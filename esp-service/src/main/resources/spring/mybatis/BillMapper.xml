@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatementEntity">
+    <!-- 查询条件 -->
+	<sql id="QueryStatementSql">
+		<where>
+			<if test="stmtId != null and stmtId != ''">
+				AND stmt_id = #{stmtId, jdbcType=BIGINT}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND user_id = #{userId, jdbcType=BIGINT}
+			</if>
+			<if test="stmtDate != null and stmtDate != ''">
+				AND stmt_date = #{stmtDate}
+			</if>
+			<if test="stmt_status != null and stmt_status != ''">
+				AND stmt_status = #{stmtStatus}
+			</if>
+			<if test="stmtMonth != null and stmtMonth != ''">
+				AND stmt_month = #{stmtMonth}
+			</if>
+			<if test="name != null and name != ''">
+				AND name = #{name}
+			</if>
+			<if test="mobileNo != null and mobileNo != ''">
+				AND mobile_no = #{mobileNo}
+			</if>
+			<if test="gender != null and gender != ''">
+				AND gender = #{gender}
+			</if>
+			<if test="stmtStatus != null and stmtStatus != ''">
+				AND stmt_status = #{stmtStatus}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 帐单分页查询 -->
+	<select id="queryBillInforPage" parameterType="Map"	resultType="StatementEntity">
+	<![CDATA[
+		select
+				stmt.stmt_id stmtId,
+				stmt.user_id userId,
+				stmt.stmt_date stmtDate,
+				stmt.stmt_month stmtMonth,
+				stmt.name name,
+				stmt.last_period_date lastPeriodDate,
+				stmt.last_period_date lastPeriodDateDes,
+				stmt.pmt_due_date pmtDueDate,
+				stmt.pmt_due_date pmtDueDateDes,
+				stmt.total_amt totalAmt,
+				stmt.credit_amt creditAmt,
+				stmt.loan_amt loanAmt,
+				stmt.card_pay_amt cardPayAmt,
+			 	stmt.ctd_stmt_bal ctdStmtBal,
+				stmt.ctd_cash_amt ctdCashAmt,
+				stmt.ctd_cash_cnt ctdCashCnt,
+				stmt.ctd_retail_amt ctdRetailAmt,
+				stmt.ctd_retail_cnt ctdRetailCnt,
+				stmt.qual_grace_bal qualGraceBal,
+				stmt.grace_days_full_ind graceDaysFullInd,
+				stmt.email email,
+				stmt.gender gender,
+				stmt.mobile_no mobileNo,
+				stmt.stmt_address stmtAddress,
+				stmt.stmt_city stmtCity,
+				stmt.stmt_district stmtDistrict,
+				stmt.stmt_media_type stmtMediaType,
+				stmt.stmt_state stmtState,
+				stmt.stmt_postcode stmtPostcode,
+				stmt.stmt_status stmtStatus
+			from 
+				t_apass_statement stmt
+	]]>
+		<include refid="QueryStatementSql" />
+	</select>
+	<select id="queryBillInforPageCount" parameterType="Map"	resultType="Integer">
+	<![CDATA[
+		select
+			count(1)
+		from 
+			t_apass_statement stmt
+	]]>
+		<include refid="QueryStatementSql" />
+	</select>
+   
+</mapper>

@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetRuleResultByCustom">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="xmldatasource" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRuleResultByCustomResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="IdentityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="xmldatasource" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRuleResultByCustomWithIdentityNoResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNoCallFrom">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CallFrom" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="IdentityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="xmldatasource" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNoCallFromResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRuleResultByCustomWithIdentityNoCallFromResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNoCallFromBid">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="Bid" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="CallFrom" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="IdentityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="xmldatasource" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomWithIdentityNoCallFromBidResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRuleResultByCustomWithIdentityNoCallFromBidResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomAndVersion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="identityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="xmldatasource" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="mainver" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="subver" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRuleResultByCustomAndVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRuleResultByCustomAndVersionResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetInnerCreditPara">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="certNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="vbNames" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetInnerCreditParaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetInnerCreditParaResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZhiCePara">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="reportid" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="vbNames" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetZhiCeParaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetZhiCeParaResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetNetCreditPara">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="certNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="reportSN" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetNetCreditParaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetNetCreditParaResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax"/>
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRCParaListByCustomAndVersion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="modelname" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="mainver" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="subver" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRCParaListByCustomAndVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRCParaListByCustomAndVersionResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetMODListAll">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="isactive" type="s:string"/>
+            <s:element minOccurs="1" maxOccurs="1" name="ctid" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="ctname" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetMODListAllResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMODListAllResult" type="tns:ArrayOfMOD"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfMOD">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MOD" nillable="true" type="tns:MOD"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MOD">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="MOD_ID" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MOD_NM" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="CT_ID" type="s:int"/>
+          <s:element minOccurs="1" maxOccurs="1" name="MOD_STAT" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MOD_VER" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MOD_SUBVER" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MOD_VER_GP" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MOD_DESC" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="MOD_CT" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="MOD_UT" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="MOD_CU" type="s:int"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetRCResult">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="moduleName" type="s:string"/>
+            <s:element minOccurs="1" maxOccurs="1" name="bid" type="s:int"/>
+            <s:element minOccurs="1" maxOccurs="1" name="modId" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="IdentityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="CallFrom" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRCResultResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRCResultResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRCResultByVersion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="moduleName" type="s:string"/>
+            <s:element minOccurs="1" maxOccurs="1" name="bid" type="s:int"/>
+            <s:element minOccurs="1" maxOccurs="1" name="modId" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="mainver" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="subver" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="IdentityNo" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="custName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="CallFrom" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRCResultByVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRCResultByVersionResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetLatestLog">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="identityNo" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetLatestLogResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetLatestLogResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetRuleResultByCustomSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustom"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNo"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNoResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoCallFromSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNoCallFrom"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoCallFromSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNoCallFromResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoCallFromBidSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNoCallFromBid"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomWithIdentityNoCallFromBidSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomWithIdentityNoCallFromBidResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomAndVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomAndVersion"/>
+  </wsdl:message>
+  <wsdl:message name="GetRuleResultByCustomAndVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRuleResultByCustomAndVersionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetInnerCreditParaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetInnerCreditPara"/>
+  </wsdl:message>
+  <wsdl:message name="GetInnerCreditParaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetInnerCreditParaResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetZhiCeParaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetZhiCePara"/>
+  </wsdl:message>
+  <wsdl:message name="GetZhiCeParaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetZhiCeParaResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetNetCreditParaSoapIn">
+    <wsdl:part name="parameters" element="tns:GetNetCreditPara"/>
+  </wsdl:message>
+  <wsdl:message name="GetNetCreditParaSoapOut">
+    <wsdl:part name="parameters" element="tns:GetNetCreditParaResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCParaListByCustomAndVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRCParaListByCustomAndVersion"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCParaListByCustomAndVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRCParaListByCustomAndVersionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetMODListAllSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMODListAll"/>
+  </wsdl:message>
+  <wsdl:message name="GetMODListAllSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMODListAllResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCResultSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRCResult"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCResultSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRCResultResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCResultByVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRCResultByVersion"/>
+  </wsdl:message>
+  <wsdl:message name="GetRCResultByVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRCResultByVersionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetLatestLogSoapIn">
+    <wsdl:part name="parameters" element="tns:GetLatestLog"/>
+  </wsdl:message>
+  <wsdl:message name="GetLatestLogSoapOut">
+    <wsdl:part name="parameters" element="tns:GetLatestLogResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="RCWebServiceSoap">
+    <wsdl:operation name="GetRuleResultByCustom">
+      <wsdl:input message="tns:GetRuleResultByCustomSoapIn"/>
+      <wsdl:output message="tns:GetRuleResultByCustomSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNo">
+      <wsdl:input message="tns:GetRuleResultByCustomWithIdentityNoSoapIn"/>
+      <wsdl:output message="tns:GetRuleResultByCustomWithIdentityNoSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFrom">
+      <wsdl:input message="tns:GetRuleResultByCustomWithIdentityNoCallFromSoapIn"/>
+      <wsdl:output message="tns:GetRuleResultByCustomWithIdentityNoCallFromSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFromBid">
+      <wsdl:input message="tns:GetRuleResultByCustomWithIdentityNoCallFromBidSoapIn"/>
+      <wsdl:output message="tns:GetRuleResultByCustomWithIdentityNoCallFromBidSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomAndVersion">
+      <wsdl:input message="tns:GetRuleResultByCustomAndVersionSoapIn"/>
+      <wsdl:output message="tns:GetRuleResultByCustomAndVersionSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetInnerCreditPara">
+      <wsdl:input message="tns:GetInnerCreditParaSoapIn"/>
+      <wsdl:output message="tns:GetInnerCreditParaSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetZhiCePara">
+      <wsdl:input message="tns:GetZhiCeParaSoapIn"/>
+      <wsdl:output message="tns:GetZhiCeParaSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetNetCreditPara">
+      <wsdl:input message="tns:GetNetCreditParaSoapIn"/>
+      <wsdl:output message="tns:GetNetCreditParaSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCParaListByCustomAndVersion">
+      <wsdl:input message="tns:GetRCParaListByCustomAndVersionSoapIn"/>
+      <wsdl:output message="tns:GetRCParaListByCustomAndVersionSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetMODListAll">
+      <wsdl:input message="tns:GetMODListAllSoapIn"/>
+      <wsdl:output message="tns:GetMODListAllSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResult">
+      <wsdl:input message="tns:GetRCResultSoapIn"/>
+      <wsdl:output message="tns:GetRCResultSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResultByVersion">
+      <wsdl:input message="tns:GetRCResultByVersionSoapIn"/>
+      <wsdl:output message="tns:GetRCResultByVersionSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetLatestLog">
+      <wsdl:input message="tns:GetLatestLogSoapIn"/>
+      <wsdl:output message="tns:GetLatestLogSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RCWebServiceSoap" type="tns:RCWebServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetRuleResultByCustom">
+      <soap:operation soapAction="http://tempuri.org/GetRuleResultByCustom" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNo">
+      <soap:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNo" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFrom">
+      <soap:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNoCallFrom" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFromBid">
+      <soap:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNoCallFromBid" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomAndVersion">
+      <soap:operation soapAction="http://tempuri.org/GetRuleResultByCustomAndVersion" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInnerCreditPara">
+      <soap:operation soapAction="http://tempuri.org/GetInnerCreditPara" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZhiCePara">
+      <soap:operation soapAction="http://tempuri.org/GetZhiCePara" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNetCreditPara">
+      <soap:operation soapAction="http://tempuri.org/GetNetCreditPara" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCParaListByCustomAndVersion">
+      <soap:operation soapAction="http://tempuri.org/GetRCParaListByCustomAndVersion" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMODListAll">
+      <soap:operation soapAction="http://tempuri.org/GetMODListAll" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResult">
+      <soap:operation soapAction="http://tempuri.org/GetRCResult" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResultByVersion">
+      <soap:operation soapAction="http://tempuri.org/GetRCResultByVersion" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLatestLog">
+      <soap:operation soapAction="http://tempuri.org/GetLatestLog" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="RCWebServiceSoap12" type="tns:RCWebServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetRuleResultByCustom">
+      <soap12:operation soapAction="http://tempuri.org/GetRuleResultByCustom" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNo">
+      <soap12:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNo" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFrom">
+      <soap12:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNoCallFrom" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomWithIdentityNoCallFromBid">
+      <soap12:operation soapAction="http://tempuri.org/GetRuleResultByCustomWithIdentityNoCallFromBid" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRuleResultByCustomAndVersion">
+      <soap12:operation soapAction="http://tempuri.org/GetRuleResultByCustomAndVersion" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetInnerCreditPara">
+      <soap12:operation soapAction="http://tempuri.org/GetInnerCreditPara" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetZhiCePara">
+      <soap12:operation soapAction="http://tempuri.org/GetZhiCePara" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNetCreditPara">
+      <soap12:operation soapAction="http://tempuri.org/GetNetCreditPara" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCParaListByCustomAndVersion">
+      <soap12:operation soapAction="http://tempuri.org/GetRCParaListByCustomAndVersion" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMODListAll">
+      <soap12:operation soapAction="http://tempuri.org/GetMODListAll" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResult">
+      <soap12:operation soapAction="http://tempuri.org/GetRCResult" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRCResultByVersion">
+      <soap12:operation soapAction="http://tempuri.org/GetRCResultByVersion" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLatestLog">
+      <soap12:operation soapAction="http://tempuri.org/GetLatestLog" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RCWebService">
+    <wsdl:port name="RCWebServiceSoap" binding="tns:RCWebServiceSoap">
+      <soap:address location="http://10.1.6.155:6644/GateWay/RCService.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="RCWebServiceSoap12" binding="tns:RCWebServiceSoap12">
+      <soap12:address location="http://10.1.6.155:6644/GateWay/RCService.asmx"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

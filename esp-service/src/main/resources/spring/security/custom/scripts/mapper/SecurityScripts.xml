@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<security>
+	<!-- ********************* Security Login SQL *************************** -->
+	<!-- Security User Login Query -->
+	<script id="security-sql-user-login">
+	<![CDATA[
+		SELECT	ID               ID,
+		        MERCHANT_CODE    MERCHANTCODE,
+				USER_NAME        USERNAME,
+				REAL_NAME        REALNAME,
+				MOBILE           MOBILE,
+				EMAIL            EMAIL,
+				PASSWORD         PASSWORD,
+				STATUS           STATUS,
+				DEPARTMENT       DEPARTMENT,
+				CREATED_BY       CREATEDBY,
+				CREATED_DATE     CREATEDDATE,
+				UPDATED_BY       UPDATEDBY,
+				UPDATED_DATE     UPDATEDDATE   
+			FROM
+				LS_RBAC_USERS 
+			WHERE
+				USER_NAME = ?
+	]]>
+	</script>
+
+	<!-- Security User Login Query -->
+	<script id="security-sql-user-permission">
+	<![CDATA[
+		SELECT  DISTINCT D.ID           ID,
+				D.PERMISSION_CODE       PERMISSIONCODE,
+				D.PERMISSION_NAME       PERMISSIONNAME  
+		FROM
+			LS_RBAC_USERS A,
+			LS_RBAC_USER_ROLE B,
+			LS_RBAC_ROLE_PERMISSION C,
+			LS_RBAC_PERMISSIONS D
+		WHERE
+			A.ID = B.USER_ID
+			AND B.ROLE_ID = C.ROLE_ID
+			AND C.PERMISSION_ID = D.ID
+			AND A.USER_NAME = ?
+	]]>
+	</script>
+
+	<!-- Security User Accordion Menu -->
+	<script id="security-sql-user-accordion-menu">
+	<![CDATA[
+		SELECT DISTINCT D.ID           ID, 
+						D.TEXT         TEXT, 
+						D.ICON_CLS     ICONCLS, 
+						D.URL          URL, 
+						D.PARENT_ID    PARENTID, 
+						D.DISPLAY      DISPLAY 
+			  FROM LS_RBAC_USERS A, LS_RBAC_USER_ROLE B, LS_RBAC_ROLE_MENU C, LS_RBAC_MENUS D
+		WHERE A.ID = B.USER_ID AND B.ROLE_ID = C.ROLE_ID AND C.MENU_ID = D.ID 
+			  AND D.PARENT_ID = 'ROOT' AND A.USER_NAME = ? ORDER BY D.DISPLAY ASC
+	]]>
+	</script>
+
+	<!-- Security User Accordion Sub Menu -->
+	<script id="security-sql-user-accordion-submenu">
+	<![CDATA[
+		SELECT DISTINCT D.ID           ID, 
+						D.TEXT         TEXT, 
+						D.ICON_CLS     ICONCLS, 
+						D.URL          URL, 
+						D.PARENT_ID    PARENTID, 
+						D.DISPLAY      DISPLAY 
+			  FROM LS_RBAC_USERS A, LS_RBAC_USER_ROLE B, LS_RBAC_ROLE_MENU C, LS_RBAC_MENUS D
+		WHERE A.ID = B.USER_ID AND B.ROLE_ID = C.ROLE_ID AND C.MENU_ID = D.ID 
+			  AND D.PARENT_ID = ? AND A.USER_NAME = ? ORDER BY D.DISPLAY ASC
+	]]>
+	</script>
+</security> 

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="RecognizeIdentityCardByBytes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="bytes" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByBytesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecognizeIdentityCardByBytesResult" type="tns:IdentityCard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="IdentityCard">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="StatusCode" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="StatusDescription" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="CardNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Sex" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Birthday" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Address" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Folk" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IssueAuthority" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ValidPeriod" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="RecognizeIdentityCardByUrl">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="imageUrl" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByUrlResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecognizeIdentityCardByUrlResult" type="tns:IdentityCard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByBase64String">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="base64String" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByBase64StringResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecognizeIdentityCardByBase64StringResult" type="tns:IdentityCard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByFilePath">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="filepath" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RecognizeIdentityCardByFilePathResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecognizeIdentityCardByFilePathResult" type="tns:IdentityCard" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RecognizeIdentityCardByBytesSoapIn">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByBytes" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByBytesSoapOut">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByBytesResponse" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByUrlSoapIn">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByUrl" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByUrlSoapOut">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByUrlResponse" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByBase64StringSoapIn">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByBase64String" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByBase64StringSoapOut">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByBase64StringResponse" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByFilePathSoapIn">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByFilePath" />
+  </wsdl:message>
+  <wsdl:message name="RecognizeIdentityCardByFilePathSoapOut">
+    <wsdl:part name="parameters" element="tns:RecognizeIdentityCardByFilePathResponse" />
+  </wsdl:message>
+  <wsdl:portType name="OCRServiceSoap">
+    <wsdl:operation name="RecognizeIdentityCardByBytes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证图片二级制，获取身份证OCR解析数据</wsdl:documentation>
+      <wsdl:input message="tns:RecognizeIdentityCardByBytesSoapIn" />
+      <wsdl:output message="tns:RecognizeIdentityCardByBytesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByUrl">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证图片链接，获取身份证OCR解析数据</wsdl:documentation>
+      <wsdl:input message="tns:RecognizeIdentityCardByUrlSoapIn" />
+      <wsdl:output message="tns:RecognizeIdentityCardByUrlSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByBase64String">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据身份证图片二级制BASE64字符串，获取身份证OCR解析数据</wsdl:documentation>
+      <wsdl:input message="tns:RecognizeIdentityCardByBase64StringSoapIn" />
+      <wsdl:output message="tns:RecognizeIdentityCardByBase64StringSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByFilePath">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">根据图片本地地址，获取身份证OCR解析数据</wsdl:documentation>
+      <wsdl:input message="tns:RecognizeIdentityCardByFilePathSoapIn" />
+      <wsdl:output message="tns:RecognizeIdentityCardByFilePathSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="OCRServiceSoap" type="tns:OCRServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RecognizeIdentityCardByBytes">
+      <soap:operation soapAction="http://tempuri.org/RecognizeIdentityCardByBytes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByUrl">
+      <soap:operation soapAction="http://tempuri.org/RecognizeIdentityCardByUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByBase64String">
+      <soap:operation soapAction="http://tempuri.org/RecognizeIdentityCardByBase64String" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByFilePath">
+      <soap:operation soapAction="http://tempuri.org/RecognizeIdentityCardByFilePath" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="OCRServiceSoap12" type="tns:OCRServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RecognizeIdentityCardByBytes">
+      <soap12:operation soapAction="http://tempuri.org/RecognizeIdentityCardByBytes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByUrl">
+      <soap12:operation soapAction="http://tempuri.org/RecognizeIdentityCardByUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByBase64String">
+      <soap12:operation soapAction="http://tempuri.org/RecognizeIdentityCardByBase64String" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RecognizeIdentityCardByFilePath">
+      <soap12:operation soapAction="http://tempuri.org/RecognizeIdentityCardByFilePath" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OCRService">
+    <wsdl:port name="OCRServiceSoap" binding="tns:OCRServiceSoap">
+      <soap:address location="http://10.138.60.23:10000/OCRService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="OCRServiceSoap12" binding="tns:OCRServiceSoap12">
+      <soap12:address location="http://10.138.60.23:10000/OCRService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

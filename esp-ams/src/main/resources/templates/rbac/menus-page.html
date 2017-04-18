@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+#menuForm td input {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+#menuForm td input.validatebox-text {
+	border:none;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/rbac/menus.js"></script>
+</head>
+<body>
+	<!-- Toolbar -->
+	<div id="tb">
+		<div class="search">
+			<table>
+				<tr>
+					<td width="10%" align="right" nowrap="nowrap">菜单名称：</td>
+					<td width="20%"><input id="menuName" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn">&nbsp;查&nbsp;询&nbsp;</a>&nbsp;&nbsp;<a
+						href="javascript:void(0);" class="easyui-linkbutton add-btn">&nbsp;添加菜单&nbsp;</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 用户查询列表 -->
+	<div id="tablelist"></div>
+
+	<div id="menuDetails">
+		<form id="menuForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">上级菜单：</td>
+					<td><input id="parentCombo" name="parentId"
+						class="easyui-combotree" style="width: 320px;" /><span style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">菜单名称：</td>
+					<td><input type="hidden" id="id" name="id" /> <input
+						type="text" id="text" name="text" style="width: 320px;"
+						data-options="required:true" /><span style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">菜单链接：</td>
+					<td><input type="text" id="url" name="url"
+						style="width: 320px;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">菜单图标：</td>
+					<td><input type="text" id="iconCls" name="iconCls"
+						style="width: 320px;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">显示顺序：</td>
+					<td><input type="number" id="display" name="display" value="1"
+						min="1" style="width: 320px;" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

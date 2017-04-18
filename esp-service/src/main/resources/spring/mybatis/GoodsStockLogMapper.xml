@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GoodsStockLogEntity">
+	
+	<select id="loadByOrderId" parameterType="HashMap" resultType="GoodsStockLogEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			user_id userId, 
+			order_id orderId 
+		FROM
+			t_esp_good_stock_log 
+		WHERE
+			order_id = #{orderId}
+	]]>
+	</select>
+
+
+	<insert id="insert" parameterType="GoodsStockLogEntity">
+	<![CDATA[
+		INSERT INTO t_esp_good_stock_log (
+			user_id,
+			order_id,
+			created_date
+		)
+		VALUES
+			(	#{userId, jdbcType=BIGINT},
+				#{orderId, jdbcType=VARCHAR},
+				CURRENT_TIMESTAMP
+				);
+	]]>
+	</insert>
+
+	<delete id="deleteByOrderId" parameterType="String">
+		DELETE FROM
+		t_esp_good_stock_log WHERE order_id = #{orderId}
+	</delete>
+</mapper> 

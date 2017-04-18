@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/merchant/merchantInforList.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/easyui/outOfBounds.js"></script>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 1040px;">
+				<tr>
+			    	<td width="10%" align="right">商户名称：</td>
+			    	<td><input type="text" class="easyui-textbox" style="width: 200px;" id="merchantName" ></td>
+				    <td width="10%" align="right">商户类型：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 200px;" id="merchantType">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="个人" value="1">个人</option>
+						   <option label="企业" value="2">企业</option>
+						</select>
+				  	</td>
+				  <td width="30%" />
+					 	 <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
+				 	  <@apass.role value="MERCHANT_MANAGE_EDIT">
+						  <a href="javascript:void(0);" class="easyui-linkbutton"  id="add">添&nbsp;加&nbsp;商&nbsp;户&nbsp;</a> &nbsp;&nbsp;
+					  </@apass.role>
+					  	<a href="javascript:void(0);" class="easyui-linkbutton"  id="flush">重&nbsp;置&nbsp;</a>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 用户查询列表 -->
+	<div id="merchantInforList"></div>
+	 <!-- 添加商户基本信息弹出窗口 -->
+	<div id="addMerchantInfor" class="easyui-window" title="<font color='black'>添加</font>" hidden="hidden"
+		style="width: 630px; height: 350px; display: none; text-align: center;" >
+ 	  <h2>添加商户信息</h2>
+		  	<table class="details_table" style="width:92%">
+            <tr>
+            	<td width="10%" align="right"><font color="red">*</font>商户编码:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" id="addMerchantCode" name="addMerchantCode" required="true"  /></td>
+				<td width="10%" align="right"><font color="red">*</font>商户名称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;" id="addMerchantName" name="addMerchantName" maxlength="5" data-options="validType:'length[1,15]'" required="true" /></td>
+            </tr>
+            <tr>
+				<td width="10%" align="right"><font color="red">*</font>结算是否含运费:</td>
+				<td align="left">
+					<select class="easyui-combobox" style="width: 180px;" id="addIsContainFreight" name="addIsContainFreight" required="required" editable="false" >
+             		    <option value="">请选择</option>
+						<option value="1">是</option>
+						<option value="0">否</option>
+             	    </select>
+				</td>
+            	<td width="10%" align="right">结算日期:</td>
+				<td align="left">
+					<select id="addMerchantSettlementDate" class="easyui-combobox" name="addMerchantSettlementDate" style="width:180px;" editable="false">   
+					    <option value="">请选择</option>   
+					    <option value="1">1号</option>   
+					    <option value="2">2号</option>   
+					    <option value="3">3号</option>   
+					    <option value="4">4号</option>   
+					    <option value="5">5号</option>   
+					    <option value="6">6号</option>   
+					    <option value="7">6号</option>   
+					    <option value="8">8号</option>   
+					    <option value="9">9号</option>   
+					    <option value="10">10号</option>   
+					    <option value="11">11号</option>   
+					    <option value="12">12号</option>   
+					    <option value="13">13号</option>   
+					    <option value="14">14号</option>   
+					    <option value="15">15号</option>   
+					    <option value="16">16号</option>   
+					    <option value="17">17号</option>   
+					    <option value="18">18号</option>   
+					    <option value="19">19号</option>   
+					    <option value="20">20号</option>   
+					    <option value="21">21号</option>   
+					    <option value="22">22号</option>   
+					    <option value="23">23号</option>   
+					    <option value="24">24号</option>   
+					    <option value="25">25号</option>   
+					    <option value="26">26号</option>   
+					    <option value="27">27号</option>   
+					    <option value="28">28号</option>   
+					</select>  
+				</td>
+            </tr>
+            <tr>
+            	<td width="10%" align="right">所在省份:</td>
+				<td align="left"><input  class="easyui-combobox" id="addMerchantProvince" style="width: 180px;" name="请选择" value="" editable="false"></td>
+				<td width="10%" align="right">所在城市:</td>
+				<td align="left"><input  class="easyui-combobox" id="addMerchantCity" style="width: 180px;" name="请选择" value="" editable="false"></td>
+            </tr>
+            <tr>
+            	<td width="10%" align="right">详细地址:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" id="addMerchantAddress"  name="addMerchantAddress" /></td>
+				<td width="10%" align="right">邮政编码:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" id="addMerchantPostcode"  name="addMerchantPostcode" /></td>
+            </tr>
+            <tr>
+               	<td width="10%" align="right">商户类型:</td>
+				<td align="left"><select class="easyui-combobox" style="width: 180px;" id="addMerchantType" name="addMerchantType" editable="false">
+             		    <option value="">请选择</option>
+						<option value="1">个人</option>
+						<option value="2">企业</option>
+             	 </select></td>
+             	<td width="10%" align="right">商户昵称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addMerchantNickname" name="addMerchantNickname" /></td>
+            </tr>
+            <tr>
+            	<td width="15%" align="right">结算银行名称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addSettlementBankName" name="addSettlementBankName" /></td>
+                <td width="10%" align="right">结算银行卡号:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addSettlementCardNo" name="addSettlementCardNo" /></td>
+            </tr>
+		    <tr>
+            	<td width="10%" align="right">经营类型:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addManageType" name="addManageType" /></td>
+                <td width="15%" align="right">企业机构代码:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addOrgCode" name="addOrgCode" /></td>
+            </tr>
+			<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="cancelAdd" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+						            <a href="javascript:void(0);" id="agreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+	        </tr>
+		  	</table>
+	</div>
+	 <!-- 编辑商户基本信息弹出窗口 -->
+	<div id="editMerchantInfor" class="easyui-window" title="<font color='black'>编辑</font>" hidden="hidden"
+		style="width: 630px; height: 350px; display: none; text-align: center;" >
+ 	  <h2>编辑商户信息</h2>
+		  	<table class="details_table" style="width:92%">
+            <tr>
+            	<td width="10%" align="right"><font color="red">*</font>商户编码:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text" id="editMerchantCode" name="editMerchantCode" disabled="disabled"/></td>
+				<td width="10%" align="right"><font color="red">*</font>商户名称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editMerchantName" name="editMerchantName" disabled="disabled"/></td>
+            </tr>
+            <tr>
+            	<td width="10%" align="right"><font color="red">*</font>结算是否含运费:</td>
+				<td align="left">
+					<select class="easyui-combobox" style="width: 180px;" id="editIsContainFreight" name="editIsContainFreight" editable="false">
+             		    <option value="">请选择</option>
+						<option value="1">是</option>
+						<option value="0">否</option>
+             	 </select>
+            	<td width="10%" align="right">结算日期:</td>
+				<td align="left">
+					<select id="editMerchantSettlementDate" class="easyui-combobox" name="dept" style="width:180px;" editable="false">   
+					    <option value="">请选择</option>   
+					    <option value="1">1号</option>   
+					    <option value="2">2号</option>   
+					    <option value="3">3号</option>   
+					    <option value="4">4号</option>   
+					    <option value="5">5号</option>   
+					    <option value="6">6号</option>   
+					    <option value="7">6号</option>   
+					    <option value="8">8号</option>   
+					    <option value="9">9号</option>   
+					    <option value="10">10号</option>   
+					    <option value="11">11号</option>   
+					    <option value="12">12号</option>   
+					    <option value="13">13号</option>   
+					    <option value="14">14号</option>   
+					    <option value="15">15号</option>   
+					    <option value="16">16号</option>   
+					    <option value="17">17号</option>   
+					    <option value="18">18号</option>   
+					    <option value="19">19号</option>   
+					    <option value="20">20号</option>   
+					    <option value="21">21号</option>   
+					    <option value="22">22号</option>   
+					    <option value="23">23号</option>   
+					    <option value="24">24号</option>   
+					    <option value="25">25号</option>   
+					    <option value="26">26号</option>   
+					    <option value="27">27号</option>   
+					    <option value="28">28号</option>   
+					</select>  
+				</td>
+            </tr>
+            <tr>
+            	<td width="10%" align="right">所在省份:</td>
+				<td align="left"><input  class="easyui-combobox" id="editMerchantProvince" style="width: 180px;" name="请选择" value="" editable="false"></td>
+				<td width="10%" align="right">所在城市:</td>
+				<td align="left"><input  class="easyui-combobox" id="editMerchantCity" style="width: 180px;" name="请选择" value="" editable="false"></td>
+            </tr>
+            <tr>
+            	<td width="10%" align="right">详细地址:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text"  id="editMerchantAddress"  name="editMerchantAddress" /></td>
+				<td width="10%" align="right">邮政编码:</td>
+				<td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text"  id="editMerchantPostcode"  name="editMerchantPostcode"/></td>
+            </tr>
+            <tr>
+               	<td width="10%" align="right">商户类型:</td>
+				<td align="left"><select class="easyui-combobox" style="width: 180px;" id="editMerchantType" name="editMerchantType" editable="false">
+             		    <option value="">请选择</option>
+						<option value="1">个人</option>
+						<option value="2">企业</option>
+             	 </select></td>
+             	<td width="10%" align="right">商户昵称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editMerchantNickname" name="editMerchantNickname" /></td>
+            </tr>
+            
+            <tr>
+            	<td width="15%" align="right">结算银行名称:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editSettlementBankName" name="editSettlementBankName" /></td>
+                <td width="10%" align="right">结算银行卡号:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editSettlementCardNo" name="editSettlementCardNo" /></td>
+            </tr>
+		    <tr>
+            	<td width="10%" align="right">经营类型:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editManageType" name="editManageType" /></td>
+                <td width="15%" align="right">企业机构代码:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editOrgCode" name="editOrgCode" /></td>
+                <!-- 隐藏域，用来存储商户id -->
+                <td>
+	                <input  type="hidden" id="merchantId" name="merchantId" />
+	                <p style="display: none;">
+	                	<input class="easyui-textbox" id="message"
+							style="width: 180px; height: 60px" data-options="multiline:true">
+	                </p>
+				</td>
+            </tr>
+			<tr style="margin-top: 22px;">
+					<td colspan="4">
+						<a href="javascript:void(0);" id="cancelEdit" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+						<a href="javascript:void(0);" id="agreeEdit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+	        </tr>
+		  	</table>
+	</div>
+</body>
+</html>

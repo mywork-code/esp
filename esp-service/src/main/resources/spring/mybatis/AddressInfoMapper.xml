@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AddressInfoEntity">
+	<!-- 插入 -->
+	<insert id="insert" parameterType="AddressInfoEntity" useGeneratedKeys="true" keyProperty="id">
+	<![CDATA[
+		INSERT INTO T_ESP_ADDRESS_INFO(
+			user_id,
+			province,
+			city,
+			district,
+			address,
+			postcode,
+			name,
+			telephone,
+			is_default
+		)
+		VALUES
+		(
+			#{userId, jdbcType=BIGINT},
+			#{province, jdbcType=VARCHAR}, 
+			#{city, jdbcType=VARCHAR}, 
+			#{district, jdbcType=VARCHAR}, 
+			#{address, jdbcType=VARCHAR},
+			#{postcode, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{telephone, jdbcType=VARCHAR},
+			#{isDefault, jdbcType=VARCHAR}
+		)
+	]]>
+		<selectKey resultType="Long" keyProperty="id" order="AFTER">
+		<![CDATA[ SELECT LAST_INSERT_ID()  AS id  ]]>
+		</selectKey>
+	</insert>
+	<select id="queryAddressInfoList" parameterType="java.lang.Long" resultType="AddressInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			id addressId,
+			user_id userId,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			is_default isDefault
+		FROM
+			t_esp_address_info
+		WHERE
+			user_id=#{value}
+		ORDER BY is_default DESC, id DESC
+	]]>
+	</select>
+	<!-- 更新地址信息的状态为非默认 -->
+	<update id="updateAddressStatus" parameterType="java.lang.Long">
+	<![CDATA[
+		UPDATE t_esp_address_info SET is_default = "0"
+		WHERE is_default = "1"
+		AND user_id = #{userId}
+	]]>
+	</update>
+	<!-- 更新用户的地址信息 -->
+	<update id="updateAddressInfo" parameterType="AddressInfoEntity">
+	<![CDATA[
+		UPDATE t_esp_address_info 
+	]]>
+		<set>
+			<if test="province != null and province != ''">
+				province = #{province},
+			</if>
+			<if test="city != null and city != ''">
+				city = #{city},
+			</if>
+			<if test="district != null and district != ''">
+				district = #{district},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address},
+			</if>
+			<if test="postcode != null and postcode != ''">
+				postcode = #{postcode},
+			</if>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="telephone != null and telephone != ''">
+				telephone = #{telephone},
+			</if>
+			<if test="isDefault != null and isDefault != ''">
+				is_default = #{isDefault},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE user_id = #{userId}
+			AND id = #{id}
+	]]>
+	</update>
+	<!-- 删除用户的地址信息 -->
+	<delete id="deleteAddressInfoCTQ" parameterType="Map">
+		DELETE FROM t_esp_address_info where id in
+		<foreach item="idItem" collection="idStr" open="(" separator="," close=")">
+			#{idItem}
+		</foreach>
+		AND USER_ID = #{userId}
+	</delete>
+	
+	<select id="queryDefaultByUserId" parameterType="AddressInfoEntity" resultType="AddressInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			id addressId,
+			user_id userId,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			is_default isDefault
+		FROM
+			t_esp_address_info
+	]]>
+	<where>
+		1=1
+		<if test="id != null ">
+			AND id = #{id, jdbcType=BIGINT}
+		</if>
+		<if test="isDefault != null and isDefault != ''">
+			AND is_default = #{isDefault, jdbcType=VARCHAR}
+		</if>
+		<if test="userId != null">
+			AND user_id = #{userId, jdbcType=BIGINT}
+		</if>
+	</where>
+	<![CDATA[
+		ORDER BY id DESC
+	]]>
+	</select>
+	
+	<!-- 根据 userId 查询一条用户地址，有默认则返回默认地址;无默认地址，按排序返回一条用户地址;用户无地址数据时返回null -->
+	<select id="queryOneAddressByUserId" parameterType="Long" resultType="AddressInfoEntity">
+	    <![CDATA[
+	        SELECT
+			    id id,
+			    id addressId,
+			    user_id userId,
+			    province province,
+			    city city,
+			    district district,
+			    address address,
+			    postcode postcode,
+			    name name,
+			    telephone telephone,
+			    is_default isDefault
+			FROM
+			    t_esp_address_info
+			WHERE
+			    user_id = #{userId, jdbcType=BIGINT}
+			ORDER BY
+			    is_default DESC, id DESC
+			LIMIT 1;
+	    ]]>
+	</select>
+	
+	<select id="selectByPK" parameterType="java.lang.Long" resultType="AddressInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			id addressId,
+			user_id userId,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			is_default isDefault
+		FROM
+			t_esp_address_info
+		WHERE
+			id=#{value}
+	]]>
+	</select>
+</mapper>

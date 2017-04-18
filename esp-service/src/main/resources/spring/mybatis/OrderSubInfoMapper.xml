@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderSubInfoEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="orderId != null and orderId != ''">
+				and orderInfo.order_Id like CONCAT('%',#{orderId},'%')
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				and orderInfo.orderstatus like
+				CONCAT('%',#{orderStatus},'%')
+			</if>
+			<if test="refundType != null and refundType != ''">
+				and refundInfo.refund_Type like
+				CONCAT('%',#{refundType},'%')
+			</if>
+			<if test="createDate != null and createDate != ''">
+				and date_format(orderInfo.create_date,'%Y-%m-%d') =
+				#{createDate}
+			</if>
+			<if test="telephone != null and telephone != ''">
+				and orderInfo.telephone like CONCAT('%',#{telephone},'%')
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				and orderInfo.merchant_code = #{merchantCode}
+			</if>
+			<if test="name != null and name != ''">
+				and orderInfo.name like CONCAT('%',#{name},'%')
+			</if>
+		</where>
+	</sql>
+	<!-- 订单查询页面显示  -->
+	<select id="querySubOrderDetailInfoByParam" parameterType="Map"
+		resultType="OrderSubInfoEntity">
+		<![CDATA[
+		SELECT
+		orderInfo.order_id orderId,
+		orderInfo.orderstatus orderStatus,
+		orderInfo.orderstatus orderStatusDsc,
+		orderInfo.user_id userId,
+		orderInfo.merchant_code merchantCode,
+		round(orderInfo.order_amt,2) orderAmt,
+		orderInfo.logistics_name logisticsName,
+		orderInfo.logistics_no logisticsNo,
+	    orderInfo.create_date createDate,
+		orderInfo.payType payType,
+		orderInfo.pay_time payDate,
+		orderInfo.province province,
+		orderInfo.city city,
+		orderInfo.district district,
+		orderInfo.address address,
+		orderInfo.name name,
+		orderInfo.telephone telephone,
+		orderInfo.postcode postcode,
+		orderInfo.paystatus  payStatus,
+		orderInfo.update_date updateDate,
+		concat(orderInfo.province,orderInfo.city,orderInfo.district,orderInfo.address) fullAddress,
+		merchant.merchant_name merchantName,
+		refundInfo.id refundId,
+		refundInfo.refund_type refundType
+		FROM
+		t_esp_order_info orderInfo 
+        left join t_esp_merchant_info merchant on 
+        orderInfo.merchant_code=merchant.merchant_code
+        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+		]]>
+		<include refid="QueryConditionSql" />
+	    <![CDATA[
+		ORDER BY orderInfo.create_date DESC
+		]]>
+	</select>
+	<!-- 订单查询 导出  -->
+	<select id="querySubOrderDetailInfoByParamForExport" parameterType="Map"
+		resultType="OrderSubInfoEntity">
+		<![CDATA[
+		SELECT
+			orderInfo.order_id orderId,
+			orderInfo.orderstatus orderStatus,
+			orderInfo.orderstatus orderStatusDsc,
+			orderInfo.user_id userId,
+			orderInfo.merchant_code merchantCode,
+			merchant.merchant_name merchantName,
+			orderdetailandgoodtemp.goodsIdTemp goodsId,
+			orderdetailandgoodtemp.goodsNameTemp goodsName,
+		  	orderdetailandgoodtemp.goodsTypeTemp goodsType,
+		  	orderdetailandgoodtemp.goodsTypeTemp goodsTypeDesc,
+			orderdetailandgoodtemp.goodsModelTemp goodsModel,
+			orderdetailandgoodtemp.goodsSkuTypeTemp goodsSkuType,
+			orderdetailandgoodtemp.goodsSkuAttrTemp goodsSkuAttr,
+			orderdetailandgoodtemp.goodsNumTemp goodsNum,
+			round(orderdetailandgoodtemp.goodsPriceTemp, 2) orderAmt,
+			orderInfo.logistics_name logisticsName,
+			orderInfo.logistics_no logisticsNo,
+			orderInfo.create_date createDate,
+			orderInfo.payType payType,
+			orderInfo.pay_time payDate,
+			orderInfo.province province,
+			orderInfo.city city,
+			orderInfo.district district,
+			orderInfo.address address,
+			orderInfo.NAME name,
+			orderInfo.telephone telephone,
+			orderInfo.postcode postcode,
+			orderInfo.paystatus payStatus,
+			orderInfo.update_date updateDate,
+			concat(
+				orderInfo.province,
+				orderInfo.city,
+				orderInfo.district,
+				orderInfo.address
+			) fullAddress,
+			refundInfo.id refundId,
+			refundInfo.refund_type refundType
+		FROM
+			t_esp_order_info orderInfo
+		LEFT JOIN t_esp_merchant_info merchant ON orderInfo.merchant_code = merchant.merchant_code
+		LEFT JOIN t_esp_refund_info refundInfo ON orderInfo.order_id = refundInfo.order_id
+		LEFT JOIN (
+			SELECT
+				orderdetail.order_id orderIdTemp,
+				orderdetail.goods_num goodsNumTemp,
+				goodsbase.id goodsIdTemp,
+				goodsbase.goods_name goodsNameTemp,
+				orderdetail.goods_type goodsTypeTemp,
+				goodsstockinfo.goods_sku_attr goodsSkuAttrTemp,
+				orderdetail.goods_price goodsPriceTemp,
+				goodsbase.goods_model goodsModelTemp,
+				goodsbase.goods_sku_type goodsSkuTypeTemp,
+				orderdetail.update_date orderdetailUpdateDateTemp
+			FROM
+				t_esp_order_detail_info orderdetail
+			LEFT JOIN t_esp_goods_base_info goodsbase ON orderdetail.goods_id = goodsbase.id
+			LEFT JOIN t_esp_goods_stock_info goodsstockinfo on orderdetail.goods_stock_id=goodsstockinfo.id
+		) orderdetailandgoodtemp ON orderInfo.order_id = orderdetailandgoodtemp.orderIdTemp
+		]]>
+		<include refid="QueryConditionSql" />
+	    <![CDATA[
+			ORDER BY orderInfo.create_date DESC,
+			orderinfo.order_id DESC,
+			orderdetailandgoodtemp.orderdetailUpdateDateTemp DESC
+		
+		]]>
+	</select>
+
+	<update id="updateLogisticsInfoByOrderId" parameterType="Map">
+		update
+		t_esp_order_info set
+		logistics_name=#{logisticsName},logistics_no
+		=#{logisticsNo}
+		where order_id = #{orderId}
+	</update>
+
+	<update id="updateOrderStatusByOrderId" parameterType="Map">
+		update
+		t_esp_order_info set
+		orderstatus=#{orderStatus}
+		where order_id =
+		#{orderId}
+	</update>
+
+	<update id="updateOrderStatusAndLastRtimeByOrderId"
+		parameterType="Map">
+		update
+		t_esp_order_info set
+		orderstatus=#{orderStatus},
+		send_outgoodsdate = CURRENT_TIMESTAMP
+		where order_id = #{orderId}
+	</update>
+
+	<!-- 记录总数 -->
+	<select id="querySubOrderDetailInfoByParamCount" parameterType="Map"
+		resultType="Integer">
+	    <![CDATA[
+		SELECT
+	    count(1)
+		FROM
+		t_esp_order_info orderInfo 
+        left join t_esp_merchant_info merchant on 
+        orderInfo.merchant_code=merchant.merchant_code
+        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+        ]]>
+		<include refid="QueryConditionSql" />
+	</select>
+	<!-- 记录总数 -->
+	<select id="querySubOrderDetailInfoByParamForExportCount" parameterType="Map"
+		resultType="Integer">
+	    <![CDATA[
+		SELECT
+	    count(1)
+		FROM
+		t_esp_order_info orderInfo 
+     	LEFT JOIN t_esp_merchant_info merchant ON orderInfo.merchant_code = merchant.merchant_code
+		LEFT JOIN t_esp_refund_info refundInfo ON orderInfo.order_id = refundInfo.order_id
+		LEFT JOIN (
+			SELECT
+				orderdetail.order_id orderIdTemp,
+				orderdetail.goods_num goodsNumTemp,
+				goodsbase.id goodsIdTemp,
+				goodsbase.goods_name goodsNameTemp,
+				goodsbase.goods_type goodsTypeTemp,
+				goodsbase.goods_model goodsModelTemp,
+				goodsbase.goods_sku_type goodsSkuTypeTemp
+			FROM
+				t_esp_order_detail_info orderdetail
+			LEFT JOIN t_esp_goods_base_info goodsbase ON orderdetail.goods_id = goodsbase.id
+		) orderdetailandgoodtemp ON orderInfo.order_id = orderdetailandgoodtemp.orderIdTemp
+        ]]>
+		<include refid="QueryConditionSql" />
+	</select>
+</mapper>

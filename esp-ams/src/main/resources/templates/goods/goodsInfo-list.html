@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+
+</head>
+<script type="text/javascript" charset="utf-8"
+	src="${rc.contextPath}/WebContent/ueditor1.4.3.3/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="${rc.contextPath}/WebContent/ueditor1.4.3.3/ueditor.all.min.js"></script>
+<script type="text/javascript" charset="utf-8"
+	src="${rc.contextPath}/WebContent/ueditor1.4.3.3/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/goodsInfo-list.js"></script>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+.new-btn {
+	display: inline-block;
+    padding: 2px 4px 2px 30px;
+    background: #FFFFFF url("/ams/WebContent/images/icon_upload.png") no-repeat 4px center;
+    font-size: 16px;
+    color: #000000;
+    background-size: 18px;
+    border: 1px #000 solid;
+    border-radius: 4px;
+}
+.new-btn:hover {
+ background: #FFFFFF url("/ams/WebContent/images/icon_upload1.png") no-repeat 4px center;
+    color: #707070;
+    background-size: 18px;
+     border: 1px #707070 solid;
+}
+</style>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+<input id="goodCostpriceIf" type="hidden" value="${goodCostpriceIf!}">
+
+	<div id="tb" style="display:none;">
+		<div class="search">
+			<table style="min-width: 700px;">
+				<tr>
+					<td width="10%" align="right">商户名称：</td>
+			    	<td width="20%"><input id="merchantName"  class="easyui-textbox" 
+			    		style="width: 200px;"  ></td>
+				    <td width="10%" align="right">商户类型：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 150px;" id="merchantType">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="个人" value="1">个人</option>
+						   <option label="企业" value="2">企业</option>
+						</select>
+				  	</td>
+				</tr>
+				<tr>
+					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
+					<td width="20%"><input id="goodsNames" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td width="10%" align="right" nowrap="nowrap">商品类型：</td>
+					<td width="10%" align="right" nowrap="nowrap">
+						<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;" editable="false">   
+						  <option value="" selected="selected">请选择</option>   
+						  <option label="正常" value="1">正常</option>   
+						  <option label="精选" value="2">精选</option>   
+						</select>
+					</td>
+					<td width="5%" />
+					<td>
+						<a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp; 
+					  <@apass.role value="GOODS_INFO_ADD">
+						<#if merchantStatus??&&merchantStatus=="1"> 
+						<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
+						data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
+						</#if> 
+						</@apass.role>
+						 <@apass.role value="GOODS_INFO_EXPORT">
+						<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+						data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
+						</@apass.role>
+						<a href="javascript:void(0);" class="easyui-linkbutton" id="flush"
+						data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
+						</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 商品查询列表 -->
+	<div id="tablelist"></div>
+
+	<!-- 系统参数-->
+	<input type="hidden" id="merchantStatus" name="merchantStatus" value="${merchantStatus!}" />
+	<input type="hidden" id="goodsPriceRate" name="goodsPriceRate" value="${goodsPriceRate!}" />
+	<input type="hidden" id="merchantSettleRate" name="merchantSettleRate" value="${merchantSettleRate!}">
+	
+	<!-- 添加商品 -->
+	<div id="addGoodsInfo" class="easyui-window"
+		title="<font color='black'>添加商品</font>" hidden="hidden"
+		style="width: 500px; height: 400px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+		<form id="addGoodsInfoList">
+			<table class="details_table" style="width: 92%" id="mytab">
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商户:</td>
+					<td colspan="1" width="60%" style="height: 22px;">
+					<input class="easyui-textbox"
+						type="text" id="addmerchantCode" name="addmerchantCode"  value="${userMechantCode!}" style="width: 100%;" disabled="disabled"/>
+					 </td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
+					<td colspan="1" width="60%"><input class="easyui-textbox"
+						type="text" id="addgoodsName" name="addgoodsName"  data-options="validType:'length[1,18]'"
+						style="width: 100%;" idth="20%" align="right"></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品型号:</td>
+					<td colspan="1" width="60%" style="height: 22px;">
+					<input class="easyui-textbox"
+						type="text" id="addgoodsModel" name="addgoodsModel" style="width: 100%;" />
+					 </td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品小标题:</td>
+					<td colspan="1" width="60%"><input class="easyui-textbox"  data-options="validType:'length[1,25]'" 
+						type="text" id="addgoodsTitle" name="addgoodsTitle" style="width: 100%;" /></td>
+				</tr>
+				<tr>
+				<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
+				<td align="left"><select class="easyui-combobox"
+						data-options="required:true" style="width: 100%" id="addgoodsSkuType" editable="false"
+						name="addgoodsSkuType">
+							<option value="">请选择</option>
+							<option value="颜色">颜色</option>
+							<option value="尺寸">尺寸</option>
+					</select></td>
+				</tr>
+
+				<tr>
+					<td align="right">生产日期:</td>
+					<td><input id="addproDate" name="addproDate" editable="false"
+						class="easyui-datebox" style="width: 50%;" /></td>
+				</tr>
+
+				<tr>
+					<td align="right"><font color="red">*</font>上架日期:</td>
+					<td><input id="addlistTime" name="addlistTime" editable="false" 
+						class="easyui-datetimebox" style="width: 50%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>下架日期:</td>
+					<td><input id="adddelistTime" name="adddelistTime" editable="false" 
+						class="easyui-datetimebox" style="width: 50%;" /></td>
+				</tr>
+				<tr>
+					<td align="right">保质期(多少个月):</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000" id="addkeepDate" name="addkeepDate"
+						missingMessage="1~100000之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>排序:</td>
+					<td><input id="sordNo" name="sordNo" 
+						class="easyui-numberbox" style="width: 100%;" /></td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right">生产厂家:</td>
+					<td colspan="3" width="60%"><input class="easyui-textbox"
+						type="text" id="addsupNo" name="addsupNo" style="width: 100%;" /></td>
+				</tr>
+			<!-- 	<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品描述:</td>
+					<script id="editor" name="editor" type="text/plain"
+						style="width: 200px; height: 150px;"></script>
+				</tr> -->
+
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="disGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="goodsAddinfo"
+						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+	<!-- 编辑商品弹出窗口 -->
+	<div id="editGoodsInfo" class="easyui-window"
+		title="<font color='black'>编辑商品</font>" hidden="hidden"
+		style="width: 700px; height: 500px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+			<table class="details_table" style="width: 92%" id="mytab">
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商户:</td>
+					<td colspan="1" width="60%" style="height: 22px;">
+					<input class="easyui-textbox"
+						type="text" id="editmerchantCode" name="editmerchantCode" style="width: 100%;" disabled="disabled"/>
+					 </td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品型号:</td>
+					<td colspan="1" width="60%" style="height: 22px;">
+					<input class="easyui-textbox"
+						type="text" id="editgoodsModel" name="editgoodsModel" style="width: 100%;"/>
+					</td>
+				</tr>
+				<input type="hidden" id="editid" name="editid"/>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
+					<td colspan="1" width="60%"><input class="easyui-textbox" data-options="validType:'length[1,18]'"
+						id="editgoodsName" name="editgoodsName" style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品小标题:</td>
+					<td colspan="1" width="60%"><input class="easyui-textbox" data-options="validType:'length[1,25]'"
+						type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 100%;" /></td>
+				</tr>
+				<tr>
+				<td width="20%" align="right"><font color="red">*</font>商品最小单元分类:</td>
+				<td align="left"><select class="easyui-combobox" editable="false"
+						data-options="required:true" style="width: 100%" id="editgoodsSkuType"
+						name="editgoodsSkuType">
+							<option value="">请选择</option>
+							<option value="颜色">颜色</option>
+							<option value="型号">型号</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>上架日期:</td>
+					<td><input id="editlistTime" name="editlistTime" editable="false"
+						class="easyui-datetimebox" style="width: 50%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>下架日期:</td>
+					<td><input id="editdelistTime" name="editdelistTime" editable="false"
+						class="easyui-datetimebox" style="width: 50%;" /></td>
+				</tr>
+				<tr>
+					<td align="right">生产日期:</td>
+					<td><input id="editproDate" name="editproDate"
+						 class="easyui-datebox"
+						style="width: 50%;" /></td>
+				</tr>
+				<tr>
+					<td align="right">保质期(多少个月):</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000" id="editkeepDate" name="editkeepDate"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">生产厂家:</td>
+					<td colspan="3" width="60%"><input class="easyui-textbox"
+						type="text" id="editsupNo" name="editsupNo" style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>排序:</td>
+					<td colspan="3" width="60%"><input class="easyui-numberbox"
+						type="text" id="editsordNo" name="editsordNo" style="width: 100%;" /></td>
+				</tr>
+			<tr>
+				<td width="20%" align="right"width="">商品墙图片:</td>
+				<td colspan="3" width="60%" align="left">
+				 	<img id='editGoodsLogoImg'   src=""/>
+				 	<form id="logoFilepic"  method="POST" enctype="multipart/form-data" modelAttribute="logoFileModel">	
+					    <input  type="file" style="padding-top:35px;width:40%;height:26px;"  id="editGoodsLogoFile" name="editGoodsLogoFile"/>
+					    <a href="javascript:void(0);" id="upLogoBtn"
+						style="margin-right: 15px;" class="new-btn">上传</a>
+					    <input  type="hidden"  id="editLogogoodsId" name="editLogogoodsId"/>
+					    
+				    </form>
+				    <p style="margin: 4px 0 8px;color:red"><span>支持格式：.png,.jpg;尺寸：320*254;大小：≤500kb</span></p>
+				</td>
+			</tr>
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="bannerGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">商品大图上传</a>
+						<a href="javascript:void(0);" id="reportGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">商品详情录入</a>
+					</td>
+				</tr>
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="editdisGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="editgoodsAddinfo"
+						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+	</div>
+	<!-- 编辑器 商品详情录入 -->
+	<div id="editorReport" class="easyui-window"
+		title="<font color='black'>商品详情录入</font>" hidden="hidden"
+		style="width: 1000px; height: 500px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+    <script id="editor" type="text/plain" style="width:900px;height:200px;"></script>
+    
+    <a href="javascript:void(0);" id="getAllHtmldisy"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+    <a href="javascript:void(0);" id="getAllHtml"
+						style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>
+	</div>
+	
+	<!-- 库存查询录入 -->
+	<div id="goodsStockInfo" class="easyui-window"
+		title="<font color='black'>库存查询录入</font>" hidden="hidden"
+		style="width: 900px; height: 300px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+  		<tr style="margin-top: 22px;">
+  		<input type="hidden" name = "goodsId" id = "goodsId">
+		<td><a href="javascript:void(0);" id="addGoodsStockInfo"
+		style="margin-right: 15px;" class="easyui-linkbutton">新&nbsp;增&nbsp;</a>
+			</td>
+		</tr>
+    <div id="goodsStockList"></div>
+	</div>
+	
+	<!-- 新加库存 -->
+	<div id="addGoodsStockInfoWin" class="easyui-window"
+		title="<font color='black'>新加库存</font>" hidden="hidden"
+		style="width: 500px; height: 310px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+		<form id="stockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">	
+			<table class="details_table" style="width: 92%" id="mytab">
+				 
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品规格:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="goodsSkuAttr" name="goodsSkuAttr" style="width: 100%;" />
+					 </td>
+				</tr>
+				 <input type="hidden" name = "addstockInfogoodsId" id = "addstockInfogoodsId">
+				<tr>
+					<td align="right"><font color="red">*</font>市场价:</td>
+					<td><input class="easyui-numberspinner" type="text" 
+						data-options="min:1,max:100000,precision:2" id="marketPrice" name="marketPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;"/></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>成本价:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000,precision:2" id="goodsCostPrice" name="goodsCostPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>商品价格:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000,precision:2" id="goodsPrice" name="goodsPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;" readonly="readonly"/></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>库存量:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:999" id="stockTotalAmt" name="stockTotalAmt"
+						required="true" missingMessage="1~999之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>比价链接1:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="goodsCompareUrlone" name="goodsCompareUrl" style="width: 100%;" />
+					 </td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>比价链接2:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="goodsCompareUrltwo" name="goodsCompareUrl2" style="width: 100%;" />
+					 </td>
+				</tr>
+				
+			    <tr>
+					<td align="right"><font color="red">*</font>缩略图Logo:</td>
+					<td><input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/></td>
+				</tr>
+
+				<tr>
+					<td align="right"><font color="red"></font></td>
+					<td><span style="color:red">支持格式：.png,.jpg;尺寸：130*130px;大小：≤500kb</span></td>
+				</tr>
+
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="addGoodsStockInfoDisy"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="addGoodsStockInfoSumbit"
+						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+			</form>
+	</div>
+	
+	<!-- 修改库存信息 -->
+	<div id="editGoodsStockInfoWin" class="easyui-window"
+		title="<font color='black'>修改库存信息</font>" hidden="hidden"
+		style="width: 500px; height: 350px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+			<table class="details_table" style="width: 92%" id="mytab">
+				 
+				 <input type="hidden" name = "editstockinfoId" id = "editstockinfoId">
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>商品规格:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="editgoodsSkuAttr" name="editgoodsSkuAttr" style="width: 100%;" 		/>
+					 </td>
+				</tr>
+ 
+					<td align="right"><font color="red">*</font>市场价:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000,precision:2" id="editmarketPrice" name="editmarketPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>成本价:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000,precision:2" id="editgoodsCostPrice" name="editgoodsCostPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>商品价格:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:100000,precision:2" id="editgoodsPrice" name="editgoodsPrice"
+						required="true" missingMessage="1~100000之间的正整数"
+						style="width: 100%;"  readonly="readonly"/></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>库存量:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:999" id="editstockTotalAmt" name="editstockTotalAmt"
+						required="true" missingMessage="1~999之间的正整数"
+						style="width: 100%;"  disabled="disabled"/></td>
+				</tr>
+				
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>比价链接1:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="editgoodsCompareUrlone" name="editgoodsCompareUrl" style="width: 100%;" />
+					 </td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><font color="red">*</font>比价链接2:</td>
+					<td width="30%">
+					<input class="easyui-textbox"
+						type="text" id="editgoodsCompareUrltwo" name="editgoodsCompareUrl2" style="width: 100%;" />
+					 </td>
+				</tr>
+			   <tr>
+				<td width="20%" align="right" valign="top" width="">库存缩略图:</td>
+				<td colspan="3" width="60%">
+				 	<img id='editStockGoodsLogoImg'   src=""/>
+				 	<form id="stocklogoFilepic"  method="POST" enctype="multipart/form-data" modelAttribute="logoFileModel">	
+					    <input  type="file" style="padding-top:35px" style="width:40%"  id="editStockGoodsLogoFile" name="editGoodsLogoFile"/>
+					    <input  type="hidden"  id="editStockLogoUrl" name="editStockLogoUrl"/>
+					    <input type="hidden" name = "editLogogoodsId" id = "editStockInfogoodsId">
+					     <input type="hidden" name = "editStockinfoIdInForm" id = "editStockinfoIdInForm">
+					    <span style="color:red">支持格式：.png,.jpg;尺寸：130 *130px;大小：≤500kb</span>
+				    </form>
+				</td>
+			   </tr>
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="editGoodsStockInfoDisy"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="editGoodsStockInfoSumbit"
+						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+						 <a href="javascript:void(0);" id="upStockLogoBtn"
+						style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;传&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+	</div>
+	
+	
+	<div id="addAmtGoodsStockInfoWin" class="easyui-window"
+		title="<font color='black'>加库存</font>" hidden="hidden"
+		style="width: 500px; height: 100px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+			<table class="details_table" style="width: 92%" id="mytab">
+				<tr>
+					<input type="hidden" name = "stockinfoId" id = "stockinfoId">
+					<input type="hidden" name = "stockCurrAmtTemp" id = "stockCurrAmtTemp">
+					<input type="hidden" name = "stockTotalAmtTemp" id = "stockTotalAmtTemp">
+					<td align="right"><font color="red">*</font>请输入加的数量:</td>
+					<td><input class="easyui-numberspinner" type="text"
+						data-options="min:1,max:999" id="addstockinfoAmt" name="addstockinfoAmt"
+						required="true" missingMessage="1~999之间的正整数"
+						style="width: 100%;" /></td>
+				</tr>
+				 
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="addAmtGoodsStockInfoWinDisy"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="addAmtGoodsStockInfoWinSumbit"
+						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+	</div>
+	
+		<!-- banner图 ：商品大图上传-->
+	<div id="bannerPicUpWin" class="easyui-window"
+		title="<font color='black'>商品大图上传</font>" hidden="hidden"
+		style="width: 500px; height: 500px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+    	<div id="goodsbannerList"></div>
+		<br/>	
+		<form id="bannerListpic"  method="POST" enctype="multipart/form-data" modelAttribute="bannerModel">	
+		<table class="details_table" style="width: 92%" id="mytab">
+				<input type="hidden" name = "bannerGoodsId" id = "bannerGoodsId">
+				<tr>
+					<td align="right"><font color="red">*</font>排序:</td>
+					<td><input class="easyui-textbox" type="text" id="bannerPicOrder" name="bannerPicOrder"
+						style="width: 100%;" /></td>
+				</tr>
+				<tr>
+					<td align="right"><font color="red">*</font>图片:</td>
+					<td><input type="file" name="bannerPicFile" id="bannerPicFile"/></td>
+					<span style="color:red">支持格式：.png,.jpg;尺寸:750*672 px;大小：≤500kb</span>
+				</tr>
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="addFiledisy"
+						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+						<a href="javascript:void(0);" id="addFileSumbit"
+						style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;传&nbsp;</a>
+					</td>
+				</tr>
+		</table>
+		</form>
+	</div>
+	<!-- 预览banner图-->
+	<div id="previewBannerWin" class="easyui-window"
+		title="<font color='black'>预览</font>" hidden="hidden"
+		style="width: 620px; height: 450px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+		 <img id='previewBannerImg'   src=""/>
+	</div>
+	
+	
+	
+	<script type="text/javascript">
+	//实例化
+    var ue = UE.getEditor('editor');
+	</script>
+</body>
+</html>

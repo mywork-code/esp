@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../component/library.html"/>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/systemParam.js"></script>
+</head>
+<body>
+
+
+	<!-- 系统参数查询列表 -->
+	<div id="systemparamlist"></div>
+
+	<!-- 系统参数编辑窗口 -->
+
+	<div id="editSystemParamInfo" class="easyui-dialog" title="系统参数信息"
+		style="width: 600px; height: 200px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<h2 style="text-align: center;">修改系统参数</h2>
+		<form id="systemParamInfo" method="POST">
+			<table>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>商户结算折扣率：
+					</td>
+					<td width="30%"><input type="text" id="merchantSettleRate"
+						name="refundReason" style="width: 130px;" maxlength="50"></input></td>
+
+					<td width="20%" align="right"><span style="color: red">*</span>商品价格折扣率：
+					</td>
+					<td width="30%"><input type="text" id="goodsPriceRate"
+						name="goodsPrice" style="width: 130px;" maxlength="50"></input></td>
+				</tr>
+			</table>
+
+			<table style="width: 100%; text-align: center;">
+				<tr>
+					<td width="100%"><a href="javascript:confirmBtn();"
+						class="easyui-linkbutton agree-btn"
+						data-options="iconCls:'icon-search'">确&nbsp;定</a> <a
+						href="javascript:closeBtn();" class="easyui-linkbutton close-btn"
+						data-options="iconCls:'icon-search'">关&nbsp;闭&nbsp;</a>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

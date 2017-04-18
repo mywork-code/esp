@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MerchantInfoEntity">
+    <!-- 查询条件 -->
+    <sql id="QueryConditionSql">
+		<where>
+			<if test="merchantName != null and merchantName != ''">
+				AND t1.merchant_name LIKE '%${merchantName}%'
+			</if>
+			<if test="merchantType != null and merchantType != ''">
+				AND t1.merchant_type     =#{merchantType, jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != ''">
+				AND t1.status     =#{status, jdbcType=VARCHAR}
+			</if>
+			<if test="merchantNickname != null and merchantNickname != ''">
+				AND t1.merchant_nickname     =#{merchantNickname, jdbcType=VARCHAR}
+			</if>
+			<if test="is_contain_freight != null">
+	        	AND t1.is_contain_freight = #{isContainFreight, jdbcType=VARCHAR},
+	        </if> 
+		</where>
+	</sql>
+    <!-- 商户信息分页查询 -->
+	<select id="queryMerchantInforList" parameterType="Map" resultType="MerchantInfoEntity">
+	<![CDATA[
+	        SELECT
+				t1.id id,
+				t1.merchant_code merchantCode,
+				t1.merchant_name merchantName,
+				t1.merchant_province merchantProvince,
+				t1.merchant_city merchantCity,
+				t1.merchant_address merchantAddress,
+				t1.merchant_Postcode merchantPostcode,
+				t1.merchant_type merchantType,
+				t1.merchant_settlement_date merchantSettlementDate,
+				t1.settlement_bank_name settlementBankName,
+				t1.settlement_card_no settlementCardNo,
+				t1.manage_type manageType,
+				t1.org_code orgCode,
+				t2.STATUS STATUS,
+				t1.create_user createUser,
+				t1.create_date createDate,
+				t1.update_user updateUser,
+				t1.update_date updateDate,
+				t1.merchant_nickname merchantNickname,
+				t1.merchant_settlement_freight merchantSettlementFreight,
+				t1.remark remark,
+				t1.is_contain_freight isContainFreight
+			FROM
+				t_esp_merchant_info t1
+			LEFT JOIN 
+				t_esp_merchant_temp_info t2
+			ON
+				t1.merchant_code = t2.merchant_code
+	]]>
+	    <include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY t1.update_date DESC 
+	]]>
+	</select>
+	
+	
+    <!-- 待审核商户信息分页查询 -->
+	<select id="queryMerchantCheckList" parameterType="Map" resultType="MerchantInfoEntity">
+	<![CDATA[
+	         SELECT 
+		         t1.id  					   id,
+				 t1.merchant_code 			   merchantCode,
+		         t1.merchant_name             merchantName,
+		         t1.merchant_province         merchantProvince,
+		         t1.merchant_city             merchantCity,
+		         t1.merchant_address          merchantAddress,
+		         t1.merchant_Postcode         merchantPostcode,
+		         t1.merchant_type             merchantType,
+		         t1.merchant_settlement_date  merchantSettlementDate,
+		         t1.settlement_bank_name      settlementBankName,
+		         t1.settlement_card_no        settlementCardNo,
+		         t1.manage_type               manageType,
+				 t1.org_code                  orgCode,
+				 t1.status                    status,
+				 t1.create_user               createUser,
+				 t1.create_date               createDate,
+				 t1.update_user               updateUser,
+				 t1.update_date               updateDate,
+				 t1.merchant_nickname		   merchantNickname,
+				 t1.merchant_settlement_freight merchantSettlementFreight,
+				 t1.remark					   remark,
+				 t1.is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_temp_info t1
+	]]>
+	    <include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY t1.update_date DESC 
+	]]>
+	</select>
+	
+    <!-- 商户信息查询,不带分页 -->
+	<select id="queryMerchantInforListNoPage" parameterType="Map" resultType="MerchantInfoEntity">
+	<![CDATA[
+	         SELECT 
+		         t1.id  					   id,
+				 t1.merchant_code 			   merchantCode,
+		         t1.merchant_name             merchantName,
+		         t1.merchant_province         merchantProvince,
+		         t1.merchant_city             merchantCity,
+		         t1.merchant_address          merchantAddress,
+		         t1.merchant_Postcode         merchantPostcode,
+		         t1.merchant_type             merchantType,
+		         t1.merchant_settlement_date  merchantSettlementDate,
+		         t1.settlement_bank_name      settlementBankName,
+		         t1.settlement_card_no        settlementCardNo,
+		         t1.manage_type               manageType,
+				 t1.org_code                  orgCode,
+				 t1.status                    status,
+				 t1.create_user               createUser,
+				 t1.create_date               createDate,
+				 t1.update_user               updateUser,
+				 t1.update_date               updateDate,
+				 t1.merchant_nickname		   merchantNickname,
+				 t1.merchant_settlement_freight merchantSettlementFreight,
+				 t1.remark					   remark,
+				 t1.is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_info t1
+	]]>
+	    <include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY t1.update_date DESC 
+	]]>
+	</select>
+	<!-- 记录总数 -->
+	<select id="queryMerchantInforListCount" parameterType="Map" resultType="Integer">
+		<![CDATA[
+			SELECT   COUNT(1) 
+		        FROM  t_esp_merchant_info t1
+		]]>
+	    <include refid="QueryConditionSql" />
+	</select>
+	
+	<!-- 记录待审核商户总数 -->
+	<select id="queryMerchantCheckListCount" parameterType="Map" resultType="Integer">
+		<![CDATA[
+			SELECT   COUNT(1) 
+		        FROM   t_esp_merchant_temp_info t1
+		]]>
+	    <include refid="QueryConditionSql" />
+	</select>
+	<!-- 插入商户信息 到商户主表 -->
+	<insert id="insertMerchantInfor" parameterType="MerchantInfoEntity">
+	      <![CDATA[
+	               INSERT INTO t_esp_merchant_info 
+					(  
+							merchant_code,
+							merchant_name,
+							merchant_province,
+							merchant_city,
+							merchant_address,
+							merchant_Postcode,
+							merchant_type,
+							merchant_nickname,
+							merchant_settlement_freight,
+							merchant_settlement_date,
+							settlement_bank_name,
+							settlement_card_no,
+							manage_type,
+							org_code,
+							status,
+							create_user,
+							update_user,
+							remark,					   
+				 			is_contain_freight,		   
+							create_date,
+							update_date
+							
+					) 
+				  VALUES
+					(
+						   #{merchantCode, jdbcType=VARCHAR}, 
+						   #{merchantName, jdbcType=VARCHAR}, 
+   						   #{merchantProvince, jdbcType=VARCHAR}, 
+   						   #{merchantCity, jdbcType=VARCHAR}, 
+   						   #{merchantAddress, jdbcType=VARCHAR}, 
+   						   #{merchantPostcode, jdbcType=VARCHAR}, 
+   						   #{merchantType, jdbcType=VARCHAR}, 
+   						   #{merchantNickname, jdbcType=VARCHAR}, 
+   						   #{merchantSettlementFreight,jdbcType=DECIMAL}, 
+   						   #{merchantSettlementDate, jdbcType=DATE}, 
+   						   #{settlementBankName, jdbcType=VARCHAR}, 
+   						   #{settlementCardNo, jdbcType=VARCHAR}, 
+   						   #{manageType, jdbcType=VARCHAR}, 
+   						   #{orgCode, jdbcType=VARCHAR}, 
+   						   #{status, jdbcType=VARCHAR}, 
+   						   #{createUser, jdbcType=VARCHAR}, 
+   						   #{updateUser, jdbcType=VARCHAR}, 
+   						   #{remark, jdbcType=VARCHAR}, 
+   						   #{isContainFreight, jdbcType=VARCHAR}, 
+   						   CURRENT_TIMESTAMP,
+   						   CURRENT_TIMESTAMP
+					)
+	      
+	      ]]>
+	</insert>
+	
+	<!-- 插入商户信息 到商户临时表-->
+	<insert id="insertMerchantInforToTemp" parameterType="MerchantInfoEntity">
+	      <![CDATA[
+	               INSERT INTO t_esp_merchant_temp_info 
+					(  
+							merchant_code,
+							merchant_name,
+							merchant_province,
+							merchant_city,
+							merchant_address,
+							merchant_Postcode,
+							merchant_type,
+							merchant_nickname,
+							merchant_settlement_freight,
+							merchant_settlement_date,
+							settlement_bank_name,
+							settlement_card_no,
+							manage_type,
+							org_code,
+							status,
+							create_user,
+							update_user,
+							remark,					   
+				 			is_contain_freight,		   
+							create_date,
+							update_date
+							
+					) 
+				  VALUES
+					(
+						   #{merchantCode, jdbcType=VARCHAR}, 
+						   #{merchantName, jdbcType=VARCHAR}, 
+   						   #{merchantProvince, jdbcType=VARCHAR}, 
+   						   #{merchantCity, jdbcType=VARCHAR}, 
+   						   #{merchantAddress, jdbcType=VARCHAR}, 
+   						   #{merchantPostcode, jdbcType=VARCHAR}, 
+   						   #{merchantType, jdbcType=VARCHAR}, 
+   						   #{merchantNickname, jdbcType=VARCHAR}, 
+   						   #{merchantSettlementFreight,jdbcType=DECIMAL}, 
+   						   #{merchantSettlementDate, jdbcType=DATE}, 
+   						   #{settlementBankName, jdbcType=VARCHAR}, 
+   						   #{settlementCardNo, jdbcType=VARCHAR}, 
+   						   #{manageType, jdbcType=VARCHAR}, 
+   						   #{orgCode, jdbcType=VARCHAR}, 
+   						   #{status, jdbcType=VARCHAR}, 
+   						   #{createUser, jdbcType=VARCHAR}, 
+   						   #{updateUser, jdbcType=VARCHAR}, 
+   						   #{remark, jdbcType=VARCHAR}, 
+   						   #{isContainFreight, jdbcType=VARCHAR}, 
+   						   CURRENT_TIMESTAMP,
+   						   CURRENT_TIMESTAMP
+					)
+	      
+	      ]]>
+	</insert>
+	
+	<!-- 编辑商户信息 到商户主表-->
+	<update id="editMerchantInfor" parameterType="MerchantInfoEntity">
+	    <![CDATA[
+		      UPDATE T_ESP_MERCHANT_INFO 
+	    ]]>
+	    <set>
+	    <![CDATA[
+			 update_date = CURRENT_TIMESTAMP,
+	         merchant_code = #{merchantCode, jdbcType=VARCHAR},
+	         merchant_name = #{merchantName, jdbcType=VARCHAR},
+	         merchant_province = #{merchantProvince, jdbcType=VARCHAR},
+	         merchant_city = #{merchantCity, jdbcType=VARCHAR},
+	         merchant_address = #{merchantAddress, jdbcType=VARCHAR},
+	         merchant_Postcode = #{merchantPostcode, jdbcType=VARCHAR},
+	         merchant_type = #{merchantType, jdbcType=VARCHAR},
+			 merchant_nickname = #{merchantNickname, jdbcType=VARCHAR},
+			 merchant_settlement_freight = #{merchantSettlementFreight,jdbcType=DECIMAL},
+	         merchant_settlement_date = #{merchantSettlementDate, jdbcType=DATE},
+	         settlement_bank_name = #{settlementBankName, jdbcType=VARCHAR},
+	         settlement_card_no = #{settlementCardNo, jdbcType=VARCHAR},
+	         manage_type = #{manageType, jdbcType=VARCHAR},
+	         org_code = #{orgCode, jdbcType=VARCHAR},
+	         update_user = #{updateUser, jdbcType=VARCHAR},
+	         is_contain_freight = #{isContainFreight, jdbcType=VARCHAR},
+	         status = #{status, jdbcType=VARCHAR},
+	         remark = #{remark, jdbcType=VARCHAR}
+		]]>
+		</set>
+	   	<![CDATA[
+			WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	</update>
+	
+	<!-- 编辑商户信息 到商户临时表 -->
+	<update id="editMerchantInforToTemp" parameterType="MerchantInfoEntity">
+	    <![CDATA[
+		    UPDATE t_esp_merchant_temp_info 
+	    ]]>
+	    <set>
+	    <![CDATA[
+			 update_date = CURRENT_TIMESTAMP,
+	         merchant_code = #{merchantCode, jdbcType=VARCHAR},
+	         merchant_name = #{merchantName, jdbcType=VARCHAR},
+	         merchant_province = #{merchantProvince, jdbcType=VARCHAR},
+	         merchant_city = #{merchantCity, jdbcType=VARCHAR},
+	         merchant_address = #{merchantAddress, jdbcType=VARCHAR},
+	         merchant_Postcode = #{merchantPostcode, jdbcType=VARCHAR},
+	         merchant_type = #{merchantType, jdbcType=VARCHAR},
+			 merchant_nickname = #{merchantNickname, jdbcType=VARCHAR},
+			 merchant_settlement_freight = #{merchantSettlementFreight,jdbcType=DECIMAL},
+	         merchant_settlement_date = #{merchantSettlementDate, jdbcType=DATE},
+	         settlement_bank_name = #{settlementBankName, jdbcType=VARCHAR},
+	         settlement_card_no = #{settlementCardNo, jdbcType=VARCHAR},
+	         manage_type = #{manageType, jdbcType=VARCHAR},
+	         org_code = #{orgCode, jdbcType=VARCHAR},
+	         update_user = #{updateUser, jdbcType=VARCHAR},
+	         remark = #{remark, jdbcType=VARCHAR},
+	         is_contain_freight = #{isContainFreight, jdbcType=VARCHAR},
+	         status = #{status, jdbcType=VARCHAR},
+	         remark = #{remark, jdbcType=VARCHAR}
+		]]>
+		</set>
+	   	<![CDATA[
+			WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	</update>
+	
+	
+	<!-- 编辑商户状态  主表t_esp_merchant_info-->
+	<update id="editMerchantStatus" parameterType="MerchantInfoEntity">
+	    <![CDATA[
+		      UPDATE T_ESP_MERCHANT_INFO 
+	    ]]>
+	    <set>
+	    <![CDATA[
+			update_date = CURRENT_TIMESTAMP,
+		]]>
+	     <if test="status != null">
+	         status = #{status, jdbcType=VARCHAR},
+	     </if>
+	    </set>
+	   	<![CDATA[
+		WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	</update>
+	
+	<!-- 编辑商户状态 临时表 t_esp_merchant_temp_info-->
+	<update id="editMerchantStatusTemp" parameterType="MerchantInfoEntity">
+	    <![CDATA[
+		      UPDATE t_esp_merchant_temp_info 
+	    ]]>
+	    <set>
+	    <![CDATA[
+			update_date = CURRENT_TIMESTAMP,
+		]]>
+	     <if test="status != null">
+	         status = #{status, jdbcType=VARCHAR},
+	     </if>
+	    </set>
+	   	<![CDATA[
+		WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	</update>
+	
+	
+	<!-- 根据商户编码查询商户信息 -->
+	<select id="selectBymerchantCode" parameterType="String" resultType="MerchantInfoEntity">
+		<![CDATA[
+	         SELECT 
+		         id  					   id,
+				 merchant_code 			   merchantCode,
+		         merchant_name             merchantName,
+		         merchant_province         merchantProvince,
+		         merchant_city             merchantCity,
+		         merchant_address          merchantAddress,
+		         merchant_Postcode         merchantPostcode,
+		         merchant_type             merchantType,
+		         merchant_settlement_date  merchantSettlementDate,
+		         settlement_bank_name      settlementBankName,
+		         settlement_card_no        settlementCardNo,
+		         manage_type               manageType,
+				 org_code                  orgCode,
+				 status                    status,
+				 create_user               createUser,
+				 create_date               createDate,
+				 update_user               updateUser,
+				 update_date               updateDate,
+				 merchant_nickname		   merchantNickname,
+				 merchant_settlement_freight merchantSettlementFreight,
+				 remark					   remark,
+				 is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_info
+		]]>
+		<![CDATA[
+			WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	    
+	</select>
+	
+	<!-- 根据商户编码查询商户信息 -->
+	<select id="selectTempBymerchantCode" parameterType="String" resultType="MerchantInfoEntity">
+		<![CDATA[
+	         SELECT 
+		         id  					   id,
+				 merchant_code 			   merchantCode,
+		         merchant_name             merchantName,
+		         merchant_province         merchantProvince,
+		         merchant_city             merchantCity,
+		         merchant_address          merchantAddress,
+		         merchant_Postcode         merchantPostcode,
+		         merchant_type             merchantType,
+		         merchant_settlement_date  merchantSettlementDate,
+		         settlement_bank_name      settlementBankName,
+		         settlement_card_no        settlementCardNo,
+		         manage_type               manageType,
+				 org_code                  orgCode,
+				 status                    status,
+				 create_user               createUser,
+				 create_date               createDate,
+				 update_user               updateUser,
+				 update_date               updateDate,
+				 merchant_nickname		   merchantNickname,
+				 merchant_settlement_freight merchantSettlementFreight,
+				 remark					   remark,
+				 is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_temp_info
+		]]>
+		<![CDATA[
+			WHERE merchant_code = #{merchantCode, jdbcType=VARCHAR} 
+	    ]]>
+	</select>
+	
+	<!-- 根据商户id查询临时表的商户信息 -->
+	<select id="queryMerchantTempById" parameterType="Long" resultType="MerchantInfoEntity">
+		<![CDATA[
+	         SELECT 
+		         id  					   id,
+				 merchant_code 			   merchantCode,
+		         merchant_name             merchantName,
+		         merchant_province         merchantProvince,
+		         merchant_city             merchantCity,
+		         merchant_address          merchantAddress,
+		         merchant_Postcode         merchantPostcode,
+		         merchant_type             merchantType,
+		         merchant_settlement_date  merchantSettlementDate,
+		         settlement_bank_name      settlementBankName,
+		         settlement_card_no        settlementCardNo,
+		         manage_type               manageType,
+				 org_code                  orgCode,
+				 status                    status,
+				 create_user               createUser,
+				 create_date               createDate,
+				 update_user               updateUser,
+				 update_date               updateDate,
+				 merchant_nickname		   merchantNickname,
+				 merchant_settlement_freight merchantSettlementFreight,
+				 remark					   remark,
+				 is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_info
+		]]>
+		<![CDATA[
+			WHERE id = #{id, jdbcType=VARCHAR} 
+	    ]]>
+	    
+	</select>
+	
+	<!-- 根据商户id查询主表的商户信息 -->
+	<select id="queryMerchantInfoById" parameterType="Long" resultType="MerchantInfoEntity">
+		<![CDATA[
+	         SELECT 
+		         id  					   id,
+				 merchant_code 			   merchantCode,
+		         merchant_name             merchantName,
+		         merchant_province         merchantProvince,
+		         merchant_city             merchantCity,
+		         merchant_address          merchantAddress,
+		         merchant_Postcode         merchantPostcode,
+		         merchant_type             merchantType,
+		         merchant_settlement_date  merchantSettlementDate,
+		         settlement_bank_name      settlementBankName,
+		         settlement_card_no        settlementCardNo,
+		         manage_type               manageType,
+				 org_code                  orgCode,
+				 status                    status,
+				 create_user               createUser,
+				 create_date               createDate,
+				 update_user               updateUser,
+				 update_date               updateDate,
+				 merchant_nickname		   merchantNickname,
+				 merchant_settlement_freight merchantSettlementFreight,
+				 remark					   remark,
+				 is_contain_freight		   isContainFreight 
+			FROM t_esp_merchant_info
+		]]>
+		<![CDATA[
+			WHERE id = #{id} 
+	    ]]>
+	</select>
+	
+	
+	<!-- 根据商户编码查询商户信息 -->
+	<select id="selectMerchantInforList" resultType="MerchantInfoEntity">
+		<![CDATA[
+	         SELECT 
+		         id  					   id,
+				 merchant_code 			   merchantCode,
+		         merchant_name             merchantName,
+		         merchant_province         merchantProvince,
+		         merchant_city             merchantCity,
+		         merchant_address          merchantAddress,
+		         merchant_Postcode         merchantPostcode,
+		         merchant_type             merchantType,
+		         merchant_settlement_date  merchantSettlementDate,
+		         settlement_bank_name      settlementBankName,
+		         settlement_card_no        settlementCardNo,
+		         manage_type               manageType,
+				 org_code                  orgCode,
+				 status                    status,
+				 create_user               createUser,
+				 create_date               createDate,
+				 update_user               updateUser,
+				 update_date               updateDate,
+				 remark					   remark,
+				 is_contain_freight		   isContainFreight
+			FROM t_esp_merchant_info
+			WHERE status = '1' 
+		]]>
+	</select>
+</mapper>

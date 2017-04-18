@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GFBInsertVBS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GFBInsertVBSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GFBInsertVBSResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="RequestResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Status" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Result" />
+          <s:element minOccurs="0" maxOccurs="1" name="Content" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="IsSubmitOrders">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsSubmitOrdersResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="IsSubmitOrdersResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DownContractPDF">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="bid" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="filetype" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DownContractPDFResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="IsBlacklistUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsBlacklistUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="IsBlacklistUserResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsSignCompleteUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="IsSignCompleteUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="IsSignCompleteUserResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SecondSalesTypeVBS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SecondSalesTypeVBSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecondSalesTypeVBSResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeCard">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ChangeCardResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ChangeCardResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SecondSales">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="json" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SecondSalesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SecondSalesResult" type="tns:RequestResult" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RequestResult" nillable="true" type="tns:RequestResult" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GFBInsertVBSSoapIn">
+    <wsdl:part name="parameters" element="tns:GFBInsertVBS" />
+  </wsdl:message>
+  <wsdl:message name="GFBInsertVBSSoapOut">
+    <wsdl:part name="parameters" element="tns:GFBInsertVBSResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersSoapIn">
+    <wsdl:part name="parameters" element="tns:IsSubmitOrders" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersSoapOut">
+    <wsdl:part name="parameters" element="tns:IsSubmitOrdersResponse" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFSoapIn">
+    <wsdl:part name="parameters" element="tns:DownContractPDF" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFSoapOut">
+    <wsdl:part name="parameters" element="tns:DownContractPDFResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsBlacklistUserSoapIn">
+    <wsdl:part name="parameters" element="tns:IsBlacklistUser" />
+  </wsdl:message>
+  <wsdl:message name="IsBlacklistUserSoapOut">
+    <wsdl:part name="parameters" element="tns:IsBlacklistUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserSoapIn">
+    <wsdl:part name="parameters" element="tns:IsSignCompleteUser" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserSoapOut">
+    <wsdl:part name="parameters" element="tns:IsSignCompleteUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSSoapIn">
+    <wsdl:part name="parameters" element="tns:SecondSalesTypeVBS" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSSoapOut">
+    <wsdl:part name="parameters" element="tns:SecondSalesTypeVBSResponse" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardSoapIn">
+    <wsdl:part name="parameters" element="tns:ChangeCard" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardSoapOut">
+    <wsdl:part name="parameters" element="tns:ChangeCardResponse" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesSoapIn">
+    <wsdl:part name="parameters" element="tns:SecondSales" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesSoapOut">
+    <wsdl:part name="parameters" element="tns:SecondSalesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GFBInsertVBSHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GFBInsertVBSHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFHttpGetIn">
+    <wsdl:part name="bid" type="s:string" />
+    <wsdl:part name="filetype" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFHttpGetOut" />
+  <wsdl:message name="IsBlacklistUserHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsBlacklistUserHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesHttpGetIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesHttpGetOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="GFBInsertVBSHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GFBInsertVBSHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsSubmitOrdersHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFHttpPostIn">
+    <wsdl:part name="bid" type="s:string" />
+    <wsdl:part name="filetype" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DownContractPDFHttpPostOut" />
+  <wsdl:message name="IsBlacklistUserHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsBlacklistUserHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="IsSignCompleteUserHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesTypeVBSHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ChangeCardHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesHttpPostIn">
+    <wsdl:part name="json" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SecondSalesHttpPostOut">
+    <wsdl:part name="Body" element="tns:RequestResult" />
+  </wsdl:message>
+  <wsdl:portType name="GongFangBangServiceSoap">
+    <wsdl:operation name="GFBInsertVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">将供房帮信息插入到VBS中</wsdl:documentation>
+      <wsdl:input message="tns:GFBInsertVBSSoapIn" />
+      <wsdl:output message="tns:GFBInsertVBSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否允许提交订单</wsdl:documentation>
+      <wsdl:input message="tns:IsSubmitOrdersSoapIn" />
+      <wsdl:output message="tns:IsSubmitOrdersSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">下载合同 
+[贷款合同             DOCUMENTKIND/GFBWM/DKHT][贷款用途声明         DOCUMENTKIND/GFBWM/DKYTSM][个人贷款服务合同     DOCUMENTKIND/GFBWM/GRDKFWHT][个人贷款委托担保合同 DOCUMENTKIND/GFBWM/GRDKWTDBHT][个人客户扣款授权书   DOCUMENTKIND/GFBWM/GRKHKKSQS][个人信息授权书       DOCUMENTKIND/GFBWM/GRXXSQS][关于变更还款卡号的补充协议   DOCUMENTKIND/GFBWM/BGKHBCXY][还款代扣授权书       DOCUMENTKIND/GFBWM/HKDKSQS][还款分期表           DOCUMENTKIND/GFBWM/HKFQB][还款事项提醒函       DOCUMENTKIND/GFBWM/HKSXTXH][借款借据(单卡)       DOCUMENTKIND/GFBWM/JKJJDAN][借款借据(多卡)       DOCUMENTKIND/GFBWM/JKJJDUO][平台服务协议         DOCUMENTKIND/GFBWM/PTFWXY][特别提示函           DOCUMENTKIND/GFBWM/TBTSH]</wsdl:documentation>
+      <wsdl:input message="tns:DownContractPDFSoapIn" />
+      <wsdl:output message="tns:DownContractPDFSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否是黑名单用户</wsdl:documentation>
+      <wsdl:input message="tns:IsBlacklistUserSoapIn" />
+      <wsdl:output message="tns:IsBlacklistUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">若客户在系统中有一笔订单未完成签约，即为‘在途’状态，则该客户不能申请供房帮</wsdl:documentation>
+      <wsdl:input message="tns:IsSignCompleteUserSoapIn" />
+      <wsdl:output message="tns:IsSignCompleteUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取VBS线下交单规则</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesTypeVBSSoapIn" />
+      <wsdl:output message="tns:SecondSalesTypeVBSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">改卡</wsdl:documentation>
+      <wsdl:input message="tns:ChangeCardSoapIn" />
+      <wsdl:output message="tns:ChangeCardSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否可以加贷，再贷</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesSoapIn" />
+      <wsdl:output message="tns:SecondSalesSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="GongFangBangServiceHttpGet">
+    <wsdl:operation name="GFBInsertVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">将供房帮信息插入到VBS中</wsdl:documentation>
+      <wsdl:input message="tns:GFBInsertVBSHttpGetIn" />
+      <wsdl:output message="tns:GFBInsertVBSHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否允许提交订单</wsdl:documentation>
+      <wsdl:input message="tns:IsSubmitOrdersHttpGetIn" />
+      <wsdl:output message="tns:IsSubmitOrdersHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">下载合同 
+[贷款合同             DOCUMENTKIND/GFBWM/DKHT][贷款用途声明         DOCUMENTKIND/GFBWM/DKYTSM][个人贷款服务合同     DOCUMENTKIND/GFBWM/GRDKFWHT][个人贷款委托担保合同 DOCUMENTKIND/GFBWM/GRDKWTDBHT][个人客户扣款授权书   DOCUMENTKIND/GFBWM/GRKHKKSQS][个人信息授权书       DOCUMENTKIND/GFBWM/GRXXSQS][关于变更还款卡号的补充协议   DOCUMENTKIND/GFBWM/BGKHBCXY][还款代扣授权书       DOCUMENTKIND/GFBWM/HKDKSQS][还款分期表           DOCUMENTKIND/GFBWM/HKFQB][还款事项提醒函       DOCUMENTKIND/GFBWM/HKSXTXH][借款借据(单卡)       DOCUMENTKIND/GFBWM/JKJJDAN][借款借据(多卡)       DOCUMENTKIND/GFBWM/JKJJDUO][平台服务协议         DOCUMENTKIND/GFBWM/PTFWXY][特别提示函           DOCUMENTKIND/GFBWM/TBTSH]</wsdl:documentation>
+      <wsdl:input message="tns:DownContractPDFHttpGetIn" />
+      <wsdl:output message="tns:DownContractPDFHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否是黑名单用户</wsdl:documentation>
+      <wsdl:input message="tns:IsBlacklistUserHttpGetIn" />
+      <wsdl:output message="tns:IsBlacklistUserHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">若客户在系统中有一笔订单未完成签约，即为‘在途’状态，则该客户不能申请供房帮</wsdl:documentation>
+      <wsdl:input message="tns:IsSignCompleteUserHttpGetIn" />
+      <wsdl:output message="tns:IsSignCompleteUserHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取VBS线下交单规则</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesTypeVBSHttpGetIn" />
+      <wsdl:output message="tns:SecondSalesTypeVBSHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">改卡</wsdl:documentation>
+      <wsdl:input message="tns:ChangeCardHttpGetIn" />
+      <wsdl:output message="tns:ChangeCardHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否可以加贷，再贷</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesHttpGetIn" />
+      <wsdl:output message="tns:SecondSalesHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="GongFangBangServiceHttpPost">
+    <wsdl:operation name="GFBInsertVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">将供房帮信息插入到VBS中</wsdl:documentation>
+      <wsdl:input message="tns:GFBInsertVBSHttpPostIn" />
+      <wsdl:output message="tns:GFBInsertVBSHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否允许提交订单</wsdl:documentation>
+      <wsdl:input message="tns:IsSubmitOrdersHttpPostIn" />
+      <wsdl:output message="tns:IsSubmitOrdersHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">下载合同 
+[贷款合同             DOCUMENTKIND/GFBWM/DKHT][贷款用途声明         DOCUMENTKIND/GFBWM/DKYTSM][个人贷款服务合同     DOCUMENTKIND/GFBWM/GRDKFWHT][个人贷款委托担保合同 DOCUMENTKIND/GFBWM/GRDKWTDBHT][个人客户扣款授权书   DOCUMENTKIND/GFBWM/GRKHKKSQS][个人信息授权书       DOCUMENTKIND/GFBWM/GRXXSQS][关于变更还款卡号的补充协议   DOCUMENTKIND/GFBWM/BGKHBCXY][还款代扣授权书       DOCUMENTKIND/GFBWM/HKDKSQS][还款分期表           DOCUMENTKIND/GFBWM/HKFQB][还款事项提醒函       DOCUMENTKIND/GFBWM/HKSXTXH][借款借据(单卡)       DOCUMENTKIND/GFBWM/JKJJDAN][借款借据(多卡)       DOCUMENTKIND/GFBWM/JKJJDUO][平台服务协议         DOCUMENTKIND/GFBWM/PTFWXY][特别提示函           DOCUMENTKIND/GFBWM/TBTSH]</wsdl:documentation>
+      <wsdl:input message="tns:DownContractPDFHttpPostIn" />
+      <wsdl:output message="tns:DownContractPDFHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否是黑名单用户</wsdl:documentation>
+      <wsdl:input message="tns:IsBlacklistUserHttpPostIn" />
+      <wsdl:output message="tns:IsBlacklistUserHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">若客户在系统中有一笔订单未完成签约，即为‘在途’状态，则该客户不能申请供房帮</wsdl:documentation>
+      <wsdl:input message="tns:IsSignCompleteUserHttpPostIn" />
+      <wsdl:output message="tns:IsSignCompleteUserHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">获取VBS线下交单规则</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesTypeVBSHttpPostIn" />
+      <wsdl:output message="tns:SecondSalesTypeVBSHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">改卡</wsdl:documentation>
+      <wsdl:input message="tns:ChangeCardHttpPostIn" />
+      <wsdl:output message="tns:ChangeCardHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">是否可以加贷，再贷</wsdl:documentation>
+      <wsdl:input message="tns:SecondSalesHttpPostIn" />
+      <wsdl:output message="tns:SecondSalesHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="GongFangBangServiceSoap" type="tns:GongFangBangServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GFBInsertVBS">
+      <soap:operation soapAction="http://tempuri.org/GFBInsertVBS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <soap:operation soapAction="http://tempuri.org/IsSubmitOrders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <soap:operation soapAction="http://tempuri.org/DownContractPDF" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <soap:operation soapAction="http://tempuri.org/IsBlacklistUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <soap:operation soapAction="http://tempuri.org/IsSignCompleteUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <soap:operation soapAction="http://tempuri.org/SecondSalesTypeVBS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <soap:operation soapAction="http://tempuri.org/ChangeCard" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <soap:operation soapAction="http://tempuri.org/SecondSales" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GongFangBangServiceSoap12" type="tns:GongFangBangServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GFBInsertVBS">
+      <soap12:operation soapAction="http://tempuri.org/GFBInsertVBS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <soap12:operation soapAction="http://tempuri.org/IsSubmitOrders" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <soap12:operation soapAction="http://tempuri.org/DownContractPDF" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <soap12:operation soapAction="http://tempuri.org/IsBlacklistUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <soap12:operation soapAction="http://tempuri.org/IsSignCompleteUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <soap12:operation soapAction="http://tempuri.org/SecondSalesTypeVBS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <soap12:operation soapAction="http://tempuri.org/ChangeCard" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <soap12:operation soapAction="http://tempuri.org/SecondSales" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GongFangBangServiceHttpGet" type="tns:GongFangBangServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="GFBInsertVBS">
+      <http:operation location="/GFBInsertVBS" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <http:operation location="/IsSubmitOrders" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <http:operation location="/DownContractPDF" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <http:operation location="/IsBlacklistUser" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <http:operation location="/IsSignCompleteUser" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <http:operation location="/SecondSalesTypeVBS" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <http:operation location="/ChangeCard" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <http:operation location="/SecondSales" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="GongFangBangServiceHttpPost" type="tns:GongFangBangServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="GFBInsertVBS">
+      <http:operation location="/GFBInsertVBS" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSubmitOrders">
+      <http:operation location="/IsSubmitOrders" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownContractPDF">
+      <http:operation location="/DownContractPDF" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="IsBlacklistUser">
+      <http:operation location="/IsBlacklistUser" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsSignCompleteUser">
+      <http:operation location="/IsSignCompleteUser" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSalesTypeVBS">
+      <http:operation location="/SecondSalesTypeVBS" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangeCard">
+      <http:operation location="/ChangeCard" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SecondSales">
+      <http:operation location="/SecondSales" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="GongFangBangService">
+    <wsdl:port name="GongFangBangServiceSoap" binding="tns:GongFangBangServiceSoap">
+      <soap:address location="http://10.138.60.106:8066/GFBService/WebService/GongFangBangService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GongFangBangServiceSoap12" binding="tns:GongFangBangServiceSoap12">
+      <soap12:address location="http://10.138.60.106:8066/GFBService/WebService/GongFangBangService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GongFangBangServiceHttpGet" binding="tns:GongFangBangServiceHttpGet">
+      <http:address location="http://10.138.60.106:8066/GFBService/WebService/GongFangBangService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="GongFangBangServiceHttpPost" binding="tns:GongFangBangServiceHttpPost">
+      <http:address location="http://10.138.60.106:8066/GFBService/WebService/GongFangBangService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

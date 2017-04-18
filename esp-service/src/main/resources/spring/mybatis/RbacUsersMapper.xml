@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- CRM客户信息管理 Mybatis Mapper -->
+<mapper namespace="UsersDO">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="id != null and id != ''">
+				AND ID = #{id, jdbcType=VARCHAR}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND USER_NAME = #{userName, jdbcType=VARCHAR}
+			</if>
+			<if test="realName != null and realName != ''">
+				AND REAL_NAME = #{realName, jdbcType=VARCHAR}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND MOBILE = #{mobile, jdbcType=VARCHAR}
+			</if>
+			<if test="email != null and email != ''">
+				AND EMAIL = #{email, jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != ''">
+				AND STATUS = #{status, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="UsersDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_USERS (
+			ID,
+			USER_NAME,
+			REAL_NAME,
+			PASSWORD,
+			MOBILE,
+			EMAIL,
+			STATUS,
+			DEPARTMENT,
+			CREATED_BY,
+			CREATED_DATE,
+			UPDATED_BY,
+			UPDATED_DATE
+		)
+		VALUES
+		(
+			#{id, jdbcType=VARCHAR}, 
+			#{userName, jdbcType=VARCHAR}, 
+			#{realName, jdbcType=VARCHAR}, 
+			#{password, jdbcType=VARCHAR}, 
+			#{mobile, jdbcType=VARCHAR}, 
+			#{email, jdbcType=VARCHAR}, 
+			#{status, jdbcType=VARCHAR},
+			#{department, jdbcType=VARCHAR},  
+			#{createdBy, jdbcType=VARCHAR}, 
+			CURRENT_TIMESTAMP, 
+			#{updatedBy, jdbcType=VARCHAR}, 
+			CURRENT_TIMESTAMP
+		)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>
+	</insert>
+
+	<!-- 分页查询&过滤查询 -->
+	<select id="select" parameterType="UsersDO" resultType="UsersDO">
+	<![CDATA[
+		SELECT   t_uses.ID               ID,
+				 t_uses.USER_NAME        USERNAME,
+				 t_uses.REAL_NAME        REALNAME,
+				 t_uses.MOBILE           MOBILE,
+				 t_uses.EMAIL            EMAIL,
+				 t_uses.STATUS           STATUS,
+				 t_uses.DEPARTMENT       DEPARTMENT,
+				 t_uses.CREATED_BY       CREATEDBY,
+				 t_uses.CREATED_DATE     CREATEDDATE,
+				 t_uses.UPDATED_BY       UPDATEDBY,
+				 t_uses.UPDATED_DATE     UPDATEDDATE, 
+				 t_uses.MERCHANT_CODE	  MERCHANTCODE,
+				 t_merchant.merchant_name MERCHANTNAME
+		FROM LS_RBAC_USERS t_uses LEFT JOIN T_ESP_MERCHANT_INFO t_merchant
+		ON	t_uses.MERCHANT_CODE =t_merchant.MERCHANT_CODE
+	]]>
+		<include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+
+	<!-- 记录总数 -->
+	<select id="count" parameterType="UsersDO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(1) FROM LS_RBAC_USERS
+	]]>
+		<include refid="QueryConditionSql" />
+	</select>
+
+	<!-- 主键查询 -->
+	<select id="selectByPK" parameterType="String" resultType="UsersDO">
+	<![CDATA[
+		SELECT   ID               ID,
+				 USER_NAME        USERNAME,
+				 REAL_NAME        REALNAME,
+				 MOBILE           MOBILE,
+				 EMAIL            EMAIL,
+				 STATUS           STATUS,
+				 DEPARTMENT       DEPARTMENT,
+				 CREATED_BY       CREATEDBY,
+				 CREATED_DATE     CREATEDDATE,
+				 UPDATED_BY       UPDATEDBY,
+				 UPDATED_DATE     UPDATEDDATE 
+		FROM LS_RBAC_USERS WHERE ID = #{value}
+	]]>
+	</select>
+	
+	<!-- 根据Username查询 -->
+	<select id="selectByUserName" parameterType="String" resultType="UsersDO">
+	<![CDATA[
+		SELECT   ID               ID,
+				 USER_NAME        USERNAME,
+				 REAL_NAME        REALNAME,
+				 MOBILE           MOBILE,
+				 EMAIL            EMAIL,
+				 STATUS           STATUS,
+				 PASSWORD         PASSWORD,
+				 DEPARTMENT       DEPARTMENT,
+				 CREATED_BY       CREATEDBY,
+				 CREATED_DATE     CREATEDDATE,
+				 UPDATED_BY       UPDATEDBY,
+				 UPDATED_DATE     UPDATEDDATE,
+				 UPDATED_DATE     UPDATEDDATE,
+				 MERCHANT_CODE    merchantCode
+		FROM LS_RBAC_USERS WHERE USER_NAME = #{value}
+	]]>
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_USERS WHERE ID = #{value}
+	]]>
+	</delete>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="UsersDO">
+	<![CDATA[
+		UPDATE LS_RBAC_USERS 
+	]]>
+		<set>
+		<![CDATA[
+			UPDATED_BY = #{updatedBy, jdbcType=VARCHAR},
+			UPDATED_DATE = CURRENT_TIMESTAMP,
+		]]>
+			<if test="userName != null and userName != ''">
+				USER_NAME = #{userName, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="realName != null and realName != ''">
+				REAL_NAME = #{realName, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="mobile != null and mobile != ''">
+				MOBILE = #{mobile, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="email != null and email != ''">
+				EMAIL = #{email, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="status != null and status != ''">
+				STATUS = #{status, jdbcType=VARCHAR},
+			</if>
+				MERCHANT_CODE = #{merchantCode, jdbcType=VARCHAR},
+		</set>
+	<![CDATA[
+		WHERE ID = #{id, jdbcType=VARCHAR} 
+	]]>
+	</update>
+
+	<!-- 更新所有 -->
+	<update id="updateAll" parameterType="UsersDO">
+	<![CDATA[
+		UPDATE LS_RBAC_USERS 
+			SET UPDATED_BY     = #{updatedBy, jdbcType=VARCHAR}, 
+				UPDATED_DATE   = CURRENT_TIMESTAMP, 
+				REAL_NAME      = #{realName, jdbcType=VARCHAR},  
+				MOBILE         = #{mobile, jdbcType=VARCHAR},  
+				EMAIL          = #{email, jdbcType=VARCHAR},
+				DEPARTMENT     = #{department, jdbcType=VARCHAR},    
+				STATUS         = #{status, jdbcType=VARCHAR} 
+		 WHERE ID = #{id, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- 更新密码 -->
+	<update id="changePwd" parameterType="UsersDO">
+	<![CDATA[
+		UPDATE LS_RBAC_USERS 
+			SET UPDATED_BY     = #{updatedBy, jdbcType=VARCHAR}, 
+				UPDATED_DATE   = CURRENT_TIMESTAMP, 
+				PASSWORD       = #{password, jdbcType=VARCHAR}
+		 WHERE USER_NAME = #{userName, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- ********************************************************** -->
+	<!-- 可用角色列表 -->
+	<select id="loadAvailableRoles" parameterType="String"
+		resultType="RolesDO">
+	<![CDATA[
+			SELECT  ID           ID,
+					ROLE_CODE    ROLECODE,
+					ROLE_NAME    ROLENAME
+		  FROM LS_RBAC_ROLES WHERE ID NOT IN 
+			  (SELECT ROLE_ID FROM LS_RBAC_USER_ROLE WHERE USER_ID = #{value})
+			  ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+	
+	<!-- 已用角色列表 -->
+	<select id="loadAssignedRoles" parameterType="String"
+		resultType="RolesDO">
+	<![CDATA[
+			SELECT  ID                 ID,
+					ROLE_CODE    ROLECODE,
+					ROLE_NAME    ROLENAME
+		  FROM LS_RBAC_ROLES WHERE ID IN 
+			  (SELECT ROLE_ID FROM LS_RBAC_USER_ROLE WHERE USER_ID = #{value})
+			  ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+
+	<!-- 删除用户角色列表 -->
+	<delete id="deleteUserRolesByUserId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_USER_ROLE WHERE USER_ID = #{value}
+	]]>
+	</delete>
+
+	<!-- 插入用户角色 -->
+	<insert id="insertUserRole" parameterType="UserRoleDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_USER_ROLE (ID, USER_ID, ROLE_ID, 
+		CREATED_BY,	CREATED_DATE, UPDATED_BY, UPDATED_DATE) 
+		VALUES (#{id, jdbcType=VARCHAR}, 
+		#{userId, jdbcType=VARCHAR}, #{roleId, jdbcType=VARCHAR}, 
+		#{createdBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP, 
+		#{updatedBy, jdbcType=VARCHAR},	CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>	
+	</insert>
+	
+</mapper> 

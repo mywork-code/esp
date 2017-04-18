@@ -1,0 +1,236 @@
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        body {
+            margin-left: 45px;
+            margin-right: 45px;
+            font-family: Arial Unicode MS;
+            font-size: 14px;
+        }
+
+        p {
+            line-height: 120%;
+        }
+
+        table th {
+            font-weight: bold;
+        }
+
+        .bottom-line {
+            border-bottom: 1px solid black;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<!--content-->
+<h1 style="text-align:center;">商品购销及服务合同</h1>
+<div style="text-align: right"><strong>编号：</strong>${contractNo}</div>
+
+<p><strong>甲方（购买方）：</strong>${realName}</p>
+<p>身份证号：${identityNo}</p>
+<p>手机号：${mobile}</p>
+<p><strong>乙方（销售方）：</strong><span>上海奥派数据科技有限公司</span></p>
+<p><strong>住所：</strong>${companyAddress}</p>
+
+<br/>
+<p>
+    甲乙双方基于平等自愿原则，在<strong>安家趣花平台</strong>上就商品的销售与购买事项达成如下合同，以兹共守：
+</p>
+<p><strong>一、商品与价款</strong></p>
+<p>1.本次甲方拟向乙方采购的<strong>商品详情为：</strong></p>
+
+<table style="border: 0px;">
+    <#list productList as product>
+        <tr>
+            <th>商品：</th>
+            <td width="200px" class="bottom-line">${product.productName}</td>
+            <th>，数量：</th>
+            <td class="bottom-line" width="50px">${product.productNum}</td>
+            <th>，价格：</th>
+            <td class="bottom-line">${product.amount?string('0.00')}</td>
+            <th>元</th>
+        </tr>
+    </#list>
+</table>
+<p>
+    <strong>上述商品采购价共计<span class="underline">&#160;${orderAmount?string('0.00')}&#160;</span>元，以上价格均为含税价。</strong>
+</p>
+<p>2.甲乙双方一致同意本次购物款采取以下支付方式：</p>
+<p>
+    <strong>（1）甲方应在本合同签署的同时向乙方支付购物首付款<span class="underline">&#160;${downPayment?string('0.00')}&#160;</span>元；</strong>
+</p>
+<p>
+    <strong>（1）乙方同意甲方延迟支付剩余的购物款</strong>，
+    甲方应在
+    <strong>
+        <span class="underline">&#160;${payStartYear}&#160;</span>年
+        <span class="underline">&#160;${payStartMonth}&#160;</span>月
+        <span class="underline">&#160;${payStartDay}&#160;</span>日
+        至
+        <span class="underline">&#160;${payEndYear}&#160;</span>年
+        <span class="underline">&#160;${payEndMonth}&#160;</span>月
+        <span class="underline">&#160;${payEndDay}&#160;</span>
+        日之间主动在安家趣花平台进行付款操作
+    </strong>，向乙方支付<strong>剩余购物款<span class="underline">&#160;${balancePayment?string('0.00')}&#160;</span>元。</strong>
+</p>
+<p>
+    3.甲方知悉并理解：乙方的商品价格、数量、是否有货等商品信息随时都有可能发生变动，不作特别通知。由于网站商品信息的数量极其庞大，
+    虽然乙方会尽最大努力保证商品信息的准确性，但由于众所周知的互联网技术因素等客观原因存在，网页显示的信息可能会有一定的滞后性或差错。
+    如甲方拟购买的商品发生缺货，甲方有权取消订单。
+</p>
+<p>
+    <strong>二、应付费用</strong>
+</p>
+<p>
+    由于甲方采取延期方式进行支付购物款，甲方同意：基于乙方在甲方延期付款过程提供的专业咨询和服务，甲方按以下约定向乙方支付费用：
+</p>
+<p>
+    1.手续费：甲方应向乙方支付<strong>手续费<span class="underline">&#160;${feeAmount?string('0.00')}&#160;</span>元</strong>，
+    甲方委托银行或第三方从甲方指定的银行账户中扣划该手续费，以完成对乙方的支付。
+</p>
+<p>
+    2.乙方有权授权他方代收其在本合同项下应向甲方收取的款项。甲方同意乙方/乙方的代收方委托银行或有资质的第三方支付机构从甲方以下指定账户中扣划购物款、手续费等相关款项；
+    甲方实际支付费用的时间为乙方/乙方的代收方委托银行或有资质的第三方支付机构从甲方指定账户中扣划到相关款项的时间。
+</p>
+<p>
+    <span><strong>开户行：${payBankName}</strong></span>
+    <span style="margin-left: 50px;"><strong>户名：${realName}</strong></span>
+    <span style="margin-left: 50px;"><strong>卡号：${payBankCardNo}</strong></span>
+</p>
+<p>
+    3.<strong>甲方已理解并同意接受：甲方已支付的手续费在任何情况下均不予退还。</strong>
+</p>
+<p>
+    <strong>三、订货</strong>
+</p>
+<p>
+    甲方在安家趣花平台登录后，选中乙方在该平台展示的商品，自主下单订货。乙方在收到购物首付款、手续费及其他甲方应付款项后，即为甲方安排发货。
+    <strong>在甲方支付其应付款项之前，乙方有权拒绝发货</strong>。
+</p>
+<p>
+    <strong>四、质量标准</strong>
+</p>
+<p>
+    1.乙方销售的商品应是制造商合法生产的并完全符合制造商的质量检测标准和国家质量检测标准，且乙方保证有权销售前述商品。
+</p>
+<p>
+    2.甲方如对乙方销售商品质量有异议的，可联系乙方。确属质量问题的，乙方按照国家相关法律法规和平台并不时公布更新的退换货政策处理。
+</p>
+<p>
+    <strong>五、交货</strong>
+</p>
+<p>
+    1.在甲方下单并经乙方确认后，由乙方或乙方指定的发货人（包括不限于乙方之供应商），按甲方订单中的收货地址和收货人安排发货。
+    订单收货人与甲方本人不一致的，订单收货人的行为和意思表示视为甲方的行为和意思表示，甲方应对订单收货人的行为及意思表示的法律后果承担连带责任。
+</p>
+<p>
+    2.订单收货人对乙方或乙方委托的第三方送达的货物，在验收无误后应以签名的方式在送货单据上签收，否则送货方有权拒绝交货。
+</p>
+<p>
+    3.因以下情况造成订单延迟或无法配送等，乙方不承担延迟配送的责任：
+</p>
+<p>
+    （1）甲方提供的信息错误、地址不详细等原因导致的；
+</p>
+<p>
+    （2）货物送达后无人签收或拒绝签收，导致无法配送或延迟配送的；
+</p>
+<p>
+    （3）情势变更因素导致的；
+</p>
+<p>
+    （4）不可抗力因素导致的，例如：自然灾害、交通戒严、突发战争等。
+</p>
+<p>
+    发生上述第（1）（2）种情形时，如乙方同意另行配送的，产生的额外送货费用由甲方承担。
+</p>
+<p>
+    <strong>六、发票开具</strong>
+</p>
+<p>
+    甲方应如需购物发票的，应及时向乙方提出需求，乙方将依法开具相应发票。
+</p>
+<p>
+    <strong>七、货物验收、退换货</strong>
+</p>
+<p>
+    1.订单收货人应当场对货物的规格、数量及其它相关情况进行验收确认；订单收货人当场不作验收的，视为验收通过。
+</p>
+<p>
+    2.乙方按照《产品质量法》等法律法规、安家趣花公布并不时更新的规则、以及商品制造商的规定，实施退换货政策并履行相关售后服务义务。
+</p>
+<p>
+    3.对于甲方按照7天无理由退货规则进行的退货，或其他非因甲方原因导致的退货，
+    <strong>乙方将向甲方归还其已收取的购物款项。若此时甲方的剩余购物款已经由贷款人以发放借款的形式支付，则甲方应继续根据与贷款人等相关权利人的约定履行其借款项下的权利与义务。</strong>
+</p>
+<p>
+    4.甲方应提前联系乙方并经乙方认可后进行退换货，同时甲方应当严格按照乙方提供的退货地址进行退货。
+    <strong>因甲方违反上述约定导致商品丢失或迟延退换或重新配送的，由甲方自行承担责任和相关费用。</strong>
+</p>
+<p>
+    <strong>八、剩余购物款款项的借款</strong>
+</p>
+<p>
+    1.若甲方在<strong>
+    <span class="underline">&#160;${stageEndYear}&#160;</span>年
+    <span class="underline">&#160;${stageEndMonth}&#160;</span>月
+    <span class="underline">&#160;${stageEndDay}&#160;</span>日 </strong>
+    前申请剩余购物款分期并经同意的，甲方应另行与贷款人等贷款权利人签署相关合同。
+    贷款人将根据甲方的委托，将甲方借款款项受托支付至乙方，以完成甲方剩余购物款的支付。甲方后续向贷款人等权利人分期归还借款相关款项。
+</p>
+<p>
+    2.<strong>若甲方未能在本合同约定的剩余购物款付款日支付剩余购物款，也未申请剩余购物款分期的，视为甲方向贷款人提交放款申请。</strong>
+    贷款人将按照甲方已签署合同的相关约定，根据甲方的委托将借款款项受托支付至乙方，以完成甲方剩余购物款的支付。甲方后续向贷款人等权利人归还贷款相关款项。
+</p>
+<p>
+    <strong>九、争议解决</strong>
+</p>
+<p>
+    因本合同产生之争议，应适用中华人民共和国法律，<strong>并由上海市浦东新区人民法院管辖</strong>。
+</p>
+<p>
+    <strong>十、合同生效及修订</strong>
+</p>
+<p>
+    1.甲方<strong>以签名或点击确认或勾选本合同</strong>的形式确认本合同的，即视为甲方完全接受本合同内容。
+    <strong>如果甲方不同意本合同的任何约定，请立即停止购买</strong>。本合同在甲方支付首付款和手续费后生效。
+</p>
+<p>
+    2.乙方有权根据业务需要修改本合同及各类规则，并以公示的方式在安家趣花上进行公布，不再单独另行通知甲方。
+    <strong>变更后的合同及各类规则一经前述公布即自动生效。变更前后存在不一致的，均以变更后的内容为准。</strong>
+</p>
+<p>
+    <strong>十一、其他</strong>
+</p>
+<p>
+    1.本合同项下的“安家趣花”，是指上海奥派数据科技有限公司运营的在线服务平台，其展现形式包括不限于微信公众号、APP、网页；
+    本合同的“平台账号”，即指甲方在上述平台上的open ID、用户名、账户名、手机号等信息。
+</p>
+<p>
+    2.本合同项下的“分期”，是指甲方在支付一定金额的购物首付款后，在约定的剩余购物款支付日前，
+    通过向贷款人申请发放消费购物借款的方式支付剩余购物款，后续由甲方分期向贷款人归还借款并向相关权利人支付费用（如有）的一种购物及借款方式。
+</p>
+<br/>
+<table width="100%">
+    <tr>
+        <td width="50%" colspan="2"><strong>甲方（购买方）：</strong>${realName}</td>
+        <td width="50%" colspan="2"><strong>乙方（销售方）：</strong>上海奥派数据科技有限公司</td>
+    </tr>
+    <tr>
+        <td width="10%"><strong>签名：</strong></td>
+        <td align="center"><span style="color: white;font-size: 1px;">签名处</span></td>
+        <td width="10%"><strong>盖章：</strong></td>
+        <td align="center"><span style="color: white;font-size: 1px;">盖章处</span></td>
+    </tr>
+    <tr>
+        <td colspan="2"><strong>日期：</strong>${contractDate}</td>
+        <td colspan="2"><strong>日期：</strong>${contractDate}</td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,145 @@
+@charset "UTF-8";
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+textarea,
+p,
+blockquote,
+th,
+td,
+header,
+hgroup,
+nav,
+section,
+article,
+aside,
+footer,
+figure,
+figcaption,
+menu,
+button {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, STHeiTi, sans-serif;
+    line-height: 1;
+    color: #000;
+    background-color: #eee;
+    -webkit-user-select: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%;
+    font-weight: 400
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+caption,
+th {
+    text-align: left
+}
+
+fieldset,
+img {
+    border: 0
+}
+
+li {
+    list-style: none
+}
+
+ins {
+    text-decoration: none
+}
+
+del {
+    text-decoration: line-through
+}
+
+input:not(.art-checkbox),
+button,
+textarea,
+select,
+optgroup,
+option{
+    -webkit-appearance: none;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    outline: 0;
+    border:none
+}
+
+button {
+    -webkit-appearance: none;
+    border: 0;
+    background: 0 0
+}
+
+a {
+    -webkit-touch-callout: none;
+    text-decoration: none;
+    color: #00b7ee;
+}
+
+:focus {
+    outline: 0;
+    -webkit-tap-highlight-color: transparent
+}
+
+em,
+i {
+    font-style: normal
+}
+
+.clear:after {
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+    clear: both;
+}
+.ui-wrap{
+    min-width: 320px;
+    margin: 0 auto;
+    overflow:hidden;
+}
+.wPageIdx {
+    width:37.5rem;
+    margin:0 auto;
+}
+.wPageIdx .main{
+    width:100%;
+}

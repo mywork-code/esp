@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 还款计划表 -->
+<mapper namespace="RepayScheduleEntity">
+	<!-- 根据vbsid查询到期还款日期 -->	
+	<select id="selectByVbsid" parameterType="Long" resultType="String">
+		SELECT
+				loan_pmt_due_date
+		  FROM
+				t_apass_repay_schedule
+		 WHERE
+				loan_init_term = '1'
+		  AND   loan_id =#{value}
+	</select>
+	
+</mapper> 

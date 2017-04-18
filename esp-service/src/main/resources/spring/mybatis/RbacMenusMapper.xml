@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- CRM菜单管理 Mybatis Mapper -->
+<mapper namespace="MenusDO">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="id != null and id != ''">
+				AND ID = #{id, jdbcType=VARCHAR}
+			</if>
+			<if test="text != null and text != ''">
+<!-- 				AND TEXT = #{text, jdbcType=VARCHAR} -->
+				AND TEXT LIKE '%${text}%'
+			</if>
+			<if test="url != null and url != ''">
+				AND URL = #{url, jdbcType=VARCHAR}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				AND PARENT_ID = #{parentId, jdbcType=VARCHAR}
+			</if>
+			<if test="neId != null and neId != ''">
+				AND ID != #{neId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="MenusDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_MENUS (ID, TEXT, ICON_CLS, URL, 
+		PARENT_ID, DISPLAY, CREATED_BY, CREATED_DATE, 
+		UPDATED_BY, UPDATED_DATE) VALUES(#{id, jdbcType=VARCHAR}, 
+		#{text, jdbcType=VARCHAR}, #{iconCls, jdbcType=VARCHAR}, 
+		#{url, jdbcType=VARCHAR}, 
+		#{parentId, jdbcType=VARCHAR}, #{display, jdbcType=INTEGER}, 
+		#{createdBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP, 
+		#{updatedBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>
+	</insert>
+
+	<!-- 分页查询&过滤查询 -->
+	<select id="select" parameterType="MenusDO" resultType="MenusDO">
+	<![CDATA[
+		SELECT ID                    ID,
+			   TEXT                  TEXT,
+			   ICON_CLS              ICONCLS,
+			   URL                   URL,
+			   PARENT_ID             PARENTID,
+			   DISPLAY               DISPLAY,
+			   CREATED_BY            CREATEDBY,
+			   CREATED_DATE          CREATEDDATE,
+			   UPDATED_BY            UPDATEDBY,
+			   UPDATED_DATE          UPDATEDDATE 
+		FROM LS_RBAC_MENUS
+	]]>
+		<include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY PARENT_ID, DISPLAY ASC
+	]]>
+	</select>
+
+	<!-- 记录总数 -->
+	<select id="count" parameterType="MenusDO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(1) FROM LS_RBAC_MENUS
+	]]>
+		<include refid="QueryConditionSql" />
+	</select>
+
+	<!-- 主键查询 -->
+	<select id="selectByPK" parameterType="String" resultType="MenusDO">
+	<![CDATA[
+		SELECT ID                    ID,
+			   TEXT                  TEXT,
+			   ICON_CLS              ICONCLS,
+			   URL                   URL,
+			   PARENT_ID             PARENTID,
+			   DISPLAY               DISPLAY,
+			   CREATED_BY            CREATEDBY,
+			   CREATED_DATE          CREATEDDATE,
+			   UPDATED_BY            UPDATEDBY,
+			   UPDATED_DATE          UPDATEDDATE 
+		FROM LS_RBAC_MENUS WHERE ID = #{value}
+	]]>
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_MENUS WHERE ID = #{value}
+	]]>
+	</delete>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="MenusDO">
+	<![CDATA[
+		UPDATE LS_RBAC_MENUS 
+	]]>
+		<set>
+			UPDATED_BY = #{updatedBy, jdbcType=VARCHAR}, 
+			UPDATED_DATE = CURRENT_TIMESTAMP,
+			<if test="text != null and text != ''">
+				TEXT = #{text, jdbcType=VARCHAR},
+			</if>
+			<if test="iconCls != null and iconCls != ''">
+				ICON_CLS = #{iconCls, jdbcType=VARCHAR},
+			</if>
+			<if test="url != null and url != ''">
+				URL = #{url, jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null and parentId != ''">
+				PARENT_ID = #{parentId, jdbcType=VARCHAR},
+			</if>
+			<if test="display != null and display != ''">
+				DISPLAY = #{display, jdbcType=INTEGER},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE ID = #{id, jdbcType=VARCHAR} 
+	]]>
+	</update>
+
+	<!-- 更新所有 -->
+	<update id="updateAll" parameterType="MenusDO">
+	<![CDATA[
+		UPDATE LS_RBAC_MENUS 
+			SET UPDATED_BY = #{updatedBy, jdbcType=VARCHAR},  
+				UPDATED_DATE = CURRENT_TIMESTAMP, 
+				TEXT = #{text, jdbcType=VARCHAR},
+				ICON_CLS = #{iconCls, jdbcType=VARCHAR},  
+				URL = #{url, jdbcType=VARCHAR},  
+				PARENT_ID = #{parentId, jdbcType=VARCHAR},  
+				DISPLAY = #{display, jdbcType=INTEGER} 
+		WHERE ID = #{id, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- 分页查询&过滤查询 -->
+	<select id="selectAvailableMenus" parameterType="java.util.HashMap" resultType="MenusDO">
+	<![CDATA[
+		SELECT  E.ID                    ID,
+				E.TEXT                  TEXT,
+				E.ICON_CLS              ICONCLS,
+				E.URL                   URL,
+				E.PARENT_ID             PARENTID,
+				E.DISPLAY               DISPLAY,
+				E.CREATED_BY            CREATEDBY,
+				E.CREATED_DATE          CREATEDDATE,
+				E.UPDATED_BY            UPDATEDBY,
+				E.UPDATED_DATE          UPDATEDDATE 
+		FROM LS_RBAC_USERS A, LS_RBAC_USER_ROLE B, LS_RBAC_ROLES C, 
+			 LS_RBAC_ROLE_MENU D, LS_RBAC_MENUS E WHERE A.ID = B.USER_ID 
+			 AND B.ROLE_ID = C.ID AND C.ID = D.ROLE_ID AND D.MENU_ID = E.ID 
+			 AND A.USER_NAME = #{username, jdbcType=VARCHAR} AND 
+			 E.PARENT_ID = #{parentId, jdbcType=VARCHAR} ORDER BY E.DISPLAY ASC
+	]]>
+	</select>
+	
+	<!--  根据菜单ID删除角色菜单表数据  -->
+	<delete id="deleteRoleMenuByMenuId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_ROLE_MENU WHERE MENU_ID = #{value}
+	]]>
+	</delete>
+	
+</mapper> 

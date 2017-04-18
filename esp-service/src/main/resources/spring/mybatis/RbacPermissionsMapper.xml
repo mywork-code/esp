@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- CRM权限管理-权限资源 Mybatis Mapper -->
+<mapper namespace="PermissionsDO">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="id != null and id != ''">
+				AND ID = #{id, jdbcType=VARCHAR}
+			</if>
+			<if test="permissionCode != null and permissionCode != ''">
+				AND PERMISSION_CODE = #{permissionCode, jdbcType=VARCHAR}
+			</if>
+			<if test="permissionName != null and permissionName != ''">
+				AND PERMISSION_NAME LIKE '%${permissionName}%'
+			</if>
+			<if test="neId != null and neId != ''">
+				AND ID != #{neId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="PermissionsDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_PERMISSIONS (ID, PERMISSION_CODE, PERMISSION_NAME, 
+		DESCRIPTION, CREATED_BY, CREATED_DATE, UPDATED_BY, UPDATED_DATE) VALUES 
+		(#{id, jdbcType=VARCHAR}, #{permissionCode, jdbcType=VARCHAR}, 
+		#{permissionName, jdbcType=VARCHAR}, #{description, jdbcType=VARCHAR}, 
+		#{createdBy, jdbcType=VARCHAR},	CURRENT_TIMESTAMP, 
+		#{updatedBy, jdbcType=VARCHAR},	CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>
+	</insert>
+
+	<!-- 分页查询&过滤查询 -->
+	<select id="select" parameterType="PermissionsDO" resultType="PermissionsDO">
+	<![CDATA[
+		SELECT ID                 ID,
+			   PERMISSION_CODE    PERMISSIONCODE,
+			   PERMISSION_NAME    PERMISSIONNAME,
+			   DESCRIPTION        DESCRIPTION,
+			   CREATED_BY         CREATEDBY,
+			   CREATED_DATE       CREATEDDATE,
+			   UPDATED_BY         UPDATEDBY,
+			   UPDATED_DATE       UPDATEDDATE 
+		  FROM LS_RBAC_PERMISSIONS
+	]]>
+		<include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+
+	<!-- 记录总数 -->
+	<select id="count" parameterType="PermissionsDO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(1) FROM LS_RBAC_PERMISSIONS
+	]]>
+		<include refid="QueryConditionSql" />
+	</select>
+
+	<!-- 主键查询 -->
+	<select id="selectByPK" parameterType="String" resultType="PermissionsDO">
+	<![CDATA[
+		SELECT ID                 ID,
+			   PERMISSION_CODE    PERMISSIONCODE,
+			   PERMISSION_NAME    PERMISSIONNAME,
+			   DESCRIPTION        DESCRIPTION,
+			   CREATED_BY         CREATEDBY,
+			   CREATED_DATE       CREATEDDATE,
+			   UPDATED_BY         UPDATEDBY,
+			   UPDATED_DATE       UPDATEDDATE 
+		  FROM LS_RBAC_PERMISSIONS WHERE ID = #{value}
+	]]>
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_PERMISSIONS WHERE ID = #{value}
+	]]>
+	</delete>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="PermissionsDO">
+	<![CDATA[
+		UPDATE LS_RBAC_PERMISSIONS 
+	]]>
+		<set>
+			UPDATED_BY = #{updatedBy, jdbcType=VARCHAR}, 
+			UPDATED_DATE = CURRENT_TIMESTAMP,
+			<if test="permissionCode != null and permissionCode != ''">
+				PERMISSION_CODE = #{permissionCode, jdbcType=VARCHAR},
+			</if>
+			<if test="permissionName != null and permissionName != ''">
+				PERMISSION_NAME = #{permissionName, jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				DESCRIPTION = #{description, jdbcType=VARCHAR},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE ID = #{id, jdbcType=VARCHAR} 
+	]]>
+	</update>
+
+	<!-- 更新所有 -->
+	<update id="updateAll" parameterType="PermissionsDO">
+	<![CDATA[
+		UPDATE LS_RBAC_PERMISSIONS 
+			SET UPDATED_BY = #{updatedBy, jdbcType=VARCHAR},
+				UPDATED_DATE = CURRENT_TIMESTAMP,
+				PERMISSION_CODE = #{permissionCode, jdbcType=VARCHAR},  
+				PERMISSION_NAME = #{permissionName, jdbcType=VARCHAR},
+				DESCRIPTION = #{description, jdbcType=VARCHAR}
+			WHERE ID = #{id, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- 删除角色权限表资源记录 -->
+	<delete id="deleteRolePermissionsByPermissionId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_ROLE_PERMISSION WHERE PERMISSION_ID = #{value}
+	]]>
+	</delete>
+	
+</mapper> 

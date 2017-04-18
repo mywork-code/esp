@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SubOrderInfoEntity">
+
+    <!-- 查询条件 -->
+    <sql id="QueryConditionSql">
+        <where>
+            <if test="id != null">
+                AND ID = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND USER_ID = #{userId, jdbcType=BIGINT}
+            </if>
+            <if test="orderId != null and orderId != ''">
+                AND ORDER_ID = #{orderId, jdbcType=VARCHAR} 
+            </if>
+            <if test="subOrderId != null and subOrderId != ''">
+                AND SUB_ORDER_ID = #{subOrderId, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null and status != ''">
+                AND STATUS = #{status, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </sql>
+
+	<insert id="insert" parameterType="SubOrderInfoEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into t_esp_sub_order_info
+            (user_id,
+             order_amt,
+             order_id,
+             status,
+             sub_order_id,
+             merchant_code,
+             logistics_name,
+             logistics_no,
+             remark,
+             create_date,
+             update_date
+            )
+			values (
+			#{userId, jdbcType=BIGINT},
+	        #{orderAmt, jdbcType=DECIMAL},
+	        #{orderId, jdbcType=VARCHAR},
+	        #{status, jdbcType=VARCHAR},
+	        #{subOrderId, jdbcType=VARCHAR},
+	      	#{merchantCode, jdbcType=VARCHAR},
+	      	#{logisticsName, jdbcType=VARCHAR},
+	        #{logisticsNo, jdbcType=VARCHAR},
+	        #{remark, jdbcType=VARCHAR},
+	        CURRENT_TIMESTAMP,
+	        CURRENT_TIMESTAMP);
+	</insert>
+	
+	<select id="selectByOrderId" parameterType="String" resultType="SubOrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id		id,
+			user_id userId,
+			order_amt orderAmt,
+			order_id orderId,
+			status status,
+			sub_order_id subOrderId,
+			merchant_code merchantCode,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			remark remark,
+			acceptGoodsType		 acceptGoodsType,
+            extendAcceptGoodsNum  extendAcceptGoodsNum,
+            sendOutGoodsDate      sendOutGoodsDate,
+            lastAcceptGoodsDate		lastAcceptGoodsDate,
+            acceptGoodsDate			acceptGoodsDate,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_sub_order_info
+			WHERE order_id=#{value}
+		]]>
+		<![CDATA[
+		ORDER BY update_date DESC
+		]]>
+	</select>
+	
+	<!-- 查询 用户 待付款、待发货、待收货 子订单数量 -->
+	<select id="getSubOrderNum" parameterType="java.lang.Long" resultType="com.apass.esp.domain.dto.aftersale.IdNum">
+    <![CDATA[
+        SELECT  COUNT(SUB_ORDER_ID)     num, 
+                STATUS                  id 
+        FROM    T_ESP_SUB_ORDER_INFO 
+        WHERE   USER_ID = #{value} 
+        AND     STATUS IN ('D00','D02','D03')
+        GROUP BY STATUS
+        ]]>
+    </select>
+	
+	<update id="updateSubOrderStatus" parameterType="SubOrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_sub_order_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			status = #{status, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+
+	<update id="updateStatusBySubOrderId" parameterType="SubOrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_sub_order_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			status = #{status, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE sub_order_id =  #{subOrderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- 分页查询&过滤查询 子订单信息 -->
+    <select id="select" parameterType="SubOrderInfoEntity" resultType="SubOrderInfoEntity">
+    <![CDATA[
+        SELECT  ID                           id,
+                USER_ID                      userId,
+                ORDER_AMT                    orderAmt,
+                ORDER_ID                     orderId,
+                STATUS                       status,
+                SUB_ORDER_ID                 subOrderId,
+                MERCHANT_CODE                merchantCode,
+                LOGISTICS_NAME               logisticsName,
+                LOGISTICS_NO                 logisticsNo,
+                ACCEPTGOODSTYPE              acceptGoodsType,
+                EXTENDACCEPTGOODSNUM         extendAcceptGoodsNum,
+                SENDOUTGOODSDATE             sendOutGoodsDate,
+                LASTACCEPTGOODSDATE          lastAcceptGoodsDate,
+                ACCEPTGOODSDATE              acceptGoodsDate,
+                REMARK                       remark,
+                CREATE_DATE                  createDate,
+                UPDATE_DATE                  updateDate
+        FROM t_esp_sub_order_info
+    ]]>
+        <include refid="QueryConditionSql" />
+    <![CDATA[
+        ORDER BY UPDATE_DATE DESC
+    ]]>
+    </select>
+    
+    <!-- 主键查询 -->
+    <select id="selectByPK" parameterType="Long" resultType="SubOrderInfoEntity">
+	    <![CDATA[
+	        SELECT  ID                           id,
+	                USER_ID                      userId,
+	                ORDER_AMT                    orderAmt,
+	                ORDER_ID                     orderId,
+	                STATUS                       status,
+	                SUB_ORDER_ID                 subOrderId,
+	                MERCHANT_CODE                merchantCode,
+	                LOGISTICS_NAME               logisticsName,
+	                LOGISTICS_NO                 logisticsNo,
+	                REMARK                       remark,
+	                acceptGoodsType				 acceptGoodsType,
+	                extendAcceptGoodsNum         extendAcceptGoodsNum,
+	                sendOutGoodsDate             sendOutGoodsDate,
+	                lastAcceptGoodsDate			 lastAcceptGoodsDate,
+	                acceptGoodsDate				 acceptGoodsDate,
+	                CREATE_DATE                  createDate,
+	                UPDATE_DATE                  updateDate
+	        FROM t_esp_sub_order_info WHERE ID = #{value}
+	    ]]>
+    </select>
+	
+    <!-- 根据子订单查询 -->
+    <select id="loadSubOrderBySubId" parameterType="String" resultType="SubOrderInfoEntity">
+	    <![CDATA[
+	        SELECT  ID                           id,
+	                USER_ID                      userId,
+	                ORDER_AMT                    orderAmt,
+	                ORDER_ID                     orderId,
+	                STATUS                       status,
+	                SUB_ORDER_ID                 subOrderId,
+	                MERCHANT_CODE                merchantCode,
+	                LOGISTICS_NAME               logisticsName,
+	                LOGISTICS_NO                 logisticsNo,
+	                REMARK                       remark,
+	                acceptGoodsType				 acceptGoodsType,
+	                extendAcceptGoodsNum         extendAcceptGoodsNum,
+	                sendOutGoodsDate             sendOutGoodsDate,
+	                lastAcceptGoodsDate			 lastAcceptGoodsDate,
+	                acceptGoodsDate				 acceptGoodsDate,
+	                CREATE_DATE                  createDate,
+	                UPDATE_DATE                  updateDate
+	        FROM t_esp_sub_order_info WHERE SUB_ORDER_ID = #{value}
+	    ]]>
+    </select>
+    
+    <!-- 根据子订单编号查询子订单状态-->
+    <select id="getSubOrderStatus" parameterType="String" resultType="String">
+        <![CDATA[
+            SELECT STATUS FROM T_ESP_SUB_ORDER_INFO WHERE SUB_ORDER_ID = #{value}
+        ]]>
+    </select>
+    
+    <!-- 更新 -->
+    <update id="update" parameterType="SubOrderInfoEntity">
+    <![CDATA[
+        UPDATE T_ESP_SUB_ORDER_INFO
+    ]]>
+        <set>
+        <![CDATA[
+            UPDATE_DATE = CURRENT_TIMESTAMP,
+        ]]>
+            <if test="status != null and status != ''">
+                STATUS = #{status, jdbcType=VARCHAR},
+            </if>
+            <if test="lastAcceptGoodsDate != null">
+                lastAcceptGoodsDate = #{lastAcceptGoodsDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="extendAcceptGoodsNum != null">
+                extendAcceptGoodsNum = #{extendAcceptGoodsNum, jdbcType=INTEGER},
+            </if>
+            <if test="acceptGoodsDate != null">
+                acceptGoodsDate = #{acceptGoodsDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="acceptGoodsType != null and acceptGoodsType !='' ">
+                acceptGoodsType = #{acceptGoodsType, jdbcType=VARCHAR}
+            </if>
+        </set>
+        <![CDATA[
+        WHERE ID = #{id, jdbcType=BIGINT} 
+        ]]>
+    </update>
+</mapper>

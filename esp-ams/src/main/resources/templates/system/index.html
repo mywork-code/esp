@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Apass业务系统</title>
+    <#include "../common/component/library.html" />
+    <style type="text/css">
+        html {
+	height: 100%;
+	width: 100%;
+	background: rgb(0, 39, 101);
+}
+
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0 auto;
+	position: relative;
+}
+
+#loginWrap {
+	width: 1074px;
+	height: 480px;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	margin: -200px auto 0;
+	background: url("${rc.contextPath}/WebContent/images/loginbg.png")
+		no-repeat center center;
+	-webkit-background-size: 1000px 480px;
+	background-size: 1000px 480px;
+}
+
+input {
+	background: none;
+	outline: none;
+	border: none;
+}
+
+#loginWrap form div span {
+	display: inline-block;
+	width: 88px;
+	font-weight: bolder;
+}
+
+#loginWrap .num {
+	position: absolute;
+	top: 210px;
+	left: 530px;
+}
+
+#loginWrap .pass {
+	position: absolute;
+	top: 250px;
+	left: 530px;
+}
+
+#loginWrap .code {
+	position: absolute;
+	top: 290px;
+	left: 530px;
+}
+
+#loginWrap .login {
+	position: absolute;
+	top: 330px;
+	left: 530px;
+}
+
+#loginWrap .login a {
+	text-decoration: none;
+	display: inline-block;
+	width: 100px;
+	height: 26px;
+	text-align: center;
+	line-height: 26px;
+	color: #d9eef7;
+	background: rgb(21, 93, 247);
+	background: linear-gradient(to bottom, #0CAEEA 0, #0076A2 100%);
+	cursor: pointer;
+	border: 1px #0076a3 solid;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	margin-right: 15px;
+	padding: 0;
+	transition: all 0.3s;
+}
+
+#loginWrap .login a:hover {
+    background: linear-gradient(to bottom, #0095cc 0, #00678e 100%);
+}
+#loginWrap .login a:active {
+position: relative;
+	top: 1px;
+   color: #80bed6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));
+	background: -moz-linear-gradient(top,  #0078a5,  #00adee);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0078a5', endColorstr='#00adee');
+}
+
+#div3 .login .log {
+	margin: 0 30px 0 20px;
+}
+
+#loginWrap label input {
+	border: 1px #B4CFFF solid;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	width: 128px;
+	text-indent: 8px;
+	padding: 2px;
+}
+
+#loginWrap label input:focus {
+	    border-color:#2B74F7;
+	-moz-box-shadow: 0 0 3px 0 #80ADFF;
+	-webkit-box-shadow: 0 0 3px 0 #80ADFF;
+	box-shadow: 0 0 3px 0 #80ADFF;
+}
+
+#loginWrap .logo {
+	position: absolute;
+	top: 34px;
+	left: 274px;
+	width: 250px;
+}
+
+#random {
+	width: 45px !important;
+}
+
+.codeImg {
+	width: 80px;
+	height: 22px;
+	vertical-align: middle;
+}
+
+#alertError {
+	position: absolute;
+	top: 156px;
+	left: 530px;
+	font-weight: bold;
+	color: #FFB300;
+}
+    </style>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/system/login.js"></script>
+</head>
+<body>
+<div id="loginWrap">
+    <p id="alertError"></p>
+    <input id="alertMsg" type="hidden" value="${msg!}"/>
+
+    <form id="loginForm" method="post" action="${rc.contextPath}/login">
+        <div class="num">
+            <label><span>用户账号：</span><input type="text" id="username" name="username"data-options="required:true,missingMessage:'请输入账户'" autofocus="autofocus"/></label>
+        </div>
+        <div class="pass">
+            <label><span>用户密码：</span><input type="password" id="password" name="password"data-options="required:true,missingMessage:'请输入密码'"/></label>
+        </div>
+        <div class="code">
+            <label><span>验证码：</span><input type="text" id="random" name="random" autocomplete="off"/>
+                <img class="codeImg" src="${rc.contextPath}/listeningboot/random"onclick="javascript:this.src='${rc.contextPath}/listeningboot/random?'+Math.random()">
+            </label>
+        </div>
+    </form>
+    <div class="login">
+        <a href="javascript:void(0)" class="" id="submitLogin">登录系统</a>
+        <!-- <a href="" class="" id="">忘记密码</a> -->
+    </div>
+    <img class="logo" src="${rc.contextPath}/WebContent/images/vcreditLogo.png" alt=""/>
+
+</div>
+</body>
+</html>

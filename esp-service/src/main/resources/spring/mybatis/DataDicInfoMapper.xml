@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DataDicInfoEntity">
+
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			and datadic.data_type_no=#{dataTypeNo}
+			<if test="dataNo != null and dataNo != ''">
+				and data_no=#{dataNo}
+			</if>
+			<if test="status != null and status != ''">
+				and datadic.status=#{status}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询数据字典同归 -->
+	<select id="queryDataDicInfoByParam" parameterType="Map"
+		resultType="DataDicInfoEntity">
+		<![CDATA[
+		SELECT
+		datadic.id id,
+		datadic.data_type_no dataTypeNo,
+		datadic.data_type_name dataTypeName,
+		datadic.data_no dataNo,
+		datadic.data_name dataName,
+		datadic.status status,
+		datadic.remark remark
+		FROM
+		t_esp_data_dic datadic 
+		]]>
+		<include refid="QueryConditionSql" />
+	</select>
+	
+	<!-- 根据物流厂商编号查询物流厂商名称 -->
+	<select id="queryDataNameByDataNo" parameterType="String" resultType="String">
+        SELECT DATA_NAME FROM T_ESP_DATA_DIC WHERE BINARY DATA_NO = #{dataNo}
+    </select>
+</mapper>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- CRM角色管理 Mybatis Mapper -->
+<mapper namespace="RolesDO">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="id != null and id != ''">
+				AND ID = #{id, jdbcType=VARCHAR}
+			</if>
+			<if test="roleCode != null and roleCode != ''">
+				AND ROLE_CODE = #{roleCode, jdbcType=VARCHAR}
+			</if>
+			<if test="roleName != null and roleName != ''">
+				AND ROLE_NAME = #{roleName, jdbcType=VARCHAR}
+			</if>
+			<if test="neId != null and neId != ''">
+				AND ID != #{neId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="RolesDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_ROLES (ID, ROLE_CODE, ROLE_NAME, 
+		DESCRIPTION, CREATED_BY, CREATED_DATE, UPDATED_BY, 
+		UPDATED_DATE) VALUES (#{id, jdbcType=VARCHAR}, 
+		#{roleCode, jdbcType=VARCHAR}, #{roleName, jdbcType=VARCHAR}, 
+		#{description, jdbcType=VARCHAR}, #{createdBy, jdbcType=VARCHAR},	
+		CURRENT_TIMESTAMP, #{updatedBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			
+			select UUID() ID
+		</selectKey>
+	</insert>
+
+	<!-- 分页查询&过滤查询 -->
+	<select id="select" parameterType="RolesDO" resultType="RolesDO">
+	<![CDATA[
+		SELECT ID                ID, 
+			   ROLE_CODE         ROLECODE,
+			   ROLE_NAME         ROLENAME,
+			   CREATED_BY        CREATEDBY,
+			   CREATED_DATE      CREATEDDATE,
+			   UPDATED_BY        UPDATEDBY,
+			   UPDATED_DATE      UPDATEDDATE,
+			   DESCRIPTION       DESCRIPTION
+		   FROM LS_RBAC_ROLES
+	]]>
+		<include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY UPDATED_DATE DESC
+	]]>
+	</select>
+
+	<!-- 记录总数 -->
+	<select id="count" parameterType="RolesDO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(1) FROM LS_RBAC_ROLES
+	]]>
+		<include refid="QueryConditionSql" />
+	</select>
+
+	<!-- 主键查询 -->
+	<select id="selectByPK" parameterType="String" resultType="RolesDO">
+	<![CDATA[
+		SELECT ID                ID, 
+			   ROLE_CODE         ROLECODE,
+			   ROLE_NAME         ROLENAME,
+			   CREATED_BY        CREATEDBY,
+			   CREATED_DATE      CREATEDDATE,
+			   UPDATED_BY        UPDATEDBY,
+			   UPDATED_DATE      UPDATEDDATE,
+			   DESCRIPTION       DESCRIPTION
+		   FROM LS_RBAC_ROLES WHERE ID = #{value}
+	]]>
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_ROLES WHERE ID = #{value}
+	]]>
+	</delete>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="RolesDO">
+	<![CDATA[
+		UPDATE LS_RBAC_ROLES 
+	]]>
+		<set>
+			UPDATED_BY = #{updatedBy, jdbcType=VARCHAR},
+		    UPDATED_DATE = CURRENT_TIMESTAMP,
+			<if test="roleCode != null and roleCode != ''">
+				ROLE_CODE = #{roleCode, jdbcType=VARCHAR},
+			</if>
+			<if test="roleName != null and roleName != ''">
+				ROLE_NAME = #{roleName, jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				DESCRIPTION = #{description, jdbcType=VARCHAR},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE ID = #{id, jdbcType=VARCHAR} 
+	]]>
+	</update>
+
+	<!-- 更新所有 -->
+	<update id="updateAll" parameterType="RolesDO">
+	<![CDATA[
+		UPDATE LS_RBAC_ROLES 
+			SET UPDATED_BY = #{updatedBy, jdbcType=VARCHAR},
+				UPDATED_DATE = CURRENT_TIMESTAMP,
+				ID = #{id, jdbcType=VARCHAR},  
+				ROLE_CODE = #{roleCode, jdbcType=VARCHAR},  
+				ROLE_NAME = #{roleName, jdbcType=VARCHAR},
+				DESCRIPTION = #{description, jdbcType=VARCHAR}
+		 WHERE ID = #{id, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- ********************************** 角色资源设置 ********************************** -->
+	<!-- 根据角色ID删除 角色权限表记录 -->
+	<delete id="deleteRolePermissionsByRoleId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_ROLE_PERMISSION WHERE ROLE_ID = #{value}
+	]]>
+	</delete>
+	
+	<!-- 查询所有的可分配资源列表 -->
+	<select id="selectAvailablePermissions" parameterType="String"
+		resultType="PermissionsDO">
+	<![CDATA[
+		SELECT ID                 ID,
+			   PERMISSION_CODE    PERMISSIONCODE,
+			   PERMISSION_NAME    PERMISSIONNAME,
+			   DESCRIPTION        DESCRIPTION,
+			   CREATED_BY         CREATEDBY,
+			   CREATED_DATE       CREATEDDATE,
+			   UPDATED_BY         UPDATEDBY,
+			   UPDATED_DATE       UPDATEDDATE 
+		  FROM LS_RBAC_PERMISSIONS WHERE ID NOT IN 
+			  (SELECT PERMISSION_ID FROM LS_RBAC_ROLE_PERMISSION WHERE ROLE_ID = #{value})
+			  ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+
+	<!-- 查询所有的已分配资源列表 -->
+	<select id="selectAllocatedPermissions" parameterType="String"
+		resultType="PermissionsDO">
+	<![CDATA[
+		SELECT ID                 ID,
+			   PERMISSION_CODE    PERMISSIONCODE,
+			   PERMISSION_NAME    PERMISSIONNAME,
+			   DESCRIPTION        DESCRIPTION,
+			   CREATED_BY         CREATEDBY,
+			   CREATED_DATE       CREATEDDATE,
+			   UPDATED_BY         UPDATEDBY,
+			   UPDATED_DATE       UPDATEDDATE 
+		  FROM LS_RBAC_PERMISSIONS WHERE ID IN 
+			  (SELECT PERMISSION_ID FROM LS_RBAC_ROLE_PERMISSION WHERE ROLE_ID = #{value})
+			  ORDER BY CREATED_DATE DESC
+	]]>
+	</select>
+		
+	<!-- 插入 -->
+	<insert id="insertRolePermission" parameterType="RolePermissionDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_ROLE_PERMISSION (ID, ROLE_ID, 
+		PERMISSION_ID, CREATED_BY, CREATED_DATE, UPDATED_BY, 
+		UPDATED_DATE) VALUES (#{id, jdbcType=VARCHAR}, 
+		#{roleId, jdbcType=VARCHAR}, #{permissionId, jdbcType=VARCHAR}, 
+		#{createdBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP, 
+		#{updatedBy, jdbcType=VARCHAR},	CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>
+	</insert>
+	
+	<!-- ********************************** 角色菜单设置 ********************************** -->
+	<!-- 根据角色ID删除 角色权限表记录 -->
+	<delete id="deleteRoleMenusByRoleId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_ROLE_MENU WHERE ROLE_ID = #{value}
+	]]>
+	</delete>
+	
+	<!-- 查询角色菜单设置 -->
+	<select id="selectMenuSettingList" parameterType="HashMap" resultType="MenusSettingDO">
+	<![CDATA[
+		SELECT A.*, 
+			   CASE WHEN B.ID IS NOT NULL THEN 'Y' ELSE 'N' END CHECKSIGN 
+		 FROM (SELECT ID, TEXT FROM 
+			   LS_RBAC_MENUS WHERE PARENT_ID = #{parentId} ORDER BY DISPLAY ASC) A 
+			LEFT JOIN LS_RBAC_ROLE_MENU B ON A.ID = B.MENU_ID AND B.ROLE_ID = #{roleId}
+	]]>
+	</select>
+	
+	<!-- 插入角色菜单数据 -->
+	<insert id="insertRoleMenu" parameterType="RoleMenuDO">
+	<![CDATA[
+		INSERT INTO LS_RBAC_ROLE_MENU (ID, ROLE_ID, MENU_ID, 
+		CREATED_BY,	CREATED_DATE, UPDATED_BY, UPDATED_DATE) 
+		VALUES (#{id, jdbcType=VARCHAR}, 
+		#{roleId, jdbcType=VARCHAR}, #{menuId, jdbcType=VARCHAR}, 
+		#{createdBy, jdbcType=VARCHAR}, CURRENT_TIMESTAMP, 
+		#{updatedBy, jdbcType=VARCHAR},	CURRENT_TIMESTAMP)
+	]]>
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select UUID() ID
+		</selectKey>
+	</insert>
+	
+	<!-- ********************************** 角色用戶设置 ********************************** -->
+	<!-- 根据角色ID删除用户角色表记录 -->
+	<delete id="deleteUserRolesByRoleId" parameterType="String">
+	<![CDATA[
+		DELETE FROM LS_RBAC_USER_ROLE WHERE ROLE_ID = #{value}
+	]]>
+	</delete>
+</mapper> 

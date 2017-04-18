@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+#resetPasswordDetails + .window .panel-header>.panel-title {
+	color:#000;
+}
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+#resetPasswordDetails table {padding-top:10px;}
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/rbac/users.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/easyui/outOfBounds.js"></script>
+</head>
+<body>
+	<!-- Toolbar -->
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 700px;">
+				<tr>
+					<td width="10%" align="right" nowrap="nowrap">用户账号：</td>
+					<td width="20%"><input id="username" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td width="10%" align="right" nowrap="nowrap">真实姓名：</td>
+					<td width="20%"><input id="realName" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp; <a
+						href="javascript:void(0);" class="easyui-linkbutton add-btn"
+						data-options="iconCls:'icon-search'">添&nbsp;加&nbsp;</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 用户查询列表 -->
+	<div id="tablelist"></div>
+
+	<!-- 用户角色设置 -->
+	<div id="userRoleDetails">
+		<table style="width: 800px; margin: 3px auto;">
+			<tr>
+				<td style="width: 400px; height: 300px; overflow: hidden;"><div
+						id="roleSrcList"></div></td>
+				<td width="40px;"><button id="moveRight" title="右移选中记录"
+						style="width: 30px; margin-top: 5px">></button> <br>
+					<button id="moveLeft" title="左移选中记录"
+						style="width: 30px; margin-top: 5px""><</button> <br />
+					<button id="moveAllRight" title="全部右移"
+						style="width: 30px; margin-top: 5px"">>></button> <br>
+					<button id="moveAllLeft" title="全部左移"
+						style="width: 30px; margin-top: 5px""><<</button></td>
+				<td style="width: 400px; height: 300px; overflow: hidden;"><div
+						id="roleDestList"></div></td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- 用户添加 -->
+	<div id="userDetails">
+		<form id="userForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">用户账号：</td>
+					<td><input type="text" id="username" name="username"
+						style="width: 320px;" data-options="required:true" maxlength="50" /><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">用户密码：</td>
+					<td><input type="password" id="password" name="password"
+						data-options="required:true" style="width: 320px;" maxlength="50" /><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">确认密码：</td>
+					<td><input type="password" id="repassword" name="repassword"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">真实姓名：</td>
+					<td><input type="text" id="realName" name="realName"
+						style="width: 320px;" maxlength="100"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">手机：</td>
+					<td><input type="text" id="mobile" name="mobile"
+						style="width: 320px;" maxlength="11"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">邮箱：</td>
+					<td><input type="text" id="email" name="email"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 重置密码 -->
+	<div id="resetPasswordDetails">
+		<table style="width: 100%;">
+			<tr>
+				<td width="20%" align="right">用户账号：</td>
+				<td><input type="text" id="username" disabled="disabled"
+					style="width: 320px;" maxlength="50" /><span style="color: red;">*</span></td>
+			</tr>
+			<tr>
+				<td width="20%" align="right">新密码：</td>
+				<td><input type="password" id="newpassword" name="newpassword"
+					data-options="required:true" style="width: 320px;" maxlength="50" /><span
+					style="color: red;">*</span></td>
+			</tr>
+			<tr>
+				<td width="20%" align="right">确认新密码：</td>
+				<td><input type="password" id="renewpassword"
+					name="renewpassword" style="width: 320px;" maxlength="50"></input><span
+					style="color: red;">*</span></td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- 关联商户 -->
+	<div id="relevanceMerchantInfor" class="easyui-window" title="<font color='black'>关联商户</font>" hidden="hidden"
+		style="width: 350px; height: 100px; display: none; text-align: center;" >
+	  	<table class="details_table" style="width:92%">
+            <tr>
+				<td width="20%" align="right">选择商户:</td>
+				<td align="left">
+				<select class="easyui-combobox" style="width: 180px;" id="selectMerchant" name="selectMerchant" value="">
+				 </select> 
+				</td>
+            </tr>
+            <tr style="margin-top: 22px;">
+				<td colspan="4">
+					<a href="javascript:void(0);" id="cancelEdit" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" id="agreeEdit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				</td>
+	        </tr>
+	  	</table>
+	</div>
+</body>
+</html>

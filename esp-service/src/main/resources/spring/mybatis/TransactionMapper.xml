@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TxnInfoEntity">
+   <!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="userId != null and userId != ''">
+				AND USER_ID = #{userId}
+			</if>
+			<if test="txnDate != null and txnDate != ''">
+				AND TXN_DATE = #{txnDate, jdbcType=DATE}
+			</if>
+			<if test="txnDateBoot != null and txnDateBoot != ''">
+				and date_format(txn_date,'%Y-%m-%d %H:%i:%s') >= #{txnDateBoot}
+			</if> 
+			<if test="txnDateTop != null and txnDateTop != ''">
+				and #{txnDateTop} >= date_format(txn_date,'%Y-%m-%d %H:%i:%s') 
+			</if>
+			<if test="status != null">
+				AND STATUS = #{status, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 查询数据 -->
+	<select id="queryTransactionInforPage" parameterType="TxnInfoEntity" resultType="TxnInfoEntity">
+		<![CDATA[
+			SELECT
+				TXN_ID AS txnId,
+				ORDER_ID AS orderId,
+				USER_ID AS userId,
+				TXN_TYPE AS txnType,
+				TXN_DATE AS txnDate,
+				TXN_DATE AS txnDateDes,
+				TXN_AMT AS txnAmt,
+				POST_DATE AS postDate,
+				TXN_DESC AS txnDesc,
+				ORIG_TRANS_DATE AS origTransDate,
+				ORIG_TXN_CODE AS origTxnCode,
+				ORIG_TXN_AMT AS origTxnAmt,
+				STMT_DATE AS stmtDate,
+				STMT_DATE AS stmtDateDes,
+				LOAN_ID AS loanId,
+				CONTRACT_NO AS contractNo,
+				OPEN_BANK_ID AS openBankId,
+				OPEN_BANK AS openBank,
+				CARD_ID AS cardNo,
+				USR_NAME AS usrName,
+				CERT_TYPE AS certType,
+				CERT_ID AS certId,
+				PURPOSE AS purpose,
+				STATE AS state,
+				CITY AS city,
+				SUB_BANK AS subBank,
+				FLAG AS flag,
+				STATUS AS status,
+				SEND_TIME AS sendTime,
+				SUCCESS_AMT AS successAmt,
+				FAILURE_AMT AS failureAmt,
+				ERR_IND AS errInd,
+				settle_flag settleFlag,
+				CREATE_USER AS createUser,
+				CREATE_DATE AS createDate,
+				UPDATE_USER AS updateUser,
+				UPDATE_DATE AS updateDate
+			FROM
+				T_APASS_TXN_INFO
+		]]>
+		<include refid="QueryConditionSql"></include>
+		<![CDATA[
+			ORDER BY UPDATE_DATE DESC
+		]]>
+	</select>
+	<select id="queryTransactionInforPageCount" parameterType="Map" resultType="Integer">
+	<![CDATA[
+		select
+			count(1)
+		from 
+			T_APASS_TXN_INFO
+	]]>
+		<include refid="QueryConditionSql" />
+	</select>
+	
+	<!--查询订单首付金额-->
+	<select id="selectDownpaymentByOrderId" parameterType="java.lang.String" resultType="TxnInfoEntity">
+		<![CDATA[
+			SELECT TXN_AMT AS txnAmt,	TXN_TYPE AS txnType FROM T_APASS_TXN_INFO WHERE ORDER_ID = #{value} AND TXN_TYPE = 'T01'
+		]]>
+	</select>
+   
+</mapper>

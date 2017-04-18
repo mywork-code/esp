@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+#roleName,#roleCode {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+textarea {
+	border: 1px solid #B4CFFF;
+    padding: 5px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+.messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/rbac/roles.js"></script>
+</head>
+<body>
+	<!-- Toolbar -->
+	<div id="tb">
+		<div class="search">
+			<table style="width: 100%;min-width:700px;">
+				<tr>
+					<td width="10%" align="right" nowrap="nowrap">角色名称：</td>
+					<td width="20%"><input id="roleName" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td width="10%" align="right" nowrap="nowrap">角色编码：</td>
+					<td width="20%"><input id="roleCode" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;<a
+						href="javascript:void(0);" class="easyui-linkbutton add-btn"
+						data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 用户查询列表 -->
+	<div id="tablelist"></div>
+
+	<div id="roleDetails">
+		<form id="roleForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">角色编码：</td>
+					<td><input type="hidden" id="id" name="id" /> <input
+						type="text" id="roleCode" name="roleCode" style="width: 320px;"
+						data-options="required:true" /><span style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">角色名称：</td>
+					<td><input type="text" id="roleName" name="roleName"
+						data-options="required:true" style="width: 320px;" /><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">角色描述：</td>
+					<td><textarea type="text" id="description" name="description"
+							style="width: 320px; height: 100px;"></textarea></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 角色资源配置 -->
+	<div id="rolePermissionDetails">
+		<table style="width: 800px;margin: 3px auto;">
+			<tr>
+				<td style="width: 400px; height: 300px; overflow: hidden;"><div
+						id="permissionSrcList"></div></td>
+				<td width="40px;"><button id="moveRight" title="右移选中记录"
+						style="width: 30px; margin-top: 5px">></button> <br>
+					<button id="moveLeft" title="左移选中记录"
+						style="width: 30px; margin-top: 5px""><</button> <br />
+					<button id="moveAllRight" title="全部右移"
+						style="width: 30px; margin-top: 5px"">>></button> <br>
+					<button id="moveAllLeft" title="全部左移"
+						style="width: 30px; margin-top: 5px""><<</button></td>
+				<td style="width: 400px; height: 300px; overflow: hidden;"><div
+						id="permissionDestList"></div></td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- 角色菜单配置 -->
+	<div id="roleMenuDetails">
+		<div id="menutablelist"></div>
+	</div>
+</body>
+</html>

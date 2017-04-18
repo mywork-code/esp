@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+#goodsUrlListDiv img{
+	width:30px;height:30px;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/order/orders.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+	<!-- Toolbar -->
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 500px;">
+				<tr>
+					<td width="5%" align="right" nowrap="nowrap">订单号：</td>
+					<td width="5%"><input id="orderId" style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%" align="right" nowrap="nowrap">下单时间：</td>
+					<td width="5%"><input id="createDate" style="width:120px" class="easyui-datebox" /></td>
+					<td width="5%" align="right" nowrap="nowrap">姓名：</td>
+					<td width="5%"><input id="name" style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%" align="right" nowrap="nowrap">手机号码：</td>
+					<td width="5%"><input id=telephone style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%" align="right" nowrap="nowrap">订单状态：</td>
+					<td width="5%"><select style="width:120px" id="orderStatus" name="orderStatus"
+						class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
+							<option label="待付款" value="D00">待付款</option>
+							<option label="待发货" value="D02">待发货</option>
+							<option label="待签收" value="D03">待收货</option>
+							<option label="交易完成" value="D04">交易完成</option>
+							<option label="售后服务中" value="D05">售后服务中</option>
+							<option label="订单失效" value="D07">订单失效</option>
+					</select></td>
+					<td width="5%" align="right" nowrap="nowrap">售后状态：</td>
+					<td width="5%"><select style="width:120px" id="refundType" name="refundType"
+						class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
+							<option label="退货" value="0">退货</option>
+							<option label="换货" value="1">换货</option>
+					</select></td>
+				</tr>
+			</table>
+
+			<table style="width: 100%; text-align: right;">
+				<tr>
+					<td width="100%"><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp; <a
+						href="javascript:void(0);" class="easyui-linkbutton reset-btn"
+						data-options="iconCls:'icon-reset'">重&nbsp;置&nbsp;</a>&nbsp;
+						 <@apass.role value="ORDER_INFO_EXPORT">
+						 <a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+						data-options="iconCls:'icon-search'">导&nbsp;出&nbsp;</a>&nbsp;
+						</@apass.role>
+						</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<!-- 订单查询列表 -->
+	<div id="tablelist"></div>
+
+	<!-- 订单详情列表 -->
+	<div id="orderDetailListWin" class="easyui-window" title="订单详细信息"
+		style="width: 700px; height: 400px"
+		data-options="iconCls:'icon-save',modal:true,maximizable:false,minimizable:false,resizable:false,collapsible:false">
+				<form id="ff" method="post">
+					<table cellpadding="5">
+						<tr>
+							<td>订单编号:</td>
+							<td><input class="easyui-textbox" type="text" id="orderId"
+								readonly="true"></input></td>
+							
+							<td>支付类型:</td>
+							<td><input class="easyui-textbox" type="text" name="payType"
+								id="payType" readonly="true"></input></td>
+<!-- 							<td>用户id:</td> -->
+<!-- 							<td><input class="easyui-textbox" type="text" name="userId" -->
+<!-- 								id="userId" readonly="true"></input></td> -->
+						</tr>
+						<tr>
+							<td>订单金额:</td>
+							<td><input class="easyui-textbox" type="text"
+								name="orderAmt" id="orderAmt" readonly="true"></input></td>
+							<td>订单状态:</td>
+							<td><input class="easyui-textbox" type="text"
+								name="orderStatus" id="orderStatus" readonly="true"></input></td>
+						</tr>
+<!-- 						<tr> -->
+<!-- 							<td>商品名称:</td> -->
+<!-- 							<td><input class="easyui-textbox" type="text" -->
+<!-- 								name="goodName" id="goodName" readonly="true"></input></td> -->
+<!-- 						</tr> -->
+						<tr>
+							<td>订单创建日期:</td>
+							<td><input class="easyui-textbox" type="text"
+								name="createDate" id="createDate" readonly="true"></input></td>
+
+<!-- 							<td>交易流水:</td> -->
+<!-- 							<td><input class="easyui-textbox" type="text" name="transNo" -->
+<!-- 								id="transNo" readonly="true"></input></td> -->
+						</tr>
+					</table>
+				</form>
+			<div id="orderDetailList" data-options="region:'center'"></div>
+	</div>
+
+	<!-- 添加物流信息 -->
+	<div id="addLogisticsDetails" class="easyui-dialog" title="添加物流信息"
+		style="width: 650px; height: 300px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<form id="logisticForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">订单id：</td>
+					<td><input type="text" id="orderId" name="orderId"
+						style="width: 320px;" maxlength="50" readonly="true"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">物流公司：</td>
+					<td><input id="logisticsName" name="logisticsName" class="easyui-combobox"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">物流单号：</td>
+					<td><input type="text" id="logisticsNo" name="logisticsNo"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+
+
+	<!-- 物流详细信息 -->
+	<div id="logisticsDetail" class="easyui-window" title="物流详细信息"
+		style="width: 550px; height: 200px"
+		data-options="iconCls:'icon-save',modal:true,maximizable:false,minimizable:false,resizable:false,scrollbarSize:true,fitColumns:false,collapsible:false">
+		<div id="logisticsDetails"></div>
+	</div>
+
+	<!-- 退货详情列表 -->
+	<div id="orderRefundDetailList" class="easyui-dialog" title="退货详情列表"
+		style="width: 650px; height: 300px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<form id="refundDetailForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">订单id：</td>
+					<td><input type="text" id="orderId" name="orderId"
+						style="width: 320px;" maxlength="50" readonly="true"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">订单金额：</td>
+					<td><input type="text" id="orderAmt" name="orderAmt"
+						style="width: 320px;" maxlength="50" readonly="true"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">实际退款金额：</td>
+					<td><input type="text" id="refundAmt" name="refundAmt"
+						style="width: 320px;" maxlength="50" readonly="true"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">物流厂商：</td>
+					<td><input type="text" id="logisticsName" name="logisticsName"
+						style="width: 320px;" maxlength="50" readonly="true"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right">物流单号：</td>
+					<td><input type="text" id="logisticsNo" name="logisticsNo"
+						style="width: 320px;" maxlength="50" readonly="true"><span
+						style="color: red;">*</span></td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right">退款原因：</td>
+					<td><input type="text" id="refundReason" name="refundReason"
+						style="width: 320px;" maxlength="50" readonly="true"><span
+						style="color: red;">*</span></td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right">退款时间：</td>
+					<td><input type="text" id="createDate" name="createDate"
+						style="width: 320px;" maxlength="50" readonly="true"><span
+						style="color: red;">*</span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 售后详情-->
+	<div id="serviceDetail" class="easyui-window" title="售后详情"
+		style="width: 850px; height: 300px"
+		data-options="iconCls:'icon-save',modal:true,maximizable:false,minimizable:false,resizable:false,scrollbarSize:true,fitColumns:false,collapsible:false,collapsible:false">
+			<div id="serviceDetails"></div>
+	</div>
+
+
+	<!-- 退货详情列表 -->
+	<div id="serviceDetailList" class="easyui-dialog" title="申请退货订单详情"
+		style="width: 650px; height: 400px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<h2 style="text-align: center;">申请退货订单详情</h2>
+		<form id="refundDetailForm" method="POST">
+			<table>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>
+					<font class="return" >退货原因：</font>
+					<font class="swap" >换货原因：</font>
+					</td>
+					<td width="30%"><input type="text" id="refundReason"
+						name="refundReason" style="width: 130px;" maxlength="50" disabled></input></td>
+
+					<td width="20%" align="right"><span style="color: red">*</span>
+					<font class="return">退款金额：</font>
+					<font class="swap">换款金额：</font>
+					</td>
+					<td width="30%"><input type="text" id="goodsPrice"
+						name="goodsPrice" style="width: 130px;" maxlength="50" disabled></input></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>
+					<font class="return">退货数量：</font>
+					<font class="swap">换货数量：</font>
+					
+					</td>
+					<td width="30%"><input type="text" id="goodsNum"
+						name="goodsNum" style="width: 130px;" maxlength="50" disabled></input></td>
+
+					<td width="20%" align="right"><span style="color: red">*</span>
+					<font class="return">退货状态：</font>
+					<font class="swap">换货状态：</font>
+					
+					</td>
+					<td width="30%"><input type="text" id="status" name="status"
+						style="width: 130px;" maxlength="50" disabled></input></td>
+				</tr>
+
+				<tr id="sLogisticsNameAndSLogisticsNo">
+					<td width="20%" align="right"><span style="color: red">*</span>客户发货物流公司：
+					</td>
+					<td width="30%"><input type="text" id="sLogisticsName"
+						name="sLogisticsName" style="width: 130px;" maxlength="50"
+						disabled></input></td>
+
+					<td width="20%" align="right"><span style="color: red">*</span>客户发货物流单号：
+					</td>
+					<td width="30%"><input type="text" id="sLogisticsNo"
+						name="sLogisticsNo" style="width: 130px;" maxlength="50" disabled></input></td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>商品图片：
+					</td>
+					<td colspan="3">
+						<div id="goodsUrlListDiv">
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td width="20%" align="right" valign="top">
+					<font class="return">退货说明：</font>
+					<font class="swap">换货说明：</font>
+					</td>
+					<td colspan=3>
+<!-- 					<input type="text" id="remark" name="remark" maxlength="50" disabled> -->
+						<textarea rows="8" cols="50" id="remark" name="remark" disabled></textarea>
+					</td>
+					
+				</tr>
+			</table>
+
+			<table style="width: 100%; text-align: center;">
+				<tr>
+					<td width="100%"><a href="javascript:void(0);"
+						class="easyui-linkbutton agree-btn"
+						data-options="iconCls:'icon-search'" style="display: none">同&nbsp;意</a>
+						<a href="javascript:void(0);"
+						class="easyui-linkbutton confirm-receipt-btn"
+						data-options="iconCls:'icon-search'" style="display: none">确&nbsp;认&nbsp;收&nbsp;货</a>
+						<a href="javascript:void(0);"
+						class="easyui-linkbutton send-goods-again-btn"
+						data-options="iconCls:'icon-search'" style="display: none">重&nbsp;新&nbsp;发&nbsp;货</a>
+						<a href="javascript:void(0);" class="easyui-linkbutton reject-btn"
+						data-options="iconCls:'icon-reset'" style="display: none">驳&nbsp;回</a>
+						<a href="javascript:void(0);" class="easyui-linkbutton close-btn"
+						data-options="iconCls:'icon-search'">关&nbsp;闭&nbsp;</a>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 驳回弹出框 -->
+	<div id="rejectDialog" class="easyui-dialog" title=""
+		style="width: 380px; height: 150px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<form id="rejectForm" method="POST">
+			<table>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>驳回原因：
+					</td>
+					<td width="80%"><textarea rows="3" cols="30" id="rejectReason"></textarea></td>
+				</tr>
+			</table>
+
+			<table style="width: 100%; text-align: center;">
+				<tr>
+					<td width="100%"><a href="javascript:void(0);"
+						class="easyui-linkbutton confirm-btn"
+						data-options="iconCls:'icon-search'">确&nbsp;认&nbsp;</a>&nbsp;<a
+						href="javascript:void(0);" class="easyui-linkbutton close-btn"
+						data-options="iconCls:'icon-search'">关&nbsp;闭&nbsp;</a>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+	<!-- 重新发货物流信息 -->
+	<div id="sendGoodsAgain" class="easyui-dialog" title="重新发货物流信息"
+		style="width: 650px; height: 300px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<form id="sendGoodsAgainForm" method="POST">
+			<table style="width: 100%;">
+				<tr>
+					<td width="20%" align="right">订单id：</td>
+					<td><input type="text" id="orderId" name="orderId"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">物流公司：</td>
+					<td><input type="text" id="rlogisticsName"
+						name="rlogisticsName" style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">物流单号：</td>
+					<td><input type="text" id="rlogisticsNo" name="rlogisticsNo"
+						style="width: 320px;" maxlength="50"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

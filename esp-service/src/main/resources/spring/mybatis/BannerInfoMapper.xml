@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- insert,select,selectByPK,count, delete, update,updateAll -->
+<mapper namespace="BannerInfoEntity">
+
+	<!-- app 首页banner加载 -->
+	<select id="loadIndexBanners" resultType="BannerInfoEntity" parameterType="String">
+	<![CDATA[
+		SELECT
+			ID id,
+			banner_name bannerName,
+			banner_img_url bannerImgUrl,
+			banner_category bannerCategory,
+			activity_url activityUrl,
+			banner_type bannerType,
+			banner_order bannerOrder,
+			create_user createUser,
+			create_date createDate,
+			update_user updateUser,
+			update_date updateDate
+		FROM
+			t_esp_banner_info
+		WHERE
+			banner_type = #{value} 
+		ORDER BY
+			banner_order ASC
+		LIMIT 0,5
+	]]>
+	</select>
+	<!-- 通过id查询banner信息 -->
+	<select id="selectById" resultType="BannerInfoEntity" parameterType="Integer">
+	<![CDATA[
+		SELECT
+			ID id,
+			banner_name bannerName,
+			banner_img_url bannerImgUrl,
+			banner_category bannerCategory,
+			activity_url activityUrl,
+			banner_type bannerType,
+			banner_order bannerOrder,
+			create_user createUser,
+			create_date createDate,
+			update_user updateUser,
+			update_date updateDate
+		FROM
+			t_esp_banner_info
+		WHERE
+			ID = #{value} 
+	]]>
+	</select>
+	
+	<!--  后台banner加载 -->
+	<select id="loadBanners" resultType="BannerInfoEntity" parameterType="Map">
+	<![CDATA[
+		SELECT
+			ID id,
+			banner_name bannerName,
+			banner_img_url bannerImgUrl,
+			banner_category bannerCategory,
+			banner_type bannerType,
+			activity_url activityUrl,
+			banner_order bannerOrder,
+			activity_url activityUrl,
+			create_user createUser,
+			create_date createDate,
+			update_user updateUser,
+			update_date updateDate
+		FROM
+			t_esp_banner_info
+	  	]]>	
+			<where>
+			   <if test="bannerType != null and bannerType != ''">
+			       AND banner_type = #{bannerType, jdbcType=VARCHAR} 
+			   </if>	
+			   <if test="bannerType == null or bannerType == ''">
+			       AND banner_type in ('index','sift')
+			   </if>
+			   <if test="bannerOrder !=null and bannerOrder !=''">
+			      AND banner_order =#{bannerOrder, jdbcType=BIGINT} 
+			   </if>
+			</where>
+	<![CDATA[
+		ORDER BY
+				update_date DESC
+	]]>
+	</select>
+
+	<!-- 后台banner加载 -->
+	<select id="loadBannersCount" resultType="Integer"
+		parameterType="Map">
+	<![CDATA[
+			SELECT COUNT(1) FROM t_esp_banner_info t
+		]]>
+		<where>
+			<if test="bannerType != null and bannerType != ''">
+				AND banner_type = #{bannerType, jdbcType=VARCHAR}
+			</if>
+			<if test="bannerType == null or bannerType == ''">
+				AND banner_type in ('index','sift')
+			</if>
+			<if test="bannerOrder !=null and bannerOrder !=''">
+				AND banner_order =#{bannerOrder, jdbcType=BIGINT}
+			</if>
+		</where>
+	</select>
+	
+		<!-- 插入 -->
+	<insert id="insert" parameterType="BannerInfoEntity" >
+	<![CDATA[
+		  insert into t_esp_banner_info
+            (
+             banner_name,
+             banner_img_url,
+             banner_category,
+             banner_type,
+             banner_order,
+             activity_url,
+             create_user,
+             create_date,
+             update_user,
+             update_date
+             )
+			values 
+			(
+			#{bannerName, jdbcType=VARCHAR},
+	        #{bannerImgUrl, jdbcType=VARCHAR},
+	        #{bannerCategory, jdbcType=VARCHAR},
+	        #{bannerType, jdbcType=VARCHAR},
+	        #{bannerOrder, jdbcType=BIGINT},
+	        #{activityUrl, jdbcType=VARCHAR},
+	        #{createUser, jdbcType=VARCHAR},
+             CURRENT_TIMESTAMP,
+	        #{updateUser, jdbcType=VARCHAR}, 
+	        CURRENT_TIMESTAMP
+	        );
+	]]>
+	</insert>
+		<!-- 删除 -->
+	<delete id="delete" parameterType="Long">
+	<![CDATA[
+		DELETE FROM t_esp_banner_info WHERE ID = #{value}
+	]]>
+	</delete>
+</mapper> 

@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderInfoEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+			<if test="orderId != null and orderId != ''">
+				and order_Id = #{orderId, jdbcType=VARCHAR}
+			</if>
+			<if test="userId != null">
+				and user_id=#{userId, jdbcType=BIGINT}
+			</if>
+			<if test="payType != null and payType != ''">
+				and payType=#{payType, jdbcType=VARCHAR}
+			</if>
+			<if test="payStatus != null and payStatus != ''">
+				and paystatus=#{payStatus, jdbcType=VARCHAR}
+			</if>
+			<if test="mainOrderId != null and mainOrderId != ''">
+				and main_order_id=#{mainOrderId, jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != ''">
+				and orderstatus=#{status, jdbcType=VARCHAR}
+			</if>
+	</sql>
+
+	<select id="select" parameterType="OrderInfoEntity" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		]]>
+		<where>
+			<![CDATA[
+					orderstatus !='D08'
+				 ]]>
+ 			<include refid="QueryConditionSql" />
+		</where>
+    <![CDATA[
+        ORDER BY create_date DESC
+    ]]>
+    </select>
+
+	<select id="selectByMainOrderId" parameterType="String" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		where main_order_id=#{value}
+		]]>
+	</select>
+	
+	<select id="selectByOrderIdList" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		where 1=1
+		]]>
+		<if test="orderIdArray != null">
+			AND order_id in
+			<foreach collection="orderIdArray" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<![CDATA[
+		ORDER BY update_date DESC
+		]]>
+	</select>
+
+	<select id="queryOrderInfoList" parameterType="java.util.HashMap"
+		resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+			WHERE 1=1
+		]]>
+		<if test="userId != null and userId != ''">
+			AND user_id=#{userId}
+		</if>
+		<if test="statusArray != null">
+			AND orderstatus in
+			<foreach collection="statusArray" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<![CDATA[
+		ORDER BY update_date DESC
+		]]>
+	</select>
+	
+	
+	<select id="selectByOrderIdAndUserId" parameterType="HashMap" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+			WHERE 1=1
+		]]>
+		<if test="userId != null">
+			AND user_id=#{userId}
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND order_id=#{orderId}
+		</if>
+		<![CDATA[
+		ORDER BY update_date DESC
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="OrderInfoEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into t_esp_order_info
+            (user_id,
+             order_amt,
+             order_id,
+             payType,
+             goods_num,
+             paystatus,
+             orderstatus,
+             remark,
+             merchant_code,
+             logistics_name,
+             logistics_no,
+             extend_acceptgoodsNum,
+             province,
+             city,
+             district,
+             address,
+             postcode,
+             name,
+             telephone,
+             addressId,
+             create_date,
+             update_date
+            )
+			values (
+			#{userId, jdbcType=BIGINT},
+	        #{orderAmt, jdbcType=DECIMAL},
+	        #{orderId, jdbcType=VARCHAR},
+	        #{payType, jdbcType=VARCHAR},
+	        #{goodsNum, jdbcType=INTEGER},
+	        #{payStatus, jdbcType=VARCHAR},
+	        #{status, jdbcType=VARCHAR},
+	        #{remark, jdbcType=VARCHAR},
+			#{merchantCode, jdbcType=VARCHAR},
+	        #{logisticsName, jdbcType=VARCHAR},
+	        #{logisticsNo, jdbcType=VARCHAR},
+	        #{extendAcceptGoodsNum, jdbcType=INTEGER},
+	       	#{province, jdbcType=VARCHAR},
+	        #{city, jdbcType=VARCHAR},
+            #{district, jdbcType=VARCHAR},
+	        #{address, jdbcType=VARCHAR},
+	        #{postcode, jdbcType=VARCHAR},
+	        #{name, jdbcType=VARCHAR},
+	        #{telephone, jdbcType=VARCHAR},
+	        #{addressId, jdbcType=BIGINT},
+	        CURRENT_TIMESTAMP,
+	        CURRENT_TIMESTAMP);
+	</insert>
+	
+	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			orderstatus = #{status, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+
+	<update id="updateByMainOrderId" parameterType="OrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_info 
+		]]>
+		<set>
+        <![CDATA[
+            UPDATE_DATE = CURRENT_TIMESTAMP,
+        ]]>
+            <if test="status != null and status != ''">
+                orderstatus = #{status, jdbcType=VARCHAR},
+            </if>
+            <if test="payStatus != null and payStatus != ''">
+                paystatus = #{payStatus, jdbcType=VARCHAR},
+            </if>
+		</set>
+	<![CDATA[
+		WHERE main_order_id =  #{mainOrderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<!-- 更新 -->
+    <update id="update" parameterType="OrderInfoEntity">
+    <![CDATA[
+        UPDATE t_esp_order_info
+    ]]>
+        <set>
+	        <![CDATA[
+	            UPDATE_DATE = CURRENT_TIMESTAMP,
+	        ]]>
+            <if test="status != null and status != ''">
+                orderstatus = #{status, jdbcType=VARCHAR},
+            </if>
+           	<if test="payStatus != null and payStatus != ''">
+                paystatus = #{payStatus, jdbcType=VARCHAR},
+            </if>
+           	<if test="payType != null and payType != ''">
+                payType = #{payType, jdbcType=VARCHAR},
+            </if>
+            <if test="lastAcceptGoodsDate != null">
+                last_acceptgoodsdate = #{lastAcceptGoodsDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="extendAcceptGoodsNum != null">
+                extend_acceptgoodsNum = #{extendAcceptGoodsNum, jdbcType=INTEGER},
+            </if>
+            <if test="acceptGoodsDate != null">
+                acceptgoodsdate = #{acceptGoodsDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="acceptGoodsType != null and acceptGoodsType != ''">
+                acceptgoodstype = #{acceptGoodsType, jdbcType=VARCHAR},
+            </if>
+            
+            <if test="province != null and province !='' ">
+                province = #{province, jdbcType=VARCHAR},
+            </if>
+            <if test="city != null and city !='' ">
+                city = #{city, jdbcType=VARCHAR},
+            </if>
+            <if test="district != null and district !='' ">
+                district = #{district, jdbcType=VARCHAR},
+            </if>
+            <if test="address != null and address !='' ">
+                address = #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name !='' ">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null and telephone !='' ">
+                telephone = #{telephone, jdbcType=VARCHAR},
+            </if>
+            <if test="addressId != null">
+                addressId = #{addressId, jdbcType=BIGINT},
+            </if>
+            <if test="logisticsId != null and logisticsId!=''">
+                logistics_id = #{logisticsId, jdbcType=VARCHAR},
+            </if>
+			<if test="logisticsSignDate != null ">
+				logistics_sign_time = #{logisticsSignDate, jdbcType=TIMESTAMP},
+			</if>
+			<if test="mainOrderId != null ">
+                main_order_id = #{mainOrderId, jdbcType=VARCHAR},
+            </if>
+        </set>
+        <![CDATA[
+        WHERE ID = #{id, jdbcType=BIGINT} 
+        ]]>
+    </update>
+
+
+	<!-- 查询 用户 待付款、待发货、待收货 子订单数量 -->
+	<select id="getOrderNum" parameterType="java.lang.Long"
+		resultType="com.apass.esp.domain.dto.aftersale.IdNum">
+    <![CDATA[
+        SELECT  COUNT(ORDER_ID)     num, 
+                ORDERSTATUS         id 
+        FROM    t_esp_order_info 
+        WHERE   USER_ID = #{value} 
+        AND     ORDERSTATUS IN ('D00','D02','D03')
+        GROUP BY ORDERSTATUS
+        ]]>
+	</select>
+	
+	<!-- 加载待付款 -->
+	<select id="loadNoPayList" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D00'
+		order by create_date asc
+		LIMIT 0,1000
+		]]>
+	</select>
+	
+	<!-- 查询所有待签收订单 -->
+	<select id="loadNoSignOrders" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D03'
+		]]>
+	</select>
+	<!-- 根据物流唯一标识 -->
+	<select id="loadBylogisticsId" parameterType="String" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate
+		FROM
+			t_esp_order_info
+		where logistics_id=#{value}
+		]]>
+	</select>
+	
+	<!-- 查询售后完成且超过1天的订单 -->
+	<select id="loadCompleteOrderGtThreeDay" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			order_id IN (
+				SELECT
+					order_id
+				FROM
+					t_esp_refund_info
+				WHERE
+					STATUS = 'rs05'
+				AND DATE_ADD(
+					completion_time,
+					INTERVAL 1 DAY
+				) < NOW()
+			)
+		AND orderstatus = 'D05'
+		]]>
+	</select>
+
+	<!--查询最新订单信息-->
+	<select id="queryLatestSuccessOrderInfo" parameterType="java.lang.Long"
+			resultType="OrderInfoEntity">
+		<![CDATA[
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+			WHERE payType='T02' and payStatus = 'P02' AND user_id = #{value} ORDER BY createDate DESC limit 1
+		]]>
+	</select>
+	
+</mapper>

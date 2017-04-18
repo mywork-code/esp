@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="RefundInfoEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+		    <if test="id != null">
+                and refund.id = #{id}
+            </if>
+			<if test="orderId != null">
+				and refund.order_id = #{orderId}
+			</if>
+			<if test="rlogisticsNo != null and rlogisticsNo != ''">
+                and refund.r_logistics_no = #{rlogisticsNo}
+            </if>
+            <if test="rlogisticsId != null and rlogisticsId != ''">
+                and refund.r_logistics_id = #{rlogisticsId}
+            </if>
+		</where>
+	</sql>
+
+	<select id="queryRefundInfo" parameterType="Map"
+		resultType="RefundInfoEntity">
+		<![CDATA[
+			select  
+		        refund.id                   id,
+		        refund.order_id             orderId,
+		        refund.order_amt            orderAmt,
+		        refund.refund_amt           refundAmt,
+		        refund.s_logistics_name     slogisticsName,
+		        refund.s_logistics_no       slogisticsNo,
+		        refund.r_logistics_id       rlogisticsId,
+		        refund.r_logistics_name     rlogisticsName,
+		        refund.r_logistics_no       rlogisticsNo,
+		        refund.approval_user        approvalUser,
+		        refund.approval_comments    approvalComments,
+		        refund.status               status,
+		        refund.refund_reason        refundReason,
+		        refund.reject_reason        rejectReason,
+		        refund.remark               remark,
+		        refund.create_date          createDate,
+		        refund.update_date          updateDate,
+		        refund.refund_type          refundType,
+		        refund.goods_url            goodsUrl,
+		        refund.is_agree             isAgree,
+		        refund.completion_time      completionTime
+	        from t_esp_refund_info refund 
+		]]>
+		<include refid="QueryConditionSql" />
+	</select>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="RefundInfoEntity"
+		useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_esp_refund_info(
+            ORDER_ID,
+            ORDER_AMT,
+            REFUND_AMT,
+            REFUND_TYPE,
+            STATUS,
+            REFUND_REASON,
+            REMARK,
+            GOODS_URL,
+            CREATE_DATE,
+            UPDATE_DATE
+        )
+        VALUES
+        (
+            #{orderId, jdbcType=BIGINT},
+            #{orderAmt, jdbcType=DECIMAL}, 
+            #{refundAmt, jdbcType=DECIMAL},
+            #{refundType, jdbcType=VARCHAR},
+            #{status, jdbcType=VARCHAR},
+            #{refundReason, jdbcType=VARCHAR},
+            #{remark, jdbcType=VARCHAR},
+            #{goodsUrl, jdbcType=VARCHAR},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+        )
+    ]]>
+	</insert>
+
+	<!-- 保存物流厂商、单号信息 -->
+	<update id="updateLogisticsInfo" parameterType="RefundInfoEntity">
+        <![CDATA[ 
+            UPDATE T_ESP_REFUND_INFO 
+                SET UPDATE_DATE     = CURRENT_TIMESTAMP,
+                    S_LOGISTICS_NAME   = #{slogisticsName, jdbcType=VARCHAR},
+                    S_LOGISTICS_NO     = #{slogisticsNo, jdbcType=VARCHAR},
+                    STATUS             = #{status, jdbcType=VARCHAR}
+                WHERE ID  = #{id, jdbcType=BIGINT} 
+        ]]>
+	</update>
+
+	<!--更新售后状态 -->
+	<update id="updateRefundStatusByOrderId" parameterType="Map">
+		UPDATE
+		  T_ESP_REFUND_INFO
+		SET STATUS          =     #{status},
+		    UPDATE_DATE     =     CURRENT_TIMESTAMP
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<!--售后完成 -->
+	<update id="updateRefundStatusAndCtimeByOrderId" parameterType="Map">
+		UPDATE
+		T_ESP_REFUND_INFO
+		SET STATUS = #{status},completion_time = now() 
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<!--同意售后请求  -->
+	<update id="agreeRequestByOrderId" parameterType="Map">
+		update
+		t_esp_refund_info
+		set is_agree=#{is_agree},approval_user=#{approvalUser},
+		approval_comments=#{approvalComments}
+		where order_id = #{orderId}
+	</update>
+
+	<!--驳回退货请求 ,状态变更为 售后失败 -->
+	<update id="rejectRequestByOrderId" parameterType="Map">
+		update
+		t_esp_refund_info
+		set status = #{status},reject_reason=#{rejectReason},
+		approval_user=#{approvalUser},approval_comments=#{approvalComments}
+		where order_id = #{orderId}
+	</update>
+
+	<!--商家重新发货 -->
+	<update id="sendGoodsAgain" parameterType="Map">
+		UPDATE
+		T_ESP_REFUND_INFO
+		SET STATUS = #{status},
+		R_LOGISTICS_NAME=#{rlogisticsName},R_LOGISTICS_NO=#{rlogisticsNo}
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<!-- 查询售后完成,订单状态处于售后处理中的数据 -->
+	<select id="queryReturningOrderInfo" parameterType="Map"
+        resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
+        <![CDATA[
+            SELECT
+			    t1.id                    refundId,
+			    t1.status                refundStatus,
+			    t1.completion_time       completionTime,
+			    t1.order_id              orderId,
+			    t2.orderstatus           orderStatus
+			FROM
+			    t_esp_refund_info t1,
+			    t_esp_order_info t2
+			WHERE
+			    t2.orderstatus = 'D05'
+			AND t1.order_id = t2.order_id
+			AND t1.status = 'RS05'
+			AND t1.completion_time BETWEEN #{startDate} AND #{endDate}          
+        ]]>
+    </select>
+    
+    <!-- 查询 商家重新发货物流显示已签收的数据 -->
+    <select id="queryReceiptedInfo" parameterType="Map" resultType="RefundInfoEntity">
+        <![CDATA[
+            SELECT 
+            id id,
+            order_id orderId
+            FROM T_ESP_REFUND_INFO 
+            WHERE refund_type = '1' 
+            AND status = 'RS04' 
+            AND completion_time BETWEEN #{startDate} AND #{endDate}    
+        ]]>
+    </select>
+    
+    <!--更新换货商户发货物流唯一标识 -->
+    <update id="updateRlogisticsIdbyId" parameterType="Map">
+        UPDATE
+        T_ESP_REFUND_INFO 
+        SET R_LOGISTICS_ID = #{rlogisticsId}
+        WHERE ID = #{refundId}
+    </update>
+
+</mapper>

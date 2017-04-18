@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- Console -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- INFO -->
+	<appender name="InfoRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/var/logs/espApp.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>/var/logs/espApp.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<!-- project default level -->
+	<logger name="com.listening" level="INFO" />
+	<logger name="org.springframework" level="INFO"/>
+	<!-- spring framework log level -->
+	<logger name="org.springframework.web" level="INFO"/>
+	<logger name="org.springframework.boot" level="INFO"/>
+	<logger name="org.springframework.context" level="INFO"/>
+
+	<root level="ERROR">
+		<appender-ref ref="console" />
+		<appender-ref ref="InfoRollingFile" />
+	</root>
+</configuration>

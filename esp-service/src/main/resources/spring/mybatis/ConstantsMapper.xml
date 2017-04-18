@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- insert,select,selectByPK,count, delete, update,updateAll -->
+<mapper namespace="ConstantEntity">
+	<!-- 查询条件 -->
+	<sql id="QuerDictSql">
+		<where>
+			<if test="dataNo != null and dataNo != ''">
+				AND t.DATA_NO = #{dataNo, jdbcType=VARCHAR}
+			</if>
+			<if test="dataName != null and dataName != ''">
+				AND t.DATA_NAME = #{dataName, jdbcType=VARCHAR}
+			</if>
+			<if test="dataTypeNo != null and dataTypeNo != ''">
+				AND t.DATA_TYPE_NO = #{dataTypeNo}
+			</if>
+			<if test="dataTypeName != null and dataTypeName != ''">
+				AND t.DATA_TYPE_NAME = #{dataTypeName, jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != ''">
+				AND t.status = #{status, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="select" parameterType="ConstantEntity" resultType="ConstantEntity">
+	<![CDATA[
+		SELECT
+			DATA_TYPE_NO dataTypeNo,
+			DATA_TYPE_NAME dataTypeName,
+			DATA_NO dataNo,
+			DATA_NAME dataName,
+			STATUS status
+		FROM
+			t_esp_data_dic 
+	]]>
+	<include refid="QuerDictSql"></include>
+	<![CDATA[
+		ORDER BY DATA_TYPE_NO 
+	]]>
+	</select>
+	
+	<select id="selectByDataNoAndDataTypeNo" parameterType="ConstantEntity" resultType="ConstantEntity">
+	<![CDATA[
+		SELECT
+			DATA_TYPE_NO dataTypeNo,
+			DATA_TYPE_NAME dataTypeName,
+			DATA_NO dataNo,
+			DATA_NAME dataName,
+			STATUS status,
+			remark remark
+		FROM
+			t_esp_data_dic 
+		WHERE
+			DATA_TYPE_NO=#{dataTypeNo}
+			and DATA_NO=#{dataNo}
+	]]>
+	</select>
+</mapper> 

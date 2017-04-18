@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SystemParamEntity">
+
+	<!-- 查询系统参数 -->
+	<select id="querySystemParamInfo" parameterType="Map"
+		resultType="SystemParamEntity">
+		<![CDATA[
+		SELECT
+		id id,
+		merchant_Settle_rate merchantSettleRate,
+		goods_price_rate goodsPriceRate,
+		create_user createUser,
+		create_date createDate,
+		update_user updateUser,
+		update_date updateDate
+		FROM
+		t_esp_system_param_info 
+		order by update_date desc
+		]]>
+	</select>
+
+
+	<!-- 修改系统参数 -->
+	<update id="updateSystemParamInfo">
+		update t_esp_system_param_info set
+		merchant_Settle_rate=#{merchantSettleRate},goods_price_rate=#{goodsPriceRate},
+		update_user=#{userName},update_date=#{systemtime}
+		where id=#{id}
+	</update>
+</mapper>

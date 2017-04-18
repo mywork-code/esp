@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ServiceProcessEntity">
+	<!-- 查询条件 -->
+    <sql id="QueryConditionSql">
+        <where>
+            <if test="id != null">
+                AND ID = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="refundId != null">
+                AND REFUND_ID = #{refundId, jdbcType=BIGINT}
+            </if>
+            
+             <if test="nodeName != null">
+                AND NODE_NAME = #{nodeName, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询&过滤查询 -->
+    <select id="select" parameterType="ServiceProcessEntity" resultType="ServiceProcessEntity">
+        <![CDATA[
+            SELECT  ID                           id,
+                    REFUND_ID                    refundId,
+                    NODE_NAME                    nodeName,
+                    APPROVAL_COMMENTS            approvalComments,
+                    CREATE_DATE                 createDate,
+                    UPDATE_DATE                 updateDate
+            FROM T_ESP_SERVICE_PROCESS_INFO
+        ]]>
+            <include refid="QueryConditionSql" />
+        <![CDATA[
+            ORDER BY UPDATE_DATE DESC
+        ]]>
+    </select>
+    
+    <!-- 插入 -->
+    <insert id="insert" parameterType="ServiceProcessEntity" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+            INSERT INTO T_ESP_SERVICE_PROCESS_INFO(
+                REFUND_ID,
+                NODE_NAME,
+                APPROVAL_COMMENTS,
+                CREATE_DATE,
+                UPDATE_DATE
+            )
+            VALUES
+            (
+                #{refundId, jdbcType=BIGINT},
+                #{nodeName, jdbcType=VARCHAR}, 
+                #{approvalComments, jdbcType=VARCHAR},
+                CURRENT_TIMESTAMP,
+                CURRENT_TIMESTAMP
+            )
+        ]]>
+    </insert>
+
+    <!-- 查询售后流程表 -->
+	<select id="queryServiceProcessDetailInfoByParam" parameterType="Map"
+		resultType="ServiceProcessEntity">
+		<![CDATA[
+        select 
+        refundInfo.id refundId,
+        refundInfo.r_logistics_name rLogisticsName,
+        refundInfo.r_logistics_no rLogisticsNo,
+        refundInfo.s_logistics_name sLogisticsName,
+        refundInfo.s_logistics_name sLogisticsNameDes,
+        refundInfo.s_logistics_no sLogisticsNo,
+        refundInfo.order_id orderId,
+        refundInfo.refund_type refundType,
+        refundInfo.refund_reason refundReason,
+        refundInfo.refund_reason refundReasonDes,
+        refundInfo.status status,
+        refundInfo.status statusDesc,
+        refundInfo.is_agree isAgree,
+        refundInfo.remark remark,
+        refundInfo.goods_url goodsUrl,
+        refundInfo.create_date createDate,
+        refundInfo.approval_user approvalUser,
+        refundInfo.approval_comments approvalComments,
+        detailInfo.goods_num goodsNum,
+        detailInfo.goods_price goodsPrice
+        from  t_esp_refund_info  refundInfo  left join 
+        t_esp_refund_detail_info detailInfo on detailInfo.order_id=refundInfo.order_id
+		]]>
+		<where>
+			refundInfo.order_id=#{orderId}
+		</where>
+	    <![CDATA[
+		   ORDER BY refundInfo.create_date DESC
+		]]>
+	</select>
+
+	<!-- 修改售后流程表 -->
+	<select id="updateServiceProcessDetailInfoByParam"
+		parameterType="Map" resultType="ServiceProcessEntity">
+		<![CDATA[
+         update t_esp_service_process_info set approval_comments=#{approvalComments} 
+		]]>
+		<where>
+			refund_id=#{refundId} and node_name=#{nodeName}
+		</where>
+	</select>
+
+	<!-- 记录总数 -->
+	<select id="queryServiceProcessDetailInfoByParamCount"
+		parameterType="Map" resultType="Integer">
+	  	<![CDATA[
+        select 
+        count(*)
+        t_esp_service_process_info service left join t_esp_refund_info 
+        refundInfo on service.refund_id=refundInfo.id left join   
+        t_esp_refund_detail_info detailInfo on detailInfo.order_id=refundInfo.order_id
+		]]>
+		<where>
+			refundInfo.order_id=#{orderId})
+		</where>
+	</select>
+</mapper>

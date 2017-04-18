@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetReturnMessageDatas">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="businessID" type="s:int"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetReturnMessageDatasResponse">
+        <s:complexType/>
+      </s:element>
+      <s:element name="SendMessageList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lstSendMessageData" type="tns:ArrayOfSendMessageData"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfSendMessageData">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SendMessageData" nillable="true" type="tns:SendMessageData"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SendMessageData">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MessageTemplateId" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ReBackCall" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SendMobile" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SmsSource" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendMessageListResponse">
+        <s:complexType/>
+      </s:element>
+      <s:element name="SendMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="MessageTemplateId" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="ReBackCall" type="s:string"/>
+            <s:element minOccurs="1" maxOccurs="1" name="UserId" type="s:int"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMessageResponse">
+        <s:complexType/>
+      </s:element>
+      <s:element name="SendMessageAusXin">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="MessageTemplateId" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="ReBackCall" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="LoginName" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Mobile" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMessageAusXinResponse">
+        <s:complexType/>
+      </s:element>
+      <s:element name="SendListSmsMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lstSmsMessageData" type="tns:ArrayOfSmsMessageData"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfSmsMessageData">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SmsMessageData" nillable="true" type="tns:SmsMessageData"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SmsMessageData">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="OperationUserID" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="MessageContent" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Mobile" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SignStr" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SmsSource" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SmsTypeName" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="CustomerType" type="s:unsignedByte"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Parameters" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Remark" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="BeginSendtime" nillable="true" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="EndSendtime" nillable="true" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="SendStyle" type="s:int"/>
+          <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendListSmsMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendListSmsMessageResult" type="s:boolean"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSmsMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="messageData" type="tns:SmsMessageData"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSmsMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendSmsMessageResult" type="s:boolean"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MobileSendSms">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="messageData" type="tns:SmsMessageData"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MobileSendSmsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MobileSendSmsResult" type="tns:MobileRequestResult"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="MobileRequestResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="State" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Context" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Result"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendSmsCloudCommunication">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="smsJsonString" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendSmsCloudCommunicationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendSmsCloudCommunicationResult" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendListSmsMessageForTime">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lstSmsMessageData" type="tns:ArrayOfSmsMessageData"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendListSmsMessageForTimeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SendListSmsMessageForTimeResult" type="s:boolean"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMessageForStaticContent">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+            <s:element minOccurs="0" maxOccurs="1" name="MessageTemplateId" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SendMessageResult">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Result" type="s:boolean"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ResultDesc" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendMessageForStaticContentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendMessageForStaticContentResult" type="tns:SendMessageResult"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendMessageForDynamicParams">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lstSendMessageData4Dynamic" type="tns:ArrayOfSendMessageData4Dynamic"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfSendMessageData4Dynamic">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SendMessageData4Dynamic" nillable="true" type="tns:SendMessageData4Dynamic"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SendMessageData4Dynamic">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="BusinessId" type="s:int"/>
+          <s:element minOccurs="1" maxOccurs="1" name="OperatorId" type="s:int"/>
+          <s:element minOccurs="1" maxOccurs="1" name="TemplateId" type="s:int"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SmsSource" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="JsonParams" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="SmsType" type="s:int"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SendMessageForDynamicParamsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendMessageForDynamicParamsResult" type="tns:SendMessageResult"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string"/>
+      <s:element name="SendMessageResult" nillable="true" type="tns:SendMessageResult"/>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetReturnMessageDatasSoapIn">
+    <wsdl:part name="parameters" element="tns:GetReturnMessageDatas"/>
+  </wsdl:message>
+  <wsdl:message name="GetReturnMessageDatasSoapOut">
+    <wsdl:part name="parameters" element="tns:GetReturnMessageDatasResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageListSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessageList"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageListSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageListResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessage"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageAusXinSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessageAusXin"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageAusXinSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageAusXinResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendListSmsMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:SendListSmsMessage"/>
+  </wsdl:message>
+  <wsdl:message name="SendListSmsMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:SendListSmsMessageResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:SendSmsMessage"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:SendSmsMessageResponse"/>
+  </wsdl:message>
+  <wsdl:message name="MobileSendSmsSoapIn">
+    <wsdl:part name="parameters" element="tns:MobileSendSms"/>
+  </wsdl:message>
+  <wsdl:message name="MobileSendSmsSoapOut">
+    <wsdl:part name="parameters" element="tns:MobileSendSmsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsCloudCommunicationSoapIn">
+    <wsdl:part name="parameters" element="tns:SendSmsCloudCommunication"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsCloudCommunicationSoapOut">
+    <wsdl:part name="parameters" element="tns:SendSmsCloudCommunicationResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendListSmsMessageForTimeSoapIn">
+    <wsdl:part name="parameters" element="tns:SendListSmsMessageForTime"/>
+  </wsdl:message>
+  <wsdl:message name="SendListSmsMessageForTimeSoapOut">
+    <wsdl:part name="parameters" element="tns:SendListSmsMessageForTimeResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessageForStaticContent"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageForStaticContentResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForDynamicParamsSoapIn">
+    <wsdl:part name="parameters" element="tns:SendMessageForDynamicParams"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForDynamicParamsSoapOut">
+    <wsdl:part name="parameters" element="tns:SendMessageForDynamicParamsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetReturnMessageDatasHttpGetIn">
+    <wsdl:part name="businessID" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="GetReturnMessageDatasHttpGetOut"/>
+  <wsdl:message name="SendMessageHttpGetIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+    <wsdl:part name="ReBackCall" type="s:string"/>
+    <wsdl:part name="UserId" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageHttpGetOut"/>
+  <wsdl:message name="SendMessageAusXinHttpGetIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+    <wsdl:part name="ReBackCall" type="s:string"/>
+    <wsdl:part name="LoginName" type="s:string"/>
+    <wsdl:part name="Mobile" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageAusXinHttpGetOut"/>
+  <wsdl:message name="SendSmsCloudCommunicationHttpGetIn">
+    <wsdl:part name="smsJsonString" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsCloudCommunicationHttpGetOut">
+    <wsdl:part name="Body" element="tns:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentHttpGetIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentHttpGetOut">
+    <wsdl:part name="Body" element="tns:SendMessageResult"/>
+  </wsdl:message>
+  <wsdl:message name="GetReturnMessageDatasHttpPostIn">
+    <wsdl:part name="businessID" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="GetReturnMessageDatasHttpPostOut"/>
+  <wsdl:message name="SendMessageHttpPostIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+    <wsdl:part name="ReBackCall" type="s:string"/>
+    <wsdl:part name="UserId" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageHttpPostOut"/>
+  <wsdl:message name="SendMessageAusXinHttpPostIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+    <wsdl:part name="ReBackCall" type="s:string"/>
+    <wsdl:part name="LoginName" type="s:string"/>
+    <wsdl:part name="Mobile" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageAusXinHttpPostOut"/>
+  <wsdl:message name="SendSmsCloudCommunicationHttpPostIn">
+    <wsdl:part name="smsJsonString" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendSmsCloudCommunicationHttpPostOut">
+    <wsdl:part name="Body" element="tns:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentHttpPostIn">
+    <wsdl:part name="BusinessId" type="s:string"/>
+    <wsdl:part name="MessageTemplateId" type="s:string"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageForStaticContentHttpPostOut">
+    <wsdl:part name="Body" element="tns:SendMessageResult"/>
+  </wsdl:message>
+  <wsdl:portType name="SendMessageServiceSoap">
+    <wsdl:operation name="GetReturnMessageDatas">
+      <wsdl:input message="tns:GetReturnMessageDatasSoapIn"/>
+      <wsdl:output message="tns:GetReturnMessageDatasSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageList">
+      <wsdl:input message="tns:SendMessageListSoapIn"/>
+      <wsdl:output message="tns:SendMessageListSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <wsdl:input message="tns:SendMessageSoapIn"/>
+      <wsdl:output message="tns:SendMessageSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <wsdl:input message="tns:SendMessageAusXinSoapIn"/>
+      <wsdl:output message="tns:SendMessageAusXinSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessage">
+      <wsdl:input message="tns:SendListSmsMessageSoapIn"/>
+      <wsdl:output message="tns:SendListSmsMessageSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsMessage">
+      <wsdl:input message="tns:SendSmsMessageSoapIn"/>
+      <wsdl:output message="tns:SendSmsMessageSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="MobileSendSms">
+      <wsdl:input message="tns:MobileSendSmsSoapIn"/>
+      <wsdl:output message="tns:MobileSendSmsSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <wsdl:input message="tns:SendSmsCloudCommunicationSoapIn"/>
+      <wsdl:output message="tns:SendSmsCloudCommunicationSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessageForTime">
+      <wsdl:input message="tns:SendListSmsMessageForTimeSoapIn"/>
+      <wsdl:output message="tns:SendListSmsMessageForTimeSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <wsdl:input message="tns:SendMessageForStaticContentSoapIn"/>
+      <wsdl:output message="tns:SendMessageForStaticContentSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForDynamicParams">
+      <wsdl:input message="tns:SendMessageForDynamicParamsSoapIn"/>
+      <wsdl:output message="tns:SendMessageForDynamicParamsSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SendMessageServiceHttpGet">
+    <wsdl:operation name="GetReturnMessageDatas">
+      <wsdl:input message="tns:GetReturnMessageDatasHttpGetIn"/>
+      <wsdl:output message="tns:GetReturnMessageDatasHttpGetOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <wsdl:input message="tns:SendMessageHttpGetIn"/>
+      <wsdl:output message="tns:SendMessageHttpGetOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <wsdl:input message="tns:SendMessageAusXinHttpGetIn"/>
+      <wsdl:output message="tns:SendMessageAusXinHttpGetOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <wsdl:input message="tns:SendSmsCloudCommunicationHttpGetIn"/>
+      <wsdl:output message="tns:SendSmsCloudCommunicationHttpGetOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <wsdl:input message="tns:SendMessageForStaticContentHttpGetIn"/>
+      <wsdl:output message="tns:SendMessageForStaticContentHttpGetOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SendMessageServiceHttpPost">
+    <wsdl:operation name="GetReturnMessageDatas">
+      <wsdl:input message="tns:GetReturnMessageDatasHttpPostIn"/>
+      <wsdl:output message="tns:GetReturnMessageDatasHttpPostOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <wsdl:input message="tns:SendMessageHttpPostIn"/>
+      <wsdl:output message="tns:SendMessageHttpPostOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <wsdl:input message="tns:SendMessageAusXinHttpPostIn"/>
+      <wsdl:output message="tns:SendMessageAusXinHttpPostOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <wsdl:input message="tns:SendSmsCloudCommunicationHttpPostIn"/>
+      <wsdl:output message="tns:SendSmsCloudCommunicationHttpPostOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <wsdl:input message="tns:SendMessageForStaticContentHttpPostIn"/>
+      <wsdl:output message="tns:SendMessageForStaticContentHttpPostOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SendMessageServiceSoap" type="tns:SendMessageServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetReturnMessageDatas">
+      <soap:operation soapAction="http://tempuri.org/GetReturnMessageDatas" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageList">
+      <soap:operation soapAction="http://tempuri.org/SendMessageList" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <soap:operation soapAction="http://tempuri.org/SendMessage" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <soap:operation soapAction="http://tempuri.org/SendMessageAusXin" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessage">
+      <soap:operation soapAction="http://tempuri.org/SendListSmsMessage" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsMessage">
+      <soap:operation soapAction="http://tempuri.org/SendSmsMessage" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MobileSendSms">
+      <soap:operation soapAction="http://tempuri.org/MobileSendSms" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <soap:operation soapAction="http://tempuri.org/SendSmsCloudCommunication" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessageForTime">
+      <soap:operation soapAction="http://tempuri.org/SendListSmsMessageForTime" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <soap:operation soapAction="http://tempuri.org/SendMessageForStaticContent" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForDynamicParams">
+      <soap:operation soapAction="http://tempuri.org/SendMessageForDynamicParams" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SendMessageServiceSoap12" type="tns:SendMessageServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetReturnMessageDatas">
+      <soap12:operation soapAction="http://tempuri.org/GetReturnMessageDatas" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageList">
+      <soap12:operation soapAction="http://tempuri.org/SendMessageList" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <soap12:operation soapAction="http://tempuri.org/SendMessage" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <soap12:operation soapAction="http://tempuri.org/SendMessageAusXin" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessage">
+      <soap12:operation soapAction="http://tempuri.org/SendListSmsMessage" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsMessage">
+      <soap12:operation soapAction="http://tempuri.org/SendSmsMessage" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MobileSendSms">
+      <soap12:operation soapAction="http://tempuri.org/MobileSendSms" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <soap12:operation soapAction="http://tempuri.org/SendSmsCloudCommunication" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendListSmsMessageForTime">
+      <soap12:operation soapAction="http://tempuri.org/SendListSmsMessageForTime" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <soap12:operation soapAction="http://tempuri.org/SendMessageForStaticContent" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForDynamicParams">
+      <soap12:operation soapAction="http://tempuri.org/SendMessageForDynamicParams" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SendMessageServiceHttpGet" type="tns:SendMessageServiceHttpGet">
+    <http:binding verb="GET"/>
+    <wsdl:operation name="GetReturnMessageDatas">
+      <http:operation location="/GetReturnMessageDatas"/>
+      <wsdl:input>
+        <http:urlEncoded/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <http:operation location="/SendMessage"/>
+      <wsdl:input>
+        <http:urlEncoded/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <http:operation location="/SendMessageAusXin"/>
+      <wsdl:input>
+        <http:urlEncoded/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <http:operation location="/SendSmsCloudCommunication"/>
+      <wsdl:input>
+        <http:urlEncoded/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <http:operation location="/SendMessageForStaticContent"/>
+      <wsdl:input>
+        <http:urlEncoded/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SendMessageServiceHttpPost" type="tns:SendMessageServiceHttpPost">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="GetReturnMessageDatas">
+      <http:operation location="/GetReturnMessageDatas"/>
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessage">
+      <http:operation location="/SendMessage"/>
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageAusXin">
+      <http:operation location="/SendMessageAusXin"/>
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </wsdl:input>
+      <wsdl:output/>
+    </wsdl:operation>
+    <wsdl:operation name="SendSmsCloudCommunication">
+      <http:operation location="/SendSmsCloudCommunication"/>
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendMessageForStaticContent">
+      <http:operation location="/SendMessageForStaticContent"/>
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SendMessageService">
+    <wsdl:port name="SendMessageServiceSoap" binding="tns:SendMessageServiceSoap">
+      <soap:address location="http://10.1.6.155:10000/Service/SendMessageService.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="SendMessageServiceSoap12" binding="tns:SendMessageServiceSoap12">
+      <soap12:address location="http://10.1.6.155:10000/Service/SendMessageService.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="SendMessageServiceHttpGet" binding="tns:SendMessageServiceHttpGet">
+      <http:address location="http://10.1.6.155:10000/Service/SendMessageService.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="SendMessageServiceHttpPost" binding="tns:SendMessageServiceHttpPost">
+      <http:address location="http://10.1.6.155:10000/Service/SendMessageService.asmx"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

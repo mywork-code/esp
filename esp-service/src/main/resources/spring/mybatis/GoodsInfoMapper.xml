@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- insert,select,selectByPK,count, delete, update,updateAll -->
+<mapper namespace="GoodsInfoEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryGoodsSql">
+		<where>
+	   <if test="id != null and id != ''">
+			AND t.id = #{id, jdbcType=BIGINT}
+		</if>
+		 <if test="merchantCode != null and merchantCode != ''">
+			AND t.merchant_code = #{merchantCode}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			AND t.goods_name LIKE '%${goodsName}%'
+		</if>
+		<if test="goodsTitle != null and goodsTitle != ''">
+			AND t.goods_title = #{goodsTitle}
+		</if>
+		<if test="goodsType != null and goodsType != ''">
+			AND t.goods_type = #{goodsType}
+		</if>
+		<if test="status != null and status != ''">
+			AND t.status = #{status}
+		</if>
+		<if test="listTime != null and listTime != ''">
+			AND t.list_time &gt;= #{listTime, jdbcType=DATE}
+		</if>
+		<if test="delistTime != null and delistTime != ''">
+			AND t.EXPIRE_DATE &lt;= #{delistTime, jdbcType=DATE}
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			AND t.is_delete = #{isDelete}
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			AND t2.merchant_name LIKE '%${merchantName}%'
+		</if>
+		<if test="merchantType != null and merchantType != ''">
+			AND t2.merchant_type = #{merchantType}
+		</if>
+		</where>
+	</sql>
+	<!-- 商品管理分页查询 -->
+	<select id="goodsPageList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
+	<![CDATA[
+		 SELECT
+				t.ID id,
+				t.category_code categoryCode,
+				t.goods_name goodsName,
+				t.goods_title goodsTitle,
+				t.goods_sell_pt goodsSellPt,
+				t.goods_type goodsType,
+				t.goods_type goodsTypeDesc,
+				t.goods_logo_url goodsLogoUrl,
+				t.list_time listTime,
+				t.delist_time delistTime,
+				t.pro_date proDate,
+				t.keep_date keepDate,
+				t.sup_no supNo,
+				t.create_user createUser,
+				t.update_user updateUser,
+				t.create_date createDate,
+				t.update_date updateDate,
+				t.merchant_code merchantCode,
+				t2.merchant_name merchantName,
+				t2.merchant_type  merchantType,
+				t.status status,
+				t.status statusDesc,
+				t.goods_Sku_Type goodsSkuType,
+				t.goods_Model goodsModel,
+				t.goods_sift_url goodsSiftUrl,
+				t.sord_no sordNo
+			FROM
+				t_esp_goods_base_info t
+			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
+	]]>
+	<include refid="QueryGoodsSql" />
+	<![CDATA[
+		ORDER BY t.update_date DESC 
+	]]>
+	</select>
+	
+	
+	<!-- 商品精选分页查询 -->
+	<select id="pageForSiftList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
+	<![CDATA[
+		SELECT
+		t.ID id,
+		t.category_code categoryCode,
+		t.goods_name goodsName,
+		t.goods_title goodsTitle,
+		t.goods_sell_pt goodsSellPt,
+		t.goods_type goodsType,
+		t.goods_logo_url goodsLogoUrl,
+		t.list_time listTime,
+		t.delist_time delistTime,
+		t.pro_date proDate,
+		t.keep_date keepDate,
+		t.sup_no supNo,
+		t.create_user createUser,
+		t.update_user updateUser,
+		t.create_date createDate,
+		t.update_date updateDate,
+		t.merchant_code merchantCode,
+		t. STATUS STATUS,
+
+		t.goods_Sku_Type goodsSkuType,
+		t.goods_Model goodsModel,
+		t.goods_sift_url goodsSiftUrl,
+		t_mer.merchant_name merchantName,
+		sord_no SordNo
+	FROM
+		t_esp_goods_base_info t LEFT JOIN t_esp_merchant_info t_mer 
+	ON
+		t.merchant_code = t_mer.merchant_code
+	where t.STATUS IN ('G02', 'G01')
+	]]>
+		<if test="goodsName != null and goodsName != ''">
+			AND t.goods_name LIKE '%${goodsName}%'
+		</if>
+		<if test="goodsType != null and goodsType != ''">
+			AND t.goods_type = #{goodsType}
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			AND t.is_delete = #{isDelete}
+		</if>
+	<![CDATA[
+		ORDER BY t.update_date DESC 
+	]]>
+	</select>
+	
+	<!-- 商品管理count -->
+	<select id="goodsPageListCount" parameterType="GoodsInfoEntity" resultType="Integer">
+		<![CDATA[
+			SELECT  COUNT(1) 
+			FROM    t_esp_goods_base_info t
+			LEFT    JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
+		]]>
+		<include refid="QueryGoodsSql" />
+	</select>
+	
+	<!-- 商品精选count -->
+	<select id="pageForSiftListCount" parameterType="GoodsInfoEntity" resultType="Integer">
+		<![CDATA[
+			SELECT COUNT(1) FROM t_esp_goods_base_info t where t.status IN('G02','G01')
+		]]>
+		<if test="goodsName != null and goodsName != ''">
+			AND t.goods_name LIKE '%${goodsName}%'
+		</if>
+		<if test="goodsType != null and goodsType != ''">
+			AND t.goods_type = #{goodsType}
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			AND t.is_delete = #{isDelete}
+		</if>
+	</select>
+	
+	<!-- 商品精选的数量 -->
+	<select id="countByGoodsType" parameterType="String" resultType="Integer">
+		<![CDATA[
+			SELECT COUNT(1) FROM t_esp_goods_base_info t where t.goods_type = '2'
+			and t.status IN ('G02', 'G01') and  t.is_delete ='01'
+		]]>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="GoodsInfoEntity">
+	<![CDATA[
+		insert into t_esp_goods_base_info
+            (goods_Model,
+             goods_name,
+             goods_title,
+             goods_type,
+             goods_logo_url,
+             list_time,
+             delist_time,
+             pro_date,
+             keep_date,
+             sup_no,
+             create_user,
+             update_user,
+             create_date,
+             update_date,
+             merchant_code,
+             status,
+             is_delete,
+             goods_detail,goods_Sku_Type,
+             sord_no)
+			values (#{goodsModel, jdbcType=VARCHAR},
+	        #{goodsName, jdbcType=VARCHAR},
+	        #{goodsTitle, jdbcType=VARCHAR},
+	        #{goodsType, jdbcType=VARCHAR},
+	        #{goodsLogoUrl, jdbcType=VARCHAR},
+	        #{listTime, jdbcType=VARCHAR},
+	        #{delistTime, jdbcType=VARCHAR},
+	        #{proDate, jdbcType=VARCHAR},
+            #{keepDate, jdbcType=VARCHAR},
+	        #{supNo, jdbcType=VARCHAR},
+	        #{createUser, jdbcType=VARCHAR},
+	        #{updateUser, jdbcType=VARCHAR}, 
+	        CURRENT_TIMESTAMP,
+	        CURRENT_TIMESTAMP,
+            #{merchantCode, jdbcType=VARCHAR},
+	        #{status, jdbcType=VARCHAR},
+	        #{isDelete, jdbcType=VARCHAR},
+	        #{googsDetail, jdbcType=VARCHAR},
+	        #{goodsSkuType, jdbcType=VARCHAR},
+	        #{sordNo, jdbcType=INTEGER});
+	]]>
+	</insert>
+	<!-- 更新 -->
+	<update id="update" parameterType="GoodsInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_goods_base_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			<if test="goodsName != null and goodsName != ''">
+				goods_name = #{goodsName, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsTitle != null and goodsTitle != ''">
+				goods_title = #{goodsTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSellPt != null and goodsSellPt != ''">
+				goods_sell_pt = #{goodsSellPt, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsType != null and goodsType != ''">
+				goods_type = #{goodsType, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsLogoUrl != null and goodsLogoUrl != ''">
+				goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},        
+			</if>
+			<if test="listTime != null and listTime != ''">
+				list_time = #{listTime, jdbcType=VARCHAR},
+			</if>
+			<if test="delistTime != null and delistTime != ''">
+				delist_time = #{delistTime, jdbcType=VARCHAR},
+			</if>
+			<if test="proDate != null and proDate != ''">
+				pro_date = #{proDate, jdbcType=VARCHAR},
+			</if>
+			<if test="keepDate != null and keepDate != ''"> 
+				keep_date = #{keepDate, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser, jdbcType=VARCHAR},  
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status, jdbcType=VARCHAR},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete, jdbcType=VARCHAR},
+			</if>
+			<if test="googsDetail != null and googsDetail != ''">
+				goods_detail = #{googsDetail, jdbcType=VARCHAR},
+			</if>
+			<if test="supNo != null and supNo != ''">
+				sup_no = #{supNo, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSkuType != null and goodsSkuType != ''">
+				goods_Sku_Type = #{goodsSkuType, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSiftUrl != null and goodsSiftUrl != ''">
+				goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE ID =  #{id, jdbcType=BIGINT}
+	]]>
+	</update>
+	
+	<!--商品编辑 -->
+	<update id="updateGoods" parameterType="GoodsInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_goods_base_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			<if test="goodsName != null and goodsName != ''">
+				goods_name = #{goodsName, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsTitle != null and goodsTitle != ''">
+				goods_title = #{goodsTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSellPt != null and goodsSellPt != ''">
+				goods_sell_pt = #{goodsSellPt, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsModel != null and goodsModel != ''">
+				goods_model = #{goodsModel, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsType != null and goodsType != ''">
+				goods_type = #{goodsType, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsLogoUrl != null and goodsLogoUrl != ''">
+				goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},        
+			</if>
+			<if test="listTime != null and listTime != ''">
+				list_time = #{listTime, jdbcType=VARCHAR},
+			</if>
+			<if test="delistTime != null and delistTime != ''">
+				delist_time = #{delistTime, jdbcType=VARCHAR},
+			</if>
+			<if test="proDate != null and proDate != ''">
+			pro_date = #{proDate, jdbcType=VARCHAR},
+			</if>
+			<if test="keepDate != null and keepDate != ''">
+			keep_date = #{keepDate, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser, jdbcType=VARCHAR},  
+			</if>
+			<if test="status != null and status != ''">
+				status = #{status, jdbcType=VARCHAR},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete, jdbcType=VARCHAR},
+			</if>
+			<if test="googsDetail != null and googsDetail != ''">
+				goods_detail = #{googsDetail, jdbcType=VARCHAR},
+			</if>
+			<if test="supNo != null and supNo != ''">
+			sup_no = #{supNo, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSkuType != null and goodsSkuType != ''">
+				goods_Sku_Type = #{goodsSkuType, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsSiftUrl != null and goodsSiftUrl != ''">
+				goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
+			</if>
+		</set>
+	<![CDATA[
+		WHERE ID =  #{id, jdbcType=BIGINT}
+	]]>
+	</update>
+	
+	<!-- 当有些值为空时，数据库更新为空 -->
+	<update id="updateGoodsEdit" parameterType="GoodsInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_goods_base_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			goods_detail = #{googsDetail, jdbcType=VARCHAR},
+		</set>
+	<![CDATA[
+		WHERE ID =  #{id, jdbcType=BIGINT}
+	]]>
+	</update>
+	
+	<!-- 加载 首页精选商品 -->
+	<select id="loadRecommendGoods"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_sift_url goodsSiftUrl,
+			c.minPrice goodsPrice
+		FROM
+			t_esp_goods_base_info a,
+		 (
+			SELECT
+				a.goods_id goodsId,
+				a.id goodsStockId,
+				b.minprice minPrice
+			FROM
+				t_esp_goods_stock_info a,
+				(
+					SELECT
+						goods_id goodsId,
+						MIN(market_price) minprice
+					FROM
+						t_esp_goods_stock_info
+					WHERE stock_curr_amt>0
+					GROUP BY
+						goods_id
+				) b
+			WHERE
+				a.goods_id = b.goodsId
+			AND a.market_price = b.minprice
+			GROUP BY
+				a.goods_id
+		) c 
+		WHERE
+			a.id = c.goodsId
+		AND	a.goods_type = '2'
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND a.`status` = 'G02'
+		AND a.is_delete = '01'
+		ORDER BY a.update_date DESC
+	]]>
+	</select>
+	<!-- 查询商品上架期内 -->
+	<select id="count"  resultType="Integer">
+	<![CDATA[
+		SELECT
+			count(1)
+		FROM
+			t_esp_goods_base_info
+			where 
+				CURRENT_TIMESTAMP > list_time
+			AND CURRENT_TIMESTAMP < delist_time
+			AND status='G02'
+			AND is_delete = '01'
+	]]>
+	</select>
+	
+	<!-- 分页查询  商品上架期内-->
+	<select id="select" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID id,
+			a.goods_name goodsName,
+			a.goods_title goodsTit,
+			c.minPrice minPrice,
+			c.maxPrice maxPrice,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_type goodsType,
+			a.goods_logo_url goodsLogoUrl,
+			a.list_time listTime,
+			a.delist_time delistTime,		
+			a.pro_date proDate,
+			a.keep_date keepDate,
+			a.sup_no supNo
+		FROM
+			t_esp_goods_base_info a LEFT JOIN 
+	
+			( SELECT
+				a.ID goodsId,
+				MIN(goods_price) minPrice,
+				MAX(goods_price) maxPrice
+			FROM
+				t_esp_goods_base_info a,
+				t_esp_goods_stock_info b
+			WHERE
+			 CURRENT_TIMESTAMP > a.list_time
+			AND CURRENT_TIMESTAMP < a.delist_time
+			AND a.id = b.goods_id
+			AND status='G02'
+			AND a.is_delete = '01'
+			GROUP BY
+				a.id) c
+		ON a.id=c.goodsId
+			where 
+		 CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND status='G02'
+		AND is_delete = '01'
+	]]>
+	<![CDATA[
+		ORDER BY a.update_date DESC 
+	]]>
+	</select>
+	
+	<!--  商品列表展示-->
+	<select id="loadGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c
+		WHERE
+			a.id = c.goodsId
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	<![CDATA[
+		ORDER BY a.update_date DESC 
+	]]>
+	</select>
+	
+	
+	<!-- 主键查询基本信息 -->
+	<select id="selectByPK" parameterType="Long" resultType="GoodsInfoEntity">
+	<![CDATA[
+		SELECT
+			ID id,
+			ID goodId,
+			category_code categoryCode,
+			goods_name goodsName,
+			goods_title goodsTitle,
+			goods_sell_pt goodsSellPt,
+			goods_type goodsType,
+			goods_logo_url goodsLogoUrl,
+			list_time listTime,
+			status status,
+			delist_time delistTime,
+			pro_date proDate,
+			keep_date keepDate,
+			sup_no supNo,
+			create_user createUser,
+			update_user updateUser,
+			create_date createDate,
+			update_date updateDate,
+			merchant_code merchantCode,
+			is_delete isDelete,
+			goods_Sku_Type goodsSkuType,
+			goods_detail googsDetail,
+			goods_sift_url goodsSiftUrl,
+			goods_model goodsModel
+		FROM
+			t_esp_goods_base_info
+		WHERE
+			id=#{value}
+	]]>
+	</select>
+	
+	<update id="updateGoodsStatus" parameterType="Map">
+			update t_esp_goods_base_info set goods_type = #{goodsType} 
+		<where>
+			id = #{goodsId} 
+		</where>
+	</update>
+	
+	<!-- 商品基本信息+商户信息+库存信息 -->
+	<select id="loadContainGoodsAndGoodsStockAndMerchant" parameterType="HashMap" resultType="GoodsDetailInfoEntity">
+	<![CDATA[
+		SELECT
+			a.id goodsId,
+			b.id goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			b.goods_price price,
+			b.stock_curr_amt stockCurrAmt,
+			c.merchant_name merchantName,
+			c.merchant_code merchantCode,
+			a.list_time listTime,
+			a.delist_time delistTime,
+			a.status status
+		FROM
+			t_esp_goods_base_info a,
+			t_esp_goods_stock_info b,
+			t_esp_merchant_info c
+		WHERE
+			b.goods_id = a.id
+		AND a.merchant_code = c.merchant_code
+		AND a.id = #{goodsId}
+		AND b.id = #{goodsStockId}
+	]]>
+	</select>
+
+	<!--修改已上架的商品状态(已经到下架时间的商品) -->
+	<update id="updateGoodsStatusByDelisttime" parameterType="String">
+		<![CDATA[
+		UPDATE t_esp_goods_base_info 
+		]]>
+		<set>
+			status = 'G03'
+		</set>
+	<![CDATA[
+		WHERE delist_time<=DATE_FORMAT(now(),'%Y-%m-%d') 
+	]]>
+	</update>
+</mapper> 

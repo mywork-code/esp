@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderDetailInfoEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="orderId != null and orderId != ''">
+				and order_Id = #{orderId, jdbcType=VARCHAR}
+			</if>
+			<if test="goodsId != null">
+				and goods_Id = #{goodsId, jdbcType=BIGINT}
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				and merchant_code = #{merchantCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryOrderDetailInfo" parameterType="String"
+		resultType="OrderDetailInfoEntity">
+	<![CDATA[
+		SELECT
+		orderdetail.ID id,
+		orderdetail.ORDER_ID orderId,
+		orderdetail.GOODS_ID goodsId,
+		orderdetail.goods_stock_id goodsStockId,
+		orderdetail.MERCHANT_CODE merchantCode,
+		orderdetail.GOODS_PRICE goodsPrice,
+		orderdetail.GOODS_NUM goodsNum,
+		orderdetail.GOODS_TITLE goodsTitle,
+		orderdetail.CATEGORY_CODE categoryCode,
+		orderdetail.GOODS_NAME goodsName,
+		orderdetail.GOODS_SELL_PT goodsSellPt,
+		orderdetail.GOODS_TYPE goodsType,
+		orderdetail.GOODS_LOGO_URL goodsLogoUrl,
+		orderdetail.LIST_TIME listTime,
+		orderdetail.DELIST_TIME delistTime,
+		orderdetail.PRO_DATE proDate,
+		orderdetail.KEEP_DATE keepDate,
+		orderdetail.SUP_NO supNo,
+		goodsbaseinfo.goods_model goodsModel,
+		goodsstockinfo.goods_sku_attr goodsSkuAttr,
+		orderdetail.CREATE_DATE createDate,
+		orderdetail.UPDATE_DATE updateDate
+		FROM
+			t_esp_order_detail_info orderdetail
+				LEFT JOIN t_esp_goods_base_info goodsbaseinfo on orderdetail.goods_id= goodsbaseinfo.id
+				LEFT JOIN t_esp_goods_stock_info goodsstockinfo on orderdetail.goods_stock_id= goodsstockinfo.id
+	]]>
+		<![CDATA[
+        WHERE orderdetail.order_id = #{orderId} 
+		ORDER BY orderdetail.update_date DESC	
+        ]]>
+	</select>
+	
+	<select id="queryOrderDetailBySubOrderId" parameterType="String" resultType="OrderDetailInfoEntity">
+	<![CDATA[
+		SELECT
+     			ID                           id,
+                 ORDER_ID                     orderId,
+                 GOODS_ID                     goodsId,
+                 goods_stock_id				 goodsStockId,
+                 MERCHANT_CODE                merchantCode,
+                 GOODS_PRICE                  goodsPrice,
+                 GOODS_NUM                    goodsNum,
+                 GOODS_TITLE                  goodsTitle,
+                 CATEGORY_CODE                categoryCode,
+                 GOODS_NAME                   goodsName,
+                 GOODS_SELL_PT                goodsSellPt,
+                 GOODS_TYPE                   goodsType,
+                 GOODS_LOGO_URL               goodsLogoUrl,
+                 LIST_TIME                    listTime,
+                 DELIST_TIME                  delistTime,
+                 PRO_DATE                     proDate,
+                 KEEP_DATE                    keepDate,
+                 SUP_NO                       supNo,
+                 CREATE_DATE                  createDate,
+                 UPDATE_DATE                  updateDate
+		FROM
+			t_esp_order_detail_info
+		WHERE
+			sub_order_id=#{subOrderId}
+		ORDER BY update_date DESC	
+	]]>
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="OrderDetailInfoEntity" useGeneratedKeys="true" keyProperty="id">
+	<![CDATA[
+		insert into t_esp_order_detail_info
+            (order_id,
+             goods_stock_id,
+             goods_id,
+             goods_price,
+             goods_num,
+             goods_title,
+             category_code,
+             goods_name,
+             goods_sell_pt,
+             goods_type,
+             goods_logo_url,
+             merchant_code,
+             list_time,
+             delist_time,
+             pro_date,
+             keep_date,
+             sup_no,
+             create_date,
+             update_date)
+			values (
+			#{orderId, jdbcType=VARCHAR},
+	        #{goodsStockId, jdbcType=VARCHAR},
+	        #{goodsId, jdbcType=BIGINT},
+	        #{goodsPrice, jdbcType=TIMESTAMP},
+	        #{goodsNum, jdbcType=INTEGER},
+	        #{goodsTitle, jdbcType=VARCHAR},
+	        #{categoryCode, jdbcType=VARCHAR},
+	        #{goodsName, jdbcType=VARCHAR},
+            #{goodsSellPt, jdbcType=VARCHAR},
+	        #{goodsType, jdbcType=VARCHAR},
+	        #{goodsLogoUrl, jdbcType=VARCHAR},
+	        #{merchantCode, jdbcType=VARCHAR}, 
+            #{listTime, jdbcType=TIMESTAMP},
+	        #{delistTime, jdbcType=TIMESTAMP},
+	        #{proDate, jdbcType=TIMESTAMP},
+	        #{keepDate, jdbcType=VARCHAR},
+	        #{supNo, jdbcType=VARCHAR},
+	      	CURRENT_TIMESTAMP,
+	        CURRENT_TIMESTAMP);
+	]]>
+	</insert>
+	
+	<update id="updateOrderDetailStatus" parameterType="OrderDetailInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_detail_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			order_status = #{orderStatus, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+
+	<update id="updateOrderDetailStatusBySubOrderId" parameterType="OrderDetailInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_detail_info 
+		]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			order_status = #{orderStatus, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE sub_order_id =  #{subOrderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<update id="update"  parameterType="OrderDetailInfoEntity">
+	<![CDATA[
+		UPDATE t_esp_order_detail_info 
+	]]>
+		<set>
+			update_date = CURRENT_TIMESTAMP,
+			<if test="orderStatus != null and orderStatus != ''">
+				order_status = #{orderStatus}
+			</if>
+		</set>
+	<![CDATA[
+		WHERE  id = #{id}
+	]]>
+	</update>
+	
+    <select id="select" parameterType="OrderDetailInfoEntity" resultType="OrderDetailInfoEntity">
+    <![CDATA[
+        SELECT  
+        			ID                           id,
+                    ORDER_ID                     orderId,
+                    GOODS_ID                     goodsId,
+                    goods_stock_id				 goodsStockId,
+                    MERCHANT_CODE                merchantCode,
+                    GOODS_PRICE                  goodsPrice,
+                    GOODS_NUM                    goodsNum,
+                    GOODS_TITLE                  goodsTitle,
+                    CATEGORY_CODE                categoryCode,
+                    GOODS_NAME                   goodsName,
+                    GOODS_SELL_PT                goodsSellPt,
+                    GOODS_TYPE                   goodsType,
+                    GOODS_LOGO_URL               goodsLogoUrl,
+                    LIST_TIME                    listTime,
+                    DELIST_TIME                  delistTime,
+                    PRO_DATE                     proDate,
+                    KEEP_DATE                    keepDate,
+                    SUP_NO                       supNo,
+                    CREATE_DATE                  createDate,
+                    UPDATE_DATE                  updateDate
+            FROM T_ESP_ORDER_DETAIL_INFO 
+    ]]>
+        <include refid="QueryConditionSql" />
+    <![CDATA[
+        ORDER BY UPDATE_DATE DESC
+    ]]>
+    </select>
+	
+	<!-- 主键查询 -->
+    <select id="selectByPK" parameterType="Long" resultType="OrderDetailInfoEntity">
+        <![CDATA[
+            SELECT 
+                    ID                           id,
+                    ORDER_ID                     orderId,
+                    GOODS_ID                     goodsId,
+                    goods_stock_id				 goodsStockId,
+                    MERCHANT_CODE                merchantCode,
+                    GOODS_PRICE                  goodsPrice,
+                    GOODS_NUM                    goodsNum,
+                    GOODS_TITLE                  goodsTitle,
+                    CATEGORY_CODE                categoryCode,
+                    GOODS_NAME                   goodsName,
+                    GOODS_SELL_PT                goodsSellPt,
+                    GOODS_TYPE                   goodsType,
+                    GOODS_LOGO_URL               goodsLogoUrl,
+                    LIST_TIME                    listTime,
+                    DELIST_TIME                  delistTime,
+                    PRO_DATE                     proDate,
+                    KEEP_DATE                    keepDate,
+                    SUP_NO                       supNo,
+                    CREATE_DATE                  createDate,
+                    UPDATE_DATE                  updateDate
+            FROM t_esp_order_detail_info WHERE ID = #{value}
+        ]]>
+    </select>
+	
+</mapper>

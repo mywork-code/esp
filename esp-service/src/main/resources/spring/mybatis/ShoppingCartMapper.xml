@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- insert,select,selectByPK,count, delete, update,updateAll -->
+<mapper namespace="CartInfoEntity">
+
+	<!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="id != null">
+				AND ID = #{id, jdbcType=BIGINT}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND USER_ID = #{userId, jdbcType=BIGINT}
+			</if>
+			<if test="goodsStockId != null and goodsStockId != ''">
+				AND GOODS_STOCK_ID = #{goodsStockId, jdbcType=BIGINT}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="CartInfoEntity" useGeneratedKeys="true" keyProperty="id">
+	    <![CDATA[
+	        INSERT INTO T_ESP_CART_INFO(
+	            USER_ID,
+	            GOODS_STOCK_ID,
+	            GOODS_SELECTED_PRICE,
+	            GOODS_NUM,
+	            IS_SELECT,
+	            CREATE_DATE,
+	            UPDATE_DATE
+	        )
+	        VALUES
+	        (
+	            #{userId, jdbcType=BIGINT},
+	            #{goodsStockId, jdbcType=BIGINT}, 
+	            #{goodsSelectedPrice, jdbcType=DECIMAL},
+	            #{goodsNum, jdbcType=INTEGER},
+	            #{isSelect, jdbcType=VARCHAR},
+	            CURRENT_TIMESTAMP,
+	            CURRENT_TIMESTAMP
+	        )
+	    ]]>
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="CartInfoEntity">
+    <![CDATA[
+        UPDATE T_ESP_CART_INFO 
+    ]]>
+		<set>
+        <![CDATA[
+            UPDATE_DATE = CURRENT_TIMESTAMP,
+        ]]>
+            <if test="goodsStockId != null">
+                GOODS_STOCK_ID = #{goodsStockId, jdbcType=BIGINT},
+            </if>
+			<if test="goodsSelectedPrice != null">
+				GOODS_SELECTED_PRICE = #{goodsSelectedPrice, jdbcType=DECIMAL},
+			</if>
+			<if test="goodsNum != null">
+				GOODS_NUM = #{goodsNum, jdbcType=INTEGER},
+			</if>
+			<if test="isSelect != null and isSelect != ''">
+                IS_SELECT = #{isSelect, jdbcType=VARCHAR},
+            </if>
+		</set>
+        <![CDATA[
+        WHERE ID = #{id, jdbcType=BIGINT} 
+        ]]>
+	</update>
+	
+	<!-- 更新 -->
+    <update id="updateGoodsNum" parameterType="CartInfoEntity">
+	    <![CDATA[
+	        UPDATE T_ESP_CART_INFO 
+	            SET GOODS_NUM       = #{goodsNum, jdbcType=INTEGER}
+	            WHERE USER_ID       = #{userId, jdbcType=BIGINT} 
+	            AND GOODS_STOCK_ID  = #{goodsStockId, jdbcType=BIGINT}
+	    ]]>
+    </update>
+
+	<!-- 查询 -->
+	<select id="select" parameterType="CartInfoEntity" resultType="CartInfoEntity">
+    <![CDATA[
+        SELECT  ID                           id,
+                USER_ID                      userId,
+                GOODS_STOCK_ID               goodsStockId,
+                GOODS_SELECTED_PRICE         goodsSelectedPrice,
+                GOODS_NUM                    goodsNum,
+                CREATE_DATE                  createDate,
+                UPDATE_DATE                  updateDate
+        FROM T_ESP_CART_INFO
+    ]]>
+		<include refid="QueryConditionSql" />
+    <![CDATA[
+        ORDER BY UPDATE_DATE DESC
+    ]]>
+	</select>
+
+
+	<!-- 批量删除购物车中商品 -->
+	<delete id="deleteGoodsInCart" parameterType="java.util.HashMap">
+		DELETE FROM T_ESP_CART_INFO WHERE USER_ID = #{userId} AND
+		GOODS_STOCK_ID IN
+		<foreach item="idItem" collection="goodsStockIdArr" open="("
+			separator="," close=")">
+			#{idItem}
+		</foreach>
+	</delete>
+
+	<!-- 查询购物车中商品信息 -->
+	<select id="getGoodsInfoInCart" parameterType="java.lang.Long"
+		resultType="com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity">
+	    <![CDATA[      
+	    
+	        SELECT  
+	            t1.USER_ID                  userId,
+	            t1.GOODS_STOCK_ID           goodsStockId,
+	            t1.GOODS_NUM                goodsNum,
+	            t1.IS_SELECT                isSelect,
+	            t2.GOODS_NAME               goodsName,
+	            t2.MERCHANT_CODE            merchantCode,   
+	            t3.STOCK_LOGO               goodsLogoUrl,
+	            t2.DELIST_TIME              delistTime,   
+	            t2.IS_DELETE                isDelete,   
+	            t2.STATUS                   goodsStatus,
+	            t3.GOODS_ID                 goodsId,
+                t3.STOCK_CURR_AMT           stockCurrAmt,
+                t3.GOODS_SKU_ATTR           goodsSkuAttr
+	        FROM
+	            T_ESP_CART_INFO t1,
+	            T_ESP_GOODS_BASE_INFO t2,
+	            T_ESP_GOODS_STOCK_INFO t3
+	        WHERE
+	            t3.goods_id = t2.id
+	        AND t1.goods_stock_id = t3.id
+	        AND t1.user_id = #{value}
+	        ORDER BY t1.UPDATE_DATE DESC
+	    ]]>
+	</select>
+
+    <!-- 获取购物车中商品数量 -->
+    <select id="getGoodsAmount" parameterType="java.lang.Long" resultType="Integer">
+    <![CDATA[
+        SELECT SUM(goods_num) FROM T_ESP_CART_INFO WHERE user_id =  #{value} 
+    ]]>
+    </select>
+    
+    <!-- 更新 商品勾选标记 -->
+    <update id="synIsSelect" parameterType="CartInfoEntity">
+        <![CDATA[
+            UPDATE T_ESP_CART_INFO 
+                SET IS_SELECT         = #{isSelect, jdbcType=VARCHAR}
+                WHERE GOODS_STOCK_ID  = #{goodsStockId, jdbcType=BIGINT}
+                AND USER_ID           = #{userId, jdbcType=BIGINT} 
+        ]]>
+    </update>
+
+
+	<insert id="insertList" useGeneratedKeys="true" parameterType="java.util.List">
+		<selectKey resultType="long" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into t_esp_cart_info (user_id,goods_stock_id,goods_selected_price,goods_num,create_date,update_date,is_select)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.userId},#{item.goodsStockId},#{item.goodsSelectedPrice},#{item.goodsNum},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,#{item.isSelect})
+		</foreach>
+	</insert> 
+</mapper> 

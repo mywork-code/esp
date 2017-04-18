@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/banner/bannerList.js"></script>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 1040px;">
+				<tr>
+				    <td width="10%" align="right">banner类型：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 200px;" id="bannerType2">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="首页" value="index">首页</option>
+						   <option label="精选" value="sift">精选</option>
+						</select>
+				  	</td>
+				  <td width="30%">
+				  <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
+				  <@apass.role value="BANNER_LIST_EDIT">
+				  <a href="javascript:void(0);" class="easyui-linkbutton"  id="add">添&nbsp;加&nbsp;</a> &nbsp;&nbsp;
+				  </@apass.role>
+				  <a href="javascript:void(0);" class="easyui-linkbutton"  id="reset">重&nbsp;置&nbsp;</a>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- banner查询列表 -->
+	<div id="bannerList"></div>
+	
+	<!-- 添加banner本信息弹出窗口 -->
+	<div id="addBannerInfor" class="easyui-window" title="<font color='black'>添加banner信息</font>" hidden="hidden"
+		style="width: 430px; height: 200px; display: none; text-align: center;" >
+       <form id="addBannerFile"  action="${rc.contextPath}/application/banner/management/addBannerFile" method="POST" enctype="multipart/form-data">
+           <table class="details_table" style="width:92%">
+<!--            	    <tr> -->
+<!-- 	            	<td width="30%" align="right" >名称:</td> -->
+<!-- 					<td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text" id="bannerName" name="bannerName" /></td> -->
+<!-- 	      	    </tr> -->
+	      	    <tr>  
+	      	        <td width="30%" align="right"><font color="red">*</font>类型:</td>
+					<td align="left"><select class="easyui-combobox" style="width: 175px;" id="bannerType" name="bannerType" required=true>
+	             		    <option value="">请选择</option>
+							<option value="index">首页</option>
+							<option value="sift">精选</option>
+	             	 </select></td>
+                 </tr>
+            	<tr>
+            		<td width="30%" align="right"><font color="red">*</font>排序:</td>
+					<td align="left"><input  class="easyui-numberspinner" style="width: 180px;" data-options="min:1" type="text"  id="bannerOrder"  name="bannerOrder" required=true /></td>
+            	</tr>
+				<tr>
+					<td width="30%" align="right">活动地址:</td>
+					<td align="left"><input id="activityUrl" name="activityUrl"
+						class="easyui-textbox" style="width: 180px;" /></td>
+				</tr>
+				<tr>
+               	 	<td width="30%" align="right"><font color="red">*</font>上传图片:</td>
+					<td align="left"><input type="file" style="width: 180px;" name="bannerFile" id="bannerFile"/></td>
+            	</tr>
+            	 <tr>
+	            	<td colspan="4">
+	            		<span id="fondSpan"><font color='red'>支持格式：.png或.jpg;宽：750px,高：420px;大小：≤500kb</font></span>
+	            	</td>
+            	</tr>
+				<tr style="margin-top: 22px;">
+					<td colspan="4"><a href="javascript:void(0);" id="cancelAdd" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+						            <a href="javascript:void(0);" id="agreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					</td>
+	        	</tr>
+           </table>
+	   </form>	
+	</div>
+	
+	<!-- 查看图片弹出窗口 -->
+	<div id="showBannerPoto" class="easyui-window" title="<font color='black'>查看图片</font>" hidden="hidden" collapsible="false"
+		data-options="modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
+		style="width: 800px; height: 480px; display: none; text-align: center;" >
+           <table class="details_table" style="width:100%">
+           		<tr>
+           			<td width="">
+					    <img id='showPicture' style="width:100%;height:100%;" src=""/>
+					</td>
+            	</tr>
+           </table>
+	</div>
+	
+</body>
+</html>
