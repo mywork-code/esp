@@ -35,6 +35,8 @@ public class PaymentHttpClient {
   //  支付请求地址
   private static final String APASSPAYREQ = "/apassPay/pay";
 
+  private static final String CREDITPAYAUTHORITY = "/queryForEsp/creditPayAuthority";
+
   //  支付查询请求地址
   private static final String APASSPAYSTATUSQUERY = "/apassPay/queryPayStatus";
 
@@ -172,6 +174,31 @@ public class PaymentHttpClient {
     }
     return payResp;
   }
+
+  /**
+   * 查询未结清借款&额度消费已出账笔数
+   * @return
+   */
+  public Integer creditPayAuthority(Long userId) throws BusinessException {
+    try {
+      String address = bbsReqUrl + CREDITPAYAUTHORITY;
+      Map<String,Object> map = new HashMap<>();
+      map.put("userId",userId);
+      String requestJson = GsonUtils.toJson(map);
+      LOGGER.info("queryForEsp_creditPayAuthority_reqJson:{}", requestJson);
+      StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+      String responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
+      LOGGER.info("queryForEsp_creditPayAuthority_repJson:{}", responseJson);
+      Response result = GsonUtils.convertObj(responseJson, Response.class);
+      Object data = result.getData();
+      return data != null ? (Integer) data :null;
+    } catch (Exception e) {
+      LOGGER.error("queryForEsp_creditPayAuthority_error接口调用异常:{}", e);
+      throw new BusinessException("调用账单系统异常", e);
+    }
+  }
+
+
 
   /**
    * 调用BSS支付查询接口

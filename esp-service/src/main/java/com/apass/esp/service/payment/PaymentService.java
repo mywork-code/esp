@@ -430,6 +430,15 @@ public class PaymentService {
 	//暂时注释掉新用户判断
 //		boolean newCustomerFlag = paymentHttpClient.isNewCustomer(userId);
 		boolean newCustomerFlag = true;
+
+		Integer num = paymentHttpClient.creditPayAuthority(userId);
+		if(num != null && num >= 3){
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
+			return resultMap;
+		}
+
 		if(!newCustomerFlag){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 		} else {
