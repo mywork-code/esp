@@ -191,7 +191,7 @@ public class PaymentHttpClient {
       LOGGER.info("queryForEsp_creditPayAuthority_repJson:{}", responseJson);
       Response result = GsonUtils.convertObj(responseJson, Response.class);
       Object data = result.getData();
-      return data != null ? (Integer) data :null;
+      return data != null ? Integer.valueOf(data.toString()) :null;
     } catch (Exception e) {
       LOGGER.error("queryForEsp_creditPayAuthority_error接口调用异常:{}", e);
       throw new BusinessException("调用账单系统异常", e);
