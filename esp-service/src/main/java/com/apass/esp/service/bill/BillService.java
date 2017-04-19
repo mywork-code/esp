@@ -43,7 +43,7 @@ public class BillService {
     /**
      * 
      * @param userId用户Id
-     * @return true:有逾期
+     * @return true:有分期
      * @throws BusinessException
      */
     public boolean queryStatement(Long userId) throws BusinessException{
@@ -74,13 +74,14 @@ public class BillService {
         
         List<StatementEntity> statements = billRepository.billRepository(paramMap);
         if(statements == null || statements.size() == 0){
-            throw new RuntimeException("当前无帐单.");
+            return false;//无分期
+            //throw new RuntimeException("当前无帐单.");
         }else if(statements.size() == 1 && "S01".equals(statements.get(0).getStmtStatus())){
-            return false;
+            return false;//无分期
         }else if(statements.size() == 2){
-            return true;
+            return true;//有分期
         }else{
-            throw new RuntimeException("帐单数据有误");
+            throw  new RuntimeException("帐单数据有误");
         }
         
     }
