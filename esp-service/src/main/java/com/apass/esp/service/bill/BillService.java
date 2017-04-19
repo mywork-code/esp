@@ -57,7 +57,7 @@ public class BillService {
         String billDay = customerInfo.getBillDate();
         // String billDay = "18";
         if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
-            throw new RuntimeException("额度已失效.");
+            return false;
         }
         
         String currDay = DateFormatUtil.getNowDay(); // 当日
