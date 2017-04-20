@@ -43,7 +43,7 @@ public class AddressInfoController {
 			String userId = CommonUtils.getValue(paramMap, "userId");
 			
 			String province = CommonUtils.getValue(paramMap, "province");    //省
-			String city = CommonUtils.getValue(paramMap, "city");            //市
+			String city =  CommonUtils.getValue(paramMap, "city");            //市
 			String district = CommonUtils.getValue(paramMap, "district");    //区
 			String address = CommonUtils.getValue(paramMap, "address");      //街道(详细地址)
 			String postcode = CommonUtils.getValue(paramMap, "postcode");    //邮编(暂未使用)
