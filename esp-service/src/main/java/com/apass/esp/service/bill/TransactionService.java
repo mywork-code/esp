@@ -1,5 +1,6 @@
 package com.apass.esp.service.bill;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,16 @@ public class TransactionService {
      */
     public Pagination<TxnInfoEntity> queryTransactionInforPage(Map<String, Object> map, Page page) {
         return transactionRepository.page(map, page, "queryTransactionInforPage");
+    }
+
+
+    /**
+     * 根据 orderId查询交易 流水
+     * @param orderId
+     * @return
+     */
+    public TxnInfoEntity queryTxnByOrderId(String orderId) {
+        return transactionRepository.queryTxnByOrderId(orderId);
     }
 
 }

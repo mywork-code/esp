@@ -1,5 +1,7 @@
 package com.apass.esp.repository.bill;
 
+import java.util.List;
+
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
@@ -14,5 +16,14 @@ public class TransactionRepository extends BaseMybatisRepository<TxnInfoEntity, 
      */
     public TxnInfoEntity selectDownpaymentByOrderId(String orderId){
         return this.getSqlSession().selectOne(getSQL("selectDownpaymentByOrderId"), orderId);
+    }
+
+    /**
+     * 根据 orderId查询交易 流水
+     * @param orderId
+     * @return
+     */
+    public TxnInfoEntity queryTxnByOrderId(String orderId) {
+        return this.getSqlSession().selectOne(getSQL("queryTxnByOrderId"), orderId);
     }
 }

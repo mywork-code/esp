@@ -915,7 +915,7 @@ public class OrderService {
 			orderDetailInfoDto.setDelayAcceptGoodFlag(order.getExtendAcceptGoodsNum() + "");
 			// }
 			//账单分期后改为删除按钮
-			boolean billOverDueFlag =  billService.queryStatement(userIdVal);
+			boolean billOverDueFlag =  billService.queryStatement(userIdVal,order.getOrderId());
 			if(billOverDueFlag){
 				LOGGER.info("userId={},账单分期已逾期",userIdVal);
 				orderDetailInfoDto.setRefundAllowedFlag("0");
