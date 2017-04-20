@@ -63,7 +63,6 @@ public class BillService {
         // String billDay = "18";
         if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
             return false;//如果没有授信，则无额度消费
-            //throw new RuntimeException("额度已失效.");
         }
         
         Date outStmtBillDate = null; // 当前已出账单日 时间格式
@@ -87,7 +86,7 @@ public class BillService {
         
         List<StatementEntity> statements = billRepository.billRepository(paramMap);
         if(statements == null || statements.size() == 0){
-            throw new RuntimeException("当前无帐单.");
+            return false;//无帐单
         }else if(statements.size() == 1 && "S01".equals(statements.get(0).getStmtStatus())){
             return false;
         }else if(statements.size() == 2){
