@@ -139,10 +139,10 @@
 				orderInfo.payType txnType
 			FROM
 				t_apass_txn_info txnInfo
-			LEFT JOIN t_esp_order_info orderInfo ON txnInfo.order_id = orderInfo.order_id
+			LEFT JOIN t_esp_order_info orderInfo ON txnInfo.order_id = orderInfo.main_order_id
 			WHERE
 				orderInfo.order_id = #{value}
-			AND orderInfo.payType = 'T02'
+			AND txnInfo.txn_type = 'T02'
 		]]>
 	</select>
    
