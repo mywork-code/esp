@@ -36,11 +36,6 @@ public class BillController extends BaseController {
      */
     @RequestMapping("/page")
     public String merchantInforPage(Map<String, Object> paramMap) {
-        try {
-            boolean queryStatement = billService.queryStatement(796l, "68f17509-04bf-438b-8d4c-522cbcc76af8");
-        } catch (BusinessException e) {
-            logger.error("", e);
-        }
         return CREDIT_BILL_URL;
     }
 
