@@ -62,7 +62,7 @@ public class BillService {
         String billDay = customerInfo.getBillDate();
         // String billDay = "18";
         if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
-            return false;//如果没有授信，则无额度消费，一起有今后按钮
+            return false;//如果没有授信，则无额度消费
             //throw new RuntimeException("额度已失效.");
         }
         
@@ -78,8 +78,9 @@ public class BillService {
                 outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(txnDate, 1), Integer.parseInt(billDay));
             }
         }else{
-            LOGGER.info("交易流水数据有误,查询参数orderId：[{}]", orderId);
-            throw new RuntimeException("交易流水数据有误");
+            LOGGER.info("交易流水数据未生成,查询参数orderId：[{}]", orderId);
+            return false;
+            //throw new RuntimeException("交易流水数据有误");
         }
         
         paramMap.put("stmtDate",DateFormatUtil.dateToString(outStmtBillDate));
