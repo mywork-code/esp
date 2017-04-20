@@ -1,5 +1,6 @@
 package com.apass.esp.service.activity;
 
+import com.apass.esp.domain.entity.WithdrawActivityInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class ActivityWithDrawService {
 	@Autowired
 	public WithdrawActivityInfoMapper withdrawActivityInfoMapper;
 
-	
+	public WithdrawActivityInfo addActivity(WithdrawActivityInfo record){
+		withdrawActivityInfoMapper.insert(record);
+		return record;
+	}
 	
 }

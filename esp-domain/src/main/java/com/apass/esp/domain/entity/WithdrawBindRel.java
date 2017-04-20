@@ -1,4 +1,4 @@
-package com.apass.esp.domain.entity.activity;
+package com.apass.esp.domain.entity;
 
 import java.util.Date;
 
