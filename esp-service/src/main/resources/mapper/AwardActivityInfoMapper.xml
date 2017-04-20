@@ -16,7 +16,8 @@
 		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, activity_name, a_start_date, a_end_date, status, type, rebate,
+		id, activity_name, a_start_date, a_end_date, status, type,
+		rebate,
 		create_by, create_date,
 		update_by, update_date
 	</sql>
@@ -28,20 +29,27 @@
 		where id = #{id,jdbcType=BIGINT}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-		delete from t_esp_award_activity_info
+		delete from
+		t_esp_award_activity_info
 		where id = #{id,jdbcType=BIGINT}
 	</delete>
-	<insert id="insert" parameterType="com.apass.esp.domain.entity.AwardActivityInfo"
-		useGeneratedKeys="true" keyProperty="id">
+	<insert id="insert" parameterType="com.apass.esp.domain.entity.AwardActivityInfo">
+		<selectKey resultType="java.lang.Long" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
 		insert into t_esp_award_activity_info (activity_name, a_start_date,
 		a_end_date,
 		status, type, rebate,
 		create_by, create_date, update_by,
 		update_date)
-		values (#{activityName,jdbcType=VARCHAR}, #{aStartDate,jdbcType=TIMESTAMP},
+		values (#{activityName,jdbcType=VARCHAR},
+		#{aStartDate,jdbcType=TIMESTAMP},
 		#{aEndDate,jdbcType=TIMESTAMP},
-		#{status,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{rebate,jdbcType=DECIMAL},
-		#{createBy,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+		#{status,jdbcType=TINYINT}, #{type,jdbcType=TINYINT},
+		#{rebate,jdbcType=DECIMAL},
+		#{createBy,jdbcType=VARCHAR},
+		#{createDate,jdbcType=TIMESTAMP},
 		#{updateBy,jdbcType=VARCHAR},
 		#{updateDate,jdbcType=TIMESTAMP})
 	</insert>
@@ -150,19 +158,26 @@
 		where id = #{id,jdbcType=BIGINT}
 	</update>
 	<update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.AwardActivityInfo">
-		update t_esp_award_activity_info
-		set activity_name = #{activityName,jdbcType=VARCHAR},
-		a_start_date = #{aStartDate,jdbcType=TIMESTAMP},
-		a_end_date = #{aEndDate,jdbcType=TIMESTAMP},
+		update
+		t_esp_award_activity_info
+		set activity_name =
+		#{activityName,jdbcType=VARCHAR},
+		a_start_date =
+		#{aStartDate,jdbcType=TIMESTAMP},
+		a_end_date =
+		#{aEndDate,jdbcType=TIMESTAMP},
 		status = #{status,jdbcType=TINYINT},
 		type = #{type,jdbcType=TINYINT},
 		rebate = #{rebate,jdbcType=DECIMAL},
 		create_by = #{createBy,jdbcType=VARCHAR},
-		create_date = #{createDate,jdbcType=TIMESTAMP},
-		update_by = #{updateBy,jdbcType=VARCHAR},
-		update_date = #{updateDate,jdbcType=TIMESTAMP}
+		create_date =
+		#{createDate,jdbcType=TIMESTAMP},
+		update_by =
+		#{updateBy,jdbcType=VARCHAR},
+		update_date =
+		#{updateDate,jdbcType=TIMESTAMP}
 		where id = #{id,jdbcType=BIGINT}
 	</update>
-	
-	
+
+
 </mapper>

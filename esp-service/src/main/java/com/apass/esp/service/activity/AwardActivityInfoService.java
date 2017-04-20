@@ -17,9 +17,9 @@ public class AwardActivityInfoService {
 	@Autowired
 	public AwardActivityInfoMapper awardActivityInfoMapper;
 
-	public AwardActivityInfo addActivity(AwardActivityInfo record){
-		awardActivityInfoMapper.insert(record);
-		return record;
+	public long addActivity(AwardActivityInfo awardActivityInfo) {
+		awardActivityInfoMapper.insert(awardActivityInfo);
+		return awardActivityInfo.getId();
 	}
-	
+
 }
