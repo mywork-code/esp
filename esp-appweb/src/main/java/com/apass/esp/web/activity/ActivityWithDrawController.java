@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 
 @Controller
@@ -24,7 +25,7 @@ public class ActivityWithDrawController {
 		obj.setStatus((byte) 1);
 		obj.setType((byte) 0);
 		obj.setaStartDate(new Date());
-
+		
 		obj = awardActivityInfoService.addActivity(obj);
 		return obj.getId().toString();
 

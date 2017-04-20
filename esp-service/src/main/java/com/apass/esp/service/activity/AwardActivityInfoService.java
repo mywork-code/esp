@@ -13,11 +13,6 @@ import com.apass.esp.mapper.AwardDetailMapper;
 @Service
 public class AwardActivityInfoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwardActivityInfoService.class);
-	@Autowired
-	public AwardBindRelMapper WihdrawBindRelMapper;
-
-	@Autowired
-	public AwardDetailMapper awardDetailMapper;
 
 	@Autowired
 	public AwardActivityInfoMapper awardActivityInfoMapper;
