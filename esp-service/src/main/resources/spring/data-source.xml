@@ -14,14 +14,14 @@
 	
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<bean id="mysqlSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="mapperLocations" value="classpath*:mapper/**/*.xml"/>
         <property name="dataSource" ref="mysqlDataSource"/>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage"  value="com.apass.esp.mapper"/>
-        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="sqlSessionFactory" ref="mysqlSqlSessionFactory"/>
     </bean>
 </beans>
 
