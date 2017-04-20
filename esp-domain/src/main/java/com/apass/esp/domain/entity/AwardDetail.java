@@ -4,133 +4,133 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class AwardDetail {
-	private Long id;
+    private Long id;
 
-	private Long userId;
+    private Long userId;
 
-	private Long activityId;
+    private Long activityId;
 
-	private BigDecimal taxAmount;
+    private BigDecimal taxAmount;
 
-	private BigDecimal amount;
+    private BigDecimal amount;
 
-	private Byte type;
+    private Byte type;
 
-	private Byte status;
+    private Byte status;
 
-	private Long mainOrderId;
+    private Long mainOrderId;
 
-	private Date arrivedDate;
+    private Date arrivedDate;
 
-	private String cardNo;
+    private String cardNo;
 
-	private String cardBank;
+    private String cardBank;
 
-	private Date createDate;
+    private Date createDate;
 
-	private Date updateDate;
+    private Date updateDate;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getUserId() {
-		return userId;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public Long getActivityId() {
-		return activityId;
-	}
+    public Long getActivityId() {
+        return activityId;
+    }
 
-	public void setActivityId(Long activityId) {
-		this.activityId = activityId;
-	}
+    public void setActivityId(Long activityId) {
+        this.activityId = activityId;
+    }
 
-	public BigDecimal getTaxAmount() {
-		return taxAmount;
-	}
+    public BigDecimal getTaxAmount() {
+        return taxAmount;
+    }
 
-	public void setTaxAmount(BigDecimal taxAmount) {
-		this.taxAmount = taxAmount;
-	}
+    public void setTaxAmount(BigDecimal taxAmount) {
+        this.taxAmount = taxAmount;
+    }
 
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 
-	public Byte getType() {
-		return type;
-	}
+    public Byte getType() {
+        return type;
+    }
 
-	public void setType(Byte type) {
-		this.type = type;
-	}
+    public void setType(Byte type) {
+        this.type = type;
+    }
 
-	public Byte getStatus() {
-		return status;
-	}
+    public Byte getStatus() {
+        return status;
+    }
 
-	public void setStatus(Byte status) {
-		this.status = status;
-	}
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
 
-	public Long getMainOrderId() {
-		return mainOrderId;
-	}
+    public Long getMainOrderId() {
+        return mainOrderId;
+    }
 
-	public void setMainOrderId(Long mainOrderId) {
-		this.mainOrderId = mainOrderId;
-	}
+    public void setMainOrderId(Long mainOrderId) {
+        this.mainOrderId = mainOrderId;
+    }
 
-	public Date getArrivedDate() {
-		return arrivedDate;
-	}
+    public Date getArrivedDate() {
+        return arrivedDate;
+    }
 
-	public void setArrivedDate(Date arrivedDate) {
-		this.arrivedDate = arrivedDate;
-	}
+    public void setArrivedDate(Date arrivedDate) {
+        this.arrivedDate = arrivedDate;
+    }
 
-	public String getCardNo() {
-		return cardNo;
-	}
+    public String getCardNo() {
+        return cardNo;
+    }
 
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
-	}
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
 
-	public String getCardBank() {
-		return cardBank;
-	}
+    public String getCardBank() {
+        return cardBank;
+    }
 
-	public void setCardBank(String cardBank) {
-		this.cardBank = cardBank;
-	}
+    public void setCardBank(String cardBank) {
+        this.cardBank = cardBank;
+    }
 
-	public Date getCreateDate() {
-		return createDate;
-	}
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+    public Date getUpdateDate() {
+        return updateDate;
+    }
 
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 }

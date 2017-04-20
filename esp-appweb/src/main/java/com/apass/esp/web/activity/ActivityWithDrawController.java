@@ -1,33 +1,33 @@
 package com.apass.esp.web.activity;
 
-import com.apass.esp.domain.entity.WithdrawActivityInfo;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.apass.esp.service.activity.ActivityWithDrawService;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
+import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.service.activity.AwardActivityInfoService;
 
 @Controller
-@RequestMapping("activity/withdraw")
+@RequestMapping("activity/award")
 public class ActivityWithDrawController {
 	@Autowired
-	public ActivityWithDrawService activityWithDrawService;
+	public AwardActivityInfoService awardActivityInfoService;
 
 	@RequestMapping("/test")
 	@ResponseBody
-	public String test(){
-		WithdrawActivityInfo obj = new WithdrawActivityInfo();
+	public String test() {
+		AwardActivityInfo obj = new AwardActivityInfo();
 		obj.setActivityName("test");
 		obj.setStatus((byte) 1);
 		obj.setType((byte) 0);
 		obj.setaStartDate(new Date());
 
-		obj = activityWithDrawService.addActivity(obj);
+		obj = awardActivityInfoService.addActivity(obj);
 		return obj.getId().toString();
 
 	}
-	
+
 }
