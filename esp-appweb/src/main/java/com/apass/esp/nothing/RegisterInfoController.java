@@ -1,6 +1,7 @@
 package com.apass.esp.nothing;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -103,10 +104,15 @@ public class RegisterInfoController {
 	            return Response.fail("验证码验证失败");
 	        }
 	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);
+	        String userFalge = null;
 	        if(result){
 	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
 	        	if(result2){
 	        		//TOO 调用gfb接口，查看该用户是新用户还是老用户
+	        		
+	        		userFalge="old";
+//	        		userFalge="new";
+	        		return Response.success("校验成功！", userFalge);
 	        	}
 	        }
 	        return Response.fail("验证码验证失败");
