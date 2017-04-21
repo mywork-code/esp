@@ -18,7 +18,7 @@
 			<groupId>com.apass.esp</groupId>
 			<artifactId>esp-framework</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>

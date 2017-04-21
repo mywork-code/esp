@@ -20,7 +20,8 @@
 		<module>esp-service</module>
 		<module>esp-appweb</module>
 		<module>esp-ams</module>
-	</modules>
+        <module>esp-common</module>
+    </modules>
 
 	<!-- *********** Params Settings ************ -->
 	<properties>
