@@ -82,4 +82,44 @@ public class AwardActivity {
 			return message;
 		}
 	}
+
+	// 转提现方法
+	public enum AWARD_ACTIVITY_METHOD {
+		BINDCARD("bindCard", "绑定卡片");
+		AWARD_ACTIVITY_METHOD(String code, String message) {
+			this.code = code;
+			this.message = message;
+		}
+
+		private String code;
+		private String message;
+
+		public String getCode() {
+			return code;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+	}
+
+	// 是否已绑定银行卡
+	public enum BIND_STATUS {
+		BINDED("0", "已绑定"), UNBINDED("1", "未绑定");
+		BIND_STATUS(String code, String message) {
+			this.code = code;
+			this.message = message;
+		}
+
+		private String code;
+		private String message;
+
+		public String getCode() {
+			return code;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+	}
 }
