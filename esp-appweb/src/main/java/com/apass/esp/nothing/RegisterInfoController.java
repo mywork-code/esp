@@ -13,11 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.common.MobileSmsService;
@@ -26,7 +25,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
-@Controller
+@RestController
 @RequestMapping("/activity/regist")
 public class RegisterInfoController {
     private static final Logger logger =  LoggerFactory.getLogger(RegisterInfoController.class);
@@ -36,14 +35,14 @@ public class RegisterInfoController {
 	@Autowired
 	private MobileSmsService mobileRandomService;
     /**
-     * 初始化活动注册页面-生成随机码
+     * 1.初始化活动注册页面-生成随机码
      * @param request
      * @param response
      * @return
      * @throws IOException
      */
     @RequestMapping(value = "/random", method = RequestMethod.GET)
-    public ModelAndView random(HttpServletRequest request, HttpServletResponse response) {
+    public void random(HttpServletRequest request, HttpServletResponse response) {
         ServletOutputStream output = null;
         try {
             HttpWebUtils.setViewHeader(response, MediaType.IMAGE_JPEG_VALUE);
@@ -57,11 +56,10 @@ public class RegisterInfoController {
         } finally {
             IOUtils.closeQuietly(output);
         }
-        return null;
     }
     /**
 	 * <pre>
-	 * 根据用户传递的手机号码, 调用消息接口向该手机号码发送验证码
+	 * 2.根据用户传递的手机号码, 调用消息接口向该手机号码发送验证码
 	 * &#64;param mobile
 	 * &#64;return Responses
 	 * </pre>
@@ -84,7 +82,7 @@ public class RegisterInfoController {
 	}
 	/**
 	 * <pre>
-	 * 根据输入的手机号码&验证码进行校验用户填写的验证码是否正确
+	 * 3.根据输入的手机号码&验证码进行校验用户填写的验证码是否正确
 	 * &#64;param mobile
 	 * &#64;param randomCode
 	 * </pre>
@@ -96,7 +94,7 @@ public class RegisterInfoController {
 		String code =     CommonUtils.getValue(request, "code");//短信验证码
 		String randomCode=CommonUtils.getValue(request, "randomCode");//随机码
 		if (StringUtils.isAnyBlank(code, smsType, mobile,randomCode)) {
-			return Response.fail("手机号或验证码输入不能为空");
+			return Response.fail("手机号或验证码或随机码输入不能为空");
 		}
 		try {
 	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
