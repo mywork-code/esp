@@ -62,8 +62,7 @@ public class BillService {
         String billDay = customerInfo.getBillDate();
         // String billDay = "18";
         if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
-            return false;//如果没有授信，则无额度消费，一起有今后按钮
-            //throw new RuntimeException("额度已失效.");
+            return false;//如果没有授信，则无额度消费
         }
         
         Date outStmtBillDate = null; // 当前已出账单日 时间格式
@@ -78,15 +77,16 @@ public class BillService {
                 outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(txnDate, 1), Integer.parseInt(billDay));
             }
         }else{
-            LOGGER.info("交易流水数据有误,查询参数orderId：[{}]", orderId);
-            throw new RuntimeException("交易流水数据有误");
+            LOGGER.info("交易流水数据未生成,查询参数orderId：[{}]", orderId);
+            return false;
+            //throw new RuntimeException("交易流水数据有误");
         }
         
         paramMap.put("stmtDate",DateFormatUtil.dateToString(outStmtBillDate));
         
         List<StatementEntity> statements = billRepository.billRepository(paramMap);
         if(statements == null || statements.size() == 0){
-            throw new RuntimeException("当前无帐单.");
+            return false;//无帐单
         }else if(statements.size() == 1 && "S01".equals(statements.get(0).getStmtStatus())){
             return false;
         }else if(statements.size() == 2){

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.AwardDetailMapper">
+	<resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.AwardDetail">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="activity_id" property="activityId" jdbcType="BIGINT" />
+		<result column="tax_amount" property="taxAmount" jdbcType="DECIMAL" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="type" property="type" jdbcType="TINYINT" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="main_order_id" property="mainOrderId" jdbcType="BIGINT" />
+		<result column="arrived_date" property="arrivedDate" jdbcType="TIMESTAMP" />
+		<result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+		<result column="card_bank" property="cardBank" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, user_id, activity_id, tax_amount, amount, type, status,
+		main_order_id, arrived_date,
+		card_no, card_bank, create_date, update_date
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from t_esp_award_detail
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from t_esp_award_detail
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.apass.esp.domain.entity.AwardDetail"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_esp_award_detail (user_id, activity_id, tax_amount,
+		amount, type, status,
+		main_order_id, arrived_date, card_no,
+		card_bank, create_date, update_date
+		)
+		values (#{userId,jdbcType=BIGINT}, #{activityId,jdbcType=BIGINT},
+		#{taxAmount,jdbcType=DECIMAL},
+		#{amount,jdbcType=DECIMAL}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
+		#{mainOrderId,jdbcType=BIGINT}, #{arrivedDate,jdbcType=TIMESTAMP},
+		#{cardNo,jdbcType=VARCHAR},
+		#{cardBank,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.apass.esp.domain.entity.AwardDetail"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_esp_award_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="activityId != null">
+				activity_id,
+			</if>
+			<if test="taxAmount != null">
+				tax_amount,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="mainOrderId != null">
+				main_order_id,
+			</if>
+			<if test="arrivedDate != null">
+				arrived_date,
+			</if>
+			<if test="cardNo != null">
+				card_no,
+			</if>
+			<if test="cardBank != null">
+				card_bank,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="updateDate != null">
+				update_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="activityId != null">
+				#{activityId,jdbcType=BIGINT},
+			</if>
+			<if test="taxAmount != null">
+				#{taxAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=TINYINT},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=TINYINT},
+			</if>
+			<if test="mainOrderId != null">
+				#{mainOrderId,jdbcType=BIGINT},
+			</if>
+			<if test="arrivedDate != null">
+				#{arrivedDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cardNo != null">
+				#{cardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="cardBank != null">
+				#{cardBank,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.AwardDetail">
+		update t_esp_award_detail
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=BIGINT},
+			</if>
+			<if test="activityId != null">
+				activity_id = #{activityId,jdbcType=BIGINT},
+			</if>
+			<if test="taxAmount != null">
+				tax_amount = #{taxAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=TINYINT},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=TINYINT},
+			</if>
+			<if test="mainOrderId != null">
+				main_order_id = #{mainOrderId,jdbcType=BIGINT},
+			</if>
+			<if test="arrivedDate != null">
+				arrived_date = #{arrivedDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="cardNo != null">
+				card_no = #{cardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="cardBank != null">
+				card_bank = #{cardBank,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				update_date = #{updateDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.AwardDetail">
+		update t_esp_award_detail
+		set user_id = #{userId,jdbcType=BIGINT},
+		activity_id = #{activityId,jdbcType=BIGINT},
+		tax_amount = #{taxAmount,jdbcType=DECIMAL},
+		amount = #{amount,jdbcType=DECIMAL},
+		type = #{type,jdbcType=TINYINT},
+		status = #{status,jdbcType=TINYINT},
+		main_order_id = #{mainOrderId,jdbcType=BIGINT},
+		arrived_date = #{arrivedDate,jdbcType=TIMESTAMP},
+		card_no = #{cardNo,jdbcType=VARCHAR},
+		card_bank = #{cardBank,jdbcType=VARCHAR},
+		create_date = #{createDate,jdbcType=TIMESTAMP},
+		update_date = #{updateDate,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>
