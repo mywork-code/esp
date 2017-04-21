@@ -326,6 +326,9 @@
 			<if test="supNo != null and supNo != ''">
 			sup_no = #{supNo, jdbcType=VARCHAR},
 			</if>
+			<if test="sordNo != null and sordNo != ''">
+			sord_no = #{sordNo, jdbcType=VARCHAR},
+			</if>
 			<if test="remark != null and remark != ''">
 				remark = #{remark, jdbcType=VARCHAR},
 			</if>
