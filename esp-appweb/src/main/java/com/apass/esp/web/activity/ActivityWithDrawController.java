@@ -1,8 +1,12 @@
 package com.apass.esp.web.activity;
 
-import java.util.Date;
-import java.util.Map;
-
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.nothing.RegisterInfoController;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.common.MobileSmsService;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,14 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.nothing.RegisterInfoController;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.common.MobileSmsService;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.CommonUtils;
+import java.util.Map;
 
 @Controller
 @RequestMapping("activity/award")
@@ -32,18 +29,6 @@ public class ActivityWithDrawController {
 	@Autowired
 	private MobileSmsService mobileRandomService;
 
-	@RequestMapping("/test")
-	@ResponseBody
-	public String test() {
-		AwardActivityInfoDto obj = new AwardActivityInfoDto();
-		obj.setActivityName("test");
-		obj.setStatus((byte) 1);
-		obj.setType((byte) 0);
-		obj.setaStartDate(new Date());
-		long obj1 = awardActivityInfoService.addActivity(obj);
-		return obj1 + "";
-
-	}
 
 	/**
 	 * 银行卡列表
