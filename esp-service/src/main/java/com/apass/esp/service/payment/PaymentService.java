@@ -427,9 +427,10 @@ public class PaymentService {
 		resultMap.put("cardBank", customer.getCardBank());
 		resultMap.put("cardType", customer.getCardType());
 
-	//暂时注释掉新用户判断
-//		boolean newCustomerFlag = paymentHttpClient.isNewCustomer(userId);
-		boolean newCustomerFlag = true;
+
+		boolean newCustomerFlag = paymentHttpClient.isNewCustomer(userId);
+		//暂时注释掉新用户判断
+		//boolean newCustomerFlag = true;
 
 		Integer num = paymentHttpClient.creditPayAuthority(userId);
 		if(num != null && num >= 3){
