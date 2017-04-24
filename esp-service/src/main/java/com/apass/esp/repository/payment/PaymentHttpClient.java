@@ -52,11 +52,6 @@ public class PaymentHttpClient {
 
   private static final String NEW_CUSTOMER_FLAG_URL = "/myCenter/search/customerFlag";
   
-  //验卡是否本人 以及是否支持该银行
-  private static final String BIND_CARD_IMFORMATION_URL="/reWardActivity/validateBindCard";
-
-  //绑定卡片
-  private static final String BIND_CARD_URL="/reWardActivity/bindCard";
 
   /**
    * 调用GFB获取客户信息
@@ -302,46 +297,4 @@ public class PaymentHttpClient {
     }
   }
   
-	/**
-	 * 验卡是否本人 以及是否支持该银行
-	 * @param map
-	 * @return
-	 */
-	public Response validateBindCard(Map<String, Object> map) {
-		String requestUrl = gfbReqUrl + BIND_CARD_IMFORMATION_URL;
-		String requestJson = GsonUtils.toJson(map);
-		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
-		try {
-			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-			LOGGER.info("验卡是否本人 以及是否支持该银行:{}", responseJson);
-			Response result = GsonUtils.convertObj(responseJson, Response.class);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("验卡是否本人 以及是否支持该银行接口调用异常:{}", e);
-			return Response.fail("验卡是否本人 以及是否支持该银行接口调用异常");
-		}
-
-	}
-	
-	/**
-	 * 绑卡
-	 * 
-	 * @param map
-	 * @return
-	 */
-	public Response bindCard(Map<String, Object> map) {
-		String requestUrl = gfbReqUrl + BIND_CARD_URL;
-		String requestJson = GsonUtils.toJson(map);
-		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
-		try {
-			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-			LOGGER.info("绑卡:{}", responseJson);
-			Response result = GsonUtils.convertObj(responseJson, Response.class);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("绑卡接口调用异常:{}", e);
-			return Response.fail("绑卡接口调用异常");
-		}
-
-	}
 }
