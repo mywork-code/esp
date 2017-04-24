@@ -8,14 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
-import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.nothing.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
@@ -108,6 +106,12 @@ public class ActivityWithDrawController {
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
+		}
+		String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
+		String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
+		boolean mobileValidate = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
+		if (!mobileValidate) {
+			return Response.fail("验证码错误");
 		}
 
 		if (AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))) {
