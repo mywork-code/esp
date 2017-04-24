@@ -1,15 +1,7 @@
 package com.apass.esp.service.activity;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.AwardActivity;
@@ -17,6 +9,14 @@ import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AwardActivityInfoService {
@@ -31,12 +31,14 @@ public class AwardActivityInfoService {
 	/**
 	 * 添加活动
 	 * 
-	 * @param awardActivityInfo
 	 * @return
 	 */
-	public long addActivity(AwardActivityInfo awardActivityInfo) {
-		awardActivityInfoMapper.insert(awardActivityInfo);
-		return awardActivityInfo.getId();
+	public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
+		AwardActivityInfo entity = new AwardActivityInfo();
+		entity.setActivityName(dto.getName());
+
+		awardActivityInfoMapper.insert(entity);
+		return entity;
 	}
 
 	/**
