@@ -9,11 +9,21 @@ import java.util.Date;
 public class AwardActivityInfoDto {
   private String name;
 
-  private Date startDate;
+  private String startDate;
 
-  private Date endDate;
+  private String endDate;
 
   private BigDecimal rebate;
+
+	private String userId;
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
   public String getName() {
     return name;
@@ -23,23 +33,23 @@ public class AwardActivityInfoDto {
     this.name = name;
   }
 
-  public Date getStartDate() {
-    return startDate;
-  }
+	public String getStartDate() {
+		return startDate;
+	}
 
-  public void setStartDate(Date startDate) {
-    this.startDate = startDate;
-  }
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
 
-  public Date getEndDate() {
-    return endDate;
-  }
+	public String getEndDate() {
+		return endDate;
+	}
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
-  }
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 
-  public BigDecimal getRebate() {
+	public BigDecimal getRebate() {
     return rebate;
   }
 
