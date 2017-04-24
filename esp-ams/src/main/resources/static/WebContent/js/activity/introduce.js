@@ -14,57 +14,45 @@ $(function(){
         columns :[[
             {
                 title : '活动名称',
-                field : 'name',
+                field : 'activityName',
                 width : 150,
-                align : 'center',
-                formatter : function(value, row, index) {
-                    var content = "";
-                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-                        + row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
-                    return content;
-                }
+                align : 'center'
             }, {
                 title : '开始时间',
-                field : 'bannerType',
+                field : 'aStartDate',
                 width : 150,
                 align : 'center',
                 formatter:function(value,row,index){
-                    if(value=="index"){
-                        return "首页";
-                    }else if(value=="sift"){
-                        return "精选";
+                    if(null!=value && ""!=value){
+                        return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
                 }
             },
             {
                 title : '结束时间',
-                field : 'activityUrl',
+                field : 'aEndDate',
                 width : 150,
                 align : 'center',
                 formatter : function(value, row, index) {
-                    var content = "";
-                    if(row.activityUrl!=null){
-                        content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
+                    if(null!=value && ""!=value){
+                        return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                    return content;
                 }
             },
             {
                 title : '个人返点',
-                field : 'bannerOrder',
+                field : 'rebate',
                 width : 120,
                 align : 'center'
             }]],
         loader : function(param, success, error) {
             $.ajax({
-                url : ctx + '/application/banner/management/query',
+                url : ctx + '/activity/introduce/list',
                 data : param,
-                type : "post",
+                type : "get",
                 dataType : "json",
                 success : function(data) {
-                    // console.log(data);
                     $.validateResponse(data, function() {
-                        // debugger;
                         success(data);
                     });
                 }
@@ -168,7 +156,6 @@ $(function(){
     //查询
     $(".search-btn").click(function(){
         var params={};
-        params['bannerType']=$('#bannerType2').combobox('getValue');
         $('#bannerList').datagrid('load',params);
     });
 
