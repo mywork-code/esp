@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
@@ -39,9 +41,9 @@ public class ActivityWithDrawController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("/getBindCardImformation")
+	@RequestMapping(value = "/getBindCardImformation", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getBindCardImformation(Map<String, Object> paramMap) {
+	public Response getBindCardImformation( Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		String result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
@@ -57,7 +59,9 @@ public class ActivityWithDrawController {
 	/**
 	 * 绑定卡片
 	 */
-	public Response bindCardByUserId(Map<String, Object> paramMap) {
+	@RequestMapping(value = "/bindCardByUserId", method = RequestMethod.POST)
+	@ResponseBody
+	public Response bindCardByUserId(@RequestBody Map<String, Object> paramMap) {
 
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String identityNo = CommonUtils.getValue(paramMap, "identityNo");
