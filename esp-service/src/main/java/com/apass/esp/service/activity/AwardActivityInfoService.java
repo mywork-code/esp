@@ -10,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.utils.BeanUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 
 @Service
@@ -37,7 +39,9 @@ public class AwardActivityInfoService {
 	 * @param awardActivityInfo
 	 * @return
 	 */
-	public long addActivity(AwardActivityInfo awardActivityInfo) {
+	public long addActivity(AwardActivityInfoDto awardActivitydto) {
+		AwardActivityInfo awardActivityInfo= new AwardActivityInfo();
+		BeanUtils.copyProperties(awardActivityInfo, awardActivitydto);
 		awardActivityInfoMapper.insert(awardActivityInfo);
 		return awardActivityInfo.getId();
 	}
