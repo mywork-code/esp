@@ -7,11 +7,13 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.apass.esp.domain.Response;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 
+@Component
 public class EspActivityHttpClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EspActivityHttpClient.class);
 
