@@ -85,7 +85,7 @@ public class AwardActivity {
 
 	// 转提现方法
 	public enum AWARD_ACTIVITY_METHOD {
-		BINDCARD("bindCard", "绑定卡片");
+		BINDCARD("bindCard", "绑定卡片"),UPLOADIMGANDRECOGNIZED("uploadImgAndRecognize","身份证上传识别");
 		AWARD_ACTIVITY_METHOD(String code, String message) {
 			this.code = code;
 			this.message = message;
@@ -103,9 +103,9 @@ public class AwardActivity {
 		}
 	}
 
-	// 是否已绑定银行卡
+	// 是否绑定银行卡
 	public enum BIND_STATUS {
-		BINDED("0", "已绑定"), UNBINDED("1", "未绑定");
+		BINDED("0", "已绑定"), UNBINDED("1", "未绑定"), UNBINDIDENTITY("2", "身份证信息不存在");
 		BIND_STATUS(String code, String message) {
 			this.code = code;
 			this.message = message;
