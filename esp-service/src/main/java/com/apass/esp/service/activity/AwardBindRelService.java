@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.mapper.AwardBindRelMapper;
 @Service
 public class AwardBindRelService {
@@ -13,4 +14,8 @@ public class AwardBindRelService {
 
 	@Autowired
 	public AwardBindRelMapper WihdrawBindRelMapper;
+	
+	public int insertAwardBindRel(AwardBindRel awardBindRel){
+		return WihdrawBindRelMapper.insert(awardBindRel);
+	}
 }
