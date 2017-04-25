@@ -21,14 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.manage.CommonResponse;
-import com.apass.esp.domain.manage.RegisterInfoResponse;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -110,38 +107,40 @@ public class RegisterInfoController {
 			return Response.fail("手机号或验证码或随机码输入不能为空");
 		}
 		try {
-//	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
-//	        String sessionCode = sessionObj != null ? sessionObj.toString() : null;
-//	        if (StringUtils.isBlank(randomCode) || StringUtils.isBlank(sessionCode)) {
-//	            return Response.fail("验证码验证失败");
-//	        }
-//	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);
-//	        if(result){
-//	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
-//	        	if(result2){
+	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
+	        String sessionCode = sessionObj != null ? sessionObj.toString() : null;
+	        if (StringUtils.isBlank(randomCode) || StringUtils.isBlank(sessionCode)) {
+	            return Response.fail("验证码验证失败");
+	        }
+	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);
+	        if(result){
+	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
+	        	if(result2){
 		        	Response resp=registerInfoService.isNewCustomer(mobile,InviterId);
 	        		if("1".equals(resp.getStatus())){
 	        			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
 	        			String falge=(String) rrse.get("falge");
 	        			if("old".equals(falge)){//
-	        				
-	        				AwardBindRel aRel=new AwardBindRel();
-	        				aRel.setActivityId(Long.parseLong(activityId));
-	        				aRel.setUserId(Long.parseLong(InviterId));
-	        				aRel.setMobile(rrse.get("mobile").toString());
-	        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
-	        				aRel.setInviteMobile(mobile);
-	        				aRel.setIsNew(new Byte("1"));
-	        				aRel.setCreateDate(new Date());
-	        				aRel.setUpdateDate(new Date());
-	        				awardBindRelService.insertAwardBindRel(aRel);
+	        				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile);//判断是否已经被邀请
+	        				if(abrel==0){
+	        					AwardBindRel aRel=new AwardBindRel();
+		        				aRel.setActivityId(Long.parseLong(activityId));
+		        				aRel.setUserId(Long.parseLong(InviterId));
+		        				aRel.setMobile(rrse.get("mobile").toString());
+		        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
+		        				aRel.setInviteMobile(mobile);
+		        				aRel.setIsNew(new Byte("1"));
+		        				aRel.setCreateDate(new Date());
+		        				aRel.setUpdateDate(new Date());
+		        				awardBindRelService.insertAwardBindRel(aRel);
+	        				}
 	        				return Response.success("校验成功！", "old");
 	        			}else if("new".equals(falge)){
 	        				return Response.success("校验成功！", "new");
 	        			}
 	        			 return Response.fail("验证码验证失败");
-//	        		}
-//	        	}
+	        		}
+	        	}
 	        }
 	        return Response.fail("验证码验证失败");
 		} catch (Exception e) {
