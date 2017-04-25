@@ -106,7 +106,7 @@ public class EspActivityHttpClient {
 	 * @return
 	 */
 	public Response identityReconize(Map<String, Object> map) {
-		String requestUrl = gfbAppReqUrl + IDENTITY_RECONIZE_URL;
+		String requestUrl = gfbReqUrl + IDENTITY_RECONIZE_URL;
 		String requestJson = GsonUtils.toJson(map);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {

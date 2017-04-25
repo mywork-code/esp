@@ -116,9 +116,10 @@ public class ActivityWithDrawController {
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 			String imgFile = CommonUtils.getValue(paramMap, "imgFile");
 			if (StringUtils.isBlank(imgFile)) {
-				return Response.fail("参数错误");
+				return Response.fail("imgFile参数错误");
 			}
 			Response res = awardActivityInfoService.identityReconize(paramMap);// 身份证号码
+			LOGGER.info(res.toString());
 			// 得到身份证号码
 			identityNo = "";
 			// 绑定
