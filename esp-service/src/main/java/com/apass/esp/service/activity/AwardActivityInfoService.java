@@ -6,18 +6,21 @@ import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,18 @@ public class AwardActivityInfoService {
 	private EspActivityHttpClient espActivityHttpClient;
 
 	/**
+	 * 活动设置无效
+	 */
+	public void updateUneffectiveActivity(Long activityId,String updateBy){
+		AwardActivityInfo entity = new AwardActivityInfo();
+		entity.setUpdateDate(new Date());
+		entity.setUpdateBy(updateBy);
+		entity.setId(activityId);
+		entity.setStatus((byte) AwardActivity.ACTIVITY_STATUS.UNEFFECTIVE.getCode());
+		awardActivityInfoMapper.updateByPrimaryKeySelective(entity);
+	}
+
+	/**
 	 * 添加活动
 	 * 
 	 * @return
@@ -49,16 +64,31 @@ public class AwardActivityInfoService {
 		entity.setRebate(NumberUtils.divide100(dto.getRebate()));
 		entity.setType((byte) AwardActivity.ACTIVITY_TYPE.PERSONAL.getCode());
 		entity.setStatus((byte) AwardActivity.ACTIVITY_STATUS.EFFECTIVE.getCode());
-		entity.setCreateBy(dto.getUserId());
-		entity.setUpdateBy(dto.getUserId());
+		entity.setCreateBy(dto.getCreateBy());
+		entity.setUpdateBy(dto.getCreateBy());
 		entity.setCreateDate(new Date());
 		entity.setUpdateDate(new Date());
 		awardActivityInfoMapper.insert(entity);
 		return entity;
 	}
 
-	public List<AwardActivityInfo> listActivity(){
-		return awardActivityInfoMapper.selectLastEffectiveActivities();
+	public List<AwardActivityInfoVo> listActivity(){
+		List<AwardActivityInfo> list = awardActivityInfoMapper.selectLastEffectiveActivities();
+		if(CollectionUtils.isEmpty(list)){
+			return Collections.emptyList();
+		}
+		List<AwardActivityInfoVo> result = new ArrayList<>();
+		for(AwardActivityInfo ai : list) {
+			AwardActivityInfoVo vo = new AwardActivityInfoVo();
+			vo.setId(ai.getId());
+			vo.setActivityName(ai.getActivityName());
+			vo.setaStartDate(DateFormatUtil.datetime2String(ai.getaStartDate()));
+			vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
+			vo.setRebate(NumberUtils.multiply100(ai.getRebate()) + "%");
+			result.add(vo);
+		}
+		return result;
+
 	}
 
 	/**

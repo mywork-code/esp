@@ -1,17 +1,16 @@
 package com.apass.esp.domain.vo;
 
-import java.util.Date;
-
 /**
  * Created by jie.xu on 17/4/24.
  */
 public class AwardActivityInfoVo {
+  private Long id;
 
   private String activityName;
 
-  private Date aStartDate;
+  private String aStartDate;
 
-  private Date aEndDate;
+  private String aEndDate;
 
   private String rebate;
 
@@ -23,19 +22,19 @@ public class AwardActivityInfoVo {
     this.activityName = activityName;
   }
 
-  public Date getaStartDate() {
+  public String getaStartDate() {
     return aStartDate;
   }
 
-  public void setaStartDate(Date aStartDate) {
+  public void setaStartDate(String aStartDate) {
     this.aStartDate = aStartDate;
   }
 
-  public Date getaEndDate() {
+  public String getaEndDate() {
     return aEndDate;
   }
 
-  public void setaEndDate(Date aEndDate) {
+  public void setaEndDate(String aEndDate) {
     this.aEndDate = aEndDate;
   }
 
@@ -45,5 +44,13 @@ public class AwardActivityInfoVo {
 
   public void setRebate(String rebate) {
     this.rebate = rebate;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 }

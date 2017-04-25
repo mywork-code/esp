@@ -21,6 +21,7 @@ import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 
@@ -54,6 +55,7 @@ public class CoffersBaseService {
         
         //根据userId查询金库明细
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+        LOGGER.info("我的的金库详细信息：{}",GsonUtils.toJson(awardDetails));
         List<AwardDetailVo>  awardDetailVos = new ArrayList<>();
         
         BigDecimal totalCoun = BigDecimal.ZERO;
@@ -71,6 +73,7 @@ public class CoffersBaseService {
                }
            }
         }
+        LOGGER.info("用户Id：{}，用户赏金：{}",userId,totalCoun);
         resultMap.put("awardDetails", awardDetailVos);
         resultMap.put("totalCoun",totalCoun);
         
