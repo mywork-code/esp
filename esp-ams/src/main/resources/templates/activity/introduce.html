@@ -11,7 +11,7 @@
             src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
 </head>
 <body>
-
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
 <div id="tb">
     <div class="search">
         <table style="min-width: 1040px;">
@@ -30,11 +30,11 @@
 
 <div id="addIntroConfig" class="easyui-window" title="<font color='black'>活动配置</font>" hidden="hidden"
      style="width: 430px; height: 200px; display: none; text-align: center;" >
-    <form id="addBannerFile"  action="${rc.contextPath}/activity/introduce/config" method="POST" enctype="multipart/form-data">
+    <form id="introConfigForm"  action="${rc.contextPath}/activity/introduce/config" method="POST" enctype="multipart/form-data">
         <table class="details_table" style="width:92%">
             <tr>
                 <td width="5%" align="right" nowrap="nowrap">活动名称：</td>
-                <td align="left"><input id="name" style="width:120px" class="easyui-textbox" /></td>
+                <td align="left"><input id="name" name="name" style="width:120px" class="easyui-textbox" /></td>
             </tr>
             <tr>
                 <td width="5%" align="right">个人返点：</td>
@@ -44,11 +44,11 @@
             </tr>
             <tr>
                 <td width="5%" align="right" nowrap="nowrap">活动开始时间：</td>
-                <td width="5%" align="left"><input id="startDate" style="width:120px" class="easyui-datebox" /></td>
+                <td width="5%" align="left"><input id="startDate" name="startDate" style="width:120px" class="easyui-datebox" /></td>
             </tr>
             <tr>
                 <td width="5%" align="right" nowrap="nowrap">活动结束时间：</td>
-                <td width="5%" align="left"><input id="endDate" style="width:120px" class="easyui-datebox" /></td>
+                <td width="5%" align="left"><input id="endDate" name="endDate" style="width:120px" class="easyui-datebox" /></td>
             </tr>
             <tr>
 
@@ -61,6 +61,7 @@
         </table>
     </form>
 </div>
+
 
 </body>
 </html>

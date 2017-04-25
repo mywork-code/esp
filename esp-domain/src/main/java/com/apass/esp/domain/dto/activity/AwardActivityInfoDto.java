@@ -1,7 +1,6 @@
 package com.apass.esp.domain.dto.activity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Created by jie.xu on 17/4/24.
@@ -15,14 +14,14 @@ public class AwardActivityInfoDto {
 
   private BigDecimal rebate;
 
-	private String userId;
+	private String createBy;
 
-  public String getUserId() {
-    return userId;
+  public String getCreateBy() {
+    return createBy;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setCreateBy(String createBy) {
+    this.createBy = createBy;
   }
 
   public String getName() {

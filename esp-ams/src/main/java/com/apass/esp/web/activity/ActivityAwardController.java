@@ -1,12 +1,15 @@
 package com.apass.esp.web.activity;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,16 +28,16 @@ public class ActivityAwardController {
   @Autowired
   private AwardActivityInfoService awardActivityInfoService;
 
-  @RequestMapping(value = "/introduce/index",method = RequestMethod.GET)
-  public String introduceConfig(){
+  @RequestMapping(value = "/introduce/index", method = RequestMethod.GET)
+  public String introduceConfig() {
     return "activity/introduce";
   }
 
-  @RequestMapping(value = "/introduce/list",method = RequestMethod.GET)
+  @RequestMapping(value = "/introduce/list", method = RequestMethod.GET)
   @ResponseBody
-  public ResponsePageBody listConfig(){
-    ResponsePageBody<AwardActivityInfo> respBody = new ResponsePageBody<>();
-    List<AwardActivityInfo> list = awardActivityInfoService.listActivity();
+  public ResponsePageBody listConfig() {
+    ResponsePageBody<AwardActivityInfoVo> respBody = new ResponsePageBody<>();
+    List<AwardActivityInfoVo> list = awardActivityInfoService.listActivity();
     respBody.setTotal(list.size());
     respBody.setRows(list);
     respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
@@ -45,12 +48,32 @@ public class ActivityAwardController {
   /**
    * 添加配置
    */
-  @RequestMapping(value = "/introduce/config",method = RequestMethod.POST)
-  public String addIntroConfig(AwardActivityInfoDto dto){
+  @RequestMapping(value = "/introduce/config", method = RequestMethod.POST)
+  @ResponseBody
+  public Response addIntroConfig(AwardActivityInfoDto dto) {
+    if (dto.getRebate() == null || StringUtils.isEmpty(dto.getName())
+        || StringUtils.isEmpty(dto.getStartDate()) || StringUtils.isEmpty(dto.getEndDate())) {
+      return Response.fail("请输入完整信息...");
+    }
     ListeningCustomSecurityUserDetails user = SpringSecurityUtils.getLoginUserDetails();
-    dto.setUserId(user.getUserId());
-    awardActivityInfoService.addActivity(dto);
-    return "redirect:/introduce/index";
+    dto.setCreateBy(user.getUsername());
+    AwardActivityInfo info = awardActivityInfoService.addActivity(dto);
+    if (info.getId() > 0) {
+      return Response.success("操作成功...");
+    } else {
+      return Response.fail("操作失败...");
+    }
+  }
+
+  /**
+   * 关闭活动
+   */
+  @RequestMapping(value = "/introduce/delete", method = RequestMethod.POST)
+  @ResponseBody
+  public Response deleteIntro(Long id) {
+    ListeningCustomSecurityUserDetails user = SpringSecurityUtils.getLoginUserDetails();
+    awardActivityInfoService.updateUneffectiveActivity(id, user.getUsername());
+    return Response.success("操作成功...");
   }
 
 }

@@ -17,6 +17,13 @@ public class NumberUtils {
     return num.divide(new BigDecimal(100));
   }
 
+  public static BigDecimal multiply100(BigDecimal num){
+    if (num == null) {
+      return null;
+    }
+    return num.multiply(new BigDecimal(100));
+  }
+
   public static String splitNum(Object obj) {
     if (obj == null) {
       return null;
