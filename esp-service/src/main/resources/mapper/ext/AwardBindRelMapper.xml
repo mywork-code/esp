@@ -9,5 +9,10 @@
 		from t_esp_award_bind_rel
 		where user_id = #{userId}
 	</select>
-	
+	<!-- 查询是否已被关联（邀请） -->
+	<select id="selectCountByInviteMobile" resultType="java.lang.Integer" parameterType="String">
+		select count(1) 
+		from t_esp_award_bind_rel
+		where invite_mobile = #{value}
+	</select>
 </mapper>

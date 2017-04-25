@@ -5,7 +5,7 @@ import java.util.Date;
 public class AwardBindRel {
     private Long id;
 
-    private Byte activityId;
+    private Long activityId;
 
     private Long userId;
 
@@ -29,15 +29,15 @@ public class AwardBindRel {
         this.id = id;
     }
 
-    public Byte getActivityId() {
-        return activityId;
-    }
+    public Long getActivityId() {
+		return activityId;
+	}
 
-    public void setActivityId(Byte activityId) {
-        this.activityId = activityId;
-    }
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
 
-    public Long getUserId() {
+	public Long getUserId() {
         return userId;
     }
 
