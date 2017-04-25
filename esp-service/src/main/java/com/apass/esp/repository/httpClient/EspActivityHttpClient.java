@@ -30,7 +30,8 @@ public class EspActivityHttpClient {
 
 	// 银行卡列表
 	private static final String BIND_LIST_URL = "/espReWardActivity/bankList";
-
+    
+	//身份证识别
 	private static final String IDENTITY_RECONIZE_URL = "/espReWardActivity/identityReconize";
 
 	/**
