@@ -1,14 +1,6 @@
 package com.apass.esp.service.activity;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
@@ -17,8 +9,19 @@ import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.repository.payment.PaymentHttpClient;
-import com.apass.esp.utils.BeanUtils;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AwardActivityInfoService {
@@ -36,14 +39,26 @@ public class AwardActivityInfoService {
 	/**
 	 * 添加活动
 	 * 
-	 * @param awardActivityInfo
 	 * @return
 	 */
-	public long addActivity(AwardActivityInfoDto awardActivitydto) {
-		AwardActivityInfo awardActivityInfo= new AwardActivityInfo();
-		BeanUtils.copyProperties(awardActivityInfo, awardActivitydto);
-		awardActivityInfoMapper.insert(awardActivityInfo);
-		return awardActivityInfo.getId();
+	public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
+		AwardActivityInfo entity = new AwardActivityInfo();
+		entity.setActivityName(dto.getName());
+		entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate()));
+		entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate()));
+		entity.setRebate(NumberUtils.divide100(dto.getRebate()));
+		entity.setType((byte) AwardActivity.ACTIVITY_TYPE.PERSONAL.getCode());
+		entity.setStatus((byte) AwardActivity.ACTIVITY_STATUS.EFFECTIVE.getCode());
+		entity.setCreateBy(dto.getUserId());
+		entity.setUpdateBy(dto.getUserId());
+		entity.setCreateDate(new Date());
+		entity.setUpdateDate(new Date());
+		awardActivityInfoMapper.insert(entity);
+		return entity;
+	}
+
+	public List<AwardActivityInfo> listActivity(){
+		return awardActivityInfoMapper.selectLastEffectiveActivities();
 	}
 
 	/**
@@ -129,5 +144,4 @@ public class AwardActivityInfoService {
 		Response res = espActivityHttpClient.identityReconize(map);
 		return res;
 	}
-
 }

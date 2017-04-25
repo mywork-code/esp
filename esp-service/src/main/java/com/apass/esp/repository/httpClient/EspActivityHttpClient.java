@@ -1,7 +1,8 @@
 package com.apass.esp.repository.httpClient;
 
-import java.util.Map;
-
+import com.apass.esp.domain.Response;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -9,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.apass.esp.domain.Response;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpClientUtils;
+import java.util.Map;
 
 @Component
 public class EspActivityHttpClient {

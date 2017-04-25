@@ -427,11 +427,6 @@ public class PaymentService {
 		resultMap.put("cardBank", customer.getCardBank());
 		resultMap.put("cardType", customer.getCardType());
 
-
-		boolean newCustomerFlag = paymentHttpClient.isNewCustomer(userId);
-		//暂时注释掉新用户判断
-		//boolean newCustomerFlag = true;
-
 		Integer num = paymentHttpClient.creditPayAuthority(userId);
 		if(num != null && num >= 3){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
@@ -439,10 +434,6 @@ public class PaymentService {
 			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
 			return resultMap;
 		}
-
-		if(!newCustomerFlag){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-		} else {
 			//1、用户可用额度为0
 			BigDecimal availableAmt = customer.getAvailableAmount();
 			if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
@@ -478,7 +469,6 @@ public class PaymentService {
 					}
 				}
 			}
-		}
 
 		resultMap.put("page", page);
 		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));

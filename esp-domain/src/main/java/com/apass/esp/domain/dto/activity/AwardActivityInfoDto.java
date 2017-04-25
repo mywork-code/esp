@@ -3,114 +3,57 @@ package com.apass.esp.domain.dto.activity;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * Created by jie.xu on 17/4/24.
+ */
 public class AwardActivityInfoDto {
-	private Long id;
+  private String name;
 
-	private String activityName;
+  private String startDate;
 
-	private Date aStartDate;
+  private String endDate;
 
-	private Date aEndDate;
+  private BigDecimal rebate;
 
-	private Byte status;
+	private String userId;
 
-	private Byte type;
+  public String getUserId() {
+    return userId;
+  }
 
-	private BigDecimal rebate;
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-	private String createBy;
+  public String getName() {
+    return name;
+  }
 
-	private Date createDate;
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	private String updateBy;
-
-	private Date updateDate;
-
-	public Long getId() {
-		return id;
+	public String getStartDate() {
+		return startDate;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
 
-	public String getActivityName() {
-		return activityName;
+	public String getEndDate() {
+		return endDate;
 	}
 
-	public void setActivityName(String activityName) {
-		this.activityName = activityName;
-	}
-
-	public Date getaStartDate() {
-		return aStartDate;
-	}
-
-	public void setaStartDate(Date aStartDate) {
-		this.aStartDate = aStartDate;
-	}
-
-	public Date getaEndDate() {
-		return aEndDate;
-	}
-
-	public void setaEndDate(Date aEndDate) {
-		this.aEndDate = aEndDate;
-	}
-
-	public Byte getStatus() {
-		return status;
-	}
-
-	public void setStatus(Byte status) {
-		this.status = status;
-	}
-
-	public Byte getType() {
-		return type;
-	}
-
-	public void setType(Byte type) {
-		this.type = type;
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 	public BigDecimal getRebate() {
-		return rebate;
-	}
+    return rebate;
+  }
 
-	public void setRebate(BigDecimal rebate) {
-		this.rebate = rebate;
-	}
-
-	public String getCreateBy() {
-		return createBy;
-	}
-
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
-	public String getUpdateBy() {
-		return updateBy;
-	}
-
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
-
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+  public void setRebate(BigDecimal rebate) {
+    this.rebate = rebate;
+  }
 }
