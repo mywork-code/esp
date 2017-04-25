@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,7 +33,7 @@ public class ActivityWithDrawController {
 	@Autowired
 	private MobileSmsService mobileRandomService;
 
-	@RequestMapping("/test")
+	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	@ResponseBody
 	public String test() {
 		AwardActivityInfoDto obj = new AwardActivityInfoDto();
@@ -53,7 +54,7 @@ public class ActivityWithDrawController {
 	 */
 	@RequestMapping(value = "/getBankList", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getBankList(Map<String, Object> paramMap) {
+	public Response getBankList(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		Response res = awardActivityInfoService.getBankList(paramMap);
 
@@ -67,7 +68,7 @@ public class ActivityWithDrawController {
 	 */
 	@RequestMapping(value = "/getBindCardImformation", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getBindCardImformation(Map<String, Object> paramMap) {
+	public Response getBindCardImformation(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
@@ -92,7 +93,7 @@ public class ActivityWithDrawController {
 	 */
 	@RequestMapping(value = "/bindCardByUserId", method = RequestMethod.POST)
 	@ResponseBody
-	public Response bindCardByUserId(Map<String, Object> paramMap) {
+	public Response bindCardByUserId(@RequestBody Map<String, Object> paramMap) {
 
 		String userId = CommonUtils.getValue(paramMap, "userId");
 
@@ -153,7 +154,7 @@ public class ActivityWithDrawController {
 	 * 
 	 * @return
 	 */
-	public Response uploadImgAndRecognize(Map<String, Object> paramMap) {
+	public Response uploadImgAndRecognize(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZED.getCode() + "_" + userId;
 
