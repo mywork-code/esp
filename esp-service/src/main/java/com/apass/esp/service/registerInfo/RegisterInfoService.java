@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.manage.CommonResponse;
 import com.apass.esp.service.purchase.PurchaseService;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
