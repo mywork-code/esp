@@ -33,7 +33,7 @@ public class RegisterInfoService {
      * @param mobile
      * @return
      */
-    public CommonResponse isNewCustomer(String mobile,String InviterId){
+    public Response isNewCustomer(String mobile,String InviterId){
     	try {
 			 Map<String,Object> map=new HashMap<String,Object>();
 			 map.put("mobile", mobile);
@@ -42,7 +42,7 @@ public class RegisterInfoService {
 	         String reqJson = GsonUtils.toJson(map);
 	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
 	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-	         CommonResponse response=GsonUtils.convertObj(responseJson, CommonResponse.class);
+	         Response   response=GsonUtils.convertObj(responseJson, Response.class);
 	         return response;
     	} catch (Exception e) {
 			LOGGER.error("判断是否新用户失败！", e);
@@ -54,7 +54,7 @@ public class RegisterInfoService {
      * @param mobile
      * @return
      */
-    public CommonResponse regsitNew(String mobile,String password,String InviterId){
+    public Response regsitNew(String mobile,String password,String InviterId){
     	try {
 			 Map<String,Object> map=new HashMap<String,Object>();
 			 map.put("mobile", mobile);
@@ -64,7 +64,7 @@ public class RegisterInfoService {
 	         String reqJson = GsonUtils.toJson(map);
 	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
 	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-	         CommonResponse response = GsonUtils.convertObj(responseJson, CommonResponse.class);
+	         Response response = GsonUtils.convertObj(responseJson, Response.class);
 	         return response;
     	} catch (Exception e) {
 			LOGGER.error("新用户注册失败！", e);

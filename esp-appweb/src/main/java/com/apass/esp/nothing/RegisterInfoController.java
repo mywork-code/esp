@@ -110,26 +110,26 @@ public class RegisterInfoController {
 			return Response.fail("手机号或验证码或随机码输入不能为空");
 		}
 		try {
-	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
-	        String sessionCode = sessionObj != null ? sessionObj.toString() : null;
-	        if (StringUtils.isBlank(randomCode) || StringUtils.isBlank(sessionCode)) {
-	            return Response.fail("验证码验证失败");
-	        }
-	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);
-	        if(result){
-	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
-	        	if(result2){
-	        		CommonResponse resp=registerInfoService.isNewCustomer(mobile,InviterId);
+//	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
+//	        String sessionCode = sessionObj != null ? sessionObj.toString() : null;
+//	        if (StringUtils.isBlank(randomCode) || StringUtils.isBlank(sessionCode)) {
+//	            return Response.fail("验证码验证失败");
+//	        }
+//	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);
+//	        if(result){
+//	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
+//	        	if(result2){
+		        	Response resp=registerInfoService.isNewCustomer(mobile,InviterId);
 	        		if("1".equals(resp.getStatus())){
-	        			String  content=resp.getData();
-	        			RegisterInfoResponse rrse=GsonUtils.convertObj(content, RegisterInfoResponse.class);
-	        			String falge=rrse.getFalge();
+	        			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
+	        			String falge=(String) rrse.get("falge");
 	        			if("old".equals(falge)){//
+	        				
 	        				AwardBindRel aRel=new AwardBindRel();
 	        				aRel.setActivityId(Long.parseLong(activityId));
 	        				aRel.setUserId(Long.parseLong(InviterId));
-	        				aRel.setMobile(rrse.getInviteMobile());
-	        				aRel.setInviteUserId(Long.parseLong(rrse.getUserId()));
+	        				aRel.setMobile(rrse.get("mobile").toString());
+	        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
 	        				aRel.setInviteMobile(mobile);
 	        				aRel.setIsNew(new Byte("1"));
 	        				aRel.setCreateDate(new Date());
@@ -140,8 +140,8 @@ public class RegisterInfoController {
 	        				return Response.success("校验成功！", "new");
 	        			}
 	        			 return Response.fail("验证码验证失败");
-	        		}
-	        	}
+//	        		}
+//	        	}
 	        }
 	        return Response.fail("验证码验证失败");
 		} catch (Exception e) {
@@ -167,15 +167,14 @@ public class RegisterInfoController {
 			return Response.fail("手机号和密码不能为空");
 		}
 		try {
-			   CommonResponse resp=registerInfoService.regsitNew(mobile,password,InviterId);
+			   Response resp=registerInfoService.regsitNew(mobile,password,InviterId);
 	        	if("1".equals(resp.getStatus())){
-	        		String  content=resp.getData();
-        			RegisterInfoResponse rrse=GsonUtils.convertObj(content, RegisterInfoResponse.class);
+        			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
         			AwardBindRel aRel=new AwardBindRel();
     				aRel.setActivityId(Long.parseLong(activityId));
     				aRel.setUserId(Long.parseLong(InviterId));
-    				aRel.setMobile(rrse.getInviteMobile());
-    				aRel.setInviteUserId(Long.parseLong(rrse.getUserId()));
+    				aRel.setMobile(rrse.get("mobile").toString());
+    				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
     				aRel.setInviteMobile(mobile);
     				aRel.setIsNew(new Byte("1"));
     				aRel.setCreateDate(new Date());
