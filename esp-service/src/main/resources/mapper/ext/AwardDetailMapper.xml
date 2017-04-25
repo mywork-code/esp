@@ -4,6 +4,6 @@
 	<select id="queryAwardDetail" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
       from t_esp_award_detail
-      where user_id = #{userId}
+      where  status in(0,2) and user_id = #{userId}
     </select>
 </mapper>
