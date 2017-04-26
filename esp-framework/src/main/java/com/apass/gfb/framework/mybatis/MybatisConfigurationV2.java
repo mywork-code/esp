@@ -2,7 +2,6 @@ package com.apass.gfb.framework.mybatis;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -39,22 +38,5 @@ public class MybatisConfigurationV2 {
     mapperScannerConfigurer.setSqlSessionFactoryBeanName("mysqlSqlSessionFactory");
     return mapperScannerConfigurer;
   }
-  
-  
-  public static void main(String[] args) {
-      
-      String phone  = "18321017352";
-      
-      System.out.println(phone.substring(0,3) + "****" + phone.substring(7, phone.length()));
-      
-      if(org.apache.commons.lang3.StringUtils.isNotBlank(phone) && StringUtils.length(phone) == 11){
-          System.out.println(phone.replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2"));
-      }
-      String haha = "";
-      if(StringUtils.isBlank(haha)){
-          System.out.println("afaf");
-      }
-      
-    
-  }
+
 }
