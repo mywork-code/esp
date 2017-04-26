@@ -38,6 +38,10 @@ public class MerchantInfoEntity {
 	 */
 	private String merchantAddress;
 	/**
+	 * 商户退货详细地址
+	 */
+	private String merchantReturnAddress;
+	/**
 	 * 邮政编码
 	 */
 	private String merchantPostcode;
@@ -280,4 +284,12 @@ public class MerchantInfoEntity {
 		this.updateDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateDate);
 	}
 
+	public String getMerchantReturnAddress() {
+		return merchantReturnAddress;
+	}
+
+	public void setMerchantReturnAddress(String merchantReturnAddress) {
+		this.merchantReturnAddress = merchantReturnAddress;
+	}
+	
 }

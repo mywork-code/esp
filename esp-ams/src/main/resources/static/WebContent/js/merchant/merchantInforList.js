@@ -118,6 +118,7 @@ $(function(){
 		$("#addMerchantProvince").combobox('setValue','');
 		$("#addMerchantCity").combobox('setValue','');
 		$("#addMerchantAddress").textbox('setValue','');
+		$("#addMerchantReturnAddress").textbox('setValue','');
 		$("#addMerchantPostcode").textbox('setValue','');
 		$("#addMerchantType").combobox('setValue','');
 		$("#addMerchantNickname").textbox('setValue','');
@@ -195,6 +196,7 @@ $(function(){
 //		var merchantProvince = $("#addMerchantProvince").combobox('getText');
 		var merchantCity = $("#addMerchantCity").combobox('getValue');
 		var merchantAddress = $("#addMerchantAddress").textbox('getValue');
+		var merchantReturnAddress = $("#addMerchantReturnAddress").textbox('getValue');//二期后台电商需要添加商家退货地址
 		var merchantPostcode = $("#addMerchantPostcode").textbox('getValue');
 		var merchantType = $("#addMerchantType").combobox('getValue');
 		var merchantNickname = $("#addMerchantNickname").textbox('getValue');
@@ -215,6 +217,7 @@ $(function(){
 			merchantProvince: merchantProvince,
 			merchantCity: merchantCity,
 			merchantAddress: merchantAddress,
+			merchantReturnAddress:merchantReturnAddress,//商家退货地址
 			merchantPostcode: merchantPostcode,//邮政编码
 			merchantType: merchantType,//商户类型（个人、企业）
 		    merchantNickname:merchantNickname,//商户昵称
@@ -290,6 +293,7 @@ $(function(){
 		$("#editMerchantProvince").combobox('setValue',row3.merchantProvince);
 		$("#editMerchantCity").combobox('setValue',row3.merchantCity);
 		$("#editMerchantAddress").textbox('setValue',row3.merchantAddress);
+		$("#editMerchantReturnAddress").textbox('setValue',row3.merchantReturnAddress);//商家退货地址
 		$("#editMerchantPostcode").textbox('setValue',row3.merchantPostcode);
 		//alert(row3.merchantType);
 		$("#editMerchantType").combobox('setValue',row3.merchantType);
@@ -350,6 +354,7 @@ $(function(){
 		var merchantCity = $("#editMerchantCity").combobox('getValue');
 //		var merchantCity = $("#editMerchantCity").combobox('getText');
 		var merchantAddress = $("#editMerchantAddress").textbox('getValue');
+		var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue');//商家退货地址
 		var merchantPostcode = $("#editMerchantPostcode").textbox('getValue');
 		var merchantType = $("#editMerchantType").combobox('getValue');
 		var merchantNickname = $("#editMerchantNickname").textbox('getValue');
@@ -368,6 +373,7 @@ $(function(){
 			merchantProvince: merchantProvince,
 			merchantCity: merchantCity,
 			merchantAddress: merchantAddress,
+			merchantReturnAddress:merchantReturnAddress,
 			merchantPostcode: merchantPostcode,//邮政编码
 			merchantType: merchantType,//商户类型（个人、企业）
 		    merchantNickname: merchantNickname,//商户昵称
