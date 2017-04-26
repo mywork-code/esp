@@ -361,6 +361,7 @@ public class MerchantInforController extends BaseController {
         String merchantProvince = HttpWebUtils.getValue(request, "merchantProvince");
         String merchantCity = HttpWebUtils.getValue(request, "merchantCity");
         String merchantAddress = HttpWebUtils.getValue(request, "merchantAddress");
+        String merchantReturnAddress = HttpWebUtils.getValue(request, "merchantReturnAddress");
         String merchantPostcode = HttpWebUtils.getValue(request, "merchantPostcode");
         String merchantType = HttpWebUtils.getValue(request, "merchantType");
         String merchantNickname = HttpWebUtils.getValue(request, "merchantNickname");
@@ -391,6 +392,9 @@ public class MerchantInforController extends BaseController {
         }
         if (null != merchantAddress && !merchantAddress.trim().isEmpty()) {
             mity.setMerchantAddress(merchantAddress);
+        }
+        if (null != merchantReturnAddress && !merchantReturnAddress.trim().isEmpty()) {
+            mity.setMerchantReturnAddress(merchantReturnAddress);
         }
         if (null != merchantPostcode && !merchantPostcode.trim().isEmpty()) {
             mity.setMerchantPostcode(merchantPostcode);

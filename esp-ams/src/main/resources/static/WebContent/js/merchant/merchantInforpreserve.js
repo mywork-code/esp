@@ -86,6 +86,7 @@ function load(){
 		$("#editMerchantProvince").combobox('setValue',data.merchantProvince);
 		$("#editMerchantCity").combobox('setValue',data.merchantCity);
 		$("#editMerchantAddress").textbox('setValue',data.merchantAddress);
+		$("#editMerchantReturnAddress").textbox('setValue',data.merchantReturnAddress);
 		$("#editMerchantPostcode").textbox('setValue',data.merchantPostcode);
 		$("#editMerchantType").combobox('setValue',data.merchantType);
 		$("#editMerchantNickname").textbox('setValue',data.merchantNickname);
@@ -227,6 +228,11 @@ function saveorsubmit(statu){
 		$.messager.alert("<span style='color: black;'>提示</span>","企业机构代码不能为空！",'info');
 		return;
 	}
+	var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue');
+	if (null == merchantReturnAddress || ("") == merchantReturnAddress) {
+		$.messager.alert("<span style='color: black;'>提示</span>","退货地址不能为空！",'info'); 
+		return;
+	}
 	debugger;
 	var remark = $("#message").textbox('getValue');
     
@@ -237,6 +243,7 @@ function saveorsubmit(statu){
 	params['merchantProvince']=merchantProvince;
 	params['merchantCity']=merchantCity;
 	params['merchantAddress']=merchantAddress;
+	params['merchantReturnAddress']=merchantReturnAddress;
 	params['merchantPostcode']=merchantPostcode;
 	params['merchantType']=merchantType;
 	params['merchantNickname']=merchantNickname;
@@ -283,6 +290,7 @@ function merchantReadonly(){
 	$("#editMerchantProvince").combobox({disabled: true});
 	$("#editMerchantCity").combobox({disabled: true});
 	$('#editMerchantAddress').textbox('textbox').attr('readonly',true);
+	$('#editMerchantReturnAddress').textbox('textbox').attr('readonly',true);
 	$('#editMerchantPostcode').textbox('textbox').attr('readonly',true);
 	$("#editMerchantType").combobox({disabled: true});
 	$('#editMerchantNickname').textbox('textbox').attr('readonly',true);
