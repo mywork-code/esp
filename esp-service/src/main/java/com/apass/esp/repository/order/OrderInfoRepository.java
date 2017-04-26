@@ -111,6 +111,10 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<OrderInfoEntity> loadNoSignOrders() {
         return this.getSqlSession().selectList("loadNoSignOrders");
     }
+    
+    /**
+     * 查询所有的
+     */
 
     /**
      * 根据物流Id标识查询

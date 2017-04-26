@@ -275,4 +275,31 @@ public class OrderRefundService {
         }
     }
 
+
+    /**
+     * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
+     */
+    public void updateReturningOrderStatus(){
+      /**
+       * 首先查看订单的状态  此时状态应为D05,并且此时的售后服务表中的状态status应该为RS06 ,售后服务进程表中的nodename应该为RS06</br>
+       * 此时守候进程表中的crete_date应该小于等于当前的系统时间减去3天
+       */
+        Date date = new Date();
+        Date startDate = DateFormatUtil.addDays(date,-3);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("startDate", startDate);
+        map.put("orderStatus", OrderStatus.ORDER_RETURNING.getCode());
+        map.put("refundStatus",RefundStatus.REFUND_STATUS05.getCode());
+        map.put("nodeName", RefundStatus.REFUND_STATUS05.getCode());
+        
+        
+        List<RefundedOrderInfoDto> refundedOrderRefundInfoList = orderRefundRepository.queryReturningOrderRefundInfo(map);
+        
+        if(refundedOrderRefundInfoList!=null && !refundedOrderRefundInfoList.isEmpty()){
+            for (RefundedOrderInfoDto refundedOrderInfoDto : refundedOrderRefundInfoList) {
+                orderInfoRepository.updateStatusByOrderId(refundedOrderInfoDto.getOrderId(), OrderStatus.ORDER_COMPLETED.getCode());
+            }
+        }
+    }
+
 }
