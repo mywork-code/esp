@@ -119,6 +119,9 @@ $(function(){
 		$("#addMerchantCity").combobox('setValue','');
 		$("#addMerchantAddress").textbox('setValue','');
 		$("#addMerchantReturnAddress").textbox('setValue','');
+		$("#addMerchantReturnName").textbox('setValue','');
+		$("#addMerchantReturnPhone").textbox('setValue','');
+		$("#addMerchantReturnPostCode").textbox('setValue','');
 		$("#addMerchantPostcode").textbox('setValue','');
 		$("#addMerchantType").combobox('setValue','');
 		$("#addMerchantNickname").textbox('setValue','');
@@ -191,12 +194,45 @@ $(function(){
 	    	$.messager.alert("<span style='color: black;'>警告</span>","商户名称长度不能超过15个字！",'warning');
 	    	return;
 	    }
+		var merchantReturnAddress = $("#addMerchantReturnAddress").textbox('getValue');//二期后台电商需要添加商家退货地址
+		var merchantReturnName = $("#addMerchantReturnName").textbox('getValue');
+		var merchantReturnPhone = $("#addMerchantReturnPhone").textbox('getValue');
+		var merchantReturnPostCode = $("#addMerchantReturnPostCode").textbox('getValue');
+		
+		if(null ==merchantReturnAddress || merchantReturnAddress.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnAddress.length>80){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
+	    	return;
+	    }
+		if(null ==merchantReturnName || merchantReturnName.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名长度不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnName.length>12){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
+	    	return;
+	    }
+		if(null ==merchantReturnPhone || merchantReturnPhone.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人联系电话长度不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnPhone.length>11){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话长度不能超过11！",'warning');
+	    	return;
+	    }
+		var merchantReturnPhoneFalge=/^1\d{10}$/.test(merchantReturnPhone);
+		if(!merchantReturnPhoneFalge){
+			$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话填写错误！",'warning');
+	    	return;
+		}
 		
 		var merchantProvince = $("#addMerchantProvince").combobox('getValue');//数据库存储对应省市的code更加灵活
 //		var merchantProvince = $("#addMerchantProvince").combobox('getText');
 		var merchantCity = $("#addMerchantCity").combobox('getValue');
 		var merchantAddress = $("#addMerchantAddress").textbox('getValue');
-		var merchantReturnAddress = $("#addMerchantReturnAddress").textbox('getValue');//二期后台电商需要添加商家退货地址
 		var merchantPostcode = $("#addMerchantPostcode").textbox('getValue');
 		var merchantType = $("#addMerchantType").combobox('getValue');
 		var merchantNickname = $("#addMerchantNickname").textbox('getValue');
@@ -218,6 +254,9 @@ $(function(){
 			merchantCity: merchantCity,
 			merchantAddress: merchantAddress,
 			merchantReturnAddress:merchantReturnAddress,//商家退货地址
+			merchantReturnName :merchantReturnName,
+			merchantReturnPhone :merchantReturnPhone,
+			merchantReturnPostCode :merchantReturnPostCode,
 			merchantPostcode: merchantPostcode,//邮政编码
 			merchantType: merchantType,//商户类型（个人、企业）
 		    merchantNickname:merchantNickname,//商户昵称
@@ -294,6 +333,9 @@ $(function(){
 		$("#editMerchantCity").combobox('setValue',row3.merchantCity);
 		$("#editMerchantAddress").textbox('setValue',row3.merchantAddress);
 		$("#editMerchantReturnAddress").textbox('setValue',row3.merchantReturnAddress);//商家退货地址
+		$("#editMerchantReturnName").textbox('setValue',row3.merchantReturnName);
+		$("#editMerchantReturnPhone").textbox('setValue',row3.merchantReturnPhone);
+		$("#editMerchantReturnPostCode").textbox('setValue',row3.merchantReturnPostCode);
 		$("#editMerchantPostcode").textbox('setValue',row3.merchantPostcode);
 		//alert(row3.merchantType);
 		$("#editMerchantType").combobox('setValue',row3.merchantType);
@@ -350,11 +392,45 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","结算是否含运费不能为空!",'info');  
 			return;
 		}
+		var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue');//商家退货地址
+		var merchantReturnName = $("#editMerchantReturnName").textbox('getValue');
+		var merchantReturnPhone = $("#editMerchantReturnPhone").textbox('getValue');
+		var merchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue');
+		
+		if(null ==merchantReturnAddress || merchantReturnAddress.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnAddress.length>80){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
+	    	return;
+	    }
+		if(null ==merchantReturnName || merchantReturnName.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名长度不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnName.length>12){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
+	    	return;
+	    }
+		if(null ==merchantReturnPhone || merchantReturnPhone.length==0){ 
+	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人联系电话长度不能为空！",'info');
+	    	return;
+	    }
+		if(merchantReturnPhone.length>11){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话长度不能超过11！",'warning');
+	    	return;
+	    }
+		var merchantReturnPhoneFalge=/^1\d{10}$/.test(merchantReturnPhone);
+		if(!merchantReturnPhoneFalge){
+			$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话填写错误！",'warning');
+	    	return;
+		}
+		
 		var merchantProvince = $("#editMerchantProvince").combobox('getValue');
 		var merchantCity = $("#editMerchantCity").combobox('getValue');
 //		var merchantCity = $("#editMerchantCity").combobox('getText');
 		var merchantAddress = $("#editMerchantAddress").textbox('getValue');
-		var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue');//商家退货地址
 		var merchantPostcode = $("#editMerchantPostcode").textbox('getValue');
 		var merchantType = $("#editMerchantType").combobox('getValue');
 		var merchantNickname = $("#editMerchantNickname").textbox('getValue');
@@ -374,6 +450,9 @@ $(function(){
 			merchantCity: merchantCity,
 			merchantAddress: merchantAddress,
 			merchantReturnAddress:merchantReturnAddress,
+			merchantReturnName :merchantReturnName,
+			merchantReturnPhone :merchantReturnPhone,
+			merchantReturnPostCode :merchantReturnPostCode,
 			merchantPostcode: merchantPostcode,//邮政编码
 			merchantType: merchantType,//商户类型（个人、企业）
 		    merchantNickname: merchantNickname,//商户昵称
