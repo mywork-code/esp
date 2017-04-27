@@ -28,6 +28,10 @@ public class ActivityAwardController {
   @Autowired
   private AwardActivityInfoService awardActivityInfoService;
 
+  /**
+   * 转介绍活动配置页
+   * @return
+   */
   @RequestMapping(value = "/introduce/index", method = RequestMethod.GET)
   public String introduceConfig() {
     return "activity/introduce";
@@ -51,7 +55,7 @@ public class ActivityAwardController {
   @RequestMapping(value = "/introduce/config", method = RequestMethod.POST)
   @ResponseBody
   public Response addIntroConfig(AwardActivityInfoDto dto) {
-    if (dto.getRebate() == null || StringUtils.isEmpty(dto.getName())
+    if (dto.getRebate() == null
         || StringUtils.isEmpty(dto.getStartDate()) || StringUtils.isEmpty(dto.getEndDate())) {
       return Response.fail("请输入完整信息...");
     }
@@ -75,5 +79,15 @@ public class ActivityAwardController {
     awardActivityInfoService.updateUneffectiveActivity(id, user.getUsername());
     return Response.success("操作成功...");
   }
+
+  /**
+   * 转介绍统计页
+   */
+  @RequestMapping(value = "/introduce/statistic/index", method = RequestMethod.GET)
+  public String introStatistics(){
+    return "activity/introStatistic";
+  }
+
+
 
 }
