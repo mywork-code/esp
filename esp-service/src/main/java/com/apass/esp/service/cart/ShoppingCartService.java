@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -287,8 +288,8 @@ public class ShoppingCartService {
                 if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
                         || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
                         || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
-                    goodsInfoInCart.setIsDelete("00");
-                    goodsInfoInCart.setIsSelect("0");
+                    goodsInfoInCart.setIsDelete("00");//失效
+                    goodsInfoInCart.setIsSelect("0");//不选中
                 }
                 
                 // 计算商品折扣后价格
@@ -308,18 +309,51 @@ public class ShoppingCartService {
                 list2.add(goodsInfo);
             }
         }
-        list1.addAll(list2);
-        /*
-        // 下架商品排在正常商品底部
-        Collections.sort(goodsInfoInCartList, new Comparator<GoodsInfoInCartEntity>() {
-
-            @Override
-            public int compare(GoodsInfoInCartEntity o1, GoodsInfoInCartEntity o2) {
-                return o2.getIsDelete().compareTo(o1.getIsDelete());
+        
+        // 按 商户编码(merchantCode) 分组i
+        Map<String, List<GoodsInfoInCartEntity>> resultMap= new LinkedHashMap<>();
+        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+        for(int i=0; i<list1.size(); i++){
+            goodsInfoInCart = list1.get(i);
+            if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
+                resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
+            } else {
+                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+                list.add(goodsInfoInCart);
+                resultMap.put(goodsInfoInCart.getMerchantCode(), list);
             }
-        });
-        */
-        return list1;
+        }
+        for(int i=0; i<list2.size(); i++){
+            goodsInfoInCart = list2.get(i);
+            if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
+                resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
+            } else {
+                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+                list.add(goodsInfoInCart);
+                resultMap.put(goodsInfoInCart.getMerchantCode(), list);
+            }
+        }
+        
+        
+        List<ListCartDto> cartDtoList = new ArrayList<ListCartDto>();
+        
+        for(String key : resultMap.keySet()){
+            ListCartDto listCart = new ListCartDto();
+            listCart.setMerchantCode(key);
+            listCart.setGoodsInfoInCartList(resultMap.get(key));
+            cartDtoList.add(listCart);
+        }
+        
+        
+        List<GoodsInfoInCartEntity> list3 = new ArrayList<GoodsInfoInCartEntity>();
+        for (ListCartDto listCartDto : cartDtoList) {
+            List<GoodsInfoInCartEntity> goodsInfoInCartList2 = listCartDto.getGoodsInfoInCartList();
+            for (GoodsInfoInCartEntity goodsInfoInCartEntity : goodsInfoInCartList2) {
+                list3.add(goodsInfoInCartEntity);
+            }
+        }
+        
+        return list3;
             
     }
     

@@ -21,6 +21,7 @@ import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
@@ -65,6 +66,9 @@ public class CoffersBaseService {
                awardDetailVo.setUserId(awardDetail.getUserId());
                awardDetailVo.setAmount(awardDetail.getAmount());
                awardDetailVo.setType(awardDetail.getType());
+               awardDetailVo.setStatus(awardDetail.getStatus());
+               awardDetailVo.setArrivedDate(DateFormatUtil.dateToString(awardDetail.getArrivedDate()));
+               awardDetailVo.setCreateDate(DateFormatUtil.dateToString(awardDetail.getCreateDate()));
                awardDetailVos.add(awardDetailVo);
                if(awardDetail.getType() == 0){
                    totalCoun = totalCoun.add(awardDetail.getAmount());
