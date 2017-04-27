@@ -289,8 +289,8 @@ public class OrderRefundService {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("startDate", startDate);
         map.put("orderStatus", OrderStatus.ORDER_RETURNING.getCode());
-        map.put("refundStatus",RefundStatus.REFUND_STATUS05.getCode());
-        map.put("nodeName", RefundStatus.REFUND_STATUS05.getCode());
+        map.put("refundStatus",RefundStatus.REFUND_STATUS06.getCode());
+        map.put("nodeName", RefundStatus.REFUND_STATUS06.getCode());
         
         
         List<RefundedOrderInfoDto> refundedOrderRefundInfoList = orderRefundRepository.queryReturningOrderRefundInfo(map);
