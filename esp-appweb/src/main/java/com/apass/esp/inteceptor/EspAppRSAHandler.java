@@ -50,7 +50,7 @@ public class EspAppRSAHandler {
 	 * @return Object
 	 * @throws Throwable
 	 */
-	//@Around("execution(* com.apass.esp.web..*.*(..)) or execution(* com.apass.esp.noauth..*.*(..))")
+	@Around("execution(* com.apass.esp.web..*.*(..)) or execution(* com.apass.esp.noauth..*.*(..))")
 	private Object handleRSAInteceptor(ProceedingJoinPoint point) throws Throwable {
 		Object[] arr = point.getArgs();
 		if (arr == null || arr.length == 0) {
@@ -107,6 +107,8 @@ public class EspAppRSAHandler {
 				// 私钥解密接受数据
 				String key = new SimpleDateFormat("yyyyMMddHH").format(new Date());
 				key = "Apass@" + key;
+				LOGGER.info("key  00   {}",key);
+				LOGGER.info("paraValue  00   {}",paraValue);
 				String paraStr = AESUtils.aesDecrypt(paraValue, key);
 				newPara[i] = GsonUtils.convertMap(paraStr);
 				isFlag = true;

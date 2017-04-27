@@ -181,4 +181,27 @@
         WHERE ID = #{refundId}
     </update>
 
+    <!-- 查询订单状态信息为售后服务中，服务状态为失败的数据 -->
+	<select id="queryReturningOrderRefundInfo" parameterType="Map"
+        resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
+        <![CDATA[
+            SELECT
+			    t1.id                    refundId,
+			    t1.status                refundStatus,
+			    t1.completion_time       completionTime,
+			    t1.order_id              orderId,
+			    t2.orderstatus           orderStatus
+			FROM
+			    t_esp_refund_info t1,
+			    t_esp_order_info t2,
+			    t_esp_service_process_info t3
+			WHERE
+			    t2.orderstatus = #{orderStatus}
+			AND t1.status = #{refundStatus}
+			AND t3.node_name = #{nodeName}
+			AND t1.order_id = t2.order_id
+			AND t1.id = t3.refund_id
+			AND DATE_ADD(t3.create_date,INTERVAL 3 DAY) <= NOW()        
+        ]]>
+    </select>
 </mapper>

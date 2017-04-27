@@ -113,5 +113,12 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
     public int updateRlogisticsIdbyRefundId(Map<String, Object> map) {
         return getSqlSession().update(getSQL("updateRlogisticsIdbyId"), map);
     }
+    
+    /**
+     * 查询售后失败,订单状态处于售后处理中的数据
+     */
+    public List<RefundedOrderInfoDto> queryReturningOrderRefundInfo(Map<String, Object> map) {
+        return getSqlSession().selectList(getSQL("queryReturningOrderRefundInfo"), map);
+    }
 
 }

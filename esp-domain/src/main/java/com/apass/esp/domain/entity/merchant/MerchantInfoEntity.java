@@ -38,6 +38,26 @@ public class MerchantInfoEntity {
 	 */
 	private String merchantAddress;
 	/**
+	 * 商户退货详细地址
+	 */
+	private String merchantReturnAddress;
+	
+    /**
+     * 商户的收货人名称
+     */
+    private  String merchantReturnName;
+    
+    /**
+     * 商户的收货人手机号码
+     */
+    private String merchantReturnPhone;
+    
+    /**
+     * 商户的收货邮编
+     */
+    private String merchantReturnPostCode;
+    
+	/**
 	 * 邮政编码
 	 */
 	private String merchantPostcode;
@@ -280,4 +300,36 @@ public class MerchantInfoEntity {
 		this.updateDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updateDate);
 	}
 
+	public String getMerchantReturnAddress() {
+		return merchantReturnAddress;
+	}
+
+	public void setMerchantReturnAddress(String merchantReturnAddress) {
+		this.merchantReturnAddress = merchantReturnAddress;
+	}
+
+    public String getMerchantReturnName() {
+        return merchantReturnName;
+    }
+
+    public void setMerchantReturnName(String merchantReturnName) {
+        this.merchantReturnName = merchantReturnName;
+    }
+
+    public String getMerchantReturnPhone() {
+        return merchantReturnPhone;
+    }
+
+    public void setMerchantReturnPhone(String merchantReturnPhone) {
+        this.merchantReturnPhone = merchantReturnPhone;
+    }
+
+    public String getMerchantReturnPostCode() {
+        return merchantReturnPostCode;
+    }
+
+    public void setMerchantReturnPostCode(String merchantReturnPostCode) {
+        this.merchantReturnPostCode = merchantReturnPostCode;
+    }
+	
 }
