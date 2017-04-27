@@ -56,7 +56,7 @@ public class WithdrawService {
      */
     public Map<String, Object> queryWithdrawByUserId(String userId) {
         Map<String, Object> paramMap = Maps.newHashMap();
-        
+        paramMap.put("userId", userId);
         //查询用户是否绑卡
         String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
         Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
