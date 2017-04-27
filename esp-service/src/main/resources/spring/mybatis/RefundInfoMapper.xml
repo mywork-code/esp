@@ -201,7 +201,7 @@
 			AND t3.node_name = #{nodeName}
 			AND t1.order_id = t2.order_id
 			AND t1.id = t3.refund_id
-			AND t3.create_time <= #{createTime}          
+			AND DATE_ADD(t3.create_date,INTERVAL 3 DAY) <= NOW()        
         ]]>
     </select>
 </mapper>
