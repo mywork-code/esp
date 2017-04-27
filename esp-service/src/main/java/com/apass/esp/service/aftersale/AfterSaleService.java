@@ -416,6 +416,8 @@ public class AfterSaleService {
             serviceProcessDto.setIsAllowed("1");
             //在商品退换货的时候，加上商户的退货地址
             serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
+            serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
+            serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
         }
 
         /** RS02、RS03、RS04、RS05 客户端显示客户发货物流地址 */
