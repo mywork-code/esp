@@ -8,6 +8,8 @@ import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
+import com.apass.esp.mapper.AwardBindRelMapper;
+import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -32,7 +34,7 @@ public class AwardActivityInfoService {
 
 	@Autowired
 	public AwardActivityInfoMapper awardActivityInfoMapper;
-
+	
 	@Autowired
 	private PaymentHttpClient paymentHttpClient;
 
@@ -42,7 +44,7 @@ public class AwardActivityInfoService {
 	/**
 	 * 活动设置无效
 	 */
-	public void updateUneffectiveActivity(Long activityId,String updateBy){
+	public void updateUneffectiveActivity(Long activityId, String updateBy) {
 		AwardActivityInfo entity = new AwardActivityInfo();
 		entity.setUpdateDate(new Date());
 		entity.setUpdateBy(updateBy);
@@ -72,23 +74,34 @@ public class AwardActivityInfoService {
 		return entity;
 	}
 
-	public List<AwardActivityInfoVo> listActivity(){
+	/**
+	 * 获取活动
+	 * 
+	 * @return
+	 */
+	public List<AwardActivityInfoVo> listActivity() {
 		List<AwardActivityInfo> list = awardActivityInfoMapper.selectLastEffectiveActivities();
-		if(CollectionUtils.isEmpty(list)){
+		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 		List<AwardActivityInfoVo> result = new ArrayList<>();
-		for(AwardActivityInfo ai : list) {
+		for (AwardActivityInfo ai : list) {
 			AwardActivityInfoVo vo = new AwardActivityInfoVo();
 			vo.setId(ai.getId());
 			vo.setActivityName(ai.getActivityName());
 			vo.setaStartDate(DateFormatUtil.datetime2String(ai.getaStartDate()));
 			vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
 			vo.setRebate(NumberUtils.multiply100(ai.getRebate()) + "%");
+			vo.setUpdateDate(DateFormatUtil.datetime2String(ai.getUpdateDate()));
 			result.add(vo);
 		}
 		return result;
 
+	}
+
+	public boolean validateAwardActivity() {
+
+		return false;
 	}
 
 	/**

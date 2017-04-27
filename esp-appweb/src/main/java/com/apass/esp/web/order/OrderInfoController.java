@@ -6,14 +6,23 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +46,15 @@ public class OrderInfoController {
     private static final Logger LOGGER   = LoggerFactory.getLogger(OrderInfoController.class);
     @Autowired
     public OrderService         orderService;
+    
+	@Autowired
+	public AwardActivityInfoService awardActivityInfoService;
+	
+	@Autowired
+	public AwardBindRelService awardBindRelService;
+	
+	@Autowired
+	public AwardDetailService awardDetailService;
 
     private static final String NO_USER  = "对不起!用户号不能为空";
     private static final String ORDER_ID = "orderId";
@@ -225,6 +244,20 @@ public class OrderInfoController {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail("确认收货失败!请稍后再试");
         }
+        //该订单是否可以返现
+//        List<AwardActivityInfoVo> list = awardActivityInfoService.listActivity();
+//        if(CollectionUtils.isEmpty(list)){
+//        	return Response.success("确认收货成功!");
+//        }
+//        AwardActivityInfoVo awardActivityInfoVo = list.get(0);
+//        Date date= new Date();
+//        String currentTimeString = DateFormatUtil.datetime2String(date);
+//        boolean isInDate = DateFormatUtil.isInDate(currentTimeString, awardActivityInfoVo.getaStartDate(), awardActivityInfoVo.getaEndDate());
+//        if(! isInDate){
+//        	return Response.success("确认收货成功!");
+//        }
+        
+        
         return Response.success("确认收货成功!");
     }
 

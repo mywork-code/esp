@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
+import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.mapper.AwardDetailMapper;
+import com.apass.esp.utils.BeanUtils;
 
 @Service
 public class AwardDetailService {
@@ -14,4 +17,16 @@ public class AwardDetailService {
 
 	@Autowired
 	public AwardDetailMapper awardDetailMapper;
+
+	/**
+	 * 添加明细记录
+	 * 
+	 * @param awardDetailDto
+	 * @return
+	 */
+	public int addAwardDetail(AwardDetailDto awardDetailDto) {
+		AwardDetail awardDetail = new AwardDetail();
+		BeanUtils.copyProperties(awardDetail, awardDetailDto);
+		return awardDetailMapper.insert(awardDetail);
+	}
 }

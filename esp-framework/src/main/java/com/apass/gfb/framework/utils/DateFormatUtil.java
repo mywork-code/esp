@@ -419,5 +419,22 @@ public class DateFormatUtil {
         return calendar.getTime();
     }
 
-    
+	/**
+	 * 判断某时间是否在另一个时间段内
+	 * 
+	 * @param current
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static boolean isInDate(String current, String start, String end) {
+		if (StringUtils.isAnyEmpty(current, start, end)) {
+			return false;
+		}
+		long cur = Long.valueOf(current);
+		if (Long.valueOf(start) <= cur && cur <= Long.valueOf(end)) {
+			return true;
+		}
+		return false;
+	}
 }
