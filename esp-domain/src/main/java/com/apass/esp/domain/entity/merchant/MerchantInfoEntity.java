@@ -41,6 +41,22 @@ public class MerchantInfoEntity {
 	 * 商户退货详细地址
 	 */
 	private String merchantReturnAddress;
+	
+    /**
+     * 商户的收货人名称
+     */
+    private  String merchantReturnName;
+    
+    /**
+     * 商户的收货人手机号码
+     */
+    private String merchantReturnPhone;
+    
+    /**
+     * 商户的收货邮编
+     */
+    private String merchantReturnPostCode;
+    
 	/**
 	 * 邮政编码
 	 */
@@ -291,5 +307,29 @@ public class MerchantInfoEntity {
 	public void setMerchantReturnAddress(String merchantReturnAddress) {
 		this.merchantReturnAddress = merchantReturnAddress;
 	}
+
+    public String getMerchantReturnName() {
+        return merchantReturnName;
+    }
+
+    public void setMerchantReturnName(String merchantReturnName) {
+        this.merchantReturnName = merchantReturnName;
+    }
+
+    public String getMerchantReturnPhone() {
+        return merchantReturnPhone;
+    }
+
+    public void setMerchantReturnPhone(String merchantReturnPhone) {
+        this.merchantReturnPhone = merchantReturnPhone;
+    }
+
+    public String getMerchantReturnPostCode() {
+        return merchantReturnPostCode;
+    }
+
+    public void setMerchantReturnPostCode(String merchantReturnPostCode) {
+        this.merchantReturnPostCode = merchantReturnPostCode;
+    }
 	
 }
