@@ -122,7 +122,7 @@ public class OrderScheduleTask {
     /**
      * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void updateReturningOrderStatus(){
         
         try {
