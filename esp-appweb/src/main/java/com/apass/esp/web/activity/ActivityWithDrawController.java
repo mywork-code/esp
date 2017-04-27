@@ -52,9 +52,11 @@ public class ActivityWithDrawController {
 	@RequestMapping(value = "/getBankList", method = RequestMethod.POST)
 	@ResponseBody
 	public Response getBankList(@RequestBody Map<String, Object> paramMap) {
-		// String userId = CommonUtils.getValue(paramMap, "userId");
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		if (StringUtils.isEmpty(userId)) {
+			return Response.fail("userId不能为空");
+		}
 		Response res = awardActivityInfoService.getBankList(paramMap);
-
 		return res;
 	}
 
@@ -87,19 +89,20 @@ public class ActivityWithDrawController {
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String mobile = CommonUtils.getValue(paramMap, "mobile");
 
-		//String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
-		//String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
+		// String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
+		// String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
 
 		if (StringUtils.isAnyBlank(userId, mobile, realName, cardNo
-				//, smsType
-				)) {
+		// , smsType
+		)) {
 			return Response.fail("参数错误");
 		}
 
-//		boolean mobileValidate = mobileRandomService.mobileCodeValidate(smsType, mobile, code);
-//		if (!mobileValidate) {
-//			return Response.fail("验证码错误或者过期,请重新获取");
-//		}
+		// boolean mobileValidate =
+		// mobileRandomService.mobileCodeValidate(smsType, mobile, code);
+		// if (!mobileValidate) {
+		// return Response.fail("验证码错误或者过期,请重新获取");
+		// }
 
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));

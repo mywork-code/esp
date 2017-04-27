@@ -414,16 +414,16 @@ public class AfterSaleService {
         if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
             && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
             serviceProcessDto.setIsAllowed("1");
-            //在商品退换货的时候，加上商户的退货地址
-            serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
-            serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
-            serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
         }
 
         /** RS02、RS03、RS04、RS05 客户端显示客户发货物流地址 */
         if (RefundStatus.showSlogistics(refundInfo.getStatus())) {
             serviceProcessDto.setSlogisticsName(refundInfo.getSlogisticsName());
             serviceProcessDto.setSlogisticsNo(refundInfo.getSlogisticsNo());
+            //在商品退换货的时候，加上商户的退货地址
+            serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
+            serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
+            serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
         }
 
         /** 换货(refundType=1) RS04、RS05 客户端显示商户发货物流地址 */
