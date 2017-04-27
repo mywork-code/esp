@@ -87,6 +87,9 @@ function load(){
 		$("#editMerchantCity").combobox('setValue',data.merchantCity);
 		$("#editMerchantAddress").textbox('setValue',data.merchantAddress);
 		$("#editMerchantReturnAddress").textbox('setValue',data.merchantReturnAddress);
+		$("#editMerchantReturnName").textbox('setValue',data.merchantReturnName);
+		$("#editMerchantReturnPhone").textbox('setValue',data.merchantReturnPhone);
+		$("#editMerchantReturnPostCode").textbox('setValue',data.merchantReturnPostCode);
 		$("#editMerchantPostcode").textbox('setValue',data.merchantPostcode);
 		$("#editMerchantType").combobox('setValue',data.merchantType);
 		$("#editMerchantNickname").textbox('setValue',data.merchantNickname);
@@ -233,6 +236,35 @@ function saveorsubmit(statu){
 		$.messager.alert("<span style='color: black;'>提示</span>","退货地址不能为空！",'info'); 
 		return;
 	}
+	if(merchantReturnAddress.length>80){ 
+    	$.messager.alert("<span style='color: black;'>警告</span>","退货地址长度不能超过80！",'warning');
+    	return;
+    }
+	var merchantReturnName = $("#editMerchantReturnName").textbox('getValue');
+	if (null == merchantReturnName || ("") == merchantReturnName) {
+		$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名不能为空！",'info'); 
+		return;
+	}
+	if(merchantReturnName.length>12){ 
+    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
+    	return;
+    }
+	var merchantReturnPhone = $("#editMerchantReturnPhone").textbox('getValue');
+	if (null == merchantReturnPhone || ("") == merchantReturnPhone) {
+		$.messager.alert("<span style='color: black;'>提示</span>","收货联系电话不能为空！",'info'); 
+		return;
+	}
+	if(merchantReturnPhone.length>11){ 
+    	$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话长度不能超过11！",'warning');
+    	return;
+    }
+	var merchantReturnPhoneFalge=/^1\d{10}$/.test(merchantReturnPhone);
+	if(!merchantReturnPhoneFalge){
+		$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话填写错误！",'warning');
+    	return;
+	}
+	var merchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue');
+
 	debugger;
 	var remark = $("#message").textbox('getValue');
     
@@ -244,6 +276,9 @@ function saveorsubmit(statu){
 	params['merchantCity']=merchantCity;
 	params['merchantAddress']=merchantAddress;
 	params['merchantReturnAddress']=merchantReturnAddress;
+	params['merchantReturnName']=merchantReturnName;
+	params['merchantReturnPhone']=merchantReturnPhone;
+	params['merchantReturnPostCode']=merchantReturnPostCode;
 	params['merchantPostcode']=merchantPostcode;
 	params['merchantType']=merchantType;
 	params['merchantNickname']=merchantNickname;
@@ -291,6 +326,9 @@ function merchantReadonly(){
 	$("#editMerchantCity").combobox({disabled: true});
 	$('#editMerchantAddress').textbox('textbox').attr('readonly',true);
 	$('#editMerchantReturnAddress').textbox('textbox').attr('readonly',true);
+	$('#editMerchantReturnName').textbox('textbox').attr('readonly',true);
+	$('#editMerchantReturnPhone').textbox('textbox').attr('readonly',true);
+	$('#editMerchantReturnPostCode').textbox('textbox').attr('readonly',true);
 	$('#editMerchantPostcode').textbox('textbox').attr('readonly',true);
 	$("#editMerchantType").combobox({disabled: true});
 	$('#editMerchantNickname').textbox('textbox').attr('readonly',true);
