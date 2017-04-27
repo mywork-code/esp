@@ -310,7 +310,7 @@ public class ShoppingCartService {
             }
         }
         
-        // 按 商户编码(merchantCode) 分组i
+        // 按 商户编码(merchantCode) 分组
         Map<String, List<GoodsInfoInCartEntity>> resultMap= new LinkedHashMap<>();
         GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
         for(int i=0; i<list1.size(); i++){
@@ -323,17 +323,19 @@ public class ShoppingCartService {
                 resultMap.put(goodsInfoInCart.getMerchantCode(), list);
             }
         }
-        for(int i=0; i<list2.size(); i++){
-            goodsInfoInCart = list2.get(i);
-            if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
-                resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
-            } else {
-                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
-                list.add(goodsInfoInCart);
-                resultMap.put(goodsInfoInCart.getMerchantCode(), list);
-            }
-        }
         
+//        Map<String, List<GoodsInfoInCartEntity>> resultMap2= new LinkedHashMap<>();
+//        GoodsInfoInCartEntity goodsInfoInCart2 = new GoodsInfoInCartEntity();
+//        for(int i=0; i<list2.size(); i++){
+//            goodsInfoInCart2 = list1.get(i);
+//            if (resultMap2.containsKey(goodsInfoInCart2.getMerchantCode())) {
+//                resultMap2.get(goodsInfoInCart2.getMerchantCode()).add(goodsInfoInCart2);
+//            } else {
+//                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+//                list.add(goodsInfoInCart2);
+//                resultMap2.put(goodsInfoInCart2.getMerchantCode(), list);
+//            }
+//        }
         
         List<ListCartDto> cartDtoList = new ArrayList<ListCartDto>();
         
@@ -343,8 +345,7 @@ public class ShoppingCartService {
             listCart.setGoodsInfoInCartList(resultMap.get(key));
             cartDtoList.add(listCart);
         }
-        
-        
+       
         List<GoodsInfoInCartEntity> list3 = new ArrayList<GoodsInfoInCartEntity>();
         for (ListCartDto listCartDto : cartDtoList) {
             List<GoodsInfoInCartEntity> goodsInfoInCartList2 = listCartDto.getGoodsInfoInCartList();
@@ -352,6 +353,7 @@ public class ShoppingCartService {
                 list3.add(goodsInfoInCartEntity);
             }
         }
+        list3.addAll(list2);
         
         return list3;
             
@@ -526,7 +528,7 @@ public class ShoppingCartService {
         
         resultMap.put("synFlag", synFlag);
         resultMap.put("synMessage", synMessage);
-        resultMap.put("goodsInfoInCartList", this.getGoodsInfoInCart(requestId, userId));
+        resultMap.put("goodsInfoInCartList", getGoodsInfoInCart(requestId, userId));
         resultMap.put("goodsAmountInCart", goodsAmountInCart);
         
         return resultMap;
