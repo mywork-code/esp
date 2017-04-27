@@ -30,8 +30,8 @@ public class EspActivityHttpClient {
 
 	// 银行卡列表
 	private static final String BIND_LIST_URL = "/espReWardActivity/bankList";
-    
-	//身份证识别
+
+	// 身份证识别
 	private static final String IDENTITY_RECONIZE_URL = "/espReWardActivity/identityReconize";
 
 	/**
@@ -86,6 +86,8 @@ public class EspActivityHttpClient {
 	 */
 	public Response getBankList(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + BIND_LIST_URL;
+		String userId = (String) map.get("userId");
+		LOGGER.info("银行卡列表  userId :{}", userId);
 		String requestJson = GsonUtils.toJson(map);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
