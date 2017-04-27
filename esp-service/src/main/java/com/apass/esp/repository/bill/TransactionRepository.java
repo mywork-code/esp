@@ -1,7 +1,5 @@
 package com.apass.esp.repository.bill;
 
-import java.util.List;
-
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;

@@ -118,5 +118,19 @@ public class OrderScheduleTask {
         }
         
     }
+    
+    /**
+     * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后，原“申请售后”按钮消失，显示“删除订单”，每笔订单仅可申请一次售后。
+     */
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateReturningOrderStatus(){
+        
+        try {
+            orderRefundService.updateReturningOrderStatus();
+        } catch (Exception e) {
+            LOGGER.error("[售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”],订单状态修改异常", e);
+        }
+        
+    }
 
 }

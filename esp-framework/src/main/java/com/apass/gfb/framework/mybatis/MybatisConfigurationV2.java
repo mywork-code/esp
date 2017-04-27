@@ -1,5 +1,7 @@
 package com.apass.gfb.framework.mybatis;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -9,8 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import javax.sql.DataSource;
 
 /**
  * Created by jie.xu on 17/4/20.
@@ -38,4 +38,5 @@ public class MybatisConfigurationV2 {
     mapperScannerConfigurer.setSqlSessionFactoryBeanName("mysqlSqlSessionFactory");
     return mapperScannerConfigurer;
   }
+
 }

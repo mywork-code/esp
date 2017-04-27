@@ -18,6 +18,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.refund.ServiceProcessDto;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
@@ -28,6 +29,7 @@ import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.datadic.DataDicRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.repository.merchant.MerchantInforRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
@@ -73,6 +75,9 @@ public class AfterSaleService {
 
     @Autowired
     private FileViewService fileViewService;
+    
+    @Autowired
+    private MerchantInforRepository memChantRepository;
 
     @Transactional(rollbackFor = { Exception.class, RuntimeException.class })
     public void returnGoods(String requestId, String userId, String orderId, BigDecimal returnPriceVal, String operate, String reason,
@@ -364,6 +369,9 @@ public class AfterSaleService {
 
         ServiceProcessDto serviceProcessDto = new ServiceProcessDto();
 
+        /**
+         * 获取订单的详情
+         */
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, userIdVal);
 
         if (null == orderInfo) {
@@ -376,7 +384,17 @@ public class AfterSaleService {
             LOG.info(requestId, "当前订单状态不支持售后进度查询", orderStatus);
             throw new BusinessException("当前订单状态不支持售后进度查询!");
         }
-
+        
+        /**
+         * 根据商户的编码获取商户的详细信息，然后获取商户的退货地址
+         */
+        MerchantInfoEntity merchantInfo = memChantRepository.queryByMerchantCode(orderInfo.getMerchantCode());
+        
+        if(null == merchantInfo){
+            LOG.info(requestId, "根据商户编码获取商户详细信息", "数据为空");
+            throw new BusinessException("无效的商户编码!");
+        }
+        
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("orderId", orderId);
         List<RefundInfoEntity> refundInfoList = orderRefundDao.queryRefundInfoByParam(param);
@@ -391,11 +409,13 @@ public class AfterSaleService {
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
-
+        
         /** status 状态 RS01, 退货信息表字段 is_agree=1 时，可提交物流信息   */
         if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
             && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
             serviceProcessDto.setIsAllowed("1");
+            //在商品退换货的时候，加上商户的退货地址
+            serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
         }
 
         /** RS02、RS03、RS04、RS05 客户端显示客户发货物流地址 */
@@ -569,5 +589,5 @@ public class AfterSaleService {
             }
         }
     }
-
+    
 }
