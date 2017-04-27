@@ -6,7 +6,6 @@ import java.math.BigDecimal;
  * Created by jie.xu on 17/4/24.
  */
 public class AwardActivityInfoDto {
-  private String name;
 
   private String startDate;
 
@@ -24,13 +23,6 @@ public class AwardActivityInfoDto {
     this.createBy = createBy;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
 	public String getStartDate() {
 		return startDate;

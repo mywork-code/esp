@@ -80,11 +80,6 @@ $(function(){
     });
     //确认   添加  banner信息
     $("#agreeAdd").click(function(){
-        var name=$("#name").textbox('getValue');
-        if(null == name || name==""){
-            $.messager.alert("<span style='color: black;'>提示</span>","活动名称不能为空！","info");
-            return;
-        }
         var rebate=$("#rebate").textbox('getValue');
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","返点配置不能为空！","info");

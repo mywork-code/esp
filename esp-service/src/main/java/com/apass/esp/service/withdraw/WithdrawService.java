@@ -31,19 +31,18 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 
+
 /**
- * @description 我的金库
+ * @description 提现
  *
  * @author xiaohai
- * @version $Id: CoffersBaseService.java, v 0.1 2017年6月6日 下午3:30:22 xiaohai Exp $
+ * @version $Id: WithdrawService.java, v 0.1 2017年6月8日 上午9:29:43 xiaohai Exp $
  */
 @Service
 @Transactional
 public class WithdrawService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WithdrawService.class);
-    @Autowired
-    private AwardBindRelMapper awardBindRelMapper;
     @Autowired
     private AwardDetailMapper awardDetailMapper;
     @Autowired
@@ -57,7 +56,7 @@ public class WithdrawService {
      */
     public Map<String, Object> queryWithdrawByUserId(String userId) {
         Map<String, Object> paramMap = Maps.newHashMap();
-        
+        paramMap.put("userId", userId);
         //查询用户是否绑卡
         String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
         Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
@@ -69,7 +68,7 @@ public class WithdrawService {
         if(AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))){
             paramMap.put("page", "1");//已绑卡
             String cardNo = (String)result.get("cardNo");
-            paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
+            paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号后4位
             paramMap.put("cardBank",result.get("cardBank"));//银行名称
             
             //查询全部可提金额金额

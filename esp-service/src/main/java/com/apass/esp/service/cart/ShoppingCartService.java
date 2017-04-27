@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -261,14 +262,14 @@ public class ShoppingCartService {
         cartInfoRepository.deleteGoodsInCart(paramMap);
 
     }
-
+ 
     /**
      * 查看购物车中商品信息
      * 
      * @param userId
      * @throws BusinessException 
      */
-    public List<GoodsInfoInCartEntity> getGoodsInfoInCart(String requestId, String userId) throws BusinessException {
+    public List<ListCartDto> getGoodsInfoInCart(String requestId, String userId) throws BusinessException {
 
         Long userIdVal = Long.valueOf(userId);
 
@@ -279,7 +280,7 @@ public class ShoppingCartService {
         
         if (null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()) {
             LOG.info(requestId, "查询数据库购物车表数据", "数据为空");
-//            throw new BusinessException("购物车为空");
+            throw new BusinessException("购物车为空");
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
@@ -287,8 +288,8 @@ public class ShoppingCartService {
                 if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
                         || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
                         || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
-                    goodsInfoInCart.setIsDelete("00");
-                    goodsInfoInCart.setIsSelect("0");
+                    goodsInfoInCart.setIsDelete("00");//失效
+                    goodsInfoInCart.setIsSelect("0");//不选中
                 }
                 
                 // 计算商品折扣后价格
@@ -308,18 +309,64 @@ public class ShoppingCartService {
                 list2.add(goodsInfo);
             }
         }
-        list1.addAll(list2);
-        /*
-        // 下架商品排在正常商品底部
-        Collections.sort(goodsInfoInCartList, new Comparator<GoodsInfoInCartEntity>() {
-
-            @Override
-            public int compare(GoodsInfoInCartEntity o1, GoodsInfoInCartEntity o2) {
-                return o2.getIsDelete().compareTo(o1.getIsDelete());
+        
+        // 按 商户编码(merchantCode) 分组
+        Map<String, List<GoodsInfoInCartEntity>> resultMap= new LinkedHashMap<>();
+        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+        if(list1 != null && list1.size()>0){
+            for(int i=0; i<list1.size(); i++){
+                goodsInfoInCart = list1.get(i);
+                if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
+                    resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
+                } else {
+                    List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+                    list.add(goodsInfoInCart);
+                    resultMap.put(goodsInfoInCart.getMerchantCode(), list);
+                }
             }
-        });
-        */
-        return list1;
+        }
+        
+//        Map<String, List<GoodsInfoInCartEntity>> resultMap2= new LinkedHashMap<>();
+//        GoodsInfoInCartEntity goodsInfoInCart2 = new GoodsInfoInCartEntity();
+//        for(int i=0; i<list2.size(); i++){
+//            goodsInfoInCart2 = list1.get(i);
+//            if (resultMap2.containsKey(goodsInfoInCart2.getMerchantCode())) {
+//                resultMap2.get(goodsInfoInCart2.getMerchantCode()).add(goodsInfoInCart2);
+//            } else {
+//                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+//                list.add(goodsInfoInCart2);
+//                resultMap2.put(goodsInfoInCart2.getMerchantCode(), list);
+//            }
+//        }
+        
+        List<ListCartDto> cartDtoList = new ArrayList<ListCartDto>();
+        
+        if(resultMap != null){
+            for(String key : resultMap.keySet()){
+                ListCartDto listCart = new ListCartDto();
+                listCart.setMerchantCode(key);
+                listCart.setGoodsInfoInCartList(resultMap.get(key));
+                cartDtoList.add(listCart);
+            }
+        }
+        
+        if(list2 != null && list2.size()>0){
+            ListCartDto listCart = new ListCartDto();
+            listCart.setMerchantCode("unavailability");
+            listCart.setGoodsInfoInCartList(list2);
+            cartDtoList.add(listCart);
+        }
+       
+//        List<GoodsInfoInCartEntity> list3 = new ArrayList<GoodsInfoInCartEntity>();
+//        for (ListCartDto listCartDto : cartDtoList) {
+//            List<GoodsInfoInCartEntity> goodsInfoInCartList2 = listCartDto.getGoodsInfoInCartList();
+//            for (GoodsInfoInCartEntity goodsInfoInCartEntity : goodsInfoInCartList2) {
+//                list3.add(goodsInfoInCartEntity);
+//            }
+//        }
+//        list3.addAll(list2);
+        
+        return cartDtoList;
             
     }
     
@@ -492,7 +539,7 @@ public class ShoppingCartService {
         
         resultMap.put("synFlag", synFlag);
         resultMap.put("synMessage", synMessage);
-        resultMap.put("goodsInfoInCartList", this.getGoodsInfoInCart(requestId, userId));
+        resultMap.put("goodsInfoInCartList", getGoodsInfoInCart(requestId, userId));
         resultMap.put("goodsAmountInCart", goodsAmountInCart);
         
         return resultMap;
@@ -623,7 +670,7 @@ public class ShoppingCartService {
     public List<ListCartDto> getCartDtoList(String requestId, String userId) throws BusinessException {
         
         // 获取购物车中商品基本信息
-        List<GoodsInfoInCartEntity> dataList = getGoodsInfoInCart(requestId, userId);
+        List<GoodsInfoInCartEntity> dataList = null;//getGoodsInfoInCart(requestId, userId);
         
         // 按 商户编码(merchantCode) 分组
         Map<String, List<GoodsInfoInCartEntity>> resultMap= new HashMap<String, List<GoodsInfoInCartEntity>>();

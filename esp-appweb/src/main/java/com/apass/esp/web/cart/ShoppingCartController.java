@@ -1,6 +1,7 @@
 package com.apass.esp.web.cart;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,13 +108,15 @@ public class ShoppingCartController {
         
         try {
             
-            Map<String, Object> resultMap = new HashMap<String, Object>();
+            Map<String, Object> resultMap = new HashMap<>();
 
-            List<GoodsInfoInCartEntity> goodsInfoInCartList = shoppingCartService.getGoodsInfoInCart(requestId, userId);
+//            List<GoodsInfoInCartEntity> goodsInfoInCartList = shoppingCartService.getGoodsInfoInCart(requestId, userId);
+            List<ListCartDto> listCartDtos = shoppingCartService.getGoodsInfoInCart(requestId, userId);
 
             int goodsAmountInCart = shoppingCartService.getNumOfTypeInCart(userId);
 
-            resultMap.put("goodsInfoInCartList", goodsInfoInCartList);
+//            resultMap.put("goodsInfoInCartList", goodsInfoInCartList);
+            resultMap.put("goodsInfoInCartList", listCartDtos);
             resultMap.put("goodsAmountInCart", goodsAmountInCart);
 
             return Response.success("查看购物车中商品成功", resultMap);

@@ -7,4 +7,10 @@
       from t_esp_award_activity_info
         where status = 1
     </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_award_activity_info
+        where status = 1 and activity_name = #{name}
+    </select>
 </mapper>
