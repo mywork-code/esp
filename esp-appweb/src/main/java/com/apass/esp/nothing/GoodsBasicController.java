@@ -26,7 +26,7 @@ public class GoodsBasicController {
 	private GoodsService goodService;
 
 	/**
-	 * 获取商品详细信息 基本信息+sdfsdfsd详细信息(规格 价格 剩余量)
+	 * 获取商品详细信息 基本信息详细信息(规格 价格 剩余量)
 	 * 
 	 * @return
 	 */
