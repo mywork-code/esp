@@ -63,7 +63,6 @@ public class WithdrawController {
 	@RequestMapping("/confirmWithdraw")
 	@ResponseBody
 	public Response confirmWithdraw(@RequestBody Map<String, Object> paramMap) {
-	    Map<String,Object> resultMap = Maps.newHashMap();
 	    try{
 	        String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
 	        String amount = CommonUtils.getValue(paramMap, "amount");
@@ -71,9 +70,13 @@ public class WithdrawController {
 	            return Response.fail("参数有误");
 	        }
 	        
-	        resultMap = withdrawService.confirmWithdraw(userId,amount);
+	        int count = withdrawService.confirmWithdraw(userId,amount);
 	        
-	        return Response.success("提现页面查询成功", resultMap);
+	        if(count == 1){
+	            return Response.success("确认提现成功");
+	        }else{
+	            return Response.fail("确认提现失败");
+	        }
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
 	        return Response.fail(e.getMessage());

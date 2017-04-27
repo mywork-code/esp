@@ -75,13 +75,7 @@ public class WithdrawService {
             List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
             BigDecimal totalCount = BigDecimal.ZERO;
             if(awardDetails != null && awardDetails.size()>0){
-                for (AwardDetail awardDetail : awardDetails) {
-                    if(awardDetail.getType() == 0){
-                        totalCount = totalCount.add(awardDetail.getAmount());
-                    }else if(awardDetail.getType() == 1){
-                        totalCount = totalCount.subtract(awardDetail.getAmount());
-                    }
-                }
+                totalCount = getTotalCount(awardDetails);
             }
             paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
         }else{
@@ -91,6 +85,22 @@ public class WithdrawService {
         return paramMap;
     }
 
+    /**
+     * 计算全部可提现金额
+     * @param awardDetails
+     * @return
+     */
+    public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
+        BigDecimal totalCount = BigDecimal.ZERO;
+        for (AwardDetail awardDetail : awardDetails) {
+            if(awardDetail.getType() == 0){
+                totalCount = totalCount.add(awardDetail.getAmount());
+            }else if(awardDetail.getType() == 1){
+                totalCount = totalCount.subtract(awardDetail.getAmount());
+            }
+        }
+        return totalCount;
+    }
 
     /**
      * 确认提现：往数据库投入一条数据
@@ -98,7 +108,7 @@ public class WithdrawService {
      * @param amount
      * @return
      */
-    public Map<String, Object> confirmWithdraw(String userId, String amount) {
+    public Integer confirmWithdraw(String userId, String amount) {
         AwardDetail awardDetail = new AwardDetail();
         
         
