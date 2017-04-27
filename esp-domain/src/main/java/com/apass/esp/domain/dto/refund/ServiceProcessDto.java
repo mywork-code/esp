@@ -34,6 +34,9 @@ public class ServiceProcessDto {
     
     /** 换货商户发货物流单号 */
     private String rlogisticsNo;
+    
+    /** 商户的地址*/
+    private String merchantInfoReturnAddress;
 
     /** 处理进度-处理时间 */
     /** RS01(申请退/换货)-处理时间 */
@@ -116,6 +119,14 @@ public class ServiceProcessDto {
 
     public void setRlogisticsNo(String rlogisticsNo) {
         this.rlogisticsNo = rlogisticsNo;
+    }
+    
+    public String getMerchantInfoReturnAddress() {
+        return merchantInfoReturnAddress;
+    }
+
+    public void setMerchantInfoReturnAddress(String merchantInfoReturnAddress) {
+        this.merchantInfoReturnAddress = merchantInfoReturnAddress;
     }
 
     public Date getRs01Time() {
