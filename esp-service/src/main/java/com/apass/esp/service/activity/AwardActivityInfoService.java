@@ -60,7 +60,7 @@ public class AwardActivityInfoService {
 	 */
 	public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
 		AwardActivityInfo entity = new AwardActivityInfo();
-		entity.setActivityName(dto.getName());
+		entity.setActivityName(AwardActivity.ActivityName.INTRO.getValue());
 		entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate()));
 		entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate()));
 		entity.setRebate(NumberUtils.divide100(dto.getRebate()));
@@ -103,6 +103,24 @@ public class AwardActivityInfoService {
 
 		return false;
 	}
+
+	/**
+	 * 通过活动名称获得指定活动
+	 */
+	public AwardActivityInfoVo getActivityByName(AwardActivity.ActivityName name) throws BusinessException {
+		AwardActivityInfo ai = awardActivityInfoMapper.selectByName(name.getValue());
+		if(ai == null){
+			throw new BusinessException("未查到指定的活动【" + name.getDesc() + "】");
+		}
+		AwardActivityInfoVo vo = new AwardActivityInfoVo();
+		vo.setId(ai.getId());
+		vo.setActivityName(ai.getActivityName());
+		vo.setaStartDate(DateFormatUtil.datetime2String(ai.getaStartDate()));
+		vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
+		vo.setRebate(NumberUtils.multiply100(ai.getRebate()) + "%");
+		return vo;
+	}
+
 
 	/**
 	 * 查询用户是否绑卡及绑卡信息

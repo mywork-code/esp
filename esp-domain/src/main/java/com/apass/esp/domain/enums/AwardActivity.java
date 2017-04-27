@@ -1,6 +1,39 @@
 package com.apass.esp.domain.enums;
 
 public class AwardActivity {
+
+	public enum ActivityName {
+		INTRO("intro","转介绍")
+		;
+
+		private String value;
+		private String desc;
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+
+		private ActivityName(String value, String desc){
+			this.value = value;
+			this.desc = desc;
+		}
+
+	}
+
+
+
 	// 活动有效性
 	public enum ACTIVITY_STATUS {
 		EFFECTIVE(1, "有效"), UNEFFECTIVE(0, "无效");
