@@ -386,13 +386,13 @@ public class AfterSaleService {
         }
         
         /**
-         * 获取商户的详细信息，然后获取商户的退货地址
+         * 根据商户的编码获取商户的详细信息，然后获取商户的退货地址
          */
         MerchantInfoEntity merchantInfo = memChantRepository.queryByMerchantCode(orderInfo.getMerchantCode());
         
         if(null == merchantInfo){
             LOG.info(requestId, "根据商户编码获取商户详细信息", "数据为空");
-            throw new BusinessException("无效的订单号!");
+            throw new BusinessException("无效的商户编码!");
         }
         
         Map<String, Object> param = new HashMap<String, Object>();
@@ -414,6 +414,7 @@ public class AfterSaleService {
         if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
             && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
             serviceProcessDto.setIsAllowed("1");
+            //在商品退换货的时候，加上商户的退货地址
             serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
         }
 
