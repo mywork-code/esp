@@ -123,11 +123,6 @@ public class MerchantInfoEntity {
 	 * 备注
 	 */
 	private String remark;
-	
-	/**
-	 * 测试
-	 */
-	private String ceshi;
 
 	public String getRemark() {
 		return remark;
@@ -337,12 +332,4 @@ public class MerchantInfoEntity {
         this.merchantReturnPostCode = merchantReturnPostCode;
     }
 
-    public String getCeshi() {
-        return ceshi;
-    }
-
-    public void setCeshi(String ceshi) {
-        this.ceshi = ceshi;
-    }
-    
 }
