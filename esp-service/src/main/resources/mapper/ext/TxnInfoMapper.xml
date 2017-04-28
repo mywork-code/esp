@@ -25,7 +25,7 @@
         stmt_date, loan_id,open_bank_id,open_bank
     </sql>
 
-    <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List" />
         from t_apass_txn_info

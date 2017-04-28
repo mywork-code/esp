@@ -12,7 +12,7 @@ public interface TxnInfoMapper {
   /**
    * 根据订单id查询流水
    */
-  List<TxnInfoEntity> selectByOrderId(Long orderId);
+  List<TxnInfoEntity> selectByOrderId(String orderId);
 
 
 }
