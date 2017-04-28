@@ -155,4 +155,33 @@ public class AwardActivity {
 			return message;
 		}
 	}
+	
+	
+	    //可选择银行列表
+		public enum BANK_ENTITY {
+			BANKLIST_ICBC("ICBC", "工商银行"),
+			BANKLIST_CMBC("CMBC", "民生银行"),
+			BANKLIST_CEB("CEB", "光大银行"),
+			BANKLIST_GDB("GDB", "广发银行"),
+			BANKLIST_CITIC("CITIC", "中信银行"), 
+			BANKLIST_CIB("CIB", "兴业银行"),
+			BANKLIST_PAB("PAB", "平安银行");
+			BANK_ENTITY(String code, String message) {
+				this.code = code;
+				this.message = message;
+			}
+
+			private String code;
+			private String message;
+
+			public String getCode() {
+				return code;
+			}
+
+			public String getMessage() {
+				return message;
+			}
+		}
+	
+	
 }

@@ -18,15 +18,38 @@ import com.apass.gfb.framework.utils.HttpClientUtils;
 @Service
 public class RegisterInfoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseService.class);
-
+    
+    private static final String CHECKUSER_ISWECHATUSER="/checkUser/isWeChatUser";
     private static final String CHECKUSER_OLDORNEW="/checkUser/oldOrNew";
     private static final String CHECKUSER_REGISTER="/checkUser/register";
-
+    
     /**
      * 供房帮服务地址
      */
     @Value("${gfb.service.url}")
     protected String              gfbServiceUrl;
+    
+    
+    /**
+     * 判断是否为是微信端用户
+     * @param mobile
+     * @return
+     */
+    public Response isWeChatUser(String mobile){
+    	try {
+			 Map<String,Object> map=new HashMap<String,Object>();
+			 map.put("mobile", mobile);
+	         String requestUrl = gfbServiceUrl + CHECKUSER_ISWECHATUSER;
+	         String reqJson = GsonUtils.toJson(map);
+	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+	         Response   response=GsonUtils.convertObj(responseJson, Response.class);
+	         return response;
+    	} catch (Exception e) {
+			LOGGER.error("判断是否为是微信端用户失败！", e);
+		}
+		return null;
+    }
     /**
      * 判断是否为新用户
      * @param mobile

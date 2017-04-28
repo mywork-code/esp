@@ -13,6 +13,8 @@ public class AwardActivityInfoVo {
   private String aEndDate;
 
   private String rebate;
+  
+  private String updateDate;
 
   public String getActivityName() {
     return activityName;
@@ -53,4 +55,12 @@ public class AwardActivityInfoVo {
   public void setId(Long id) {
     this.id = id;
   }
+
+public String getUpdateDate() {
+	return updateDate;
+}
+
+public void setUpdateDate(String updateDate) {
+	this.updateDate = updateDate;
+}
 }

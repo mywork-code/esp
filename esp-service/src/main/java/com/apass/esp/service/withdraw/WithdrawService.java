@@ -15,25 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
-import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.domain.vo.AwardDetailVo;
-import com.apass.esp.mapper.AwardActivityInfoMapper;
-import com.apass.esp.mapper.AwardBindRelMapper;
 import com.apass.esp.mapper.AwardDetailMapper;
-import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 
 
 
@@ -99,9 +89,9 @@ public class WithdrawService {
     public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
         BigDecimal totalCount = BigDecimal.ZERO;
         for (AwardDetail awardDetail : awardDetails) {
-            if(awardDetail.getType() == 0){
+            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
                 totalCount = totalCount.add(awardDetail.getAmount());
-            }else if(awardDetail.getType() == 1){
+            }else if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
                 totalCount = totalCount.subtract(awardDetail.getAmount());
             }
         }

@@ -1,5 +1,6 @@
 package com.apass.esp.web.activity;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
+import com.apass.esp.domain.entity.activity.BankEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.nothing.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 @Controller
 @RequestMapping("activity/award")
@@ -56,8 +59,9 @@ public class ActivityWithDrawController {
 		if (StringUtils.isEmpty(userId)) {
 			return Response.fail("userId不能为空");
 		}
-		Response res = awardActivityInfoService.getBankList(paramMap);
-		return res;
+		Map<String, Object> map = awardActivityInfoService.getBankList();
+		// String s = GsonUtils.toJson(Response.successResponse(map));
+		return Response.successResponse(map);
 	}
 
 	/**

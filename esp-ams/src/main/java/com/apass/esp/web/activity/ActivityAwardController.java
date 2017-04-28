@@ -3,8 +3,11 @@ package com.apass.esp.web.activity;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
@@ -27,6 +30,9 @@ public class ActivityAwardController {
 
   @Autowired
   private AwardActivityInfoService awardActivityInfoService;
+
+  @Autowired
+  private AwardDetailService awardDetailService;
 
   /**
    * 转介绍活动配置页
@@ -88,6 +94,14 @@ public class ActivityAwardController {
     return "activity/introStatistic";
   }
 
+  /**
+   * 统计查询
+   */
+  @RequestMapping(value = "/introduce/statistic/list", method = RequestMethod.GET)
+  @ResponseBody
+  public ResponsePageBody<AwardBindRelStatisticVo> listIntroStatistic(ActivityBindRelStatisticQuery query){
+    return  awardDetailService.pageBindRelStatistic(query);
+  }
 
 
 }
