@@ -18,7 +18,12 @@ public class AwardBindRelService {
 	public int insertAwardBindRel(AwardBindRel awardBindRel){
 		return WihdrawBindRelMapper.insert(awardBindRel);
 	}
+	
 	public Integer selectCountByInviteMobile(String moblie){
 		return WihdrawBindRelMapper.selectCountByInviteMobile(moblie);
+	}
+	
+	public AwardBindRel getByInviteInviterUserId(String userId){
+		return WihdrawBindRelMapper.getByInviteInviterUserId(userId);
 	}
 }

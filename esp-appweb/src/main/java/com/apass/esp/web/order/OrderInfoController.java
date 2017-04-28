@@ -1,10 +1,30 @@
 package com.apass.esp.web.order;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
+import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
@@ -18,25 +38,6 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -245,18 +246,31 @@ public class OrderInfoController {
             return Response.fail("确认收货失败!请稍后再试");
         }
         //该订单是否可以返现
-//        List<AwardActivityInfoVo> list = awardActivityInfoService.listActivity();
-//        if(CollectionUtils.isEmpty(list)){
-//        	return Response.success("确认收货成功!");
-//        }
-//        AwardActivityInfoVo awardActivityInfoVo = list.get(0);
-//        Date date= new Date();
-//        String currentTimeString = DateFormatUtil.datetime2String(date);
-//        boolean isInDate = DateFormatUtil.isInDate(currentTimeString, awardActivityInfoVo.getaStartDate(), awardActivityInfoVo.getaEndDate());
-//        if(! isInDate){
-//        	return Response.success("确认收货成功!");
-//        }
-        
+        AwardActivityInfoVo awardActivityInfoVo =null;
+        try {
+        	awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
+		} catch (BusinessException e) {
+			return Response.success("确认收货成功!");
+		}
+        if(awardActivityInfoVo==null){
+        	return Response.success("确认收货成功!");
+        }
+        String currentTimeString = DateFormatUtil.datetime2String(new Date());
+		boolean isInDate = DateFormatUtil.isInDate(currentTimeString, awardActivityInfoVo.getaStartDate(),
+				awardActivityInfoVo.getaEndDate());
+		// 不在活动有效期
+		if (!isInDate) {
+			return Response.success("确认收货成功!");
+		}
+		AwardBindRel awardBindRel = awardBindRelService.getByInviteInviterUserId(String.valueOf(userId));
+        if(awardBindRel==null){
+        	return Response.success("确认收货成功!");
+        }
+        AwardDetailDto AwardDetailDto = new AwardDetailDto();
+        AwardDetailDto.setActivityId(awardBindRel.getActivityId());
+        //AwardDetailDto.setAmount();
+        AwardDetailDto.setMainOrderId(orderId);
+       // awardDetailService.addAwardDetail(awardDetailDto);
         
         return Response.success("确认收货成功!");
     }
