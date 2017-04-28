@@ -154,13 +154,25 @@ public class ActivityWithDrawController {
 	}
 
 	/**
-	 * 身份证上传识别
+	 * 身份证上传识别<正面or反面>
 	 * 
 	 * @return
 	 */
 	public Response uploadImgAndRecognize(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
-		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZED.getCode() + "_" + userId;
+		String idCardType = CommonUtils.getValue(paramMap, "idCardType");
+		if (StringUtils.isAnyEmpty(idCardType, userId)) {
+			return Response.fail("参数错误!");
+		}
+		String requestId = "";
+		if ("front".equals(idCardType)) {
+			requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZED.getCode() + "_" + userId;
+		} else if ("back".equals(idCardType)) {
+			requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZEDOPPO.getCode() + "_" + userId;
+		} else {
+			return Response.fail("参数错误!");
+		}
+
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
@@ -169,7 +181,7 @@ public class ActivityWithDrawController {
 			return Response.fail("对不起,该用户已绑定身份证");
 		}
 		paramMap.put("customerId", result.get("customerId"));
-		// String imgFile = CommonUtils.getValue(paramMap, "imgFile");
+		//String imgFile = CommonUtils.getValue(paramMap, "imgFile");
 		// String mobile = CommonUtils.getValue(paramMap, "mobile");
 		awardActivityInfoService.identityReconize(paramMap);
 		return Response.success("success");
