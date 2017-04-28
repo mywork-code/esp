@@ -1,34 +1,20 @@
 package com.apass.esp.service.withdraw;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
+import com.apass.esp.domain.entity.AwardDetail;
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.mapper.AwardDetailMapper;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.AwardDetail;
-import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.domain.vo.AwardDetailVo;
-import com.apass.esp.mapper.AwardActivityInfoMapper;
-import com.apass.esp.mapper.AwardBindRelMapper;
-import com.apass.esp.mapper.AwardDetailMapper;
-import com.apass.esp.repository.activity.ActivityInfoRepository;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.utils.PaginationManage;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -73,22 +59,46 @@ public class WithdrawService {
             
             //查询全部可提金额金额
             List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
-            BigDecimal totalCoun = BigDecimal.ZERO;
+            BigDecimal totalCount = BigDecimal.ZERO;
             if(awardDetails != null && awardDetails.size()>0){
-                for (AwardDetail awardDetail : awardDetails) {
-                    if(awardDetail.getType() == 0){
-                        totalCoun = totalCoun.add(awardDetail.getAmount());
-                    }else if(awardDetail.getType() == 1){
-                        totalCoun = totalCoun.subtract(awardDetail.getAmount());
-                    }
-                }
+                totalCount = getTotalCount(awardDetails);
             }
-            paramMap.put("totalCoun",totalCoun);//赏金 ，全部提现金额
+            paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
         }else{
             paramMap.put("page","0");//未绑卡
         }
         
         return paramMap;
+    }
+
+    /**
+     * 计算全部可提现金额
+     * @param awardDetails
+     * @return
+     */
+    public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
+        BigDecimal totalCount = BigDecimal.ZERO;
+        for (AwardDetail awardDetail : awardDetails) {
+            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
+                totalCount = totalCount.add(awardDetail.getAmount());
+            }else if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
+                totalCount = totalCount.subtract(awardDetail.getAmount());
+            }
+        }
+        return totalCount;
+    }
+
+    /**
+     * 确认提现：往数据库投入一条数据
+     * @param userId
+     * @param amount
+     * @return
+     */
+    public Integer confirmWithdraw(String userId, String amount) {
+        AwardDetail awardDetail = new AwardDetail();
+        
+        
+        return null;
     }
    
 }

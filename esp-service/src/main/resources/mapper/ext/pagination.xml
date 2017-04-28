@@ -4,7 +4,7 @@
 	<!-- MySql分页 -->
    	<sql id="MYSQL_PAGINATION">
    		<if test="startRecordIndex != null and startRecordIndex >= 0">
-			limit #{startRecordIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+			limit #{startRecordIndex,jdbcType=INTEGER}, #{rows,jdbcType=INTEGER}
 		</if>
 	</sql>
 </mapper>

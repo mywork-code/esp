@@ -6,4 +6,10 @@
       from t_esp_award_detail
       where  status in(0,2) and user_id = #{userId}
     </select>
+    
+    <select id="queryAwardDetailByStatusAndType" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List" />
+      from t_esp_award_detail
+      where  status =#{status} and type = #{type}
+    </select>
 </mapper>
