@@ -76,15 +76,15 @@ public class LogAspect {
         LogValueTypeEnum valueType = null;
         
         
-        String targetName = joinPoint.getTarget().getClass().getName();    
+        String className = joinPoint.getTarget().getClass().getName();    
         String methodName = joinPoint.getSignature().getName();    
         Object[] arguments = joinPoint.getArgs();    
         
-        content.append("targetName:"+targetName + "####");
+        content.append("className:"+className + "####");
         content.append("methodName:"+methodName + "####");
         content.append("arguments:");
         
-        Class targetClass = Class.forName(targetName);    
+        Class targetClass = Class.forName(className);    
         Method[] methods = targetClass.getMethods();    
         for (Method method : methods) {    
              if (method.getName().equals(methodName)) {    
