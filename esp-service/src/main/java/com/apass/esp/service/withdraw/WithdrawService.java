@@ -73,22 +73,46 @@ public class WithdrawService {
             
             //查询全部可提金额金额
             List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
-            BigDecimal totalCoun = BigDecimal.ZERO;
+            BigDecimal totalCount = BigDecimal.ZERO;
             if(awardDetails != null && awardDetails.size()>0){
-                for (AwardDetail awardDetail : awardDetails) {
-                    if(awardDetail.getType() == 0){
-                        totalCoun = totalCoun.add(awardDetail.getAmount());
-                    }else if(awardDetail.getType() == 1){
-                        totalCoun = totalCoun.subtract(awardDetail.getAmount());
-                    }
-                }
+                totalCount = getTotalCount(awardDetails);
             }
-            paramMap.put("totalCoun",totalCoun);//赏金 ，全部提现金额
+            paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
         }else{
             paramMap.put("page","0");//未绑卡
         }
         
         return paramMap;
+    }
+
+    /**
+     * 计算全部可提现金额
+     * @param awardDetails
+     * @return
+     */
+    public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
+        BigDecimal totalCount = BigDecimal.ZERO;
+        for (AwardDetail awardDetail : awardDetails) {
+            if(awardDetail.getType() == 0){
+                totalCount = totalCount.add(awardDetail.getAmount());
+            }else if(awardDetail.getType() == 1){
+                totalCount = totalCount.subtract(awardDetail.getAmount());
+            }
+        }
+        return totalCount;
+    }
+
+    /**
+     * 确认提现：往数据库投入一条数据
+     * @param userId
+     * @param amount
+     * @return
+     */
+    public Integer confirmWithdraw(String userId, String amount) {
+        AwardDetail awardDetail = new AwardDetail();
+        
+        
+        return null;
     }
    
 }
