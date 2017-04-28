@@ -3,19 +3,19 @@ package com.apass.esp.nothing;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
+import com.apass.gfb.framework.utils.CommonUtils;
 
 @RestController
 @RequestMapping("GoodsBasic")
@@ -31,8 +31,10 @@ public class GoodsBasicController {
 	 * @return
 	 */
 	@RequestMapping("/loadGoodsBasicInfoWithOutUserId")
-	public Response loadGoodsBasicInfoWithOutUserId(@RequestParam(required = true) String goodsId) {
+	public Response loadGoodsBasicInfoWithOutUserId(@RequestBody Map<String, Object> paramMap) {
 		try {
+			String goodsId = CommonUtils.getValue(paramMap, ParamsCode.GOODS_ID);
+
 			Map<String, Object> returnMap = new HashMap<>();
 			if (StringUtils.isEmpty(goodsId)) {
 				return Response.fail("商品号不能为空!");
