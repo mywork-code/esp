@@ -6,4 +6,10 @@
       from t_esp_award_detail
       where  status in(0,2) and user_id = #{userId}
     </select>
+    
+	<select id="queryAwardDetailWithDate" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List" />
+      from t_esp_award_detail
+      where user_id = #{userId} and status in(0,2) and create_date between #{beginMonthDay} and #{now}
+    </select>
 </mapper>
