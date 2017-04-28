@@ -2,7 +2,6 @@ package com.apass.esp.web.log;
 
 import java.lang.reflect.Method;
 
-import org.apache.catalina.Contained;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
