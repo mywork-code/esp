@@ -30,7 +30,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class RebateActivityScheduleTask {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RebateActivityScheduleTask.class);
 
@@ -49,7 +49,7 @@ public class RebateActivityScheduleTask {
 	/**
 	 * 每天凌晨一点执行,邀请人获得返点结算
 	 */
-	@Scheduled(cron = "0 23 15 * * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void validateActivityEndtime() {
 		try {
 			LOGGER.info("邀请人获得返点结算定时任务开始");
