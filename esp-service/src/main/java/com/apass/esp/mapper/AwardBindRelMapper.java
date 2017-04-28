@@ -1,7 +1,10 @@
 package com.apass.esp.mapper;
 
 import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+
+import java.util.List;
 
 public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
 
@@ -17,4 +20,12 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
      * @return
      */
     Integer selectCountByInviteMobile(String moblie);
+
+    /**
+     * 统计查询同一用户邀请人数
+     * @return
+     */
+    List<AwardBindRelStatistic> selectBindRelStatistic();
+
+
 }

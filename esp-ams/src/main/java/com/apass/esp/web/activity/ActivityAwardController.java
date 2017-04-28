@@ -88,6 +88,15 @@ public class ActivityAwardController {
     return "activity/introStatistic";
   }
 
+  /**
+   * 统计查询
+   */
+  @RequestMapping(value = "/introduce/statistic/index", method = RequestMethod.GET)
+  @ResponseBody
+  public ResponsePageBody listIntroStatistic(String startCreateDate,String endCreateDate){
+
+    return null;
+  }
 
 
 }
