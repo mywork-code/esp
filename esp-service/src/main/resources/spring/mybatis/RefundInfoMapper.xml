@@ -204,4 +204,35 @@
 			AND DATE_ADD(t3.create_date,INTERVAL 3 DAY) <= NOW()        
         ]]>
     </select>
+    
+    <!-- 根据订单ID和退换货类型查询 -->
+    <select id="queryRefundInfoByOrderIdAndRefundType" parameterType="Map" resultType="RefundInfoEntity">
+        <![CDATA[
+			select  
+		        refund.id                   id,
+		        refund.order_id             orderId,
+		        refund.order_amt            orderAmt,
+		        refund.refund_amt           refundAmt,
+		        refund.s_logistics_name     slogisticsName,
+		        refund.s_logistics_no       slogisticsNo,
+		        refund.r_logistics_id       rlogisticsId,
+		        refund.r_logistics_name     rlogisticsName,
+		        refund.r_logistics_no       rlogisticsNo,
+		        refund.approval_user        approvalUser,
+		        refund.approval_comments    approvalComments,
+		        refund.status               status,
+		        refund.refund_reason        refundReason,
+		        refund.reject_reason        rejectReason,
+		        refund.remark               remark,
+		        refund.create_date          createDate,
+		        refund.update_date          updateDate,
+		        refund.refund_type          refundType,
+		        refund.goods_url            goodsUrl,
+		        refund.is_agree             isAgree,
+		        refund.completion_time      completionTime
+	        from t_esp_refund_info refund 
+		]]>
+		WHERE order_id = #{orderId} and refund_type = #{refundType}
+    </select>
+    
 </mapper>

@@ -24,6 +24,7 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
@@ -245,37 +246,61 @@ public class OrderInfoController {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail("确认收货失败!请稍后再试");
         }
-        //该订单是否可以返现
-        AwardActivityInfoVo awardActivityInfoVo =null;
-        try {
-        	awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
+		// 该订单是否可以返现
+		AwardActivityInfoVo awardActivityInfoVo = null;
+		try {
+			awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
 		} catch (BusinessException e) {
+			LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
 			return Response.success("确认收货成功!");
 		}
-        if(awardActivityInfoVo==null){
-        	return Response.success("确认收货成功!");
-        }
-        String currentTimeString = DateFormatUtil.datetime2String(new Date());
-		boolean isInDate = DateFormatUtil.isInDate(currentTimeString, awardActivityInfoVo.getaStartDate(),
-				awardActivityInfoVo.getaEndDate());
-		// 不在活动有效期
-		if (!isInDate) {
-			return Response.success("确认收货成功!");
+		// 返现活动存在
+		if (awardActivityInfoVo != null) {
+			OrderInfoEntity orderInfoEntity = null;
+			try {
+				orderInfoEntity = orderService.selectByOrderId(orderId);
+			} catch (BusinessException e) {
+				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
+				return Response.success("确认收货成功!");
+			}
+			if (orderInfoEntity != null) {// 订单存在
+				Date startDate = DateFormatUtil.string2date(awardActivityInfoVo.getaStartDate(), "yyyy-MM-dd HH:mm:ss");
+				Date endDate = DateFormatUtil.string2date(awardActivityInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
+				Date date = orderInfoEntity.getCreateDate();// 下单时间
+				LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
+						orderId, awardActivityInfoVo.getId(), startDate, endDate, date);
+				if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
+					AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId));
+					if (awardBindRel != null) {// 当前用户已经被邀请
+						AwardDetailDto awardDetailDto = new AwardDetailDto();
+						awardDetailDto.setActivityId(awardBindRel.getActivityId());
+						// 返点金额
+						String rebateString = awardActivityInfoVo.getRebate();
+						BigDecimal rebate = new BigDecimal(rebateString.substring(0,rebateString.length()-1)).multiply(new BigDecimal(0.01));
+						awardDetailDto.setAmount(orderInfoEntity.getOrderAmt()
+								.multiply(rebate));
+						awardDetailDto.setMainOrderId(orderId);
+						awardDetailDto.setCreateDate(new Date());
+						awardDetailDto.setUpdateDate(new Date());
+						// 处理中
+						awardDetailDto.setStatus((byte) 2);
+						// 获得
+						awardDetailDto.setType((byte) 0);
+						awardDetailDto.setUserId(userId);
+						awardDetailService.addAwardDetail(awardDetailDto);
+						LOGGER.info(
+								"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
+								userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
+								awardActivityInfoVo.getRebate());
+						return Response.success("确认收货成功!");
+					}
+				}
+			}
 		}
-		AwardBindRel awardBindRel = awardBindRelService.getByInviteInviterUserId(String.valueOf(userId));
-        if(awardBindRel==null){
-        	return Response.success("确认收货成功!");
-        }
-        AwardDetailDto AwardDetailDto = new AwardDetailDto();
-        AwardDetailDto.setActivityId(awardBindRel.getActivityId());
-        //AwardDetailDto.setAmount();
-        AwardDetailDto.setMainOrderId(orderId);
-       // awardDetailService.addAwardDetail(awardDetailDto);
-        
-        return Response.success("确认收货成功!");
-    }
+		return Response.success("确认收货成功!");
+	}
 
-    /**
+    /** 
      * 删除订单
      * 
      * @param paramMap

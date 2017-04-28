@@ -1,7 +1,5 @@
 package com.apass.esp.mapper;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -29,5 +27,5 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
 	 * @param userId
 	 * @return
 	 */
-	AwardBindRel getByInviteInviterUserId(String userId);
+	AwardBindRel getByInviterUserId(String userId);
 }

@@ -1,26 +1,5 @@
 package com.apass.esp.service.activity;
 
-import com.apass.esp.common.utils.NumberUtils;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
-import com.apass.esp.domain.entity.AwardActivityInfo;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.mapper.AwardActivityInfoMapper;
-import com.apass.esp.mapper.AwardBindRelMapper;
-import com.apass.esp.mapper.AwardDetailMapper;
-import com.apass.esp.repository.httpClient.EspActivityHttpClient;
-import com.apass.esp.repository.payment.PaymentHttpClient;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,18 +7,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.apass.esp.common.utils.NumberUtils;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
+import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.entity.activity.BankEntity;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.mapper.AwardActivityInfoMapper;
+import com.apass.esp.repository.httpClient.EspActivityHttpClient;
+import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+
 @Service
 public class AwardActivityInfoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwardActivityInfoService.class);
 
 	@Autowired
 	public AwardActivityInfoMapper awardActivityInfoMapper;
-	
+
 	@Autowired
 	private PaymentHttpClient paymentHttpClient;
 
 	@Autowired
 	private EspActivityHttpClient espActivityHttpClient;
+
+	/**
+	 * 根据活动ID得到活动
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public AwardActivityInfo getAwardActivityInfoById(long id) {
+		return awardActivityInfoMapper.selectByPrimaryKey(id);
+	}
 
 	/**
 	 * 活动设置无效
@@ -109,7 +119,7 @@ public class AwardActivityInfoService {
 	 */
 	public AwardActivityInfoVo getActivityByName(AwardActivity.ActivityName name) throws BusinessException {
 		AwardActivityInfo ai = awardActivityInfoMapper.selectByName(name.getValue());
-		if(ai == null){
+		if (ai == null) {
 			throw new BusinessException("未查到指定的活动【" + name.getDesc() + "】");
 		}
 		AwardActivityInfoVo vo = new AwardActivityInfoVo();
@@ -120,7 +130,6 @@ public class AwardActivityInfoService {
 		vo.setRebate(NumberUtils.multiply100(ai.getRebate()) + "%");
 		return vo;
 	}
-
 
 	/**
 	 * 查询用户是否绑卡及绑卡信息
@@ -190,9 +199,40 @@ public class AwardActivityInfoService {
 	 * @param map
 	 * @return
 	 */
-	public Response getBankList(Map<String, Object> map) {
-		Response res = espActivityHttpClient.getBankList(map);
-		return res;
+	public Map<String, Object> getBankList() {
+		List<BankEntity> list = new ArrayList<BankEntity>();
+		BankEntity e1 = new BankEntity();
+		e1.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_ICBC.getCode());
+		e1.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_ICBC.getMessage());
+		BankEntity e2 = new BankEntity();
+		e2.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getCode());
+		e2.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getMessage());
+		BankEntity e3 = new BankEntity();
+		e3.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CEB.getCode());
+		e3.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CEB.getMessage());
+		BankEntity e4 = new BankEntity();
+		e4.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_GDB.getCode());
+		e4.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_GDB.getMessage());
+		BankEntity e5 = new BankEntity();
+		e5.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CITIC.getCode());
+		e5.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CITIC.getMessage());
+		BankEntity e6 = new BankEntity();
+		e6.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CIB.getCode());
+		e6.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CIB.getMessage());
+		BankEntity e7 = new BankEntity();
+		e7.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_PAB.getCode());
+		e7.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_PAB.getMessage());
+		list.add(e1);
+		list.add(e2);
+		list.add(e3);
+		list.add(e4);
+		list.add(e5);
+		list.add(e6);
+		list.add(e7);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("bankList", list);
+		map.put("bankTotal", list.size());
+		return map;
 	}
 
 	/**
