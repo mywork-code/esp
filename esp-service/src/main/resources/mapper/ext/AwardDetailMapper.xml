@@ -7,16 +7,15 @@
       where  status in(0,2) and user_id = #{userId}
     </select>
     
-<<<<<<< HEAD
 	<select id="queryAwardDetailWithDate" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
       from t_esp_award_detail
       where user_id = #{userId} and status in(0,2) and create_date between #{beginMonthDay} and #{now}
-=======
+    </select>
+     
     <select id="queryAwardDetailByStatusAndType" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
       from t_esp_award_detail
       where  status =#{status} and type = #{type}
->>>>>>> 959a70bf9c02f3046070905ce2bfbf6861253ad7
     </select>
 </mapper>
