@@ -5,10 +5,16 @@ package com.apass.esp.common.model;
  */
 public class QueryParams {
   private Integer startRecordIndex;
-  private Integer pageSize;
+  private Integer rows;
   private Integer page;
 
   private String order = "id desc";
+
+  public QueryParams(){
+    if (rows != null) {
+      this.startRecordIndex = (page - 1) * rows;
+    }
+  }
 
   public String getOrder() {
     return order;
@@ -18,23 +24,35 @@ public class QueryParams {
     this.order = order;
   }
 
+  public void setStartRecordIndex(Integer startRecordIndex) {
+    this.startRecordIndex = startRecordIndex;
+  }
+
+  public void setRows(Integer rows) {
+    this.rows = rows;
+  }
+
+  public void setPage(Integer page) {
+    this.page = page;
+  }
+
   public Integer getStartRecordIndex() {
     return startRecordIndex;
   }
 
-  public Integer getPageSize() {
-    return pageSize;
+  public Integer getRows() {
+    return rows;
   }
 
   public Integer getPage() {
     return page;
   }
 
-  public void setPageParams(Integer pageSize, Integer page) {
-    this.pageSize = pageSize;
+  public void setPageParams(Integer rows, Integer page) {
+    this.rows = rows;
     this.page = page;
-    if (pageSize != null) {
-      this.startRecordIndex = (page - 1) * pageSize;
+    if (rows != null) {
+      this.startRecordIndex = (page - 1) * rows;
     }
   }
 

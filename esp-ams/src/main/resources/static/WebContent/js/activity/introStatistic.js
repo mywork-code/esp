@@ -13,30 +13,30 @@ $(function(){
         columns :[[
             {
                 title : '邀请人',
-                field : 'activityName',
+                field : 'mobile',
                 width : 150,
                 align : 'center'
             }, {
                 title : '拉新人数',
-                field : 'aStartDate',
+                field : 'inviteNum',
                 width : 150,
                 align : 'center'
             },
             {
                 title : '现金',
-                field : 'aEndDate',
+                field : 'bankAmt',
                 width : 150,
                 align : 'center'
             },
             {
                 title : '额度',
-                field : 'rebate',
+                field : 'creditAmt',
                 width : 120,
                 align : 'center'
             },
             {
                 title : '返现金额',
-                field : 'rebate',
+                field : 'rebateAmt',
                 width : 120,
                 align : 'center'
             }
@@ -61,13 +61,18 @@ $(function(){
 
     //查询
     $(".search-btn").click(function(){
+        var startCreateDate=$("#createDate1").textbox('getValue');
+        var endCreateDate=$("#createDate2").textbox('getValue');
         var params={};
+        params['startCreateDate'] = startCreateDate;
+        params['endCreateDate'] = endCreateDate;
         $('#list').datagrid('load',params);
     });
 
     // 重置
     $("#reset").click(function(){
-        $('#bannerType2').combobox('setValue','');
+        $("#createDate1").textbox('setValue','');
+        $("#createDate2").textbox('setValue','');
         var params={};
         $('#list').datagrid('load',params);
     });

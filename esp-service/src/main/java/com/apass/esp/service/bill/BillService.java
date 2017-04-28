@@ -67,7 +67,7 @@ public class BillService {
         
         Date outStmtBillDate = null; // 当前已出账单日 时间格式
         
-        TxnInfoEntity txnInfoEntity = transactionService.queryTxnByOrderId(orderId);
+        TxnInfoEntity txnInfoEntity = transactionService.queryCreditTxnByOrderId(orderId);
         if(txnInfoEntity != null){
             Date txnDate = txnInfoEntity.getTxnDate();
             String txnDay = DateFormatUtil.dateToString(txnDate, "dd");

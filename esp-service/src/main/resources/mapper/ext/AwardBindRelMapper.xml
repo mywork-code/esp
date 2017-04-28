@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.AwardBindRelMapper">
+
+	<sql id="query_where_clause">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="startCreateDate != null">
+				<![CDATA[  and create_date >= #{startCreateDate} ]]>
+			</if>
+			<if test="endCreateDate != null and endCreateDate != '' ">
+				<![CDATA[  and create_date <= #{endCreateDate} ]]>
+			</if>
+		</trim>
+	</sql>
 	
 	<select id="selectCountByUserId" resultType="java.lang.Integer"
 		parameterType="java.lang.Long">
@@ -32,10 +43,26 @@
 		<result column="total_invite_num" property="totalInviteNum" jdbcType="INTEGER" />
 	</resultMap>
 
-	<select id="selectBindRelStatistic" resultMap="StatisticResultMap">
+	<sql id="orderby_clause">
+		order by ${order}
+	</sql>
+
+	<select id="selectBindRelStatistic" resultMap="StatisticResultMap" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
 		select
 		<include refid="Base_Column_List" />,count(*) as total_invite_num
-		from t_esp_award_activity_info
+		from t_esp_award_bind_rel
+		<include refid="query_where_clause" />
 		GROUP  BY user_id
+		order by total_invite_num desc
+		<if test="startRecordIndex != null">
+			<include refid="PAGINATION.MYSQL_PAGINATION" />
+		</if>
+	</select>
+
+
+	<select id="countBindRelByGroup" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+		select count(*) from (select count(id) from t_esp_award_bind_rel
+		<include refid="query_where_clause" />
+		GROUP  BY user_id) as t
 	</select>
 </mapper>

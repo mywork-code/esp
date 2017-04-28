@@ -1,19 +1,13 @@
 package com.apass.esp.service.bill;
 
-import java.util.List;
-import java.util.Map;
-
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.repository.bill.TransactionRepository;
+import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.apass.esp.domain.dto.statement.StatementDto;
-import com.apass.esp.domain.entity.bill.StatementEntity;
-import com.apass.esp.domain.entity.bill.TxnInfoEntity;
-import com.apass.esp.repository.bill.BillRepository;
-import com.apass.esp.repository.bill.TransactionRepository;
-import com.apass.esp.repository.statement.StatementRepository;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
+import java.util.Map;
 
 @Service
 public class TransactionService {
@@ -37,7 +31,7 @@ public class TransactionService {
      * @param orderId
      * @return
      */
-    public TxnInfoEntity queryTxnByOrderId(String orderId) {
+    public TxnInfoEntity queryCreditTxnByOrderId(String orderId) {
         return transactionRepository.queryTxnByOrderId(orderId);
     }
 
