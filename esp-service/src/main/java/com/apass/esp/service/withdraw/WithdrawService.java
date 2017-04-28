@@ -144,7 +144,7 @@ public class WithdrawService {
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetailWithDate(Long.valueOf(userId),
                 DateFormatUtil.dateToString(beginMonthDay, DateFormatUtil.YYYY_MM_DD_HH_MM_SS),DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         LOGGER.info("用户:{}本月提现详情:{}",userId,GsonUtils.toJson(awardDetails));
-        BigDecimal totolAmount = BigDecimal.ZERO;
+        BigDecimal totolAmount = BigDecimal.valueOf(Long.valueOf(amount));
         BigDecimal taxAmount = BigDecimal.ZERO;
         for (AwardDetail awardDetail : awardDetails) {
             if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
