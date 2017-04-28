@@ -9,7 +9,7 @@
 		<result column="amount" property="amount" jdbcType="DECIMAL" />
 		<result column="type" property="type" jdbcType="TINYINT" />
 		<result column="status" property="status" jdbcType="TINYINT" />
-		<result column="main_order_id" property="mainOrderId" jdbcType="BIGINT" />
+		<result column="main_order_id" property="mainOrderId" jdbcType="VARCHAR" />
 		<result column="arrived_date" property="arrivedDate" jdbcType="TIMESTAMP" />
 		<result column="card_no" property="cardNo" jdbcType="VARCHAR" />
 		<result column="card_bank" property="cardBank" jdbcType="VARCHAR" />
@@ -108,7 +108,7 @@
 				#{status,jdbcType=TINYINT},
 			</if>
 			<if test="mainOrderId != null">
-				#{mainOrderId,jdbcType=BIGINT},
+				#{mainOrderId,jdbcType=VARCHAR},
 			</if>
 			<if test="arrivedDate != null">
 				#{arrivedDate,jdbcType=TIMESTAMP},
@@ -149,7 +149,7 @@
 				status = #{status,jdbcType=TINYINT},
 			</if>
 			<if test="mainOrderId != null">
-				main_order_id = #{mainOrderId,jdbcType=BIGINT},
+				main_order_id = #{mainOrderId,jdbcType=VARCHAR},
 			</if>
 			<if test="arrivedDate != null">
 				arrived_date = #{arrivedDate,jdbcType=TIMESTAMP},
@@ -177,7 +177,7 @@
 		amount = #{amount,jdbcType=DECIMAL},
 		type = #{type,jdbcType=TINYINT},
 		status = #{status,jdbcType=TINYINT},
-		main_order_id = #{mainOrderId,jdbcType=BIGINT},
+		main_order_id = #{mainOrderId,jdbcType=VARCHAR},
 		arrived_date = #{arrivedDate,jdbcType=TIMESTAMP},
 		card_no = #{cardNo,jdbcType=VARCHAR},
 		card_bank = #{cardBank,jdbcType=VARCHAR},

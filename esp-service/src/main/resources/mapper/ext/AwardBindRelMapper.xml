@@ -15,4 +15,13 @@
 		from t_esp_award_bind_rel
 		where invite_mobile = #{value}
 	</select>
+	
+	<!-- 查询被邀请人的记录 -->
+	<select id="getByInviterUserId" resultMap="BaseResultMap" parameterType="String">
+		select * 
+		from t_esp_award_bind_rel
+		where invite_user_id = #{userId}
+	</select>
+	
+	
 </mapper>

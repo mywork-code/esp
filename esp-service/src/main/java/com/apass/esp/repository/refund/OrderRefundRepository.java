@@ -121,4 +121,12 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
         return getSqlSession().selectList(getSQL("queryReturningOrderRefundInfo"), map);
     }
 
+    /**
+     * 根据订单ID,退换货类型查询退换货信息
+     * @param map
+     * @return
+     */
+    public RefundInfoEntity queryRefundInfoByOrderIdAndRefundType(Map<String, Object> map){
+    	return getSqlSession().selectOne(getSQL("queryRefundInfoByOrderIdAndRefundType"), map);
+    }
 }
