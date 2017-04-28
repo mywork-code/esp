@@ -226,6 +226,9 @@ $(function(){
 		$("#editMerchantCity").combobox('setValue',row3.merchantCity);
 		$("#editMerchantAddress").textbox('setValue',row3.merchantAddress);
 		$("#editMerchantReturnAddress").textbox('setValue',row3.merchantReturnAddress);
+		$("#editMerchantReturnName").textbox('setValue',row3.merchantReturnName);
+		$("#editMerchantReturnPhone").textbox('setValue',row3.merchantReturnPhone);
+		$("#editMerchantReturnPostCode").textbox('setValue',row3.merchantReturnPostCode);
 		$("#editMerchantPostcode").textbox('setValue',row3.merchantPostcode);
 		//alert(row3.merchantType);
 		$("#editMerchantType").combobox('setValue',row3.merchantType);
@@ -302,6 +305,9 @@ function merchantReadonlyFalse(){
 	$("#editMerchantCity").combobox({disabled: false});
 	$('#editMerchantAddress').textbox('textbox').attr('readonly',false);
 	$('#editMerchantReturnAddress').textbox('textbox').attr('readonly',false);
+	$('#editMerchantReturnName').textbox('textbox').attr('readonly',false);
+	$('#editMerchantReturnPhone').textbox('textbox').attr('readonly',false);
+	$('#editMerchantReturnPostCode').textbox('textbox').attr('readonly',false);
 	$('#editMerchantPostcode').textbox('textbox').attr('readonly',false);
 	$("#editMerchantType").combobox({disabled: false});
 	$('#editMerchantNickname').textbox('textbox').attr('readonly',false);

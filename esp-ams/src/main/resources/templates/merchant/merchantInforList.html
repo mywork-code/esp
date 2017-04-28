@@ -39,7 +39,7 @@
 	<div id="merchantInforList"></div>
 	 <!-- 添加商户基本信息弹出窗口 -->
 	<div id="addMerchantInfor" class="easyui-window" title="<font color='black'>添加</font>" hidden="hidden"
-		style="width: 630px; height: 350px; display: none; text-align: center;" >
+		style="width: 630px; height: 400px; display: none; text-align: center;" >
  	  <h2>添加商户信息</h2>
 		  	<table class="details_table" style="width:92%">
             <tr>
@@ -128,8 +128,18 @@
             </tr>
             <!-- 二期后台电商需要>添加商家退货地址 -->
              <tr>
-            	<td width="15%" align="right">退货地址:</td>
+            	<td width="15%" align="right"><font color="red">*</font>退货地址:</td>
 				<td colspan="3" width="85%"><input class="easyui-textbox" style="width: 95%;" type="text" id="addMerchantReturnAddress" name="addMerchantReturnAddress" /></td>
+            </tr>
+             <tr>
+            	<td width="10%" align="right"><font color="red">*</font>收货人姓名:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addMerchantReturnName" name="addMerchantReturnName" /></td>
+                <td width="15%" align="right"><font color="red">*</font>收货联系电话:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addMerchantReturnPhone" name="addMerchantReturnPhone" /></td>
+            </tr>
+              <tr>
+            	<td width="10%" align="right">收货邮编:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="addMerchantReturnPostCode" name="addMerchantReturnPostCode" /></td>
             </tr>
 			<tr style="margin-top: 22px;">
 					<td colspan="4"><a href="javascript:void(0);" id="cancelAdd" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
@@ -140,7 +150,7 @@
 	</div>
 	 <!-- 编辑商户基本信息弹出窗口 -->
 	<div id="editMerchantInfor" class="easyui-window" title="<font color='black'>编辑</font>" hidden="hidden"
-		style="width: 630px; height: 350px; display: none; text-align: center;" >
+		style="width: 630px; height: 400px; display: none; text-align: center;" >
  	  <h2>编辑商户信息</h2>
 		  	<table class="details_table" style="width:92%">
             <tr>
@@ -237,8 +247,18 @@
             </tr>
              <!-- 二期后台电商需要>添加商家退货地址 -->
             <tr>
-            	<td width="15%" align="right">退货地址:</td>
+            	<td width="15%" align="right"><font color="red">*</font>退货地址:</td>
 				<td colspan="3" width="85%"><input class="easyui-textbox" style="width: 95%;" type="text" id="editMerchantReturnAddress" name="editMerchantReturnAddress" /></td>
+            </tr>
+             <tr>
+            	<td width="10%" align="right"><font color="red">*</font>收货人姓名:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editMerchantReturnName" name="editMerchantReturnName" /></td>
+                <td width="15%" align="right"><font color="red">*</font>收货联系电话:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editMerchantReturnPhone" name="editMerchantReturnPhone" /></td>
+            </tr>
+              <tr>
+            	<td width="10%" align="right">收货邮编:</td>
+				<td align="left"><input class="easyui-textbox" style="width: 180px;"  type="text" id="editMerchantReturnPostCode" name="editMerchantReturnPostCode" /></td>
             </tr>
 			<tr style="margin-top: 22px;">
 					<td colspan="4">
