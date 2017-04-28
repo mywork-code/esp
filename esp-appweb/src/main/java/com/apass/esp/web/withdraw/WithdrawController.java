@@ -78,6 +78,7 @@ public class WithdrawController {
 	        
 	        int count = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
 	        if(count == 1){
+	            resultMap.put("cardBank", cardBank);
 	            resultMap.put("amount", amount);
 	            resultMap.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
 	            LOGGER.info("提现成功，返回数据：{}",resultMap);
