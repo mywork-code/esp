@@ -169,7 +169,7 @@ public class RegisterInfoController {
 	 * &#64;param randomCode
 	 * </pre>
 	 */
-	@RequestMapping(value = "/activity/regist/validate",method = RequestMethod.POST)
+	@RequestMapping(value = "/validate",method = RequestMethod.POST)
 	public Response validateRandomCode(HttpServletRequest request, HttpServletResponse response) {
 		String smsType =  CommonUtils.getValue(request, "smsType");// 验证码类型
  		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
@@ -240,7 +240,7 @@ public class RegisterInfoController {
 	 * &#64;param randomCode
 	 * </pre>
 	 */
-	@RequestMapping(value = "/activity/regist/new",method = RequestMethod.POST)
+	@RequestMapping(value = "/new",method = RequestMethod.POST)
 	public Response regsitNew(HttpServletRequest request, HttpServletResponse response) {
 		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
 		String password =     CommonUtils.getValue(request, "password");//密码
