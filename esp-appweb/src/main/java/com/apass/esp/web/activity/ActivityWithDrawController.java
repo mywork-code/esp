@@ -92,7 +92,8 @@ public class ActivityWithDrawController {
 		String realName = CommonUtils.getValue(paramMap, "realName");
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String mobile = CommonUtils.getValue(paramMap, "mobile");
-
+		String identityNo = CommonUtils.getValue(paramMap, "identityNo");
+		
 		// String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
 		// String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
 
@@ -118,23 +119,24 @@ public class ActivityWithDrawController {
 			return Response.fail("对不起,该用户已经绑定银行卡");
 		}
 		paramMap.put("customerId", result.get("customerId"));
-		String identityNo = "";
+		
 		// 客户未绑定身份证 ==>验证身份证
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
-			String imgFile = CommonUtils.getValue(paramMap, "imgFile");
-			if (StringUtils.isBlank(imgFile)) {
-				return Response.fail("imgFile参数错误");
-			}
-			Response res = awardActivityInfoService.identityReconize(paramMap);// 身份证号码
-			LOGGER.info(res.toString());
-			// 得到身份证号码
-			identityNo = "";
+//			String imgFile = CommonUtils.getValue(paramMap, "imgFile");
+//			if (StringUtils.isBlank(imgFile)) {
+//				return Response.fail("imgFile参数错误");
+//			}
+//			Response res = awardActivityInfoService.identityReconize(paramMap);// 身份证号码
+//			LOGGER.info(res.toString());
+//			// 得到身份证号码
+//			identityNo = "";
 			// 绑定
+			
 		}
 
 		// 客户已绑定身份证且未绑定银行卡
 		if (AwardActivity.BIND_STATUS.UNBINDED.getCode().equals(result.get("status"))) {
-			identityNo = CommonUtils.getValue(paramMap, "identityNo");
+			//identityNo = CommonUtils.getValue(paramMap, "identityNo");
 		}
 		paramMap.put("identityNo", identityNo);
 		// 验卡是否本人 以及是否支持该银行
@@ -159,6 +161,9 @@ public class ActivityWithDrawController {
 	 * 
 	 * @return
 	 */
+	
+	@RequestMapping(value = "/uploadImgAndRecognize", method = RequestMethod.POST)
+	@ResponseBody
 	public Response uploadImgAndRecognize(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String idCardType = CommonUtils.getValue(paramMap, "idCardType");
