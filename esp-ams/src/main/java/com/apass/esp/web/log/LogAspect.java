@@ -2,6 +2,8 @@ package com.apass.esp.web.log;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -10,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -18,6 +22,7 @@ import com.apass.esp.service.log.LogService;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 
 import net.sf.json.JSONObject; 
 @Aspect
@@ -66,6 +71,10 @@ public class LogAspect {
      * 用于获取controller 方法头上的注解信息
      */
     public static LogInfoEntity getControllerMethodLog(JoinPoint joinPoint)  throws Exception {  
+        
+        //获取request对象
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
         
         LogInfoEntity logInfo =  new LogInfoEntity();
         
@@ -116,6 +125,14 @@ public class LogAspect {
             //如果为request带传参数，暂不处理
             if(valueType == LogValueTypeEnum.VALUE_REQUEST){
                 
+            }
+            
+            /**
+             * 因为导出是一个公共模块，所以无法确定导出所属模块 ,所以只能通过request
+             */
+            if(valueType == LogValueTypeEnum.VALUE_EXPORT){
+                
+                operationType = HttpWebUtils.getValue(request, "fileName")+LogValueTypeEnum.VALUE_EXPORT.getMessage();
             }
             
         }

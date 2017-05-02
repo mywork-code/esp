@@ -11,7 +11,9 @@ public enum LogValueTypeEnum {
     
     VALUE_REQUEST("G01","Original"),//request方式
   
-    VALUE_FILE("G02","File");//上传文件
+    VALUE_FILE("G02","File"),//上传文件
+    
+    VALUE_EXPORT("G03","导出");//导出文件
     
     private String code;
     
