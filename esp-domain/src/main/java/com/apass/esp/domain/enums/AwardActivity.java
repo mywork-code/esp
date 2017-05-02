@@ -3,8 +3,7 @@ package com.apass.esp.domain.enums;
 public class AwardActivity {
 
 	public enum ActivityName {
-		INTRO("intro","转介绍")
-		;
+		INTRO("intro", "转介绍");
 
 		private String value;
 		private String desc;
@@ -25,14 +24,12 @@ public class AwardActivity {
 			this.desc = desc;
 		}
 
-		private ActivityName(String value, String desc){
+		private ActivityName(String value, String desc) {
 			this.value = value;
 			this.desc = desc;
 		}
 
 	}
-
-
 
 	// 活动有效性
 	public enum ACTIVITY_STATUS {
@@ -118,7 +115,8 @@ public class AwardActivity {
 
 	// 转提现方法
 	public enum AWARD_ACTIVITY_METHOD {
-		BINDCARD("bindCard", "绑定卡片"),UPLOADIMGANDRECOGNIZED("uploadImgAndRecognize","身份证上传识别");
+		BINDCARD("bindCard", "绑定卡片"), UPLOADIMGANDRECOGNIZED("uploadImgAndRecognize",
+				"身份证正面上传识别"), UPLOADIMGANDRECOGNIZEDOPPO("uploadImgAndRecognize", "身份证反面上传识别");
 		AWARD_ACTIVITY_METHOD(String code, String message) {
 			this.code = code;
 			this.message = message;
@@ -155,33 +153,26 @@ public class AwardActivity {
 			return message;
 		}
 	}
-	
-	
-	    //可选择银行列表
-		public enum BANK_ENTITY {
-			BANKLIST_ICBC("ICBC", "工商银行"),
-			BANKLIST_CMBC("CMBC", "民生银行"),
-			BANKLIST_CEB("CEB", "光大银行"),
-			BANKLIST_GDB("GDB", "广发银行"),
-			BANKLIST_CITIC("CITIC", "中信银行"), 
-			BANKLIST_CIB("CIB", "兴业银行"),
-			BANKLIST_PAB("PAB", "平安银行");
-			BANK_ENTITY(String code, String message) {
-				this.code = code;
-				this.message = message;
-			}
 
-			private String code;
-			private String message;
-
-			public String getCode() {
-				return code;
-			}
-
-			public String getMessage() {
-				return message;
-			}
+	// 可选择银行列表
+	public enum BANK_ENTITY {
+		BANKLIST_ICBC("ICBC", "工商银行"), BANKLIST_CMBC("CMBC", "民生银行"), BANKLIST_CEB("CEB", "光大银行"), BANKLIST_GDB("GDB",
+				"广发银行"), BANKLIST_CITIC("CITIC", "中信银行"), BANKLIST_CIB("CIB", "兴业银行"), BANKLIST_PAB("PAB", "平安银行");
+		BANK_ENTITY(String code, String message) {
+			this.code = code;
+			this.message = message;
 		}
-	
-	
+
+		private String code;
+		private String message;
+
+		public String getCode() {
+			return code;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+	}
+
 }

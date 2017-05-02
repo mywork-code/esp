@@ -245,4 +245,16 @@ public class AwardActivityInfoService {
 		Response res = espActivityHttpClient.identityReconize(map);
 		return res;
 	}
+
+	/**
+	 * 保存合同
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Response saveContract(Map<String, Object> map) {
+		Response res = espActivityHttpClient.saveContract(map);
+		return res;
+	}
+
 }

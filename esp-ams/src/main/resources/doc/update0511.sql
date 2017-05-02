@@ -27,3 +27,7 @@ SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人名�
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人手机号' AFTER `merchant_return_name`,
  ADD COLUMN `merchant_return_Postcode` VARCHAR (10) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户的收货邮政编码' AFTER `merchant_return_phone`;
+
+/** 卡片绑定信息表*/
+ALTER TABLE `t_gfb_bind_cards` ADD COLUMN `is_from_esp` int (10) CHARACTER
+SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '是否来自esp' AFTER `status`;
