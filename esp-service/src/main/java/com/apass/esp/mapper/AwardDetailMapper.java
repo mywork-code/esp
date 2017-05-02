@@ -9,7 +9,13 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 
 public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 
-	List<AwardDetail> queryAwardDetail(@Param("userId") Long userId);
+
+        List<AwardDetail> queryAwardDetail(@Param("userId") Long userId);
+
+        List<AwardDetail> queryAwardDetailWithDate(@Param("userId")Long userId,
+            @Param("beginMonthDay")String beginMonthDay, @Param("now")String now);
+
 
 	List<AwardDetail> queryAwardDetailByStatusAndType(@Param("status") byte status, @Param("type") byte type);
+
 }

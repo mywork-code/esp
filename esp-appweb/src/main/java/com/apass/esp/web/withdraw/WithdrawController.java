@@ -15,6 +15,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.service.coffers.CoffersBaseService;
 import com.apass.esp.service.withdraw.WithdrawService;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.google.common.collect.Maps;
 
@@ -32,7 +33,7 @@ public class WithdrawController {
     @Autowired
     private WithdrawService withdrawService;
 	/**
-	 * 
+	 * 提现页面查询接口
 	 * @param paramMap
 	 * @return
 	 */
@@ -56,35 +57,42 @@ public class WithdrawController {
 	}
 	
 	/**
-	 * 
+	 * 确认提现接口
 	 * @param paramMap
 	 * @return
 	 */
 	@RequestMapping("/confirmWithdraw")
 	@ResponseBody
 	public Response confirmWithdraw(@RequestBody Map<String, Object> paramMap) {
+	    Map<String,Object> resultMap = Maps.newHashMap();
 	    try{
 	        String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
 	        String amount = CommonUtils.getValue(paramMap, "amount");
-	        if(StringUtils.isAnyBlank(userId,amount)){
+	        String cardBank = CommonUtils.getValue(paramMap, "cardBank");
+	        String cardNo = CommonUtils.getValue(paramMap, "cardNo");
+	        
+	        if(StringUtils.isAnyBlank(userId,amount,cardBank,cardNo)){
 	            return Response.fail("参数有误");
 	        }
+	        LOGGER.info("确认提现传参内容userId:{},amount:{},cardBank:{},cardNo:{}",userId,amount,cardBank,cardNo);
 	        
-	        int count = withdrawService.confirmWithdraw(userId,amount);
-	        
+	        int count = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
 	        if(count == 1){
-	            return Response.success("确认提现成功");
-	        }else{
-	            return Response.fail("确认提现失败");
-	        }
+	            resultMap.put("cardBank", cardBank);
+	            resultMap.put("amount", amount);
+	            resultMap.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
+	            LOGGER.info("提现成功，返回数据：{}",resultMap);
+                    return Response.success("提现成功",resultMap);
+                 }else{
+                     LOGGER.info("提现成功，返回数据：{}",resultMap);
+                     return Response.fail("提现失败");
+                 }                  
+
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
 	        return Response.fail(e.getMessage());
 	    }
 	}
-	
-	
-	
 
 
 }

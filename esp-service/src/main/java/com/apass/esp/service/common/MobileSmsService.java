@@ -77,7 +77,7 @@ public class MobileSmsService {
             String code = createRandom(true, 6);
             logger.info("Random->" + mobile + "->" + code);
             cacheManager.set(type + "_" + mobile, code, 120);
-            String msg = "【安家派】验证码" + code + "（有效时间为2分钟）注意该验证码为重要信息，请勿泄露！";
+            String msg = "【安家趣花】验证码" + code + "（有效时间为2分钟）注意该验证码为重要信息，请勿泄露！";
             boolean flag = true;
             
             String cacheCode = cacheManager.get(SHORT_MESSAGE_CHANNEL);

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LogInfoEntity">
+
+    <!-- 查询条件 -->
+    <sql id="QueryConditionSql">
+		<where>
+			<if test="operationType != null and operationType != ''">
+				AND t1.operation_type LIKE '%${operationType}%'
+			</if>
+			<if test="content != null and content != ''">
+				AND t1.content    LIKE '%${content}%'
+			</if>
+		</where>
+	</sql>
+	
+    <!-- 日志信息查询,不带分页 -->
+	<select id="queryLogInfoList" parameterType="Map" resultType="LogInfoEntity">
+	<![CDATA[
+	         SELECT 
+		         t1.id  					   id,
+				 t1.operation_type 			   operationType,
+		         t1.content          		  content,
+				 t1.create_user               createUser,
+				 t1.create_date               createDate
+				 
+			FROM t_esp_log_info t1
+	]]>
+	    <include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY t1.create_date DESC 
+	]]>
+	</select>	
+	
+	<!--日志信息查询 分页  -->
+	<select id="queryLogInfoPageList" parameterType="Map" resultType="LogInfoEntity">
+	<![CDATA[
+	         SELECT 
+		         t1.id  					   id,
+				 t1.operation_type 			   operationType,
+		         t1.content          		  content,
+				 t1.create_user               createUser,
+				 t1.create_date               createDate
+				 
+			FROM t_esp_log_info t1
+	]]>
+	    <include refid="QueryConditionSql" />
+	<![CDATA[
+		ORDER BY t1.create_date DESC 
+	]]>
+	</select>
+	
+	
+	<!-- 记录分页总数 -->
+	<select id="queryLogInfoPageListCount" parameterType="Map" resultType="Integer">
+		<![CDATA[
+			SELECT   COUNT(1) 
+		        FROM  t_esp_log_info t1
+		]]>
+	    <include refid="QueryConditionSql" />
+	</select>
+	
+	
+	<!-- 插入日志信息到日志表中-->
+	<insert id="insert" parameterType="LogInfoEntity">
+	      <![CDATA[
+	               INSERT INTO t_esp_log_info 
+					(  
+							
+							operation_type,
+							content,
+							create_user,
+							create_date
+					) 
+				  VALUES
+					(
+						   #{operationType, jdbcType=VARCHAR}, 
+						   #{content, jdbcType=VARCHAR}, 
+   						   #{createUser, jdbcType=VARCHAR}, 
+   						   CURRENT_TIMESTAMP
+					)
+	      
+	      ]]>
+	</insert>
+	
+</mapper>

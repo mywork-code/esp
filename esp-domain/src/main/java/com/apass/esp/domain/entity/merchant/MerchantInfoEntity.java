@@ -331,5 +331,5 @@ public class MerchantInfoEntity {
     public void setMerchantReturnPostCode(String merchantReturnPostCode) {
         this.merchantReturnPostCode = merchantReturnPostCode;
     }
-	
+
 }
