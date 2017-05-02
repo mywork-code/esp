@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.apass.esp.domain.dto.statement.StatementDto;
 import com.apass.esp.service.statement.StatementService;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.controller.BaseController;
@@ -55,6 +57,7 @@ public class ExportStatement extends BaseController {
     private StatementService statementService;
 
     @RequestMapping("/exportStatement")
+    @LogAnnotion(operationType="",valueType=LogValueTypeEnum.VALUE_EXPORT)
     public void exportStatement(HttpServletRequest request, HttpServletResponse response) {
         long start1 = System.currentTimeMillis();
         try {
