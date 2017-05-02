@@ -6,7 +6,7 @@
     I.style.fontSize = d + "px", D.rem = N.rem = d
   }
   var K, J = N.document, I = J.documentElement, H = J.querySelector('meta[name="viewport"]'), G = J.querySelector('meta[name="flexible"]'), F = 0, E = 0, D = M.flexible || (M.flexible = {});
-  if (H)    {
+  if (H) {
     console.warn("将根据已有的meta标签来设置缩放比例");
     var C = H.getAttribute("content").match(/initial\-scale=([\d\.]+)/);
     C && (E = parseFloat(C[1]), F = parseInt(1 / E))
