@@ -35,6 +35,8 @@ import com.apass.esp.service.activity.ActivityInfoService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
@@ -80,6 +82,7 @@ public class ExportFileController {
      * @return
      */
     @RequestMapping("/exportFile")
+    @LogAnnotion(operationType="",valueType=LogValueTypeEnum.VALUE_EXPORT)
     public void queryOrderDetailInfo(HttpServletRequest request, HttpServletResponse response) {
         ServletOutputStream outp = null;
         FileInputStream in = null;
