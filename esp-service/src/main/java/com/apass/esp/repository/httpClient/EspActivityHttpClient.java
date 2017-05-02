@@ -34,6 +34,9 @@ public class EspActivityHttpClient {
 	// 身份证识别
 	private static final String IDENTITY_RECONIZE_URL = "/espReWardActivity/identityReconize";
 
+	//
+	private static final String SAVE_CONTRACT_URL = "/espReWardActivity/saveContract";
+
 	/**
 	 * 验卡是否本人 以及是否支持该银行
 	 * 
@@ -119,6 +122,27 @@ public class EspActivityHttpClient {
 		} catch (Exception e) {
 			LOGGER.error("上传并解析身份证图片接口调用异常:{}", e);
 			return Response.fail("上传并解析身份证图片接口调用异常");
+		}
+	}
+
+	/**
+	 * 合同
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Response saveContract(Map<String, Object> map) {
+		String requestUrl = gfbReqUrl + SAVE_CONTRACT_URL;
+		String requestJson = GsonUtils.toJson(map);
+		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+		try {
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			LOGGER.info("绑卡合同:{}", responseJson);
+			Response result = GsonUtils.convertObj(responseJson, Response.class);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("绑卡合同片接口调用异常:{}", e);
+			return Response.fail("绑卡合同接口调用异常");
 		}
 	}
 }

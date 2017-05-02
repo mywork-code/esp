@@ -20,6 +20,7 @@ import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 @Controller
 @RequestMapping("activity/award")
@@ -181,9 +182,10 @@ public class ActivityWithDrawController {
 			return Response.fail("对不起,该用户已绑定身份证");
 		}
 		paramMap.put("customerId", result.get("customerId"));
-		//String imgFile = CommonUtils.getValue(paramMap, "imgFile");
+		// String imgFile = CommonUtils.getValue(paramMap, "imgFile");
 		// String mobile = CommonUtils.getValue(paramMap, "mobile");
-		awardActivityInfoService.identityReconize(paramMap);
+		Response res = awardActivityInfoService.identityReconize(paramMap);
+
 		return Response.success("success");
 	}
 
@@ -210,4 +212,18 @@ public class ActivityWithDrawController {
 			return Response.fail("网络异常,发送验证码失败,请稍后再试");
 		}
 	}
+
+	/**
+	 * 合同
+	 * 
+	 * @param paramMap
+	 * @return
+	 */
+	@RequestMapping(value = "/saveContract", method = RequestMethod.POST)
+	@ResponseBody
+	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
+		Response res = awardActivityInfoService.saveContract(paramMap);
+		return Response.success(GsonUtils.toJson(res));
+	}
+
 }
