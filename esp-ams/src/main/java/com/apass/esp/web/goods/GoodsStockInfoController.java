@@ -125,9 +125,9 @@ public class GoodsStockInfoController {
                                                                // .png,.jpg
                 file.getInputStream().close();
                 return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
-            } else if (size > 1024 * 512) {
+            } else if (size > 1024 * 300) {
                 file.getInputStream().close();
-                return Response.fail("文件不能大于500kb!");
+                return Response.fail("文件不能大于300kb!");
             }
 
             /**
