@@ -34,8 +34,11 @@ public class EspActivityHttpClient {
 	// 身份证识别
 	private static final String IDENTITY_RECONIZE_URL = "/espReWardActivity/identityReconize";
 
-	//
+	// 保存 合同
 	private static final String SAVE_CONTRACT_URL = "/espReWardActivity/saveContract";
+	
+	// 初始化合同
+	private static final String INIT_CONTRACT_URL = "/espReWardActivity/initContract";
 
 	/**
 	 * 验卡是否本人 以及是否支持该银行
@@ -46,6 +49,7 @@ public class EspActivityHttpClient {
 	public Response validateBindCard(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + BIND_CARD_IMFORMATION_URL;
 		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
@@ -68,6 +72,7 @@ public class EspActivityHttpClient {
 	public Response bindCard(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + BIND_CARD_URL;
 		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
@@ -89,8 +94,7 @@ public class EspActivityHttpClient {
 	 */
 	public Response getBankList(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + BIND_LIST_URL;
-		String userId = (String) map.get("userId");
-		LOGGER.info("银行卡列表  userId :{}", userId);
+		LOGGER.info(" requestUrl :{}", requestUrl);
 		String requestJson = GsonUtils.toJson(map);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
@@ -113,6 +117,7 @@ public class EspActivityHttpClient {
 	public Response identityReconize(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + IDENTITY_RECONIZE_URL;
 		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
@@ -134,6 +139,7 @@ public class EspActivityHttpClient {
 	public Response saveContract(Map<String, Object> map) {
 		String requestUrl = gfbReqUrl + SAVE_CONTRACT_URL;
 		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
 		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
 		try {
 			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
@@ -143,6 +149,22 @@ public class EspActivityHttpClient {
 		} catch (Exception e) {
 			LOGGER.error("绑卡合同片接口调用异常:{}", e);
 			return Response.fail("绑卡合同接口调用异常");
+		}
+	}
+
+	public Response initContract(Map<String, Object> map) {
+		String requestUrl = gfbReqUrl + INIT_CONTRACT_URL;
+		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
+		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+		try {
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			LOGGER.info("初始化合同:{}", responseJson);
+			Response result = GsonUtils.convertObj(responseJson, Response.class);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("初始化合同片接口调用异常:{}", e);
+			return Response.fail("初始化合同接口调用异常");
 		}
 	}
 }
