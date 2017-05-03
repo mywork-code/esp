@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,18 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.AwardActivity.ActivityName;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.registerInfo.RegisterInfoService;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
+import com.google.common.collect.Maps;
 @RestController
 @RequestMapping("/activity/regist")
 public class RegisterInfoController {
@@ -49,6 +54,11 @@ public class RegisterInfoController {
 	private AwardBindRelService awardBindRelService;
 	@Autowired
 	private AwardActivityInfoService awardActivityInfoService;
+	/**
+	 * 缓存服务
+	 */
+	@Autowired
+	private CacheManager cacheManager;
     /**
      * 1.初始化活动注册页面-生成随机码
      * @param request
@@ -56,22 +66,26 @@ public class RegisterInfoController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(value = "/random", method = RequestMethod.GET)
-    public void random(HttpServletRequest request, HttpServletResponse response) {
-        ServletOutputStream output = null;
-        try {
-            HttpWebUtils.setViewHeader(response, MediaType.IMAGE_JPEG_VALUE);
-            String random = RandomUtils.getRandom(4);
-            HttpWebUtils.getSession(request).setAttribute("random", random);
-            byte[] image = ImageUtils.getRandomImgage(random);
-            output = response.getOutputStream();
-            output.write(image);
-        } catch (IOException e) {
-            logger.error("write random image to response fail", e);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
+    @RequestMapping(value = "/random/{randomFlage}", method = RequestMethod.GET)
+    public Response random(HttpServletResponse response,@PathVariable("randomFlage") String randomFlage) { 
+    	ServletOutputStream output = null;
+    try {
+        String random = RandomUtils.getRandom(4);
+        byte[] image = ImageUtils.getRandomImgage(random);
+        Map<String, String> paramMap2 = Maps.newHashMap();
+        paramMap2.put("value", random);
+        String randomCacheKey = "activityRegistRandom_" + randomFlage;
+        cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap2), 5 * 60);
+        HttpWebUtils.setViewHeader(response, MediaType.IMAGE_JPEG_VALUE);
+        output = response.getOutputStream();
+        output.write(image);
+    } catch (Exception e) {
+        return Response.fail("fail");
+    } finally {
+        IOUtils.closeQuietly(output);
     }
+    return null;
+}
     /**
 	 * <pre>
 	 * 2.根据用户传递的手机号码查询用户表看是否是微信端用户
@@ -81,10 +95,14 @@ public class RegisterInfoController {
 	 */
 	@RequestMapping(value = "/isWeChatUser",method = RequestMethod.POST)
 	public Response isWeChatUser(@RequestBody Map<String, Object> paramMap) {
-
 		String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
-		if (StringUtils.isAnyBlank(mobile)) {
-			return Response.fail("手机号不能为空");
+		
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile);
+ 		if (StringUtils.isAnyBlank(mobile)) {
+			return Response.fail("手机号不能为空！");
+		}else if (!m.matches()) {
+			return Response.fail("手机号格式不正确！");
 		}
 		try {
 			Response resp=registerInfoService.isWeChatUser(mobile);
@@ -114,10 +132,18 @@ public class RegisterInfoController {
 			String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
 			String identityNo =  CommonUtils.getValue(paramMap, "identityNo");//身份证号
 			
+			Pattern p = Pattern.compile("^1[0-9]{10}$");
+			Matcher m = p.matcher(mobile);
+			Pattern p2 = Pattern.compile("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$");
+			Matcher m2 = p2.matcher(identityNo);
 			if (StringUtils.isAnyBlank(mobile)) {
 				return Response.fail("手机号不能为空");
-			}if(StringUtils.isAnyBlank(identityNo)){
+			}else if(!m.matches()){
+				return Response.fail("手机号格式不正确");
+			}else if(StringUtils.isAnyBlank(identityNo)){
 				return Response.fail("身份证号不能为空");
+			}else if(!m2.matches()){
+				return Response.fail("身份证号格式不正确！");
 			}
 			Map<String,Object> respMap=new HashMap<String,Object>();
 			try {
@@ -151,8 +177,13 @@ public class RegisterInfoController {
 
 		String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
 		String smsType = CommonUtils.getValue(paramMap, "smsType");//验证码类型
+		
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile);
 		if (StringUtils.isAnyBlank(mobile, smsType)) {
 			return Response.fail("验证码接收手机号不能为空");
+		}else if(!m.matches()){
+			return Response.fail("手机号格式不正确！");
 		}
 		try {
 			mobileRandomService.sendMobileVerificationCode(smsType, mobile);
@@ -169,34 +200,44 @@ public class RegisterInfoController {
 	 * &#64;param randomCode
 	 * </pre>
 	 */
-	@RequestMapping(value = "/activity/regist/validate",method = RequestMethod.POST)
-	public Response validateRandomCode(HttpServletRequest request, HttpServletResponse response) {
-		String smsType =  CommonUtils.getValue(request, "smsType");// 验证码类型
- 		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
-		String code =     CommonUtils.getValue(request, "code");//短信验证码
-		String randomCode=CommonUtils.getValue(request, "randomCode");//随机码
-		String InviterId=  CommonUtils.getValue(request, "InviterId");//邀请人的id
+	@RequestMapping(value = "/validate",method = RequestMethod.POST)
+	public Response validateRandomCode(@RequestBody Map<String, Object> paramMap) {
+		String smsType =  CommonUtils.getValue(paramMap, "smsType");// 验证码类型
+ 		String mobile =   CommonUtils.getValue(paramMap, "mobile");// 手机号
+		String code =     CommonUtils.getValue(paramMap, "code");//短信验证码
+		String randomCode=CommonUtils.getValue(paramMap, "randomCode");//随机码
+		String InviterId=  CommonUtils.getValue(paramMap, "InviterId");//邀请人的id
+		String randomFlage= CommonUtils.getValue(paramMap, "randomFlage");//随机码标识
+		
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile);
 		if (StringUtils.isBlank( smsType)) {
 			return Response.fail("手机号验证码类型不能为空");
 		}else if (StringUtils.isBlank( mobile)) {
 			return Response.fail("手机号不能为空");
+		}else if(!m.matches()){
+			return Response.fail("手机号格式不正确！");
 		}else if (StringUtils.isBlank( code)) {
 			return Response.fail("短信验证码不能为空");
 		}else if (StringUtils.isBlank( randomCode)) {
 			return Response.fail("随机码不能为空");
 		}else if (StringUtils.isBlank( InviterId)) {
 			return Response.fail("邀请人的id不能为空");
+		}else if (StringUtils.isBlank( randomFlage)) {
+			return Response.fail("随机码标识不能为空");
 		}
 		try {
-	        Object sessionObj = HttpWebUtils.getSession(request).getAttribute("random");
-	        String sessionCode = sessionObj != null ? sessionObj.toString() : null;
-	        if (StringUtils.isBlank(randomCode) || StringUtils.isBlank(sessionCode)) {
-	            return Response.fail("验证码验证失败");
-	        }
-	        Boolean result=sessionCode.equalsIgnoreCase(randomCode);//判断随机码是否填写正确
+			String cacheKey = "activityRegistRandom_"+ randomFlage;
+			String cacheJson = cacheManager.get(cacheKey);
+			Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+			if(cacheJsonMap == null || !cacheJsonMap.containsKey("value")){
+				return Response.fail("验证码不正确");
+			}
+			if(!StringUtils.equalsIgnoreCase((String)cacheJsonMap.get("value"), randomCode)){
+				return Response.fail("验证码不正确");
+			}
 	        Map<String,Object> respMap=new HashMap<String,Object>(); 
-	        if(result){
-	        	boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);//判断短信验证码是否填写正确
+	        boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);//判断短信验证码是否填写正确
 	        	if(result2){
 		        	Response resp=registerInfoService.isNewCustomer(mobile,InviterId);
 	        		if("1".equals(resp.getStatus())){
@@ -226,7 +267,6 @@ public class RegisterInfoController {
 	        			return Response.success("校验成功！", respMap);
 	        		}
 	        	}
-	        }
 	        return Response.fail("校验失败,请重新注册！");
 		} catch (Exception e) {
 			logger.error("校验失败,请重新注册", e);
@@ -240,14 +280,18 @@ public class RegisterInfoController {
 	 * &#64;param randomCode
 	 * </pre>
 	 */
-	@RequestMapping(value = "/activity/regist/new",method = RequestMethod.POST)
+	@RequestMapping(value = "/new",method = RequestMethod.POST)
 	public Response regsitNew(HttpServletRequest request, HttpServletResponse response) {
 		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
 		String password =     CommonUtils.getValue(request, "password");//密码
 		String InviterId=  CommonUtils.getValue(request, "InviterId");//邀请人的id
-
+		
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile);
 		if (StringUtils.isBlank( mobile)) {
 			return Response.fail("手机号不能为空");
+		}else if(!m.matches()){
+			return Response.fail("手机号格式不正确！");
 		}else if (StringUtils.isAnyBlank(password)) {
 			return Response.fail("密码不能为空");
 		}else if (StringUtils.isAnyBlank(InviterId)) {
