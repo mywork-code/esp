@@ -83,11 +83,11 @@ public class MobileSmsService {
             String cacheCode = cacheManager.get(SHORT_MESSAGE_CHANNEL);
             
             if("1".equals(cacheCode)){
-            	flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "205");
+            	flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "230");
             }else if("2".equals(cacheCode)){
             	flag = this.sendSms(mobile, msg, "创蓝短信验证码", "25");
             }else{
-            	flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "205");
+            	flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "230");
             }
             if (!flag) {
                 throw new BusinessException("短信发送失败,请稍后再试");
@@ -110,11 +110,11 @@ public class MobileSmsService {
         	String cacheCode = cacheManager.get(SHORT_MESSAGE_CHANNEL);
             
             if("1".equals(cacheCode)){
-            	flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "206");
+            	flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "231");
             }else if("2".equals(cacheCode)){
             	flag = this.sendSms(mobile, msg, "创蓝短信验证码", "25");
             }else{
-            	flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "206");
+            	flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "231");
             }
             if (!flag) {
                 throw new BusinessException("短信发送失败,请稍后再试.");
