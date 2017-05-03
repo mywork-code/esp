@@ -257,4 +257,15 @@ public class AwardActivityInfoService {
 		return res;
 	}
 
+	/**
+	 * 初始化
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Response initContract(Map<String, Object> map) {
+		Response res = espActivityHttpClient.initContract(map);
+		return res;
+	}
+
 }
