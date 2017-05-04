@@ -96,16 +96,16 @@ public class RegisterInfoController {
 	@RequestMapping(value = "/isWeChatUser",method = RequestMethod.POST)
 	public Response isWeChatUser(@RequestBody Map<String, Object> paramMap) {
 		String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
-		
+		String mobile2=mobile.replace(" ", "");
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
-		Matcher m = p.matcher(mobile);
- 		if (StringUtils.isAnyBlank(mobile)) {
+		Matcher m = p.matcher(mobile2);
+ 		if (StringUtils.isAnyBlank(mobile2)) {
 			return Response.fail("手机号不能为空！");
 		}else if (!m.matches()) {
 			return Response.fail("手机号格式不正确！");
 		}
 		try {
-			Response resp=registerInfoService.isWeChatUser(mobile);
+			Response resp=registerInfoService.isWeChatUser(mobile2);
 			if("1".equals(resp.getStatus())){
 				Map<String,Object> resultMap=(Map<String, Object>) resp.getData();
 				String falge=(String) resultMap.get("falge");
@@ -131,12 +131,13 @@ public class RegisterInfoController {
 
 			String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
 			String identityNo =  CommonUtils.getValue(paramMap, "identityNo");//身份证号
+			String mobile2=mobile.replace(" ", "");
 			
 			Pattern p = Pattern.compile("^1[0-9]{10}$");
-			Matcher m = p.matcher(mobile);
+			Matcher m = p.matcher(mobile2);
 			Pattern p2 = Pattern.compile("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$");
 			Matcher m2 = p2.matcher(identityNo);
-			if (StringUtils.isAnyBlank(mobile)) {
+			if (StringUtils.isAnyBlank(mobile2)) {
 				return Response.fail("手机号不能为空");
 			}else if(!m.matches()){
 				return Response.fail("手机号格式不正确");
@@ -147,7 +148,7 @@ public class RegisterInfoController {
 			}
 			Map<String,Object> respMap=new HashMap<String,Object>();
 			try {
-				Response resp=registerInfoService.isWeChatUser(mobile);
+				Response resp=registerInfoService.isWeChatUser(mobile2);
 				if("1".equals(resp.getStatus())){
 					Map<String,Object> resultMap=(Map<String, Object>) resp.getData();
 					String identityNoReturn =(String) resultMap.get("identityNo");
@@ -177,16 +178,17 @@ public class RegisterInfoController {
 
 		String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
 		String smsType = CommonUtils.getValue(paramMap, "smsType");//验证码类型
-		
+		String mobile2=mobile.replace(" ", "");
+
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
-		Matcher m = p.matcher(mobile);
-		if (StringUtils.isAnyBlank(mobile, smsType)) {
-			return Response.fail("验证码接收手机号不能为空");
+		Matcher m = p.matcher(mobile2);
+		if (StringUtils.isAnyBlank(mobile2, smsType)) {
+			return Response.fail("验证码和手机号不能为空");
 		}else if(!m.matches()){
 			return Response.fail("手机号格式不正确！");
 		}
 		try {
-			mobileRandomService.sendMobileVerificationCode(smsType, mobile);
+			mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
 			return Response.success("验证码发送成功,请注意查收");
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
@@ -208,12 +210,13 @@ public class RegisterInfoController {
 		String randomCode=CommonUtils.getValue(paramMap, "randomCode");//随机码
 		String InviterId=  CommonUtils.getValue(paramMap, "InviterId");//邀请人的id
 		String randomFlage= CommonUtils.getValue(paramMap, "randomFlage");//随机码标识
-		
+		String mobile2=mobile.replace(" ", "");
+
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
-		Matcher m = p.matcher(mobile);
+		Matcher m = p.matcher(mobile2);
 		if (StringUtils.isBlank( smsType)) {
 			return Response.fail("手机号验证码类型不能为空");
-		}else if (StringUtils.isBlank( mobile)) {
+		}else if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
 			return Response.fail("手机号格式不正确！");
@@ -237,14 +240,14 @@ public class RegisterInfoController {
 				return Response.fail("验证码不正确");
 			}
 	        Map<String,Object> respMap=new HashMap<String,Object>(); 
-	        boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile, code);//判断短信验证码是否填写正确
+	        boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile2, code);//判断短信验证码是否填写正确
 	        	if(result2){
-		        	Response resp=registerInfoService.isNewCustomer(mobile,InviterId);
+		        	Response resp=registerInfoService.isNewCustomer(mobile2,InviterId);
 	        		if("1".equals(resp.getStatus())){
 	        			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
 	        			String falge=(String) rrse.get("falge");
 	        			if("old".equals(falge)){//已经在App中注册成功
-	        				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile);//判断是否已经被邀请
+	        				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
 	        				if(abrel==0){//没有被邀请
 	        			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
 	        			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
@@ -254,7 +257,7 @@ public class RegisterInfoController {
 		        				aRel.setUserId(Long.parseLong(InviterId));
 		        				aRel.setMobile(rrse.get("mobile").toString());
 		        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
-		        				aRel.setInviteMobile(mobile);
+		        				aRel.setInviteMobile(mobile2);
 		        				aRel.setIsNew(new Byte("1"));
 		        				aRel.setCreateDate(new Date());
 		        				aRel.setUpdateDate(new Date());
@@ -285,10 +288,11 @@ public class RegisterInfoController {
 		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
 		String password =     CommonUtils.getValue(request, "password");//密码
 		String InviterId=  CommonUtils.getValue(request, "InviterId");//邀请人的id
-		
+		String mobile2=mobile.replace(" ", "");
+
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
-		Matcher m = p.matcher(mobile);
-		if (StringUtils.isBlank( mobile)) {
+		Matcher m = p.matcher(mobile2);
+		if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
 			return Response.fail("手机号格式不正确！");
@@ -298,7 +302,7 @@ public class RegisterInfoController {
 			return Response.fail("邀请人的id不能为空");
 		}
 		try {
-			   Response resp=registerInfoService.regsitNew(mobile,password,InviterId);
+			   Response resp=registerInfoService.regsitNew(mobile2,password,InviterId);
 	        	if("1".equals(resp.getStatus())){
 	        		ActivityName activityName=ActivityName.INTRO;//获取活动名称
  			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
@@ -309,7 +313,7 @@ public class RegisterInfoController {
     				aRel.setUserId(Long.parseLong(InviterId));
     				aRel.setMobile(rrse.get("mobile").toString());
     				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
-    				aRel.setInviteMobile(mobile);
+    				aRel.setInviteMobile(mobile2);
     				aRel.setIsNew(new Byte("1"));
     				aRel.setCreateDate(new Date());
     				aRel.setUpdateDate(new Date());

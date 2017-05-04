@@ -93,6 +93,109 @@ public class ExportStatement extends BaseController {
 
     }
 
+    /**
+     * 导出报表  当导出报表的数据量大于65535条时
+     * @param filePath
+     * @param dataList
+     * @param attrs
+     * @throws IOException
+     */
+    private void exportStatementDataGt65535(String filePath, List<StatementDto> dataList, String attrs) throws IOException {
+
+        //获取具体表头内容
+        String[] headArr = attrs.replace("{", "").replace("}", "").replace("\"", "").split(",");
+        String[] headKeyArr = new String[headArr.length];
+        String[] headValArr = new String[headArr.length];//表格标题行内容：中文
+        
+        /**
+         * 判断dataList的size,如果一个sheet满50000条时，就重新建一个sheet
+         */
+        int num = (dataList.size() % 50000 == 0)?dataList.size()/50000:dataList.size()/50000 + 1;
+
+        //1，创建工作薄
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        
+        //3， 获取标题样式，内容样式
+        List<HSSFCellStyle> sytleList = getHSSFCellStyle(workbook);
+        
+        for(int i = 0;i<headArr.length;i++){
+            String[] splitArr = headArr[i].split(":");
+            headKeyArr[i] = splitArr[0];
+            headValArr[i] = splitArr[1];
+        }
+        //循环创建sheet
+        for(int m = 1;m <= num; m++){
+          //2，创建一个表
+            HSSFSheet sheet = workbook.createSheet("报表详情"+m);
+          //4，导出标题行
+            HSSFRow rowHead = sheet.createRow(0);
+            for (int i = 0; i < headValArr.length; i++) {
+                HSSFCell cellHead = rowHead.createCell(i);
+                sheet.autoSizeColumn(i, true);
+                cellHead.setCellStyle(sytleList.get(0));
+                cellHead.setCellValue(headValArr[i]);
+            }
+            
+            //填充内容
+          //4,填充内容,共dataList.size();行，每行的内容从dataList中的每个对象中取
+            for (int i = 50000*m-50000; i < 50000*m && i<dataList.size(); i++) {
+                HSSFRow rowContent = sheet.createRow(i-50000*m + 50001);
+                // json日期转换配置类
+                JsonConfig jsonConfig = new JsonConfig();
+                jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+                JSONObject jsonObject = JSONObject.fromObject(dataList.get(i), jsonConfig);
+
+                for (int j = 0; j < headKeyArr.length; j++) {
+                    HSSFCell cellContent = rowContent.createCell(j);
+                    cellContent.setCellStyle(sytleList.get(1));
+                    if (i % 50000 == 1) {
+                        sheet.autoSizeColumn(j, true);
+                    }
+                    cellContent.setCellValue(jsonObject.get(headKeyArr[j]) + "");
+                }
+            }
+        }
+        //循环所有的sheet
+        for(int m = 1;m <= num; m++){
+            // 获取所有订单号，用来合并相同订单号的单元格
+            List<String> orderIdList = new ArrayList<>();
+            HSSFSheet sheetAt = workbook.getSheetAt(m-1);
+            int rowsNum = sheetAt.getLastRowNum();
+            for (int i = 0; i < rowsNum; i++) {
+                HSSFRow row = sheetAt.getRow(i + 1);
+                HSSFCell cell = row.getCell(0);
+                String stringCellValue = cell.getStringCellValue();
+                orderIdList.add(stringCellValue);
+            }
+            //合并单元格
+            for (int i = 0; i < orderIdList.size(); i++) {
+                String orderIdStr = orderIdList.get(i);
+                for (int j = i + 1; j < orderIdList.size(); j++) {
+                    if (orderIdStr.equals(orderIdList.get(j))) {
+                        for (int k = 0; k < COMBINE_COL; k++) {
+                            CellRangeAddress cra = new CellRangeAddress(i + 1, j + 1, k, k);
+                            sheetAt.addMergedRegion(cra);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        //5，写入到时服务器
+        String filePath2 = new File(filePath).getParent();
+        if (!new File(filePath2).isDirectory()) {
+            new File(filePath2).mkdirs();
+        }
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(filePath);
+            workbook.write(out);
+        } finally {
+            out.close();
+        }
+    }
     //导出报表
     private void exportStatement(String filePath, List<StatementDto> dataList, String attrs) throws IOException {
 
