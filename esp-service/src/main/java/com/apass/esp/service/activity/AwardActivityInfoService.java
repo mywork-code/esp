@@ -268,4 +268,13 @@ public class AwardActivityInfoService {
 		return res;
 	}
 
+	/**
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Response latestSignature(Map<String, Object> map) {
+		Response res = espActivityHttpClient.latestSignature(map);
+		return res;
+	}
 }

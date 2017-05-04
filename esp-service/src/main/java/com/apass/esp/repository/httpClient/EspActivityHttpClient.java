@@ -36,9 +36,12 @@ public class EspActivityHttpClient {
 
 	// 保存 合同
 	private static final String SAVE_CONTRACT_URL = "/espReWardActivity/saveContract";
-	
+
 	// 初始化合同
 	private static final String INIT_CONTRACT_URL = "/espReWardActivity/initContract";
+
+	// 初始化合同
+	private static final String LATE_SIGN_URL = "/espReWardActivity/latestSignature";
 
 	/**
 	 * 验卡是否本人 以及是否支持该银行
@@ -167,4 +170,21 @@ public class EspActivityHttpClient {
 			return Response.fail("初始化合同接口调用异常");
 		}
 	}
+
+	public Response latestSignature(Map<String, Object> map) {
+		String requestUrl = gfbReqUrl + LATE_SIGN_URL;
+		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
+		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+		try {
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			LOGGER.info("初始化合同:{}", responseJson);
+			Response result = GsonUtils.convertObj(responseJson, Response.class);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("初始化合同片接口调用异常:{}", e);
+			return Response.fail("初始化合同接口调用异常");
+		}
+	}
+
 }
