@@ -205,7 +205,7 @@ public class ActivityWithDrawController {
 		}
 		paramMap.put("status", "1");// 有签名
 		paramMap.put("sign", res.getData());
-		paramMap.put("msg", res.getMsg());
+		paramMap.put("customerEntity", res.getMsg());
 		return Response.successResponse(paramMap);
 	}
 }

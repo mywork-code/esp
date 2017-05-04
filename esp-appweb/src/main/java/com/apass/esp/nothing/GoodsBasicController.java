@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
@@ -30,15 +31,15 @@ public class GoodsBasicController {
 	 * @return
 	 */
 	@RequestMapping("/loadGoodsBasicInfoWithOutUserId")
-	public Response loadGoodsBasicInfoWithOutUserId(@RequestBody Map<String, Object> paramMap) {
+	public Response loadGoodsBasicInfoWithOutUserId(@RequestParam(required = true) String goodsId) {
 
 		try {
 			Map<String, Object> returnMap = new HashMap<>();
-			Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+			// Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
 			if (null == goodsId) {
 				return Response.fail("商品号不能为空!");
 			}
-			goodService.loadGoodsBasicInfoById(goodsId,returnMap);
+			goodService.loadGoodsBasicInfoById(Long.valueOf(goodsId), returnMap);
 			return Response.success("加载成功", returnMap);
 		} catch (BusinessException e) {
 			LOGGER.error("GoodsBasic loadGoodsBasicInfo fail", e);
