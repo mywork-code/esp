@@ -66,6 +66,7 @@ public class WithdrawService {
             paramMap.put("cardNo",cardNo);//银行卡号后4位
             paramMap.put("cardNoLastFour",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号后4位
             paramMap.put("cardBank",result.get("cardBank"));//银行名称
+            paramMap.put("bankCode",result.get("bankCode"));//银行code
             
             //查询全部可提金额金额
             List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
