@@ -313,6 +313,193 @@ public class ExportFileController {
         out.close();
 
     }
+    
+    /**
+     * 处理当出入的数据大于65535条时
+     */
+    public void generateFileDataGt65535(String filePath, List dataList, String attrs) throws IOException {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        
+        /**
+         * 判断dataList的size,如果一个sheet满50000条时，就重新建一个sheet
+         */
+        int num = (dataList.size() % 50000 == 0)?dataList.size()/50000:dataList.size()/50000 + 1;
+
+        /**
+         * excel头文件信息
+         */
+        String[] attrArrays = attrs.replace("{", "").replace("}", "").replace("\"", "").split(",");
+
+        // 字段数组:orderId
+        String[] keyArrays = new String[attrArrays.length];
+
+        // 标题数组:订单ID
+        String[] valueArrays = new String[attrArrays.length];
+
+        
+        for (int i = 0; i < attrArrays.length; i++) {
+            String[] attrsArray = attrArrays[i].split(":");
+            keyArrays[i] = attrsArray[0];
+            valueArrays[i] = attrsArray[1];
+        }
+        
+        for(int j = 1;j <= num;j++){
+            HSSFSheet sheet = wb.createSheet();
+            HSSFRow row = sheet.createRow(0);
+            // 第三步：创建第一行（也可以称为表头）
+            for (int i = 0; i < valueArrays.length; i++) {
+                HSSFCell cell = row.createCell(i);
+                cell.setCellStyle(hssfCellStyle.get(0));
+                String cellValue = valueArrays[i];
+                sheet.autoSizeColumn(i, true);
+                cell.setCellValue(cellValue);
+            }
+            
+           // 向单元格里填充数据
+            for (int i = 50000*j-50000; i < 50000*j && i<dataList.size(); i++) {
+                row = sheet.createRow(i-50000*j + 50001);
+                Object object = dataList.get(i);
+                // json日期转换配置类
+                JsonConfig jsonConfig = new JsonConfig();
+                jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+                JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
+
+                for (int k = 0; k < keyArrays.length; k++) {
+                    HSSFCell cellContent = row.createCell(k);
+                    cellContent.setCellStyle(hssfCellStyle.get(1));
+                    if (i % 50000 == 1) {
+                        sheet.autoSizeColumn(k, true);
+                    }
+                    cellContent.setCellValue(jsonObject.get(keyArrays[k]) + "");
+                }
+
+            }
+            
+        }
+        
+        // 判断文件是否存在 ,没有创建文件
+        String filePath2 = new File(filePath).getParent();
+        if (!new File(filePath2).isDirectory()) {
+            new File(filePath2).mkdirs();
+        }
+        FileOutputStream out = new FileOutputStream(filePath);
+        wb.write(out);
+        out.close();
+    }
+
+    /**
+     * 导出订单表
+     * @param filePath
+     * @param dataList
+     * @param attrs
+     * @throws IOException
+     */
+    private void generateOrderFileDataGt65535(String filePath, List dataList, String attrs) throws IOException {
+        
+     // {"orderId":"订单号","createDate":"下单时间"...}
+
+        // 第一步：声明一个工作薄
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(workbook);
+        
+        /**
+         * 判断dataList的size,如果一个sheet满50000条时，就重新建一个sheet
+         */
+        int num = (dataList.size() % 50000 == 0)?dataList.size()/50000:dataList.size()/50000 + 1;
+
+        // 获取标题行内容
+        String[] rowHeadArr = attrs.replace("{", "").replace("}", "").replace("\"", "").split(",");
+        
+        String[] headKeyArr = new String[rowHeadArr.length];
+        
+        String[] headValueArr = new String[rowHeadArr.length];// 表格标题行内容：中文
+        
+        for (int i = 0; i < rowHeadArr.length; i++) {
+            String[] cellArr = rowHeadArr[i].split(":");
+            headKeyArr[i] = cellArr[0];
+            headValueArr[i] = cellArr[1];
+        }
+        long start = System.currentTimeMillis();
+        
+        for(int j = 1;j <= num ;j++){
+            //创建一个sheet
+            HSSFSheet sheet = workbook.createSheet("订单信息"+j);
+            // 第三步：创建标题行
+            HSSFRow createRow = sheet.createRow(0);
+            for (int i = 0; i < headValueArr.length; i++) {
+                HSSFCell cell = createRow.createCell(i);
+                sheet.autoSizeColumn(i, true);
+                cell.setCellStyle(hssfCellStyle.get(0));
+                cell.setCellValue(headValueArr[i]);
+            }
+            
+           // 第四步：填充内容,共dataList.size();行，每行的内容从dataList中的每个对象中取
+            for (int i = 50000*j-50000; i < 50000*j && i<dataList.size(); i++) {
+                createRow = sheet.createRow(i-50000*j + 50001);
+                Object object = dataList.get(i);
+                // json日期转换配置类
+                JsonConfig jsonConfig = new JsonConfig();
+                jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
+                JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
+
+                for (int k = 0; k < headKeyArr.length; k++) {
+                    HSSFCell cellContent = createRow.createCell(k);
+                    cellContent.setCellStyle(hssfCellStyle.get(1));
+                    if (i % 50000 == 1) {
+                        sheet.autoSizeColumn(k, true);
+                    }
+                    cellContent.setCellValue(jsonObject.get(headKeyArr[k]) + "");
+                }
+            }
+            
+        }
+        
+        for(int j = 1; j<= num;j++){
+         // 获取所有订单号，用来合并相同订单号的单元格
+            List<String> orderIdList = new ArrayList<>();
+            HSSFSheet sheetAt = workbook.getSheetAt(j-1);
+            int rowsNum = sheetAt.getLastRowNum();
+            for (int i = 0; i < rowsNum; i++) {
+                HSSFRow row = sheetAt.getRow(i + 1);
+                HSSFCell cell = row.getCell(0);
+                String stringCellValue = cell.getStringCellValue();
+                orderIdList.add(stringCellValue);
+            }
+            //合并单元格
+            for (int i = 0; i < orderIdList.size(); i++) {
+                String orderIdStr = orderIdList.get(i);
+                for (int m = i + 1; m < orderIdList.size(); m++) {
+                    if (orderIdStr.equals(orderIdList.get(m))) {
+                        for (int k = 0; k < 10; k++) {
+                            CellRangeAddress cra = new CellRangeAddress(i + 1, m + 1, k, k);
+                            sheetAt.addMergedRegion(cra);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        long end = System.currentTimeMillis();
+        System.out.println("导出订单所用时间：-------------================================》>>>>>" + (end - start) / 1000);
+
+        // 判断文件是否存在 ,没有创建文件
+        String filePath2 = new File(filePath).getParent();
+        if (!new File(filePath2).isDirectory()) {
+            new File(filePath2).mkdirs();
+        }
+        FileOutputStream out = new FileOutputStream(filePath);
+        workbook.write(out);
+        out.close();
+        
+    }
 
     // 获取要带出的结果集
     public List getResultData(Map map) throws BusinessException, IllegalAccessException, InvocationTargetException {
