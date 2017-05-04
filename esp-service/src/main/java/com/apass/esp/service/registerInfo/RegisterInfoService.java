@@ -22,7 +22,8 @@ public class RegisterInfoService {
     private static final String CHECKUSER_ISWECHATUSER="/checkUser/isWeChatUser";
     private static final String CHECKUSER_OLDORNEW="/checkUser/oldOrNew";
     private static final String CHECKUSER_REGISTER="/checkUser/register";
-    
+    private static final String CHECKUSER_GETINVITERINFO="/checkUser/getInviterInfo";
+
     /**
      * 供房帮服务地址
      */
@@ -83,6 +84,26 @@ public class RegisterInfoService {
 			 map.put("password", password);
 			 map.put("InviterId", InviterId);
 	         String requestUrl = gfbServiceUrl + CHECKUSER_REGISTER;
+	         String reqJson = GsonUtils.toJson(map);
+	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+	         Response response = GsonUtils.convertObj(responseJson, Response.class);
+	         return response;
+    	} catch (Exception e) {
+			LOGGER.error("新用户注册失败！", e);
+		}
+		return null;
+    }
+    /**
+     * 获取邀请人信息
+     * @param mobile
+     * @return
+     */
+    public Response getInviterInfo(String InviterId){
+    	try {
+			 Map<String,Object> map=new HashMap<String,Object>();
+			 map.put("InviterId", InviterId);
+	         String requestUrl = gfbServiceUrl + CHECKUSER_GETINVITERINFO;
 	         String reqJson = GsonUtils.toJson(map);
 	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
 	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
