@@ -284,20 +284,29 @@ public class RegisterInfoController {
 	 * </pre>
 	 */
 	@RequestMapping(value = "/new",method = RequestMethod.POST)
-	public Response regsitNew(HttpServletRequest request, HttpServletResponse response) {
-		String mobile =   CommonUtils.getValue(request, "mobile");// 手机号
-		String password =     CommonUtils.getValue(request, "password");//密码
-		String InviterId=  CommonUtils.getValue(request, "InviterId");//邀请人的id
+	public Response regsitNew(@RequestBody Map<String, Object> paramMap) {
+		String mobile =   CommonUtils.getValue(paramMap, "mobile");// 手机号
+		String password =  CommonUtils.getValue(paramMap, "password");//密码
+		String InviterId=   CommonUtils.getValue(paramMap, "InviterId");//邀请人的id
 		String mobile2=mobile.replace(" ", "");
 
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
 		Matcher m = p.matcher(mobile2);
+		Pattern pas = Pattern.compile("^[\\w]{6,12}$");
+		Matcher mas = pas.matcher(password);
+		
 		if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
 			return Response.fail("手机号格式不正确！");
 		}else if (StringUtils.isAnyBlank(password)) {
 			return Response.fail("密码不能为空");
+		}else if (password.length()<6){
+			return Response.fail("密码不能小于6位");
+		}else if (password.length()>12){
+			return Response.fail("密码不能大于12位");
+		}else if (!mas.matches()){
+			return Response.fail("密码格式不正确！");
 		}else if (StringUtils.isAnyBlank(InviterId)) {
 			return Response.fail("邀请人的id不能为空");
 		}
@@ -326,5 +335,31 @@ public class RegisterInfoController {
 			return Response.fail("注册新用户失败");
 		}
 	}
-
+	
+	/**
+	 * <pre>
+	 * 3.根据邀请人的id获取邀请人的信息（姓名，身份证号，签名）
+	 * &#64;param mobile
+	 * &#64;param randomCode
+	 * </pre>
+	 */
+	@RequestMapping(value = "/inviterInfo",method = RequestMethod.POST)
+	public Response getInviterInfo(@RequestBody Map<String, Object> paramMap) {
+		String InviterId=   CommonUtils.getValue(paramMap, "InviterId");//邀请人的id
+		if (StringUtils.isBlank( InviterId)) {
+			return Response.fail("邀请人的id不能为空");
+		}
+		try {
+			 Response resp =registerInfoService.getInviterInfo(InviterId);
+			 if("1".equals(resp.getStatus())){
+				 Map<String,Object> rrse=(Map<String, Object>) resp.getData();
+				 return Response.success("获取邀请人的信息成功！", rrse);
+			 }
+			 return Response.fail("获取邀请人的信息失败！");
+		} catch (Exception e) {
+			logger.error("获取邀请人的信息失败！", e);
+			return Response.fail("获取邀请人的信息失败!");
+		}
+	}
+	
 }
