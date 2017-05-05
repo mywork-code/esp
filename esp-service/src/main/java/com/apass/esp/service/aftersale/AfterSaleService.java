@@ -410,6 +410,11 @@ public class AfterSaleService {
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
         
+        //在商品退换货的时候，加上商户的退货地址
+        serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
+        serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
+        serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
+        
         /** status 状态 RS01, 退货信息表字段 is_agree=1 时，可提交物流信息   */
         if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
             && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
@@ -420,10 +425,6 @@ public class AfterSaleService {
         if (RefundStatus.showSlogistics(refundInfo.getStatus())) {
             serviceProcessDto.setSlogisticsName(refundInfo.getSlogisticsName());
             serviceProcessDto.setSlogisticsNo(refundInfo.getSlogisticsNo());
-            //在商品退换货的时候，加上商户的退货地址
-            serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
-            serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
-            serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
         }
 
         /** 换货(refundType=1) RS04、RS05 客户端显示商户发货物流地址 */
