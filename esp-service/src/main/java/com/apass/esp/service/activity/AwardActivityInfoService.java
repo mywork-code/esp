@@ -114,6 +114,11 @@ public class AwardActivityInfoService {
 		return false;
 	}
 
+	public boolean isExistActivity(AwardActivity.ActivityName name) {
+		AwardActivityInfo ai = awardActivityInfoMapper.selectByName(name.getValue());
+		return ai != null;
+	}
+
 	/**
 	 * 通过活动名称获得指定活动
 	 */
