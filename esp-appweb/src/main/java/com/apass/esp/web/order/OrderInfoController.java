@@ -262,6 +262,7 @@ public class OrderInfoController {
 			try {
 				orderInfoEntity = orderService.selectByOrderId(orderId);
 			} catch (BusinessException e) {
+			    LOGGER.error("根据订单号和用户id查询订单信息", e);
 				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
 				return Response.success("确认收货成功!");
 			}
@@ -279,7 +280,7 @@ public class OrderInfoController {
 						// 返点金额
 						String rebateString = awardActivityInfoVo.getRebate();
 						BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
-								.multiply(new BigDecimal(0.01));
+								.multiply(BigDecimal.valueOf(0.01));
 						BigDecimal rebateAmt = orderInfoEntity.getOrderAmt().multiply(rebate);
 						int rebateInt = rebateAmt.intValue();
 						// 返现金额小于1时 不返现

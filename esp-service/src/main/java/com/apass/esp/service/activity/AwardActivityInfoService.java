@@ -167,6 +167,7 @@ public class AwardActivityInfoService {
 			resultMap.put("bankCode", customerInfo.getBankCode());
 			return resultMap;
 		} catch (BusinessException e) {
+		    LOGGER.error("查询用户是否绑卡及绑卡信息", e);
 			return new HashMap<String, Object>();
 		}
 	}

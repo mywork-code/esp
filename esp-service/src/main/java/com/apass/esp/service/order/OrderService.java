@@ -426,7 +426,6 @@ public class OrderService {
 			orderInfo.setName(address.getName());
 			orderInfo.setTelephone(address.getTelephone());
 			orderInfo.setMerchantCode(merchantCode);
-			orderInfo.setPayStatus(OrderStatus.ORDER_NOPAY.getCode());
 			orderInfo.setExtendAcceptGoodsNum(0);
 			orderInfo.setAddressId(addressId);
 			orderInfo.setPayStatus(PaymentStatus.NOPAY.getCode());
