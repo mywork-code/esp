@@ -165,6 +165,7 @@ public class AwardActivityInfoService {
 			resultMap.put("cardNo", customerInfo.getCardNo());
 			resultMap.put("cardBank", customerInfo.getCardBank());
 			resultMap.put("bankCode", customerInfo.getBankCode());
+			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			return resultMap;
 		} catch (BusinessException e) {
 			return new HashMap<String, Object>();
