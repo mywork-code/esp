@@ -7,44 +7,53 @@ import java.math.BigDecimal;
  */
 public class AwardActivityInfoDto {
 
-  private String startDate;
+    private Long id;
 
-  private String endDate;
+    private String startDate;
 
-  private BigDecimal rebate;
+    private String endDate;
 
-	private String createBy;
+    private BigDecimal rebate;
 
-  public String getCreateBy() {
-    return createBy;
-  }
+    private String createBy;
 
-  public void setCreateBy(String createBy) {
-    this.createBy = createBy;
-  }
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getStartDate() {
-		return startDate;
-	}
+    public String getCreateBy() {
+        return createBy;
+    }
 
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
-	}
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
-	public String getEndDate() {
-		return endDate;
-	}
+    public String getStartDate() {
+        return startDate;
+    }
 
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
-	}
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
 
-	public BigDecimal getRebate() {
-    return rebate;
-  }
+    public String getEndDate() {
+        return endDate;
+    }
 
-  public void setRebate(BigDecimal rebate) {
-    this.rebate = rebate;
-  }
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public BigDecimal getRebate() {
+        return rebate;
+    }
+
+    public void setRebate(BigDecimal rebate) {
+        this.rebate = rebate;
+    }
 }
