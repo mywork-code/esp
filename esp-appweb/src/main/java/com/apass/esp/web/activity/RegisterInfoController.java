@@ -209,7 +209,9 @@ public class RegisterInfoController {
     		if("1".equals(resp.getStatus())){
     			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
     			String falge=(String) rrse.get("falge");
-    			if("old".equals(falge)){//已经在App中注册成功
+    			if(InviterId.equals(rrse.get("userId").toString())){
+    				return Response.fail("校验失败,自己不能邀请自己！");
+    			}else if("old".equals(falge)){//已经在App中注册成功
     				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
     				if(abrel==0){//没有被邀请
     			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
@@ -218,8 +220,8 @@ public class RegisterInfoController {
     			        AwardBindRel aRel=new AwardBindRel();
         				aRel.setActivityId(aInfoVo.getId());
         				aRel.setUserId(Long.parseLong(InviterId));
-        				aRel.setMobile(rrse.get("mobile").toString());
-        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
+        				aRel.setMobile(rrse.get("inviteMobile").toString());
+        				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
         				aRel.setInviteMobile(mobile2);
         				aRel.setIsNew(new Byte("0"));//被邀请人是老用户
         				aRel.setCreateDate(new Date());

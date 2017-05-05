@@ -159,6 +159,14 @@ public class ActivityWithDrawController {
 	@RequestMapping(value = "/saveContract", method = RequestMethod.POST)
 	@ResponseBody
 	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
+		
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		String requestId = "";
+		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
+		if (result == null || result.size() == 0) {
+			return Response.fail("对不起,该用户不存在!");
+		}
+		paramMap.put("customerId", result.get("customerId"));
 		Response res = awardActivityInfoService.saveContract(paramMap);
 		return res;
 	}
@@ -203,12 +211,10 @@ public class ActivityWithDrawController {
 		Response res = awardActivityInfoService.initContract(paramMap);
 		if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
 			paramMap.put("status", "0");// 没有签名
-			paramMap.put("sign", "");//
-			return Response.successResponse(res.getMsg());
 		}
 		paramMap.put("status", "1");// 有签名
 		paramMap.put("sign", res.getData());
 		paramMap.put("customerEntity", res.getMsg());
-		return Response.successResponse(paramMap);
+		return Response.response("1", "请求数据成功", paramMap);
 	}
 }
