@@ -102,7 +102,7 @@ public class RebateActivityScheduleTask {
 								LOGGER.error(
 										"activity id {},startDate {},endDate {},curDate {} orderId {} 更新 返现获得 失败=====",
 										awardActivityInfoVo.getId(), startDate, endDate, date,
-										awardDetailDto.getMainOrderId(),e.getMessage());
+										awardDetailDto.getMainOrderId(),e);
 							}
 							LOGGER.info(
 									"activity id {},活动开始时间 startDate {},活动结束时间 endDate {},获得返现时间  {},订单ID {} 获得返现成功,金额 ,{}",
@@ -117,7 +117,7 @@ public class RebateActivityScheduleTask {
 			}
 			LOGGER.info("邀请人获得返点结算定时任务结束");
 		} catch (Exception e) {
-			LOGGER.error("邀请人获得返点结算", e.getMessage());
+			LOGGER.error("邀请人获得返点结算", e);
 		}
 	}
 }
