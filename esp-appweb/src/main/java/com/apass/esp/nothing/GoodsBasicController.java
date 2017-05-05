@@ -15,7 +15,7 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 
 @RestController
-@RequestMapping("GoodsBasic")
+@RequestMapping("goodsBasic")
 public class GoodsBasicController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBasicController.class);
 
