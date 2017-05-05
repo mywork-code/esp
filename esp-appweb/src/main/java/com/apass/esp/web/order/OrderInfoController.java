@@ -1,22 +1,5 @@
 package com.apass.esp.web.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -39,6 +22,21 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -253,7 +251,7 @@ public class OrderInfoController {
 		try {
 			awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
 		} catch (BusinessException e) {
-			LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
+			LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId,e);
 			return Response.success("确认收货成功!");
 		}
 		// 返现活动存在
@@ -263,7 +261,7 @@ public class OrderInfoController {
 				orderInfoEntity = orderService.selectByOrderId(orderId);
 			} catch (BusinessException e) {
 			    LOGGER.error("根据订单号和用户id查询订单信息", e);
-				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
+				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId,e);
 				return Response.success("确认收货成功!");
 			}
 			if (orderInfoEntity != null) {// 订单存在
