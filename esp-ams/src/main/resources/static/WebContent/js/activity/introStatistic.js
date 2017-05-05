@@ -63,11 +63,20 @@ $(function(){
     });
 
 
-
     //查询
     $(".search-btn").click(function(){
-        var startCreateDate=$("#createDate1").textbox('getValue');
-        var endCreateDate=$("#createDate2").textbox('getValue');
+    	debugger;
+        var startCreateDate=$("#createDate1").datebox('getValue');
+        var endCreateDate=$("#createDate2").datebox('getValue');
+        if(startCreateDate!=null && startCreateDate!=''&&endCreateDate!=null && endCreateDate!=''){
+    		if(startCreateDate>endCreateDate){
+    			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
+    			$('#createDate1').datebox('setValue','');
+    			$('#createDate2').datebox('setValue','');
+    			return;
+    		}
+    		
+    	}
         var params={};
         params['startCreateDate'] = startCreateDate;
         params['endCreateDate'] = endCreateDate;
