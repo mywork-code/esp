@@ -1,22 +1,15 @@
-package com.apass.esp.nothing;
+package com.apass.esp.web.activity;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,10 +27,6 @@ import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpWebUtils;
-import com.apass.gfb.framework.utils.ImageUtils;
-import com.apass.gfb.framework.utils.RandomUtils;
-import com.google.common.collect.Maps;
 @RestController
 @RequestMapping("/activity/regist")
 public class RegisterInfoController {
@@ -58,34 +47,6 @@ public class RegisterInfoController {
 	 */
 	@Autowired
 	private CacheManager cacheManager;
-    /**
-     * 1.初始化活动注册页面-生成随机码
-     * @param request
-     * @param response
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/random/{randomFlage}", method = RequestMethod.GET)
-    public Response random(HttpServletResponse response,@PathVariable("randomFlage") String randomFlage) { 
-    	ServletOutputStream output = null;
-    try {
-        String random = RandomUtils.getRandom(4);
-        byte[] image = ImageUtils.getRandomImgage(random);
-        Map<String, String> paramMap2 = Maps.newHashMap();
-        paramMap2.put("value", random);
-        String randomCacheKey = "activityRegistRandom_" + randomFlage;
-        cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap2), 5 * 60);
-        HttpWebUtils.setViewHeader(response, MediaType.IMAGE_JPEG_VALUE);
-        output = response.getOutputStream();
-        output.write(image);
-    } catch (Exception e) {
-    	logger.error("获取随机码失败！", e);
-        return Response.fail("fail");
-    } finally {
-        IOUtils.closeQuietly(output);
-    }
-    return null;
-}
     /**
 	 * <pre>
 	 * 2.根据用户传递的手机号码查询用户表看是否是微信端用户
@@ -260,7 +221,7 @@ public class RegisterInfoController {
         				aRel.setMobile(rrse.get("mobile").toString());
         				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
         				aRel.setInviteMobile(mobile2);
-        				aRel.setIsNew(new Byte("1"));
+        				aRel.setIsNew(new Byte("0"));//被邀请人是老用户
         				aRel.setCreateDate(new Date());
         				aRel.setUpdateDate(new Date());
         				awardBindRelService.insertAwardBindRel(aRel);
@@ -321,10 +282,10 @@ public class RegisterInfoController {
         			AwardBindRel aRel=new AwardBindRel();
     				aRel.setActivityId(aInfoVo.getId());
     				aRel.setUserId(Long.parseLong(InviterId));
-    				aRel.setMobile(rrse.get("mobile").toString());
+    				aRel.setMobile(rrse.get("inviteMobile").toString());
     				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
     				aRel.setInviteMobile(mobile2);
-    				aRel.setIsNew(new Byte("1"));
+    				aRel.setIsNew(new Byte("1"));//被邀请人是新用户
     				aRel.setCreateDate(new Date());
     				aRel.setUpdateDate(new Date());
     				awardBindRelService.insertAwardBindRel(aRel);
