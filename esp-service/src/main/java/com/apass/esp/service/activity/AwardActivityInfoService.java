@@ -159,6 +159,7 @@ public class AwardActivityInfoService {
 				return resultMap;
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
+			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {
@@ -170,7 +171,6 @@ public class AwardActivityInfoService {
 			resultMap.put("cardNo", customerInfo.getCardNo());
 			resultMap.put("cardBank", customerInfo.getCardBank());
 			resultMap.put("bankCode", customerInfo.getBankCode());
-			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			return resultMap;
 		} catch (BusinessException e) {
 		    LOGGER.error("查询用户是否绑卡及绑卡信息", e);
