@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,5 +12,7 @@ public interface AwardActivityInfoMapper extends GenericMapper<AwardActivityInfo
 
   AwardActivityInfo selectByName(@Param("name") String name);
 
+  List<AwardActivityInfo> pageEffectiveList(QueryParams query);
 
+  Integer count();
 }

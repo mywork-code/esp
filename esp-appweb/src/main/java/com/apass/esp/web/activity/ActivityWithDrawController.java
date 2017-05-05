@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.nothing.RegisterInfoController;
+import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
