@@ -79,6 +79,7 @@ public class RegisterInfoController {
         output = response.getOutputStream();
         output.write(image);
     } catch (Exception e) {
+    	logger.error("获取随机码失败！", e);
         return Response.fail("fail");
     } finally {
         IOUtils.closeQuietly(output);
@@ -240,35 +241,36 @@ public class RegisterInfoController {
 			}
 	        Map<String,Object> respMap=new HashMap<String,Object>(); 
 	        boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile2, code);//判断短信验证码是否填写正确
-	        	if(result2){
-		        	Response resp=registerInfoService.isNewCustomer(mobile2,InviterId);
-	        		if("1".equals(resp.getStatus())){
-	        			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
-	        			String falge=(String) rrse.get("falge");
-	        			if("old".equals(falge)){//已经在App中注册成功
-	        				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
-	        				if(abrel==0){//没有被邀请
-	        			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
-	        			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
-	        					
-	        			        AwardBindRel aRel=new AwardBindRel();
-		        				aRel.setActivityId(aInfoVo.getId());
-		        				aRel.setUserId(Long.parseLong(InviterId));
-		        				aRel.setMobile(rrse.get("mobile").toString());
-		        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
-		        				aRel.setInviteMobile(mobile2);
-		        				aRel.setIsNew(new Byte("1"));
-		        				aRel.setCreateDate(new Date());
-		        				aRel.setUpdateDate(new Date());
-		        				awardBindRelService.insertAwardBindRel(aRel);
-	        				}
-	        				respMap.put("isAppUser", "old");
-	        			}else if("new".equals(falge)){
-	        				respMap.put("isAppUser", "new");
-	        			}
-	        			return Response.success("校验成功！", respMap);
+	        if(!result2){
+	        	return Response.fail("手机验证码不正确");
+	        }
+        	Response resp=registerInfoService.isNewCustomer(mobile2,InviterId);
+    		if("1".equals(resp.getStatus())){
+    			Map<String,Object> rrse=(Map<String, Object>) resp.getData();
+    			String falge=(String) rrse.get("falge");
+    			if("old".equals(falge)){//已经在App中注册成功
+    				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
+    				if(abrel==0){//没有被邀请
+    			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
+    			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
+    					
+    			        AwardBindRel aRel=new AwardBindRel();
+        				aRel.setActivityId(aInfoVo.getId());
+        				aRel.setUserId(Long.parseLong(InviterId));
+        				aRel.setMobile(rrse.get("mobile").toString());
+        				aRel.setInviteUserId(Long.parseLong(rrse.get("inviteUserId").toString()));
+        				aRel.setInviteMobile(mobile2);
+        				aRel.setIsNew(new Byte("1"));
+        				aRel.setCreateDate(new Date());
+        				aRel.setUpdateDate(new Date());
+        				awardBindRelService.insertAwardBindRel(aRel);
+    				}
+    				respMap.put("isAppUser", "old");
+    			}else if("new".equals(falge)){
+    				respMap.put("isAppUser", "new");
+    			}
+    			return Response.success("校验成功！", respMap);
 	        		}
-	        	}
 	        return Response.fail("校验失败,请重新注册！");
 		} catch (Exception e) {
 			logger.error("校验失败,请重新注册", e);
