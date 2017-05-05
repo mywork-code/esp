@@ -53,7 +53,7 @@ public class ActivityWithDrawController {
 	@ResponseBody
 	public Response getBindCardImformation(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
-		if(StringUtils.isEmpty(userId)){
+		if (StringUtils.isEmpty(userId)) {
 			return Response.fail("userId为空");
 		}
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
@@ -159,7 +159,7 @@ public class ActivityWithDrawController {
 	@RequestMapping(value = "/saveContract", method = RequestMethod.POST)
 	@ResponseBody
 	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
-		
+
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String requestId = "";
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
@@ -211,6 +211,7 @@ public class ActivityWithDrawController {
 		Response res = awardActivityInfoService.initContract(paramMap);
 		if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
 			paramMap.put("status", "0");// 没有签名
+			return Response.response("1", "请求数据成功", paramMap);
 		}
 		paramMap.put("status", "1");// 有签名
 		paramMap.put("sign", res.getData());
