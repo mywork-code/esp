@@ -13,4 +13,16 @@
         from t_esp_award_activity_info
         where status = 1 and activity_name = #{name}
     </select>
+	<select id="pageEffectiveList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_award_activity_info
+        where status = 1
+        <if test="startRecordIndex != null">
+           <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+     </select>
+	
+    <select id ="count" resultType="java.lang.Integer">
+      select count(*) from t_esp_award_activity_info where status = 1
+    </select>
 </mapper>

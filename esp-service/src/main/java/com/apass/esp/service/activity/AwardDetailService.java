@@ -13,6 +13,7 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.utils.BaseConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -44,9 +45,12 @@ public class AwardDetailService {
 	 * 分页统计转介绍数据
 	 * @return
 	 */
-	public ResponsePageBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) {
-		ResponsePageBody<AwardBindRelStatisticVo> respBody = new ResponsePageBody<>();
+	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) {
+	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
+		BigDecimal bankAmtSum = BigDecimal.ZERO;
+                BigDecimal creditAmtSum = BigDecimal.ZERO;
+                BigDecimal rebateAmtSum = BigDecimal.ZERO;
 		List<AwardBindRelStatisticVo> result = new ArrayList<>();
 		for(AwardBindRelStatistic rs : list){
 			AwardBindRelStatisticVo vo = new AwardBindRelStatisticVo();
@@ -59,7 +63,7 @@ public class AwardDetailService {
 			BigDecimal rebateAmt = BigDecimal.ZERO;
 			for(AwardDetail awardDetail : awardDetails){
 				if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
-					rebateAmt = rebateAmt.add(awardDetail.getAmount());
+				    rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
 				}
 				String mainOrderId = awardDetail.getMainOrderId();
 				if(mainOrderId != null){
@@ -67,21 +71,28 @@ public class AwardDetailService {
 					for(TxnInfoEntity txn : txnInfoEntityList){
 						if(TxnTypeCode.SF_CODE.getCode().equals(txn.getTxnType())
 								|| TxnTypeCode.KQEZF_CODE.getCode().equals(txn.getTxnType())){
-							bankAmt = bankAmt.add(txn.getTxnAmt());
+							bankAmt = bankAmt.add(txn.getTxnAmt());//银行卡支付
 						} else if (TxnTypeCode.XYZF_CODE.getCode().equals(txn.getTxnType())) {
-							creditAmt = creditAmt.add(txn.getTxnAmt());
+							creditAmt = creditAmt.add(txn.getTxnAmt());//信用支付
 						}
 					}
 				}
 			}
+			rebateAmtSum = rebateAmtSum.add(rebateAmt);
+			bankAmtSum = bankAmtSum.add(bankAmt);
+			creditAmtSum = creditAmtSum.add(creditAmt);
 			vo.setRebateAmt(rebateAmt);
 			vo.setBankAmt(bankAmt);
 			vo.setCreditAmt(creditAmt);
 			result.add(vo);
+			
 		}
 		if(CollectionUtils.isNotEmpty(list)){
-			respBody.setTotal(wihdrawBindRelMapper.countBindRelByGroup(query));
+		    respBody.setTotal(wihdrawBindRelMapper.countBindRelByGroup(query));
 		}
+		respBody.setBankAmtSum(bankAmtSum);
+		respBody.setCreditAmtSum(creditAmtSum);
+		respBody.setRebateAmtSum(rebateAmtSum);
 		respBody.setRows(result);
 		respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
 

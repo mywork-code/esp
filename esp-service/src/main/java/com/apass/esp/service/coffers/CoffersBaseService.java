@@ -51,7 +51,7 @@ public class CoffersBaseService {
         Map<String, Object> resultMap = Maps.newHashMap();
         //邀请人数量
         Integer count = awardBindRelMapper.selectCountByUserId(Long.valueOf(userId));
-        resultMap.put("inviteCount ", count);
+        resultMap.put("inviteCount", count);
         LOGGER.info("用户Id:{},邀请人数:{}",userId,count);
         
         //根据userId查询金库明细

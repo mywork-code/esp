@@ -37,6 +37,9 @@ public class QueryParams {
   }
 
   public Integer getStartRecordIndex() {
+    if (rows != null) {
+      this.startRecordIndex = (page - 1) * rows;
+    }
     return startRecordIndex;
   }
 

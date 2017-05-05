@@ -13,14 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.nothing.RegisterInfoController;
+import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.common.MobileSmsService;
-import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
 
 @Controller
@@ -30,9 +26,6 @@ public class ActivityWithDrawController {
 
 	@Autowired
 	public AwardActivityInfoService awardActivityInfoService;
-
-	@Autowired
-	private MobileSmsService mobileRandomService;
 
 	/**
 	 * 银行卡列表
@@ -48,7 +41,6 @@ public class ActivityWithDrawController {
 			return Response.fail("userId不能为空");
 		}
 		Map<String, Object> map = awardActivityInfoService.getBankList();
-		// String s = GsonUtils.toJson(Response.successResponse(map));
 		return Response.successResponse(map);
 	}
 
@@ -61,6 +53,9 @@ public class ActivityWithDrawController {
 	@ResponseBody
 	public Response getBindCardImformation(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
+		if (StringUtils.isEmpty(userId)) {
+			return Response.fail("userId为空");
+		}
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
@@ -75,24 +70,15 @@ public class ActivityWithDrawController {
 	@RequestMapping(value = "/bindCardByUserId", method = RequestMethod.POST)
 	@ResponseBody
 	public Response bindCardByUserId(@RequestBody Map<String, Object> paramMap) {
-
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String realName = CommonUtils.getValue(paramMap, "realName");
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
-		String mobile = CommonUtils.getValue(paramMap, "mobile");
-		String identityNo = CommonUtils.getValue(paramMap, "identityNo");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
-
-		// String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
-		// String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
-		if (StringUtils.isAnyBlank(userId, mobile, realName, cardNo, bankCode)) {
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode)) {
 			return Response.fail("传入参数均不能为空");
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
 			return Response.fail("真实姓名输入不合法");
-		}
-		if (!RegExpUtils.mobile(mobile)) {
-			return Response.fail("手机号格式错误");
 		}
 
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
@@ -100,46 +86,28 @@ public class ActivityWithDrawController {
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
 		}
-
 		if (AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))) {
 			return Response.fail("对不起,该用户已经绑定银行卡");
 		}
 		paramMap.put("customerId", result.get("customerId"));
-
-		// 客户未绑定身份证 ==>验证身份证
+		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("identityNo", result.get("identityNo"));
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
-			// String imgFile = CommonUtils.getValue(paramMap, "imgFile");
-			// if (StringUtils.isBlank(imgFile)) {
-			// return Response.fail("imgFile参数错误");
-			// }
-			// Response res =
-			// awardActivityInfoService.identityReconize(paramMap);// 身份证号码
-			// LOGGER.info(res.toString());
-			// // 得到身份证号码
-			// identityNo = "";
-			// 绑定
 			return Response.fail("对不起,请先上传身份证再绑定卡片");
 		}
-
-		// 客户已绑定身份证且未绑定银行卡
-		if (AwardActivity.BIND_STATUS.UNBINDED.getCode().equals(result.get("status"))) {
-			// identityNo = CommonUtils.getValue(paramMap, "identityNo");
-		}
-		paramMap.put("identityNo", identityNo);
-
-		// 验卡是否本人 以及是否支持该银行
-
 		Response res = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res.getStatus())) {
-			return Response.fail("该用户已经绑定银行卡");
-			// Map resMap = GsonUtils.convert((String) res.getData());
+			return res;
+		}
+
+		Response response1 = awardActivityInfoService.latestSignature(paramMap);
+		if (!"1".equals(response1.getStatus())) {
+			return Response.fail("请先签名");
 		}
 		// 绑卡
-
 		Response response = awardActivityInfoService.bindCard(paramMap);
-
 		if (!"1".equals(response.getStatus())) {
-			return Response.fail(userId);
+			return response;
 		}
 		return response;
 	}
@@ -177,34 +145,9 @@ public class ActivityWithDrawController {
 		}
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("mobile", result.get("mobile"));
-		// String imgFile = CommonUtils.getValue(paramMap, "imgFile");
-		// String mobile = CommonUtils.getValue(paramMap, "mobile");
+
 		Response res = awardActivityInfoService.identityReconize(paramMap);
 		return res;
-	}
-
-	/**
-	 * 发送验证码
-	 * 
-	 * @param paramMap
-	 * @return
-	 */
-	@RequestMapping(value = "/sendMessage", method = RequestMethod.POST)
-	@ResponseBody
-	public Response sendRandomCode(@RequestBody Map<String, Object> paramMap) {
-
-		String mobile = CommonUtils.getValue(paramMap, "mobile");// 手机号
-		String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
-		if (StringUtils.isAnyBlank(mobile, smsType)) {
-			return Response.fail("验证码,接收手机号不能为空");
-		}
-		try {
-			mobileRandomService.sendMobileVerificationCode(smsType, mobile);
-			return Response.success("验证码发送成功,请注意查收");
-		} catch (BusinessException e) {
-			LOGGER.error("mobile verification code send fail", e);
-			return Response.fail("网络异常,发送验证码失败,请稍后再试");
-		}
 	}
 
 	/**
@@ -216,8 +159,16 @@ public class ActivityWithDrawController {
 	@RequestMapping(value = "/saveContract", method = RequestMethod.POST)
 	@ResponseBody
 	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
+
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		String requestId = "";
+		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
+		if (result == null || result.size() == 0) {
+			return Response.fail("对不起,该用户不存在!");
+		}
+		paramMap.put("customerId", result.get("customerId"));
 		Response res = awardActivityInfoService.saveContract(paramMap);
-		return Response.success(GsonUtils.toJson(res));
+		return res;
 	}
 
 	/**
@@ -232,18 +183,39 @@ public class ActivityWithDrawController {
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String realName = CommonUtils.getValue(paramMap, "realName");
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
-		String mobile = CommonUtils.getValue(paramMap, "mobile");
-		String identityNo = CommonUtils.getValue(paramMap, "identityNo");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, mobile, identityNo)) {
+		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank)) {
 			return Response.fail("参数值错误");
+		}
+		if (!RegExpUtils.length(realName, 4, 20)) {
+			return Response.fail("真实姓名输入不合法");
 		}
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation("contractInit",
 				Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
 		}
+		if ("2".equals(result.get("status"))) {
+			return Response.fail("对不起,请先上传身份证");
+		}
+		if ("0".equals(result.get("status"))) {
+			return Response.fail("对不起,该用户已绑定银行卡");
+		}
 		paramMap.put("customerId", result.get("customerId"));
-		// 客户已绑定身份证且未绑定银行卡
-		return awardActivityInfoService.initContract(paramMap);
+		paramMap.put("identityNo", result.get("identityNo"));
+		paramMap.put("mobile", result.get("mobile"));
+		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
+		if (!"1".equals(res1.getStatus())) {
+			return res1;
+		}
+		Response res = awardActivityInfoService.initContract(paramMap);
+		if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
+			paramMap.put("status", "0");// 没有签名
+			return Response.response("1", "请求数据成功", paramMap);
+		}
+		paramMap.put("status", "1");// 有签名
+		paramMap.put("sign", res.getData());
+		paramMap.put("customerEntity", res.getMsg());
+		return Response.response("1", "请求数据成功", paramMap);
 	}
 }
