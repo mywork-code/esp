@@ -77,6 +77,9 @@ public class WithdrawService {
             paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
         }else{
             paramMap.put("page","0");//未绑卡
+            paramMap.put("mobile", result.get("mobile"));//手机号
+            paramMap.put("identityNo", result.get("identityNo"));//身份证号码
+            paramMap.put("identityExpires", result.get("identityExpires"));//身份证有效期
         }
         
         return paramMap;

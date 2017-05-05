@@ -114,6 +114,11 @@ public class AwardActivityInfoService {
 		return false;
 	}
 
+	public boolean isExistActivity(AwardActivity.ActivityName name) {
+		AwardActivityInfo ai = awardActivityInfoMapper.selectByName(name.getValue());
+		return ai != null;
+	}
+
 	/**
 	 * 通过活动名称获得指定活动
 	 */
@@ -165,8 +170,10 @@ public class AwardActivityInfoService {
 			resultMap.put("cardNo", customerInfo.getCardNo());
 			resultMap.put("cardBank", customerInfo.getCardBank());
 			resultMap.put("bankCode", customerInfo.getBankCode());
+			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			return resultMap;
 		} catch (BusinessException e) {
+		    LOGGER.error("查询用户是否绑卡及绑卡信息", e);
 			return new HashMap<String, Object>();
 		}
 	}

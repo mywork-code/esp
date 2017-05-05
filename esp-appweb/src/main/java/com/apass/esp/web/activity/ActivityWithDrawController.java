@@ -53,6 +53,9 @@ public class ActivityWithDrawController {
 	@ResponseBody
 	public Response getBindCardImformation(@RequestBody Map<String, Object> paramMap) {
 		String userId = CommonUtils.getValue(paramMap, "userId");
+		if(StringUtils.isEmpty(userId)){
+			return Response.fail("userId为空");
+		}
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
