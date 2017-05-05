@@ -31,6 +31,7 @@ import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.bill.BillService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -57,7 +58,7 @@ public class OrderInfoController {
 
 	@Autowired
 	public AwardDetailService awardDetailService;
-
+	
 	private static final String NO_USER = "对不起!用户号不能为空";
 	private static final String ORDER_ID = "orderId";
 
@@ -229,7 +230,8 @@ public class OrderInfoController {
 		String requestId = logStashSign + "_" + orderId;
 		paramMap.remove("x-auth-token"); // 输出日志前删除会话token
 		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
-
+		
+		OrderDetailInfoDto dto = null;
 		if (null == userId) {
 			LOGGER.info("用户号不能为空!");
 			return Response.fail("登录失效请重新登录!");
@@ -237,10 +239,12 @@ public class OrderInfoController {
 		if (StringUtils.isEmpty(orderId)) {
 			return Response.fail("请求订单信息不能为空!");
 		}
-
+		
 		try {
 
 			orderService.confirmReceiveGoods(requestId, userId, orderId);
+			dto = orderService.getOrderDetailInfoDto(requestId, orderId);
+			
 		} catch (BusinessException e) {
 			LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
 			return Response.fail(e.getErrorDesc());
@@ -254,7 +258,7 @@ public class OrderInfoController {
 			awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
 		} catch (BusinessException e) {
 			LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
-			return Response.success("确认收货成功!");
+			return Response.success("确认收货成功!",dto);
 		}
 		// 返现活动存在
 		if (awardActivityInfoVo != null) {
@@ -264,7 +268,7 @@ public class OrderInfoController {
 			} catch (BusinessException e) {
 			    LOGGER.error("根据订单号和用户id查询订单信息", e);
 				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
-				return Response.success("确认收货成功!");
+				return Response.success("确认收货成功!",dto);
 			}
 			if (orderInfoEntity != null) {// 订单存在
 				Date startDate = DateFormatUtil.string2date(awardActivityInfoVo.getaStartDate(), "yyyy-MM-dd HH:mm:ss");
@@ -285,7 +289,7 @@ public class OrderInfoController {
 						int rebateInt = rebateAmt.intValue();
 						// 返现金额小于1时 不返现
 						if (rebateInt == 0) {
-							return Response.success("确认收货成功!");
+							return Response.success("确认收货成功!",dto);
 						}
 						awardDetailDto.setAmount(new BigDecimal(rebateInt));
 						awardDetailDto.setMainOrderId(orderId);
@@ -301,12 +305,12 @@ public class OrderInfoController {
 								"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
 								userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
 								awardActivityInfoVo.getRebate());
-						return Response.success("确认收货成功!");
+						return Response.success("确认收货成功!",dto);
 					}
 				}
 			}
 		}
-		return Response.success("确认收货成功!");
+		return Response.success("确认收货成功!",dto);
 	}
 
 	/**
