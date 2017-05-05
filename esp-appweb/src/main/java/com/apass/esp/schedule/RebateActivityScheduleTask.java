@@ -27,7 +27,11 @@ import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-
+/**
+ * 邀请人获得返点结算 Task
+ * @author xianzhi.wang
+ *
+ */
 @Component
 @Configurable
 @EnableScheduling
@@ -95,17 +99,15 @@ public class RebateActivityScheduleTask {
 							try {
 								awardDetailService.updateAwardDetail(awardDetailDto);
 							} catch (Exception e) {
-								e.printStackTrace();
 								LOGGER.error(
 										"activity id {},startDate {},endDate {},curDate {} orderId {} 更新 返现获得 失败=====",
 										awardActivityInfoVo.getId(), startDate, endDate, date,
-										awardDetailDto.getMainOrderId());
+										awardDetailDto.getMainOrderId(),e.getMessage());
 							}
 							LOGGER.info(
 									"activity id {},活动开始时间 startDate {},活动结束时间 endDate {},获得返现时间  {},订单ID {} 获得返现成功,金额 ,{}",
 									awardActivityInfoVo.getId(), startDate, endDate, new Date(),
 									awardDetailDto.getMainOrderId(), awardDetailDto.getAmount());
-
 						}
 
 					}
@@ -115,8 +117,7 @@ public class RebateActivityScheduleTask {
 			}
 			LOGGER.info("邀请人获得返点结算定时任务结束");
 		} catch (Exception e) {
-			e.printStackTrace();
-			LOGGER.error("邀请人获得返点结算", e);
+			LOGGER.error("邀请人获得返点结算", e.getMessage());
 		}
 	}
 }
