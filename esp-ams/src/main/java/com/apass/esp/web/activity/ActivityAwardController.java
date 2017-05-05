@@ -1,20 +1,11 @@
 package com.apass.esp.web.activity;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardDetailService;
@@ -23,7 +14,12 @@ import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
-import com.apass.gfb.framework.utils.BaseConstants;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by jie.xu on 17/4/21.
@@ -49,13 +45,8 @@ public class ActivityAwardController {
 
   @RequestMapping(value = "/introduce/list", method = RequestMethod.GET)
   @ResponseBody
-  public ResponsePageBody listConfig() {
-    ResponsePageBody<AwardActivityInfoVo> respBody = new ResponsePageBody<>();
-    List<AwardActivityInfoVo> list = awardActivityInfoService.listActivity();
-    respBody.setTotal(list.size());
-    respBody.setRows(list);
-    respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
-    return respBody;
+  public ResponsePageBody listConfig(QueryParams query) {
+    return  awardActivityInfoService.listActivity(query);
   }
 
 

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.common.model.QueryParams;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.utils.BaseConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -84,16 +87,15 @@ public class AwardActivityInfoService {
 		return entity;
 	}
 
+
 	/**
 	 * 获取活动
 	 * 
 	 * @return
 	 */
-	public List<AwardActivityInfoVo> listActivity() {
-		List<AwardActivityInfo> list = awardActivityInfoMapper.selectLastEffectiveActivities();
-		if (CollectionUtils.isEmpty(list)) {
-			return Collections.emptyList();
-		}
+	public ResponsePageBody<AwardActivityInfoVo> listActivity(QueryParams query) {
+		ResponsePageBody<AwardActivityInfoVo> respBody = new ResponsePageBody<>();
+		List<AwardActivityInfo> list = awardActivityInfoMapper.pageEffectiveList(query);
 		List<AwardActivityInfoVo> result = new ArrayList<>();
 		for (AwardActivityInfo ai : list) {
 			AwardActivityInfoVo vo = new AwardActivityInfoVo();
@@ -105,7 +107,14 @@ public class AwardActivityInfoService {
 			vo.setUpdateDate(DateFormatUtil.datetime2String(ai.getUpdateDate()));
 			result.add(vo);
 		}
-		return result;
+		if(CollectionUtils.isEmpty(list)){
+			respBody.setTotal(0);
+		}else{
+			respBody.setTotal(awardActivityInfoMapper.count());
+		}
+		respBody.setRows(result);
+		respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+		return respBody;
 
 	}
 
