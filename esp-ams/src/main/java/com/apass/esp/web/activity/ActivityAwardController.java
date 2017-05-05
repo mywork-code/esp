@@ -9,6 +9,7 @@ import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -99,7 +100,7 @@ public class ActivityAwardController {
    */
   @RequestMapping(value = "/introduce/statistic/list", method = RequestMethod.GET)
   @ResponseBody
-  public ResponsePageBody<AwardBindRelStatisticVo> listIntroStatistic(ActivityBindRelStatisticQuery query){
+  public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> listIntroStatistic(ActivityBindRelStatisticQuery query){
     return  awardDetailService.pageBindRelStatistic(query);
   }
 
