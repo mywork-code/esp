@@ -262,6 +262,7 @@ public class OrderInfoController {
 			try {
 				orderInfoEntity = orderService.selectByOrderId(orderId);
 			} catch (BusinessException e) {
+			    LOGGER.error("根据订单号和用户id查询订单信息", e);
 				LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
 				return Response.success("确认收货成功!",dto);
 			}
