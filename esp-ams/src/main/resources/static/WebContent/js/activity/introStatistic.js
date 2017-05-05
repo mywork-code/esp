@@ -50,6 +50,11 @@ $(function(){
                 dataType : "json",
                 success : function(data) {
                     $.validateResponse(data, function() {
+                    	debugger;
+                    	$("#manSum").html(data.total);
+                    	$("#cashSum").html(data.bankAmtSum);
+                    	$("#amountSum").html(data.creditAmtSum);
+                    	$("#returnCashSum").html(data.rebateAmtSum);
                         success(data);
                     });
                 }

@@ -42,7 +42,7 @@ class UEController {
 	public String loadPic(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		byte[] xlsbyte = FileUtilsCommons.loadPicByte(rootPath, HttpWebUtils.getValue(request, "picUrl"));
-
+		
 		response.getOutputStream().write(xlsbyte);
 
 		return null;

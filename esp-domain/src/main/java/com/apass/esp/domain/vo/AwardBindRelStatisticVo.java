@@ -52,4 +52,5 @@ public class AwardBindRelStatisticVo {
   public void setRebateAmt(BigDecimal rebateAmt) {
     this.rebateAmt = rebateAmt;
   }
+  
 }
