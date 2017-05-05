@@ -1,5 +1,6 @@
 $(function(){
     $("#addIntroConfig").window('close');
+    $("#editIntroConfig").window('close');
 
     //Grid
     $('#list').datagrid({
@@ -33,7 +34,10 @@ $(function(){
                 title : '个人返点',
                 field : 'rebate',
                 width : 120,
-                align : 'center'
+                align : 'center',
+                formatter : function(value, row, index) {
+                	return value+"%";
+                }
             },
             {
                 title : '操作',
@@ -46,6 +50,8 @@ $(function(){
                     var content = "";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteActivity("
                             + row.id+ ");\">关闭活动</a>&nbsp;&nbsp;";
+                        content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editActivity('"
+						+ row.id+"','"+ row.rebate+"','"+row.aEndDate + "');\"'>编辑</a>&nbsp;&nbsp;";
                     return content;
                 }
             }
@@ -57,6 +63,8 @@ $(function(){
                 type : "get",
                 dataType : "json",
                 success : function(data) {
+                	debugger;
+                	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
                     });
@@ -66,7 +74,7 @@ $(function(){
     });
 
 
-    //添加  banner信息
+    //添加 活动
     $("#add").click(function(){
         $('#addIntroConfig').window({
             minimizable:false,
@@ -78,7 +86,7 @@ $(function(){
         $("#addIntroConfig").window('open');
 
     });
-    //确认   添加  banner信息
+    //确认   添加活动
     $("#agreeAdd").click(function(){
         var rebate=$("#rebate").textbox('getValue');
         if(null == rebate || rebate==""){
@@ -90,7 +98,7 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","开始时间不能为空！","info");
             return;
         }
-        var endDate=$("#endDate").textbox('getValue');
+        var endDate=$("#endDate").datebox('getValue');
         if(null == endDate || endDate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
             return;
@@ -166,4 +174,42 @@ $(function(){
             }
         })
     };
+    
+    var idActiv = null;
+    /**
+	 * 编辑
+	 */
+	$.editActivity = function(id,rebate,endDate) {
+		$("#editIntroConfig").window({modal: true});
+		$("#editIntroConfig").window('open');
+		idActiv = id;
+		
+		$("#editRebate").textbox('setValue',rebate);
+		$("#editEndDate").datetimebox('setValue',endDate); 
+		
+	}
+    //取消  编辑 
+    $("#editCancelAdd").click(function(){
+        $("#editIntroConfig").window('close');
+    });
+    //确定  编辑活动信息
+    $("#editAgreeAdd").click(function(){
+		var rebate = $("#editRebate").textbox('getValue');
+		var endDate = $("#editEndDate").datetimebox('getValue'); 
+		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate};
+		$.ajax({
+			type : "POST",
+			url : ctx + '/activity/introduce/edit',
+			data : params,
+			dataType : "json",
+			success : function(data) {
+				debugger;
+				$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
+				$("#editIntroConfig").window('close');
+				var params={};
+        		$('#list').datagrid('load', params);
+			}
+		});
+    });
+    
 });

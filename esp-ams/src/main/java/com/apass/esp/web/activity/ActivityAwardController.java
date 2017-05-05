@@ -14,7 +14,11 @@ import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
-import org.apache.commons.lang.StringUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,6 +78,28 @@ public class ActivityAwardController {
       return Response.fail("已存在该活动配置信息...");
     }
   }
+  /**
+   * 编辑配置
+   */
+  @RequestMapping(value = "/introduce/edit", method = RequestMethod.POST)
+  @ResponseBody
+  public Response editIntroConfig(HttpServletRequest request) throws BusinessException {
+      String id = HttpWebUtils.getValue(request, "id");
+      String rebate = HttpWebUtils.getValue(request, "rebate");
+      String endDate = HttpWebUtils.getValue(request, "endDate");
+      if (StringUtils.isAnyBlank(id,rebate,endDate)) {
+          return Response.fail("请输入完整信息...");
+        }
+      
+      Integer count = awardActivityInfoService.editActivity(id,rebate,endDate);
+      if (count == 1) {
+        return Response.success("操作成功...");
+      } else {
+        return Response.fail("操作失败...");
+      }
+  }
+      
+   
 
   /**
    * 关闭活动

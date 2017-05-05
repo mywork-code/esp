@@ -27,7 +27,7 @@
 </div>
 <div id="list"></div>
 
-<div id="addIntroConfig" class="easyui-window" title="<font color='black'>活动配置</font>" hidden="hidden"
+<div id="addIntroConfig" class="easyui-window" title="<font color='black'>添加活动配置</font>" hidden="hidden"
      style="width: 430px; height: 200px; display: none; text-align: center;" >
     <form id="introConfigForm"  action="${rc.contextPath}/activity/introduce/config" method="POST" enctype="multipart/form-data">
         <table class="details_table" style="width:92%">
@@ -39,11 +39,11 @@
             </tr>
             <tr>
                 <td width="5%" align="right" nowrap="nowrap">活动开始时间：</td>
-                <td width="5%" align="left"><input id="startDate" name="startDate" style="width:120px" class="easyui-datebox" /></td>
+                <td width="5%" align="left"><input id="startDate" name="startDate" style="width:160px" class="easyui-datetimebox" /></td>
             </tr>
             <tr>
                 <td width="5%" align="right" nowrap="nowrap">活动结束时间：</td>
-                <td width="5%" align="left"><input id="endDate" name="endDate" style="width:120px" class="easyui-datebox" /></td>
+                <td width="5%" align="left"><input id="endDate" name="endDate" style="width:160px" class="easyui-datetimebox" /></td>
             </tr>
             <tr>
 
@@ -57,6 +57,29 @@
     </form>
 </div>
 
+<div id="editIntroConfig" class="easyui-window" title="<font color='black'>编辑活动配置</font>" hidden="hidden"
+     style="width: 430px; height: 200px; text-align: center;" >
+    <table class="details_table" style="width:92%">
+        <tr>
+            <td width="5%" align="right">个人返点：</td>
+            <td align="left"><input id="editRebate" name="rebate"
+                                    class="easyui-textbox" style="width: 120px;" />
+                <span style="font-size: 16px">%</span></td>
+        </tr>
+        <tr>
+            <td width="5%" align="right" nowrap="nowrap">活动结束时间：</td>
+            <td width="5%" align="left"><input id="editEndDate" name="endDate" style="width:160px" class="easyui-datetimebox" /></td>
+        </tr>
+        <tr>
+
+        </tr>
+        <tr style="margin-top: 22px;">
+            <td colspan="2"><a href="javascript:void(0);" id="editCancelAdd" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+                <a href="javascript:void(0);" id="editAgreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>
+            </td>
+        </tr>
+    </table>
+</div>
 
 </body>
 </html>
