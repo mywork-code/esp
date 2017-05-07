@@ -258,7 +258,7 @@ function saveorsubmit(statu){
     	$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话长度不能超过11！",'warning');
     	return;
     }
-	var merchantReturnPhoneFalge=/^1\d{10}$/.test(merchantReturnPhone);
+	var merchantReturnPhoneFalge=/^[1][34578][0-9]{9}$/.test(merchantReturnPhone);
 	if(!merchantReturnPhoneFalge){
 		$.messager.alert("<span style='color: black;'>警告</span>","收货人联系电话填写错误！",'warning');
     	return;
