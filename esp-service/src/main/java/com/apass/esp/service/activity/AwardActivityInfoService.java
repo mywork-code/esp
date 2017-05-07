@@ -87,7 +87,6 @@ public class AwardActivityInfoService {
 		return entity;
 	}
 
-
 	/**
 	 * 获取活动
 	 * 
@@ -107,9 +106,9 @@ public class AwardActivityInfoService {
 			vo.setUpdateDate(DateFormatUtil.datetime2String(ai.getUpdateDate()));
 			result.add(vo);
 		}
-		if(CollectionUtils.isEmpty(list)){
+		if (CollectionUtils.isEmpty(list)) {
 			respBody.setTotal(0);
-		}else{
+		} else {
 			respBody.setTotal(awardActivityInfoMapper.count());
 		}
 		respBody.setRows(result);
@@ -162,13 +161,13 @@ public class AwardActivityInfoService {
 			resultMap.put("userId", userId);
 			resultMap.put("mobile", customerInfo.getMobile());
 			resultMap.put("customerId", customerInfo.getCustomerId());
+			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			// 身份信息未认证
 			if (StringUtils.isEmpty(customerInfo.getIdentityNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode());
 				return resultMap;
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
-			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {
@@ -182,7 +181,7 @@ public class AwardActivityInfoService {
 			resultMap.put("bankCode", customerInfo.getBankCode());
 			return resultMap;
 		} catch (BusinessException e) {
-		    LOGGER.error("查询用户是否绑卡及绑卡信息", e);
+			LOGGER.error("查询用户是否绑卡及绑卡信息", e);
 			return new HashMap<String, Object>();
 		}
 	}
