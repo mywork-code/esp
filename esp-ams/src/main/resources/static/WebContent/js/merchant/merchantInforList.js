@@ -382,6 +382,10 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","商户编码不能为空!",'info');  
 			return;
 		}
+		if (!/^\d{6}$/.test(merchantCode)) {
+			$.messager.alert("<span style='color: black;'>提示</span>","只能输入6位邮编!",'info');  
+			return;
+		}
 		var merchantName = $("#editMerchantName").textbox('getValue');
 		if (null == merchantName || ("") == merchantName) {
 			$.messager.alert("<span style='color: black;'>提示</span>","商户名称不能为空!",'info');  
@@ -401,7 +405,7 @@ $(function(){
 	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
 	    	return;
 	    }
-		if(merchantReturnAddress.length>80){ 
+		if(!/^[\u4e00-\u9fa5]{1,80}$/.test(merchantReturnAddress)){ 
 	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
 	    	return;
 	    }
@@ -409,7 +413,8 @@ $(function(){
 	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名长度不能为空！",'info');
 	    	return;
 	    }
-		if(merchantReturnName.length>12){ 
+		 
+		if(!/^[\u4e00-\u9fa5]{1,12}$/.test(merchantReturnName)){ 
 	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
 	    	return;
 	    }

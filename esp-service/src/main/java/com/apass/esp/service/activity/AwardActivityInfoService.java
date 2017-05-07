@@ -2,15 +2,11 @@ package com.apass.esp.service.activity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.common.model.QueryParams;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.utils.BaseConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
@@ -29,7 +26,9 @@ import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
@@ -88,6 +87,7 @@ public class AwardActivityInfoService {
         return entity;
     }
 
+
     /**
      * 编辑活动
      * @param dto
@@ -128,7 +128,6 @@ public class AwardActivityInfoService {
         respBody.setRows(result);
         respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
         return respBody;
-
     }
 
     public boolean validateAwardActivity() {
@@ -175,13 +174,13 @@ public class AwardActivityInfoService {
 			resultMap.put("userId", userId);
 			resultMap.put("mobile", customerInfo.getMobile());
 			resultMap.put("customerId", customerInfo.getCustomerId());
+			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			// 身份信息未认证
 			if (StringUtils.isEmpty(customerInfo.getIdentityNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode());
 				return resultMap;
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
-			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {
@@ -195,7 +194,7 @@ public class AwardActivityInfoService {
 			resultMap.put("bankCode", customerInfo.getBankCode());
 			return resultMap;
 		} catch (BusinessException e) {
-		    LOGGER.error("查询用户是否绑卡及绑卡信息", e);
+			LOGGER.error("查询用户是否绑卡及绑卡信息", e);
 			return new HashMap<String, Object>();
 		}
 	}

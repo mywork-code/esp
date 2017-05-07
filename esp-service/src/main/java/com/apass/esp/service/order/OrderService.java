@@ -857,79 +857,7 @@ public class OrderService {
 		}
 
 		for (OrderInfoEntity order : orderList) {
-			// 通过子订单号查询订单详情
-			OrderDetailInfoEntity orderDetailParam = new OrderDetailInfoEntity();
-			orderDetailParam.setOrderId(order.getOrderId());
-			List<OrderDetailInfoEntity> orderDetailInfoList = orderDetailInfoRepository.filter(orderDetailParam);
-
-			List<GoodsInfoInOrderDto> goodsListInEachOrder = new ArrayList<GoodsInfoInOrderDto>();
-			// 每笔订单商品数目
-			int goodsSum = 0;
-			for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
-				goodsSum += orderDetailInfo.getGoodsNum();
-
-				GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
-				goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
-				goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
-				goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
-				GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
-				if (null != goodsStock) {
-					goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
-					goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
-				}
-				goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
-				goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
-				goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
-				goodsListInEachOrder.add(goodsInfo);
-			}
-			OrderDetailInfoDto orderDetailInfoDto = new OrderDetailInfoDto();
-			orderDetailInfoDto.setOrderId(order.getOrderId());
-			orderDetailInfoDto.setOrderAmt(order.getOrderAmt());
-			orderDetailInfoDto.setGoodsNumSum(goodsSum);
-			orderDetailInfoDto.setStatus(order.getStatus());
-			orderDetailInfoDto.setOrderDetailInfoList(goodsListInEachOrder);
-
-			// 待付款订单计算剩余付款时间
-			if (order.getStatus().equals(OrderStatus.ORDER_NOPAY.getCode())) {
-				if (DateFormatUtil.isExpired(order.getCreateDate(), 1)) {
-					dealWithInvalidOrder(requestId, order.getOrderId());
-					orderDetailInfoDto.setStatus(OrderStatus.ORDER_CANCEL.getCode());
-				} else {
-					orderDetailInfoDto.setRemainingTime(
-							DateFormatUtil.getDateDiff(DateFormatUtil.addDays(order.getCreateDate(), 1), new Date()));
-				}
-
-			}
-
-			orderDetailInfoDto.setOrderCreateDate(order.getCreateDate());
-			orderDetailInfoDto.setProvince(order.getProvince());
-			orderDetailInfoDto.setCity(order.getCity());
-			orderDetailInfoDto.setDistrict(order.getDistrict());
-			orderDetailInfoDto.setAddress(order.getAddress());
-			orderDetailInfoDto.setName(order.getName());
-			orderDetailInfoDto.setTelephone(order.getTelephone());
-			orderDetailInfoDto.setAddressId(order.getAddressId());
-			// if (StringUtils.isNotEmpty(orderStatus) &&
-			// OrderStatus.ORDER_SEND.getCode().equals(orderStatus)) {
-			orderDetailInfoDto.setDelayAcceptGoodFlag(order.getExtendAcceptGoodsNum() + "");
-			// }
-			//账单分期后改为删除按钮
-			boolean billOverDueFlag =  billService.queryStatement(userIdVal,order.getOrderId());
-			if(billOverDueFlag){
-				LOGGER.info("userId={},账单分期已逾期",userIdVal);
-				orderDetailInfoDto.setRefundAllowedFlag("0");
-			} else {
-				try {
-					orderDetailInfoDto.setRefundAllowedFlag("1");
-					// 交易完成的订单是否允许售后操作校验
-					afterSaleService.orderRufundValidate(requestId, userIdVal, order.getOrderId(), order);
-				} catch (Exception e) {
-					LOG.info(requestId, "这个捕获只是为了过滤掉订单售后校验逻辑抛出的异常", "");
-					LOGGER.error(e.getMessage(), e);
-					// 这个捕获只是为了过滤掉 订单售后校验 抛出的 异常
-					orderDetailInfoDto.setRefundAllowedFlag("0");
-				}
-			}
+			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, userIdVal, order);
 
 			returnOrders.add(orderDetailInfoDto);
 
@@ -958,6 +886,97 @@ public class OrderService {
 		}
 		return returnOrders;
 	}
+	
+	public OrderDetailInfoDto getOrderDetailInfoDto(String requestId,String orderId) throws BusinessException{
+	    
+	    if(StringUtils.isBlank(orderId)){
+	        throw new BusinessException("订单Id不能为空!");
+	    }
+	    
+        OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
+	    
+        OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity.getUserId(),entity);
+	    
+	    return dto;
+	}
+
+    private OrderDetailInfoDto getOrderDetailInfoDto(String requestId, Long userIdVal,
+                                                     OrderInfoEntity order) throws BusinessException {
+        // 通过子订单号查询订单详情
+        OrderDetailInfoEntity orderDetailParam = new OrderDetailInfoEntity();
+        orderDetailParam.setOrderId(order.getOrderId());
+        List<OrderDetailInfoEntity> orderDetailInfoList = orderDetailInfoRepository.filter(orderDetailParam);
+
+        List<GoodsInfoInOrderDto> goodsListInEachOrder = new ArrayList<GoodsInfoInOrderDto>();
+        // 每笔订单商品数目
+        int goodsSum = 0;
+        for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
+        	goodsSum += orderDetailInfo.getGoodsNum();
+
+        	GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
+        	goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
+        	goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
+        	goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
+        	GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
+        	if (null != goodsStock) {
+        		goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+        		goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
+        	}
+        	goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
+        	goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
+        	goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
+        	goodsListInEachOrder.add(goodsInfo);
+        }
+        OrderDetailInfoDto orderDetailInfoDto = new OrderDetailInfoDto();
+        orderDetailInfoDto.setOrderId(order.getOrderId());
+        orderDetailInfoDto.setOrderAmt(order.getOrderAmt());
+        orderDetailInfoDto.setGoodsNumSum(goodsSum);
+        orderDetailInfoDto.setStatus(order.getStatus());
+        orderDetailInfoDto.setOrderDetailInfoList(goodsListInEachOrder);
+
+        // 待付款订单计算剩余付款时间
+        if (order.getStatus().equals(OrderStatus.ORDER_NOPAY.getCode())) {
+        	if (DateFormatUtil.isExpired(order.getCreateDate(), 1)) {
+        		dealWithInvalidOrder(requestId, order.getOrderId());
+        		orderDetailInfoDto.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+        	} else {
+        		orderDetailInfoDto.setRemainingTime(
+        				DateFormatUtil.getDateDiff(DateFormatUtil.addDays(order.getCreateDate(), 1), new Date()));
+        	}
+
+        }
+
+        orderDetailInfoDto.setOrderCreateDate(order.getCreateDate());
+        orderDetailInfoDto.setProvince(order.getProvince());
+        orderDetailInfoDto.setCity(order.getCity());
+        orderDetailInfoDto.setDistrict(order.getDistrict());
+        orderDetailInfoDto.setAddress(order.getAddress());
+        orderDetailInfoDto.setName(order.getName());
+        orderDetailInfoDto.setTelephone(order.getTelephone());
+        orderDetailInfoDto.setAddressId(order.getAddressId());
+        // if (StringUtils.isNotEmpty(orderStatus) &&
+        // OrderStatus.ORDER_SEND.getCode().equals(orderStatus)) {
+        orderDetailInfoDto.setDelayAcceptGoodFlag(order.getExtendAcceptGoodsNum() + "");
+        // }
+        //账单分期后改为删除按钮
+        boolean billOverDueFlag =  billService.queryStatement(userIdVal,order.getOrderId());
+        if(billOverDueFlag){
+        	LOGGER.info("userId={},账单分期已逾期",userIdVal);
+        	orderDetailInfoDto.setRefundAllowedFlag("0");
+        } else {
+        	try {
+        		orderDetailInfoDto.setRefundAllowedFlag("1");
+        		// 交易完成的订单是否允许售后操作校验
+        		afterSaleService.orderRufundValidate(requestId, userIdVal, order.getOrderId(), order);
+        	} catch (Exception e) {
+        		LOG.info(requestId, "这个捕获只是为了过滤掉订单售后校验逻辑抛出的异常", "");
+        		LOGGER.error(e.getMessage(), e);
+        		// 这个捕获只是为了过滤掉 订单售后校验 抛出的 异常
+        		orderDetailInfoDto.setRefundAllowedFlag("0");
+        	}
+        }
+        return orderDetailInfoDto;
+    }
 
 	/**
 	 * 获取用户 待付款、待发货、待收货 订单数量
