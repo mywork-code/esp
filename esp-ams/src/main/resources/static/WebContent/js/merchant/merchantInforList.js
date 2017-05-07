@@ -208,7 +208,7 @@ $(function(){
 	    	return;
 	    }
 		if(null ==merchantReturnName || merchantReturnName.length==0){ 
-	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名长度不能为空！",'info');
+	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名不能为空！",'info');
 	    	return;
 	    }
 		if(merchantReturnName.length>12){ 
