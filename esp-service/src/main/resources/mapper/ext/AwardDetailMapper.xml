@@ -5,6 +5,7 @@
       select <include refid="Base_Column_List" />
       from t_esp_award_detail
       where  status in(0,2) and user_id = #{userId}
+      ORDER BY create_date DESC
     </select>
     
 	<select id="queryAwardDetailWithDate" resultMap="BaseResultMap">

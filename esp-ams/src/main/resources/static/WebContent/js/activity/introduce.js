@@ -63,7 +63,6 @@ $(function(){
                 type : "get",
                 dataType : "json",
                 success : function(data) {
-                	debugger;
                 	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
@@ -88,7 +87,7 @@ $(function(){
     });
     //确认   添加活动
     $("#agreeAdd").click(function(){
-        var rebate=$("#rebate").textbox('getValue');
+        var rebate=$("#rebate").numberbox('getValue');
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","返点配置不能为空！","info");
             return;
@@ -103,6 +102,22 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
             return;
         }
+        if(startDate!=null && startDate!=''&&endDate!=null && endDate!=''){
+        	debugger;
+        	alert(new Date().Format("yyyy-MM-dd hh:mm:ss"));
+    		if(startDate>endDate){
+    			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
+    			$('#startDate').datetimebox('setValue','');
+    			$('#endDate').datetimebox('setValue','');
+    			return;
+    		}
+    		if(startDate<new Date().Format("yyyy-MM-dd hh:mm:ss")){
+    			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间不能小于当前时间！",'info');
+    			$('#startDate').datetimebox('clear');
+    			$('#endDate').datetimebox('setValue','');
+    			return;
+    		}
+    	}
 
 
         //提交from
@@ -120,8 +135,11 @@ $(function(){
                 }
                 var respon=JSON.parse(data);
                 if(respon.status=="1"){
+                	debugger;
                     $.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
-                    $('#addBannerInfor').window('close');
+                    $("#addIntroConfig").window('close');
+                    var params={};
+                    $('#list').datagrid('load',params);
                 }else{
                     $.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
                     return;
@@ -137,10 +155,10 @@ $(function(){
     });
 
     //查询
-    $(".search-btn").click(function(){
-        var params={};
-        $('#list').datagrid('load',params);
-    });
+//    $(".search-btn").click(function(){
+//        var params={};
+//        $('#list').datagrid('load',params);
+//    });
 
 
     $.deleteActivity=function(id){
@@ -163,9 +181,10 @@ $(function(){
                             return false;
                         }
                         if(data.status=="1"){
+                        	debugger;
                             $.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
                             var params={};
-                            $('#bannerList').datagrid('load',params);
+                            $('#list').datagrid('load',params);
                         }else{
                             $.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
                         }

@@ -382,9 +382,18 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","商户编码不能为空!",'info');  
 			return;
 		}
-		if (!/^\d{6}$/.test(merchantCode)) {
+		var merchantPostcode = $("#editMerchantPostcode").textbox('getValue');
+		if (!(/^\d{6}$/.test(merchantPostcode))) {
 			$.messager.alert("<span style='color: black;'>提示</span>","只能输入6位邮编!",'info');  
 			return;
+		}
+		
+		var editMerchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue'); 
+		if((0!= editMerchantReturnPostCode.length||"" != editMerchantReturnPostCode)){
+			if(!/^\d{6}$/.test(editMerchantReturnPostCode)){
+				$.messager.alert("<span style='color: black;'>提示</span>","收货编码输入错误!",'info');  
+				return;
+			}
 		}
 		var merchantName = $("#editMerchantName").textbox('getValue');
 		if (null == merchantName || ("") == merchantName) {
@@ -396,16 +405,20 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","结算是否含运费不能为空!",'info');  
 			return;
 		}
-		var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue');//商家退货地址
-		var merchantReturnName = $("#editMerchantReturnName").textbox('getValue');
-		var merchantReturnPhone = $("#editMerchantReturnPhone").textbox('getValue');
-		var merchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue');
+		var merchantReturnAddress = $("#editMerchantReturnAddress").textbox('getValue').trim();//商家退货地址
+		var merchantReturnName = $("#editMerchantReturnName").textbox('getValue').trim();
+		var merchantReturnPhone = $("#editMerchantReturnPhone").textbox('getValue').trim();
+		var merchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue').trim();
 		
 		if(null ==merchantReturnAddress || merchantReturnAddress.length==0){ 
 	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
 	    	return;
 	    }
-		if(!/^[\u4e00-\u9fa5]{1,80}$/.test(merchantReturnAddress)){ 
+		if(!is_forbid(merchantReturnAddress)){
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址含有非法字符！",'warning');
+			return;
+		}
+		if(merchantReturnAddress.length>80){ 
 	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
 	    	return;
 	    }
@@ -415,7 +428,7 @@ $(function(){
 	    }
 		 
 		if(!/^[\u4e00-\u9fa5]{1,12}$/.test(merchantReturnName)){ 
-	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名必须是中文且长度不能超过12！",'warning');
 	    	return;
 	    }
 		if(null ==merchantReturnPhone || merchantReturnPhone.length==0){ 
@@ -578,3 +591,35 @@ function loadDirect(provinceId,cityId){
 function regExp_pattern(str,pattern){  
 	   return pattern.test(str);  
 }  
+/**
+ * 检查是否含有非法字符
+ * @param temp_str
+ * @returns {Boolean}
+ */
+function is_forbid(temp_str){
+    temp_str = temp_str.replace(/(^\s*)|(\s*$)/g, "");
+//	temp_str = temp_str.replace('--',"@");
+	temp_str = temp_str.replace('/',"@");
+	temp_str = temp_str.replace('+',"@");
+	temp_str = temp_str.replace('\'',"@");
+	temp_str = temp_str.replace('\\',"@");
+	temp_str = temp_str.replace('$',"@");
+	temp_str = temp_str.replace('^',"@");
+//	temp_str = temp_str.replace('.',"@");
+	temp_str = temp_str.replace(';',"@");
+	temp_str = temp_str.replace('<',"@");
+	temp_str = temp_str.replace('>',"@");
+	temp_str = temp_str.replace('"',"@");
+	temp_str = temp_str.replace('=',"@");
+	temp_str = temp_str.replace('{',"@");
+	temp_str = temp_str.replace('}',"@");
+	temp_str = temp_str.replace('!',"@");
+	var forbid_str = new String('@,%,~,&');
+	var forbid_array = new Array();
+	forbid_array = forbid_str.split(',');
+	for(i=0;i<forbid_array.length;i++){
+		if(temp_str.search(new RegExp(forbid_array[i])) != -1)
+		return false;
+	}
+	return true;
+}
