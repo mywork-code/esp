@@ -116,7 +116,7 @@ public class AwardActivityInfoService {
             vo.setActivityName(ai.getActivityName());
             vo.setaStartDate(DateFormatUtil.datetime2String(ai.getaStartDate()));
             vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
-            vo.setRebate(NumberUtils.multiply100(ai.getRebate())+"");
+            vo.setRebate(ai.getRebate().doubleValue()*100+"");
             vo.setUpdateDate(DateFormatUtil.datetime2String(ai.getUpdateDate()));
             result.add(vo);
         }
