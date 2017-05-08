@@ -1,5 +1,18 @@
 package com.apass.esp.service.activity;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
@@ -12,19 +25,8 @@ import com.apass.esp.mapper.AwardBindRelMapper;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.utils.BeanUtils;
-import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.utils.BaseConstants;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class AwardDetailService {
@@ -105,6 +107,7 @@ public class AwardDetailService {
 	 * @param awardDetailDto
 	 * @return
 	 */
+    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
 	public int addAwardDetail(AwardDetailDto awardDetailDto) {
 		AwardDetail awardDetail = new AwardDetail();
 		BeanUtils.copyProperties(awardDetail, awardDetailDto);
@@ -138,6 +141,7 @@ public class AwardDetailService {
 	 * @param awardDetailDto
 	 * @return
 	 */
+    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
 	public int updateAwardDetail(AwardDetailDto awardDetailDto) {
 		AwardDetail awardDetail = new AwardDetail();
 		BeanUtils.copyProperties(awardDetail, awardDetailDto);
