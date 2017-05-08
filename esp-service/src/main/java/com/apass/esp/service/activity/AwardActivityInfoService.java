@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.common.model.QueryParams;
@@ -59,7 +58,7 @@ public class AwardActivityInfoService {
     /**
      * 活动设置无效
      */
-    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
+    @Transactional(rollbackFor=Exception.class) 
     public void updateUneffectiveActivity(Long activityId, String updateBy) {
         AwardActivityInfo entity = new AwardActivityInfo();
         entity.setUpdateDate(new Date());
@@ -96,7 +95,7 @@ public class AwardActivityInfoService {
      * @param dto
      * @return
      */
-    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
+    @Transactional(rollbackFor=Exception.class) 
     public Integer editActivity(String id,String rebate,String endDate) {
         AwardActivityInfo awardActivityInfo = new AwardActivityInfo();
         awardActivityInfo.setaEndDate(DateFormatUtil.string2date(endDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS));

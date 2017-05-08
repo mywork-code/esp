@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
@@ -107,7 +106,7 @@ public class AwardDetailService {
 	 * @param awardDetailDto
 	 * @return
 	 */
-    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
+    @Transactional(rollbackFor=Exception.class) 
 	public int addAwardDetail(AwardDetailDto awardDetailDto) {
 		AwardDetail awardDetail = new AwardDetail();
 		BeanUtils.copyProperties(awardDetail, awardDetailDto);
@@ -141,7 +140,7 @@ public class AwardDetailService {
 	 * @param awardDetailDto
 	 * @return
 	 */
-    @Transactional(propagation=Propagation.REQUIRED,noRollbackFor=Exception.class,readOnly=true) 
+    @Transactional(rollbackFor=Exception.class) 
 	public int updateAwardDetail(AwardDetailDto awardDetailDto) {
 		AwardDetail awardDetail = new AwardDetail();
 		BeanUtils.copyProperties(awardDetail, awardDetailDto);
