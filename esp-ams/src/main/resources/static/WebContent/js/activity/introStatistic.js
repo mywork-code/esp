@@ -12,7 +12,7 @@ $(function(){
         toolbar : '#tb',
         columns :[[
             {
-                title : '邀请人',
+                title : '全部',
                 field : 'mobile',
                 width : 150,
                 align : 'center'

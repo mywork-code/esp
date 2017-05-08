@@ -193,7 +193,6 @@ $(function() {
     });
     
 	$.checkOne = function(id) {
-		debugger;
 		var arr = new Array();
 		arr[0]=id;
 		activityInfoinsert(arr,"商品单个设置活动");
