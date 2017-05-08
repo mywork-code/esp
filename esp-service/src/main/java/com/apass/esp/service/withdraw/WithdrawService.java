@@ -1,14 +1,11 @@
 package com.apass.esp.service.withdraw;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +108,7 @@ public class WithdrawService {
      * @return
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor=Exception.class) 
     public Integer confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
         AwardDetail awardDetail = new AwardDetail();
         awardDetail.setAmount(BigDecimal.valueOf(Long.valueOf(amount)));
