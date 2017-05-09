@@ -103,8 +103,6 @@ $(function(){
             return;
         }
         if(startDate!=null && startDate!=''&&endDate!=null && endDate!=''){
-        	debugger;
-        	alert(new Date().Format("yyyy-MM-dd hh:mm:ss"));
     		if(startDate>endDate){
     			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
     			$('#startDate').datetimebox('setValue','');
