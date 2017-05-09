@@ -47,7 +47,7 @@ public class ActivityRandomController {
     public Response random(HttpServletResponse response,@PathVariable("randomFlage") String randomFlage) { 
     	ServletOutputStream output = null;
     try {
-        String random = RandomUtils.getRandom(4);
+    	String random = RandomUtils.getRandom(4);
         byte[] image = ImageUtils.getRandomImgage(random);
         Map<String, String> paramMap2 = Maps.newHashMap();
         paramMap2.put("value", random);

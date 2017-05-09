@@ -1,5 +1,7 @@
 package com.apass.esp.web.activity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,17 +98,18 @@ public class RegisterInfoController {
 			
 			Pattern p = Pattern.compile("^1[0-9]{10}$");
 			Matcher m = p.matcher(mobile2);
-			Pattern p2 = Pattern.compile("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$");
-			Matcher m2 = p2.matcher(identityNo);
+//			Pattern p2 = Pattern.compile("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$");
+//			Matcher m2 = p2.matcher(identityNo);
 			if (StringUtils.isAnyBlank(mobile2)) {
 				return Response.fail("手机号不能为空");
 			}else if(!m.matches()){
 				return Response.fail("手机号格式不正确,请重新输入");
 			}else if(StringUtils.isAnyBlank(identityNo)){
 				return Response.fail("身份证号不能为空");
-			}else if(!m2.matches()){
-				return Response.fail("身份证号格式不正确,请重新输入！");
 			}
+//			else if(!m2.matches()){
+//				return Response.fail("身份证号格式不正确,请重新输入！");
+//			}
 			Map<String,Object> respMap=new HashMap<String,Object>();
 			try {
 				Response resp=registerInfoService.isWeChatUser(mobile2);
@@ -116,7 +119,8 @@ public class RegisterInfoController {
 					if(identityNo.equals(identityNoReturn)){
 						respMap.put("identityFalge", "same");
 					}else{
-						respMap.put("identityFalge", "different");
+//						respMap.put("identityFalge", "different");
+						return Response.fail("手机号"+mobile+"在微信公众号的注册信息与所输入的身份证号不符");
 					}
 					return Response.success("身份证号验证成功！",respMap);
 				}
@@ -124,7 +128,7 @@ public class RegisterInfoController {
 				logger.error("身份证号验证失败", e);
 				return Response.fail("身份证号验证失败!");
 			}
-			return Response.fail("身份证号验证失败！");
+			return Response.fail("手机号"+mobile+"在微信公众号的注册信息与所输入的身份证号不符");
 		}
 	
     /**
@@ -149,8 +153,13 @@ public class RegisterInfoController {
 			return Response.fail("手机号格式不正确,请重新输入！");
 		}
 		try {
-			mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
-			return Response.success("验证码发送成功,请注意查收");
+		    Boolean Flage=registerInfoService.isSendMes(smsType, mobile2);
+			if(Flage){
+				mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
+				return Response.success("验证码发送成功,请注意查收");
+			}else{
+				return Response.fail("短信发送过于频繁，请稍后再试！");
+			}
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
 			return Response.fail("网络异常,发送验证码失败,请稍后再试");
@@ -224,6 +233,14 @@ public class RegisterInfoController {
     					if(null==aInfoVo){
     						return Response.fail("绑定关系失败,无有效活动！");
     					}
+						SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+						Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
+						Date nowtime=new Date();
+						int result=nowtime.compareTo(aStartDate);
+						if(result<0){
+							return Response.fail("绑定关系失败,活动还未开始！");
+						}
+    						
     			        AwardBindRel aRel=new AwardBindRel();
         				aRel.setActivityId(aInfoVo.getId());
         				aRel.setUserId(Long.parseLong(InviterId));
@@ -235,7 +252,7 @@ public class RegisterInfoController {
         				aRel.setUpdateDate(new Date());
         				awardBindRelService.insertAwardBindRel(aRel);
     				}if(abrel==1){
-    					return Response.success("校验成功！", "已被邀请！");
+    					return Response.fail("校验失败，您已与其他用户绑定过关系!");
     				}
     				respMap.put("isAppUser", "old");
     			}else if("new".equals(falge)){
@@ -288,8 +305,17 @@ public class RegisterInfoController {
 	        	if("1".equals(resp.getStatus())){
 	        		ActivityName activityName=ActivityName.INTRO;//获取活动名称
  			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
-        	
- 			        
+	 			   	if(null==aInfoVo){
+						return Response.fail("绑定关系失败,无有效活动！");
+					}
+					SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+					Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
+					Date nowtime=new Date();
+					int result=nowtime.compareTo(aStartDate);
+					if(result<0){
+						return Response.fail("绑定关系失败,活动还未开始！");
+					}
+					
  			        Map<String,Object> rrse=(Map<String, Object>) resp.getData();
         			AwardBindRel aRel=new AwardBindRel();
     				aRel.setActivityId(aInfoVo.getId());
@@ -334,6 +360,29 @@ public class RegisterInfoController {
 			logger.error("获取邀请人的信息失败！", e);
 			return Response.fail("获取邀请人的信息失败!");
 		}
+	}
+	
+	/**
+	 * 获取有效活动开始时间
+	 */
+	@RequestMapping(value = "/activityTime",method = RequestMethod.GET)
+	public Response getActivityTIme() {
+		ActivityName activityName=ActivityName.INTRO;//获取活动名称
+	        try {
+				AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
+				String aStartTime=aInfoVo.getaStartDate();
+				SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+				long startTime=sdf.parse(aStartTime).getTime();
+				Map<String,Object> result=new HashMap<String,Object>();
+				result.put("startTime", startTime);
+				return Response.success("获取有效活动开始时间成功！",result);
+			} catch (BusinessException e) {
+				logger.error("获取有效活动开始时间失败！", e);
+				return Response.fail("获取有效活动开始时间失败!");
+			}catch (ParseException e) {
+				logger.error("获取有效活动开始时间失败！", e);
+				return Response.fail("获取有效活动开始时间失败!");
+			}
 	}
 	
 }
