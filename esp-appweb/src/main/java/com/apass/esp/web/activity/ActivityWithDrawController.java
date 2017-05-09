@@ -104,7 +104,7 @@ public class ActivityWithDrawController {
 		String s  = GsonUtils.toJson(res.getData());
 		Map <String,Object> m =GsonUtils.convert(s);
 		if(!cardBank.equals(m.get("dictName"))){
-			return Response.fail("对不起,该银行卡与输入的卡号不匹配");
+			return Response.fail("卡号与所选银行不匹配!");
 		}
 
 		Response response1 = awardActivityInfoService.latestSignature(paramMap);
@@ -214,6 +214,7 @@ public class ActivityWithDrawController {
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("identityNo", result.get("identityNo"));
 		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("repaymentDate", result.get("repaymentDate"));
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {
 			return res1;
@@ -221,7 +222,7 @@ public class ActivityWithDrawController {
 			String s  = GsonUtils.toJson(res1.getData());
 			Map <String,Object> m =GsonUtils.convert(s);
 			if(!cardBank.equals(m.get("dictName"))){
-				return Response.fail("对不起,该银行卡与输入的卡号不匹配");
+				return Response.fail("卡号与所选银行不匹配!");
 			}
 			Response res = awardActivityInfoService.initContract(paramMap);
 			if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
