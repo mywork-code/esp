@@ -599,35 +599,3 @@ function loadDirect(provinceId,cityId){
 function regExp_pattern(str,pattern){  
 	   return pattern.test(str);  
 }  
-/**
- * 检查是否含有非法字符
- * @param temp_str
- * @returns {Boolean}
- */
-function is_forbid(temp_str){
-    temp_str = temp_str.replace(/(^\s*)|(\s*$)/g, "");
-//	temp_str = temp_str.replace('--',"@");
-	temp_str = temp_str.replace('/',"@");
-	temp_str = temp_str.replace('+',"@");
-	temp_str = temp_str.replace('\'',"@");
-	temp_str = temp_str.replace('\\',"@");
-	temp_str = temp_str.replace('$',"@");
-	temp_str = temp_str.replace('^',"@");
-//	temp_str = temp_str.replace('.',"@");
-	temp_str = temp_str.replace(';',"@");
-	temp_str = temp_str.replace('<',"@");
-	temp_str = temp_str.replace('>',"@");
-	temp_str = temp_str.replace('"',"@");
-	temp_str = temp_str.replace('=',"@");
-	temp_str = temp_str.replace('{',"@");
-	temp_str = temp_str.replace('}',"@");
-	temp_str = temp_str.replace('!',"@");
-	var forbid_str = new String('@,%,~,&');
-	var forbid_array = new Array();
-	forbid_array = forbid_str.split(',');
-	for(i=0;i<forbid_array.length;i++){
-		if(temp_str.search(new RegExp(forbid_array[i])) != -1)
-		return false;
-	}
-	return true;
-}
