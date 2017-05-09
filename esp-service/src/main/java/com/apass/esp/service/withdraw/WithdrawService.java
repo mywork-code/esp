@@ -77,6 +77,7 @@ public class WithdrawService {
             paramMap.put("page","0");//未绑卡
             paramMap.put("mobile", result.get("mobile"));//手机号
             paramMap.put("identityNo", result.get("identityNo"));//身份证号码
+            paramMap.put("customerStatus", result.get("customerStatus"));//客户状态
             paramMap.put("identityExpires", result.get("identityExpires"));//身份证有效期
         }
         
