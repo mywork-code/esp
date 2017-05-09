@@ -203,16 +203,20 @@ $(function(){
 	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
 	    	return;
 	    }
-		if(merchantReturnAddress.length>80){ 
-	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
+		if(!is_forbid(merchantReturnAddress)){
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址含有非法字符！",'warning');
+			return;
+		}
+		if(merchantReturnAddress.length>40){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过40！",'warning');
 	    	return;
 	    }
 		if(null ==merchantReturnName || merchantReturnName.length==0){ 
 	    	$.messager.alert("<span style='color: black;'>提示</span>","收货人姓名不能为空！",'info');
 	    	return;
 	    }
-		if(merchantReturnName.length>12){ 
-	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过12！",'warning');
+		if(merchantReturnName.length>6){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过6！",'warning');
 	    	return;
 	    }
 		if(null ==merchantReturnPhone || merchantReturnPhone.length==0){ 
@@ -427,8 +431,12 @@ $(function(){
 	    	return;
 	    }
 		 
-		if(!/^[\u4e00-\u9fa5]{1,12}$/.test(merchantReturnName)){ 
-	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名必须是中文且长度不能超过12！",'warning');
+//		if(!/^[\u4e00-\u9fa5]{1,12}$/.test(merchantReturnName)){ 
+//	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名必须是中文且长度不能超过12！",'warning');
+//	    	return;
+//	    }
+		if(merchantReturnName.length>6){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名长度不能超过6！",'warning');
 	    	return;
 	    }
 		if(null ==merchantReturnPhone || merchantReturnPhone.length==0){ 
