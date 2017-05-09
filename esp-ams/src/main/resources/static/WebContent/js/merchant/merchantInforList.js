@@ -418,8 +418,8 @@ $(function(){
 	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址含有非法字符！",'warning');
 			return;
 		}
-		if(merchantReturnAddress.length>80){ 
-	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过80！",'warning');
+		if(merchantReturnAddress.length>40){ 
+	    	$.messager.alert("<span style='color: black;'>警告</span>","商户退货地址长度不能超过40！",'warning');
 	    	return;
 	    }
 		if(null ==merchantReturnName || merchantReturnName.length==0){ 

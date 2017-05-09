@@ -33,7 +33,8 @@ public class ResponsePageIntroStaticBody<T> {
     
     private BigDecimal bankAmtSum;//银行支付额度
     private BigDecimal creditAmtSum;//信用支付额度
-    private BigDecimal rebateAmtSum;// 返现金额 
+    private BigDecimal rebateAmtSum;// 返现金额
+    private Integer allCount;
 
     /**
      * Getter method for property <tt>total</tt>.
@@ -130,7 +131,14 @@ public class ResponsePageIntroStaticBody<T> {
     public void setRebateAmtSum(BigDecimal rebateAmtSum) {
         this.rebateAmtSum = rebateAmtSum;
     }
-    
+
+    public Integer getAllCount() {
+        return allCount;
+    }
+
+    public void setAllCount(Integer allCount) {
+        this.allCount = allCount;
+    }
     
 
 }

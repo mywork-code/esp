@@ -76,8 +76,8 @@ public class AwardActivityInfoService {
     public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
         AwardActivityInfo entity = new AwardActivityInfo();
         entity.setActivityName(AwardActivity.ActivityName.INTRO.getValue());
-        entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate()));
-        entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate()));
+        entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         entity.setRebate(NumberUtils.divide100(dto.getRebate()));
         entity.setType((byte) AwardActivity.ACTIVITY_TYPE.PERSONAL.getCode());
         entity.setStatus((byte) AwardActivity.ACTIVITY_STATUS.EFFECTIVE.getCode());
