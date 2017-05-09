@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
@@ -87,10 +88,10 @@ public class WithdrawService {
      * @param awardDetails
      * @return
      */
-    public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
+    private BigDecimal getTotalCount(List<AwardDetail> awardDetails){
         BigDecimal totalCount = BigDecimal.ZERO;
         for (AwardDetail awardDetail : awardDetails) {
-            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
+            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
                 totalCount = totalCount.add(awardDetail.getAmount());
             }else if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
                 totalCount = totalCount.subtract(awardDetail.getAmount());
@@ -109,7 +110,8 @@ public class WithdrawService {
      * @throws BusinessException 
      */
     @Transactional(rollbackFor=Exception.class) 
-    public Integer confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
+    public Map<String,Object> confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
+        Map<String,Object> result = Maps.newHashMap();
         AwardDetail awardDetail = new AwardDetail();
         awardDetail.setAmount(BigDecimal.valueOf(Long.valueOf(amount)));
         awardDetail.setUserId(Long.valueOf(userId));
@@ -131,8 +133,17 @@ public class WithdrawService {
         awardDetail.setTaxAmount(taxAmount);
         
         int count = awardDetailMapper.insert(awardDetail);
+        if(count == 1){
+            result.put("cardBank", cardBank);
+            result.put("amount", BigDecimal.valueOf(Long.valueOf(amount)).subtract(taxAmount));
+            result.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
+            LOGGER.info("提现成功，返回数据：{}",result);
+         }else{
+             LOGGER.info("提现失败，返回数据：{}",result);
+             throw new BusinessException("提现失败");
+         }        
         
-        return count;
+        return result;
     }
 
     /**
@@ -146,15 +157,20 @@ public class WithdrawService {
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetailWithDate(Long.valueOf(userId),
                 DateFormatUtil.dateToString(beginMonthDay, DateFormatUtil.YYYY_MM_DD_HH_MM_SS),DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         LOGGER.info("用户:{}本月提现详情:{}",userId,GsonUtils.toJson(awardDetails));
-        BigDecimal totolAmount = BigDecimal.valueOf(Long.valueOf(amount));
+        BigDecimal totolAmount = BigDecimal.ZERO;
         BigDecimal taxAmount = BigDecimal.ZERO;
         for (AwardDetail awardDetail : awardDetails) {
             if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
                 totolAmount = totolAmount.add(awardDetail.getAmount());
             }
         }
-        if(totolAmount.compareTo(BigDecimal.valueOf(800))>0){
-            taxAmount = (totolAmount.subtract(BigDecimal.valueOf(800))).multiply(BigDecimal.valueOf(0.2));
+        if(totolAmount.compareTo(BigDecimal.valueOf(800))<0){
+            totolAmount = totolAmount.add(BigDecimal.valueOf(Long.valueOf(amount)));
+            if(totolAmount.compareTo(BigDecimal.valueOf(800))>0){
+                taxAmount = totolAmount.subtract(BigDecimal.valueOf(800)).multiply(BigDecimal.valueOf(0.2));
+            }
+        }else{
+            taxAmount = BigDecimal.valueOf(Long.valueOf(amount)).multiply(BigDecimal.valueOf(0.2));
         }
         LOGGER.info("用户:{}本月提现总额:{}，需缴个税：{}",userId,totolAmount,taxAmount);
         return taxAmount;

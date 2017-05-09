@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
+import com.apass.esp.domain.enums.ActivityInfoStatus;
+import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.mapper.AwardBindRelMapper;
@@ -43,7 +45,7 @@ public class CoffersBaseService {
     private AwardDetailMapper awardDetailMapper;
     
     /**
-     * 去的订单
+     * 我的金库
      * @param userId:用户Id
      * @return
      */
@@ -70,9 +72,9 @@ public class CoffersBaseService {
                awardDetailVo.setArrivedDate(DateFormatUtil.dateToString(awardDetail.getArrivedDate()));
                awardDetailVo.setCreateDate(DateFormatUtil.dateToString(awardDetail.getCreateDate()));
                awardDetailVos.add(awardDetailVo);
-               if(awardDetail.getType() == 0){
+               if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
                    totalCoun = totalCoun.add(awardDetail.getAmount());
-               }else if(awardDetail.getType() == 1){
+               }else if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
                    totalCoun = totalCoun.subtract(awardDetail.getAmount());
                }
            }

@@ -76,18 +76,9 @@ public class WithdrawController {
 	        }
 	        LOGGER.info("确认提现传参内容userId:{},amount:{},cardBank:{},cardNo:{}",userId,amount,cardBank,cardNo);
 	        
-	        int count = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
-	        if(count == 1){
-	            resultMap.put("cardBank", cardBank);
-	            resultMap.put("amount", amount);
-	            resultMap.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
-	            LOGGER.info("提现成功，返回数据：{}",resultMap);
-                    return Response.success("提现成功",resultMap);
-                 }else{
-                     LOGGER.info("提现成功，返回数据：{}",resultMap);
-                     return Response.fail("提现失败");
-                 }                  
-
+	        resultMap = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
+	        
+	        return Response.success("提现成功！", resultMap);
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
 	        return Response.fail(e.getMessage());
