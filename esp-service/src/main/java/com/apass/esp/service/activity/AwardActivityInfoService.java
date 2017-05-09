@@ -76,8 +76,8 @@ public class AwardActivityInfoService {
     public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
         AwardActivityInfo entity = new AwardActivityInfo();
         entity.setActivityName(AwardActivity.ActivityName.INTRO.getValue());
-        entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
-        entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        entity.setaStartDate(DateFormatUtil.string2date(dto.getStartDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        entity.setaEndDate(DateFormatUtil.string2date(dto.getEndDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         entity.setRebate(NumberUtils.divide100(dto.getRebate()));
         entity.setType((byte) AwardActivity.ACTIVITY_TYPE.PERSONAL.getCode());
         entity.setStatus((byte) AwardActivity.ACTIVITY_STATUS.EFFECTIVE.getCode());
@@ -184,6 +184,8 @@ public class AwardActivityInfoService {
 				return resultMap;
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
+			resultMap.put("customerStatus", customerInfo.getStatus());
+			resultMap.put("repaymentDate", customerInfo.getRepaymentDate());//还款日
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {

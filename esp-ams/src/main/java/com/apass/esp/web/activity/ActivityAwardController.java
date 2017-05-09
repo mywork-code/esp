@@ -15,15 +15,14 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.HttpWebUtils;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by jie.xu on 17/4/21.
@@ -75,7 +74,7 @@ public class ActivityAwardController {
         return Response.fail("操作失败...");
       }
     } else{
-      return Response.fail("已存在该活动配置信息...");
+      return Response.fail("已存在有效的活动配置信息...");
     }
   }
   /**
