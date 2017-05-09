@@ -17,6 +17,7 @@ import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RegExpUtils;
 
 @Controller
@@ -74,6 +75,7 @@ public class ActivityWithDrawController {
 		String realName = CommonUtils.getValue(paramMap, "realName");
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
+		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
 		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode)) {
 			return Response.fail("传入参数均不能为空");
 		}
@@ -98,6 +100,11 @@ public class ActivityWithDrawController {
 		Response res = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res.getStatus())) {
 			return res;
+		}
+		String s  = GsonUtils.toJson(res.getData());
+		Map <String,Object> m =GsonUtils.convert(s);
+		if(!cardBank.equals(m.get("dictName"))){
+			return Response.fail("对不起,该银行卡与输入的卡号不匹配");
 		}
 
 		Response response1 = awardActivityInfoService.latestSignature(paramMap);
@@ -140,7 +147,7 @@ public class ActivityWithDrawController {
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
 		}
-		if("front".equals(idCardType)){
+		if ("front".equals(idCardType)) {
 			if (!AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 				return Response.fail("对不起,该用户已绑定身份证");
 			}
@@ -186,7 +193,8 @@ public class ActivityWithDrawController {
 		String realName = CommonUtils.getValue(paramMap, "realName");
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank)) {
+		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode)) {
 			return Response.fail("参数值错误");
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
@@ -209,15 +217,21 @@ public class ActivityWithDrawController {
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {
 			return res1;
-		}
-		Response res = awardActivityInfoService.initContract(paramMap);
-		if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
-			paramMap.put("status", "0");// 没有签名
+		} else {
+			String s  = GsonUtils.toJson(res1.getData());
+			Map <String,Object> m =GsonUtils.convert(s);
+			if(!cardBank.equals(m.get("dictName"))){
+				return Response.fail("对不起,该银行卡与输入的卡号不匹配");
+			}
+			Response res = awardActivityInfoService.initContract(paramMap);
+			if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
+				paramMap.put("status", "0");// 没有签名
+				return Response.response("1", "请求数据成功", paramMap);
+			}
+			paramMap.put("status", "1");// 有签名
+			paramMap.put("sign", res.getData());
+			paramMap.put("customerEntity", res.getMsg());
 			return Response.response("1", "请求数据成功", paramMap);
 		}
-		paramMap.put("status", "1");// 有签名
-		paramMap.put("sign", res.getData());
-		paramMap.put("customerEntity", res.getMsg());
-		return Response.response("1", "请求数据成功", paramMap);
 	}
 }
