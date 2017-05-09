@@ -1,7 +1,9 @@
 package com.apass.esp.nothing;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -10,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,55 +112,56 @@ public class PayCallback {
 		}
 		// 返现活动存在
 		if (awardActivityInfoVo != null) {
-			OrderInfoEntity orderInfoEntity = null;
+			List<OrderInfoEntity> orderInfoEntityList = new ArrayList<OrderInfoEntity>();
 			Long userId = null;
 			try {
-				orderInfoEntity = orderService.selectByOrderId(orderId);
-				userId = orderInfoEntity.getUserId();
+				orderInfoEntityList = orderService.selectByMainOrderId(orderId);
 			} catch (BusinessException e) {
 				LOGGER.error("根据订单号和用户id查询订单信息", e);
-				LOGGER.error("selectByOrderId orderId{},userId{} error ", orderId, userId,e);
 				return;
 			}
-			if (orderInfoEntity != null) {// 订单存在
-				Date startDate = DateFormatUtil.string2date(awardActivityInfoVo.getaStartDate(), "yyyy-MM-dd HH:mm:ss");
-				Date endDate = DateFormatUtil.string2date(awardActivityInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
-				Date date = orderInfoEntity.getCreateDate();// 下单时间
-				LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
-						orderId, awardActivityInfoVo.getId(), startDate, endDate, date);
-				if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
-					AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId));
-					if (awardBindRel != null) {// 当前用户已经被邀请
-						AwardDetailDto awardDetailDto = new AwardDetailDto();
-						awardDetailDto.setActivityId(awardBindRel.getActivityId());
-						// 返点金额
-						String rebateString = awardActivityInfoVo.getRebate();
-						BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
-								.multiply(BigDecimal.valueOf(0.01));
-						BigDecimal rebateAmt = orderInfoEntity.getOrderAmt().multiply(rebate);
-						int rebateInt = rebateAmt.intValue();
-						// 返现金额小于1时 不返现
-						if (rebateInt == 0) {
+			if (CollectionUtils.isNotEmpty(orderInfoEntityList)) {// 订单存在
+				for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
+					userId = orderInfoEntity.getUserId();
+					Date startDate = DateFormatUtil.string2date(awardActivityInfoVo.getaStartDate(),
+							"yyyy-MM-dd HH:mm:ss");
+					Date endDate = DateFormatUtil.string2date(awardActivityInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
+					Date date = orderInfoEntity.getCreateDate();// 下单时间
+					LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
+							orderId, awardActivityInfoVo.getId(), startDate, endDate, date);
+					if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
+						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId));
+						if (awardBindRel != null) {// 当前用户已经被邀请
+							AwardDetailDto awardDetailDto = new AwardDetailDto();
+							awardDetailDto.setActivityId(awardBindRel.getActivityId());
+							// 返点金额
+							String rebateString = awardActivityInfoVo.getRebate();
+							BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
+									.multiply(BigDecimal.valueOf(0.01));
+							BigDecimal rebateAmt = orderInfoEntity.getOrderAmt().multiply(rebate);
+							int rebateInt = rebateAmt.intValue();
+							// 返现金额小于1时 不返现
+							if (rebateInt == 0) {
+								return;
+							}
+							awardDetailDto.setAmount(new BigDecimal(rebateInt));
+							awardDetailDto.setMainOrderId(orderId);
+							awardDetailDto.setCreateDate(new Date());
+							awardDetailDto.setUpdateDate(new Date());
+							// 处理中
+							awardDetailDto.setStatus((byte) AwardActivity.AWARD_STATUS.PROCESSING.getCode());
+							// 获得
+							awardDetailDto.setType((byte) AwardActivity.AWARD_TYPE.GAIN.getCode());
+							awardDetailDto.setUserId(awardBindRel.getUserId());
+							awardDetailService.addAwardDetail(awardDetailDto);
+							LOGGER.info(
+									"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
+									userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
+									awardActivityInfoVo.getRebate());
 							return;
 						}
-						awardDetailDto.setAmount(new BigDecimal(rebateInt));
-						awardDetailDto.setMainOrderId(orderId);
-						awardDetailDto.setCreateDate(new Date());
-						awardDetailDto.setUpdateDate(new Date());
-						// 处理中
-						awardDetailDto.setStatus((byte) AwardActivity.AWARD_STATUS.PROCESSING.getCode());
-						// 获得
-						awardDetailDto.setType((byte) AwardActivity.AWARD_TYPE.GAIN.getCode());
-						awardDetailDto.setUserId(awardBindRel.getUserId());
-						awardDetailService.addAwardDetail(awardDetailDto);
-						LOGGER.info(
-								"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
-								userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
-								awardActivityInfoVo.getRebate());
-						return;
 					}
 				}
-
 			}
 
 		}
