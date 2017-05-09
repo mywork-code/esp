@@ -184,6 +184,7 @@ public class AwardActivityInfoService {
 				return resultMap;
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
+			resultMap.put("customerStatus", customerInfo.getStatus());
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {
