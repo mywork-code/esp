@@ -149,7 +149,9 @@ public class ActivityWithDrawController {
 		}
 		if ("front".equals(idCardType)) {
 			if (!AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
-				return Response.fail("对不起,该用户已绑定身份证");
+				if(!"00".equals(result.get("customerStatus"))){
+					return Response.fail("对不起,该用户已绑定身份证");
+				}
 			}
 		}
 		paramMap.put("customerId", result.get("customerId"));
