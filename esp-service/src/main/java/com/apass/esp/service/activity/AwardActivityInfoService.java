@@ -185,6 +185,7 @@ public class AwardActivityInfoService {
 			}
 			resultMap.put("identityNo", customerInfo.getIdentityNo());
 			resultMap.put("customerStatus", customerInfo.getStatus());
+			resultMap.put("repaymentDate", customerInfo.getRepaymentDate());//还款日
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
 					customerInfo.getCardType(), customerInfo.getCardNo())) {

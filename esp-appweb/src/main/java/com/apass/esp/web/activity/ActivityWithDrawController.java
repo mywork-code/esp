@@ -214,6 +214,7 @@ public class ActivityWithDrawController {
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("identityNo", result.get("identityNo"));
 		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("repaymentDate", result.get("repaymentDate"));
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {
 			return res1;
