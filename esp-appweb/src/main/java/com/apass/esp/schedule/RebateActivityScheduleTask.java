@@ -76,7 +76,7 @@ public class RebateActivityScheduleTask {
 				map.put("refundType", "0");
 				RefundInfoEntity refundInfoEntity = orderRefundService.queryRefundInfoByOrderIdAndRefundType(map);
 				// 订单状态已完成且订单已完成37天 ，没有发生过退货行为 才能获得返点
-				Date newDate = DateFormatUtil.addDays(orderInfoEntity.getUpdateDate(), 37);
+				Date newDate = DateFormatUtil.addDays(orderInfoEntity.getLogisticsSignDate(), 37);
 				if ("D04".equals(orderInfoEntity.getStatus()) && newDate.before(date) && refundInfoEntity == null) {
 					// 更新状态
 					awardDetailDto.setUpdateDate(new Date());
