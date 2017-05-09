@@ -63,7 +63,7 @@ public class RegisterInfoController {
  		if (StringUtils.isAnyBlank(mobile2)) {
 			return Response.fail("手机号不能为空！");
 		}else if (!m.matches()) {
-			return Response.fail("手机号格式不正确！");
+			return Response.fail("手机号格式不正确,请重新输入！");
 		}
 		try {
 			Response resp=registerInfoService.isWeChatUser(mobile2);
@@ -101,11 +101,11 @@ public class RegisterInfoController {
 			if (StringUtils.isAnyBlank(mobile2)) {
 				return Response.fail("手机号不能为空");
 			}else if(!m.matches()){
-				return Response.fail("手机号格式不正确");
+				return Response.fail("手机号格式不正确,请重新输入");
 			}else if(StringUtils.isAnyBlank(identityNo)){
 				return Response.fail("身份证号不能为空");
 			}else if(!m2.matches()){
-				return Response.fail("身份证号格式不正确！");
+				return Response.fail("身份证号格式不正确,请重新输入！");
 			}
 			Map<String,Object> respMap=new HashMap<String,Object>();
 			try {
@@ -146,7 +146,7 @@ public class RegisterInfoController {
 		if (StringUtils.isAnyBlank(mobile2, smsType)) {
 			return Response.fail("验证码和手机号不能为空");
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确！");
+			return Response.fail("手机号格式不正确,请重新输入！");
 		}
 		try {
 			mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
@@ -180,7 +180,7 @@ public class RegisterInfoController {
 		}else if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确！");
+			return Response.fail("手机号格式不正确,请重新输入！");
 		}else if (StringUtils.isBlank( code)) {
 			return Response.fail("短信验证码不能为空");
 		}else if (StringUtils.isBlank( randomCode)) {
@@ -215,13 +215,15 @@ public class RegisterInfoController {
     			    	userFlage=InviterId.equals(rrse.get("userId").toString());
     			    }
     				if(userFlage){
-    					return Response.fail("校验失败,自己不能邀请自己！");
+    					return Response.fail("绑定关系失败,自己不能邀请自己！");
     				}
     				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
     				if(abrel==0){//没有被邀请
     			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
     			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
-    					
+    					if(null==aInfoVo){
+    						return Response.fail("绑定关系失败,无有效活动！");
+    					}
     			        AwardBindRel aRel=new AwardBindRel();
         				aRel.setActivityId(aInfoVo.getId());
         				aRel.setUserId(Long.parseLong(InviterId));
@@ -232,6 +234,8 @@ public class RegisterInfoController {
         				aRel.setCreateDate(new Date());
         				aRel.setUpdateDate(new Date());
         				awardBindRelService.insertAwardBindRel(aRel);
+    				}if(abrel==1){
+    					return Response.success("校验成功！", "已被邀请！");
     				}
     				respMap.put("isAppUser", "old");
     			}else if("new".equals(falge)){
@@ -267,7 +271,7 @@ public class RegisterInfoController {
 		if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确！");
+			return Response.fail("手机号格式不正确,请重新输入！");
 		}else if (StringUtils.isAnyBlank(password)) {
 			return Response.fail("密码不能为空");
 		}else if (password.length()<6){
@@ -284,7 +288,8 @@ public class RegisterInfoController {
 	        	if("1".equals(resp.getStatus())){
 	        		ActivityName activityName=ActivityName.INTRO;//获取活动名称
  			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
-        			
+        	
+ 			        
  			        Map<String,Object> rrse=(Map<String, Object>) resp.getData();
         			AwardBindRel aRel=new AwardBindRel();
     				aRel.setActivityId(aInfoVo.getId());
