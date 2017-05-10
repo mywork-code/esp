@@ -18,7 +18,7 @@ public class AwardDetail {
 
     private Byte status;
 
-    private String mainOrderId;
+    private String orderId;
 
     private Date arrivedDate;
 
@@ -86,6 +86,13 @@ public class AwardDetail {
         this.status = status;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 
     public Date getArrivedDate() {
         return arrivedDate;
@@ -126,12 +133,4 @@ public class AwardDetail {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
-
-	public String getMainOrderId() {
-		return mainOrderId;
-	}
-
-	public void setMainOrderId(String mainOrderId) {
-		this.mainOrderId = mainOrderId;
-	}
 }

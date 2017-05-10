@@ -1,20 +1,5 @@
 package com.apass.esp.schedule;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
@@ -24,6 +9,19 @@ import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 邀请人获得返点结算 Task
@@ -34,7 +32,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class RebateActivityScheduleTask {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RebateActivityScheduleTask.class);
 
@@ -53,6 +51,8 @@ public class RebateActivityScheduleTask {
 	/**
 	 * 5分钟执行一次 测试
 	 */
+
+//	@Scheduled(cron = "0 0 1 * * ?")
 	@Scheduled(cron = "0 0/5 * * * *")
 	public void validateActivityEndtime() {
 		try {
@@ -65,7 +65,7 @@ public class RebateActivityScheduleTask {
 				return;
 			}
 			for (AwardDetailDto awardDetailDto : list) {
-				String orderId = awardDetailDto.getMainOrderId();
+				String orderId = awardDetailDto.getOrderId();
 				OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(orderId);
 				if (orderInfoEntity == null || orderInfoEntity.getLogisticsSignDate() == null) {
 					return;
@@ -83,12 +83,11 @@ public class RebateActivityScheduleTask {
 					try {
 						awardDetailService.updateAwardDetail(awardDetailDto);
 					} catch (Exception e) {
-						LOGGER.error("orderId {} 更新 返现获得 失败=====", awardDetailDto.getMainOrderId(), e);
+						LOGGER.error("orderId {} 更新 返现获得 失败=====", orderId, e);
 					}
-					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}", awardDetailDto.getMainOrderId(),
+					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}", orderId,
 							awardDetailDto.getAmount());
 				}
-
 			}
 			LOGGER.info("邀请人获得返点结算定时任务结束");
 		} catch (Exception e) {

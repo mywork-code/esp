@@ -1,18 +1,5 @@
 package com.apass.esp.service.withdraw;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
@@ -22,6 +9,17 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -114,6 +112,16 @@ public class WithdrawService {
     @Transactional(rollbackFor=Exception.class) 
     public Map<String,Object> confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
         Map<String,Object> result = Maps.newHashMap();
+        //查询全部可提金额金额
+        List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+        BigDecimal totalCount = BigDecimal.ZERO;
+        if(awardDetails != null && awardDetails.size()>0){
+            totalCount = getTotalCount(awardDetails);
+            if(totalCount.compareTo(BigDecimal.valueOf(Long.valueOf(amount))) < 0){
+                throw new BusinessException("提现金额大于最大可提现金额！请重新输入提现金额。");
+            }
+        }
+
         AwardDetail awardDetail = new AwardDetail();
         awardDetail.setAmount(BigDecimal.valueOf(Long.valueOf(amount)));
         awardDetail.setUserId(Long.valueOf(userId));
@@ -123,7 +131,7 @@ public class WithdrawService {
         awardDetail.setActivityId(awardActivityInfoVo.getId());
         awardDetail.setType((byte) AwardActivity.AWARD_TYPE.WITHDRAW.getCode());
         awardDetail.setStatus((byte) AwardActivity.AWARD_STATUS.PROCESSING.getCode());
-        awardDetail.setMainOrderId(null);
+        awardDetail.setOrderId(null);
         awardDetail.setArrivedDate(null);
         awardDetail.setCardBank(cardBank);
         awardDetail.setCardNo(cardNo);
