@@ -1257,37 +1257,6 @@ $(function() {
 	
 	
 });
-//控制保留几位有效小数的js函数
-//ValueString：’数字字符串’  nAfterDotNum：保留小数位数
-function FormatAfterDotNumber( ValueString, nAfterDotNum ){
-    var resultStr,nTen;
-    ValueString = ""+ValueString+"";
-    strLen = ValueString.length;
-    dotPos = ValueString.indexOf(".",0);
-    if (dotPos == -1) {
- 		resultStr = ValueString+".";
- 		for (i=0;i<nAfterDotNum ;i++){
-  		resultStr = resultStr+"0";
-        }
-	   return resultStr;
-	}else {
-  		if ((strLen - dotPos - 1) >= nAfterDotNum ){
-	 		nAfter = dotPos + nAfterDotNum  + 1;
-	  		nTen =1;
-		    for(j=0;j<nAfterDotNum ;j++){
-		    	nTen = nTen*10;
-		    }
-		    resultStr = Math.round(parseFloat(ValueString)*nTen)/nTen;
-		    return resultStr;
-		 } else{
-		     resultStr = ValueString;
-		     for (i=0;i<(nAfterDotNum  - strLen + dotPos + 1);i++){
-		    	 resultStr = resultStr+"0";
-			     }
-			     return resultStr;
-			 }
-	}
-} 
 
 //往string中的某个位置插入内容
 String.prototype.splice = function(idx, rem, str) {

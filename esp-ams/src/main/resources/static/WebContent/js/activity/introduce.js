@@ -36,7 +36,9 @@ $(function(){
                 width : 120,
                 align : 'center',
                 formatter : function(value, row, index) {
-                	return value+"%";
+                	if(value != null && value != ''){
+                		return FormatAfterDotNumber(value,2)+"%";
+                	}
                 }
             },
             {
@@ -63,6 +65,7 @@ $(function(){
                 type : "get",
                 dataType : "json",
                 success : function(data) {
+                	debugger;
                 	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
