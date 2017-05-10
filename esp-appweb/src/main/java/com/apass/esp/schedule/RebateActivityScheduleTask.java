@@ -51,9 +51,9 @@ public class RebateActivityScheduleTask {
 	public OrderRefundService orderRefundService;
 
 	/**
-	 * 每天凌晨一点执行,邀请人获得返点结算
+	 * 5分钟执行一次 测试
 	 */
-	@Scheduled(cron = "0 0 1 * * ?")
+	@Scheduled(cron = "0 0/5 * * * *")
 	public void validateActivityEndtime() {
 		try {
 			LOGGER.info("邀请人获得返点结算定时任务开始");
