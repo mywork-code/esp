@@ -207,16 +207,7 @@ public class TxnInfoEntity {
 	}
 
 	public void setTxnType(String txnType) {
-	    String content = "";
-	    TxnTypeCode[] txnTypeCodes = TxnTypeCode.values();
-	    for (TxnTypeCode txnTypeCode : txnTypeCodes) {
-	        String code = txnTypeCode.getCode();
-            if(txnType.equals(code)){
-                content = txnTypeCode.getMessage();
-            }
-        }
-	    
-		this.txnType = content;
+	    this.txnType = txnType;
 	}
 
 	public Date getTxnDate() {
