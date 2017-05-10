@@ -128,10 +128,10 @@ public class PayCallback {
 					LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
 							mainOrderId, awardActivityInfoVo.getId(), startDate, endDate, date);
 					if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
-						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId));
+						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId),Integer.parseInt(String.valueOf(awardActivityInfoVo.getId())));
 						if (awardBindRel != null) {// 当前用户已经被邀请
 							AwardDetailDto awardDetailDto = new AwardDetailDto();
-							awardDetailDto.setActivityId(awardBindRel.getActivityId());
+							awardDetailDto.setActivityId(awardActivityInfoVo.getId());
 							// 返点金额
 							String rebateString = awardActivityInfoVo.getRebate();
 							BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
