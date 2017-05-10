@@ -1,5 +1,6 @@
 package com.apass.esp.service.withdraw;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
@@ -9,6 +10,8 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,17 @@ public class WithdrawService {
             LOGGER.info("该用户不存在,userId:{}",userId);
             throw new RuntimeException("对不起,该用户不存在!");
         }
+        //查询全部可提金额金额,已经提现金额
+        List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+        BigDecimal totalCount = BigDecimal.ZERO;//最大 可提现
+        BigDecimal haveCount = BigDecimal.ZERO;//已提现
+        if(awardDetails != null && awardDetails.size()>0){
+            totalCount = getTotalCount(awardDetails);
+            haveCount = getHaveWithdrawCount(awardDetails);
+        }
+        paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
+        paramMap.put("haveCount",haveCount);//赏金 ，已提现金额
+        
         if(AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))){
             paramMap.put("page", "1");//已绑卡
             String cardNo = (String)result.get("cardNo");
@@ -63,18 +77,6 @@ public class WithdrawService {
             paramMap.put("cardNoLastFour",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号后4位
             paramMap.put("cardBank",result.get("cardBank"));//银行名称
             paramMap.put("bankCode",result.get("bankCode"));//银行code
-            
-            //查询全部可提金额金额,已经提现金额
-            List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
-            BigDecimal totalCount = BigDecimal.ZERO;//最大 可提现
-            BigDecimal haveCount = BigDecimal.ZERO;//已提现
-            if(awardDetails != null && awardDetails.size()>0){
-                totalCount = getTotalCount(awardDetails);
-                haveCount = getHaveWithdrawCount(awardDetails);
-            }
-            paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
-            paramMap.put("haveCount",haveCount);//赏金 ，已提现金额
-            
         }else{
             paramMap.put("page","0");//未绑卡
             paramMap.put("mobile", result.get("mobile"));//手机号
@@ -126,6 +128,17 @@ public class WithdrawService {
     @Transactional(rollbackFor=Exception.class) 
     public Map<String,Object> confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
         Map<String,Object> result = Maps.newHashMap();
+        String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.CONFIRMWITHDRAW.getCode() + "_" + userId;
+        Map<String, Object> resultBind = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
+        LOGGER.info("是否绑卡查询结果：{}",GsonUtils.toJson(result));
+        if (resultBind == null || resultBind.size() == 0) {
+            LOGGER.info("该用户不存在,userId:{}",userId);
+            throw new RuntimeException("对不起,该用户不存在!");
+        }
+        if (!"0".equals(result.get("status"))) {
+            throw new RuntimeException("对不起,该用户未绑定银行卡，或身份信息不存在。");
+        }
+        
         //查询全部可提金额金额
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
         BigDecimal totalCount = BigDecimal.ZERO;
