@@ -226,21 +226,24 @@ public class RegisterInfoController {
     				if(userFlage){
     					return Response.fail("绑定关系失败,自己不能邀请自己！");
     				}
-    				Integer abrel=awardBindRelService.selectCountByInviteMobile(mobile2);//判断是否已经被邀请
-    				if(abrel==0){//没有被邀请
-    			        ActivityName activityName=ActivityName.INTRO;//获取活动名称
-    			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
-    					if(null==aInfoVo){
-    						return Response.fail("绑定关系失败,无有效活动！");
-    					}
-						SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-						Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
-						Date nowtime=new Date();
-						int result=nowtime.compareTo(aStartDate);
-						if(result<0){
-							return Response.fail("绑定关系失败,活动还未开始！");
-						}
-    						
+    				
+    			    ActivityName activityName=ActivityName.INTRO;//获取活动名称
+			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
+					if(null==aInfoVo){
+						return Response.fail("绑定关系失败,无有效活动！");
+					}
+					SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+					Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
+					Date nowtime=new Date();
+					int result=nowtime.compareTo(aStartDate);
+					if(result<0){
+						return Response.fail("绑定关系失败,活动还未开始！");
+					}
+    				AwardBindRel abr=new AwardBindRel();
+    				abr.setInviteMobile(mobile2);
+    				abr.setActivityId(aInfoVo.getId());
+    				Integer abrel=awardBindRelService.selectByMobileAndActivityId(abr);//判断是否已经被邀请
+    				if(abrel==0){//当前活动下没有被邀请
     			        AwardBindRel aRel=new AwardBindRel();
         				aRel.setActivityId(aInfoVo.getId());
         				aRel.setUserId(Long.parseLong(InviterId));
@@ -251,8 +254,8 @@ public class RegisterInfoController {
         				aRel.setCreateDate(new Date());
         				aRel.setUpdateDate(new Date());
         				awardBindRelService.insertAwardBindRel(aRel);
-    				}if(abrel==1){
-    					return Response.fail("校验失败，您已与其他用户绑定过关系!");
+    				}else if(abrel==1){
+    					return Response.fail("校验失败，您在当前活动中已与其他用户绑定过关系!");
     				}
     				respMap.put("isAppUser", "old");
     			}else if("new".equals(falge)){
@@ -322,18 +325,25 @@ public class RegisterInfoController {
 					if(result<0){
 						return Response.fail("绑定关系失败,活动还未开始！");
 					}
-					
- 			        Map<String,Object> rrse=(Map<String, Object>) resp.getData();
-        			AwardBindRel aRel=new AwardBindRel();
-    				aRel.setActivityId(aInfoVo.getId());
-    				aRel.setUserId(Long.parseLong(InviterId));
-    				aRel.setMobile(rrse.get("inviteMobile").toString());
-    				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
-    				aRel.setInviteMobile(mobile2);
-    				aRel.setIsNew(new Byte("1"));//被邀请人是新用户
-    				aRel.setCreateDate(new Date());
-    				aRel.setUpdateDate(new Date());
-    				awardBindRelService.insertAwardBindRel(aRel);
+    				AwardBindRel abr=new AwardBindRel();
+    				abr.setInviteMobile(mobile2);
+    				abr.setActivityId(aInfoVo.getId());
+    				Integer abrel=awardBindRelService.selectByMobileAndActivityId(abr);//判断是否已经被邀请
+    				if(abrel==0){
+    					    Map<String,Object> rrse=(Map<String, Object>) resp.getData();
+    	        			AwardBindRel aRel=new AwardBindRel();
+    	    				aRel.setActivityId(aInfoVo.getId());
+    	    				aRel.setUserId(Long.parseLong(InviterId));
+    	    				aRel.setMobile(rrse.get("inviteMobile").toString());
+    	    				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
+    	    				aRel.setInviteMobile(mobile2);
+    	    				aRel.setIsNew(new Byte("1"));//被邀请人是新用户
+    	    				aRel.setCreateDate(new Date());
+    	    				aRel.setUpdateDate(new Date());
+    	    				awardBindRelService.insertAwardBindRel(aRel);
+    				}else if(abrel==1){
+    					return Response.fail("校验失败，您在当前活动中已与其他用户绑定过关系!");
+    				}
 	        	return Response.success("注册成功！");
 	        }
 	        return Response.fail("注册新用户失败");
