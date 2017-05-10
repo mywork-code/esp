@@ -182,6 +182,9 @@ public class AwardActivityInfoService {
 			resultMap.put("mobile", customerInfo.getMobile());
 			resultMap.put("customerId", customerInfo.getCustomerId());
 			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
+			if(StringUtils.isNotBlank(customerInfo.getRealName())){
+				resultMap.put("realName", customerInfo.getRealName());
+			}
 			// 身份信息未认证
 			if (StringUtils.isEmpty(customerInfo.getIdentityNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode());
