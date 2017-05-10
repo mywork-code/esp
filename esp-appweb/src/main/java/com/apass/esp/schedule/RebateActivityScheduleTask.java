@@ -82,6 +82,7 @@ public class RebateActivityScheduleTask {
                 LOGGER.info("orderId {},  newDate {} ,orderInfoEntity.getStatus {},refundInfoEntity {}", orderId, newDate, orderInfoEntity.getStatus(), refundInfoEntity);
                 if ("D04".equals(orderInfoEntity.getStatus()) && newDate.before(date) && refundInfoEntity == null) {
                     // 更新状态
+                    awardDetailDto.setArrivedDate(new Date());
                     awardDetailDto.setUpdateDate(new Date());
                     awardDetailDto.setStatus((byte) 0);
                     try {
