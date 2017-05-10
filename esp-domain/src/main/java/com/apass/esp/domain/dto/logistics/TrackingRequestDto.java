@@ -19,6 +19,12 @@ public class TrackingRequestDto {
     
     @JsonProperty("order_id ")
     private String orderId;
+    
+    /**
+     * 语言默认为简体中文
+     */
+    @JsonProperty("lang")
+    private String lang = "cn";
 
     public String getOrderId() {
         return orderId;
@@ -43,4 +49,13 @@ public class TrackingRequestDto {
     public void setCarrierCode(String carrierCode) {
         this.carrierCode = carrierCode;
     }
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
 }
