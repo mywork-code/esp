@@ -77,4 +77,3 @@ CREATE TABLE `t_esp_award_detail` (
   `update_date` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='奖励明细表';
-
