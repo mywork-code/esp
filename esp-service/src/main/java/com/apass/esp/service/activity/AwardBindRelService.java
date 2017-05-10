@@ -26,7 +26,7 @@ public class AwardBindRelService {
 		return wihdrawBindRelMapper.selectCountByInviteMobile(moblie);
 	}
 
-	public AwardBindRel getByInviterUserId(String userId){
-		return wihdrawBindRelMapper.getByInviterUserId(userId);
+	public AwardBindRel getByInviterUserId(String userId,int activityId){
+		return wihdrawBindRelMapper.getByInviterUserId(userId,activityId);
 	}
 }
