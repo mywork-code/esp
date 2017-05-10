@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,7 @@ import java.util.Map;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class RebateActivityScheduleTask {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RebateActivityScheduleTask.class);
 
@@ -52,7 +51,8 @@ public class RebateActivityScheduleTask {
 	/**
 	 * 每天凌晨一点执行,邀请人获得返点结算
 	 */
-	@Scheduled(cron = "0 0 1 * * ?")
+//	@Scheduled(cron = "0 0 1 * * ?")
+	@Scheduled(cron = "0 0/5 * * * *")
 	public void validateActivityEndtime() {
 		try {
 			LOGGER.info("邀请人获得返点结算定时任务开始");
@@ -64,12 +64,11 @@ public class RebateActivityScheduleTask {
 				return;
 			}
 			for (AwardDetailDto awardDetailDto : list) {
-				// AwardActivityInfo awardActivityInfo =
-				// awardActivityInfoService
-				// .getAwardActivityInfoById(awardDetailDto.getActivityId());
-				// String activityName = awardActivityInfo.getActivityName();
 				String orderId = awardDetailDto.getOrderId();
 				OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(orderId);
+				if (orderInfoEntity == null || orderInfoEntity.getLogisticsSignDate() == null) {
+					return;
+				}
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("orderId", orderInfoEntity.getOrderId());
 				map.put("refundType", "0");
@@ -83,13 +82,11 @@ public class RebateActivityScheduleTask {
 					try {
 						awardDetailService.updateAwardDetail(awardDetailDto);
 					} catch (Exception e) {
-						LOGGER.error("orderId {} 更新 返现获得 失败=====",
-								orderId, e);
+						LOGGER.error("orderId {} 更新 返现获得 失败=====", orderId, e);
 					}
-					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}",
-							orderId, awardDetailDto.getAmount());
+					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}", orderId,
+							awardDetailDto.getAmount());
 				}
-
 			}
 			LOGGER.info("邀请人获得返点结算定时任务结束");
 		} catch (Exception e) {
