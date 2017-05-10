@@ -45,5 +45,5 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @param userId
    * @return
    */
-  AwardBindRel getByInviterUserId(String userId);
+  AwardBindRel getByInviterUserId(String userId,int activityId);
 }

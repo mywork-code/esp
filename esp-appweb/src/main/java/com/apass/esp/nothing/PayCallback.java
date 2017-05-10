@@ -1,23 +1,5 @@
 package com.apass.esp.nothing;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -36,6 +18,22 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 支付BSS回调
@@ -97,7 +95,7 @@ public class PayCallback {
 		return Response.success("支付成功");
 	}
 
-	private void addRebateRecord(String status, String orderId) {
+	private void addRebateRecord(String status, String mainOrderId) {
 		if (YesNo.isNo(status)) {
 			return;
 		}
@@ -107,7 +105,7 @@ public class PayCallback {
 		try {
 			awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
 		} catch (BusinessException e) {
-			LOGGER.error("getActivityBy intro error orderId {}", orderId);
+			LOGGER.error("getActivityBy intro error orderId {}", mainOrderId);
 			return;
 		}
 		// 返现活动存在
@@ -115,7 +113,7 @@ public class PayCallback {
 			List<OrderInfoEntity> orderInfoEntityList = new ArrayList<OrderInfoEntity>();
 			Long userId = null;
 			try {
-				orderInfoEntityList = orderService.selectByMainOrderId(orderId);
+				orderInfoEntityList = orderService.selectByMainOrderId(mainOrderId);
 			} catch (BusinessException e) {
 				LOGGER.error("根据订单号和用户id查询订单信息", e);
 				return;
@@ -128,12 +126,13 @@ public class PayCallback {
 					Date endDate = DateFormatUtil.string2date(awardActivityInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
 					Date date = orderInfoEntity.getCreateDate();// 下单时间
 					LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
-							orderId, awardActivityInfoVo.getId(), startDate, endDate, date);
+							mainOrderId, awardActivityInfoVo.getId(), startDate, endDate, date);
 					if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
-						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId));
+						//当前活动是否存在绑定关系
+						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId),Integer.parseInt(String.valueOf(awardActivityInfoVo.getId())));
 						if (awardBindRel != null) {// 当前用户已经被邀请
 							AwardDetailDto awardDetailDto = new AwardDetailDto();
-							awardDetailDto.setActivityId(awardBindRel.getActivityId());
+							awardDetailDto.setActivityId(awardActivityInfoVo.getId());
 							// 返点金额
 							String rebateString = awardActivityInfoVo.getRebate();
 							BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
@@ -142,10 +141,10 @@ public class PayCallback {
 							int rebateInt = rebateAmt.intValue();
 							// 返现金额小于1时 不返现
 							if (rebateInt == 0) {
-								return;
+								continue;
 							}
 							awardDetailDto.setAmount(new BigDecimal(rebateInt));
-							awardDetailDto.setMainOrderId(orderId);
+							awardDetailDto.setOrderId(orderInfoEntity.getOrderId());
 							awardDetailDto.setCreateDate(new Date());
 							awardDetailDto.setUpdateDate(new Date());
 							// 处理中
@@ -156,9 +155,8 @@ public class PayCallback {
 							awardDetailService.addAwardDetail(awardDetailDto);
 							LOGGER.info(
 									"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
-									userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
+									userId, orderInfoEntity.getOrderId(), awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
 									awardActivityInfoVo.getRebate());
-							return;
 						}
 					}
 				}

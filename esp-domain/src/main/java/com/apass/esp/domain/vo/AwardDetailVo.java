@@ -36,6 +36,11 @@ public class AwardDetailVo {
     private String arrivedDate;
     
     /**
+     * 前端显示时间
+     */
+    private String date;
+    
+    /**
      * 提前时间
      */
     private String createDate;
@@ -75,6 +80,12 @@ public class AwardDetailVo {
     }
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+    public String getDate() {
+        return date;
+    }
+    public void setDate(String date) {
+        this.date = date;
     }
           
     

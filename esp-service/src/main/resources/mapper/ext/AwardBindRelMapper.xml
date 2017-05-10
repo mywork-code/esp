@@ -76,7 +76,7 @@
 	<select id="getByInviterUserId" resultMap="BaseResultMap" parameterType="String">
 		select * 
 		from t_esp_award_bind_rel
-		where invite_user_id = #{userId}
+		where invite_user_id = #{userId} and activity_id=#{activityId}
 	</select>
 	
 	

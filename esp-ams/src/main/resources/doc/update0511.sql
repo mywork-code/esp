@@ -71,7 +71,7 @@ CREATE TABLE `t_esp_award_detail` (
   `amount` decimal(10,2) NOT NULL COMMENT '金额(提现或者获得)',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0，获得，1提现',
   `status` tinyint(2) NOT NULL DEFAULT '2' COMMENT '0成功，1失败，2处理中',
-  `main_order_id` varchar(128) DEFAULT NULL COMMENT '获得的来源订单号order_id',
+  `order_id` varchar(128) DEFAULT NULL COMMENT '获得的来源订单号order_id',
   `arrived_date` datetime DEFAULT NULL COMMENT '提现到账时间',
   `card_no` varchar(32) DEFAULT NULL COMMENT '提现银行卡号',
   `card_bank` varchar(100) DEFAULT NULL COMMENT '提现 卡银行',
