@@ -64,6 +64,15 @@
 			<include refid="PAGINATION.MYSQL_PAGINATION" />
 		</if>
 	</select>
+	
+	<select id="selectAllBindRelStatistic" resultMap="StatisticResultMap" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+		select
+		<include refid="Base_Column_List" />,count(*) as total_invite_num
+		from t_esp_award_bind_rel
+		<include refid="query_where_clause" />
+		GROUP  BY user_id
+		order by total_invite_num desc
+	</select>
 
 
 	<select id="countBindRelByGroup" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
