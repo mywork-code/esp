@@ -128,6 +128,7 @@ public class PayCallback {
 					LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}", userId,
 							mainOrderId, awardActivityInfoVo.getId(), startDate, endDate, date);
 					if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
+						//当前活动是否存在绑定关系
 						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId),Integer.parseInt(String.valueOf(awardActivityInfoVo.getId())));
 						if (awardBindRel != null) {// 当前用户已经被邀请
 							AwardDetailDto awardDetailDto = new AwardDetailDto();
@@ -140,7 +141,7 @@ public class PayCallback {
 							int rebateInt = rebateAmt.intValue();
 							// 返现金额小于1时 不返现
 							if (rebateInt == 0) {
-								return;
+								continue;
 							}
 							awardDetailDto.setAmount(new BigDecimal(rebateInt));
 							awardDetailDto.setOrderId(orderInfoEntity.getOrderId());
@@ -156,7 +157,6 @@ public class PayCallback {
 									"userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
 									userId, orderInfoEntity.getOrderId(), awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
 									awardActivityInfoVo.getRebate());
-							return;
 						}
 					}
 				}
