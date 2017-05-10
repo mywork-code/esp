@@ -287,10 +287,10 @@ public class RegisterInfoController {
 		Matcher m = p.matcher(mobile2);
 		Pattern pas = Pattern.compile("^[\\w]{6,12}$");
 		Matcher mas = pas.matcher(password);
-		Pattern pas2 = Pattern.compile("^[A-Za-z]$");
-		Matcher mas2 = pas.matcher(password);
-		Pattern pas3 = Pattern.compile("^[0-9]$");
-		Matcher mas3 = pas.matcher(password);
+		Pattern pas2 = Pattern.compile("^[A-Za-z]*$");
+		Matcher mas2 = pas2.matcher(password);
+		Pattern pas3 = Pattern.compile("^[0-9]*$");
+		Matcher mas3 = pas3.matcher(password);
 		if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
