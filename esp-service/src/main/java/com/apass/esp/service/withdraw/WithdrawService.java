@@ -64,13 +64,17 @@ public class WithdrawService {
             paramMap.put("cardBank",result.get("cardBank"));//银行名称
             paramMap.put("bankCode",result.get("bankCode"));//银行code
             
-            //查询全部可提金额金额
+            //查询全部可提金额金额,已经提现金额
             List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
-            BigDecimal totalCount = BigDecimal.ZERO;
+            BigDecimal totalCount = BigDecimal.ZERO;//最大 可提现
+            BigDecimal haveCount = BigDecimal.ZERO;//已提现
             if(awardDetails != null && awardDetails.size()>0){
                 totalCount = getTotalCount(awardDetails);
+                haveCount = getHaveWithdrawCount(awardDetails);
             }
             paramMap.put("totalCount",totalCount);//赏金 ，全部提现金额
+            paramMap.put("haveCount",haveCount);//赏金 ，已提现金额
+            
         }else{
             paramMap.put("page","0");//未绑卡
             paramMap.put("mobile", result.get("mobile"));//手机号
@@ -81,6 +85,16 @@ public class WithdrawService {
         }
         
         return paramMap;
+    }
+
+    private BigDecimal getHaveWithdrawCount(List<AwardDetail> awardDetails) {
+        BigDecimal haveCount = BigDecimal.ZERO;
+        for (AwardDetail awardDetail : awardDetails) {
+            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
+                haveCount = haveCount.add(awardDetail.getAmount());
+            }
+        }
+        return haveCount;
     }
 
     /**
