@@ -284,7 +284,10 @@ public class RegisterInfoController {
 		Matcher m = p.matcher(mobile2);
 		Pattern pas = Pattern.compile("^[\\w]{6,12}$");
 		Matcher mas = pas.matcher(password);
-		
+		Pattern pas2 = Pattern.compile("^[A-Za-z]$");
+		Matcher mas2 = pas.matcher(password);
+		Pattern pas3 = Pattern.compile("^[0-9]$");
+		Matcher mas3 = pas.matcher(password);
 		if (StringUtils.isBlank( mobile2)) {
 			return Response.fail("手机号不能为空");
 		}else if(!m.matches()){
@@ -292,11 +295,15 @@ public class RegisterInfoController {
 		}else if (StringUtils.isAnyBlank(password)) {
 			return Response.fail("密码不能为空");
 		}else if (password.length()<6){
-			return Response.fail("密码不能小于6位");
+			return Response.fail("请输入6-12位字母与数字的组合");
 		}else if (password.length()>12){
-			return Response.fail("密码不能大于12位");
+			return Response.fail("请输入6-12位字母与数字的组合");
+		}else if (mas2.matches()){
+			return Response.fail("请输入6-12位字母与数字的组合！");
+		}else if (mas3.matches()){
+			return Response.fail("请输入6-12位字母与数字的组合！");
 		}else if (!mas.matches()){
-			return Response.fail("密码格式不正确！");
+			return Response.fail("请输入6-12位字母与数字的组合！");
 		}else if (StringUtils.isAnyBlank(InviterId)) {
 			return Response.fail("邀请人的id不能为空");
 		}

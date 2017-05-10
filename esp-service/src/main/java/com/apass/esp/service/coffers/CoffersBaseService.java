@@ -71,6 +71,7 @@ public class CoffersBaseService {
                awardDetailVo.setStatus(awardDetail.getStatus());
                awardDetailVo.setArrivedDate(DateFormatUtil.dateToString(awardDetail.getArrivedDate()));
                awardDetailVo.setCreateDate(DateFormatUtil.dateToString(awardDetail.getCreateDate()));
+               awardDetailVo.setDate(awardDetailVo.getArrivedDate()==null ? awardDetailVo.getArrivedDate():awardDetailVo.getCreateDate());
                awardDetailVos.add(awardDetailVo);
                if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
                    totalCoun = totalCoun.add(awardDetail.getAmount());
