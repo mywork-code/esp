@@ -73,7 +73,7 @@
 	</select>
 
 	<!-- 查询被邀请人的记录 -->
-	<select id="getByInviterUserId" resultMap="BaseResultMap" parameterType="String">
+	<select id="getByInviterUserId" resultMap="BaseResultMap" >
 		select * 
 		from t_esp_award_bind_rel
 		where invite_user_id = #{userId} and activity_id=#{activityId}
