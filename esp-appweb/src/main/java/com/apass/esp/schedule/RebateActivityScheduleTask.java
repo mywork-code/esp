@@ -1,10 +1,14 @@
 package com.apass.esp.schedule;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.refund.OrderRefundService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +19,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.apass.esp.domain.dto.activity.AwardDetailDto;
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardDetailService;
-import com.apass.esp.service.order.OrderService;
-import com.apass.esp.service.refund.OrderRefundService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 邀请人获得返点结算 Task
@@ -69,7 +68,7 @@ public class RebateActivityScheduleTask {
 				// awardActivityInfoService
 				// .getAwardActivityInfoById(awardDetailDto.getActivityId());
 				// String activityName = awardActivityInfo.getActivityName();
-				String orderId = awardDetailDto.getMainOrderId();
+				String orderId = awardDetailDto.getOrderId();
 				OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(orderId);
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("orderId", orderInfoEntity.getOrderId());
@@ -85,10 +84,10 @@ public class RebateActivityScheduleTask {
 						awardDetailService.updateAwardDetail(awardDetailDto);
 					} catch (Exception e) {
 						LOGGER.error("orderId {} 更新 返现获得 失败=====",
-								awardDetailDto.getMainOrderId(), e);
+								orderId, e);
 					}
 					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}",
-							awardDetailDto.getMainOrderId(), awardDetailDto.getAmount());
+							orderId, awardDetailDto.getAmount());
 				}
 
 			}

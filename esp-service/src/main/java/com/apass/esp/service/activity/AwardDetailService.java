@@ -73,7 +73,7 @@ public class AwardDetailService {
 			    if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
                                 rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
                             }   
-                            String orderId = awardDetail.getMainOrderId();
+                            String orderId = awardDetail.getOrderId();
 				                    OrderInfoEntity order = orderService.selectByOrderId(orderId);
                             if(order != null && order.getMainOrderId() != null){
                                     List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
