@@ -113,6 +113,16 @@ public class WithdrawService {
     @Transactional(rollbackFor=Exception.class) 
     public Map<String,Object> confirmWithdraw(String userId, String amount, String cardBank, String cardNo) throws BusinessException {
         Map<String,Object> result = Maps.newHashMap();
+        //查询全部可提金额金额
+        List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+        BigDecimal totalCount = BigDecimal.ZERO;
+        if(awardDetails != null && awardDetails.size()>0){
+            totalCount = getTotalCount(awardDetails);
+            if(totalCount.compareTo(BigDecimal.valueOf(Long.valueOf(amount))) < 0){
+                throw new BusinessException("提现金额大于最大可提现金额！请重新输入提现金额。");
+            }
+        }
+
         AwardDetail awardDetail = new AwardDetail();
         awardDetail.setAmount(BigDecimal.valueOf(Long.valueOf(amount)));
         awardDetail.setUserId(Long.valueOf(userId));
