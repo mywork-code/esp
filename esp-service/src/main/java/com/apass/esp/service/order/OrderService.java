@@ -1413,4 +1413,9 @@ public class OrderService {
 		OrderInfoEntity orderInfoEntity = orderInfoRepository.queryLatestSuccessOrderInfo(userId);
 		return orderInfoEntity == null ? "" : DateFormatUtil.datetime2String(orderInfoEntity.getCreateDate());
 	}
+	
+	public List<OrderInfoEntity> selectByMainOrderId(String mainOrderId) throws BusinessException{
+		List<OrderInfoEntity> list = orderInfoRepository.selectByMainOrderId(mainOrderId);
+		return list;
+	}
 }

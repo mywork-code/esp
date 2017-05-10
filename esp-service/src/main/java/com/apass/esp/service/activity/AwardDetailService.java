@@ -1,20 +1,9 @@
 package com.apass.esp.service.activity;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
@@ -23,9 +12,22 @@ import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.mapper.AwardBindRelMapper;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class AwardDetailService {
@@ -41,12 +43,15 @@ public class AwardDetailService {
 	@Autowired
 	private TxnInfoMapper txnInfoMapper;
 
+	@Autowired
+	private OrderService orderService;
+
 
 	/**
 	 * 分页统计转介绍数据
 	 * @return
 	 */
-	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) {
+	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) throws BusinessException {
 	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
 		BigDecimal bankAmtSum = BigDecimal.ZERO;
@@ -68,9 +73,10 @@ public class AwardDetailService {
 			    if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
                                 rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
                             }   
-                            String mainOrderId = awardDetail.getMainOrderId();
-                            if(mainOrderId != null){
-                                    List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(mainOrderId);
+                            String orderId = awardDetail.getMainOrderId();
+				                    OrderInfoEntity order = orderService.selectByOrderId(orderId);
+                            if(order != null && order.getMainOrderId() != null){
+                                    List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
                                     for(TxnInfoEntity txn : txnInfoEntityList){
                                             if(TxnTypeCode.SF_CODE.getCode().equals(txn.getTxnType())
                                                             || TxnTypeCode.KQEZF_CODE.getCode().equals(txn.getTxnType())){

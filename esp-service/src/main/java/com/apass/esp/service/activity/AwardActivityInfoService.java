@@ -19,10 +19,14 @@ import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.activity.BankEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
@@ -178,6 +182,9 @@ public class AwardActivityInfoService {
 			resultMap.put("mobile", customerInfo.getMobile());
 			resultMap.put("customerId", customerInfo.getCustomerId());
 			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
+			if(StringUtils.isNotBlank(customerInfo.getRealName())){
+				resultMap.put("realName", customerInfo.getRealName());
+			}
 			// 身份信息未认证
 			if (StringUtils.isEmpty(customerInfo.getIdentityNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode());
@@ -310,5 +317,5 @@ public class AwardActivityInfoService {
         Response res = espActivityHttpClient.latestSignature(map);
         return res;
     }
-
+    
 }
