@@ -187,9 +187,9 @@ public class LogisticsService {
         }
         Map<String, Object> resultMap = new HashMap<>();
         LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
-        // get请求参数拼接
+        // get请求参数拼接  append("/cn")设置语言为中文
         StringBuilder sb = new StringBuilder(carrierCode);
-        sb.append("/").append(trackingNumber);
+        sb.append("/").append(trackingNumber).append("/cn");
 
         try {
             logisticInfo.setShipperCode(carrierCode);
