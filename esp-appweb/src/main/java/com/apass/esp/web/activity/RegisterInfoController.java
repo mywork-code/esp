@@ -365,8 +365,8 @@ public class RegisterInfoController {
 	/**
 	 * 获取有效活动开始时间
 	 */
-	@RequestMapping(value = "/activityTime",method = RequestMethod.GET)
-	public Response getActivityTIme() {
+	@RequestMapping(value = "/activityTime",method = RequestMethod.POST)
+	public Response getActivityTIme(@RequestBody Map<String, Object> paramMap) {
 		ActivityName activityName=ActivityName.INTRO;//获取活动名称
 	        try {
 				AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
