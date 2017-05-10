@@ -17,7 +17,9 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,17 +76,19 @@ public class AwardDetailService {
                                 rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
                             }   
                             String orderId = awardDetail.getOrderId();
-				                    OrderInfoEntity order = orderService.selectByOrderId(orderId);
-                            if(order != null && order.getMainOrderId() != null){
+                            if(StringUtils.isNotBlank(orderId)){
+                                OrderInfoEntity order = orderService.selectByOrderId(orderId);
+                                if(order != null && order.getMainOrderId() != null){
                                     List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
                                     for(TxnInfoEntity txn : txnInfoEntityList){
-                                            if(TxnTypeCode.SF_CODE.getCode().equals(txn.getTxnType())
-                                                            || TxnTypeCode.KQEZF_CODE.getCode().equals(txn.getTxnType())){
-                                                    bankAmt = bankAmt.add(txn.getTxnAmt());//银行卡支付
-                                            } else if (TxnTypeCode.XYZF_CODE.getCode().equals(txn.getTxnType())) {
-                                                    creditAmt = creditAmt.add(txn.getTxnAmt());//信用支付
-                                            }
+                                        if(TxnTypeCode.SF_CODE.getCode().equals(txn.getTxnType())
+                                                || TxnTypeCode.KQEZF_CODE.getCode().equals(txn.getTxnType())){
+                                            bankAmt = bankAmt.add(txn.getTxnAmt());//银行卡支付
+                                        } else if (TxnTypeCode.XYZF_CODE.getCode().equals(txn.getTxnType())) {
+                                            creditAmt = creditAmt.add(txn.getTxnAmt());//信用支付
+                                        }
                                     }
+                                }
                             }
 			}
 			rebateAmtSum = rebateAmtSum.add(rebateAmt);
