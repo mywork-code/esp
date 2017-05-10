@@ -2,10 +2,9 @@ package com.apass.esp.service.activity;
 
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardDetail;
-import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
@@ -17,7 +16,6 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -78,16 +76,13 @@ public class AwardDetailService {
                             String orderId = awardDetail.getOrderId();
                             if(StringUtils.isNotBlank(orderId)){
                                 OrderInfoEntity order = orderService.selectByOrderId(orderId);
-                                if(order != null && order.getMainOrderId() != null){
-                                    List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
-                                    for(TxnInfoEntity txn : txnInfoEntityList){
-                                        if(TxnTypeCode.SF_CODE.getCode().equals(txn.getTxnType())
-                                                || TxnTypeCode.KQEZF_CODE.getCode().equals(txn.getTxnType())){
-                                            bankAmt = bankAmt.add(txn.getTxnAmt());//银行卡支付
-                                        } else if (TxnTypeCode.XYZF_CODE.getCode().equals(txn.getTxnType())) {
-                                            creditAmt = creditAmt.add(txn.getTxnAmt());//信用支付
-                                        }
-                                    }
+                                if(order != null){
+																	if(PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())){
+																		//银行卡全卡支付
+																		bankAmt = bankAmt.add(order.getOrderAmt());
+																	} else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())){
+																		creditAmt = creditAmt.add(order.getOrderAmt());
+																	}
                                 }
                             }
 			}
