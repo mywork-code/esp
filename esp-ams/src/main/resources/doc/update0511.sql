@@ -80,4 +80,8 @@ CREATE TABLE `t_esp_award_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='奖励明细表';
 
+/** 邀请人绑定关系表 **/
+ALTER TABLE `t_esp_award_bind_rel`
+DROP INDEX `invite`,
+DROP INDEX `invite_mobile`;
 

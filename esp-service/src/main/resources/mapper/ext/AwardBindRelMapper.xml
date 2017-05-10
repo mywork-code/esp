@@ -26,7 +26,13 @@
 		from t_esp_award_bind_rel
 		where invite_mobile = #{value}
 	</select>
-
+	<!-- 查询当前活动是否已被关联（邀请） -->
+	<select id="selectByMobileAndActivityId" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.entity.AwardBindRel">
+		select count(1) 
+		from t_esp_award_bind_rel
+		where invite_mobile = #{inviteMobile, jdbcType=VARCHAR}
+		And   activity_id   = #{activityId, jdbcType=VARCHAR}
+	</select>
 
 	<resultMap id="StatisticResultMap" type="com.apass.esp.domain.extentity.AwardBindRelStatistic">
 		<id column="id" property="id" jdbcType="BIGINT" />
