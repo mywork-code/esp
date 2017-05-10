@@ -11,11 +11,16 @@ import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
+import com.apass.esp.web.banner.BannerController;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
+import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/activity")
 public class ActivityAwardController {
-
+    /**
+     * 日志
+     */
+  private static final Logger LOGGER  = LoggerFactory.getLogger(ActivityAwardController.class);
   @Autowired
   private AwardActivityInfoService awardActivityInfoService;
 
@@ -125,7 +133,14 @@ public class ActivityAwardController {
   @RequestMapping(value = "/introduce/statistic/list", method = RequestMethod.GET)
   @ResponseBody
   public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> listIntroStatistic(ActivityBindRelStatisticQuery query){
-    return  awardDetailService.pageBindRelStatistic(query);
+    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> response = new ResponsePageIntroStaticBody<>();
+    try {
+        response = awardDetailService.pageBindRelStatistic(query);
+    } catch (BusinessException e) {
+        LOGGER.error("统计查询失败！",e);
+        response.setStatus(BaseConstants.CommonCode.FAILED_CODE);
+    }
+    return response;
   }
 
 
