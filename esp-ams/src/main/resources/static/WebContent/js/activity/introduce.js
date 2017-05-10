@@ -36,7 +36,9 @@ $(function(){
                 width : 120,
                 align : 'center',
                 formatter : function(value, row, index) {
-                	return value+"%";
+                	if(value != null && value != ''){
+                		return FormatAfterDotNumber(value,2)+"%";
+                	}
                 }
             },
             {
@@ -51,7 +53,7 @@ $(function(){
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteActivity("
                             + row.id+ ");\">关闭活动</a>&nbsp;&nbsp;";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editActivity('"
-						+ row.id+"','"+ row.rebate+"','"+row.aEndDate + "');\"'>编辑</a>&nbsp;&nbsp;";
+						+ row.id+"','"+ row.rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "');\"'>编辑</a>&nbsp;&nbsp;";
                     return content;
                 }
             }
@@ -63,6 +65,7 @@ $(function(){
                 type : "get",
                 dataType : "json",
                 success : function(data) {
+                	debugger;
                 	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
@@ -196,12 +199,13 @@ $(function(){
     /**
 	 * 编辑
 	 */
-	$.editActivity = function(id,rebate,endDate) {
+	$.editActivity = function(id,rebate,startDate,endDate) {
 		$("#editIntroConfig").window({modal: true});
 		$("#editIntroConfig").window('open');
 		idActiv = id;
 		
 		$("#editRebate").textbox('setValue',rebate);
+		$("#editStartDate").datetimebox('setValue',startDate); 
 		$("#editEndDate").datetimebox('setValue',endDate); 
 		
 	}
@@ -212,8 +216,19 @@ $(function(){
     //确定  编辑活动信息
     $("#editAgreeAdd").click(function(){
 		var rebate = $("#editRebate").textbox('getValue');
+		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
 		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate};
+		if(null == endDate || endDate==""){
+            $.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
+            return;
+        }
+		if(startDate>endDate){
+			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
+			$('#editEndDate').datetimebox('setValue','');
+			return;
+		}
+		
 		$.ajax({
 			type : "POST",
 			url : ctx + '/activity/introduce/edit',
