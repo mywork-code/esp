@@ -258,59 +258,6 @@ public class OrderInfoController {
             LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
             return Response.success("确认收货成功!", dto);
         }
-        // 返现活动存在
-        if (awardActivityInfoVo != null) {
-            OrderInfoEntity orderInfoEntity = null;
-            try {
-                orderInfoEntity = orderService.selectByOrderId(orderId);
-            } catch (BusinessException e) {
-                LOGGER.error("根据订单号和用户id查询订单信息", e);
-                LOGGER.error("selectByOrderId orderId{},userId{} error", orderId, userId);
-                return Response.success("确认收货成功!", dto);
-            }
-            if (orderInfoEntity != null) {// 订单存在
-                Date startDate = DateFormatUtil.string2date(awardActivityInfoVo.getaStartDate(),
-                        "yyyy-MM-dd HH:mm:ss");
-                Date endDate = DateFormatUtil.string2date(awardActivityInfoVo.getaEndDate(),
-                        "yyyy-MM-dd HH:mm:ss");
-                Date date = orderInfoEntity.getCreateDate();// 下单时间
-                LOGGER.info("userId {}  ,orderId {} ,activity id {},startDate {},endDate {},curDate {}",
-                        userId, orderId, awardActivityInfoVo.getId(), startDate, endDate, date);
-                if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
-                    AwardBindRel awardBindRel = awardBindRelService
-                            .getByInviterUserId(String.valueOf(userId));
-                    if (awardBindRel != null) {// 当前用户已经被邀请
-                        AwardDetailDto awardDetailDto = new AwardDetailDto();
-                        awardDetailDto.setActivityId(awardBindRel.getActivityId());
-                        // 返点金额
-                        String rebateString = awardActivityInfoVo.getRebate();
-                        BigDecimal rebate = new BigDecimal(rebateString.substring(0,
-                                rebateString.length() - 1)).multiply(BigDecimal.valueOf(0.01));
-                        BigDecimal rebateAmt = orderInfoEntity.getOrderAmt().multiply(rebate);
-                        int rebateInt = rebateAmt.intValue();
-                        // 返现金额小于1时 不返现
-                        if (rebateInt == 0) {
-                            return Response.success("确认收货成功!", dto);
-                        }
-                        awardDetailDto.setAmount(new BigDecimal(rebateInt));
-                        awardDetailDto.setOrderId(orderId);
-                        awardDetailDto.setCreateDate(new Date());
-                        awardDetailDto.setUpdateDate(new Date());
-                        // 处理中
-                        awardDetailDto.setStatus((byte) 2);
-                        // 获得
-                        awardDetailDto.setType((byte) 0);
-                        awardDetailDto.setUserId(userId);
-                        awardDetailService.addAwardDetail(awardDetailDto);
-                        LOGGER.info(
-                                "userId {}  ,orderId {} ,activity id {},orderInfoEntity.getOrderAmt {} , awardActivityInfoVo.getRebate {}",
-                                userId, orderId, awardActivityInfoVo.getId(), orderInfoEntity.getOrderAmt(),
-                                awardActivityInfoVo.getRebate());
-                        return Response.success("确认收货成功!", dto);
-                    }
-                }
-            }
-        }
         return Response.success("确认收货成功!", dto);
     }
 
