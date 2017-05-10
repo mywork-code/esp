@@ -58,9 +58,7 @@ CREATE TABLE `t_esp_award_bind_rel` (
   `invite_mobile` varchar(11) DEFAULT NULL COMMENT '被邀请人手机号',
   `create_date` datetime DEFAULT NULL COMMENT '创建时间',
   `update_date` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `invite` (`invite_user_id`) USING BTREE,
-  UNIQUE KEY `invite_mobile` (`invite_mobile`) USING BTREE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COMMENT='邀请人绑定关系表';
 /**奖励明细表*/
 CREATE TABLE `t_esp_award_detail` (
@@ -79,9 +77,3 @@ CREATE TABLE `t_esp_award_detail` (
   `update_date` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='奖励明细表';
-
-/** 邀请人绑定关系表 **/
-ALTER TABLE `t_esp_award_bind_rel`
-DROP INDEX `invite`,
-DROP INDEX `invite_mobile`;
-

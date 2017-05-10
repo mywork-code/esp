@@ -4,6 +4,7 @@ import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -45,5 +46,5 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @param userId
    * @return
    */
-  AwardBindRel getByInviterUserId(String userId,int activityId);
+  AwardBindRel getByInviterUserId(@Param("userId") String userId,@Param("activityId") int activityId);
 }
