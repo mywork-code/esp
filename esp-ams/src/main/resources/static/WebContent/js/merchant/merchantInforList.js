@@ -199,6 +199,12 @@ $(function(){
 		var merchantReturnPhone = $("#addMerchantReturnPhone").textbox('getValue');
 		var merchantReturnPostCode = $("#addMerchantReturnPostCode").textbox('getValue');
 		
+		if((0!= merchantReturnPostCode.length||"" != merchantReturnPostCode)){
+			if(!/^\d{6}$/.test(merchantReturnPostCode)){
+				$.messager.alert("<span style='color: black;'>提示</span>","收货编码为6位数字!",'info');  
+				return;
+			}
+		}
 		if(null ==merchantReturnAddress || merchantReturnAddress.length==0){ 
 	    	$.messager.alert("<span style='color: black;'>提示</span>","商户退货地址不能为空！",'info');
 	    	return;
@@ -395,7 +401,7 @@ $(function(){
 		var editMerchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue'); 
 		if((0!= editMerchantReturnPostCode.length||"" != editMerchantReturnPostCode)){
 			if(!/^\d{6}$/.test(editMerchantReturnPostCode)){
-				$.messager.alert("<span style='color: black;'>提示</span>","收货编码输入错误!",'info');  
+				$.messager.alert("<span style='color: black;'>提示</span>","收货编码为6位数字!",'info');  
 				return;
 			}
 		}
