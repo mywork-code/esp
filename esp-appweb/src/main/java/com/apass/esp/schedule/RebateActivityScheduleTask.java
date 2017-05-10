@@ -65,12 +65,11 @@ public class RebateActivityScheduleTask {
 				return;
 			}
 			for (AwardDetailDto awardDetailDto : list) {
-				// AwardActivityInfo awardActivityInfo =
-				// awardActivityInfoService
-				// .getAwardActivityInfoById(awardDetailDto.getActivityId());
-				// String activityName = awardActivityInfo.getActivityName();
 				String orderId = awardDetailDto.getMainOrderId();
 				OrderInfoEntity orderInfoEntity = orderService.selectByOrderId(orderId);
+				if (orderInfoEntity == null || orderInfoEntity.getLogisticsSignDate() == null) {
+					return;
+				}
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("orderId", orderInfoEntity.getOrderId());
 				map.put("refundType", "0");
@@ -84,11 +83,10 @@ public class RebateActivityScheduleTask {
 					try {
 						awardDetailService.updateAwardDetail(awardDetailDto);
 					} catch (Exception e) {
-						LOGGER.error("orderId {} 更新 返现获得 失败=====",
-								awardDetailDto.getMainOrderId(), e);
+						LOGGER.error("orderId {} 更新 返现获得 失败=====", awardDetailDto.getMainOrderId(), e);
 					}
-					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}",
-							awardDetailDto.getMainOrderId(), awardDetailDto.getAmount());
+					LOGGER.info("activity id {},订单ID {} 获得返现成功,金额 ,{}", awardDetailDto.getMainOrderId(),
+							awardDetailDto.getAmount());
 				}
 
 			}
