@@ -57,9 +57,9 @@ public class AdminTokenHandler {
 		// String className= point.getTarget().getClass().getSimpleName();
 		// //取得class类名的方式
 		Signature signature = point.getSignature();
-		Class<?> returnType = ((MethodSignature) signature).getReturnType();
+		Class<?> returnType = ((MethodSignature) signature).getReturnType(); 
 		Object[] arr = point.getArgs();
-
+		LOGGER.info("请求参数:[{}]",arr);
 		boolean isJsonToken = false;
 		if (arr == null || arr.length == 0) {
 			Map<String, Object> resultMap = Maps.newHashMap();
@@ -100,7 +100,7 @@ public class AdminTokenHandler {
 				return GsonUtils.convertObj(resultMap, returnType);
 			}
 		}
-
+		
 		if (!isJsonToken) {
 			// 无效jsontoken
 			Map<String, Object> resultMap = Maps.newHashMap();
