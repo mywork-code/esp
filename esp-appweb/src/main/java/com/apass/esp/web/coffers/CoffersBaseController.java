@@ -39,6 +39,7 @@ public class CoffersBaseController {
 	@ResponseBody
 	public Response queryCoffers(@RequestBody Map<String, Object> paramMap) {
 	    Map<String,Object> resultMap = Maps.newHashMap();
+	    LOGGER.info("请求参数：[{}]",paramMap);
 	    try{
 	        String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
 	        if(StringUtils.isBlank(userId)){
