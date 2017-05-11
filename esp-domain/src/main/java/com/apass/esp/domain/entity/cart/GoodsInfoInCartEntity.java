@@ -38,6 +38,17 @@ public class GoodsInfoInCartEntity {
     /** 商品logo地址 **/
     private String goodsLogoUrl;
 
+    /** 商品logo地址 **/
+    private String goodsLogoUrlNew;
+
+    public String getGoodsLogoUrlNew() {
+        return goodsLogoUrlNew;
+    }
+
+    public void setGoodsLogoUrlNew(String goodsLogoUrlNew) {
+        this.goodsLogoUrlNew = goodsLogoUrlNew;
+    }
+
     /** 商品下架时间 **/
     private Date delistTime;
 

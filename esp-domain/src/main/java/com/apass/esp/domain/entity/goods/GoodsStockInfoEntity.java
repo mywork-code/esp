@@ -59,6 +59,16 @@ public class GoodsStockInfoEntity {
     /** 商品规格logo url **/
     private String     stockLogo;
 
+    public String getStockLogoNew() {
+        return stockLogoNew;
+    }
+
+    public void setStockLogoNew(String stockLogoNew) {
+        this.stockLogoNew = stockLogoNew;
+    }
+
+    private String     stockLogoNew;
+
     /** 创建人 **/
     private String     createUser;
 

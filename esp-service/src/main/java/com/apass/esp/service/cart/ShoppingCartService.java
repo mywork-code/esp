@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.service.common.ImageService;
+import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,9 @@ public class ShoppingCartService {
     
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private ImageService imageService;
 
     /**
      * 添加商品到购物车
@@ -284,6 +289,10 @@ public class ShoppingCartService {
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
+                //添加新的图片地址
+                String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
+                goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+
                 // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
                 if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
                         || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
