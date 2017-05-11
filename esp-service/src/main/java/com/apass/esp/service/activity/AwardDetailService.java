@@ -198,4 +198,12 @@ public class AwardDetailService {
 		return awardDetailMapper.updateByPrimaryKeySelective(awardDetail);
 	}
 
+	/**
+	 * delete
+	 * @return
+	 */
+	@Transactional(rollbackFor=Exception.class)
+	public int delete(Long id){
+		return awardDetailMapper.deleteByPrimaryKey(id);
+	}
 }
