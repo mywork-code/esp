@@ -143,6 +143,10 @@ public class RegisterInfoController {
 
 		String mobile =  CommonUtils.getValue(paramMap, "mobile");//手机号
 		String smsType = CommonUtils.getValue(paramMap, "smsType");//验证码类型
+		String randomCode=CommonUtils.getValue(paramMap, "randomCode");//随机码
+		String randomFlage= CommonUtils.getValue(paramMap, "randomFlage");//随机码标识
+
+
 		String mobile2=mobile.replace(" ", "");
 
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
@@ -151,8 +155,21 @@ public class RegisterInfoController {
 			return Response.fail("验证码和手机号不能为空");
 		}else if(!m.matches()){
 			return Response.fail("手机号格式不正确,请重新输入！");
+		}else if (StringUtils.isBlank( randomCode)) {
+			return Response.fail("随机码不能为空");
+		}else if (StringUtils.isBlank( randomFlage)) {
+			return Response.fail("随机码标识不能为空");
 		}
 		try {
+			String cacheKey = "activityRegistRandom_"+ randomFlage;
+			String cacheJson = cacheManager.get(cacheKey);
+			Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+			if(cacheJsonMap == null || !cacheJsonMap.containsKey("value")){
+				return Response.fail("验证码不正确");
+			}
+			if(!StringUtils.equalsIgnoreCase((String)cacheJsonMap.get("value"), randomCode)){
+				return Response.fail("验证码不正确");
+			}
 		    Boolean Flage=registerInfoService.isSendMes(smsType, mobile2);
 			if(Flage){
 				mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
