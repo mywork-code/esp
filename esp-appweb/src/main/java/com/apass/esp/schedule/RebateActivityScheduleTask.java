@@ -80,19 +80,46 @@ public class RebateActivityScheduleTask {
                 // 订单状态已完成 且订单已完成37天 ，没有发生过退货行为 才能获得返点
                 Date newDate = DateFormatUtil.addDays(orderInfoEntity.getLogisticsSignDate(), 37);
                 LOGGER.info("orderId {},  newDate {} ,orderInfoEntity.getStatus {},refundInfoEntity {}", orderId, newDate, orderInfoEntity.getStatus(), refundInfoEntity);
-                if ("D04".equals(orderInfoEntity.getStatus()) && newDate.before(date) && refundInfoEntity == null) {
-                    // 更新状态
-                    awardDetailDto.setArrivedDate(new Date());
-                    awardDetailDto.setUpdateDate(new Date());
-                    awardDetailDto.setStatus((byte) 0);
-                    try {
-                        awardDetailService.updateAwardDetail(awardDetailDto);
-                    } catch (Exception e) {
-                        LOGGER.error("orderId {} 更新 返现获得 失败=====", orderId, e);
+                if (refundInfoEntity == null) {
+                    //37天以后
+                    if ("D04".equals(orderInfoEntity.getStatus()) && newDate.before(date)) {
+                        // 更新状态
+                        awardDetailDto.setArrivedDate(new Date());
+                        awardDetailDto.setUpdateDate(new Date());
+                        awardDetailDto.setStatus((byte) 0);
+                        try {
+                            awardDetailService.updateAwardDetail(awardDetailDto);
+                        } catch (Exception e) {
+                            LOGGER.error("orderId {} 更新 返现获得 失败=====", orderId, e);
+                        }
+                        LOGGER.info("activity id {},订单ID {}  newDate {} ,orderInfoEntity.getStatus {},refundInfoEntity {}获得返现成功,金额 ,{}", orderId
+                                , newDate, orderInfoEntity.getStatus(), refundInfoEntity, awardDetailDto.getAmount());
                     }
-                    LOGGER.info("activity id {},订单ID {}  newDate {} ,orderInfoEntity.getStatus {},refundInfoEntity {}获得返现成功,金额 ,{}", orderId
-                            , newDate, orderInfoEntity.getStatus(), refundInfoEntity, awardDetailDto.getAmount());
+                } else {
+                    //退货完成 删除记录
+                    if ("RS05".equals(refundInfoEntity.getStatus())) {
+                        awardDetailService.delete(awardDetailDto.getId());
+                    }
+                    //售后失败  再判断  订单状态已完成 且订单已完成37天
+                    if ("RS06".equals(refundInfoEntity.getStatus())) {
+                        if ("D04".equals(orderInfoEntity.getStatus()) && newDate.before(date)) {
+                            // 更新状态
+                            awardDetailDto.setArrivedDate(new Date());
+                            awardDetailDto.setUpdateDate(new Date());
+                            awardDetailDto.setStatus((byte) 0);
+                            try {
+                                awardDetailService.updateAwardDetail(awardDetailDto);
+                            } catch (Exception e) {
+                                LOGGER.error("orderId {} 更新 返现获得 失败=====", orderId, e);
+                            }
+                            LOGGER.info("activity id {},订单ID {}  newDate {} ,orderInfoEntity.getStatus {},refundInfoEntity {}获得返现成功,金额 ,{}", orderId
+                                    , newDate, orderInfoEntity.getStatus(), refundInfoEntity, awardDetailDto.getAmount());
+
+                        }
+                    }
+
                 }
+
             }
             LOGGER.info("邀请人获得返点结算定时任务结束");
         } catch (Exception e) {

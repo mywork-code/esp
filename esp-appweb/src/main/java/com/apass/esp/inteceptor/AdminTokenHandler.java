@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ public class AdminTokenHandler {
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
-	@Around("execution(* com.apass.esp.web..*.*(..))")
+//	@Around("execution(* com.apass.esp.web..*.*(..))")
 	private Object handleTokenInteceptor(ProceedingJoinPoint point)
 			throws Throwable {
 		// 研究怎样过滤掉 注册controller

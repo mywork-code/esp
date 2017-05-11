@@ -3,7 +3,7 @@ DROP TABLE  IF EXISTS esp.`t_esp_log_info`;
 CREATE TABLE esp.`t_esp_log_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
   `operation_type` varchar(30) DEFAULT NULL COMMENT '操作类型',
-  `content` varchar(2500) DEFAULT NULL,
+  `content` varchar(255) DEFAULT NULL,
   `create_user` varchar(50) NOT NULL COMMENT '创建人',
   `create_date` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
@@ -29,9 +29,6 @@ SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人手�
  ADD COLUMN `merchant_return_Postcode` VARCHAR (10) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户的收货邮政编码' AFTER `merchant_return_phone`;
 
-/** 卡片绑定信息表*/
-ALTER TABLE gfb.`t_gfb_bind_cards` ADD COLUMN `is_from_esp` int (10) CHARACTER
-SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '是否来自esp' AFTER `status`;
 
 /**转介绍活动表*/
 CREATE TABLE esp.`t_esp_award_activity_info` (
