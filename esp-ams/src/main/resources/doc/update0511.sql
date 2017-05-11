@@ -35,7 +35,7 @@ SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '是否来自esp' AFTER 
 
 /**转介绍活动表*/
 CREATE TABLE esp.`t_esp_award_activity_info` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
+  `id` bigint(20) unsigned NOT NULL AUT O_INCREMENT COMMENT '主键标识ID',
   `activity_name` varchar(100) NOT NULL COMMENT '活动名称',
   `a_start_date` datetime NOT NULL COMMENT '活动开始时间',
   `a_end_date` datetime DEFAULT NULL COMMENT '活动结束时间',
