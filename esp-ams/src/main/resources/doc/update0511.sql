@@ -1,5 +1,6 @@
 /** 日志信息表*/
-CREATE TABLE IF NO EXISTS `t_esp_log_info` (
+DROP TABLE  IF EXISTS esp.`t_esp_log_info`;
+CREATE TABLE esp.`t_esp_log_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
   `operation_type` varchar(30) DEFAULT NULL COMMENT '操作类型',
   `content` varchar(2500) DEFAULT NULL,
@@ -9,7 +10,7 @@ CREATE TABLE IF NO EXISTS `t_esp_log_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 /** 商户信息表  */
-ALTER TABLE `t_esp_merchant_info` ADD COLUMN `merchant_return_address` VARCHAR (100) CHARACTER
+ALTER TABLE  esp.`t_esp_merchant_info` ADD COLUMN `merchant_return_address` VARCHAR (100) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户退货地址' AFTER `merchant_address`,
  ADD COLUMN `merchant_return_name` VARCHAR (100) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人名称' AFTER `merchant_return_address`,
@@ -19,7 +20,7 @@ SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人手�
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户的收货邮政编码' AFTER `merchant_return_phone`;
 
 /** 商户临时信息表  */
-ALTER TABLE `t_esp_merchant_temp_info` ADD COLUMN `merchant_return_address` VARCHAR (100) CHARACTER
+ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `merchant_return_address` VARCHAR (100) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户退货地址' AFTER `merchant_address`,
  ADD COLUMN `merchant_return_name` VARCHAR (100) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人名称' AFTER `merchant_return_address`,
@@ -29,11 +30,11 @@ SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户收货人手�
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商户的收货邮政编码' AFTER `merchant_return_phone`;
 
 /** 卡片绑定信息表*/
-ALTER TABLE `t_gfb_bind_cards` ADD COLUMN `is_from_esp` int (10) CHARACTER
+ALTER TABLE gfb.`t_gfb_bind_cards` ADD COLUMN `is_from_esp` int (10) CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '是否来自esp' AFTER `status`;
 
 /**转介绍活动表*/
-CREATE TABLE `t_esp_award_activity_info` (
+CREATE TABLE esp.`t_esp_award_activity_info` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
   `activity_name` varchar(100) NOT NULL COMMENT '活动名称',
   `a_start_date` datetime NOT NULL COMMENT '活动开始时间',
@@ -48,7 +49,7 @@ CREATE TABLE `t_esp_award_activity_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='转介绍活动表';
 /**邀请人绑定关系表*/
-CREATE TABLE `t_esp_award_bind_rel` (
+CREATE TABLE esp.`t_esp_award_bind_rel` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `activity_id` bigint(20) NOT NULL COMMENT '活动ID',
   `user_id` bigint(20) NOT NULL COMMENT '邀请人',
@@ -61,7 +62,7 @@ CREATE TABLE `t_esp_award_bind_rel` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COMMENT='邀请人绑定关系表';
 /**奖励明细表*/
-CREATE TABLE `t_esp_award_detail` (
+CREATE TABLE esp.`t_esp_award_detail` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL COMMENT 'user_id',
   `activity_id` bigint(20) NOT NULL COMMENT '活动ID',
