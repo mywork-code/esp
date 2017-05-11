@@ -59,7 +59,7 @@ public class AdminTokenHandler {
 		Signature signature = point.getSignature();
 		Class<?> returnType = ((MethodSignature) signature).getReturnType(); 
 		Object[] arr = point.getArgs();
-		LOGGER.info("请求参数:[{}]",arr);
+		//LOGGER.info("请求参数:[{}]",arr);
 		boolean isJsonToken = false;
 		if (arr == null || arr.length == 0) {
 			Map<String, Object> resultMap = Maps.newHashMap();
