@@ -254,15 +254,7 @@ public class OrderInfoController {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail("确认收货失败!请稍后再试");
         }
-        // 该订单是否可以返现
-        AwardActivityInfoVo awardActivityInfoVo = null;
-        try {
-            awardActivityInfoVo = awardActivityInfoService
-                    .getActivityByName(AwardActivity.ActivityName.INTRO);
-        } catch (BusinessException e) {
-            LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
-            return Response.success("确认收货成功!", dto);
-        }
+
         return Response.success("确认收货成功!", dto);
     }
 
