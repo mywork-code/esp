@@ -1,5 +1,5 @@
 /** 日志信息表*/
-CREATE TABLE IF NO EXISTS `t_esp_log_info` (
+CREATE TABLE IF NOT EXISTS `t_esp_log_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
   `operation_type` varchar(30) DEFAULT NULL COMMENT '操作类型',
   `content` varchar(2500) DEFAULT NULL,
