@@ -1,4 +1,4 @@
-package com.apass.esp.domain.entity.categroy;
+package com.apass.esp.domain.entity;
 
 import java.util.Date;
 /**

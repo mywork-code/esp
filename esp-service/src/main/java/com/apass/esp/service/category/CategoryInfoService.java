@@ -1,16 +1,12 @@
 package com.apass.esp.service.category;
 
-import java.util.List;
-
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.mapper.CategoryMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.categroy.Category;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
 /**
  * 商品分类操作service
  */
@@ -46,7 +42,6 @@ public class CategoryInfoService {
 	/**
 	 * 根据类别id修改类别排序
 	 * @param id
-	 * @param categoryName
 	 */
 	public void updateCateSortOrder(long id , long sortOrder){
 		Category cate = new Category();
@@ -57,17 +52,7 @@ public class CategoryInfoService {
 	
 	
 	
-	/**
-	 * 
-	 * @param infoEntity 查询条件
-	 * @param page
-	 * @return
-	 */
-	public Pagination<Category> queryCategoryInforPage(CategoryDto dto, Page page) {
-		 
-		return categoryMapper.queryCategoryInforPage(categoryDtoToCategoryInfo(dto), page);
-	}
-	 
+
 	 /**
 	  * Dto 转换成 InfoEntiy
 	  * @param dto
