@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.service.common.ImageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,9 @@ public class ShopHomeController {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private ImageService imageService;
+
     /**
      *  首页初始化 加载banner和精品商品 
      * @return
@@ -67,6 +71,9 @@ public class ShopHomeController {
             List<BannerInfoEntity> banners = bannerService.loadIndexBanners(ConstantsUtils.BANNERTYPEINDEX);
             for(BannerInfoEntity banner : banners){
                 banner.setActivityUrl(banner.getActivityUrl());
+
+                banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
                 banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
             }
             
@@ -77,6 +84,9 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
+
+                goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+                goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                 goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
                 goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
             }
@@ -108,13 +118,20 @@ public class ShopHomeController {
                 if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
                     BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
                     goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(goodsInfo.getGoodsLogoUrl()));
-                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(goodsInfo.getGoodsSiftUrl()));
+                    String logoUrl = goodsInfo.getGoodsLogoUrl();
+                    String siftUrl = goodsInfo.getGoodsSiftUrl();
+                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                    goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
                 }
             }
             List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
             for(BannerInfoEntity banner : banners){
                 banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+
+                banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
                 banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
             }
             returnMap.put("banners", banners);
@@ -174,7 +191,9 @@ public class ShopHomeController {
             for (GoodsStockInfoEntity goodsStock : goodsStockList) {
                 BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),goodsStock.getId());
                 goodsStock.setGoodsPrice(price);
-                goodsStock.setStockLogo(EncodeUtils.base64Encode(goodsStock.getStockLogo()));
+                String stockLogoUrl = goodsStock.getStockLogo();
+                goodsStock.setStockLogoNew(imageService.getImageUrl(stockLogoUrl));
+                goodsStock.setStockLogo(EncodeUtils.base64Encode(stockLogoUrl));
             }
             
             GoodsInfoEntity goodsInfo = goodService.selectByGoodsId(goodsId);
