@@ -122,9 +122,9 @@ public class OrderRefundService {
      */
     public void confirmReceiptByOrderId(Map<String, String> map) throws BusinessException {
         try {
-            map.put("status", RefundStatus.REFUND_STATUS04.getCode());
+            map.put("status", RefundStatus.REFUND_STATUS03.getCode());
             orderRefundRepository.updateRefundStatusByOrderId(map);
-
+            
             String refundId = map.get("refundId");
             String nodeName = RefundStatus.REFUND_STATUS03.getCode();
             String approvalComments = "同意";
@@ -136,14 +136,15 @@ public class OrderRefundService {
                 afterSaleService.insertServiceProcessAllInfo(Long.valueOf(refundId), nodeName, approvalComments);
             }
             
-            // 插入等待退款记录,此时并未退款
-            nodeName = RefundStatus.REFUND_STATUS04.getCode();
-            map.put("nodeName", nodeName);
-            List<ServiceProcessEntity> list1 = serviceProcessService.queryServiceProcessByParam(map);
-            if (list1.size() == 0) {
-                afterSaleService.insertServiceProcessAllInfo(Long.valueOf(refundId), nodeName, approvalComments);
+            if("0".equals(map.get("refundType"))){
+                // 插入等待退款记录,此时并未退款
+                nodeName = RefundStatus.REFUND_STATUS04.getCode();
+                map.put("nodeName", nodeName);
+                List<ServiceProcessEntity> list1 = serviceProcessService.queryServiceProcessByParam(map);
+                if (list1.size() == 0) {
+                    afterSaleService.insertServiceProcessAllInfo(Long.valueOf(refundId), nodeName, approvalComments);
+                }
             }
-            
         } catch (Exception e) {
             LOGGER.error("确认收货异常：", e);
             throw new BusinessException("确认收货异常：", e);
