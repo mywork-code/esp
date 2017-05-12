@@ -3,6 +3,7 @@ package com.apass.esp.web.order;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
+import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
@@ -14,6 +15,7 @@ import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -56,6 +58,9 @@ public class OrderInfoController {
 
     @Autowired
     public AwardDetailService awardDetailService;
+
+    @Autowired
+    private ImageService imageService;
 
     private static final String NO_USER = "对不起!用户号不能为空";
 
@@ -462,6 +467,13 @@ public class OrderInfoController {
 
             List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
                     statusStr);
+            //添加新的图片地址
+            for (OrderDetailInfoDto list : resultList) {
+                List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
+                for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList ) {
+                         l.setGoodsLogoUrlNew(imageService.getImageUrl(l.getGoodsLogoUrl()));
+                }
+            }
             resultMap.put("orderInfoList", resultList);
             return Response.success("操作成功", resultMap);
         } catch (BusinessException e) {
