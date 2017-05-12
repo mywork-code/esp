@@ -36,37 +36,7 @@ public class CategoryController {
 	
 	@Autowired
 	private CategoryInfoService cateService;
-	/**
-     * 商品分类信息初始化
-     */
-    @RequestMapping("/page")
-    public ModelAndView categoryInforPage(Map<String, Object> paramMap) {
-    	if(SpringSecurityUtils.hasPermission("CATEGORY_MANAGE_EDIT")) {
-    		paramMap.put("grantedAuthority", "permission");
-		}
-        return new ModelAndView(CATEGORYINFOR_URL,paramMap);
-    }
-    /**
-     * 获取商品分类列表
-     * @param request
-     * @param dto
-     * @return
-     */
-    public ResponsePageBody<Category> queryCategoryInfoPage(HttpServletRequest request,CategoryDto dto){
-    	
-    	ResponsePageBody<Category> pageBody = new ResponsePageBody<Category>();
-    	
-		Page page = getPageParam(request);
-    	
-    	Pagination<Category> resultPage = cateService.queryCategoryInforPage(dto, page);
-        
-    	pageBody.setTotal(resultPage.getTotalCount());
-    	pageBody.setRows(resultPage.getDataList());
-    	pageBody.setStatus(CommonCode.SUCCESS_CODE);
-    		
-    	return pageBody;
-    }
-    
+	
     /**
      * 添加一个分类
      * @param dto
@@ -77,6 +47,7 @@ public class CategoryController {
     	//验证传入参数是否符合要求
     	validateCategoryDto(dto);
     	
+    	cateService.addCategory(dto);
     	return Response.success("添加分类成功！");
     }
     

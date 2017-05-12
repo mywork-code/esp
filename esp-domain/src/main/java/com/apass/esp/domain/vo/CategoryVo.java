@@ -1,9 +1,8 @@
-package com.apass.esp.domain.dto.category;
+package com.apass.esp.domain.vo;
 
 import java.util.Date;
 
-public class CategoryDto {
-	
+public class CategoryVo {
 	/**
 	 * 类目Id
 	 */
@@ -104,5 +103,4 @@ public class CategoryDto {
 	public void setUpdateDate(String updateDate) {
 		this.updateDate = updateDate;
 	}
-    
 }

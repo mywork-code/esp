@@ -1,16 +1,22 @@
 package com.apass.esp.service.category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.categroy.Category;
+import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 商品分类操作service
  */
@@ -22,6 +28,38 @@ public class CategoryInfoService {
 	@Autowired
 	private CategoryMapper categoryMapper;
 	
+	public ResponsePageBody<CategoryVo> listCategory(QueryParams query) {
+		ResponsePageBody<CategoryVo> pageBody = new ResponsePageBody<CategoryVo>();
+		List<Category> categories = categoryMapper.pageEffectiveList(query);
+		List<CategoryVo> voList = new ArrayList<CategoryVo>();
+		for (Category v : categories) {
+			voList.add(categroyToCathgroyEntiy(v));
+		}
+		return pageBody;
+	}
+	
+	public CategoryVo categroyToCathgroyEntiy(Category cate){
+		CategoryVo v = new CategoryVo();
+		v.setId(cate.getId());
+		v.setCategoryName(cate.getCategoryName());
+		v.setCreateDate(DateFormatUtil.datetime2String(cate.getCreateDate()));
+		v.setCreateUser(cate.getCreateUser());
+		v.setLevel(cate.getLevel());
+		v.setParentId(cate.getParentId());
+		v.setPictureUrl(cate.getPictureUrl());
+		v.setSortOrder(cate.getSortOrder());
+		v.setUpdateDate(DateFormatUtil.datetime2String(cate.getUpdateDate()));
+		v.setUpdateUser(cate.getUpdateUser());
+		return v;
+	}
+	/**
+	 * 根据parentId查询下属类别
+	 * @param parentId
+	 * @return
+	 */
+	public List<CategoryVo> getCategoryVoListByParentId(long parentId){
+		return null;
+	}
 	/**
 	 * 根据类别id获取类别
 	 * @param id
@@ -55,41 +93,24 @@ public class CategoryInfoService {
 		categoryMapper.updateByPrimaryKey(cate);
 	}
 	
-	
-	
 	/**
-	 * 
-	 * @param infoEntity 查询条件
-	 * @param page
+	 * 新增一个类别
+	 * @param categoryDto
 	 * @return
 	 */
-	public Pagination<Category> queryCategoryInforPage(CategoryDto dto, Page page) {
-		 
-		return categoryMapper.queryCategoryInforPage(categoryDtoToCategoryInfo(dto), page);
+	public Category addCategory(CategoryDto categoryDto){
+		Category cate = new Category();
+		cate.setCategoryName(categoryDto.getCategoryName());
+		cate.setCreateDate(DateFormatUtil.string2date(categoryDto.getCreateDate()));
+		cate.setCreateUser(categoryDto.getCreateUser());
+		cate.setLevel(categoryDto.getLevel());
+		cate.setParentId(categoryDto.getParentId());
+		cate.setPictureUrl(categoryDto.getPictureUrl());
+		cate.setSortOrder(categoryDto.getSortOrder());
+		cate.setUpdateDate(DateFormatUtil.string2date(categoryDto.getUpdateDate()));
+		cate.setUpdateUser(categoryDto.getUpdateUser());
+		categoryMapper.insert(cate);
+		return cate;
 	}
-	 
-	 /**
-	  * Dto 转换成 InfoEntiy
-	  * @param dto
-	  * @return
-	  */
-	 public Category categoryDtoToCategoryInfo(CategoryDto dto){
-		 
-		 Category entity =  new Category();
-		 
-		 if(dto != null ){
-			 entity.setCategoryName(dto.getCategoryName());
-			 entity.setCreateDate(dto.getCreateDate());
-			 entity.setCreateUser(dto.getCreateUser());
-			 entity.setId(dto.getId());
-			 entity.setLevel(dto.getLevel());
-			 entity.setParentId(dto.getParentId());
-			 entity.setSortOrder(dto.getSortOrder());
-			 entity.setPictureUrl(dto.getPictureUrl());
-			 entity.setUpdateDate(dto.getUpdateDate());
-			 entity.setUpdateUser(dto.getUpdateUser());
-		 }
-		 return entity;
-	 }
 	
 }
