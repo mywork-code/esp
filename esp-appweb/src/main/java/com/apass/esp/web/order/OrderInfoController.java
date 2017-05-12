@@ -22,6 +22,7 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -463,7 +464,7 @@ public class OrderInfoController {
             for (OrderDetailInfoDto list : resultList) {
                 List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
                 for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList ) {
-                         l.setGoodsLogoUrlNew(imageService.getImageUrl(l.getGoodsLogoUrl()));
+                         l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
                 }
             }
             resultMap.put("orderInfoList", resultList);
