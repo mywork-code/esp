@@ -1,12 +1,9 @@
 package com.apass.esp.web.category;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +13,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.categroy.CategoryInfoEntity;
-import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
+import com.apass.esp.domain.entity.categroy.Category;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.esp.web.merchant.MerchantInforController;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 
 /**
  * 商品类别操作类
@@ -57,13 +52,13 @@ public class CategoryController {
      * @param dto
      * @return
      */
-    public ResponsePageBody<CategoryInfoEntity> queryCategoryInfoPage(HttpServletRequest request,CategoryDto dto){
+    public ResponsePageBody<Category> queryCategoryInfoPage(HttpServletRequest request,CategoryDto dto){
     	
-    	ResponsePageBody<CategoryInfoEntity> pageBody = new ResponsePageBody<CategoryInfoEntity>();
+    	ResponsePageBody<Category> pageBody = new ResponsePageBody<Category>();
     	
 		Page page = getPageParam(request);
     	
-    	Pagination<CategoryInfoEntity> resultPage = cateService.queryCategoryInforPage(dto, page);
+    	Pagination<Category> resultPage = cateService.queryCategoryInforPage(dto, page);
         
     	pageBody.setTotal(resultPage.getTotalCount());
     	pageBody.setRows(resultPage.getDataList());
@@ -100,7 +95,7 @@ public class CategoryController {
     
     public void validateCategoryDto(CategoryDto dto){
     	
-    	if(StringUtils.isBlank(dto.getCateLevel())){
+    	if(dto.getLevel()==0){
     		throw new RuntimeException("请明确添加分类的level");
     	}
     	
