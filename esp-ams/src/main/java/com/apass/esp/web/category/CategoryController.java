@@ -1,9 +1,14 @@
 package com.apass.esp.web.category;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.categroy.Category;
-import com.apass.esp.service.category.CategoryInfoService;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
-import com.apass.gfb.framework.utils.HttpWebUtils;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 商品类别操作类
@@ -58,12 +54,8 @@ public class CategoryController {
     	
 		Page page = getPageParam(request);
     	
-    	Pagination<Category> resultPage = cateService.queryCategoryInforPage(dto, page);
-        
-    	pageBody.setTotal(resultPage.getTotalCount());
-    	pageBody.setRows(resultPage.getDataList());
-    	pageBody.setStatus(CommonCode.SUCCESS_CODE);
-    		
+
+
     	return pageBody;
     }
     
