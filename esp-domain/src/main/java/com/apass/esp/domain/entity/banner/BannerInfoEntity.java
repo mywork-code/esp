@@ -21,7 +21,17 @@ public class BannerInfoEntity {
     private String bannerName;
     
     private String bannerImgUrl;
-    
+
+    private String bannerImgUrlNew;
+
+    public String getBannerImgUrlNew() {
+        return bannerImgUrlNew;
+    }
+
+    public void setBannerImgUrlNew(String bannerImgUrlNew) {
+        this.bannerImgUrlNew = bannerImgUrlNew;
+    }
+
     private String bannerCategory;
     
     private String bannerType;

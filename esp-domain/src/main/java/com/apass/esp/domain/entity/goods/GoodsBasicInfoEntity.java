@@ -39,8 +39,30 @@ public class GoodsBasicInfoEntity {
 	/** 商品logo地址 **/
 	private String goodsLogoUrl;
 
+    /** 商品logo地址 (新)**/
+    private String goodsLogoUrlNew;
+
 	/** 精选商品地址 **/
 	private String goodsSiftUrl;
+
+    public String getGoodsLogoUrlNew() {
+        return goodsLogoUrlNew;
+    }
+
+    public void setGoodsLogoUrlNew(String goodsLogoUrlNew) {
+        this.goodsLogoUrlNew = goodsLogoUrlNew;
+    }
+
+    public String getGoodsSiftUrlNew() {
+        return goodsSiftUrlNew;
+    }
+
+    public void setGoodsSiftUrlNew(String goodsSiftUrlNew) {
+        this.goodsSiftUrlNew = goodsSiftUrlNew;
+    }
+
+    /** 精选商品地址 （新）**/
+    private String goodsSiftUrlNew;
 
 	/** 商品详情 **/
 	private String googsDetail;

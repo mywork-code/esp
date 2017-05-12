@@ -1,7 +1,5 @@
 /**
- * @description 
- * 
- * Copyright (c) 2015-2016 liuchao01,Inc.All Rights Reserved.
+ * @description Copyright (c) 2015-2016 liuchao01,Inc.All Rights Reserved.
  */
 package com.apass.esp.domain.entity.goods;
 
@@ -14,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @description
- * 
+ *
  * 				商品基本信息表 t_ajp_goods_base_info
- * 
+ *
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
  */
@@ -25,7 +23,7 @@ public class GoodsInfoEntity {
 
     private Long id;
     // 等同id避免IOS关键字
-    private Long   goodId;
+    private Long goodId;
 
     /** 商品类目编码 **/
     private String categoryCode;
@@ -48,18 +46,32 @@ public class GoodsInfoEntity {
     /** 商品logo地址 **/
     private String goodsLogoUrl;
 
+    /** 商品logo地址 (新)**/
+    private String goodsLogoUrlNew;
+
     /** 精选商品地址 **/
     private String goodsSiftUrl;
 
+    /** 精选商品地址 (新)**/
+    private String goodsSiftUrlNew;
+
+    public String getGoodsSiftUrlNew() {
+        return goodsSiftUrlNew;
+    }
+
+    public void setGoodsSiftUrlNew(String goodsSiftUrlNew) {
+        this.goodsSiftUrlNew = goodsSiftUrlNew;
+    }
+
     /** 商品上架时间 **/
-    private Date   listTime;
+    private Date listTime;
 
     /** 商品下架时间 **/
-    private Date   delistTime;
+    private Date delistTime;
 
     /** 商品生产日期 **/
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date   proDate;
+    private Date proDate;
 
     /** 商品保质期多少月 **/
     private String keepDate;
@@ -74,10 +86,10 @@ public class GoodsInfoEntity {
     private String updateUser;
 
     /** 创建时间 **/
-    private Date   createDate;
+    private Date createDate;
 
     /** 修改时间 **/
-    private Date   updateDate;
+    private Date updateDate;
 
     /** 商户号 **/
     private String merchantCode;
@@ -121,7 +133,7 @@ public class GoodsInfoEntity {
         this.colFalgt = colFalgt;
     }
 
-    private String  colFalgt;// 标识
+    private String colFalgt;// 标识
 
     /**
      * 商品排序
@@ -238,6 +250,14 @@ public class GoodsInfoEntity {
 
     public void setGoodsLogoUrl(String goodsLogoUrl) {
         this.goodsLogoUrl = goodsLogoUrl;
+    }
+
+    public String getGoodsLogoUrlNew() {
+        return goodsLogoUrlNew;
+    }
+
+    public void setGoodsLogoUrlNew(String goodsLogoUrlNew) {
+        this.goodsLogoUrlNew = goodsLogoUrlNew;
     }
 
     public String getGoodsSiftUrl() {
@@ -376,12 +396,12 @@ public class GoodsInfoEntity {
         this.googsDetail = googsDetail;
     }
 
-	public String getMerchantType() {
-		return merchantType;
-	}
+    public String getMerchantType() {
+        return merchantType;
+    }
 
-	public void setMerchantType(String merchantType) {
-		this.merchantType = merchantType;
-	}
-    
+    public void setMerchantType(String merchantType) {
+        this.merchantType = merchantType;
+    }
+
 }

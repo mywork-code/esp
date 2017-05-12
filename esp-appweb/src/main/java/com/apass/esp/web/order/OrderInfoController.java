@@ -3,6 +3,7 @@ package com.apass.esp.web.order;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
+import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
@@ -14,12 +15,14 @@ import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +59,9 @@ public class OrderInfoController {
 
     @Autowired
     public AwardDetailService awardDetailService;
+
+    @Autowired
+    private ImageService imageService;
 
     private static final String NO_USER = "对不起!用户号不能为空";
 
@@ -249,15 +255,7 @@ public class OrderInfoController {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail("确认收货失败!请稍后再试");
         }
-        // 该订单是否可以返现
-        AwardActivityInfoVo awardActivityInfoVo = null;
-        try {
-            awardActivityInfoVo = awardActivityInfoService
-                    .getActivityByName(AwardActivity.ActivityName.INTRO);
-        } catch (BusinessException e) {
-            LOGGER.error("getActivityBy intro error userId {},orderId {}", userId, orderId);
-            return Response.success("确认收货成功!", dto);
-        }
+
         return Response.success("确认收货成功!", dto);
     }
 
@@ -462,6 +460,13 @@ public class OrderInfoController {
 
             List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
                     statusStr);
+            //添加新的图片地址
+            for (OrderDetailInfoDto list : resultList) {
+                List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
+                for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList ) {
+                         l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
+                }
+            }
             resultMap.put("orderInfoList", resultList);
             return Response.success("操作成功", resultMap);
         } catch (BusinessException e) {

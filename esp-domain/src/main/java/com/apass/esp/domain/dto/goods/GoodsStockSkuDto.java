@@ -28,6 +28,17 @@ public class GoodsStockSkuDto {
     /** 商品规格logo url **/
     private String stockLogo;
 
+    public String getStockLogoNew() {
+        return stockLogoNew;
+    }
+
+    public void setStockLogoNew(String stockLogoNew) {
+        this.stockLogoNew = stockLogoNew;
+    }
+
+    /** 商品规格logo url (new)**/
+    private String stockLogoNew;
+
     public Long getGoodsStockId() {
         return goodsStockId;
     }
