@@ -10,12 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.categroy.Category;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 商品分类操作service
@@ -37,7 +35,11 @@ public class CategoryInfoService {
 		}
 		return pageBody;
 	}
-	
+	/**
+	 * entity 转  vo 
+	 * @param cate
+	 * @return
+	 */
 	public CategoryVo categroyToCathgroyEntiy(Category cate){
 		CategoryVo v = new CategoryVo();
 		v.setId(cate.getId());
@@ -84,7 +86,6 @@ public class CategoryInfoService {
 	/**
 	 * 根据类别id修改类别排序
 	 * @param id
-	 * @param categoryName
 	 */
 	public void updateCateSortOrder(long id , long sortOrder){
 		Category cate = new Category();

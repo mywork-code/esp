@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.CategoryMapper" >
-  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.Category" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
-    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
-    <result column="sort_order" property="sortOrder" jdbcType="BIGINT" />
-    <result column="level" property="level" jdbcType="BIGINT" />
-    <result column="picture_url" property="pictureUrl" jdbcType="VARCHAR" />
-    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
-    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    id, category_name, parent_id, sort_order, level, picture_url, create_user, update_user, 
-    create_date, update_date
-  </sql>
+
  
 </mapper>
