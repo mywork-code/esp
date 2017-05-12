@@ -14,5 +14,7 @@ CREATE TABLE `t_esp_category` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品分类信息表';
 
---在商品的基础表中添加一列
-ALTER TABLE `t_esp_goods_base_info` ADD COLUMN `category_id`  bigint(20) NULL COMMENT '商品分类Id' AFTER `id`;
+--在商品的基础表中添加三列
+ALTER TABLE `t_esp_goods_base_info` ADD COLUMN `category1_id`  bigint(20) NULL COMMENT '商品分类一级Id' AFTER `id`;
+ALTER TABLE `t_esp_goods_base_info` ADD COLUMN `category2_id`  bigint(20) NULL COMMENT '商品分类二级Id' AFTER `category1_id`;
+ALTER TABLE `t_esp_goods_base_info` ADD COLUMN `category3_id`  bigint(20) NULL COMMENT '商品分类三级Id' AFTER `category2_id`;
