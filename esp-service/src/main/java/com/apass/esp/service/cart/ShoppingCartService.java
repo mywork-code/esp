@@ -503,6 +503,7 @@ public class ShoppingCartService {
         Map<Long, GoodsInfoInCartEntity> cartInfoMap= new HashMap<Long, GoodsInfoInCartEntity>();
         List<Long> goodsStockIdList = new LinkedList<Long>();
         for(GoodsInfoInCartEntity cartInfo : goodsInfoInCartList){
+            cartInfo.setGoodsLogoUrlNew(imageService.getImageUrl(cartInfo.getGoodsLogoUrl()));
             cartInfoMap.put(cartInfo.getGoodsStockId(), cartInfo);
             goodsStockIdList.add(cartInfo.getGoodsStockId());
         }
