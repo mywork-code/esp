@@ -35,6 +35,7 @@ import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -90,7 +91,8 @@ public class OrderService {
 	private GoodsStockLogRepository goodsStcokLogDao;
 	@Autowired
 	private PaymentHttpClient paymentHttpClient;
-
+	@Autowired
+	private ImageService imageService;
 	@Autowired
 	private BillService billService;
 
@@ -896,8 +898,11 @@ public class OrderService {
         OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
 	    
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity.getUserId(),entity);
-	    
-	    return dto;
+		List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
+		for (GoodsInfoInOrderDto goodsInfoInOrderDto :goodsInfoInOrderDtoList) {
+			goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoInOrderDto.getGoodsLogoUrl()));
+		}
+		return dto;
 	}
 
     private OrderDetailInfoDto getOrderDetailInfoDto(String requestId, Long userIdVal,
@@ -1098,6 +1103,8 @@ public class OrderService {
 			goodInfo.setGoodsSelectedPrice(goodsPrice);
 			goodInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
 			goodInfo.setMerchantCode(orderInfo.getMerchantCode());
+			//商品新地址
+			goodInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodInfo.getGoodsLogoUrl()));
 			goodsList.add(goodInfo);
 			// 订单总金额
 			totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.service.common.ImageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ public class GoodsService {
     private BannerInfoRepository     bannerInfoDao;
     @Autowired
     private CommonService            commonService;
+    @Autowired
+    private ImageService             imageService;
 
     /**
      * app 首页加载精品推荐商品
@@ -113,11 +116,14 @@ public class GoodsService {
         if (offShelfFlag) {
             goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
         }
-        
+
+        goodsBasicInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
+        goodsBasicInfo.setGoodsSiftUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsSiftUrl()));
+
         // 20170322
         goodsBasicInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsLogoUrl()));
         goodsBasicInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsSiftUrl()));
-        
+
         returnMap.put("goodsBasicInfo", goodsBasicInfo);
         List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
         for (GoodsStockInfoEntity goodsStock : goodsStockList) {
@@ -125,6 +131,8 @@ public class GoodsService {
             goodsStock.setGoodsPrice(price);
             totalCurrentAmt += goodsStock.getStockCurrAmt();
             // 20170322
+
+            goodsStock.setStockLogoNew(imageService.getImageUrl(goodsStock.getStockLogo()));
             goodsStock.setStockLogo(EncodeUtils.base64Encode(goodsStock.getStockLogo()));
         }
         returnMap.put("totalCurrentAmt", totalCurrentAmt);
@@ -133,6 +141,7 @@ public class GoodsService {
         // 20170322
         for(BannerInfoEntity banner : goodsBannerList){
             banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+            banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
             banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
         }
         
