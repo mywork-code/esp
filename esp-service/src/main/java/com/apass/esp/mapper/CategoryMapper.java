@@ -11,5 +11,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     List<Category> pageEffectiveList(QueryParams query);
     
+    List<Category> selectByParentKey(Long parentId);
+    
 }
 
