@@ -165,7 +165,21 @@ public class ListeningRegExpUtils {
     public static boolean isChineseCharacter(String value) {
         return Pattern.matches("[\u4e00-\u9fa5]*", value);
     }
-
+    
+    /**
+     * 是否为字母
+     */
+    public static boolean isLetterCharacter(String value){
+    	return Pattern.matches("[a-zA-Z]*", value);
+    }
+    
+    /**
+     * 是否为汉字和字母
+     */
+    public static boolean isChineseOrLetterCharacter(String value){
+    	return Pattern.matches("^[a-zA-Z\u4e00-\u9fa5]+$", value);
+    }
+    
     /**
      * Check Is Multi Mails separate by chars
      */
