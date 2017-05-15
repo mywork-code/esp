@@ -597,7 +597,7 @@ public class ShoppingCartService {
         // 根据市场价和折扣率 计算商品价格
         for(GoodsStockSkuDto dto : goodsStockSkuList){
             //添加新的图片地址
-            dto.setStockLogoNew(imageService.getImageUrl(dto.getStockLogo()));
+            dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
 
             dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
         }
@@ -663,6 +663,7 @@ public class ShoppingCartService {
         goodsInfoInCart.setGoodsName(goodsInfo.getGoodsName());
         goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
         goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
+        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
         goodsInfoInCart.setGoodsNum(numVal);
         goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
         goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
