@@ -6,11 +6,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -60,8 +62,14 @@ public class CategoryInfoService {
 	 * @return
 	 */
 	public List<CategoryVo> getCategoryVoListByParentId(long parentId){
-		return null;
+		List<Category> categories = categoryMapper.selectByParentKey(parentId);
+		List<CategoryVo> voList = new ArrayList<CategoryVo>();
+		for (Category v : categories) {
+			voList.add(categroyToCathgroyEntiy(v));
+		}
+		return voList;
 	}
+	
 	/**
 	 * 根据类别id获取类别
 	 * @param id
@@ -80,7 +88,29 @@ public class CategoryInfoService {
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setCategoryName(categoryName);
-		categoryMapper.updateByPrimaryKey(cate);
+		categoryMapper.updateByPrimaryKeySelective(cate);
+	}
+	
+	/**
+	 * 根据类目id，删除分类
+	 * @param id
+	 */
+	public void deleteCategoryById(long id){
+	
+	 List<CategoryVo> cateList = getCategoryVoListByParentId(id);
+	 if(cateList == null && cateList.isEmpty()){
+		 throw new RuntimeException("该商品分类下存在下级分类!");
+	 }
+	 
+	 //id或parentId下属是否有商品,并且此时商品的状态应该不是(G02:已上架)
+	 //TODO
+	 List<GoodsBasicInfoEntity> basicList = null;
+	 if(basicList == null && basicList.isEmpty()){
+		 throw new RuntimeException("该商品分类下存在商品!");
+	 }
+	 
+	 categoryMapper.deleteByPrimaryKey(id);
+	 
 	}
 	
 	/**
@@ -91,7 +121,7 @@ public class CategoryInfoService {
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setSortOrder(sortOrder);
-		categoryMapper.updateByPrimaryKey(cate);
+		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
 	/**

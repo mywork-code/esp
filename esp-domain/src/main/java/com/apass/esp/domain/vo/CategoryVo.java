@@ -1,6 +1,7 @@
 package com.apass.esp.domain.vo;
 
 import java.util.Date;
+import java.util.List;
 
 public class CategoryVo {
 	/**
@@ -43,6 +44,10 @@ public class CategoryVo {
      * 修改时间
      */
     private String updateDate;
+    /**
+     * 当前类目下的下属分类
+     */
+    private List<CategoryVo> vList;
 	public Long getId() {
 		return id;
 	}
@@ -102,5 +107,11 @@ public class CategoryVo {
 	}
 	public void setUpdateDate(String updateDate) {
 		this.updateDate = updateDate;
+	}
+	public List<CategoryVo> getvList() {
+		return vList;
+	}
+	public void setvList(List<CategoryVo> vList) {
+		this.vList = vList;
 	}
 }

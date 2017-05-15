@@ -82,13 +82,13 @@ public class GoodsBasicInfoEntity {
 	
 
 	/**商品一级分类*/
-	private Long category1Id;
+	private Long categoryId1;
 	
 	/**商品二级分类*/
-	private Long category2Id;
+	private Long categoryId2;
 	
 	/**商品三级分类*/
-	private Long category3Id;
+	private Long categoryId3;
 	
     public Long getGoodsStockId() {
         return goodsStockId;
@@ -157,28 +157,27 @@ public class GoodsBasicInfoEntity {
         this.marketPrice = marketPrice;
     }
 
-	public Long getCategory1Id() {
-		return category1Id;
+	public Long getCategoryId1() {
+		return categoryId1;
 	}
 
-	public void setCategory1Id(Long category1Id) {
-		this.category1Id = category1Id;
+	public void setCategoryId1(Long categoryId1) {
+		this.categoryId1 = categoryId1;
 	}
 
-	public Long getCategory2Id() {
-		return category2Id;
+	public Long getCategoryId2() {
+		return categoryId2;
 	}
 
-	public void setCategory2Id(Long category2Id) {
-		this.category2Id = category2Id;
+	public void setCategoryId2(Long categoryId2) {
+		this.categoryId2 = categoryId2;
 	}
 
-	public Long getCategory3Id() {
-		return category3Id;
+	public Long getCategoryId3() {
+		return categoryId3;
 	}
 
-	public void setCategory3Id(Long category3Id) {
-		this.category3Id = category3Id;
+	public void setCategoryId3(Long categoryId3) {
+		this.categoryId3 = categoryId3;
 	}
-    
 }
