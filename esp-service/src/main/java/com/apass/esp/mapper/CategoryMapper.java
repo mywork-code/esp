@@ -13,5 +13,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     List<Category> selectByParentKey(Long parentId);
     
+    List<Category> selectByCategoryName(String categoryName);
+    
 }
 
