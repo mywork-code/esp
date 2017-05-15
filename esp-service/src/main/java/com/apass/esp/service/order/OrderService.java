@@ -900,7 +900,7 @@ public class OrderService {
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity.getUserId(),entity);
 		List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
 		for (GoodsInfoInOrderDto goodsInfoInOrderDto :goodsInfoInOrderDtoList) {
-			goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoInOrderDto.getGoodsLogoUrl()));
+			goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
 		}
 		return dto;
 	}
@@ -1104,7 +1104,7 @@ public class OrderService {
 			goodInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
 			goodInfo.setMerchantCode(orderInfo.getMerchantCode());
 			//商品新地址
-			goodInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodInfo.getGoodsLogoUrl()));
+			goodInfo.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(goodInfo.getGoodsLogoUrl())));
 			goodsList.add(goodInfo);
 			// 订单总金额
 			totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
