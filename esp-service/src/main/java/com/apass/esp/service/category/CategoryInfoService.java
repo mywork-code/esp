@@ -29,7 +29,7 @@ public class CategoryInfoService {
 	
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
-		List<CategoryVo> cate1List = getCategoryVoListByParentId(0);
+		List<CategoryVo> cate1List = getCategoryVoListByParentId(null);
 		
 		//根据传入的一级分类参数，获取所属的二级分类
 		List<CategoryVo> cate2List = categoryListByParentId(dto.getCategoryId1(), cate1List);
@@ -51,7 +51,7 @@ public class CategoryInfoService {
 				v = cateList.get(0);
 			}
 			if(v != null){
-				voList = getCategoryVoListByParentId(Id);
+				voList = getCategoryVoListByParentId(v.getCategoryId());
 				v.setvList(voList);
 			}
 		}
@@ -105,7 +105,7 @@ public class CategoryInfoService {
 	 * @param parentId
 	 * @return
 	 */
-	public List<CategoryVo> getCategoryVoListByParentId(long parentId){
+	public List<CategoryVo> getCategoryVoListByParentId(Long parentId){
 		List<Category> categories = categoryMapper.selectByParentKey(parentId);
 		List<CategoryVo> voList = new ArrayList<CategoryVo>();
 		if(categories!=null&& !categories.isEmpty()){

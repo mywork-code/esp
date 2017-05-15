@@ -6,7 +6,15 @@
   	select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where parent_id = #{id,jdbcType=BIGINT} order by sort_order asc
+    where 
+    
+    <if test="_parameter  != null and _parameter  != '' ">
+			<![CDATA[  parent_id = #{_parameter} ]]>
+	</if>
+	<if test="_parameter  == null or _parameter  == '' ">
+			<![CDATA[  parent_id is null  ]]>
+	</if>
+	order by sort_order asc
   </select>
   
   <select id="selectByCategoryName" resultMap="BaseResultMap">
