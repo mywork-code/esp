@@ -42,7 +42,7 @@ public class CategoryController {
 	private CategoryInfoService cateService;
 	
 	@RequestMapping(value = "/page", method = RequestMethod.GET)
-	public ModelAndView categoryPage(CategoryDto dto) {
+	public ModelAndView categoryPage() {
 	    return  new ModelAndView(CATEGORYPAGE);
 	}
 	
@@ -55,10 +55,9 @@ public class CategoryController {
     @Value("${nfs.category}")
     private String                categoryPath;
     
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@RequestMapping(value = "/list")
 	@ResponseBody
-	public List<CategoryVo> listConfig(@RequestBody CategoryDto dto) {
-		
+	public List<CategoryVo> listConfig(CategoryDto dto) {
 	   return  cateService.listCategory(dto);
 	}
 	
