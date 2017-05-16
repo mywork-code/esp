@@ -185,20 +185,16 @@ public class CategoryInfoService {
 	 * @param id
 	 */
 	public void deleteCategoryById(long id){
-	
-	 List<CategoryVo> cateList = getCategoryVoListByParentId(id);
-	 if(cateList == null && cateList.isEmpty()){
-		 throw new RuntimeException("该商品分类下存在下级分类!");
-	 }
-	 
-	 //id或parentId下属是否有商品,并且此时商品的状态应该不是(G02:已上架)
-	 int count = goodsService.getBelongCategoryGoodsNumber(id);
-	 if(count>0){
+	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
+	   if(cateList == null && cateList.isEmpty()){
+		  throw new RuntimeException("该商品分类下存在下级分类!");
+	   }
+	   //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
+	   int count = goodsService.getBelongCategoryGoodsNumber(id);
+	   if(count>0){
 		 throw new RuntimeException("该商品分类下存在商品!");
-	 }
-	 
-	 categoryMapper.deleteByPrimaryKey(id);
-	 
+	   }
+	   categoryMapper.deleteByPrimaryKey(id);
 	}
 	
 	/**
