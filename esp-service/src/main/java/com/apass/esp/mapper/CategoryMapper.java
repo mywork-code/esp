@@ -17,5 +17,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     List<Category> selectByCategoryName(@Param("categoryName") String categoryName);
     
+    List<Category> selectCategoryList(Long levelId);
+    
 }
 

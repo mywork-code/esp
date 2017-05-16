@@ -1,6 +1,5 @@
 package com.apass.esp.domain.vo;
 
-import java.util.Date;
 import java.util.List;
 
 public class CategoryVo {
@@ -12,6 +11,10 @@ public class CategoryVo {
      * 类目名称
      */
     private String categoryName;
+    /**
+     * 类目小标题
+     */
+    private String categoryTitle;
     /**
      * 父类节点Id
      */
@@ -115,4 +118,11 @@ public class CategoryVo {
 	public void setvList(List<CategoryVo> vList) {
 		this.vList = vList;
 	}
+	public String getCategoryTitle() {
+		return categoryTitle;
+	}
+	public void setCategoryTitle(String categoryTitle) {
+		this.categoryTitle = categoryTitle;
+	}
+	
 }
