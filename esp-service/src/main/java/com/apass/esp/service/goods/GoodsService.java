@@ -3,7 +3,6 @@ package com.apass.esp.service.goods;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +20,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.repository.banner.BannerInfoRepository;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -44,7 +44,8 @@ public class GoodsService {
     private CommonService            commonService;
     @Autowired
     private ImageService             imageService;
-
+    @Autowired
+    private GoodsBasicRepository     goodsBasicRepository;
     /**
      * app 首页加载精品推荐商品
      * 
@@ -75,7 +76,22 @@ public class GoodsService {
         Page pageParam = new Page(pageInteger, limitInteger);
         return goodsDao.loadGoodsByPages(pageParam, param);
     }
-
+    
+    /**
+     * 通过类目id查询商品[客户端分页]
+     */
+    public Pagination<GoodsBasicInfoEntity> loadGoodsByCategoryId(GoodsBasicInfoEntity param,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = goodsBasicRepository.count(param);
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        Page pageParam = new Page(pageInteger, limitInteger);
+        return goodsBasicRepository.loadGoodsPages(pageParam, param);
+    }
     /**
      * 
      * 加载商品列表
@@ -320,6 +336,7 @@ public class GoodsService {
 
         return goodsDao.updateGoodsEdit(dto);
     }
+    
     /**
 	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
 	 * @return
@@ -327,4 +344,6 @@ public class GoodsService {
     public int getBelongCategoryGoodsNumber(long categoryId){
     	return goodsDao.getBelongCategoryGoodsNumber(categoryId);
     }
+    
 }
+
