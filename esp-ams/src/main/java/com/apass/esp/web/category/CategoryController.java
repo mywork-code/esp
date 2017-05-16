@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
@@ -27,20 +28,28 @@ import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 @Controller
 @RequestMapping("/application/categoryinfo/category")
 public class CategoryController {
-	
+	/**
+	 * 日志
+	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
-	
+	/**
+	 * 返回页面
+	 */
+	private static final String CATEGORYPAGE= "goods/goodCategory";
 	@Autowired
 	private CategoryInfoService cateService;
+	
     
 	
+	
+	@RequestMapping(value = "/page", method = RequestMethod.GET)
+	public ModelAndView categoryPage(CategoryDto dto) {
+	    return  new ModelAndView(CATEGORYPAGE);
+	}
 	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
 	public List<CategoryVo> listConfig(CategoryDto dto) {
-		
-		
-		
 	   return  cateService.getCategoryVoListByParentId(dto.getId());
 	}
     /**

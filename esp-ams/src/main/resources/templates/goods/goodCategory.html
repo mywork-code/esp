@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+#roleName,#roleCode {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+textarea {
+	border: 1px solid #B4CFFF;
+    padding: 5px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+.messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/goodCategory.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true,border:false" style="min-width:800px;">  
+	    <div data-options="region:'north'" style="height:50px">  
+			<!-- Toolbar -->
+			<div id="tb">
+				<div class="search">
+					<table style="width:100%;min-width:700px;">
+						<tr>
+							<td>
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addFirstCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;一 &nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addSecondCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;二&nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addSecondCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;三&nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addThirdCategory"
+									data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;分 &nbsp;类 &nbsp;</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+	    </div>  
+	    <div data-options="region:'west',split:true,title:'一级类目',collapsible:false" style="width:30%;min-width:300px;">  
+			<div id="westAttrDataGrid" data-options="fit:true,border:false"></div>
+	    </div>  
+	    <div data-options="region:'center',split:true,title:'二级类目'" style="width:30%;padding-top:182px;min-width:300px;">  
+	    	<div id="centerAttrDataGrid" data-options="fit:true,border:false"></div> 
+	    </div>  
+	    <div data-options="region:'east',split:true,title:'三级类目',collapsible:false" style="width:30%;;">  
+	        <div id="eastAttrDataGrid" data-options="fit:true,border:false"></div> 
+	    </div>  
+	</div>  
+	<!-- 角色菜单配置 -->
+	<div id="roleMenuDetails">
+		<div id="menutablelist"></div>
+	</div>
+</body>
+</html>   
