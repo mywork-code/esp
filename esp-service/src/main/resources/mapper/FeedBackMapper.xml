@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.FeedBackMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.FeedBack" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="feedback_type" property="feedbackType" jdbcType="VARCHAR" />
+    <result column="comments" property="comments" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, feedback_type, comments, mobile, create_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_feedback
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_feedback
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_feedback (feedback_type, comments, mobile, 
+      create_date)
+    values (#{feedbackType,jdbcType=VARCHAR}, #{comments,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_feedback
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="feedbackType != null" >
+        feedback_type,
+      </if>
+      <if test="comments != null" >
+        comments,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="feedbackType != null" >
+        #{feedbackType,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null" >
+        #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.FeedBack" >
+    update t_esp_feedback
+    <set >
+      <if test="feedbackType != null" >
+        feedback_type = #{feedbackType,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null" >
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.FeedBack" >
+    update t_esp_feedback
+    set feedback_type = #{feedbackType,jdbcType=VARCHAR},
+      comments = #{comments,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
