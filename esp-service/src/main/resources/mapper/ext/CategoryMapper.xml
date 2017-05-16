@@ -2,5 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.CategoryMapper" >
 
+  <!--查询客户端首页的前3个类目信息  -->
+  <select id="selectCategoryList" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+     SELECT 
+     <include refid="Base_Column_List" />
+      FROM     t_esp_category 
+      WHERE    level=#{value}
+      ORDER    BY sort_order ASC 
+      LIMIT    3
+  </select>
  
 </mapper>
