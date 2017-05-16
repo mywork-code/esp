@@ -1,22 +1,19 @@
 package com.apass.esp.service.category;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.vo.CategoryVo;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 /**
  * 商品分类操作service
  */
@@ -29,7 +26,7 @@ public class CategoryInfoService {
 	private CategoryMapper categoryMapper;
 	@Autowired
 	private GoodsService goodsService;
-	
+
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
 		List<CategoryVo> cate1List = getCategoryVoListByParentId(null);
@@ -164,7 +161,7 @@ public class CategoryInfoService {
 	 * @param id
 	 * @param categoryName
 	 */
-	public void updateCategoryNameById(long id ,String categoryName){
+	public void updateCategoryNameById(long id ,String categoryName,String userName){
 		
 		//根据id获取类目信息
 		CategoryVo v= getCategoryById(id);
@@ -179,7 +176,7 @@ public class CategoryInfoService {
 		cate.setId(id);
 		cate.setCategoryName(categoryName);
 		cate.setUpdateDate(new Date());
-		cate.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		cate.setUpdateUser(userName);
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -208,12 +205,12 @@ public class CategoryInfoService {
 	 * 根据类别id修改类别排序
 	 * @param id
 	 */
-	public void updateCateSortOrder(long id , long sortOrder){
+	public void updateCateSortOrder(long id , long sortOrder,String userName){
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setSortOrder(sortOrder);
 		cate.setUpdateDate(new Date());
-		cate.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		cate.setUpdateUser(userName);
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -233,13 +230,12 @@ public class CategoryInfoService {
 		Category cate = new Category();
 		cate.setCategoryName(categoryDto.getCategoryName());
 		cate.setCreateDate(new Date());
-		cate.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		cate.setCreateUser(categoryDto.getCreateUser());
 		cate.setLevel(categoryDto.getLevel());
 		cate.setParentId(categoryDto.getParentId());
 		cate.setPictureUrl(categoryDto.getPictureUrl());
 		cate.setSortOrder(categoryDto.getSortOrder());
 		cate.setUpdateDate(new Date());
-		cate.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 		categoryMapper.insert(cate);
 		return cate;
 	}
