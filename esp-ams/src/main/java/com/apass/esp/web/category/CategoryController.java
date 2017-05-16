@@ -1,20 +1,26 @@
 package com.apass.esp.web.category;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ImageTools;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 
 /**
@@ -28,10 +34,18 @@ public class CategoryController {
 	
 	@Autowired
 	private CategoryInfoService cateService;
+	
+	/**
+     * 图片服务器地址
+     */
+    @Value("${nfs.rootPath}")
+    private String                rootPath;
+    @Value("${nfs.category}")
+    private String                categoryPath;
     
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
-	public List<CategoryVo> listConfig(CategoryDto dto) {
+	public List<CategoryVo> listConfig(@RequestBody CategoryDto dto) {
 		
 	   return  cateService.listCategory(dto);
 	}
@@ -43,7 +57,7 @@ public class CategoryController {
      */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@ResponseBody
-    public Response addCategory(CategoryDto dto){
+    public Response addCategory(@RequestBody CategoryDto dto){
     	try {
     		//验证传入参数是否符合要求
         	validateAddCategoryDto(dto);
@@ -60,7 +74,7 @@ public class CategoryController {
      */
     @RequestMapping(value = "/updateName", method = RequestMethod.POST)
     @ResponseBody
-    public Response updateCategoryName(CategoryDto dto){
+    public Response updateCategoryName(@RequestBody CategoryDto dto){
     	try {
     		validateUpdateCategoryDto(dto);
         	cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName());
@@ -72,11 +86,48 @@ public class CategoryController {
     }
     
     /**
+     * 上传一个三级类目的小图标
+     * @return
+     * @throws IOException 
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addpic", method = RequestMethod.POST)
+    public Response uploadPicFile(MultipartFile file) {
+    	String url = "";
+    	 try {
+	    	if(file.isEmpty()){
+	    		throw new RuntimeException("上传图片不能为空!");
+	    	}
+	    	String fileName  = file.getOriginalFilename();
+	    	String imgType = ImageTools.getImgType(file);
+	        url = categoryPath +"cate_"+ System.currentTimeMillis() + fileName + "." + imgType;
+	    	/**
+	         * 图片校验
+	         */
+	        boolean checkGoodBannerImgSize = ImageTools.checkSiftGoodsImgSize(file);// 尺寸
+	        boolean checkImgType = ImageTools.checkImgType(file);// 类型
+			int size = file.getInputStream().available();
+			if (!(checkGoodBannerImgSize && checkImgType)) {
+                file.getInputStream().close();// 284*284px;大小：≤500kb;.jpg .png
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：284px,高：284px,格式：.jpg,.png", url);
+            } else if (size > 1024 * 300) {
+                file.getInputStream().close();
+                return Response.fail("文件不能大于300kb!", url);
+            }
+			FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
+			return Response.success("上传图片成功!", url);
+		} catch (IOException e) {
+			LOGGER.error("三级分类上传图片失败", e);
+			return Response.fail("三级分类上传图片失败");
+		}
+    }
+    
+    /**
      * 修改一个分类的排序
      */
     @RequestMapping(value = "/updateSort", method = RequestMethod.POST)
     @ResponseBody
-    public Response updateCategorySort(CategoryDto dto){
+    public Response updateCategorySort(@RequestBody CategoryDto dto){
     	try {
     		if(dto.getCategoryId() == 0 || dto.getCategoryId() == null){
         		throw new RuntimeException("传入id为空！");

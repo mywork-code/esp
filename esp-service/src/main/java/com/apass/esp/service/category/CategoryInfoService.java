@@ -14,6 +14,7 @@ import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
@@ -26,6 +27,8 @@ public class CategoryInfoService {
    
 	@Autowired
 	private CategoryMapper categoryMapper;
+	@Autowired
+	private GoodsService goodsService;
 	
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
@@ -99,7 +102,15 @@ public class CategoryInfoService {
 	public List<Category> getCategoryList(String categoryName){
 		return categoryMapper.selectByCategoryName(categoryName);
 	}
-	
+	/**
+	 * 根据类目名称，查询获取重复类目名称有几个
+	 * @param categoryName
+	 * @return
+	 */
+	public int egtCategoryCount(String categoryName){
+		List<Category> list = getCategoryList(categoryName);
+		return (list!=null && !list.isEmpty())?list.size():0;
+	}
 	/**
 	 * 根据parentId查询下属类别
 	 * @param parentId
@@ -132,6 +143,16 @@ public class CategoryInfoService {
 	 * @param categoryName
 	 */
 	public void updateCategoryNameById(long id ,String categoryName){
+		
+		//根据id获取类目信息
+		CategoryVo v= getCategoryById(id);
+		/**
+		 * 验证数据库中是否存在类目名称
+		 */
+		if(egtCategoryCount(categoryName)>=1 && (v!=null&&!v.getCategoryName().equals(categoryName))){
+			throw new RuntimeException("此类目名称已重复！");
+		}
+		
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setCategoryName(categoryName);
@@ -152,9 +173,8 @@ public class CategoryInfoService {
 	 }
 	 
 	 //id或parentId下属是否有商品,并且此时商品的状态应该不是(G02:已上架)
-	 //TODO
-	 List<GoodsBasicInfoEntity> basicList = new ArrayList<GoodsBasicInfoEntity>();
-	 if(basicList == null && basicList.isEmpty()){
+	 int count = goodsService.getBelongCategoryGoodsNumber(id);
+	 if(count>0){
 		 throw new RuntimeException("该商品分类下存在商品!");
 	 }
 	 
@@ -181,6 +201,13 @@ public class CategoryInfoService {
 	 * @return
 	 */
 	public Category addCategory(CategoryDto categoryDto){
+		/**
+		 * 验证数据库中是否存在类目名称
+		 */
+		if(egtCategoryCount(categoryDto.getCategoryName())!=0){
+			throw new RuntimeException("此类目名称已重复！");
+		}
+		
 		Category cate = new Category();
 		cate.setCategoryName(categoryDto.getCategoryName());
 		cate.setCreateDate(new Date());

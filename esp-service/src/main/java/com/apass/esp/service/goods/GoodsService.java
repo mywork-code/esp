@@ -3,6 +3,7 @@ package com.apass.esp.service.goods;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -318,5 +319,12 @@ public class GoodsService {
         }
 
         return goodsDao.updateGoodsEdit(dto);
+    }
+    /**
+	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
+	 * @return
+	 */
+    public int getBelongCategoryGoodsNumber(long categoryId){
+    	return goodsDao.getBelongCategoryGoodsNumber(categoryId);
     }
 }
