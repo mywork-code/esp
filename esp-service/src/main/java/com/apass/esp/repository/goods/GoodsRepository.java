@@ -2,6 +2,7 @@ package com.apass.esp.repository.goods;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -129,4 +130,12 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 	public void updateGoodsStatusByDelisttime() {
 		this.getSqlSession().update("updateGoodsStatusByDelisttime");
 	}
+	
+	/**
+	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
+	 * @return
+	 */
+	public int getBelongCategoryGoodsNumber(long id){
+    	return this.getSqlSession().selectOne("getBelongCategoryGoodsNumber",id);
+    }
 }
