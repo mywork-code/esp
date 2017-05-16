@@ -1,15 +1,13 @@
 package com.apass.esp.service.feedback;
-
+/**
+ * 反馈意见操作service
+ */
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-/**
- * 反馈意见操作service
- */
 
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.FeedBack;
