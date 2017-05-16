@@ -28,7 +28,7 @@ public class ActivityScheduleTask {
 	@Scheduled(cron = "0 0 1 * * ?")
 	public void validateActivityEndtime() {
 		try {
-			logger.info("执行校验商品活动过期时间定时任务开始");
+			 logger.info("执行校验商品活动过期时间定时任务开始");
 			activityInfoService.updateActivityStatusByEndtime();
 			logger.info("执行校验商品活动过期时间时间定时任务结束");
 		} catch (Exception e) {
