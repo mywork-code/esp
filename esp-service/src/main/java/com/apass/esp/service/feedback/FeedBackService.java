@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.FeedBack;
+import com.apass.esp.domain.enums.FeedBackType;
 import com.apass.esp.domain.vo.FeedBackVo;
 import com.apass.esp.mapper.FeedBackMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -39,7 +40,7 @@ public class FeedBackService {
 			v.setId(f.getId());
 			v.setComments(f.getComments());
 			v.setCreateDate(DateFormatUtil.datetime2String(f.getCreateDate()));
-			v.setFeedbackType(f.getFeedbackType());
+			v.setFeedbackType(FeedBackType.valueOf(f.getFeedbackType().toUpperCase()).getMessage());
 			v.setMobile(f.getMobile());
 			backVoList.add(v);
 		}
