@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.model.QueryParams;
@@ -36,6 +35,28 @@ public class CategoryInfoService {
 			voList.add(categroyToCathgroyEntiy(v));
 		}
 		return pageBody;
+	}
+	//查询客户端首页的前3个类目信息
+	public List<CategoryVo> selectCategoryVoList(Long levelId){
+		List<Category> categories = categoryMapper.selectCategoryList(levelId);
+		List<CategoryVo> voList = new ArrayList<CategoryVo>();
+		for (Category v : categories) {
+			voList.add(categroyToCathgroyEntiy(v));
+		}
+		//在此添加客户端首页3个类目小标题和图片
+		for(int i=0;i<voList.size();i++){
+			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
+				voList.get(i).setCategoryTitle("舒适生活从此开启");
+				voList.get(i).setPictureUrl("http://img04.tooopen.com/images/20130712/tooopen_17270713.jpg");
+			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
+				voList.get(i).setCategoryTitle("让您和您的家人省心更省力");
+				voList.get(i).setPictureUrl("http://img06.tooopen.com/images/20170514/tooopen_sy_210126153448.jpg");
+			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
+				voList.get(i).setCategoryTitle("家装没有你想的那么贵");
+				voList.get(i).setPictureUrl("http://img07.tooopen.com/images/20170427/tooopen_sy_207057725658.jpg");
+			}
+		}
+		return voList;
 	}
 	/**
 	 * entity 转  vo 
