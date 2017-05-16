@@ -2,5 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.CategoryMapper" >
 
+  <select id="selectByParentKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_esp_category
+    where 
+    <choose>
+      <when test="parentId  != null and parentId  != '' ">
+        <![CDATA[  parent_id = #{parentId} ]]>
+      </when>
+      <otherwise>
+        <![CDATA[  parent_id is null  ]]>
+      </otherwise>
+    </choose>
+	order by sort_order asc
+  </select>
+  
+  <select id="selectByCategoryName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_category
+    where category_name = #{categoryName}
+  </select>
+
+  <!--查询客户端首页的前3个类目信息  -->
+  <select id="selectCategoryList" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+     SELECT 
+		       id              id,
+		       category_name   categoryName,
+		       sort_order      sortOrder
+      FROM     t_esp_category 
+      WHERE    level=#{value}
+      ORDER    BY sort_order ASC 
+      LIMIT    3
+  </select>
  
 </mapper>
