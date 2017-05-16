@@ -28,7 +28,9 @@
   <!--查询客户端首页的前3个类目信息  -->
   <select id="selectCategoryList" parameterType="java.lang.Long" resultMap="BaseResultMap" >
      SELECT 
-     <include refid="Base_Column_List" />
+		       id              id,
+		       category_name   categoryName,
+		       sort_order      sortOrder
       FROM     t_esp_category 
       WHERE    level=#{value}
       ORDER    BY sort_order ASC 
