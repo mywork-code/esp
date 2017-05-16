@@ -584,5 +584,10 @@
 		]]>
 	</select>
 
-
+	<select id="selectMaxId" resultType="java.lang.Integer">
+	        SELECT
+	        max(id)
+	        from
+	        t_esp_merchant_info
+    </select>
 </mapper>

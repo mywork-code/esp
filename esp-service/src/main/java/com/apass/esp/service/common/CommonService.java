@@ -157,5 +157,13 @@ public class CommonService {
         strBuff.append(partFour);
         return strBuff.toString();
     }
-    
+
+    /**
+     * 生成订单号（新）
+     * @param userId
+     * @return
+     */
+    public String createOrderIdNew(Long userId) {
+return"";
+    }
 }

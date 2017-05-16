@@ -53,4 +53,22 @@ public class QueryAddressController {
 		return list;
 	}
 
+	@ResponseBody
+	@RequestMapping("/queryAreas")
+	public List<DictDTO> queryArea(HttpServletRequest request) {
+		List<DictDTO> list = null;
+		try {
+			String districtCode = HttpWebUtils.getValue(request, "districtCode");
+
+			if(!StringUtils.isNotBlank(districtCode)){
+				districtCode = "000000";
+			}
+
+			list = nationService.queryDistrictArea(districtCode);
+		} catch (Exception e) {
+			LOGGER.error("查询区域出错是出错", e);
+		}
+		return list;
+	}
+
 }
