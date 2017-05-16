@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.web.activity.RegisterInfoController;
@@ -31,7 +32,7 @@ public class ShopHomeCategoryController {
    	public Response indexCategoryInit(@RequestBody Map<String, Object> paramMap) {
    		try {
              Map<String, Object> returnMap = new HashMap<String, Object>();
-             List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoList(Long.parseLong("1"));
+             List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoList(Long.parseLong(CategoryLevel.CATEGORY_LEVEL1.getCode()));
              returnMap.put("categorys", CategoryVos);
    		     return Response.successResponse(returnMap);
 		} catch (Exception e) {
@@ -48,6 +49,7 @@ public class ShopHomeCategoryController {
    			 String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
    			 String page = CommonUtils.getValue(paramMap, "page");
    			 String rows = CommonUtils.getValue(paramMap, "rows");
+   			 
              Map<String, Object> returnMap = new HashMap<String, Object>();
              
    		     return Response.successResponse(returnMap);
