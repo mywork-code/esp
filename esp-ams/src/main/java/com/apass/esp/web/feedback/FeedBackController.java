@@ -20,6 +20,17 @@ public class FeedBackController {
 	@Autowired
 	private FeedBackService backService;
 	
+	
+   /**
+    * 意见反馈配置页
+    * @return
+    */
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+    public String introduceConfig() {
+      return "feedback/index";
+    }
+  
+  
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponsePageBody<FeedBackVo> listConfig(QueryParams query) {
