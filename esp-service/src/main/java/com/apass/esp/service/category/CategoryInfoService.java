@@ -1,21 +1,19 @@
 package com.apass.esp.service.category;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.apass.esp.common.model.QueryParams;
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.vo.CategoryVo;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 /**
  * 商品分类操作service
  */
@@ -26,15 +24,53 @@ public class CategoryInfoService {
    
 	@Autowired
 	private CategoryMapper categoryMapper;
+	@Autowired
+	private GoodsService goodsService;
+
+	public List<CategoryVo> listCategory(CategoryDto dto) {
+		//获取所有的一级分类
+		List<CategoryVo> cate1List = getCategoryVoListByParentId(null);
+		
+		//根据传入的一级分类参数，获取所属的二级分类
+		List<CategoryVo> cate2List = categoryListByParentId(dto.getCategoryId1(), cate1List);
+		
+		//根据传入的二级分类参数，获取所属的三级分类
+		List<CategoryVo> cate3List = categoryListByParentId(dto.getCategoryId2(), cate2List);
+		
+		return cate1List;
+	}
 	
-	public ResponsePageBody<CategoryVo> listCategory(QueryParams query) {
-		ResponsePageBody<CategoryVo> pageBody = new ResponsePageBody<CategoryVo>();
-		List<Category> categories = categoryMapper.pageEffectiveList(query);
+	public List<CategoryVo> categoryListByParentId(Long Id,List<CategoryVo> cateList){
+		CategoryVo v = null;
 		List<CategoryVo> voList = new ArrayList<CategoryVo>();
-		for (Category v : categories) {
-			voList.add(categroyToCathgroyEntiy(v));
+		if(cateList!=null && !cateList.isEmpty()){
+			//根据上一级分类获取下属一级分类
+			if(Id!= null && Id != 0){
+				v = getCategoryById(Id,cateList);
+			}else{
+				v = cateList.get(0);
+			}
+			if(v != null){
+				voList = getCategoryVoListByParentId(v.getCategoryId());
+				v.setvList(voList);
+			}
 		}
-		return pageBody;
+		return voList;
+	}
+	
+	/**
+	 * 根据传入的id，获取list中，入职匹配的对象
+	 * @param id
+	 * @param cateList
+	 * @return
+	 */
+	public CategoryVo getCategoryById(Long id, List<CategoryVo> cateList){
+		for (CategoryVo categoryVo : cateList) {
+			if(categoryVo.getCategoryId() == id){
+				return categoryVo;
+			}
+		}
+		return null;
 	}
 	//查询客户端首页的前3个类目信息
 	public List<CategoryVo> selectCategoryVoList(Long levelId){
@@ -65,7 +101,7 @@ public class CategoryInfoService {
 	 */
 	public CategoryVo categroyToCathgroyEntiy(Category cate){
 		CategoryVo v = new CategoryVo();
-		v.setId(cate.getId());
+		v.setCategoryId(cate.getId());
 		v.setCategoryName(cate.getCategoryName());
 		v.setCreateDate(DateFormatUtil.datetime2String(cate.getCreateDate()));
 		v.setCreateUser(cate.getCreateUser());
@@ -78,15 +114,34 @@ public class CategoryInfoService {
 		return v;
 	}
 	/**
+	 * 根据类目名称，查询改类目名称是否存在
+	 * @param categoryName
+	 * @return
+	 */
+	public List<Category> getCategoryList(String categoryName){
+		return categoryMapper.selectByCategoryName(categoryName);
+	}
+	/**
+	 * 根据类目名称，查询获取重复类目名称有几个
+	 * @param categoryName
+	 * @return
+	 */
+	public int egtCategoryCount(String categoryName){
+		List<Category> list = getCategoryList(categoryName);
+		return (list!=null && !list.isEmpty())?list.size():0;
+	}
+	/**
 	 * 根据parentId查询下属类别
 	 * @param parentId
 	 * @return
 	 */
-	public List<CategoryVo> getCategoryVoListByParentId(long parentId){
+	public List<CategoryVo> getCategoryVoListByParentId(Long parentId){
 		List<Category> categories = categoryMapper.selectByParentKey(parentId);
 		List<CategoryVo> voList = new ArrayList<CategoryVo>();
-		for (Category v : categories) {
-			voList.add(categroyToCathgroyEntiy(v));
+		if(categories!=null&& !categories.isEmpty()){
+			for (Category v : categories) {
+				voList.add(categroyToCathgroyEntiy(v));
+			}
 		}
 		return voList;
 	}
@@ -96,8 +151,9 @@ public class CategoryInfoService {
 	 * @param id
 	 * @return
 	 */
-	public Category getCategoryById(long id){
-		return categoryMapper.selectByPrimaryKey(id);
+	public CategoryVo getCategoryById(long id){
+		Category cate = categoryMapper.selectByPrimaryKey(id);
+		return categroyToCathgroyEntiy(cate);
 	}
 	
 	/**
@@ -105,10 +161,22 @@ public class CategoryInfoService {
 	 * @param id
 	 * @param categoryName
 	 */
-	public void updateCategoryNameById(long id ,String categoryName){
+	public void updateCategoryNameById(long id ,String categoryName,String userName){
+		
+		//根据id获取类目信息
+		CategoryVo v= getCategoryById(id);
+		/**
+		 * 验证数据库中是否存在类目名称
+		 */
+		if(egtCategoryCount(categoryName)>=1 && (v!=null&&!v.getCategoryName().equals(categoryName))){
+			throw new RuntimeException("此类目名称已重复！");
+		}
+		
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setCategoryName(categoryName);
+		cate.setUpdateDate(new Date());
+		cate.setUpdateUser(userName);
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -124,9 +192,8 @@ public class CategoryInfoService {
 	 }
 	 
 	 //id或parentId下属是否有商品,并且此时商品的状态应该不是(G02:已上架)
-	 //TODO
-	 List<GoodsBasicInfoEntity> basicList = null;
-	 if(basicList == null && basicList.isEmpty()){
+	 int count = goodsService.getBelongCategoryGoodsNumber(id);
+	 if(count>0){
 		 throw new RuntimeException("该商品分类下存在商品!");
 	 }
 	 
@@ -138,10 +205,12 @@ public class CategoryInfoService {
 	 * 根据类别id修改类别排序
 	 * @param id
 	 */
-	public void updateCateSortOrder(long id , long sortOrder){
+	public void updateCateSortOrder(long id , long sortOrder,String userName){
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setSortOrder(sortOrder);
+		cate.setUpdateDate(new Date());
+		cate.setUpdateUser(userName);
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -151,16 +220,22 @@ public class CategoryInfoService {
 	 * @return
 	 */
 	public Category addCategory(CategoryDto categoryDto){
+		/**
+		 * 验证数据库中是否存在类目名称
+		 */
+		if(egtCategoryCount(categoryDto.getCategoryName())!=0){
+			throw new RuntimeException("此类目名称已重复！");
+		}
+		
 		Category cate = new Category();
 		cate.setCategoryName(categoryDto.getCategoryName());
-		cate.setCreateDate(DateFormatUtil.string2date(categoryDto.getCreateDate()));
+		cate.setCreateDate(new Date());
 		cate.setCreateUser(categoryDto.getCreateUser());
 		cate.setLevel(categoryDto.getLevel());
 		cate.setParentId(categoryDto.getParentId());
 		cate.setPictureUrl(categoryDto.getPictureUrl());
 		cate.setSortOrder(categoryDto.getSortOrder());
-		cate.setUpdateDate(DateFormatUtil.string2date(categoryDto.getUpdateDate()));
-		cate.setUpdateUser(categoryDto.getUpdateUser());
+		cate.setUpdateDate(new Date());
 		categoryMapper.insert(cate);
 		return cate;
 	}

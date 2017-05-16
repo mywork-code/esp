@@ -6,7 +6,7 @@ public class CategoryVo {
 	/**
 	 * 类目Id
 	 */
-    private Long id;
+    private Long categoryId;
     /**
      * 类目名称
      */
@@ -51,11 +51,12 @@ public class CategoryVo {
      * 当前类目下的下属分类
      */
     private List<CategoryVo> vList;
-	public Long getId() {
-		return id;
+	
+	public Long getCategoryId() {
+		return categoryId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
 	}
 	public String getCategoryName() {
 		return categoryName;

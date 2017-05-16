@@ -336,4 +336,14 @@ public class GoodsService {
 
         return goodsDao.updateGoodsEdit(dto);
     }
+    
+    /**
+	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
+	 * @return
+	 */
+    public int getBelongCategoryGoodsNumber(long categoryId){
+    	return goodsDao.getBelongCategoryGoodsNumber(categoryId);
+    }
+    
 }
+
