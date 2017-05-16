@@ -1,8 +1,13 @@
 package com.apass.esp.web.category;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ImageTools;
+import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.vo.CategoryVo;
-import com.apass.esp.service.category.CategoryInfoService;
-import com.apass.esp.utils.FileUtilsCommons;
-import com.apass.esp.utils.ImageTools;
-import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 商品类别操作类
@@ -60,6 +60,7 @@ public class CategoryController {
     public Response addCategory(@RequestBody CategoryDto dto){
     	try {
     		//验证传入参数是否符合要求
+				  dto.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
         	validateAddCategoryDto(dto);
         	cateService.addCategory(dto);
         	return Response.success("添加分类成功！");
@@ -77,7 +78,8 @@ public class CategoryController {
     public Response updateCategoryName(@RequestBody CategoryDto dto){
     	try {
     		validateUpdateCategoryDto(dto);
-        	cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName());
+        	cateService.updateCategoryNameById(dto.getCategoryId(),
+							dto.getCategoryName(),SpringSecurityUtils.getLoginUserDetails().getUsername());
         	return Response.success("修改分类名称成功！");
 		} catch (RuntimeException e) {
 			return Response.fail(e.getMessage());
@@ -135,7 +137,8 @@ public class CategoryController {
     		if(dto.getSortOrder() == null || dto.getSortOrder() == 0){
         		throw new RuntimeException("请明确当前分类的排序！");
         	}
-    		cateService.updateCateSortOrder(dto.getCategoryId(), dto.getSortOrder());
+    		cateService.updateCateSortOrder(dto.getCategoryId(), dto.getSortOrder(),
+						SpringSecurityUtils.getLoginUserDetails().getUsername());
     		return Response.success("修改分类排序成功！");
 		} catch (RuntimeException e) {
 			return Response.fail(e.getMessage());
