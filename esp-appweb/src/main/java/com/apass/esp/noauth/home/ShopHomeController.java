@@ -24,6 +24,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
 import com.apass.esp.service.common.CommonService;
@@ -58,7 +59,10 @@ public class ShopHomeController {
 
     @Autowired
     private ImageService imageService;
-
+    
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
+    
     /**
      *  首页初始化 加载banner和精品商品 
      * @return
@@ -84,7 +88,10 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
-
+                //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
+                goods.setMarketPrice(new BigDecimal(marketPrice));
+                
                 goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
                 goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                 goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
@@ -118,6 +125,10 @@ public class ShopHomeController {
                 if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
                     BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
                     goodsInfo.setGoodsPrice(price);
+                    //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+                    goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+                    
                     String logoUrl = goodsInfo.getGoodsLogoUrl();
                     String siftUrl = goodsInfo.getGoodsSiftUrl();
                     goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));

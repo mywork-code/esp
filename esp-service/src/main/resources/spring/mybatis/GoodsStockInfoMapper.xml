@@ -225,7 +225,18 @@
                 GOODS_ID=#{value}
         ]]>
     </select>
-    
+    	<!-- 根据商品id查询 商品库存中市场价最高价 -->
+    <select id="getMaxMarketPriceByGoodsId" parameterType="Long" resultType="Long">
+        <![CDATA[
+           SELECT
+						MAX(market_price) minprice
+			FROM
+						t_esp_goods_stock_info
+			WHERE       stock_curr_amt>0 
+			  AND       goods_id=#{value}
+		 GROUP BY       goods_id
+        ]]>
+    </select>
   	 <!-- 更新库存 -->
 	<update id="updateCurrAmtAndTotalAmount" parameterType="GoodsStockInfoEntity">
 		<![CDATA[
