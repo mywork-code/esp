@@ -29,15 +29,9 @@ public class CategoryInfoService {
 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
-		List<CategoryVo> cate1List = getCategoryVoListByParentId(null);
+	    List<CategoryVo> cate1List = getCategoryVoListByParentId(dto.getParentId());
 		
-		//根据传入的一级分类参数，获取所属的二级分类
-		List<CategoryVo> cate2List = categoryListByParentId(dto.getCategoryId1(), cate1List);
-		
-		//根据传入的二级分类参数，获取所属的三级分类
-		List<CategoryVo> cate3List = categoryListByParentId(dto.getCategoryId2(), cate2List);
-		
-		return cate1List;
+	    return cate1List;
 	}
 	
 	public List<CategoryVo> categoryListByParentId(Long Id,List<CategoryVo> cateList){

@@ -38,12 +38,13 @@ public class CategoryController {
 	 * 返回页面
 	 */
 	private static final String CATEGORYPAGE= "goods/goodCategory";
+	//private static final String CATEGORYPAGE= "goods/goodCategory2";
 	@Autowired
 	private CategoryInfoService cateService;
 	
-	@RequestMapping(value = "/page", method = RequestMethod.GET)
+	@RequestMapping(value = "/page")
 	public ModelAndView categoryPage() {
-	    return  new ModelAndView(CATEGORYPAGE);
+	    return new ModelAndView(CATEGORYPAGE);
 	}
 	
 	
@@ -84,17 +85,17 @@ public class CategoryController {
      * 修改一个分类的名称
      * @param dto
      */
-    @RequestMapping(value = "/updateName", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateName")
     @ResponseBody
     public Response updateCategoryName(@RequestBody CategoryDto dto){
-    	try {
-    		validateUpdateCategoryDto(dto);
-        	cateService.updateCategoryNameById(dto.getCategoryId(),
-							dto.getCategoryName(),SpringSecurityUtils.getLoginUserDetails().getUsername());
-        	return Response.success("修改分类名称成功！");
-		} catch (RuntimeException e) {
-			return Response.fail(e.getMessage());
-		}
+        try {
+            validateUpdateCategoryDto(dto);
+            cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName(),
+                    SpringSecurityUtils.getLoginUserDetails().getUsername());
+            return Response.success("修改分类名称成功！");
+        } catch (RuntimeException e) {
+            return Response.fail(e.getMessage());
+        }
     	
     }
     
@@ -159,7 +160,7 @@ public class CategoryController {
     /**
      * 删除一个分类
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete")
     @ResponseBody
     public Response deleCategoryById(Long id){
     	try {
@@ -215,8 +216,9 @@ public class CategoryController {
      * @param dto
      */
     public void commonValidate(CategoryDto dto){
+        
     	
-    	if(dto.getLevel() == 0){
+    	if(dto.getLevel() == 0 || dto.getLevel() == null){
     		throw new RuntimeException("请输入该类目的排列位置");
     	}
     	
