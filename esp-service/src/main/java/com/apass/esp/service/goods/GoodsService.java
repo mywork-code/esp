@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.service.common.ImageService;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,7 +253,17 @@ public class GoodsService {
      * @param entity
      */
     public void insert(GoodsInfoEntity entity) {
-        goodsDao.insert(entity);
+        int  id  = goodsDao.insert(entity);
+        entity.setId(Long.valueOf(id));
+        //商品编号
+        StringBuffer sb = new StringBuffer();
+        String merchantCode  =entity.getMerchantCode();
+        merchantCode = merchantCode.substring(merchantCode.length()-2,merchantCode.length());
+        sb.append(merchantCode);
+        String random = RandomUtils.getRandomNum(6);
+        sb.append(random);
+        entity.setGoodsCode(sb.toString());
+        goodsDao.updateGoods(entity);
     }
 
     /**
