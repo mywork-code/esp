@@ -83,4 +83,8 @@ public class MerchantInforRepository extends BaseMybatisRepository<MerchantInfoE
             merchantCode);
         return mity;
     }
+    //得到最大的ID
+    public int getMaxId(){
+        return (int)getSqlSession().selectOne("selectMaxId");
+    }
 }

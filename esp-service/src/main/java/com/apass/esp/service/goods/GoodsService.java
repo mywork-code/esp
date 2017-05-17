@@ -3,11 +3,13 @@ package com.apass.esp.service.goods;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.repository.banner.BannerInfoRepository;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -44,7 +47,11 @@ public class GoodsService {
     private CommonService            commonService;
     @Autowired
     private ImageService             imageService;
+    @Autowired
+    private MerchantInforService merchantInforService;
 
+    @Autowired
+    private GoodsBasicRepository     goodsBasicRepository;
     /**
      * app 首页加载精品推荐商品
      * 
@@ -75,7 +82,22 @@ public class GoodsService {
         Page pageParam = new Page(pageInteger, limitInteger);
         return goodsDao.loadGoodsByPages(pageParam, param);
     }
-
+    
+    /**
+     * 通过类目id查询商品[客户端分页]
+     */
+    public Pagination<GoodsBasicInfoEntity> loadGoodsByCategoryId(GoodsBasicInfoEntity param,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = goodsBasicRepository.count(param);
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        Page pageParam = new Page(pageInteger, limitInteger);
+        return goodsBasicRepository.loadGoodsPages(pageParam, param);
+    }
     /**
      * 
      * 加载商品列表
@@ -236,7 +258,27 @@ public class GoodsService {
      * @param entity
      */
     public void insert(GoodsInfoEntity entity) {
-        goodsDao.insert(entity);
+        int  id  = goodsDao.insert(entity);
+        entity.setId(Long.valueOf(id));
+        //商品编号
+        StringBuffer sb = new StringBuffer();
+        String merchantCode  =entity.getMerchantCode();
+        MerchantInfoEntity merchantInfoEntity =  merchantInforService.queryByMerchantCode(merchantCode);
+        if(merchantInfoEntity!=null){
+           String merchantId =  String.valueOf(merchantInfoEntity.getId());
+           if(merchantId.length()==1){
+               merchantId="0"+merchantId;
+           }else if(merchantId.length()>1){
+               merchantId = merchantId.substring(merchantId.length()-2,merchantId.length());
+           }
+            sb.append(merchantId);
+            String random = RandomUtils.getRandomNum(6);
+            sb.append(random);
+            entity.setGoodsCode(sb.toString());
+            goodsDao.updateGoods(entity);
+        }
+
+
     }
 
     /**
@@ -320,6 +362,7 @@ public class GoodsService {
 
         return goodsDao.updateGoodsEdit(dto);
     }
+    
     /**
 	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
 	 * @return
@@ -327,4 +370,6 @@ public class GoodsService {
     public int getBelongCategoryGoodsNumber(long categoryId){
     	return goodsDao.getBelongCategoryGoodsNumber(categoryId);
     }
+    
 }
+

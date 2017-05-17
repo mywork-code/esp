@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- insert,select,selectByPK,count, delete, update,updateAll -->
+<mapper namespace="GoodsBasicInfoEntity">
+
+	<!--  商品列表展示（分页）-->
+	<select id="select" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c
+		WHERE
+			a.id = c.goodsId
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	  <!-- 添加商品类目查询条件 -->
+	  <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	  </if>
+	  <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		</if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		</if>
+	<![CDATA[
+		ORDER BY a.update_date DESC 
+	]]>
+	</select>
+	
+	<!-- 商品列表查询（分页） -->
+	<select id="count" parameterType="GoodsBasicInfoEntity" resultType="Integer">
+		<![CDATA[
+			SELECT  COUNT(1) 
+			FROM
+					t_esp_goods_base_info a,
+					(
+						SELECT
+							a.goods_id goodsId,
+							a.id goodsStockId,
+							b.minprice minPrice
+						FROM
+							t_esp_goods_stock_info a,
+							(
+								SELECT
+									goods_id goodsId,
+									MIN(market_price) minprice
+								FROM
+									t_esp_goods_stock_info
+								WHERE
+									stock_curr_amt > 0
+								GROUP BY
+									goods_id
+							) b
+						WHERE
+							a.goods_id = b.goodsId
+						AND a.market_price = b.minprice
+						GROUP BY
+							a.goods_id
+					) c
+				WHERE
+					a.id = c.goodsId
+				AND CURRENT_TIMESTAMP > a.list_time
+				AND CURRENT_TIMESTAMP < a.delist_time
+				AND STATUS = 'G02'
+				AND is_delete = '01'
+		]]>
+		  <!-- 添加商品类目查询条件 -->
+	     <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	     </if>
+	     <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		 </if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		  </if>
+	</select>
+	
+	
+
+</mapper>

@@ -107,14 +107,13 @@ public class CategoryController {
     @ResponseBody
     @RequestMapping(value = "/addpic", method = RequestMethod.POST)
     public Response uploadPicFile(MultipartFile file) {
-    	String url = "";
     	 try {
 	    	if(file.isEmpty()){
 	    		throw new RuntimeException("上传图片不能为空!");
 	    	}
 	    	String fileName  = file.getOriginalFilename();
 	    	String imgType = ImageTools.getImgType(file);
-	        url = categoryPath +"cate_"+ System.currentTimeMillis() + fileName + "." + imgType;
+	        String url = categoryPath +"cate_"+ System.currentTimeMillis() + fileName + "." + imgType;
 	    	/**
 	         * 图片校验
 	         */

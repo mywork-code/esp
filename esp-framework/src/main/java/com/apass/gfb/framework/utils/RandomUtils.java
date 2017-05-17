@@ -33,4 +33,19 @@ public class RandomUtils {
 		}
 		return buffer.toString();
 	}
+
+	/**
+	 * 生成指定位数的随机字符串
+	 *
+	 * @param length
+	 * @return String
+	 */
+	public static final String getRandomNum(int length) {
+		StringBuffer buffer = new StringBuffer();
+		String s = "0123456789";
+		for (int i = 0; i < length; i++) {
+			buffer.append(s.charAt(random.nextInt(s.length())));
+		}
+		return buffer.toString();
+	}
 }

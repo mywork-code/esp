@@ -173,6 +173,7 @@
              goods_name,
              goods_title,
              goods_type,
+             goods_code,
              goods_logo_url,
              list_time,
              delist_time,
@@ -283,6 +284,9 @@
 			update_date = CURRENT_TIMESTAMP,
 			<if test="goodsName != null and goodsName != ''">
 				goods_name = #{goodsName, jdbcType=VARCHAR},
+			</if>
+			<if test="goodsCode != null and goodsCode != ''">
+				goods_code = #{goodsCode, jdbcType=VARCHAR},
 			</if>
 			<if test="goodsTitle != null and goodsTitle != ''">
 				goods_title = #{goodsTitle, jdbcType=VARCHAR},
