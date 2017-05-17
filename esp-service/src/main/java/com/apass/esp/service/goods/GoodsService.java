@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,9 @@ public class GoodsService {
     private CommonService            commonService;
     @Autowired
     private ImageService             imageService;
+    @Autowired
+    private MerchantInforService merchantInforService;
+
     @Autowired
     private GoodsBasicRepository     goodsBasicRepository;
     /**
@@ -252,7 +258,27 @@ public class GoodsService {
      * @param entity
      */
     public void insert(GoodsInfoEntity entity) {
-        goodsDao.insert(entity);
+        int  id  = goodsDao.insert(entity);
+        entity.setId(Long.valueOf(id));
+        //商品编号
+        StringBuffer sb = new StringBuffer();
+        String merchantCode  =entity.getMerchantCode();
+        MerchantInfoEntity merchantInfoEntity =  merchantInforService.queryByMerchantCode(merchantCode);
+        if(merchantInfoEntity!=null){
+           String merchantId =  String.valueOf(merchantInfoEntity.getId());
+           if(merchantId.length()==1){
+               merchantId="0"+merchantId;
+           }else if(merchantId.length()>1){
+               merchantId = merchantId.substring(merchantId.length()-2,merchantId.length());
+           }
+            sb.append(merchantId);
+            String random = RandomUtils.getRandomNum(6);
+            sb.append(random);
+            entity.setGoodsCode(sb.toString());
+            goodsDao.updateGoods(entity);
+        }
+
+
     }
 
     /**

@@ -450,4 +450,16 @@ public class MerchantInforController extends BaseController {
 
         return mity;
     }
+
+    /**
+     * 得到最大的ID
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMaxId", method = RequestMethod.POST)
+    public Response getMaxId(HttpServletRequest request) {
+        int id = merchantInforService.getMaxId();
+        return Response.success("获取数据成功！",String.valueOf(id+1));
+    }
 }

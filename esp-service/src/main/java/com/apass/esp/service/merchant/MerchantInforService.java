@@ -144,4 +144,7 @@ public class MerchantInforService {
         return merchantInforRepository.queryMerchantInfoById(id);
     }
 
+    public int getMaxId(){
+        return merchantInforRepository.getMaxId();
+    }
 }

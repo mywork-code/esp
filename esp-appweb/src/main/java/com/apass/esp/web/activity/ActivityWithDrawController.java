@@ -23,7 +23,7 @@ import com.apass.gfb.framework.utils.RegExpUtils;
 @Controller
 @RequestMapping("activity/award")
 public class ActivityWithDrawController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegisterInfoController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityWithDrawController.class);
 
 	@Autowired
 	public AwardActivityInfoService awardActivityInfoService;
