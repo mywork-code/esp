@@ -140,8 +140,16 @@ public class OrderInfoEntity {
      * 首付金额
      */
     private BigDecimal downPaymentAmount;
-    
-	public String getMainOrderId() {
+
+    //下单渠道
+    private String deviceType;//android, ios
+    public String getDeviceType() {
+        return deviceType;
+    }
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+    public String getMainOrderId() {
         return mainOrderId;
     }
     public void setMainOrderId(String mainOrderId) {

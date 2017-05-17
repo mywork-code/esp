@@ -13,6 +13,7 @@ import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
@@ -37,6 +38,7 @@ import com.apass.esp.service.bill.BillService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
+import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -95,6 +97,8 @@ public class OrderService {
 	private ImageService imageService;
 	@Autowired
 	private BillService billService;
+	@Autowired
+	private MerchantInforService merchantInforService;
 
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -235,7 +239,7 @@ public class OrderService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
 	public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment, Long addressId,
-			List<PurchaseRequestDto> purchaseList, String sourceFlag) throws BusinessException {
+			List<PurchaseRequestDto> purchaseList, String sourceFlag,String deviceType) throws BusinessException {
 		int index = 0;
 		String[] goodsStockArray = new String[purchaseList.size()];
 		// 1 校验信息
@@ -315,7 +319,7 @@ public class OrderService {
 			}
 		}
 		// 4 生成订单
-		return generateOrder(requestId, userId, totalPayment, purchaseList, addressId);
+		return generateOrder(requestId, userId, totalPayment, purchaseList, addressId,deviceType);
 	}
 
 	/**
@@ -405,7 +409,7 @@ public class OrderService {
 	 */
 	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
 	public List<String> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
-			List<PurchaseRequestDto> purchaseList, Long addressId) throws BusinessException {
+			List<PurchaseRequestDto> purchaseList, Long addressId,String deviceType) throws BusinessException {
 		List<String> orderList = Lists.newArrayList();
 		// 每商户订单金额
 		Map<String, BigDecimal> merchantPaymentMap = sumMerchantPayment(purchaseList);
@@ -416,8 +420,10 @@ public class OrderService {
 			OrderInfoEntity orderInfo = new OrderInfoEntity();
 			orderInfo.setUserId(userId);
 			orderInfo.setOrderAmt(orderAmt);
-			String orderId = commonService.createOrderId(userId);
+			MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+			String orderId = commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
 			orderList.add(orderId);
+			orderInfo.setDeviceType(deviceType);
 			orderInfo.setOrderId(orderId);
 			orderInfo.setStatus(OrderStatus.ORDER_NOPAY.getCode());
 			orderInfo.setProvince(address.getProvince());
