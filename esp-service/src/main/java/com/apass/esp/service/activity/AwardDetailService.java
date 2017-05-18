@@ -8,6 +8,7 @@ import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
+import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.mapper.AwardBindRelMapper;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -16,6 +17,7 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -205,5 +208,37 @@ public class AwardDetailService {
 	@Transactional(rollbackFor=Exception.class)
 	public int delete(Long id){
 		return awardDetailMapper.deleteByPrimaryKey(id);
+	}
+	
+	public void get(){
+		
+	}
+	
+	/**
+	 * 统计在某一时间段内，已放款和预计放款总金额
+	 * @param days
+	 * @return
+	 */
+	public AwardDetailVo querySumAmountGroupByTypeStatus(int days){
+ 		ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
+		//在当前时间的基础上减去days
+		Calendar cal = Calendar.getInstance();
+		cal.add(cal.DATE, days);
+		query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),""));
+		List<AwardDetail> detailList = awardDetailMapper.querySumAmountGroupByTypeStatus(query);
+		AwardDetailVo v = new AwardDetailVo();
+		if(!CollectionUtils.isEmpty(detailList)){
+			for (AwardDetail a : detailList) {
+				//type值为1,提取
+				if(a.getType() == 1){
+					v.setLoadAmount(a.getAmount());
+				}
+				
+				if(a.getType() == 0){
+					v.setExpectLoadAmount(a.getAmount());
+				}
+			}
+		}
+		return v;
 	}
 }

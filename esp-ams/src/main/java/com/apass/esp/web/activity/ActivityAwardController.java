@@ -7,7 +7,9 @@ import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
+import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
@@ -16,6 +18,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +47,9 @@ public class ActivityAwardController {
 
   @Autowired
   private AwardDetailService awardDetailService;
+  
+  @Autowired
+  private AwardBindRelService awardBindRelService; 
 
   /**
    * 转介绍活动配置页
@@ -142,6 +148,27 @@ public class ActivityAwardController {
     }
     return response;
   }
-
-
+  
+  @RequestMapping(value = "/introduce/sumAmountGroupByType", method = RequestMethod.POST)
+  @ResponseBody
+  public AwardDetailVo getSumAmountGroupByType(Integer days){
+	  //近二十四小时
+	  if(days == null || days == 0){
+		  days = -1;
+	  }
+	  AwardDetailVo v = awardDetailService.querySumAmountGroupByTypeStatus(days);
+	  return v;
+  }
+  
+  @RequestMapping(value = "/introduce/inviterUserCountByTime", method = RequestMethod.POST)
+  @ResponseBody
+  public Integer getInviterUserCountByTime(Integer days){
+	  //近二十四小时
+	  if(days == null || days == 0){
+		  days = -1;
+	  }
+	 Integer count = awardBindRelService.getInviterUserCountByTime(days);
+	 return  count!=null?count:0;
+  }
+  
 }

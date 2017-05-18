@@ -54,5 +54,9 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @return
    */
   List<AwardBindRelStatistic> selectAllBindRelStatistic(ActivityBindRelStatisticQuery query);
-
+  
+  /**
+   * 统计查询在某一时间内邀请的总人数
+   */
+  Integer getInviterUserCountByTime(ActivityBindRelStatisticQuery query);
 }

@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.esp.domain.enums.DeviceType;
+import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,14 +33,17 @@ public class CommonService {
     @Autowired
     private GoodsStockInfoRepository goodsStockDao;
     @Autowired
-    private SequenceRepository       sequenceDao;
+    private SequenceRepository sequenceDao;
+    @Autowired
+    private PaymentHttpClient paymentHttpClient;
+
     /**
      * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格
-     * 
+     *
      * @param goodsStockList
-     * @throws BusinessException 
+     * @throws BusinessException
      */
-    public void  calculateGoodsPrice(Long goodsId , List<GoodsStockInfoEntity> goodsStockList) throws BusinessException{
+    public void calculateGoodsPrice(Long goodsId, List<GoodsStockInfoEntity> goodsStockList) throws BusinessException {
         Date now = new Date();
         List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
         BigDecimal discount = BigDecimal.ZERO;
@@ -63,16 +70,16 @@ public class CommonService {
             goodsStock.setGoodsPrice(goodsStock.getMarketPrice().multiply(discount));
         }
     }
-    
+
     /**
-     * 
      * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格
+     *
      * @param goodsStockId
      * @param goodsId
      * @return
      * @throws BusinessException
      */
-    public BigDecimal  calculateGoodsPrice(Long goodsId,Long goodsStockId) throws BusinessException{
+    public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
         Date now = new Date();
         //  系统折扣率
         List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
@@ -85,7 +92,7 @@ public class CommonService {
         param.setGoodsId(goodsId);
         param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
         List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-        
+
         if (null != activitys && activitys.size() > 0 && discount.compareTo(BigDecimal.ZERO) == 0) {
             discount = activitys.get(0).getpDiscountRate();
         }
@@ -100,13 +107,14 @@ public class CommonService {
         GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
         BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return price.setScale(0,BigDecimal.ROUND_DOWN);
+        return price.setScale(0, BigDecimal.ROUND_DOWN);
     }
-    
+
     /**
      * 生成订单号
-     * 
+     * <p>
      * 规格: 四位随机数+八位年月日+四位自增主键+四位用户名后四位
+     *
      * @param userId
      * @return
      */
@@ -139,7 +147,7 @@ public class CommonService {
         } else {
             int partThreeRes = 4 - partThree.length();
             for (int i = partThreeRes; i > 0; i--) {
-                partThree = "0"+partThree;
+                partThree = "0" + partThree;
             }
         }
         strBuff.append(partThree);
@@ -147,11 +155,11 @@ public class CommonService {
         //PartFour:userId后四位
         String partFour = String.valueOf(userId);
         if (partFour.length() > 4) {
-            partFour = partFour.substring(partFour.length() - 4, partFour.length() );
+            partFour = partFour.substring(partFour.length() - 4, partFour.length());
         } else {
             int partFourRes = 4 - partFour.length();
             for (int i = partFourRes; i > 0; i--) {
-                partFour = "0"+partFour ;
+                partFour = "0" + partFour;
             }
         }
         strBuff.append(partFour);
@@ -160,10 +168,29 @@ public class CommonService {
 
     /**
      * 生成订单号（新）
-     * @param userId
+     *
+     * @param deviceType merchantId
      * @return
      */
-    public String createOrderIdNew(Long userId) {
-return"";
+    public String createOrderIdNew(String deviceType, Long merchantId) {
+        //下单时间戳后四位+下单渠道，+随机码+商户ID后两位
+        String dateString = String.valueOf(new Date().getTime());
+        dateString = dateString.substring(dateString.length() - 4, dateString.length());
+        StringBuffer sb = new StringBuffer();
+        sb.append(dateString);
+        if (deviceType.equals(DeviceType.ANDROID.getName())) {
+            sb.append(DeviceType.ANDROID.getCode());
+        } else {
+            sb.append(DeviceType.IOS.getCode());
+        }
+        sb.append(RandomUtils.getRandomNum(4));
+        String mechantStr = String.valueOf(merchantId);
+        if(mechantStr.length()==1){
+            mechantStr="0"+mechantStr;
+        }else if(mechantStr.length()>2){
+            mechantStr= mechantStr.substring(mechantStr.length()-2,mechantStr.length());
+        }
+        sb.append(mechantStr);
+        return sb.toString();
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,11 +25,13 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 
@@ -58,7 +61,12 @@ public class ShopHomeController {
 
     @Autowired
     private ImageService imageService;
-
+    
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
+    @Autowired
+    private GoodsService goodsService;
+    
     /**
      *  首页初始化 加载banner和精品商品 
      * @return
@@ -84,7 +92,10 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
-
+                //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
+                goods.setMarketPrice(new BigDecimal(marketPrice));
+                
                 goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
                 goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                 goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
@@ -106,18 +117,34 @@ public class ShopHomeController {
     @Path("/loadGoodsList")
     public Response loadGoodsList(Map<String, Object> paramMap){
         try {
-            Map<String, Object> returnMap = new HashMap<String, Object>();
-//            String page = CommonUtils.getValue(paramMap, "page");
-//            String limit = CommonUtils.getValue(paramMap, "limit");
-//            Pagination<GoodsInfoEntity> pagination= goodService.loadGoodsByPages(page,limit);
-//            returnMap.put("total", pagination.getTotalCount());
-//            returnMap.put("goodsList", pagination.getDataList());
-            List<GoodsBasicInfoEntity> goodsList = goodService.loadGoodsList();
-            returnMap.put("goodsList", goodsList);
-            for (GoodsBasicInfoEntity goodsInfo : goodsList) {
+              Map<String, Object> returnMap = new HashMap<String, Object>();
+              String flage=CommonUtils.getValue(paramMap, "flage");//标记是精选还是类目
+              List<GoodsBasicInfoEntity> goodsList=null;
+              if(null !=flage && flage.equals("recommend")){
+            	  goodsList = goodService.loadGoodsList();
+            	  
+              }else if(null !=flage && flage.equals("category")){
+            	  String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
+        		  String page = CommonUtils.getValue(paramMap, "page");
+        		  String rows = CommonUtils.getValue(paramMap, "rows");
+        		  if(StringUtils.isEmpty(categoryId)){
+           				 return Response.fail("类目id不能空！");
+           		  }
+       			 GoodsBasicInfoEntity  goodsInfoEntity=new GoodsBasicInfoEntity();
+       			 goodsInfoEntity.setCategoryId1(Long.parseLong(categoryId));//设置1级类目Id
+       			 Pagination<GoodsBasicInfoEntity> goodsPageList= goodsService.loadGoodsByCategoryId(goodsInfoEntity,page, rows);
+       			 goodsList =goodsPageList.getDataList();
+      		     returnMap.put("totalCount", goodsPageList.getTotalCount());
+              }
+              
+               for (GoodsBasicInfoEntity goodsInfo : goodsList) {
                 if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
                     BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
                     goodsInfo.setGoodsPrice(price);
+                    //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+                    goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+                    
                     String logoUrl = goodsInfo.getGoodsLogoUrl();
                     String siftUrl = goodsInfo.getGoodsSiftUrl();
                     goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
@@ -126,6 +153,7 @@ public class ShopHomeController {
                     goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
                 }
             }
+            returnMap.put("goodsList", goodsList);
             List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
             for(BannerInfoEntity banner : banners){
                 banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
@@ -138,7 +166,7 @@ public class ShopHomeController {
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
-            return Response.fail("首页加载失败");
+            return Response.fail("加载商品列表 失败！");
         }
     }
     
