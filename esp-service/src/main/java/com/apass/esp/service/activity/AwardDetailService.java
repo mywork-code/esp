@@ -236,7 +236,7 @@ public class AwardDetailService {
 				
 				if(a.getType() == 0){
 					v.setExpectLoadAmount(a.getAmount());
-				}
+				 }
 			}
 		}
 		return v;
