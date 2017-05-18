@@ -6,13 +6,13 @@
   	select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where 
+    where status != '2'
     <choose>
       <when test="parentId  != null and parentId  != '' ">
-        <![CDATA[  parent_id = #{parentId} ]]>
+        <![CDATA[ and parent_id = #{parentId} ]]>
       </when>
       <otherwise>
-        <![CDATA[  parent_id is null  ]]>
+        <![CDATA[ and parent_id is null  ]]>
       </otherwise>
     </choose>
 	order by sort_order asc
@@ -22,7 +22,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where category_name = #{categoryName}
+    where category_name = #{categoryName} and status != '2'
   </select>
 
   <!--查询客户端首页的前3个类目信息  -->
