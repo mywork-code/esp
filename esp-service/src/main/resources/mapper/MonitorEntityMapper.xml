@@ -14,7 +14,7 @@
     <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, host, application, method_name, method_desciption, status, time, message, invoke_date, 
+    id, host, application, method_name, method_desciption, status, time, message, invoke_date,
     error_message
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
