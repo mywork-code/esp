@@ -247,7 +247,9 @@ $(function() {
 	    	console.log(item);
 	    	if(item.text == '编辑'){
 	    		$("#editCategoryDetail").window('open');
-	    		loadPic("editShowCategoryPicId",picUrl);
+	    		if(categoryLevel == 3){
+	    			loadPic("editShowCategoryPicId",picUrl);
+	    		}
 	    		$("#editCategoryName").textbox('setValue',categoryName);
 	    	}else if(item.text == '删除'){
 	    		$.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function(r) {
