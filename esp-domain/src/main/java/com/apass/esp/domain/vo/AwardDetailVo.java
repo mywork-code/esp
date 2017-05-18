@@ -44,6 +44,16 @@ public class AwardDetailVo {
      * 提前时间
      */
     private String createDate;
+    
+    /**
+     * 已放款
+     */
+    private BigDecimal loadAmount;
+    
+    /**
+     * 预计放款
+     */
+    private BigDecimal expectLoadAmount;
     public Long getUserId() {
         return userId;
     }
@@ -87,6 +97,18 @@ public class AwardDetailVo {
     public void setDate(String date) {
         this.date = date;
     }
+	public BigDecimal getLoadAmount() {
+		return loadAmount;
+	}
+	public void setLoadAmount(BigDecimal loadAmount) {
+		this.loadAmount = loadAmount;
+	}
+	public BigDecimal getExpectLoadAmount() {
+		return expectLoadAmount;
+	}
+	public void setExpectLoadAmount(BigDecimal expectLoadAmount) {
+		this.expectLoadAmount = expectLoadAmount;
+	}
           
     
 

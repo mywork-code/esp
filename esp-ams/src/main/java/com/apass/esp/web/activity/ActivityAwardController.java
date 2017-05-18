@@ -7,6 +7,7 @@ import com.apass.esp.domain.entity.AwardActivityInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
+import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
@@ -154,8 +155,8 @@ public class ActivityAwardController {
 	  if(days == null || days == 0){
 		  days = -1;
 	  }
-	  int count = awardBindRelService.getInviterUserCountByTime(days);
-	  return Response.success("返回成功!",count);
+	  AwardDetailVo v = awardDetailService.querySumAmountGroupByTypeStatus(days);
+	  return Response.success("返回成功!",v);
   }
   
 }
