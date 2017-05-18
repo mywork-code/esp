@@ -160,6 +160,7 @@ public class GoodsService {
         }
         returnMap.put("totalCurrentAmt", totalCurrentAmt);
         returnMap.put("goodsStockList", goodsStockList);
+        returnMap.put("postage", "免运费");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517
         List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
         // 20170322
         for(BannerInfoEntity banner : goodsBannerList){

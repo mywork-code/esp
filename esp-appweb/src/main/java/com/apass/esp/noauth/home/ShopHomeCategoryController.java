@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
@@ -30,7 +34,7 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 @RestController
 @RequestMapping("/v1/home/category")
 public class ShopHomeCategoryController {
-    private static final Logger logger =  LoggerFactory.getLogger(RegisterInfoController.class);
+    private static final Logger logger =  LoggerFactory.getLogger(ShopHomeCategoryController.class);
     @Autowired
     private CategoryInfoService categoryInfoService;
     @Autowired
@@ -39,6 +43,10 @@ public class ShopHomeCategoryController {
     private CommonService commonService;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
+    @Autowired
+    private BannerInfoService bannerService;
     /**
    	 * 1. 首页初始化 加载类目信息
    	 */
@@ -76,6 +84,10 @@ public class ShopHomeCategoryController {
                if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
                    BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
                    goodsInfo.setGoodsPrice(price);
+                   //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                   Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+                   goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+                   
                    String logoUrl = goodsInfo.getGoodsLogoUrl();
                    String siftUrl = goodsInfo.getGoodsSiftUrl();
                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
@@ -86,6 +98,16 @@ public class ShopHomeCategoryController {
                }
    		      returnMap.put("totalCount", goodsPageList.getTotalCount());
    		      returnMap.put("goodsList", goodsList);
+   		      
+   		       List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
+               for(BannerInfoEntity banner : banners){
+                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+
+                banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
+                banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+              }
+             returnMap.put("banners", banners);
    			 return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			logger.error("indexCategoryInit fail", e);
