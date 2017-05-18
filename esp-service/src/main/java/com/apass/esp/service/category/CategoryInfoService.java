@@ -2,6 +2,7 @@ package com.apass.esp.service.category;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
@@ -176,6 +177,7 @@ public class CategoryInfoService {
 		}
 		cate.setUpdateDate(new Date());
 		cate.setUpdateUser(userName);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -193,7 +195,18 @@ public class CategoryInfoService {
 	   if(count>0){
 		 throw new RuntimeException("该商品分类下存在商品!");
 	   }
-	   categoryMapper.deleteByPrimaryKey(id);
+	   //逻辑删除类目
+	   deleCategory(id);
+	}
+	
+	/**
+	 * 逻辑删除
+	 * @param id
+	 */
+	public void deleCategory(long id){
+		Category cate = categoryMapper.selectByPrimaryKey(id);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS2.getCode());
+		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
 	/**
@@ -206,6 +219,7 @@ public class CategoryInfoService {
 		cate.setSortOrder(sortOrder);
 		cate.setUpdateDate(new Date());
 		cate.setUpdateUser(userName);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -233,8 +247,8 @@ public class CategoryInfoService {
 		cate.setPictureUrl(categoryDto.getPictureUrl());
 		cate.setSortOrder(Long.valueOf(sortOrder));
 		cate.setUpdateDate(new Date());
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.insert(cate);
 		return cate;
 	}
-	
 }

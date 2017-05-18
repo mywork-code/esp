@@ -11,6 +11,7 @@ CREATE TABLE esp.`t_esp_category` (
   `update_user` varchar(50) NOT NULL COMMENT '修改人',
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `update_date` datetime NOT NULL COMMENT '修改时间',
+  `status` varchar(1) NOT NULL DEFAULT '1' COMMENT '状态（0 可见  1 不可见 2 删除）'
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品分类信息表';
 
