@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+#roleName,#roleCode {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+textarea {
+	border: 1px solid #B4CFFF;
+    padding: 5px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+.messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/goodCategory.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true,border:false" style="min-width:800px;">  
+	    <div data-options="region:'north'" style="height:50px">  
+			<!-- Toolbar -->
+			<div id="tb">
+				<div class="search">
+					<table style="width:100%;min-width:700px;">
+						<tr>
+							<td>
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addFirstCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;一 &nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addSecondCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;二&nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="addThirdCategory"
+									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;三&nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
+								<a href="javascript:void(0);"
+									class="easyui-linkbutton" id="flashCategory"
+									data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;分 &nbsp;类 &nbsp;</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+	    </div>  
+	    <div data-options="region:'west',split:false,title:'一级类目',collapsible:false" style="width:33%;min-width:200px;">  
+			<div id="westAttrDataGrid" data-options="fit:true,border:false">
+			</div>
+	    </div>  
+	    <div data-options="region:'center',split:false,title:'二级类目'" style="width:34%;min-width:200px;">  
+	    	<div id="centerAttrDataGrid" data-options="fit:true,border:false">
+	    	</div> 
+	    </div>  
+	    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:33%;;">  
+	        <div id="eastAttrDataGrid" data-options="fit:true,border:false">
+	        </div> 
+	    </div>  
+	</div>  
+	
+	<!-- 操作弹出菜单 -->
+	<div id="optMenu" data-options="" class="easyui-menu" style="width:120px;">   
+	    <div data-options="iconCls:'icon-edit'" id="editCategory">编辑</div>   
+	    <div class="menu-sep"></div>  
+	    <div data-options="iconCls:'icon-remove'" id="deleteCategory">删除</div>   
+	    <div class="menu-sep"></div>  
+	    <div>上移</div>   
+	    <div class="menu-sep"></div>  
+	    <div>下移</div>   
+	</div>
+	
+	<!-- 编辑商品类目  -->
+	<div id="editCategoryDetail" class="easyui-window"
+		data-options="iconCls:'icon-edit',modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
+		title="编辑商品类目 " style="width: 300px; height: 200px; display: none; text-align: center;">
+		<table style="width: 100%;">
+			<tr>
+				<td width="20%" align="right">
+					<font class="oneCategory">一</font>
+					<font class="twoCategory">二</font>
+					<font class="threeCategory">三</font>
+					级类目名称：
+				</td>
+				<td>
+					<input class="easyui-textbox" id="editCategoryName" name="categoryName" style="width: 150px;"/>
+				</td>
+			</tr>
+			<tr class="threeCategory">
+				<td width="20%">添加分类图标:</td>
+				<td>
+					<form id="editCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
+						<input type="file" id="editCategoryFilePic" name="file" />
+						<a href="javascript:void(0);" id="editUpLogoBtn" style="margin-right: 15px;" class="new-btn">
+							上传
+						</a>
+					</form>
+					<img id="editShowCategoryPicId" src="">
+				</td>
+			</tr>
+			<tr style="margin-top: 22px;">
+				<td style="margin-right: 22px;">
+					<a href="javascript:void(0);" id="editDisGoodCategory"
+					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" id="editConfirmGoodCategory"
+					style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- 添加商品类目  -->
+	<div id="addCategoryDetail" class="easyui-window"
+		data-options="iconCls:'icon-edit',modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
+		title="添加商品类目 " style="width: 500px; height: 300px; display: none; text-align: center;">
+		<table style="width: 100%;">
+			<tr>
+				<td width="20%" align="right">
+					<font class="oneCategory">一</font>
+					<font class="twoCategory">二</font>
+					<font class="threeCategory">三</font>
+					级类目名称：
+				</td>
+				<td>
+					<input class="easyui-textbox" id="addCategoryName" name="categoryName" style="width: 150px;"/>
+				</td>
+			</tr>
+			<tr class="threeCategory">
+				<td width="20%">添加分类图标:</td>
+				<td>
+					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
+						<input type="file" id="addCategoryFilePic" name="file" />
+						<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" class="new-btn">
+							上传
+						</a>
+					</form>
+					<img id="addShowCategoryPicId" src="">
+				</td>
+			</tr>
+			<tr style="margin-top: 22px;">
+				<td style="margin-right: 22px;">
+					<a href="javascript:void(0);" id="addDisGoodCategory"
+					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" id="addConfirmGoodCategory"
+					style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>   

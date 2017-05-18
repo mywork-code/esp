@@ -6,6 +6,9 @@ public class CategoryDto {
 	 * 类目Id
 	 */
     private Long categoryId;
+    
+    private Long categoryIdNew;
+    private Long categoryIdOld;
     /**
      * 类目名称
      */
@@ -18,6 +21,9 @@ public class CategoryDto {
      * 排序
      */
     private Long sortOrder;
+    private Long sortOrderNew;
+    private Long sortOrderOld;
+    
     /**
      * 级别
      */
@@ -134,4 +140,29 @@ public class CategoryDto {
 	public void setCategoryId3(Long categoryId3) {
 		this.categoryId3 = categoryId3;
 	}
+    public Long getSortOrderNew() {
+        return sortOrderNew;
+    }
+    public void setSortOrderNew(Long sortOrderNew) {
+        this.sortOrderNew = sortOrderNew;
+    }
+    public Long getSortOrderOld() {
+        return sortOrderOld;
+    }
+    public void setSortOrderOld(Long sortOrderOld) {
+        this.sortOrderOld = sortOrderOld;
+    }
+    public Long getCategoryIdNew() {
+        return categoryIdNew;
+    }
+    public void setCategoryIdNew(Long categoryIdNew) {
+        this.categoryIdNew = categoryIdNew;
+    }
+    public Long getCategoryIdOld() {
+        return categoryIdOld;
+    }
+    public void setCategoryIdOld(Long categoryIdOld) {
+        this.categoryIdOld = categoryIdOld;
+    }
+	
 }

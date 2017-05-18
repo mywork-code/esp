@@ -6,6 +6,8 @@ import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +31,9 @@ public class CategoryInfoService {
 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
-		List<CategoryVo> cate1List = getCategoryVoListByParentId(null);
+	    List<CategoryVo> cate1List = getCategoryVoListByParentId(dto.getParentId());
 		
-		//根据传入的一级分类参数，获取所属的二级分类
-		List<CategoryVo> cate2List = categoryListByParentId(dto.getCategoryId1(), cate1List);
-		
-		//根据传入的二级分类参数，获取所属的三级分类
-		List<CategoryVo> cate3List = categoryListByParentId(dto.getCategoryId2(), cate2List);
-		
-		return cate1List;
+	    return cate1List;
 	}
 	
 	public List<CategoryVo> categoryListByParentId(Long Id,List<CategoryVo> cateList){
@@ -161,7 +157,7 @@ public class CategoryInfoService {
 	 * @param id
 	 * @param categoryName
 	 */
-	public void updateCategoryNameById(long id ,String categoryName,String userName){
+	public void updateCategoryNameById(long id ,String categoryName,String pictureUrl,String userName){
 		
 		//根据id获取类目信息
 		CategoryVo v= getCategoryById(id);
@@ -175,6 +171,9 @@ public class CategoryInfoService {
 		Category cate = new Category();
 		cate.setId(id);
 		cate.setCategoryName(categoryName);
+		if(!StringUtils.isBlank(pictureUrl)){
+		    cate.setPictureUrl(pictureUrl);
+		}
 		cate.setUpdateDate(new Date());
 		cate.setUpdateUser(userName);
 		categoryMapper.updateByPrimaryKeySelective(cate);
@@ -216,21 +215,23 @@ public class CategoryInfoService {
 	 * @return
 	 */
 	public Category addCategory(CategoryDto categoryDto){
+	        Integer sortOrder = categoryMapper.getMaxSortOrder(categoryDto.getLevel());
 		/**
 		 * 验证数据库中是否存在类目名称
 		 */
 		if(egtCategoryCount(categoryDto.getCategoryName())!=0){
-			throw new RuntimeException("此类目名称已重复！");
+		    throw new RuntimeException("此类目名称已重复！");
 		}
 		
 		Category cate = new Category();
 		cate.setCategoryName(categoryDto.getCategoryName());
 		cate.setCreateDate(new Date());
 		cate.setCreateUser(categoryDto.getCreateUser());
+		cate.setUpdateUser(categoryDto.getCreateUser());
 		cate.setLevel(categoryDto.getLevel());
 		cate.setParentId(categoryDto.getParentId());
 		cate.setPictureUrl(categoryDto.getPictureUrl());
-		cate.setSortOrder(categoryDto.getSortOrder());
+		cate.setSortOrder(Long.valueOf(sortOrder));
 		cate.setUpdateDate(new Date());
 		categoryMapper.insert(cate);
 		return cate;

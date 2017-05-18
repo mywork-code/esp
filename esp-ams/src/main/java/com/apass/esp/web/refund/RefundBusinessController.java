@@ -149,7 +149,7 @@ public class RefundBusinessController {
     }
 
     /**
-     * 重新收货
+     * 重新发货
      * 
      * @param request
      * @return

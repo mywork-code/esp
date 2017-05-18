@@ -37,4 +37,13 @@
       LIMIT    3
   </select>
  
+  <select id="getMaxSortOrder"  resultType="java.lang.Integer">
+     select max(sort_order)+1 from t_esp_category
+	   <where>
+		   <if test="level != null" >
+	         and level = ${level}
+	       </if>
+	   </where>
+  </select>
+ 
 </mapper>
