@@ -21,6 +21,7 @@
 		<module>esp-appweb</module>
 		<module>esp-ams</module>
         <module>esp-common</module>
+        <module>apass-monitor</module>
     </modules>
 
 	<!-- *********** Params Settings ************ -->
