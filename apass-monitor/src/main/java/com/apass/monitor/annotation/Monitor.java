@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Monitor {
 
-  String methodMemo() default "";//方法备注
+  String methodDesc() default "";//方法备注
 
 
 }

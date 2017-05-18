@@ -45,6 +45,10 @@ public class Category {
      * 修改时间
      */
     private Date updateDate;
+    /**
+     * 状态
+     */
+    private String status;
 
     public Long getId() {
         return id;
@@ -125,4 +129,12 @@ public class Category {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }
