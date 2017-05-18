@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.MonitorEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.MonitorEntity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="host" property="host" jdbcType="VARCHAR" />
+    <result column="application" property="application" jdbcType="VARCHAR" />
+    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
+    <result column="method_desciption" property="methodDesciption" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="time" property="time" jdbcType="VARCHAR" />
+    <result column="message" property="message" jdbcType="VARCHAR" />
+    <result column="invoke_date" property="invokeDate" jdbcType="TIMESTAMP" />
+    <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, host, application, method_name, method_desciption, status, time, message, invoke_date, 
+    error_message
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_monitor
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_monitor
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_monitor (host, application, method_name, 
+      method_desciption, status, time, 
+      message, invoke_date, error_message
+      )
+    values (#{host,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR}, 
+      #{methodDesciption,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{time,jdbcType=VARCHAR}, 
+      #{message,jdbcType=VARCHAR}, #{invokeDate,jdbcType=TIMESTAMP}, #{errorMessage,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_monitor
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="host != null" >
+        host,
+      </if>
+      <if test="application != null" >
+        application,
+      </if>
+      <if test="methodName != null" >
+        method_name,
+      </if>
+      <if test="methodDesciption != null" >
+        method_desciption,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="message != null" >
+        message,
+      </if>
+      <if test="invokeDate != null" >
+        invoke_date,
+      </if>
+      <if test="errorMessage != null" >
+        error_message,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="host != null" >
+        #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="application != null" >
+        #{application,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="methodDesciption != null" >
+        #{methodDesciption,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="invokeDate != null" >
+        #{invokeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="errorMessage != null" >
+        #{errorMessage,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
+    update t_monitor
+    <set >
+      <if test="host != null" >
+        host = #{host,jdbcType=VARCHAR},
+      </if>
+      <if test="application != null" >
+        application = #{application,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        method_name = #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="methodDesciption != null" >
+        method_desciption = #{methodDesciption,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="invokeDate != null" >
+        invoke_date = #{invokeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="errorMessage != null" >
+        error_message = #{errorMessage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
+    update t_monitor
+    set host = #{host,jdbcType=VARCHAR},
+      application = #{application,jdbcType=VARCHAR},
+      method_name = #{methodName,jdbcType=VARCHAR},
+      method_desciption = #{methodDesciption,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      time = #{time,jdbcType=VARCHAR},
+      message = #{message,jdbcType=VARCHAR},
+      invoke_date = #{invokeDate,jdbcType=TIMESTAMP},
+      error_message = #{errorMessage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
