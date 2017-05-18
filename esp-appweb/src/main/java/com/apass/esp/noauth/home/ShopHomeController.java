@@ -166,7 +166,7 @@ public class ShopHomeController {
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
-            return Response.fail("加载商品列表 失败！");
+            return Response.fail("加载商品列表失败！");
         }
     }
     
