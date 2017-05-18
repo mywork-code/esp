@@ -6,13 +6,13 @@
   	select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where 
+    where status != '2'
     <choose>
       <when test="parentId  != null and parentId  != '' ">
-        <![CDATA[  parent_id = #{parentId} ]]>
+        <![CDATA[ and parent_id = #{parentId} ]]>
       </when>
       <otherwise>
-        <![CDATA[  parent_id is null  ]]>
+        <![CDATA[ and parent_id is null  ]]>
       </otherwise>
     </choose>
 	order by sort_order asc
@@ -22,7 +22,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where category_name = #{categoryName}
+    where category_name = #{categoryName} and status != '2'
   </select>
 
   <!--查询客户端首页的前3个类目信息  -->
@@ -33,8 +33,23 @@
 		       sort_order      sortOrder
       FROM     t_esp_category 
       WHERE    level=#{value}
+      AND      `status`='0'
       ORDER    BY sort_order ASC 
       LIMIT    3
   </select>
  
+ <!-- 查询同一级别下，最大的level,在此基础上+1 -->
+  <select id="getMaxSortOrder"  resultType="java.lang.Integer">
+     select max(sort_order)+1 from t_esp_category
+	   <where>
+		   <if test="level != null" >
+	         and level = ${level}
+	       </if>
+	       and status != '2'
+	   </where>
+  </select>
+ 
+  <update id="updateStatus1To0">
+      update t_esp_category set status = '0' where status = '1'
+  </update>
 </mapper>
