@@ -2,6 +2,7 @@ package com.apass.esp.service.category;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
@@ -176,6 +177,7 @@ public class CategoryInfoService {
 		}
 		cate.setUpdateDate(new Date());
 		cate.setUpdateUser(userName);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -185,7 +187,7 @@ public class CategoryInfoService {
 	 */
 	public void deleteCategoryById(long id){
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
-	   if(cateList == null && cateList.isEmpty()){
+	   if(cateList != null && !cateList.isEmpty()){
 		  throw new RuntimeException("该商品分类下存在下级分类!");
 	   }
 	   //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
@@ -193,7 +195,18 @@ public class CategoryInfoService {
 	   if(count>0){
 		 throw new RuntimeException("该商品分类下存在商品!");
 	   }
-	   categoryMapper.deleteByPrimaryKey(id);
+	   //逻辑删除类目
+	   deleCategory(id);
+	}
+	
+	/**
+	 * 逻辑删除
+	 * @param id
+	 */
+	public void deleCategory(long id){
+		Category cate = categoryMapper.selectByPrimaryKey(id);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS2.getCode());
+		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
 	/**
@@ -206,6 +219,7 @@ public class CategoryInfoService {
 		cate.setSortOrder(sortOrder);
 		cate.setUpdateDate(new Date());
 		cate.setUpdateUser(userName);
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.updateByPrimaryKeySelective(cate);
 	}
 	
@@ -233,8 +247,14 @@ public class CategoryInfoService {
 		cate.setPictureUrl(categoryDto.getPictureUrl());
 		cate.setSortOrder(Long.valueOf(sortOrder));
 		cate.setUpdateDate(new Date());
+		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.insert(cate);
 		return cate;
 	}
-	
+	/**
+	 * 批量更新类目状态由不可见改为可见
+	 */
+	public void updateStatus1To0(){
+		categoryMapper.updateStatus1To0();
+	}
 }

@@ -1,19 +1,19 @@
 package com.apass.esp.domain.enums;
 
-public enum CategoryLevel {
+public enum CategoryStatus {
 
 
-	CATEGORY_LEVEL1("1", "一级类目"),
+	CATEGORY_STATUS0("0", "可见"),
 
-	CATEGORY_LEVEL2("2", "二级类目"),
+	CATEGORY_STATUS1("1", "不可见"),
 
-	CATEGORY_LEVEL3("3", "三级类目");
+	CATEGORY_STATUS2("2", "删除");
 
 	private String code;
 
 	private String message;
 
-	private CategoryLevel(String code, String message) {
+	private CategoryStatus(String code, String message) {
 		this.code = code;
 		this.message = message;
 	}
