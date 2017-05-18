@@ -3,6 +3,8 @@ package com.apass.esp.schedule;
 import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.service.monitor.MonitorService;
+import com.apass.esp.utils.mailUtils.MailSenderInfo;
+import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,8 +40,14 @@ public class MonitorScheduleTask {
     private CacheManager cacheManager;
 
 
-    @Value("${monitor.email}")
+    @Value("${monitor.receive.emails}")
     public String receiveEmails;
+
+    @Value("${monitor.send.address}")
+    public String sendAddress;
+
+    @Value("${monitor.send.password}")
+    public String sendPassword;
 
     //
     @Scheduled(cron = "0 0/60 * * * ?")
@@ -61,12 +69,26 @@ public class MonitorScheduleTask {
         for (MonitorEntityStatistics monitorEntityStatistics : monitorEntityStatisticsList
                 ) {
 
-            if(confTimes > monitorEntityStatistics.getTotalMonitorNum()){
+            if (confTimes > monitorEntityStatistics.getTotalMonitorNum()) {
                 continue;
             }
-            List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date ,monitorEntityStatistics.getMethodName());
+            List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date, monitorEntityStatistics.getMethodName());
+            MailSenderInfo mailSenderInfo = new MailSenderInfo();
+            mailSenderInfo.setMailServerHost("SMTP.163.com");
+            mailSenderInfo.setMailServerPort("25");
+            mailSenderInfo.setValidate(true);
+            mailSenderInfo.setUserName(sendAddress);
+            mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
+            mailSenderInfo.setFromAddress(sendAddress);
+            mailSenderInfo.setSubject("1");//邮箱标题
 
-
+            String[] emailAddress = receiveEmails.split(";");
+            for (int i=0;i<emailAddress.length;i++) {
+                mailSenderInfo.setToAddress(emailAddress[0]);
+                mailSenderInfo.setContent(list.get(0).getMessage());
+                MailUtil mailUtil = new MailUtil();
+                mailUtil.sendTextMail(mailSenderInfo);
+            }
         }
     }
 }
