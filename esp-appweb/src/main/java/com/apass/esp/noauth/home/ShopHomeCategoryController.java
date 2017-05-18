@@ -5,13 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.domain.Response;
@@ -30,9 +38,11 @@ import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
-
-@RestController
-@RequestMapping("/v1/home/category")
+//@Controller
+//@RequestMapping("/v1/home/category")
+@Path("/v1/home/category")
+@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ShopHomeCategoryController {
     private static final Logger logger =  LoggerFactory.getLogger(ShopHomeCategoryController.class);
     @Autowired
@@ -50,8 +60,11 @@ public class ShopHomeCategoryController {
     /**
    	 * 1. 首页初始化 加载类目信息
    	 */
-   	@RequestMapping(value = "/init",method = RequestMethod.POST)
-   	public Response indexCategoryInit(@RequestBody Map<String, Object> paramMap) {
+//    @ResponseBody
+//    @RequestMapping(value="/init",method=RequestMethod.POST)
+    @POST
+    @Path("/init")
+   	public Response indexCategoryInit() {
    		try {
              Map<String, Object> returnMap = new HashMap<String, Object>();
              List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoList(Long.parseLong(CategoryLevel.CATEGORY_LEVEL1.getCode()));
@@ -65,7 +78,10 @@ public class ShopHomeCategoryController {
     /**
    	 * 2. 查看当前类目下的全部商品列表
    	 */
-   	@RequestMapping(value = "/loanGoodsList",method = RequestMethod.POST)
+//   	@ResponseBody
+//   	@RequestMapping(value = "/loanGoodsList",method = RequestMethod.POST)
+    @POST
+    @Path("/loanGoodsList")
    	public Response loanGoodsListByCategoryId(@RequestBody Map<String, Object> paramMap) {
    		try {
    			 String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
