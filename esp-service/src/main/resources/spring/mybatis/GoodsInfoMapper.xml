@@ -408,6 +408,7 @@
 		ORDER BY a.update_date DESC
 	]]>
 	</select>
+	
 	<!-- 查询商品上架期内 -->
 	<select id="count"  resultType="Integer">
 	<![CDATA[
