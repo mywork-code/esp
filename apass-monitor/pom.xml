@@ -11,5 +11,10 @@
 
     <artifactId>apass-monitor</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.apass.esp</groupId>
+            <artifactId>esp-framework</artifactId>
+        </dependency>
+    </dependencies>
 </project>
