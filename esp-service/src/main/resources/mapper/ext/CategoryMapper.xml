@@ -37,13 +37,18 @@
       LIMIT    3
   </select>
  
+ <!-- 查询同一级别下，最大的level,在此基础上+1 -->
   <select id="getMaxSortOrder"  resultType="java.lang.Integer">
      select max(sort_order)+1 from t_esp_category
 	   <where>
 		   <if test="level != null" >
 	         and level = ${level}
 	       </if>
+	       and status != '2'
 	   </where>
   </select>
  
+  <update id="updateStatus1To0">
+      update t_esp_category set status = '0' where status = '1'
+  </update>
 </mapper>
