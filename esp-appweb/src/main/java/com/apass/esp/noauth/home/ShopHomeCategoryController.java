@@ -34,7 +34,7 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 @RestController
 @RequestMapping("/v1/home/category")
 public class ShopHomeCategoryController {
-    private static final Logger logger =  LoggerFactory.getLogger(RegisterInfoController.class);
+    private static final Logger logger =  LoggerFactory.getLogger(ShopHomeCategoryController.class);
     @Autowired
     private CategoryInfoService categoryInfoService;
     @Autowired

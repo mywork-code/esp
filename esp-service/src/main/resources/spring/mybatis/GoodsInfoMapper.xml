@@ -408,20 +408,7 @@
 		ORDER BY a.update_date DESC
 	]]>
 	</select>
-	<!-- 查询商品上架期内 -->
-	<select id="count"  resultType="Integer">
-	<![CDATA[
-		SELECT
-			count(1)
-		FROM
-			t_esp_goods_base_info
-			where 
-				CURRENT_TIMESTAMP > list_time
-			AND CURRENT_TIMESTAMP < delist_time
-			AND status='G02'
-			AND is_delete = '01'
-	]]>
-	</select>
+	
 	<!-- 查询商品上架期内 -->
 	<select id="count"  resultType="Integer">
 	<![CDATA[
