@@ -88,5 +88,9 @@
 		where invite_user_id = #{userId} and activity_id=#{activityId}
 	</select>
 	
+	<!-- 查询被邀请的人数根据传入的时间 -->
+	<select id="getInviterUserCountByTime" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+	   select count(id) from t_esp_award_bind_rel where create_date >= #{startCreateDate}
+	</select>
 	
 </mapper>
