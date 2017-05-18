@@ -33,7 +33,6 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.6.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.apass.esp</groupId>
 			<artifactId>esp-domain</artifactId>

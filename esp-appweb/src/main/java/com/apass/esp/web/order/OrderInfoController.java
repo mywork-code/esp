@@ -88,7 +88,7 @@ public class OrderInfoController {
         String sourceFlag = CommonUtils.getValue(paramMap, "sourceFlag"); // 订单来源标记[购物车
                                                                           // 或
                                                                           // 直接购买]
-
+        String deviceType = CommonUtils.getValue(paramMap, "deviceType");//订单渠道
         String requestId = logStashSign + "_" + userIdStr;
         paramMap.remove("x-auth-token"); // 输出日志前删除会话token
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -100,6 +100,12 @@ public class OrderInfoController {
             BigDecimal totalPayment = null;
             if (null == userIdStr) {
                 return Response.fail(NO_USER);
+            }
+            if(StringUtils.isEmpty(deviceType)){
+                return Response.fail("订单来源为空");
+            }
+            if(!"ios".equals(deviceType)||!"android".equals(deviceType)){
+                return Response.fail("订单来源参数错误");
             }
             if (!StringUtils.isNumeric(userIdStr)) {
                 return Response.fail("用户名传入非法!");
@@ -126,7 +132,7 @@ public class OrderInfoController {
             }
 
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
-                    purchaseList, sourceFlag);
+                    purchaseList, sourceFlag,deviceType);
             resultMap.put("orderList", orders);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
