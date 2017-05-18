@@ -1,5 +1,5 @@
 $(function(){
-
+	
     //Grid
     $('#list').datagrid({
         title : '活动配置信息',
@@ -89,5 +89,34 @@ $(function(){
         var params={};
         $('#list').datagrid('load',params);
     });
-
+    
+    //查询已放款和预计放款
+    $("#awarddetail").change(function(){
+    	$.ajax({
+            url : ctx + '/activity/introduce/sumAmountGroupByType',
+            data : {"days":$(this).val()},
+            type : "POST",
+            dataType : "json",
+            success : function(data) {
+        		 $("#loadAmount").html(data.loadAmount);
+             	 $("#expectLoadAmount").html(data.expectLoadAmount);
+            }
+        });
+    });
+    
+    //查询拉取人数
+    $("#awardbindrel").change(function(){
+    	$.ajax({
+            url : ctx + '/activity/introduce/inviterUserCountByTime',
+            data : {"days":$(this).val()},
+            type : "POST",
+            dataType : "json",
+            success : function(data) {
+            	$("#personSum").html(data);
+            }
+        });
+    });
+    
+    $('#awarddetail').val(-1).trigger('change');
+	$('#awardbindrel').val(-1).trigger('change');
 });
