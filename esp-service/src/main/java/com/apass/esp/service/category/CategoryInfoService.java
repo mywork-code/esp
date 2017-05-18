@@ -187,7 +187,7 @@ public class CategoryInfoService {
 	 */
 	public void deleteCategoryById(long id){
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
-	   if(cateList == null && cateList.isEmpty()){
+	   if(cateList != null && !cateList.isEmpty()){
 		  throw new RuntimeException("该商品分类下存在下级分类!");
 	   }
 	   //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
@@ -250,5 +250,11 @@ public class CategoryInfoService {
 		cate.setStatus(CategoryStatus.CATEGORY_STATUS1.getCode());
 		categoryMapper.insert(cate);
 		return cate;
+	}
+	/**
+	 * 批量更新类目状态由不可见改为可见
+	 */
+	public void updateStatus1To0(){
+		categoryMapper.updateStatus1To0();
 	}
 }

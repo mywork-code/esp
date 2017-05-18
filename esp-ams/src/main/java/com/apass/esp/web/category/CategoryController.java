@@ -195,6 +195,18 @@ public class CategoryController {
             return Response.fail(e.getMessage());
         }
     }
+    
+    @RequestMapping(value = "/refresh")
+    @ResponseBody
+    public Response updateStatus(){
+    	try {
+    		cateService.updateStatus1To0();
+    		return Response.success("修改商品分类状态成功!");
+		} catch (Exception e) {
+			 LOGGER.error("修改商品分类状态失败", e);
+			return Response.fail("修改商品分类状态失败!");
+		}
+    }
 
     /**
      * 修改分类验证
