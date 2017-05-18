@@ -86,22 +86,71 @@ textarea {
 		<table style="width: 100%;">
 			<tr>
 				<td width="20%" align="right">
-					<font id="oneCategory">一</font>
-					<font id="twoCategory">二</font>
-					<font id="threeCategory">三</font>
+					<font class="oneCategory">一</font>
+					<font class="twoCategory">二</font>
+					<font class="threeCategory">三</font>
 					级类目名称：
 				</td>
 				<td>
-					<input class="easyui-textbox" id="categoryName" name="categoryName" style="width: 150px;"/>
+					<input class="easyui-textbox" id="editCategoryName" name="categoryName" style="width: 150px;"/>
 				</td>
 			</tr>
-			<tr></tr>
-			<tr></tr>
+			<tr class="threeCategory">
+				<td width="20%">添加分类图标:</td>
+				<td>
+					<form id="editCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
+						<input type="file" id="editCategoryFilePic" name="file" />
+						<a href="javascript:void(0);" id="editUpLogoBtn" style="margin-right: 15px;" class="new-btn">
+							上传
+						</a>
+					</form>
+					<img id="editShowCategoryPicId" src="">
+				</td>
+			</tr>
 			<tr style="margin-top: 22px;">
 				<td style="margin-right: 22px;">
-					<a href="javascript:void(0);" id="disGoodCategory"
+					<a href="javascript:void(0);" id="editDisGoodCategory"
 					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
-					<a href="javascript:void(0);" id="confirmGoodCategory"
+					<a href="javascript:void(0);" id="editConfirmGoodCategory"
+					style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- 添加商品类目  -->
+	<div id="addCategoryDetail" class="easyui-window"
+		data-options="iconCls:'icon-edit',modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
+		title="添加商品类目 " style="width: 500px; height: 300px; display: none; text-align: center;">
+		<table style="width: 100%;">
+			<tr>
+				<td width="20%" align="right">
+					<font class="oneCategory">一</font>
+					<font class="twoCategory">二</font>
+					<font class="threeCategory">三</font>
+					级类目名称：
+				</td>
+				<td>
+					<input class="easyui-textbox" id="addCategoryName" name="categoryName" style="width: 150px;"/>
+				</td>
+			</tr>
+			<tr class="threeCategory">
+				<td width="20%">添加分类图标:</td>
+				<td>
+					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
+						<input type="file" id="addCategoryFilePic" name="file" />
+						<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" class="new-btn">
+							上传
+						</a>
+					</form>
+					<img id="addShowCategoryPicId" src="">
+				</td>
+			</tr>
+			<tr style="margin-top: 22px;">
+				<td style="margin-right: 22px;">
+					<a href="javascript:void(0);" id="addDisGoodCategory"
+					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+					<a href="javascript:void(0);" id="addConfirmGoodCategory"
 					style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
 				</td>
 			</tr>
