@@ -295,6 +295,13 @@ public class DateFormatUtil {
         return c.getTime();
     }
 
+    public static Date addDMinutes(Date value, int num) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(value);
+        c.add(Calendar.MINUTE, num);
+        return c.getTime();
+    }
+
     public static Date addMonth(Date value, int num) {
         Calendar c = Calendar.getInstance();
         c.setTime(value);

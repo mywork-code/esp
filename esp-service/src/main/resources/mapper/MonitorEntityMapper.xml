@@ -14,7 +14,7 @@
     <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, host, application, method_name, method_desciption, status, time, message, invoke_date, 
+    id, host, application, method_name, method_desciption, status, time, message, invoke_date,
     error_message
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -28,7 +28,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_monitor (host, application, method_name, 
+    insert into t_apass_monitor (host, application, method_name,
       method_desciption, status, time, 
       message, invoke_date, error_message
       )
@@ -38,7 +38,7 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_monitor
+    insert into t_apass_monitor
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="host != null" >
         host,
@@ -99,7 +99,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
-    update t_monitor
+    update t_apass_monitor
     <set >
       <if test="host != null" >
         host = #{host,jdbcType=VARCHAR},
@@ -132,7 +132,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
-    update t_monitor
+    update t_apass_monitor
     set host = #{host,jdbcType=VARCHAR},
       application = #{application,jdbcType=VARCHAR},
       method_name = #{methodName,jdbcType=VARCHAR},
