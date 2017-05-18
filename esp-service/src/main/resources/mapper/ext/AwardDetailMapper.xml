@@ -19,4 +19,8 @@
       from t_esp_award_detail
       where  status =#{status} and type = #{type}
     </select>
+    
+    <select id="querySumAmountGroupByTypeStatus" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+       select type,status,sum(amount) as amount from t_esp_award_detail where  status='0' and create_date >= #{startCreateDate} group by type,status
+    </select>
 </mapper>

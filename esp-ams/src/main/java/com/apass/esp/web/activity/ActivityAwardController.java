@@ -8,6 +8,7 @@ import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
@@ -44,6 +45,9 @@ public class ActivityAwardController {
 
   @Autowired
   private AwardDetailService awardDetailService;
+  
+  @Autowired
+  private AwardBindRelService awardBindRelService; 
 
   /**
    * 转介绍活动配置页
@@ -142,6 +146,16 @@ public class ActivityAwardController {
     }
     return response;
   }
-
-
+  
+  @RequestMapping(value = "/introduce/test", method = RequestMethod.POST)
+  @ResponseBody
+  public Response getResponse(Integer days){
+	  //近二十四小时
+	  if(days == null || days == 0){
+		  days = -1;
+	  }
+	  int count = awardBindRelService.getInviterUserCountByTime(days);
+	  return Response.success("返回成功!",count);
+  }
+  
 }

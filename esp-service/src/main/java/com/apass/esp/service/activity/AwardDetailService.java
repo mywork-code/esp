@@ -16,6 +16,7 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -205,5 +207,23 @@ public class AwardDetailService {
 	@Transactional(rollbackFor=Exception.class)
 	public int delete(Long id){
 		return awardDetailMapper.deleteByPrimaryKey(id);
+	}
+	
+	public void get(){
+		
+	}
+	
+	/**
+	 * 统计在某一时间段内，已放款和预计放款总金额
+	 * @param days
+	 * @return
+	 */
+	public List<AwardDetail> querySumAmountGroupByTypeStatus(int days){
+		ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
+		//在当前时间的基础上减去days
+		Calendar cal = Calendar.getInstance();
+		cal.add(cal.DATE, days);
+		query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),""));
+		return awardDetailMapper.querySumAmountGroupByTypeStatus(query);
 	}
 }
