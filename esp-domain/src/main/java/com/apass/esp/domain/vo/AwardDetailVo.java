@@ -48,12 +48,12 @@ public class AwardDetailVo {
     /**
      * 已放款
      */
-    private BigDecimal loadAmount;
+    private BigDecimal loadAmount = BigDecimal.ZERO;
     
     /**
      * 预计放款
      */
-    private BigDecimal expectLoadAmount;
+    private BigDecimal expectLoadAmount = BigDecimal.ZERO;
     public Long getUserId() {
         return userId;
     }

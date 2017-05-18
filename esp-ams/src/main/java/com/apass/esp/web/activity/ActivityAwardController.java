@@ -18,6 +18,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -148,15 +149,26 @@ public class ActivityAwardController {
     return response;
   }
   
-  @RequestMapping(value = "/introduce/test", method = RequestMethod.POST)
+  @RequestMapping(value = "/introduce/sumAmountGroupByType", method = RequestMethod.POST)
   @ResponseBody
-  public Response getResponse(Integer days){
+  public AwardDetailVo getSumAmountGroupByType(Integer days){
 	  //近二十四小时
 	  if(days == null || days == 0){
 		  days = -1;
 	  }
 	  AwardDetailVo v = awardDetailService.querySumAmountGroupByTypeStatus(days);
-	  return Response.success("返回成功!",v);
+	  return v;
+  }
+  
+  @RequestMapping(value = "/introduce/inviterUserCountByTime", method = RequestMethod.POST)
+  @ResponseBody
+  public Integer getInviterUserCountByTime(Integer days){
+	  //近二十四小时
+	  if(days == null || days == 0){
+		  days = -1;
+	  }
+	 Integer count = awardBindRelService.getInviterUserCountByTime(days);
+	 return  count!=null?count:0;
   }
   
 }
