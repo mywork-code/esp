@@ -52,13 +52,4 @@ public class MonitorService {
         Date currentDate = new Date();
         return monitorEntityMapper.getMonitorEntityByMethodName(currentDate, date, methodName,env,application);
     }
-
-    public List<MonitorEntity> getMonitorEntityGroupByHostAppMethodStatus(){
-    	
-    	List<MonitorEntity> mList = monitorEntityMapper.getMonitorEntityGroupByHostAppMethodStatus();
-    	
-    	
-    	
-    	return mList;
-    }
 }
