@@ -13,6 +13,8 @@ public class AddBannerInfoEntity {
     private String        bannerOrder;
     
     private String        activityUrl;
+    
+    private String        activityName;
 
     public String getBannerName() {
         return bannerName;
@@ -52,5 +54,13 @@ public class AddBannerInfoEntity {
 
 	public void setActivityUrl(String activityUrl) {
 		this.activityUrl = activityUrl;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
 	}
 }

@@ -184,7 +184,7 @@ public class BannerController extends BaseController {
             String bannerType = pageModel.getBannerType();
             String bannerOrder = pageModel.getBannerOrder();
             String activityUrl = pageModel.getActivityUrl();
-
+            String activityName =pageModel.getActivityName();
             if (StringUtils.isAnyBlank(bannerType, bannerOrder) || !StringUtils.isNumeric(bannerOrder)) {
                 throw new BusinessException("参数有误.");
             }
@@ -192,7 +192,15 @@ public class BannerController extends BaseController {
             if (pageModel.getBannerFile().getInputStream().available() == 0) {
                 throw new BusinessException("请选择文件.");
             }
-
+            //电商3期511 20170519 banner 添加设置商品链接
+            if(StringUtils.isNotBlank(activityUrl)){
+            	if("activity".equals(activityName)){
+            		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
+            	}else if("goodId".equals(activityName)){
+            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
+            	}
+            }
+            
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
             entity.setBannerOrder(Long.valueOf(bannerOrder));
