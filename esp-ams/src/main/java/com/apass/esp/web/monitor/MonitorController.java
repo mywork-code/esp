@@ -49,4 +49,12 @@ public class MonitorController {
     	return Response.success("修改设置成功!");
     }
 
+  /**
+   * 接口监控页面
+   */
+  @RequestMapping(value = "/index", method = RequestMethod.GET)
+  public String index(){
+    return "monitor/index";
+  }
+
 }
