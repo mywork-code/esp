@@ -101,6 +101,7 @@ public class MonitorScheduleTask {
                 sb.append("调用时间 "+list.get(i).getInvokeDate()+"\n");
                 sb.append("方法用时"+list.get(i).getTime()+"ms"+"\n");
                 sb.append("堆栈信息 ："+list.get(i).getMessage()+"\n");
+                sb.append("errMessage ："+list.get(i).getErrorMessage()+"\n");
                 if(i!=list.size()-1){
                     sb.append("-----------------------------\n");
                 }
