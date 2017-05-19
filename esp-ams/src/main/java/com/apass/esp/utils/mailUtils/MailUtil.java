@@ -37,21 +37,5 @@ public class MailUtil {
 
         return false;
     }
-
-
-    public static void main(String[] args) {
-        MailSenderInfo mailSenderInfo = new MailSenderInfo();
-        mailSenderInfo.setMailServerHost("SMTP.263.net");
-        mailSenderInfo.setMailServerPort("25");
-        mailSenderInfo.setValidate(true);
-        mailSenderInfo.setUserName("sunchaohai@apass.cn");
-        mailSenderInfo.setPassword("sch1234");// 您的邮箱密码
-        mailSenderInfo.setFromAddress("sunchaohai@apass.cn");
-        mailSenderInfo.setSubject("接口预警");//邮箱标题
-        mailSenderInfo.setToAddress("xujie@apass.cn");
-        mailSenderInfo.setContent("1111");
-        MailUtil mailUtil = new MailUtil();
-        mailUtil.sendTextMail(mailSenderInfo);
-
-    }
+    
 }
