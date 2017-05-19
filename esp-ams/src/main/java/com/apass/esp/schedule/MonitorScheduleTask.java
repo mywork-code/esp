@@ -96,6 +96,7 @@ public class MonitorScheduleTask {
             sb.append("详细信息如下:\n");
             for (int i=0;i<list.size();i++
                     ) {
+                sb.append("信息: "+(i+1)+"\n");
                 sb.append("应用: "+list.get(i).getApplication()+" \n");
                 sb.append("方法名称: "+list.get(i).getMethodName()+" \n");
                 sb.append("调用时间 "+list.get(i).getInvokeDate()+"\n");
@@ -104,6 +105,9 @@ public class MonitorScheduleTask {
                 sb.append("errMessage ："+list.get(i).getErrorMessage()+"\n");
                 if(i!=list.size()-1){
                     sb.append("-----------------------------\n");
+                }
+                if(i==10){
+                    break;
                 }
             }
             mailSenderInfo.setContent(sb.toString());
