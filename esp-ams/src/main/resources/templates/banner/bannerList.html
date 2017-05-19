@@ -56,7 +56,11 @@
 					<td align="left"><input  class="easyui-numberspinner" style="width: 180px;" data-options="min:1" type="text"  id="bannerOrder"  name="bannerOrder" required=true /></td>
             	</tr>
 				<tr>
-					<td width="30%" align="right">活动地址:</td>
+					<td width="30%" align="right">
+					   <select id="activityName" class="easyui-combobox" name="activityName" style="width:80px;" panelHeight="60">   
+                               <option value="activity">活动地址</option>   
+                               <option value="goodId">商品id</option>   
+                       </select></td>
 					<td align="left"><input id="activityUrl" name="activityUrl"
 						class="easyui-textbox" style="width: 180px;" /></td>
 				</tr>

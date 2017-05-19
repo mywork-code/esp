@@ -51,7 +51,10 @@ $(function(){
 				formatter : function(value, row, index) {
 					 var content = "";
 					 if(row.activityUrl!=null){
-						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
+						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
+								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
+						 
+//						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
 					 }
 			         return content;
 		        }
@@ -228,7 +231,15 @@ $(function(){
 		$("#showPicture").attr("src",ctx + "/fileView/query?picUrl=" + bannerImgUrl);
 		$("#showBannerPoto").window('open');
 	}
-	
+	//查看活动
+	$.showActivity = function(activityUrl) {
+		var index = activityUrl.indexOf("="); 
+		var end=activityUrl.length;
+		var acUrl=activityUrl.slice(index+1,end);
+		if(isNaN(acUrl)){//排除是商品地址的情况
+			window.location.href=acUrl;
+		}
+	}
 	// 重置
 	$("#reset").click(function(){
 		$('#bannerType2').combobox('setValue','');
