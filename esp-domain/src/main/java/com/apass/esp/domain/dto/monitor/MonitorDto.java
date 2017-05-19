@@ -34,6 +34,10 @@ public class MonitorDto {
     private Date invokeDate;
 
     private String errorMessage;
+    
+    private String monitorTime;
+    
+    private String monitorTimes;
 
     public String getHost() {
         return host;
@@ -106,4 +110,22 @@ public class MonitorDto {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+	public String getMonitorTime() {
+		return monitorTime;
+	}
+
+	public void setMonitorTime(String monitorTime) {
+		this.monitorTime = monitorTime;
+	}
+
+	public String getMonitorTimes() {
+		return monitorTimes;
+	}
+
+	public void setMonitorTimes(String monitorTimes) {
+		this.monitorTimes = monitorTimes;
+	}
+    
+    
 }

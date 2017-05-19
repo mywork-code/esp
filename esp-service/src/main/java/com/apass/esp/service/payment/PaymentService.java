@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.monitor.annotation.Monitor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,6 +412,7 @@ public class PaymentService {
 	 * @return
 	 * @throws BusinessException
 	 */
+	@Monitor(methodDesc="支付初始化")
 	public Map<String, Object> initPaymentMethod(String requestId,Long userId, List<String> orderList) throws BusinessException {
 		Map<String, Object> resultMap = Maps.newHashMap();
 		String page = null;
