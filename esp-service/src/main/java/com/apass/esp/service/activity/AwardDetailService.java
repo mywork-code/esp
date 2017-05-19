@@ -16,6 +16,8 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.google.common.collect.Maps;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AwardDetailService {
@@ -54,13 +57,9 @@ public class AwardDetailService {
 	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) throws BusinessException {
 	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
-		BigDecimal bankAmtSum = BigDecimal.ZERO;
-                BigDecimal creditAmtSum = BigDecimal.ZERO;
-                BigDecimal rebateAmtSum = BigDecimal.ZERO;
-                Integer allCount = 0;
+                Map<String, Object> maps = getAllSum(query);
 		List<AwardBindRelStatisticVo> result = new ArrayList<>();
 		for(AwardBindRelStatistic rs : list){
-		        allCount += rs.getTotalInviteNum();
 			AwardBindRelStatisticVo vo = new AwardBindRelStatisticVo();
 			vo.setMobile(rs.getMobile());
 			vo.setInviteNum(rs.getTotalInviteNum());
@@ -77,18 +76,15 @@ public class AwardDetailService {
                             if(StringUtils.isNotBlank(orderId)){
                                 OrderInfoEntity order = orderService.selectByOrderId(orderId);
                                 if(order != null){
-																	if(PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())){
-																		//银行卡全卡支付
-																		bankAmt = bankAmt.add(order.getOrderAmt());
-																	} else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())){
-																		creditAmt = creditAmt.add(order.getOrderAmt());
-																	}
+                                    if (PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())) {
+                                        // 银行卡全卡支付
+                                        bankAmt = bankAmt.add(order.getOrderAmt());
+                                    } else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())) {
+                                        creditAmt = creditAmt.add(order.getOrderAmt());
+                                    }
                                 }
                             }
 			}
-			rebateAmtSum = rebateAmtSum.add(rebateAmt);
-			bankAmtSum = bankAmtSum.add(bankAmt);
-			creditAmtSum = creditAmtSum.add(creditAmt);
 			vo.setRebateAmt(rebateAmt);
 			vo.setBankAmt(bankAmt);
 			vo.setCreditAmt(creditAmt);
@@ -98,17 +94,64 @@ public class AwardDetailService {
 		if(CollectionUtils.isNotEmpty(list)){
 		    respBody.setTotal(wihdrawBindRelMapper.countBindRelByGroup(query));
 		}
-		respBody.setBankAmtSum(bankAmtSum);
-		respBody.setCreditAmtSum(creditAmtSum);
-		respBody.setRebateAmtSum(rebateAmtSum);
+		respBody.setBankAmtSum((BigDecimal)maps.get("bankAmtSum"));
+		respBody.setCreditAmtSum((BigDecimal)maps.get("creditAmtSum"));
+		respBody.setRebateAmtSum((BigDecimal)maps.get("rebateAmtSum"));
 		respBody.setRows(result);
-		respBody.setAllCount(allCount);
+		respBody.setAllCount((Integer)maps.get("allCount"));
 		respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
 
 		return respBody;
-	}
+    }
 
-	/**
+     private Map<String,Object> getAllSum(ActivityBindRelStatisticQuery query) throws BusinessException {
+         Map<String,Object> resultMap = Maps.newHashMap();
+         List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectAllBindRelStatistic(query);
+         BigDecimal bankAmtSum = BigDecimal.ZERO;
+         BigDecimal creditAmtSum = BigDecimal.ZERO;
+         BigDecimal rebateAmtSum = BigDecimal.ZERO;
+         Integer allCount = 0;
+         List<AwardBindRelStatisticVo> result = new ArrayList<>();
+         for(AwardBindRelStatistic rs : list){
+                 allCount += rs.getTotalInviteNum();
+                 AwardBindRelStatisticVo vo = new AwardBindRelStatisticVo();
+                 //查询返现金额
+                 List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(rs.getUserId());
+                 BigDecimal bankAmt = BigDecimal.ZERO;
+                 BigDecimal creditAmt = BigDecimal.ZERO;
+                 BigDecimal rebateAmt = BigDecimal.ZERO;
+                 for(AwardDetail awardDetail : awardDetails){
+                     if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
+                         rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
+                     }   
+                     String orderId = awardDetail.getOrderId();
+                     if(StringUtils.isNotBlank(orderId)){
+                         OrderInfoEntity order = orderService.selectByOrderId(orderId);
+                         if(order != null){
+                             if (PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())) {
+                                 // 银行卡全卡支付
+                                 bankAmt = bankAmt.add(order.getOrderAmt());
+                             } else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())) {
+                                 creditAmt = creditAmt.add(order.getOrderAmt());
+                             }
+                         }
+                     }
+                 }
+                 rebateAmtSum = rebateAmtSum.add(rebateAmt);
+                 bankAmtSum = bankAmtSum.add(bankAmt);
+                 creditAmtSum = creditAmtSum.add(creditAmt);
+                 result.add(vo);
+                 
+         }
+         resultMap.put("rebateAmtSum", rebateAmtSum);
+         resultMap.put("bankAmtSum", bankAmtSum);
+         resultMap.put("creditAmtSum", creditAmtSum);
+         resultMap.put("allCount", allCount);
+         
+         return resultMap;
+     }
+
+    /**
 	 * 添加明细记录
 	 * 
 	 * @param awardDetailDto
