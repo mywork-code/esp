@@ -1,9 +1,9 @@
 package com.apass.monitor.aspect;
 
 import com.apass.esp.common.utils.JsonUtil;
-import com.apass.gfb.framework.environment.SystemEnvConfig;
-import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.apass.monitor.annotation.Monitor;
+import com.apass.monitor.common.HttpClientUtils;
+import com.apass.monitor.common.MonitorSystemEnvConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.entity.ContentType;
@@ -49,7 +49,7 @@ public class MonitorAspect {
   private String appName;
 
   @Autowired
-  private SystemEnvConfig systemEnvConfig;
+  private MonitorSystemEnvConfig systemEnvConfig;
 
 
   @Pointcut("@annotation(com.apass.monitor.annotation.Monitor)")
@@ -95,10 +95,13 @@ public class MonitorAspect {
         String url = null;
         if(systemEnvConfig.isPROD()) {
           url = prodEspDomain + path;
+          params.put("env","prod");
         } else if (systemEnvConfig.isUAT()) {
           url = String.format(espDomain,"uat") + path;
+          params.put("env","uat");
         } else {
           url = String.format(espDomain,"sit") + path;
+          params.put("env","sit");
         }
         final String requestUrl = url;
         if(monitorAnno != null) {
