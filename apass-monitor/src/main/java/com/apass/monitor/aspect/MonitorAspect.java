@@ -4,7 +4,6 @@ import com.apass.esp.common.utils.JsonUtil;
 import com.apass.monitor.annotation.Monitor;
 import com.apass.monitor.common.HttpClientUtils;
 import com.apass.monitor.common.MonitorSystemEnvConfig;
-import com.apass.monitor.exception.MonitorException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.entity.ContentType;
@@ -82,7 +81,9 @@ public class MonitorAspect {
          result = joinPoint.proceed();
 
       } catch (Exception e) {
-        if(e instanceof MonitorException) {
+        String className = e.getClass().getSimpleName();
+        //忽略businessexception
+        if(!className.equalsIgnoreCase("businessexception")) {
           monitorFlag = true;
           String errorMessage = e.getMessage();
           status = 0;
