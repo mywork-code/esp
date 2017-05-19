@@ -135,7 +135,7 @@ public class WithdrawService {
             LOGGER.info("该用户不存在,userId:{}",userId);
             throw new RuntimeException("对不起,该用户不存在!");
         }
-        if (!"0".equals(result.get("status"))) {
+        if (!"0".equals(resultBind.get("status"))) {
             throw new RuntimeException("对不起,该用户未绑定银行卡，或身份信息不存在。");
         }
         
