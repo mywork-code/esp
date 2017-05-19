@@ -37,4 +37,8 @@
         AND
         #{currentDate}
     </select>
+    
+    <select id="getMonitorEntityGroupByHostAppMethodStatus" resultType="com.apass.esp.domain.entity.MonitorEntity">
+       select host,env,application,method_name,sum(time) as time,count(*) as message,status from t_apass_monitor group by host,application,method_name,status
+    </select>
 </mapper>
