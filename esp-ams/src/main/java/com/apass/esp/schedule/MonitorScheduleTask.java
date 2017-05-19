@@ -88,7 +88,7 @@ public class MonitorScheduleTask {
             mailSenderInfo.setUserName(sendAddress);
             mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
             mailSenderInfo.setFromAddress(sendAddress);
-            mailSenderInfo.setSubject(env+"环境下 "+monitorEntityStatistics.getApplication()+"应用"+monitorEntityStatistics.getMethodDescrption()+"接口在"+time+"分钟内出错"+times+"次");//邮箱标题
+            mailSenderInfo.setSubject(env+"环境下 "+monitorEntityStatistics.getApplication()+"应用"+monitorEntityStatistics.getMethodDescrption()+"接口在"+time+"分钟内出错"+list.size()+"次");//邮箱标题
 
             String[] emailAddress = receiveEmails.split(";");
             StringBuffer sb = new StringBuffer(0);
