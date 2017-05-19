@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> {
 
-    List<MonitorEntityStatistics> getMonitorEntitybyTime(@Param("currentDate") Date currentDate, @Param("date") Date date);
+    List<MonitorEntityStatistics> getMonitorEntitybyTime(@Param("currentDate") Date currentDate, @Param("date") Date date,@Param("env") String env);
 
     /**
      * 查询一段时间内的数据
@@ -18,6 +18,6 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
      * @param date
      * @return
      */
-    List<MonitorEntity> getMonitorEntityByMethodName(@Param("currentDate") Date currentDate, @Param("date") Date date,@Param("methodName") String methodName);
+    List<MonitorEntity> getMonitorEntityByMethodName(@Param("currentDate") Date currentDate, @Param("date") Date date,@Param("methodName") String methodName,@Param("env") String env,@Param("application")String application);
 
 }

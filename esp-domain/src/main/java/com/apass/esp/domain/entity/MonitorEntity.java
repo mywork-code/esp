@@ -11,6 +11,15 @@ public class MonitorEntity {
     private String host;
 
     private String application;
+    private String env;
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
 
     private String methodName;
 
