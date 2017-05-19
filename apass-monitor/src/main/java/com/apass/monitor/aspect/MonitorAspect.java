@@ -1,4 +1,4 @@
-package com.apass.monitor.annotation.aspect;
+package com.apass.monitor.aspect;
 
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
