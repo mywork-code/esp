@@ -11,50 +11,41 @@ import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
 public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetailInfoEntity, Long> {
     /**
      * 根据订单号查询订单详情
-     * 
+     *
      * @throws BusinessException
      */
     public List<OrderDetailInfoEntity> queryOrderDetailInfo(String orderId) throws BusinessException {
         try {
-        	List<OrderDetailInfoEntity> jmList = getSqlSession().selectList(getSQL("queryOrderDetailInfo"), orderId);
+            List<OrderDetailInfoEntity> jmList = getSqlSession().selectList(getSQL("queryOrderDetailInfo"), orderId);
             return jmList;
         } catch (Exception e) {
             throw new BusinessException("查询用户的消息列表失败", e);
         }
     }
+
     /**
-     * 
-     * 
+     * 根据订单列表查询订单详情
+     *
      * @param orderId
-     * @param code
+     * @return
+     * @throws BusinessException
      */
-//    public void updateStatusByOrderId(String orderId, String status) {
-//        OrderDetailInfoEntity param = new OrderDetailInfoEntity();
-//        param.setOrderId(orderId);
-//        param.setOrderStatus(status);
-//        this.getSqlSession().update("updateOrderDetailStatus", param);
-//    }
+    public List<OrderDetailInfoEntity> queryOrderDetailListByOrderList(List<String> orderList) throws BusinessException {
+        try {
+            List<OrderDetailInfoEntity> jmList = getSqlSession().selectList(getSQL("queryOrderDetailListByOrderList"), orderList);
+            return jmList;
+        } catch (Exception e) {
+            throw new BusinessException("查询用户的消息列表失败", e);
+        }
+    }
+
     /**
      * 根据 商户订单id查询订单详情
-     * 
+     *
      * @param subOrderId
      * @return
      */
     public List<OrderDetailInfoEntity> queryOrderDetailBySubOrderId(String subOrderId) {
         return getSqlSession().selectList(getSQL("queryOrderDetailBySubOrderId"), subOrderId);
     }
-    /**
-     * 根据子订单Id更新订单详情状态
-     * 
-     * @param subOrderId
-     * @param code
-     * @return
-     */
-//    public Integer updateStatusBySubOrderId(String subOrderId, String code) {
-//        OrderDetailInfoEntity param = new OrderDetailInfoEntity();
-//        param.setSubOrderId(subOrderId);
-//        param.setOrderStatus(code);
-//        return this.getSqlSession().update("updateOrderDetailStatusBySubOrderId", param);
-//    }
-
 }

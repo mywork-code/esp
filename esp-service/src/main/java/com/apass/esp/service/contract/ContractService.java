@@ -1,27 +1,5 @@
 package com.apass.esp.service.contract;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.xhtmlrenderer.pdf.ITextFontResolver;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-
 import com.apass.esp.domain.dto.contract.BuySellContractDTO;
 import com.apass.esp.domain.dto.contract.ContractProductDTO;
 import com.apass.esp.domain.dto.contract.EstampRequest;
@@ -48,6 +26,27 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.FreemarkerUtils;
 import com.google.common.collect.Lists;
 import com.itextpdf.text.pdf.BaseFont;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.xhtmlrenderer.pdf.ITextFontResolver;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lixining on 2017/4/1.
@@ -84,7 +83,7 @@ public class ContractService {
      */
     @Autowired
     private TransactionRepository transactionRepository;
-    
+
     /**
      * 交易DAO
      */
@@ -378,7 +377,7 @@ public class ContractService {
             throw new BusinessException("读取未签章合同PDF文件失败", e);
         }
     }
-    
+
     /**
      * 根据订单id列表获取相关合同参数信息
      *
@@ -394,51 +393,27 @@ public class ContractService {
         if (CollectionUtils.isEmpty(orderInfoEntityList)) {
             throw new BusinessException("订单记录不存在");
         }
-        
+        userId=orderInfoEntityList.get(0).getUserId();
         List<String> orders = Arrays.asList(orderIdArray);
         //获取主订单id
         String mainOrderId=paymentService.obtainMainOrderId(orders);
-        BigDecimal orderDownPaymentAmount = BigDecimal.ZERO;// 首付
-        TxnInfoEntity txnInfoEntity = transactionRepository.selectDownpaymentByOrderId(mainOrderId);
-        if (txnInfoEntity != null) {
-            orderDownPaymentAmount = CommonUtils.getDecimal(txnInfoEntity.getTxnAmt());
-        }
 
-        // Step 2. 加载主订单下所有产品列表
-        BigDecimal orderTotalAmount = BigDecimal.ZERO; // 总金额
+        List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailListByOrderList(orders);
+
         List<ContractProductDTO> productList = Lists.newArrayList();
-        for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
-            if (userId == null) { // 取值客户ID
-                userId = orderInfoEntity.getUserId();
-            }
-            // 非信用支付不参与赊销合同生成
-            if (!PaymentType.isCreditPayment(orderInfoEntity.getPayType())) {
-                continue;
-            }
-            orderTotalAmount = CommonUtils.add(orderInfoEntity.getOrderAmt(), orderTotalAmount);
-
-            // Step 2. 查询订单明细商品列表
-            String orderId = orderInfoEntity.getOrderId();
-            List<OrderDetailInfoEntity> orderDetailsList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
-            if (CollectionUtils.isEmpty(orderDetailsList)) {
-                throw new BusinessException("订单[" + orderInfoEntity.getOrderId() + "]明细加载失败");
-            }
-            for (OrderDetailInfoEntity order : orderDetailsList) {
-                ContractProductDTO tempProduct = new ContractProductDTO();
-                tempProduct.setProductNum(CommonUtils.getInt(order.getGoodsNum() + ""));
-                tempProduct.setProductName(order.getGoodsName());
-                tempProduct.setAmount(CommonUtils.multiply(order.getGoodsPrice(), new BigDecimal(order.getGoodsNum())));
-                productList.add(tempProduct);
-            }
+        for (OrderDetailInfoEntity order : orderDetails) {
+            ContractProductDTO tempProduct = new ContractProductDTO();
+            tempProduct.setProductNum(CommonUtils.getInt(order.getGoodsNum() + ""));
+            tempProduct.setProductName(order.getGoodsName());
+            tempProduct.setAmount(CommonUtils.multiply(order.getGoodsPrice(), new BigDecimal(order.getGoodsNum())));
+            productList.add(tempProduct);
         }
-
         // Step 3. 查询客户and签名信息
         CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
         if (customerInfo == null) {
             throw new BusinessException("客户信息查询失败");
         }
         // Step 2. 查询
-        BigDecimal orderBalanceAmount = CommonUtils.subtract(orderTotalAmount, orderDownPaymentAmount); // 尾款
         BuySellContractDTO model = new BuySellContractDTO();
         model.setUserId(userId);
         model.setRealName(customerInfo.getRealName()); // 真实姓名
@@ -448,9 +423,6 @@ public class ContractService {
         model.setMobile(customerInfo.getMobile()); // 手机号码
         model.setCompanyAddress("上海市虹口区欧阳路196号10号楼一层13室"); // 公司地址
         model.setProductList(productList); // 购买产品列表
-        model.setOrderAmount(orderTotalAmount); // 订单金额
-        model.setDownPayment(orderDownPaymentAmount); // 首付金额
-        model.setBalancePayment(orderBalanceAmount); // 尾款
 
         // 账单日
         int billDay = CommonUtils.getInt(customerInfo.getBillDate());
@@ -492,21 +464,5 @@ public class ContractService {
         model.setContractDate(DateFormatUtil.datetime2String(new Date())); // 合同签署日期
         return model;
     }
-//    public static void main(String[] args) throws Exception {
-////        Date billDate = DateFormatUtil.string2date("2017-12-31");
-////        Date endPayDate = DateFormatUtil.addDays(billDate, 6);
-////        Calendar startCalendar = Calendar.getInstance();
-////        startCalendar.setTime(billDate);
-////        System.err.println(startCalendar.get(Calendar.YEAR) + "");
-////        System.err.println(startCalendar.get(Calendar.MONTH) + 1 + "");
-////        System.err.println(startCalendar.get(Calendar.DAY_OF_MONTH) + "");
-//        ContractService service = new ContractService();
-//        String json = "{\"userId\":\"2233\",\"contractNo\":\"CPS2017040502222233\",\"realName\":\"董雨洁\",\"identityNo\":\"422823198910253007\",\"mobile\":\"15618371841\",\"companyAddress\":\"上海\",\"productList\":[{\"productName\":\"圣诞袜\",\"productNum\":\"1\",\"amount\":1112.0000}],\"orderAmount\":1112.0000,\"downPayment\":0,\"balancePayment\":1112.0000,\"payStartYear\":\"2017\",\"payStartMonth\":\"5\",\"payStartDay\":\"4\",\"payEndYear\":\"2017\",\"payEndMonth\":\"5\",\"payEndDay\":\"10\",\"stageEndYear\":\"2017\",\"stageEndMonth\":\"5\",\"stageEndDay\":\"6\",\"feeAmount\":100,\"payBankName\":\"建设银行\",\"payBankCardNo\":\"6217001210026783918\",\"contractDate\":\"2017-04-05 16:10:56\"}";
-//        // Step 2. 加载模板信息
-//        String template = service.readTemplate();
-//        // Step 3. 解析合同内容
-//        String content = FreemarkerUtils.getFreemarkerContent(template, GsonUtils.convertObj(json, BuySellContractDTO.class));
-//        System.err.println(content);
-//    }
 
 }
