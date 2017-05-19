@@ -50,7 +50,6 @@
         AND status=0
     </select>
 
-
     <sql id="query_where_clause">
         <trim prefix="where" prefixOverrides="and|or">
             <if test="startCreateDate != null">
@@ -93,11 +92,11 @@
             from t_apass_monitor
             <include refid="query_where_clause" />
             group by host,application,method_name
-        )
+        ) t1
     </select>
 
     <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
-      select sum(time) time,count(*) count from t_apass_monitor
+      select sum(time) time,count(*) total_monitor_num from t_apass_monitor
       where
       env = #{env} and application = #{application}
       and method_name = #{methodName} and status = #{status}

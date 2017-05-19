@@ -79,7 +79,15 @@ public class MonitorService {
                 query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
                 ,MonitorStatus.SUCCESS.getVal());
             vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
-            vo.setAvgTime(successStatistics.getTime() / successStatistics.getTotalMonitorNum());
+            
+            long time = successStatistics.getTime()!=null?successStatistics.getTime():0;
+            int totalMonitorNum = successStatistics.getTotalMonitorNum();
+            
+            if(totalMonitorNum==0){
+            	vo.setAvgTime(0L);
+            }else{
+            	vo.setAvgTime(time / totalMonitorNum);	
+            }
             result.add(vo);
         }
 
@@ -92,5 +100,4 @@ public class MonitorService {
         respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
         return respBody;
     }
-
 }

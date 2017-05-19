@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
@@ -25,8 +26,8 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
      * 统计次数 和 总耗时
      * @return
      */
-    MonitorEntityStatistics statisticsTimeAndNum(@Param("startDate") String startDate,
-                                                 @Param("endDate") String endDate,
+    MonitorEntityStatistics statisticsTimeAndNum(@Param("startCreateDate") String startDate,
+                                                 @Param("endCreateDate") String endDate,
                                                  @Param("methodName") String methodName,
                                                  @Param("env") String env,
                                                  @Param("application")String application,
