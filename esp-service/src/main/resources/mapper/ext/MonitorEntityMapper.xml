@@ -5,25 +5,30 @@
     <resultMap id="StatisticResultMap" type="com.apass.esp.domain.extentity.MonitorEntityStatistics">
         <result column="total_monitor_num" property="totalMonitorNum" jdbcType="INTEGER"/>
         <result column="method_name" property="methodName" jdbcType="VARCHAR"/>
+        <result column="env" property="env" jdbcType="VARCHAR"/>
+        <result column="application" property="application" jdbcType="VARCHAR"/>
+        <result column="method_desciption" property="methodDescrption" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="getMonitorEntitybyTime" resultMap="StatisticResultMap">
-        SELECT count(1) total_monitor_num,
-        method_name
-        FROM
+        SELECT count(1) as total_monitor_num,env,
+            application,
+            method_name,
+            method_desciption
+             from
+        (SELECT * from
         t_apass_monitor
-        GROUP BY
-        methodName
-        HAVING
-        invoke_date
-        BETWEEN
-        #{time}
-        AND
-        #{currentDate}
+        where
+            `invoke_date` BETWEEN #{date}
+        AND #{currentDate}
+        AND env = #{env}
+        AND STATUS = '0') a GROUP BY
+            method_name,
+            application
     </select>
 
 
-    <select id="getMonitorEntityByMethodName" resultType="com.apass.esp.domain.entity.MonitorEntity">
+    <select id="getMonitorEntityByMethodName" resultMap="BaseResultMap">
         SELECT
         *
         FROM
@@ -31,11 +36,16 @@
         where
         method_name = #{methodName}
         AND
+        env = #{env}
+        AND
+        application = #{application}
+        AND
         invoke_date
         BETWEEN
-        #{time}
+        #{date}
         AND
         #{currentDate}
+        AND status=0
     </select>
     
     <select id="getMonitorEntityGroupByHostAppMethodStatus" resultType="com.apass.esp.domain.entity.MonitorEntity">
