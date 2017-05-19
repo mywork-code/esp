@@ -25,8 +25,8 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
      * 统计次数 和 总耗时
      * @return
      */
-    MonitorEntityStatistics statisticsTimeAndNum(@Param("startDate") String startDate,
-                                                 @Param("endDate") String endDate,
+    MonitorEntityStatistics statisticsTimeAndNum(@Param("startCreateDate") String startDate,
+                                                 @Param("endCreateDate") String endDate,
                                                  @Param("methodName") String methodName,
                                                  @Param("env") String env,
                                                  @Param("application")String application,
