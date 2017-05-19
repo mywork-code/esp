@@ -228,6 +228,12 @@ $(function(){
 			$('#editEndDate').datetimebox('setValue','');
 			return;
 		}
+		if(endDate<new Date().Format("yyyy-MM-dd hh:mm:ss")){
+			$.messager.alert("<span style='color: black;'>提示</span>","编辑时  ：结束时间不能小于当前时间！",'info');
+			$('#startDate').datetimebox('clear');
+			$('#endDate').datetimebox('setValue','');
+			return;
+		}
 		
 		$.ajax({
 			type : "POST",

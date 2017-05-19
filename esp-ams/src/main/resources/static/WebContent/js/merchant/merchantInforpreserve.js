@@ -144,7 +144,7 @@ function saveorsubmit(statu){
 	var editMerchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue'); 
 	if((0!= editMerchantReturnPostCode.length||"" != editMerchantReturnPostCode)){
 		if(!/^\d{6}$/.test(editMerchantReturnPostCode)){
-			$.messager.alert("<span style='color: black;'>提示</span>","收货编码输入错误!",'info');  
+			$.messager.alert("<span style='color: black;'>提示</span>","收货邮编输入错误!",'info');  
 			return;
 		}
 	}

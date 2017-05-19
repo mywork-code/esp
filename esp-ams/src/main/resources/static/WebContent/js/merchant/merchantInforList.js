@@ -201,7 +201,7 @@ $(function(){
 		
 		if((0!= merchantReturnPostCode.length||"" != merchantReturnPostCode)){
 			if(!/^\d{6}$/.test(merchantReturnPostCode)){
-				$.messager.alert("<span style='color: black;'>提示</span>","收货编码为6位数字!",'info');  
+				$.messager.alert("<span style='color: black;'>提示</span>","收货邮编为6位数字!",'info');  
 				return;
 			}
 		}
@@ -393,15 +393,17 @@ $(function(){
 			return;
 		}
 		var merchantPostcode = $("#editMerchantPostcode").textbox('getValue');
-		if (!(/^\d{6}$/.test(merchantPostcode))) {
-			$.messager.alert("<span style='color: black;'>提示</span>","只能输入6位邮编!",'info');  
-			return;
+		if(0!= merchantPostcode.length||"" != merchantPostcode){
+			if (!(/^\d{6}$/.test(merchantPostcode))) {
+				$.messager.alert("<span style='color: black;'>提示</span>","只能输入6位邮编!",'info');  
+				return;
+			}
 		}
 		
 		var editMerchantReturnPostCode = $("#editMerchantReturnPostCode").textbox('getValue'); 
 		if((0!= editMerchantReturnPostCode.length||"" != editMerchantReturnPostCode)){
 			if(!/^\d{6}$/.test(editMerchantReturnPostCode)){
-				$.messager.alert("<span style='color: black;'>提示</span>","收货编码为6位数字!",'info');  
+				$.messager.alert("<span style='color: black;'>提示</span>","收货邮编为6位数字!",'info');  
 				return;
 			}
 		}
