@@ -8,6 +8,8 @@
         <result column="env" property="env" jdbcType="VARCHAR"/>
         <result column="application" property="application" jdbcType="VARCHAR"/>
         <result column="method_desciption" property="methodDescrption" jdbcType="VARCHAR"/>
+        <result column="time" property="time" jdbcType="BIGINT"/>
+        <result column="host" property="host" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="getMonitorEntitybyTime" resultMap="StatisticResultMap">
@@ -46,5 +48,63 @@
         AND
         #{currentDate}
         AND status=0
+    </select>
+
+    <sql id="query_where_clause">
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="startCreateDate != null">
+                <![CDATA[  and invoke_date >= #{startCreateDate} ]]>
+            </if>
+            <if test="endCreateDate != null and endCreateDate != '' ">
+                <![CDATA[  and invoke_date <= #{endCreateDate} ]]>
+            </if>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </trim>
+    </sql>
+
+
+    <select id="pageList" resultMap="StatisticResultMap" parameterType="com.apass.esp.domain.query.MonitorQuery">
+      select host,
+             env,
+             application,
+             method_name,
+             method_desciption,
+             sum(time) as time,
+             count(*) as total_monitor_num
+      from t_apass_monitor
+        <include refid="query_where_clause" />
+       group by host,application,method_name
+        <if test="startRecordIndex != null">
+            <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+    </select>
+
+    <select id ="count" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.MonitorQuery">
+        select count(*) from ( select host,
+            env,
+            application,
+            method_name,
+            method_desciption,
+            sum(time) as time,
+            count(*) as total_monitor_num
+            from t_apass_monitor
+            <include refid="query_where_clause" />
+            group by host,application,method_name
+        ) t1
+    </select>
+
+    <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
+      select sum(time) time,count(*) total_monitor_num from t_apass_monitor
+      where
+      env = #{env} and application = #{application}
+      and method_name = #{methodName} and status = #{status}
+        <if test="startCreateDate != null">
+            <![CDATA[  and invoke_date >= #{startCreateDate} ]]>
+        </if>
+        <if test="endCreateDate != null and endCreateDate != '' ">
+            <![CDATA[  and invoke_date <= #{endCreateDate} ]]>
+        </if>
     </select>
 </mapper>

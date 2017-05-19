@@ -1,9 +1,19 @@
 package com.apass.esp.web.monitor;
 
+import com.apass.esp.common.model.QueryParams;
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
+import com.apass.esp.domain.query.MonitorQuery;
+import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.service.monitor.MonitorService;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +47,18 @@ public class MonitorController {
     @RequestMapping(value = "/editMonitorSetUp", method = RequestMethod.POST)
     @ResponseBody
     public Response editSetUp(@RequestBody MonitorDto monitorDto){
-    	
+
     	if(!StringUtils.isBlank(monitorDto.getMonitorTime())){
     		cacheManager.set("monitor_time", monitorDto.getMonitorTime());
     	}
-    	
+
     	if(!StringUtils.isBlank(monitorDto.getMonitorTimes())){
     		cacheManager.set("monitor_times", monitorDto.getMonitorTimes());
     	}
-    	
-    	return Response.success("修改设置成功!");
+        HashMap map = new HashMap();
+    	map.put("monitor_times",cacheManager.get("monitor_times"));
+    	map.put("monitor_time",cacheManager.get("monitor_time"));
+    	return Response.success(JsonUtil.toJsonString(map));
     }
 
   /**
@@ -57,4 +69,15 @@ public class MonitorController {
     return "monitor/index";
   }
 
+  @RequestMapping(value = "/list", method = RequestMethod.GET)
+  @ResponseBody
+  public ResponsePageBody<MonitorVo> listConfig(MonitorQuery query) {
+	 if(StringUtils.isBlank(query.getStartCreateDate())){
+		 query.setStartCreateDate(DateFormatUtil.dateToString(new Date())+" 00:00:00");
+		 query.setEndCreateDate(DateFormatUtil.dateToString(new Date())+" 23:59:59");
+	 }
+	  
+	
+    return  monitorService.pageListMonitorLog(query);
+  }
 }

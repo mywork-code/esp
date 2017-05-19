@@ -75,15 +75,21 @@ public class MonitorAspect {
       params.put("invokeDate",new Date().getTime());
       int status = 1;
       //status:0 失败，1：成功
+    boolean monitorFlag = false;
     Object result = null;
       try {
          result = joinPoint.proceed();
 
       } catch (Exception e) {
-        String errorMessage = e.getMessage();
-        status = 0;
-        params.put("message",splitThrowableMsg(e));
-        params.put("errorMessage",errorMessage);
+        String className = e.getClass().getSimpleName();
+        //忽略businessexception
+        if(!className.equalsIgnoreCase("businessexception")) {
+          monitorFlag = true;
+          String errorMessage = e.getMessage();
+          status = 0;
+          params.put("message",splitThrowableMsg(e));
+          params.put("errorMessage",errorMessage);
+        }
         throw e;
       } finally {
         Long endTime = new Date().getTime();
@@ -104,7 +110,7 @@ public class MonitorAspect {
           params.put("env","sit");
         }
         final String requestUrl = url;
-        if(monitorAnno != null) {
+        if(monitorFlag) {
 
           final String requestJson = JsonUtil.toJsonString(params);
           exe.execute(new Runnable() {

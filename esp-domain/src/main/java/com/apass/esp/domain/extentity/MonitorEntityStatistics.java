@@ -9,6 +9,8 @@ public class MonitorEntityStatistics {
     private String env;
     private  String application;
     private String methodDescrption;
+    private Long time;
+    private String host;
 
     public String getMethodDescrption() {
         return methodDescrption;
@@ -48,5 +50,21 @@ public class MonitorEntityStatistics {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }
