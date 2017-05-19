@@ -50,7 +50,6 @@
         AND status=0
     </select>
 
-
     <sql id="query_where_clause">
         <trim prefix="where" prefixOverrides="and|or">
             <if test="startCreateDate != null">

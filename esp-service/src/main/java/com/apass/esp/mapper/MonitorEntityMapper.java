@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
