@@ -77,7 +77,7 @@ public class EspAppRSAHandler {
 			try {
 				// 私钥解密接受数据
 				String paraStr = RSAUtils.decryptByPrivateKey(paraValue, privateKey);
-				newPara[i] = GsonUtils.convertObj(paraStr, Map.class);
+				newPara[i] = GsonUtils.convertMap(paraStr);
 				isFlag = true;
 			} catch (Exception e) {
 				LOGGER.error("RSA解密参数异常-------->", e);
