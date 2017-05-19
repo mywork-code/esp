@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.MonitorEntityMapper">
+
+    <resultMap id="StatisticResultMap" type="com.apass.esp.domain.extentity.MonitorEntityStatistics">
+        <result column="total_monitor_num" property="totalMonitorNum" jdbcType="INTEGER"/>
+        <result column="method_name" property="methodName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getMonitorEntitybyTime" resultMap="StatisticResultMap">
+        SELECT count(1) total_monitor_num,
+        method_name
+        FROM
+        t_apass_monitor
+        GROUP BY
+        methodName
+        HAVING
+        invoke_date
+        BETWEEN
+        #{time}
+        AND
+        #{currentDate}
+    </select>
+
+
+    <select id="getMonitorEntityByMethodName" resultType="com.apass.esp.domain.entity.MonitorEntity">
+        SELECT
+        *
+        FROM
+        t_apass_monitor
+        where
+        method_name = #{methodName}
+        AND
+        invoke_date
+        BETWEEN
+        #{time}
+        AND
+        #{currentDate}
+    </select>
+</mapper>

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by xianzhi.wang on 2017/5/18.
  */
 @Controller
-@RequestMapping(value = "/monitor")
+@RequestMapping(value = "/noauth/monitor")
 public class MonitorController {
 
     @Autowired

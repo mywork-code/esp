@@ -21,5 +21,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     Integer getMaxSortOrder(@Param("level")Long level);
     
+    void updateStatus1To0();
+    
 }
 
