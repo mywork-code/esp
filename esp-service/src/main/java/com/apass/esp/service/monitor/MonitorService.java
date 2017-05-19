@@ -33,22 +33,24 @@ public class MonitorService {
     }
 
     /**
+     * 次数
      * @param date
      * @return
      */
-    public List<MonitorEntityStatistics> getMonitorEntitybyTime(Date date) {
+    public List<MonitorEntityStatistics> getMonitorEntitybyTime(Date date,String env) {
         Date currentDate = new Date();
-        return monitorEntityMapper.getMonitorEntitybyTime(currentDate, date);
+        return monitorEntityMapper.getMonitorEntitybyTime(currentDate, date,env);
     }
 
     /**
+     *
      * @param date
      * @param methodName
      * @return
      */
-    public List<MonitorEntity> getMonitorEntityByMethodName(Date date, String methodName) {
+    public List<MonitorEntity> getMonitorEntityByMethodName(Date date, String methodName,String env,String application) {
         Date currentDate = new Date();
-        return monitorEntityMapper.getMonitorEntityByMethodName(currentDate, date, methodName);
+        return monitorEntityMapper.getMonitorEntityByMethodName(currentDate, date, methodName,env,application);
     }
 
 }

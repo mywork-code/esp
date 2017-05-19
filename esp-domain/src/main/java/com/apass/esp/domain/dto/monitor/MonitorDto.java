@@ -11,6 +11,16 @@ public class MonitorDto {
 
     private String application;
 
+    private String env;
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
     private String methodName;
 
     private String methodDesciption;
