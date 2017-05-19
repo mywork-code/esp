@@ -5,6 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="host" property="host" jdbcType="VARCHAR" />
     <result column="application" property="application" jdbcType="VARCHAR" />
+    <result column="env" property="env" jdbcType="VARCHAR" />
     <result column="method_name" property="methodName" jdbcType="VARCHAR" />
     <result column="method_desciption" property="methodDesciption" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
@@ -14,7 +15,7 @@
     <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, host, application, method_name, method_desciption, status, time, message, invoke_date,
+    id, host, application, env,method_name, method_desciption, status, time, message, invoke_date,
     error_message
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -28,11 +29,11 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_apass_monitor (host, application, method_name,
+    insert into t_apass_monitor (host, application,env, method_name,
       method_desciption, status, time, 
       message, invoke_date, error_message
       )
-    values (#{host,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR}, 
+    values (#{host,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR},#{env,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
       #{methodDesciption,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{time,jdbcType=VARCHAR}, 
       #{message,jdbcType=VARCHAR}, #{invokeDate,jdbcType=TIMESTAMP}, #{errorMessage,jdbcType=VARCHAR}
       )
@@ -45,6 +46,9 @@
       </if>
       <if test="application != null" >
         application,
+      </if>
+      <if test="env != null" >
+        env,
       </if>
       <if test="methodName != null" >
         method_name,
@@ -74,6 +78,9 @@
       </if>
       <if test="application != null" >
         #{application,jdbcType=VARCHAR},
+      </if>
+      <if test="env != null" >
+        #{env,jdbcType=VARCHAR},
       </if>
       <if test="methodName != null" >
         #{methodName,jdbcType=VARCHAR},
@@ -107,6 +114,9 @@
       <if test="application != null" >
         application = #{application,jdbcType=VARCHAR},
       </if>
+      <if test="env != null" >
+        env = #{env,jdbcType=VARCHAR},
+      </if>
       <if test="methodName != null" >
         method_name = #{methodName,jdbcType=VARCHAR},
       </if>
@@ -135,6 +145,7 @@
     update t_apass_monitor
     set host = #{host,jdbcType=VARCHAR},
       application = #{application,jdbcType=VARCHAR},
+      env = #{env,jdbcType=VARCHAR},
       method_name = #{methodName,jdbcType=VARCHAR},
       method_desciption = #{methodDesciption,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},

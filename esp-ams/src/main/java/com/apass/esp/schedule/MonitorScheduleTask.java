@@ -29,7 +29,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class MonitorScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitorScheduleTask.class);
 
@@ -49,19 +49,24 @@ public class MonitorScheduleTask {
     @Value("${monitor.send.password}")
     public String sendPassword;
 
-    //
-    @Scheduled(cron = "0 0/60 * * * ?")
+    @Value("${monitor.env}")
+    public String env;
+
+    @Scheduled(cron = "0 0/30 * * * *")
     public void monitorSchedule() {
         String time = cacheManager.get("monitor_time");//间隔时间
         String times = cacheManager.get("monitor_times");//该时间的次数
+       // time="1";
+        //times="2";
         if (StringUtils.isAnyEmpty(time, times)) {
             LOGGER.info("请先配置间隔时间，该时间内的次数");
             return;
         }
         Date date = new Date();
         date = DateFormatUtil.addDMinutes(date, Integer.valueOf(time) * (-1));
-        date = DateFormatUtil.addDMinutes(date, -60);
-        List<MonitorEntityStatistics> monitorEntityStatisticsList = monitorService.getMonitorEntitybyTime(date);
+        date = DateFormatUtil.addDMinutes(date, -30);
+
+        List<MonitorEntityStatistics> monitorEntityStatisticsList = monitorService.getMonitorEntitybyTime(date,env);
         if (CollectionUtils.isEmpty(monitorEntityStatisticsList)) {
             return;
         }
@@ -72,20 +77,37 @@ public class MonitorScheduleTask {
             if (confTimes > monitorEntityStatistics.getTotalMonitorNum()) {
                 continue;
             }
-            List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date, monitorEntityStatistics.getMethodName());
+            List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date, monitorEntityStatistics.getMethodName(),env,monitorEntityStatistics.getApplication());
+            if(CollectionUtils.isEmpty(list)){
+                continue;
+            }
             MailSenderInfo mailSenderInfo = new MailSenderInfo();
-            mailSenderInfo.setMailServerHost("SMTP.163.com");
+            mailSenderInfo.setMailServerHost("SMTP.263.net");
             mailSenderInfo.setMailServerPort("25");
             mailSenderInfo.setValidate(true);
             mailSenderInfo.setUserName(sendAddress);
             mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
             mailSenderInfo.setFromAddress(sendAddress);
-            mailSenderInfo.setSubject("1");//邮箱标题
+            mailSenderInfo.setSubject(env+"环境下 "+monitorEntityStatistics.getApplication()+"应用"+monitorEntityStatistics.getMethodDescrption()+"接口在"+time+"分钟内出错"+list.size()+"次");//邮箱标题
 
             String[] emailAddress = receiveEmails.split(";");
+            StringBuffer sb = new StringBuffer(0);
+
+            sb.append("详细信息如下:\n");
+            for (int i=0;i<list.size();i++
+                    ) {
+                sb.append("应用: "+list.get(i).getApplication()+" \n");
+                sb.append("方法名称: "+list.get(i).getMethodName()+" \n");
+                sb.append("调用时间 "+list.get(i).getInvokeDate()+"\n");
+                sb.append("方法用时"+list.get(i).getTime()+"ms"+"\n");
+                sb.append("堆栈信息 ："+list.get(i).getMessage()+"\n");
+                if(i!=list.size()-1){
+                    sb.append("-----------------------------\n");
+                }
+            }
+            mailSenderInfo.setContent(sb.toString());
             for (int i=0;i<emailAddress.length;i++) {
-                mailSenderInfo.setToAddress(emailAddress[0]);
-                mailSenderInfo.setContent(list.get(0).getMessage());
+                mailSenderInfo.setToAddress(emailAddress[i]);
                 MailUtil mailUtil = new MailUtil();
                 mailUtil.sendTextMail(mailSenderInfo);
             }
