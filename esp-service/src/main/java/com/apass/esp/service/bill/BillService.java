@@ -81,7 +81,7 @@ public class BillService {
         }else if(statements.size() == 2){
             return true;//有分期
         }else{
-            throw new RuntimeException("帐单数据有误");
+            throw  new RuntimeException("帐单数据有误");
         }
         
     }
