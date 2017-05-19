@@ -9,6 +9,7 @@ $(function(){
         pagination : true,
         singleSelect : true,
         striped:true,
+        nowrap:false,
         toolbar : '#tb',
         columns :[[
             {

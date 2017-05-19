@@ -60,7 +60,7 @@ $(function(){
             }
             ,
             {
-                title : '成功调用的平均时间',
+                title : '成功调用的平均时间(ms)',
                 field : 'avgTime',
                 width : 150,
                 align : 'center'
