@@ -29,7 +29,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class MonitorScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitorScheduleTask.class);
 
