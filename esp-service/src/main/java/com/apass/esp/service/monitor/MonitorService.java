@@ -3,6 +3,7 @@ package com.apass.esp.service.monitor;
 
 import com.apass.esp.domain.dto.monitor.MonitorDto;
 import com.apass.esp.domain.entity.MonitorEntity;
+import com.apass.esp.domain.enums.MonitorStatus;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
@@ -61,12 +62,27 @@ public class MonitorService {
 
     public  ResponsePageBody<MonitorVo> pageListMonitorLog(MonitorQuery query){
         ResponsePageBody<MonitorVo> respBody = new ResponsePageBody<>();
-        List<MonitorEntity> list = monitorEntityMapper.pageList(query);
+        List<MonitorEntityStatistics> list = monitorEntityMapper.pageList(query);
         List<MonitorVo> result = new ArrayList<>();
-        for (MonitorEntity ai : list) {
+        for (MonitorEntityStatistics ms : list) {
             MonitorVo vo = new MonitorVo();
-
+            vo.setApplication(ms.getApplication());
+            vo.setHost(ms.getHost());
+            vo.setMethodDesciption(ms.getMethodDescrption());
+            vo.setMethodName(ms.getMethodName());
+            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
+            MonitorEntityStatistics failStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
+            , MonitorStatus.FAIL.getVal());
+            vo.setFailInvokeNum(failStatistics.getTotalMonitorNum());
+            MonitorEntityStatistics successStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
+                ,MonitorStatus.SUCCESS.getVal());
+            vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
+            vo.setAvgTime(successStatistics.getTime() / successStatistics.getTotalMonitorNum());
+            result.add(vo);
         }
+
         if (CollectionUtils.isEmpty(list)) {
             respBody.setTotal(0);
         } else {
