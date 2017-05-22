@@ -39,6 +39,9 @@ public class FeedbackController {
 		if (StringUtils.isAnyBlank(feedbackType,comments,mobile)) {
 			return Response.fail("意见反馈失败！");
 		}
+		if(comments.length()>300){
+			return Response.fail("输入是字数不得超过300字！");
+		}
 		Date date=new Date();
 //		SimpleDateFormat sdft=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		String createDate =sdft.format(date);
