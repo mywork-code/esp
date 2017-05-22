@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
-import com.apass.esp.mapper.FeedBackMapper;
-import com.apass.esp.web.activity.ActivityWithDrawController;
+import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.gfb.framework.utils.CommonUtils;
 
 @Controller
 @RequestMapping("v1/feedback")
-public class Feedback {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityWithDrawController.class);
+public class FeedbackController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackController.class);
 
 	@Autowired
-	public FeedBackMapper feedBackMapper;
+	public FeedBackService feedBackService;
 	
 	/**
 	 * 意见反馈保存
@@ -48,7 +47,7 @@ public class Feedback {
 		fb.setComments(comments);
 		fb.setMobile(mobile);
 		fb.setCreateDate(date);
-		Integer result=feedBackMapper.insert(fb);
+		Integer result=feedBackService.insert(fb);
 		if(result==1){
 			return Response.success("意见反馈保存成功!");
 		}
