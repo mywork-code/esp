@@ -217,6 +217,7 @@ $(function() {
     	}
     	debugger;
     	$('#addGoodsInfo').window('open');
+    	$("#writeGoodsInfo").css('display','none');
     	$("#addgoodsModel").textbox('clear');
     	$("#addgoodsName").textbox('clear');
 		$("#addgoodsTitle").textbox('clear');

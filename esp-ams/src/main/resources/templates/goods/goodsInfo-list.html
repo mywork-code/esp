@@ -123,93 +123,95 @@
 		title="<font color='black'>添加商品</font>" hidden="hidden"
 		style="width: 500px; height: 400px; display: none; text-align: center;"
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
-		<form id="addGoodsInfoList">
-			<table class="details_table" style="width: 92%" id="mytab">
-				<tr>
-					<td width="20%" align="right"><font color="red">*</font>商户:</td>
-					<td colspan="1" width="60%" style="height: 22px;">
-					<input class="easyui-textbox"
-						type="text" id="addmerchantCode" name="addmerchantCode"  value="${userMechantCode!}" style="width: 100%;" disabled="disabled"/>
-					 </td>
-				</tr>
-				<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
-					<td colspan="1" width="60%"><input class="easyui-textbox"
-						type="text" id="addgoodsName" name="addgoodsName"  data-options="validType:'length[1,18]'"
-						style="width: 100%;" idth="20%" align="right"></td>
-				</tr>
-				<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品型号:</td>
-					<td colspan="1" width="60%" style="height: 22px;">
-					<input class="easyui-textbox"
-						type="text" id="addgoodsModel" name="addgoodsModel" style="width: 100%;" />
-					 </td>
-				</tr>
-				<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品小标题:</td>
-					<td colspan="1" width="60%"><input class="easyui-textbox"  data-options="validType:'length[1,25]'" 
-						type="text" id="addgoodsTitle" name="addgoodsTitle" style="width: 100%;" /></td>
-				</tr>
-				<tr>
-				<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
-				<td align="left"><select class="easyui-combobox"
-						data-options="required:true" style="width: 100%" id="addgoodsSkuType" editable="false"
-						name="addgoodsSkuType">
-							<option value="">请选择</option>
-							<option value="颜色">颜色</option>
-							<option value="尺寸">尺寸</option>
-					</select></td>
-				</tr>
-
-				<tr>
-					<td align="right">生产日期:</td>
-					<td><input id="addproDate" name="addproDate" editable="false"
-						class="easyui-datebox" style="width: 50%;" /></td>
-				</tr>
-
-				<tr>
-					<td align="right"><font color="red">*</font>上架日期:</td>
-					<td><input id="addlistTime" name="addlistTime" editable="false" 
-						class="easyui-datetimebox" style="width: 50%;" /></td>
-				</tr>
-				<tr>
-					<td align="right"><font color="red">*</font>下架日期:</td>
-					<td><input id="adddelistTime" name="adddelistTime" editable="false" 
-						class="easyui-datetimebox" style="width: 50%;" /></td>
-				</tr>
-				<tr>
-					<td align="right">保质期(多少个月):</td>
-					<td><input class="easyui-numberspinner" type="text"
-						data-options="min:1,max:100000" id="addkeepDate" name="addkeepDate"
-						missingMessage="1~100000之间的正整数"
-						style="width: 100%;" /></td>
-				</tr>
-				<tr>
-					<td align="right"><font color="red">*</font>排序:</td>
-					<td><input id="sordNo" name="sordNo" 
-						class="easyui-numberbox" style="width: 100%;" /></td>
-				</tr>
-
-				<tr>
-					<td width="20%" align="right">生产厂家:</td>
-					<td colspan="3" width="60%"><input class="easyui-textbox"
-						type="text" id="addsupNo" name="addsupNo" style="width: 100%;" /></td>
-				</tr>
-			<!-- 	<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品描述:</td>
-					<script id="editor" name="editor" type="text/plain"
-						style="width: 200px; height: 150px;"></script>
-				</tr> -->
-
-				<tr style="margin-top: 22px;">
-					<td colspan="4"><a href="javascript:void(0);" id="disGoods"
-						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
-						<a href="javascript:void(0);" id="goodsAddinfo"
-						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
-					</td>
-				</tr>
-			</table>
-		</form>
+		<div id="writeGoodsInfo">
+			<form id="addGoodsInfoList">
+				<table class="details_table" style="width: 92%" id="mytab">
+					<tr>
+						<td width="20%" align="right"><font color="red">*</font>商户:</td>
+						<td colspan="1" width="60%" style="height: 22px;">
+						<input class="easyui-textbox"
+							type="text" id="addmerchantCode" name="addmerchantCode"  value="${userMechantCode!}" style="width: 100%;" disabled="disabled"/>
+						 </td>
+					</tr>
+					<tr>
+						<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
+						<td colspan="1" width="60%"><input class="easyui-textbox"
+							type="text" id="addgoodsName" name="addgoodsName"  data-options="validType:'length[1,18]'"
+							style="width: 100%;" idth="20%" align="right"></td>
+					</tr>
+					<tr>
+						<td width="20%" align="right"><font color="red">*</font>商品型号:</td>
+						<td colspan="1" width="60%" style="height: 22px;">
+						<input class="easyui-textbox"
+							type="text" id="addgoodsModel" name="addgoodsModel" style="width: 100%;" />
+						 </td>
+					</tr>
+					<tr>
+						<td width="20%" align="right"><font color="red">*</font>商品小标题:</td>
+						<td colspan="1" width="60%"><input class="easyui-textbox"  data-options="validType:'length[1,25]'" 
+							type="text" id="addgoodsTitle" name="addgoodsTitle" style="width: 100%;" /></td>
+					</tr>
+					<tr>
+					<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
+					<td align="left"><select class="easyui-combobox"
+							data-options="required:true" style="width: 100%" id="addgoodsSkuType" editable="false"
+							name="addgoodsSkuType">
+								<option value="">请选择</option>
+								<option value="颜色">颜色</option>
+								<option value="尺寸">尺寸</option>
+						</select></td>
+					</tr>
+	
+					<tr>
+						<td align="right">生产日期:</td>
+						<td><input id="addproDate" name="addproDate" editable="false"
+							class="easyui-datebox" style="width: 50%;" /></td>
+					</tr>
+	
+					<tr>
+						<td align="right"><font color="red">*</font>上架日期:</td>
+						<td><input id="addlistTime" name="addlistTime" editable="false" 
+							class="easyui-datetimebox" style="width: 50%;" /></td>
+					</tr>
+					<tr>
+						<td align="right"><font color="red">*</font>下架日期:</td>
+						<td><input id="adddelistTime" name="adddelistTime" editable="false" 
+							class="easyui-datetimebox" style="width: 50%;" /></td>
+					</tr>
+					<tr>
+						<td align="right">保质期(多少个月):</td>
+						<td><input class="easyui-numberspinner" type="text"
+							data-options="min:1,max:100000" id="addkeepDate" name="addkeepDate"
+							missingMessage="1~100000之间的正整数"
+							style="width: 100%;" /></td>
+					</tr>
+					<tr>
+						<td align="right"><font color="red">*</font>排序:</td>
+						<td><input id="sordNo" name="sordNo" 
+							class="easyui-numberbox" style="width: 100%;" /></td>
+					</tr>
+	
+					<tr>
+						<td width="20%" align="right">生产厂家:</td>
+						<td colspan="3" width="60%"><input class="easyui-textbox"
+							type="text" id="addsupNo" name="addsupNo" style="width: 100%;" /></td>
+					</tr>
+				<!-- 	<tr>
+						<td width="20%" align="right"><font color="red">*</font>商品描述:</td>
+						<script id="editor" name="editor" type="text/plain"
+							style="width: 200px; height: 150px;"></script>
+					</tr> -->
+	
+					<tr style="margin-top: 22px;">
+						<td colspan="4"><a href="javascript:void(0);" id="disGoods"
+							style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+							<a href="javascript:void(0);" id="goodsAddinfo"
+							style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
 	</div>
 	
 	<!-- 编辑商品弹出窗口 -->

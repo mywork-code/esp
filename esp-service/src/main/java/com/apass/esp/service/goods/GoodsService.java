@@ -258,27 +258,30 @@ public class GoodsService {
      * 
      * @param entity
      */
-    public void insert(GoodsInfoEntity entity) {
-        int  id  = goodsDao.insert(entity);
-        entity.setId(Long.valueOf(id));
-        //商品编号
-        StringBuffer sb = new StringBuffer();
-        String merchantCode  =entity.getMerchantCode();
-        MerchantInfoEntity merchantInfoEntity =  merchantInforService.queryByMerchantCode(merchantCode);
-        if(merchantInfoEntity!=null){
-           String merchantId =  String.valueOf(merchantInfoEntity.getId());
-           if(merchantId.length()==1){
-               merchantId="0"+merchantId;
-           }else if(merchantId.length()>1){
-               merchantId = merchantId.substring(merchantId.length()-2,merchantId.length());
-           }
-            sb.append(merchantId);
-            String random = RandomUtils.getRandomNum(6);
-            sb.append(random);
-            entity.setGoodsCode(sb.toString());
-            goodsDao.updateGoods(entity);
+    public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+        int count  = goodsDao.insert(entity);
+        if(count == 1){
+            //商品编号
+            StringBuffer sb = new StringBuffer();
+            String merchantCode  =entity.getMerchantCode();
+            MerchantInfoEntity merchantInfoEntity =  merchantInforService.queryByMerchantCode(merchantCode);
+            if(merchantInfoEntity!=null){
+                String merchantId =  String.valueOf(merchantInfoEntity.getId());
+                if(merchantId.length()==1){
+                    merchantId="0"+merchantId;
+                }else if(merchantId.length()>1){
+                    merchantId = merchantId.substring(merchantId.length()-2,merchantId.length());
+                }
+                sb.append(merchantId);
+                String random = RandomUtils.getRandomNum(6);
+                sb.append(random);
+                entity.setGoodsCode(sb.toString());
+                entity.setGoodId(entity.getId());
+                goodsDao.updateGoods(entity);
+            }
         }
-
+        
+        return entity;
 
     }
 

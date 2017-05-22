@@ -1,4 +1,4 @@
-
+--商品类目表
 DROP TABLE IF EXISTS esp.t_esp_category;
 CREATE TABLE esp.`t_esp_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',

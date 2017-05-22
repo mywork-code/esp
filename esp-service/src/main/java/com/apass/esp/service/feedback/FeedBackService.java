@@ -52,4 +52,8 @@ public class FeedBackService {
 		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
 		return pageBody;
 	}
+	
+	public Integer insert(FeedBack fb) {
+		return feedbackMapper.insert(fb);
+	}
 }
