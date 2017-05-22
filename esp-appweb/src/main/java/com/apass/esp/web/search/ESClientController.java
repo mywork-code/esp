@@ -1,5 +1,6 @@
 package com.apass.esp.web.search;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.search.ESClientManager;
 import com.apass.esp.web.activity.RegisterInfoController;
@@ -25,7 +26,6 @@ public class ESClientController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
 
-
     @Autowired
     public ESClientManager eSClientManager;
 
@@ -35,7 +35,7 @@ public class ESClientController {
 
         Client client =  eSClientManager.getClient();
 
-        return Response.successResponse(client);
+        return Response.successResponse(JsonUtil.toJsonString(client));
     }
 
 }
