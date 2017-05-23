@@ -2,7 +2,7 @@ $(function(){
 	//置空
     $("#reset").click(function(){
     	$("#monitorTime").textbox('setValue');
-    	$("#monitorTime").textbox('setValue');
+    	$("#monitorTimes").textbox('setValue');
     });
     
     //配置
