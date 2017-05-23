@@ -29,3 +29,9 @@ CREATE TABLE esp.`t_esp_feedback` (
 ALTER TABLE esp.`t_esp_goods_base_info` ADD COLUMN `category_id1`  bigint(20) NULL COMMENT '商品分类一级Id' AFTER `id`;
 ALTER TABLE esp.`t_esp_goods_base_info` ADD COLUMN `category_id2`  bigint(20) NULL COMMENT '商品分类二级Id' AFTER `category_id1`;
 ALTER TABLE esp.`t_esp_goods_base_info` ADD COLUMN `category_id3`  bigint(20) NULL COMMENT '商品分类三级Id' AFTER `category_id2`;
+
+/**在商户表和商户临时表中添加二列*/
+ALTER TABLE esp.`t_esp_merchant_info` ADD COLUMN `channel`  int(11) NULL COMMENT '商户渠道' AFTER `merchant_name`;
+ALTER TABLE esp.`t_esp_merchant_info` ADD COLUMN `merchant_area`  varchar(8) NULL COMMENT '商户所在区' AFTER `merchant_city`;
+ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `channel`  int(11) NULL COMMENT '商户渠道' AFTER `merchant_name`;
+ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `merchant_area`  varchar(8) NULL COMMENT '商户所在区' AFTER `merchant_city`;
