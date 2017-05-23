@@ -62,6 +62,7 @@ $(function() {
 			align : 'center',
 			sortable : true ,
 			formatter : function(value, row, index) {
+				alert(index);
                 var content = "";
                 // 编辑
                 content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
