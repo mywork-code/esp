@@ -22,6 +22,7 @@
 		<module>esp-ams</module>
         <module>esp-common</module>
         <module>apass-monitor</module>
+        <module>esp-search</module>
     </modules>
 
 	<!-- *********** Params Settings ************ -->
@@ -373,12 +374,12 @@
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
-				<version>5.1.2</version>
+				<version>5.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.elasticsearch.client</groupId>
 				<artifactId>transport</artifactId>
-				<version>5.1.2</version>
+				<version>5.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
