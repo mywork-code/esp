@@ -46,7 +46,7 @@ public class QueryAddressController {
 				districtCode = "000000";
 			}
 			
-			list = nationService.queryDistrict(districtCode, true);
+			list = nationService.queryDistrictForAms(districtCode, true);
 		} catch (Exception e) {
 			LOGGER.error("查询区域出错是出错", e);
 		}
