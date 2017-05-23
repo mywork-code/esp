@@ -1,8 +1,8 @@
-package com.apass.esp.search;
+package com.apass.esp.search.manager;
 
 import com.apass.esp.domain.entity.search.IdAble;
 import com.apass.esp.domain.enums.IndexType;
-import com.apass.esp.utils.ESDataUtil;
+import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import java.util.ArrayList;
 import java.util.List;
 

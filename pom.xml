@@ -22,6 +22,7 @@
 		<module>esp-ams</module>
         <module>esp-common</module>
         <module>apass-monitor</module>
+        <module>esp-search</module>
     </modules>
 
 	<!-- *********** Params Settings ************ -->

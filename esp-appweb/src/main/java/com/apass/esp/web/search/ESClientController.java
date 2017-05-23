@@ -2,8 +2,7 @@ package com.apass.esp.web.search;
 
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
-import com.apass.esp.search.ESClientManager;
-import com.apass.esp.web.activity.RegisterInfoController;
+import com.apass.esp.search.manager.ESClientManager;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

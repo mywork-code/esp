@@ -1,8 +1,9 @@
-package com.apass.esp.search;
+package com.apass.esp.search.syncer;
 
 import com.apass.esp.domain.enums.IndexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
