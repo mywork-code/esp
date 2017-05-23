@@ -2,6 +2,7 @@ package com.apass.esp.web.category;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,8 +64,24 @@ public class CategoryController {
 
     @RequestMapping(value = "/list")
     @ResponseBody
-    public List<CategoryVo> listConfig(CategoryDto dto) {
+    public List<CategoryVo> listConfigByPid(CategoryDto dto) {
         return cateService.listCategory(dto);
+    }
+    
+    /**
+     * 根据categoryId查询类目 
+     * @param dto
+     * @return
+     */
+    @RequestMapping(value = "/listCat")
+    @ResponseBody
+    public List<CategoryVo> listCategoryById(CategoryDto dto) {
+        List<CategoryVo> cateList = new ArrayList<>();
+        CategoryVo cateVo = cateService.getCategoryById(dto.getCategoryId());
+        if(cateVo != null){
+            cateList.add(cateVo);
+        }
+        return cateList;
     }
 
     /**
@@ -126,16 +144,16 @@ public class CategoryController {
             /**
              * 图片校验
              */
-//            boolean checkGoodBannerImgSize = ImageTools.checkSiftGoodsImgSize(file);// 尺寸
-//            boolean checkImgType = ImageTools.checkImgType(file);// 类型
-//            int size = file.getInputStream().available();
-//            if (!(checkGoodBannerImgSize && checkImgType)) {
-//                file.getInputStream().close();// 284*284px;大小：≤500kb;.jpg .png
-//                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：284px,高：284px,格式：.jpg,.png", url);
-//            } else if (size > 1024 * 300) {
-//                file.getInputStream().close();
-//                return Response.fail("文件不能大于300kb!", url);
-//            }
+            boolean checkGoodBannerImgSize = ImageTools.checkThirdCategoryGoodsIcon(file);// 尺寸
+            boolean checkImgType = ImageTools.checkImgType(file);// 类型
+            int size = file.getInputStream().available();
+            if (!(checkGoodBannerImgSize && checkImgType)) {
+                file.getInputStream().close();// 284*284px;大小：≤500kb;.jpg .png
+                return Response.fail("请上传大小： 20kb 尺寸：100*100 格式：.jpg，.png的图片。", url);
+            } else if (size > 1024 * 20) {
+                file.getInputStream().close();
+                return Response.fail("文件不能大于20kb!", url);
+            }
             FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
             
             return Response.success("上传图片成功!", url);

@@ -182,13 +182,23 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String status = HttpWebUtils.getValue(request, "status");
             String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
-
+            String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
+            String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
+            String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
+            
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
             goodsInfoEntity.setGoodsType(goodsType);
             goodsInfoEntity.setMerchantName(merchantName);
             goodsInfoEntity.setMerchantType(merchantType);
+            if(!StringUtils.isAnyBlank(categoryId1,categoryId2,categoryId3)){
+                goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
+                goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
+                goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
+            }
+            
+            
             if (StringUtils.isBlank(isAll)) {
                 goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
             }
@@ -224,14 +234,16 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
+    public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
         String message = SUCCESS;
+        GoodsInfoEntity goodsInfo = null;
 
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(), pageModel.getGoodsName(),
             pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
-            || pageModel.getDelistTime().equals("")) {
+            || pageModel.getDelistTime().equals("")||pageModel.getCategoryId1().equals("")||pageModel.getCategoryId2().equals("")
+            ||pageModel.getCategoryId3().equals("")) {
             message = "参数有误,请确认再提交！";
-            return message;
+            return Response.fail(message);
         }
         try {
             pageModel.setStatus(GoodStatus.GOOD_NEW.getCode());
@@ -239,11 +251,11 @@ public class GoodsBaseInfoController {
             pageModel.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
             pageModel.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
             pageModel.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            goodsService.insert(pageModel);
+            goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
             LOGGER.error("商品添加失败", e);
         }
-        return message;
+        return Response.success(message, goodsInfo);
     }
 
     /**
@@ -256,7 +268,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public String edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
+    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
                        HttpServletRequest request) {
         String message = SUCCESS;
 
@@ -264,7 +276,7 @@ public class GoodsBaseInfoController {
             pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
             || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
             message = "参数有误,请确认再提交！";
-            return message;
+            return Response.fail(message);
         }
         try {
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
@@ -272,7 +284,22 @@ public class GoodsBaseInfoController {
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
         }
-        return message;
+        return Response.success(message);
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
+    public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
+            HttpServletRequest request) {
+        String message = SUCCESS;
+        try {
+            pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
+            goodsService.updateService(pageModelEdit);
+            return Response.success(message);
+        } catch (Exception e) {
+            LOGGER.error("编辑商品失败", e);
+            return Response.fail("编辑商品失败");
+        }
     }
 
     @ResponseBody

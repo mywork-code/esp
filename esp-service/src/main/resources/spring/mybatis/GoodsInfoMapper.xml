@@ -7,7 +7,16 @@
 	<!-- 查询条件 -->
 	<sql id="QueryGoodsSql">
 		<where>
-	   <if test="id != null and id != ''">
+	    <if test="categoryId1 != null and categoryId1 != ''">
+			AND t.category_id1 = #{categoryId1, jdbcType=BIGINT}
+		</if>
+	    <if test="categoryId2 != null and categoryId2 != ''">
+			AND t.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		</if>
+	    <if test="categoryId3 != null and categoryId3 != ''">
+			AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		</if>
+	    <if test="id != null and id != ''">
 			AND t.id = #{id, jdbcType=BIGINT}
 		</if>
 		 <if test="merchantCode != null and merchantCode != ''">
@@ -46,6 +55,9 @@
 	<select id="goodsPageList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
 	<![CDATA[
 		 SELECT
+		 	 	t.category_id1 categoryId1,
+		 	 	t.category_id2 categoryId2,
+		 	 	t.category_id3 categoryId3,
 				t.ID id,
 				t.category_code categoryCode,
 				t.goods_name goodsName,
@@ -290,6 +302,15 @@
 		]]>
 		<set>
 			update_date = CURRENT_TIMESTAMP,
+			<if test="categoryId1 != null and categoryId1 != ''">
+				category_id1 = #{categoryId1, jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId2 != null and categoryId2 != ''">
+				category_id2 = #{categoryId2, jdbcType=VARCHAR},
+			</if>
+			<if test="categoryId3 != null and categoryId3 != ''">
+				category_id3 = #{categoryId3, jdbcType=VARCHAR},
+			</if>
 			<if test="goodsName != null and goodsName != ''">
 				goods_name = #{goodsName, jdbcType=VARCHAR},
 			</if>
