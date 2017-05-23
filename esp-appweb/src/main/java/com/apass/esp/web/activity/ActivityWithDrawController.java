@@ -172,10 +172,6 @@ public class ActivityWithDrawController {
 	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
 
 		String userId = CommonUtils.getValue(paramMap, "userId");
-		String sourceType = CommonUtils.getValue(paramMap, "sourceType");
-		if(StringUtils.isEmpty(sourceType)){
-			return Response.fail("参数错误！");
-		}
 		String requestId = "";
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
