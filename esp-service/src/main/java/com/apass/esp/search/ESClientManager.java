@@ -1,6 +1,13 @@
 package com.apass.esp.search;
 
+import com.apass.esp.domain.entity.search.IdAble;
+import com.apass.esp.domain.enums.IndexType;
 import com.google.common.base.Preconditions;
+import org.apache.commons.io.IOUtils;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -13,8 +20,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Created by xianzhi.wang on 2017/5/15.
@@ -26,55 +35,71 @@ public class ESClientManager {
     private static volatile TransportClient client;
 
     @Value("${es.name}")
-    private  String esName;
+    private String esName;
 
     @Value("${es.host}")
-    private  String host;
+    private String host;
 
     @Value("${es.port}")
-    private  String port;
+    private String port;
 
+    @Value("${es.indice}")
+    private String indice;
 
     private ESClientManager() {
-
     }
 
-
-    public  Client getClient() {
+    public Client getClient() {
         if (client == null) {
             synchronized (ESClientManager.class) {
                 if (client == null) {
-
-
+                    try {
                         LOGGER.info("esName {}", esName);
                         LOGGER.info("host {}", host);
                         LOGGER.info("port {}", port);
-
                         Settings settings = Settings
                                 .builder()
-                                .put("cluster.name",esName)
+                                .put("cluster.name", esName)
                                 .put("client.transport.ignore_cluster_name", true)
                                 .put("client.transport.sniff", true).build();
                         client = new PreBuiltTransportClient(settings);
 
-                    try {
                         client = client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    }
 
-                    int nodeSize = client.connectedNodes().size();
+                        int nodeSize = client.connectedNodes().size();
                         LOGGER.info("nodeSize {}", nodeSize);
                         Preconditions.checkArgument(nodeSize >= 1, "this is no available node");
-
+                        initIndex();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
         }
-
         return client;
     }
 
+    /**
+     * 初始化索引
+     * @throws Exception
+     */
+    private void initIndex() throws Exception {
+        //创建一个空的
+        if(!client.admin().indices().prepareExists(indice).get().isExists()){
+            CreateIndexResponse createIndexResponse = client.admin().indices().prepareCreate(indice).get();
+            LOGGER.info("create index {}", createIndexResponse);
+        }
+        for (IndexType type : IndexType.values()) {
+            TypesExistsResponse typesExistsResponse = client.admin().indices().typesExists(new TypesExistsRequest(new String[]{indice}, type.getDataName())).get();
+            if (typesExistsResponse.isExists()) {
+                continue;
+            }
+            InputStream in = ESClientManager.class.getResourceAsStream(type.getMapper());
+            String mappingStr = IOUtils.toString(in).trim();
+            client.admin().indices().preparePutMapping(indice).setType(type.getDataName()).setSource(mappingStr).get();
+        }
+    }
 
 }
 

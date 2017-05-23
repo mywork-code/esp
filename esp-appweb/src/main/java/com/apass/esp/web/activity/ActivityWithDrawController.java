@@ -172,12 +172,17 @@ public class ActivityWithDrawController {
 	public Response saveContract(@RequestBody Map<String, Object> paramMap) {
 
 		String userId = CommonUtils.getValue(paramMap, "userId");
+		String sourceType = CommonUtils.getValue(paramMap, "sourceType");
+		if(StringUtils.isEmpty(sourceType)){
+			return Response.fail("参数错误！");
+		}
 		String requestId = "";
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			return Response.fail("对不起,该用户不存在!");
 		}
 		paramMap.put("customerId", result.get("customerId"));
+
 		Response res = awardActivityInfoService.saveContract(paramMap);
 		return res;
 	}
