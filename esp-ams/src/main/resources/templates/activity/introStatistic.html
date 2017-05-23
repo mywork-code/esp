@@ -36,11 +36,11 @@
     
     <!-- 新增模块  1.用于统计某一段时间内 已放款 预计放款  2.用于统计某一时间内 拉取新人的数量 -->
     <!-- 开始 -->
-    <div id="statistics">
-		<table style="min-width: 700px;width: 100%;height: 60px;border:1px solid #8DB2E3" border="1" cellspacing="0" class="datagrid-btable">
+    <div>
+		<table style="min-width: 700px;width: 100%;border:1px solid #8DB2E3" border="1" cellspacing="0" class="datagrid-btable">
 			<tr>
 				<td align="center">
-				   <select id="awarddetail">
+				   <select id="awarddetail" >
 				      <option value="-1" selected>近24小时放款金额</option>
 				      <option value="-7">近7天放款金额</option>
 				      <option value="-30">近30天放款金额</option>
@@ -49,7 +49,7 @@
 				<td align="center">已放款<span id="loadAmount"></span><span style="font-weight: bold;">&nbsp;元</span></td>
 				<td align="center">预计放款<span id="expectLoadAmount"></span><span style="font-weight: bold;">&nbsp;元</span></td>
 				<td align="center">
-				  <select id="awardbindrel">
+				  <select id="awardbindrel" >
 				      <option value="-1" selected>近24小时拉新人数</option>
 				      <option value="-7">近7天拉新人数</option>
 				      <option value="-30">近30天拉新人数</option>
