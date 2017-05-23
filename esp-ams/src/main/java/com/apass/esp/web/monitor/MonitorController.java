@@ -1,6 +1,17 @@
 package com.apass.esp.web.monitor;
 
-import com.apass.esp.common.model.QueryParams;
+import java.util.Date;
+import java.util.HashMap;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
@@ -10,18 +21,6 @@ import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by xianzhi.wang on 2017/5/18.
@@ -47,18 +46,29 @@ public class MonitorController {
     @RequestMapping(value = "/editMonitorSetUp", method = RequestMethod.POST)
     @ResponseBody
     public Response editSetUp(@RequestBody MonitorDto monitorDto){
-
-    	if(!StringUtils.isBlank(monitorDto.getMonitorTime())){
-    		cacheManager.set("monitor_time", monitorDto.getMonitorTime());
+    	
+    	if(StringUtils.isBlank(monitorDto.getMonitorTime())){
+    		return Response.fail("时间不能为空!");
     	}
-
-    	if(!StringUtils.isBlank(monitorDto.getMonitorTimes())){
-    		cacheManager.set("monitor_times", monitorDto.getMonitorTimes());
+    	
+    	if(!NumberUtils.isNumber(monitorDto.getMonitorTime())){
+    		return Response.fail("时间必须为数字!");
     	}
+    	
+    	if(StringUtils.isBlank(monitorDto.getMonitorTimes())){
+    		return Response.fail("次数不能为空!");
+    	}
+    	
+    	if(!NumberUtils.isNumber(monitorDto.getMonitorTimes())){
+    		return Response.fail("次数必须为数字!");
+    	}
+    	
+    	cacheManager.set("monitor_time", monitorDto.getMonitorTime());
+    	cacheManager.set("monitor_times", monitorDto.getMonitorTimes());
         HashMap map = new HashMap();
     	map.put("monitor_times",cacheManager.get("monitor_times"));
     	map.put("monitor_time",cacheManager.get("monitor_time"));
-    	return Response.success(JsonUtil.toJsonString(map));
+    	return Response.success("配置成功!",JsonUtil.toJsonString(map));
     }
 
   /**
