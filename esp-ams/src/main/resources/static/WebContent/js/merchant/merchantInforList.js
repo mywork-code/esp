@@ -378,7 +378,7 @@ $(function () {
         console.log(row3);
         //回显编辑弹出框中的数据
         $("#merchantId").val(row3.id);
-        $("#channel").textbox('setValue', row3.channel);
+        $("#channel").combobox('setValue', row3.channel);
         $("#editMerchantCode").textbox('setValue', row3.merchantCode);
         $("#editMerchantName").textbox('setValue', row3.merchantName);
         $("#editMerchantProvince").combobox('setValue', row3.merchantProvince);

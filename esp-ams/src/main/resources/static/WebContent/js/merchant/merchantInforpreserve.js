@@ -81,7 +81,7 @@ function load(){
 		var data = datas.data;
 		console.log(data);
 		$("#merchantId").val(data.id);
-        $("#channel").textbox('setValue',data.channel);
+        $("#channel").combobox('setValue',data.channel);
 		$("#editMerchantCode").textbox('setValue',data.merchantCode);
 		$("#editMerchantName").textbox('setValue',data.merchantName);
 		$("#editMerchantProvince").combobox('setValue',data.merchantProvince);
