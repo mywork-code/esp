@@ -1,0 +1,12 @@
+{
+    "goods": {
+        "properties": {
+            "goodsName": {
+                "type": "text"
+            },
+            "goodsFixName": {
+                "type": "text"
+            }
+        }
+    }
+}
