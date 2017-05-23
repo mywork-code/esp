@@ -1,7 +1,10 @@
 package com.apass.esp.search.manager;
 
-import com.apass.esp.domain.entity.search.IdAble;
-import com.apass.esp.domain.enums.IndexType;
+
+import com.apass.esp.search.condition.GoodTestSearchCondition;
+import com.apass.esp.search.entity.GoodsTest;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +15,9 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
@@ -20,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +33,8 @@ import java.util.List;
 /**
  * Created by xianzhi.wang on 2017/5/22.
  */
-public class IndexManager {
+@Service
+public class IndexManager<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexManager.class);
 
     @Value("${es.indice}")
@@ -35,6 +42,16 @@ public class IndexManager {
 
     @Autowired
     private ESClientManager esClientManager;
+
+    /**
+     * http://blog.csdn.net/xiaohulunb/article/details/37877435
+     */
+    public <GoodsTest> Pagination<GoodsTest> goodSearch(GoodTestSearchCondition condition, String sortField, boolean desc, int from, int size) {
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
+        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getFixName()));
+        return search(boolQueryBuilder, IndexType.GOODSTEST, sortField, desc, from, size);
+    }
 
 
     /**
@@ -83,14 +100,13 @@ public class IndexManager {
      * @param index
      * @param type
      * @param id
-
      */
-    public  void deleteDocument(String index, IndexType type, Integer id) {
+    public void deleteDocument(String index, IndexType type, Integer id) {
         esClientManager.getClient().prepareDelete(index, type.getDataName(), String.valueOf(id)).get();
     }
 
 
-    public  <T> T getDocument(String index, IndexType type, Integer id) {
+    public <T> T getDocument(String index, IndexType type, Integer id) {
         GetResponse getResponse = esClientManager.getClient().prepareGet(index, type.getDataName(), String.valueOf(id)).get();
         if (getResponse != null && getResponse.isExists()) {
             Object value = ESDataUtil.readValue(getResponse.getSourceAsBytes(), type.getTypeClass());
@@ -111,7 +127,7 @@ public class IndexManager {
      * @param size         页面大小
      * @return
      */
-    public  <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, String sortField, boolean desc, int from, int size) {
+    private <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, String sortField, boolean desc, int from, int size) {
         List<T> results = new ArrayList<>();
         SearchRequestBuilder serachBuilder = esClientManager.getClient().prepareSearch(indice)//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
@@ -134,4 +150,6 @@ public class IndexManager {
         pagination.setTotalCount(total);
         return pagination;
     }
+
+
 }

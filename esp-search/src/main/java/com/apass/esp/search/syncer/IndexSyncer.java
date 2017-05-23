@@ -1,6 +1,6 @@
 package com.apass.esp.search.syncer;
 
-import com.apass.esp.domain.enums.IndexType;
+import com.apass.esp.search.enums.IndexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
