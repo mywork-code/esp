@@ -232,11 +232,22 @@ $(function() {
 		categoryId = response.categoryId;
 		categoryLevel = response.level;
 		categoryName=response.categoryName;
+		isFirstOne=response.isFirstOne;
+		isLastOne=response.isLastOne;
 		parentId = response.parentId;
 		rowIndex = index;
 		picUrl = response.pictureUrl;
+		$('#optMenu').menu('enableItem', '#moveCategory');
+		$('#optMenu').menu('enableItem', '#downCategory');
+
+		if(isFirstOne){
+			$('#optMenu').menu('disableItem', '#moveCategory');
+		}
+		if(isLastOne){
+			$('#optMenu').menu('disableItem', '#downCategory');
+		}
 		var  evt = (evt) ? evt : ((window.event) ? window.event : null);
-		$('#optMenu').menu('show', {     
+		$('#optMenu').menu('show',{     
 			left:evt.pageX,
 			top:evt.pageY
 		}); 

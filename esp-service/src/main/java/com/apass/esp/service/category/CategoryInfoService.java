@@ -139,6 +139,9 @@ public class CategoryInfoService {
 			for (Category v : categories) {
 				voList.add(categroyToCathgroyEntiy(v));
 			}
+			//因为voList在数据库查询时就已经跟进order排序来查询
+			voList.get(0).setIsFirstOne(true);
+			voList.get(voList.size()-1).setIsLastOne(true);
 		}
 		return voList;
 	}

@@ -74,9 +74,9 @@ textarea {
 	    <div class="menu-sep"></div>  
 	    <div data-options="iconCls:'icon-remove'" id="deleteCategory">删除</div>   
 	    <div class="menu-sep"></div>  
-	    <div>上移</div>   
-	    <div class="menu-sep"></div>  
-	    <div>下移</div>   
+	    <div id="moveCategory">上移</div>   
+	    <div class="menu-sep" ></div>  
+	    <div id="downCategory">下移</div>   
 	</div>
 	
 	<!-- 编辑商品类目  -->
@@ -135,23 +135,22 @@ textarea {
 				</td>
 			</tr>
 			<tr class="threeCategory">
-				<td width="20%">添加分类图标:</td>
-				<td>
+				<td width="20%" align="right">添加分类图标:</td>
+				<td colspan="3" width="60%" align="left">
 					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
 						<input type="file" id="addCategoryFilePic" name="file" />
-						<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" class="new-btn">
-							上传
-						</a>
+					<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" 
+				     class="easyui-linkbutton">上&nbsp;传</a>
 					</form>
 					<img id="addShowCategoryPicId" src="">
 				</td>
 			</tr>
 			<tr style="margin-top: 22px;">
-				<td style="margin-right: 22px;">
+				<td colspan="4">
 					<a href="javascript:void(0);" id="addDisGoodCategory"
 					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
 					<a href="javascript:void(0);" id="addConfirmGoodCategory"
-					style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
 				</td>
 			</tr>
 		</table>

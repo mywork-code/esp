@@ -24,6 +24,14 @@ public class CategoryVo {
      */
     private Long sortOrder;
     /**
+     * 判断是否为第一个
+     */
+    private Boolean isFirstOne;
+    /**
+     * 判断是否为最后一个
+     */
+    private Boolean isLastOne;
+    /**
      * 级别
      */
     private Long level;
@@ -124,5 +132,19 @@ public class CategoryVo {
 	public void setCategoryTitle(String categoryTitle) {
 		this.categoryTitle = categoryTitle;
 	}
+	public Boolean getIsFirstOne() {
+		return isFirstOne;
+	}
+	public void setIsFirstOne(Boolean isFirstOne) {
+		this.isFirstOne = isFirstOne;
+	}
+	public Boolean getIsLastOne() {
+		return isLastOne;
+	}
+	public void setIsLastOne(Boolean isLastOne) {
+		this.isLastOne = isLastOne;
+	}
+	
+	
 	
 }
