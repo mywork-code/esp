@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /**新增加商品类别表*/
-=======
---商品类目表
->>>>>>> 446e055e2f9886475d73a879fa3e934492e865c6
 DROP TABLE IF EXISTS esp.t_esp_category;
 CREATE TABLE esp.`t_esp_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
