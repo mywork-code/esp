@@ -88,7 +88,7 @@ public class ESClientController {
         GoodTestSearchCondition goodTestSearchCondition = new GoodTestSearchCondition();
         goodTestSearchCondition.setFixName("goodsName");
         goodTestSearchCondition.setName("goods");
-        Pagination<GoodsTest> pagination = indexManager.goodSearch(goodTestSearchCondition, null, true, 0, 10);
+        Pagination <GoodsTest> pagination = indexManager.goodSearch(goodTestSearchCondition, null, true, 0, 10);
         return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
 
