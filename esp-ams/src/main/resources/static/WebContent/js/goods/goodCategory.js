@@ -344,30 +344,18 @@ $(function() {
 	$("#editDisGoodCategory").click(function(){
 		$("#editCategoryDetail").window('close');
 	});
-	
-	
 	//刷新分类
-	$("#flashCategory").click(function() {
-		debugger;
-		$('#centerAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				'parentId':'null',
-			 }
-		 })
-		 $('#eastAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				 'parentId':'null',
-			 }
-		 })
-//		$('#westAttrDataGrid').datagrid('load', {'categoryId':null});
-//		$('#centerAttrDataGrid').datagrid('load', {'parentId':'null'});
-//		$('#eastAttrDataGrid').datagrid('load', {'parentId':'sanji'});
-	});
-	
+	$("#flashCategory").click(function(){
+    	$.ajax({
+            url : ctx + '/categoryinfo/category/refresh',
+            data : {},
+            type : "POST",
+            dataType : "json",
+            success : function(data) {
+            	$.messager.alert("提示",data.msg,'info');
+            }
+        });
+    });
 	//添加一级类目
 	$("#addFirstCategory").click(function(){
 		debugger;
