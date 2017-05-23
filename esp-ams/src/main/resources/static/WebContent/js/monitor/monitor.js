@@ -1,8 +1,8 @@
 $(function(){
 	//置空
     $("#reset").click(function(){
-    	$("#time").textbox('setValue');
-    	$("#times").textbox('setValue');
+    	$("#monitorTime").textbox('setValue');
+    	$("#monitorTime").textbox('setValue');
     });
     
     //配置
