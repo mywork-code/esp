@@ -101,9 +101,6 @@ public class OrderInfoController {
             if (null == userIdStr) {
                 return Response.fail(NO_USER);
             }
-            if(!"ios".equals(deviceType)||!"android".equals(deviceType)){
-                return Response.fail("订单来源参数错误");
-            }
             if (!StringUtils.isNumeric(userIdStr)) {
                 return Response.fail("用户名传入非法!");
             }
