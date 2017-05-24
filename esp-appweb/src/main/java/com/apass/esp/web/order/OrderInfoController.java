@@ -130,7 +130,7 @@ public class OrderInfoController {
             if (purchaseList.isEmpty()) {
                 return Response.fail("请选择所购买的商品");
             }
-
+            deviceType="android";
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
                     purchaseList, sourceFlag,deviceType);
             resultMap.put("orderList", orders);
