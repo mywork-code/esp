@@ -1,12 +1,14 @@
 package com.apass.esp.search.manager;
 
-import com.apass.esp.domain.enums.IndexType;
+
+import com.apass.esp.search.enums.IndexType;
 import com.google.common.base.Preconditions;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -14,15 +16,14 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.net.InetAddress;
 
 /**
  * Created by xianzhi.wang on 2017/5/15.
  */
-@Service
+@Component
 public class ESClientManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientManager.class);
 
@@ -80,6 +81,8 @@ public class ESClientManager {
      */
     private void initIndex() throws Exception {
         //创建一个空的
+        boolean a = client.admin().indices().prepareExists(indice).get().isExists();
+        LOGGER.info("index isExists  {}", a);
         if(!client.admin().indices().prepareExists(indice).get().isExists()){
             CreateIndexResponse createIndexResponse = client.admin().indices().prepareCreate(indice).get();
             LOGGER.info("create index {}", createIndexResponse);
@@ -89,8 +92,10 @@ public class ESClientManager {
             if (typesExistsResponse.isExists()) {
                 continue;
             }
-            InputStream in = ESClientManager.class.getResourceAsStream(type.getMapper());
+            String esMapper =  type.getMapper();
+            InputStream in = ESClientManager.class.getResourceAsStream(esMapper);
             String mappingStr = IOUtils.toString(in).trim();
+            IndicesAdminClient c = client.admin().indices();
             client.admin().indices().preparePutMapping(indice).setType(type.getDataName()).setSource(mappingStr).get();
         }
     }

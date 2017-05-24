@@ -152,7 +152,7 @@ public class ImageTools {
 	}
 	
 	/**
-	 * 文件宽度高度验证:精选商品图
+	 * 文件宽度高度验证:三级类目图标
 	 * 
 	 * @param file
 	 *            图片文件

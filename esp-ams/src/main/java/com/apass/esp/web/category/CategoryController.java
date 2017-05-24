@@ -2,6 +2,7 @@ package com.apass.esp.web.category;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,8 +64,24 @@ public class CategoryController {
 
     @RequestMapping(value = "/list")
     @ResponseBody
-    public List<CategoryVo> listConfig(CategoryDto dto) {
+    public List<CategoryVo> listConfigByPid(CategoryDto dto) {
         return cateService.listCategory(dto);
+    }
+    
+    /**
+     * 根据categoryId查询类目 
+     * @param dto
+     * @return
+     */
+    @RequestMapping(value = "/listCat")
+    @ResponseBody
+    public List<CategoryVo> listCategoryById(CategoryDto dto) {
+        List<CategoryVo> cateList = new ArrayList<>();
+        CategoryVo cateVo = cateService.getCategoryById(dto.getCategoryId());
+        if(cateVo != null){
+            cateList.add(cateVo);
+        }
+        return cateList;
     }
 
     /**
@@ -135,6 +153,7 @@ public class CategoryController {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于20kb!", url);
             }
+            
             FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
             
             return Response.success("上传图片成功!", url);

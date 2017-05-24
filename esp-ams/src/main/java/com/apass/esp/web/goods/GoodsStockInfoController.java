@@ -66,7 +66,9 @@ public class GoodsStockInfoController {
             String pageSize = HttpWebUtils.getValue(request, "rows");
             String id = HttpWebUtils.getValue(request, "goodsId");
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
-            entity.setGoodsId(Long.valueOf(id));
+            if(StringUtils.isNotBlank(id)){
+                entity.setGoodsId(Long.valueOf(id));
+            }
 
             PaginationManage<GoodsStockInfoEntity> pagination = goodsStockInfoService.pageList(entity, pageNo,
                 pageSize);

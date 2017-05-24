@@ -113,10 +113,12 @@ $(function () {
     //添加商户信息
     $("#add").click(function () {
         //清空弹出框中的数据
+        $("#channelAdd").textbox('setValue', '');
         $("#addMerchantCode").textbox('setValue', '');
         $("#addMerchantName").textbox('setValue', '');
         $("#addMerchantProvince").combobox('setValue', '');
         $("#addMerchantCity").combobox('setValue', '');
+        $("#addMerchantArea").combobox('setValue', '');
         $("#addMerchantAddress").textbox('setValue', '');
         $("#addMerchantReturnAddress").textbox('setValue', '');
         $("#addMerchantReturnName").textbox('setValue', '');
@@ -368,7 +370,7 @@ $(function () {
 
     //编辑   商户信息
     $.Edit = function (row) {
-
+    	
         //加载省份 和城市
         loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
         //string转json对象
@@ -376,10 +378,12 @@ $(function () {
         console.log(row3);
         //回显编辑弹出框中的数据
         $("#merchantId").val(row3.id);
+        $("#channel").combobox('setValue', row3.channel);
         $("#editMerchantCode").textbox('setValue', row3.merchantCode);
         $("#editMerchantName").textbox('setValue', row3.merchantName);
         $("#editMerchantProvince").combobox('setValue', row3.merchantProvince);
         $("#editMerchantCity").combobox('setValue', row3.merchantCity);
+        $("#editMerchantArea").combobox('setValue', row3.merchantArea);
         $("#editMerchantAddress").textbox('setValue', row3.merchantAddress);
         $("#editMerchantReturnAddress").textbox('setValue', row3.merchantReturnAddress);//商家退货地址
         $("#editMerchantReturnName").textbox('setValue', row3.merchantReturnName);
@@ -624,6 +628,7 @@ $(function () {
 
 
 function loadDirect(provinceId, cityId, areaId) {
+	debugger;
     $('#' + provinceId).combobox({
         method: "get",
         url: ctx + "/application/nation/queryNations",
@@ -645,11 +650,11 @@ function loadDirect(provinceId, cityId, areaId) {
                         url: ctx + "/application/nation/queryAreas?districtCode=" + data.code,
                         valueField: 'code',
                         textField: 'name',
-                        onSelect: function () {
+                        onSelect: function (data) {
                             var pId = $("#" + provinceId).textbox('getValue');
                             var cId = $("#" + cityId).textbox('getValue');
                             var aId = $("#" + areaId).textbox('getValue');
-                            var channel = $('#channel').textbox('getValue');
+                            var channel = $('#channelAdd').textbox('getValue');
                             if (channel.length == 0 || channel == '') {
                                 return;
                             } else {
