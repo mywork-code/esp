@@ -7,6 +7,16 @@
 .window>.panel-header>.panel-title {
 	color:#000;
 }
+.new-btn {
+	display: inline-block;
+    padding: 2px 4px 2px 30px;
+    background: #FFFFFF url("/ams/WebContent/images/icon_upload.png") no-repeat 4px center;
+    font-size: 16px;
+    color: #000000;
+    background-size: 18px;
+    border: 1px #000 solid;
+    border-radius: 4px;
+}
 #roleName,#roleCode {
 	border: 1px solid #B4CFFF;
    text-indent:5px;
@@ -139,8 +149,8 @@ textarea {
 				<td colspan="3" width="60%" align="left">
 					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
 						<input type="file" id="addCategoryFilePic" name="file" />
-					<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" 
-				     class="easyui-linkbutton">上&nbsp;传</a>
+						<a href="javascript:void(0);" id="addUpLogoBtn" style="margin-right: 15px;" 
+					     class="easyui-linkbutton">上&nbsp;传&nbsp;</a>
 					</form>
 					<img id="addShowCategoryPicId" src="">
 				</td>

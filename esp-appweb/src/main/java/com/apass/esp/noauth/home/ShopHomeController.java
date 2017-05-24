@@ -120,10 +120,7 @@ public class ShopHomeController {
               Map<String, Object> returnMap = new HashMap<String, Object>();
               String flage=CommonUtils.getValue(paramMap, "flage");//标记是精选还是类目
               List<GoodsBasicInfoEntity> goodsList=null;
-              if(null !=flage && flage.equals("recommend")){
-            	  goodsList = goodService.loadGoodsList();
-            	  
-              }else if(null !=flage && flage.equals("category")){
+              if(null !=flage && flage.equals("category")){
             	  String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
         		  String page = CommonUtils.getValue(paramMap, "page");
         		  String rows = CommonUtils.getValue(paramMap, "rows");
@@ -135,6 +132,8 @@ public class ShopHomeController {
        			 Pagination<GoodsBasicInfoEntity> goodsPageList= goodsService.loadGoodsByCategoryId(goodsInfoEntity,page, rows);
        			 goodsList =goodsPageList.getDataList();
       		     returnMap.put("totalCount", goodsPageList.getTotalCount());
+              }else{
+            	  goodsList = goodService.loadGoodsList();
               }
               
                for (GoodsBasicInfoEntity goodsInfo : goodsList) {
@@ -156,7 +155,8 @@ public class ShopHomeController {
             returnMap.put("goodsList", goodsList);
             List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
             for(BannerInfoEntity banner : banners){
-                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+//                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+                banner.setActivityUrl(banner.getActivityUrl());
 
                 banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
 
