@@ -101,9 +101,6 @@ public class OrderInfoController {
             if (null == userIdStr) {
                 return Response.fail(NO_USER);
             }
-            if(StringUtils.isEmpty(deviceType)){
-                return Response.fail("订单来源为空");
-            }
             if(!"ios".equals(deviceType)||!"android".equals(deviceType)){
                 return Response.fail("订单来源参数错误");
             }
