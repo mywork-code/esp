@@ -170,13 +170,17 @@ public class RegisterInfoController {
 			if(!StringUtils.equalsIgnoreCase((String)cacheJsonMap.get("value"), randomCode)){
 				return Response.fail("验证码不正确");
 			}
-		    Boolean Flage=registerInfoService.isSendMes(smsType, mobile2);
+//		    Boolean Flage=registerInfoService.isSendMes(smsType, mobile2);
+			//判断短信验证码是否有效
+		    Boolean Flage= mobileRandomService.getCode(smsType, mobile2);
 			if(Flage){
 				mobileRandomService.sendMobileVerificationCode(smsType, mobile2);
 				return Response.success("验证码发送成功,请注意查收");
-			}else{
-				return Response.fail("短信发送过于频繁，请稍后再试！");
 			}
+//			else{
+//				return Response.fail("短信发送过于频繁，请稍后再试！");
+//			}
+			return Response.fail("发送验证码失败,请稍后再试");
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
 			return Response.fail("网络异常,发送验证码失败,请稍后再试");
