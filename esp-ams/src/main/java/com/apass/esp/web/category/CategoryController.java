@@ -139,21 +139,21 @@ public class CategoryController {
                 throw new RuntimeException("上传图片不能为空!");
             }
             String fileName = file.getOriginalFilename();
-            //String imgType = ImageTools.getImgType(file);
             String url = categoryPath + "cate_" + System.currentTimeMillis() + fileName;
             /**
              * 图片校验
              */
-            boolean checkGoodBannerImgSize = ImageTools.checkThirdCategoryGoodsIcon(file);// 尺寸
+            boolean checkGoodBannerImgSize = ImageTools.checkCategoryLevel3ImgSize(file);// 尺寸
             boolean checkImgType = ImageTools.checkImgType(file);// 类型
             int size = file.getInputStream().available();
             if (!(checkGoodBannerImgSize && checkImgType)) {
-                file.getInputStream().close();// 284*284px;大小：≤500kb;.jpg .png
-                return Response.fail("请上传大小： 20kb 尺寸：100*100 格式：.jpg，.png的图片。", url);
+                file.getInputStream().close();// 100*100;大小：≤20kb;.jpg .png
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：100px,高：100px,格式：.jpg,.png", url);
             } else if (size > 1024 * 20) {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于20kb!", url);
             }
+            
             FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
             
             return Response.success("上传图片成功!", url);
@@ -214,14 +214,18 @@ public class CategoryController {
         }
     }
     
+    /**
+     * 刷新分类
+     * @return
+     */
     @RequestMapping(value = "/refresh")
     @ResponseBody
     public Response updateStatus(){
     	try {
     		cateService.updateStatus1To0();
-    		return Response.success("修改商品分类状态成功!");
+    		return Response.success("刷新分类成功!");
 		} catch (Exception e) {
-			 LOGGER.error("修改商品分类状态失败", e);
+			LOGGER.error("修改商品分类状态失败", e);
 			return Response.fail("修改商品分类状态失败!");
 		}
     }

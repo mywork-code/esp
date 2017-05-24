@@ -158,18 +158,18 @@ public class ImageTools {
 	 *            图片文件
 	 * @return boolean
 	 */
-	public static boolean checkThirdCategoryGoodsIcon(MultipartFile file) {
-	    try {
-	        int width = getImgWidth(file.getInputStream());
-	        int height = getImgHeight(file.getInputStream());
-	        
-	        if (width == 100 && height == 100) {// 284px*284px
-	            return true;
-	        }
-	    } catch (IOException e) {
-	        LOGGER.info("图片宽度高度校验失败！", e);
-	    }
-	    return false;
+	public static boolean checkCategoryLevel3ImgSize(MultipartFile file) {
+		try {
+			int width = getImgWidth(file.getInputStream());
+			int height = getImgHeight(file.getInputStream());
+
+			if (width == 100 && height == 100) {// 100*100
+				return true;
+			}
+		} catch (IOException e) {
+			LOGGER.info("图片宽度高度校验失败！", e);
+		}
+		return false;
 	}
 
 	/**

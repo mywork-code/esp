@@ -11,6 +11,25 @@
             src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
 </head>
 <body>
+<!-- 添加设置时间和次数 -->
+<div id="tb">
+		<div class="search">
+			<table style="min-width: 1040px;">
+				<tr>
+			    	<td width="10%" align="right">时间(分钟)：</td>
+			    	<td><input type="text" class="easyui-numberbox" style="width: 200px;" id="monitorTime" ></td>
+				    <td width="10%" align="right">次数：</td>
+				    <td><input type="text" class="easyui-numberbox" style="width: 200px;" id="monitorTimes" ></td>
+				  <td width="30%" />
+						 <a href="javascript:void(0);" class="easyui-linkbutton"  id="add">配&nbsp;置&nbsp;</a> &nbsp;&nbsp;
+					  	 <a href="javascript:void(0);" class="easyui-linkbutton"  id="reset">重&nbsp;置&nbsp;</a>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+
+
 
 <div id="list"></div>
 

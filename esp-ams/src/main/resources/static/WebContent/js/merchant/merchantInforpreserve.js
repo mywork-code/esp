@@ -81,10 +81,12 @@ function load(){
 		var data = datas.data;
 		console.log(data);
 		$("#merchantId").val(data.id);
+        $("#channel").combobox('setValue',data.channel);
 		$("#editMerchantCode").textbox('setValue',data.merchantCode);
 		$("#editMerchantName").textbox('setValue',data.merchantName);
 		$("#editMerchantProvince").combobox('setValue',data.merchantProvince);
 		$("#editMerchantCity").combobox('setValue',data.merchantCity);
+        $("#editMerchantArea").combobox('setValue',data.merchantArea);
 		$("#editMerchantAddress").textbox('setValue',data.merchantAddress);
 		$("#editMerchantReturnAddress").textbox('setValue',data.merchantReturnAddress);
 		$("#editMerchantReturnName").textbox('setValue',data.merchantReturnName);
@@ -148,7 +150,12 @@ function saveorsubmit(statu){
 			return;
 		}
 	}
-	
+    var channel = $("#channel").textbox('getValue');
+    if (null == channel || ("") == channel) {
+        $.messager.alert("<span style='color: black;'>提示</span>","商户渠道不能为空!",'info');
+        return;
+    }
+
 	var merchantCode = $("#editMerchantCode").textbox('getValue');
 	if (null == merchantCode || ("") == merchantCode) {
 		$.messager.alert("<span style='color: black;'>提示</span>","商户编码不能为空!",'info');
@@ -181,6 +188,15 @@ function saveorsubmit(statu){
 		$.messager.alert("<span style='color: black;'>提示</span>","所在城市不能为空!",'info');
 		return;
 	}
+
+    var merchantArea = $("#editMerchantArea").combobox('getValue');
+//	var merchantCity = $("#editMerchantCity").combobox('getText');
+    if (null == merchantArea || ("") == merchantArea) {
+//		alert("所在城市不能为空！");
+        $.messager.alert("<span style='color: black;'>提示</span>","所在区域不能为空!",'info');
+        return;
+    }
+
 	var merchantAddress = $("#editMerchantAddress").textbox('getValue');
 	if (null == merchantAddress || ("") == merchantAddress) {
 		$.messager.alert("<span style='color: black;'>提示</span>","详细地址不能为空！",'info'); 
@@ -282,10 +298,12 @@ function saveorsubmit(statu){
     
 	var params={};
 	params['id']=id;
+    params['channel']=channel;
 	params['merchantCode']=merchantCode;
 	params['merchantName']=merchantName;
 	params['merchantProvince']=merchantProvince;
 	params['merchantCity']=merchantCity;
+    params['merchantArea']=merchantArea;
 	params['merchantAddress']=merchantAddress;
 	params['merchantReturnAddress']=merchantReturnAddress;
 	params['merchantReturnName']=merchantReturnName;

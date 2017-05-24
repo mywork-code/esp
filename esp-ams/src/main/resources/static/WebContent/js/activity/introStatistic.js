@@ -91,10 +91,21 @@ $(function(){
     });
     
     //查询已放款和预计放款
-    $("#awarddetail").change(function(){
+    $("#awarddetail").combobox({ 
+    	onBeforeLoad:function(){
+    		$('#awarddetail').combobox('setValue',-1);
+    		awarddetai(-1);
+    	},
+    	onChange:function(){
+    		var days = $("#awarddetail").combobox('getValue');
+    		awarddetai(days);
+    	}
+    });
+    
+    function awarddetai(days){
     	$.ajax({
             url : ctx + '/activity/introduce/sumAmountGroupByType',
-            data : {"days":$(this).val()},
+            data : {"days":days},
             type : "POST",
             dataType : "json",
             success : function(data) {
@@ -102,21 +113,28 @@ $(function(){
              	 $("#expectLoadAmount").html(data.expectLoadAmount);
             }
         });
+    }
+    //查询拉取人数
+    $("#awardbindrel").combobox({ 
+    	onBeforeLoad:function(){
+    		$('#awardbindrel').combobox('setValue',-1);
+    		awardbindrel(-1);
+    	},
+    	onChange:function(){
+    		var days = $("#awardbindrel").combobox('getValue');
+    		awardbindrel(days);
+    	}
     });
     
-    //查询拉取人数
-    $("#awardbindrel").change(function(){
+    function awardbindrel(days){
     	$.ajax({
             url : ctx + '/activity/introduce/inviterUserCountByTime',
-            data : {"days":$(this).val()},
+            data : {"days":days},
             type : "POST",
             dataType : "json",
             success : function(data) {
             	$("#personSum").html(data);
             }
         });
-    });
-    
-    $('#awarddetail').val(-1).trigger('change');
-	$('#awardbindrel').val(-1).trigger('change');
+    }
 });

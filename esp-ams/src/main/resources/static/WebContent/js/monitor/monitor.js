@@ -1,5 +1,47 @@
 $(function(){
-
+	//置空
+    $("#reset").click(function(){
+    	$("#monitorTime").textbox('setValue');
+    	$("#monitorTimes").textbox('setValue');
+    });
+    
+    //配置
+    $("#add").click(function(){
+    	debugger;
+    	var time = $("#monitorTime").textbox('getValue');
+    	var times = $("#monitorTimes").textbox('getValue');
+    	
+    	if(time == null || time == ''){
+			$.messager.alert("提示", "请输入时间", "info");
+			return;
+		}
+    	if(isNaN(time)){
+    		$.messager.alert("提示", "时间必须为数字", "info");
+    		return;
+    	}
+    	if(times == null || times == ''){
+			$.messager.alert("提示", "请输入次数", "info");
+			return;
+		}
+    	if(isNaN(times)){
+    		$.messager.alert("提示", "次数必须为数字", "info");
+    		return;
+    	}
+    	var params = {"monitorTime":time,"monitorTimes":times};
+    	$.ajax({
+            url : ctx + '/noauth/monitor/editMonitorSetUp',
+            data : JSON.stringify(params),
+            contentType : 'application/json',
+            type : "POST",
+            dataType : "json",
+            success : function(data) {
+            	$.messager.alert("提示",data.msg,'info');
+            }
+        });
+    	
+    });
+	
+	
     //Grid
     $('#list').datagrid({
         title : '接口监控统计',

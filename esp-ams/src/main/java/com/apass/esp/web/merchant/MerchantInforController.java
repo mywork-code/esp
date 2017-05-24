@@ -358,8 +358,10 @@ public class MerchantInforController extends BaseController {
         String id = HttpWebUtils.getValue(request, "id");
         String merchantCode = HttpWebUtils.getValue(request, "merchantCode");
         String merchantName = HttpWebUtils.getValue(request, "merchantName");
+        String channel = HttpWebUtils.getValue(request, "channel");
         String merchantProvince = HttpWebUtils.getValue(request, "merchantProvince");
         String merchantCity = HttpWebUtils.getValue(request, "merchantCity");
+        String merchantArea = HttpWebUtils.getValue(request, "merchantArea");
         String merchantAddress = HttpWebUtils.getValue(request, "merchantAddress");
         String merchantReturnAddress = HttpWebUtils.getValue(request, "merchantReturnAddress");
         String merchantReturnName = HttpWebUtils.getValue(request, "merchantReturnName");
@@ -387,11 +389,17 @@ public class MerchantInforController extends BaseController {
         if (null != merchantName && !merchantName.trim().isEmpty()) {
             mity.setMerchantName(merchantName);
         }
+        if (null != channel && !channel.trim().isEmpty()) {
+            mity.setChannel(Integer.valueOf(channel));
+        }
         if (null != merchantProvince && !merchantProvince.trim().isEmpty()) {
             mity.setMerchantProvince(merchantProvince);
         }
         if (null != merchantCity && !merchantCity.trim().isEmpty()) {
             mity.setMerchantCity(merchantCity);
+        }
+        if (null != merchantArea && !merchantArea.trim().isEmpty()) {
+            mity.setMerchantArea(merchantArea);
         }
         if (null != merchantAddress && !merchantAddress.trim().isEmpty()) {
             mity.setMerchantAddress(merchantAddress);

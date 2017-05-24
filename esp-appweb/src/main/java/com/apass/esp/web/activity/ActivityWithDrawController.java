@@ -178,6 +178,7 @@ public class ActivityWithDrawController {
 			return Response.fail("对不起,该用户不存在!");
 		}
 		paramMap.put("customerId", result.get("customerId"));
+
 		Response res = awardActivityInfoService.saveContract(paramMap);
 		return res;
 	}

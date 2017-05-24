@@ -47,7 +47,7 @@ public class NationService {
      * @return
      * @throws BusinessException
      */
-    public List<DictDTO> queryDistrict(String districtCode, boolean cityFlag) throws BusinessException {
+    public List<DictDTO> queryDistrictForAms(String districtCode, boolean cityFlag) throws BusinessException {
         List<DictDTO> result = new ArrayList<DictDTO>();
         List<NationEntity> dataList = null;
 
@@ -149,5 +149,60 @@ public class NationService {
         return result;
     }
 
+    /**
+     * 查询城市公共方法
+     *
+     * @param districtCode
+     *            城市code
+     * @param cityFlag
+     *            true：查询市，false：查询区
+     * @return
+     * @throws BusinessException
+     */
+    public List<DictDTO> queryDistrict(String districtCode, boolean cityFlag) throws BusinessException {
+        List<DictDTO> result = new ArrayList<DictDTO>();
+        List<NationEntity> dataList = null;
 
+        boolean getAreaFlag = true;
+        if (districtCode.equals("000000")) { // 查询省份
+            getAreaFlag = true;
+        } else {
+            getAreaFlag = false;
+        }
+
+        try {
+            dataList = nationRepository.selectCityList(districtCode);
+        } catch (Exception e) {
+            throw new BusinessException("城市列表查询失败", e);
+        }
+        if (CollectionUtils.isEmpty(dataList)) {
+            return result;
+        }
+        boolean isCentrlCity = CENTRL_CITY_LIST.contains(districtCode);
+        for (NationEntity nation : dataList) {
+            /** 省份查询, 部分省份不展示 */
+            if(getAreaFlag && FORBIDDEN_PROVINCE.contains(nation.getCode())){
+                continue;
+            }
+            DictDTO dict = new DictDTO();
+            dict.setCode(nation.getCode());
+            dict.setPrefix(nation.getPrefix());
+            if (getAreaFlag) {
+                dict.setName(nation.getProvince());
+            } else {
+                if (isCentrlCity) {
+                    dict.setName(nation.getDistrict());
+                } else {
+                    if (cityFlag) {
+                        dict.setName(nation.getCity());
+                    } else {
+                        dict.setName(nation.getDistrict());
+                    }
+                }
+            }
+            result.add(dict);
+        }
+
+        return result;
+    }
 }

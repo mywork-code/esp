@@ -232,11 +232,22 @@ $(function() {
 		categoryId = response.categoryId;
 		categoryLevel = response.level;
 		categoryName=response.categoryName;
+		isFirstOne=response.isFirstOne;
+		isLastOne=response.isLastOne;
 		parentId = response.parentId;
 		rowIndex = index;
 		picUrl = response.pictureUrl;
+		$('#optMenu').menu('enableItem', '#moveCategory');
+		$('#optMenu').menu('enableItem', '#downCategory');
+
+		if(isFirstOne){
+			$('#optMenu').menu('disableItem', '#moveCategory');
+		}
+		if(isLastOne){
+			$('#optMenu').menu('disableItem', '#downCategory');
+		}
 		var  evt = (evt) ? evt : ((window.event) ? window.event : null);
-		$('#optMenu').menu('show', {     
+		$('#optMenu').menu('show',{     
 			left:evt.pageX,
 			top:evt.pageY
 		}); 
@@ -344,30 +355,18 @@ $(function() {
 	$("#editDisGoodCategory").click(function(){
 		$("#editCategoryDetail").window('close');
 	});
-	
-	
 	//刷新分类
-	$("#flashCategory").click(function() {
-		debugger;
-		$('#centerAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				'parentId':'null',
-			 }
-		 })
-		 $('#eastAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				 'parentId':'null',
-			 }
-		 })
-//		$('#westAttrDataGrid').datagrid('load', {'categoryId':null});
-//		$('#centerAttrDataGrid').datagrid('load', {'parentId':'null'});
-//		$('#eastAttrDataGrid').datagrid('load', {'parentId':'sanji'});
-	});
-	
+	$("#flashCategory").click(function(){
+    	$.ajax({
+            url : ctx + '/categoryinfo/category/refresh',
+            data : {},
+            type : "POST",
+            dataType : "json",
+            success : function(data) {
+            	$.messager.alert("提示",data.msg,'info');
+            }
+        });
+    });
 	//添加一级类目
 	$("#addFirstCategory").click(function(){
 		debugger;
