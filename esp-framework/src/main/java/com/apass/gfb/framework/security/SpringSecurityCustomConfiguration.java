@@ -63,7 +63,7 @@ public class SpringSecurityCustomConfiguration {
 
             configurer = new ListeningCustomJdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder>(manager);
             configurer.setDatasourcePlatform(datasourcePlatform);
-            configurer.setWithDefaultUser(listeningSecurityProperties.isWithDefaultUser());
+            configurer.setWithDefaultUser(false);
 
             auth.apply(configurer).dataSource(dataSource).withDefaultSchema()
                 .passwordEncoder(new BCryptPasswordEncoder());
