@@ -370,7 +370,7 @@ $(function () {
 
     //编辑   商户信息
     $.Edit = function (row) {
-
+    	
         //加载省份 和城市
         loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
         //string转json对象
@@ -628,6 +628,7 @@ $(function () {
 
 
 function loadDirect(provinceId, cityId, areaId) {
+	debugger;
     $('#' + provinceId).combobox({
         method: "get",
         url: ctx + "/application/nation/queryNations",
