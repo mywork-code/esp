@@ -156,7 +156,8 @@ public class ShopHomeController {
             returnMap.put("goodsList", goodsList);
             List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
             for(BannerInfoEntity banner : banners){
-                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+//                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+                banner.setActivityUrl(banner.getActivityUrl());
 
                 banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
 
