@@ -12,24 +12,33 @@
 </head>
 <body>
 <!-- 添加设置时间和次数 -->
-<div id="tb">
+	<div id="tb">
 		<div class="search">
-			<table style="min-width: 1040px;">
+			<table style="width: 100%;">
 				<tr>
 			    	<td width="10%" align="right">时间(分钟)：</td>
 			    	<td><input type="text" class="easyui-numberbox" style="width: 200px;" id="monitorTime" ></td>
 				    <td width="10%" align="right">次数：</td>
 				    <td><input type="text" class="easyui-numberbox" style="width: 200px;" id="monitorTimes" ></td>
-				  <td width="30%" />
+				    <td width="30%" />
 						 <a href="javascript:void(0);" class="easyui-linkbutton"  id="add">配&nbsp;置&nbsp;</a> &nbsp;&nbsp;
 					  	 <a href="javascript:void(0);" class="easyui-linkbutton"  id="reset">重&nbsp;置&nbsp;</a>
+					</td>
+				</tr>
+				<tr>
+				    <td width="10%" align="right"></td>
+				    <td colspan="2">
+					   <select id="days" class="easyui-combobox">
+					      <option value="-1" selected>近24小时统计</option>
+					      <option value="-7">近7天统计</option>
+					      <option value="-30">近30天统计</option>
+					   </select>
+					</td>
+					<td width="30%" ><a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a></td>
 				</tr>
 			</table>
 		</div>
 	</div>
-
-
-
 
 <div id="list"></div>
 

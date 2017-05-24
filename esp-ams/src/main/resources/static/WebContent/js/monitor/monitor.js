@@ -41,6 +41,12 @@ $(function(){
     	
     });
 	
+  //查询
+    $(".search-btn").click(function () {
+        var params = {};
+        params['days'] = $("#days").combobox('getValue');
+        $('#list').datagrid('load', params);
+    });
 	
     //Grid
     $('#list').datagrid({
