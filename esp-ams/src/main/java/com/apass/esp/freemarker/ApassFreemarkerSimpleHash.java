@@ -11,7 +11,7 @@ import com.apass.gfb.framework.template.overrides.ListeningFreemarkerSimpleHash;
 @Component
 public class ApassFreemarkerSimpleHash extends ListeningFreemarkerSimpleHash {
 
-	private static  final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	private static final String VARIABLE = "apass";
 
