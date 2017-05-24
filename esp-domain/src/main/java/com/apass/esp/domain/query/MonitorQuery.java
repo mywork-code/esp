@@ -10,6 +10,8 @@ public class MonitorQuery extends QueryParams {
   private String startCreateDate;
   private String endCreateDate;
   private Integer status;
+  //近几天
+  private Integer days;
 
   public String getStartCreateDate() {
     return startCreateDate;
@@ -34,4 +36,13 @@ public class MonitorQuery extends QueryParams {
   public void setStatus(Integer status) {
     this.status = status;
   }
+
+	public Integer getDays() {
+		return days;
+	}
+	
+	public void setDays(Integer days) {
+		this.days = days;
+	}
+	  
 }
