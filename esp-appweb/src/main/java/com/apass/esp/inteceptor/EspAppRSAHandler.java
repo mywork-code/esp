@@ -1,5 +1,6 @@
 package com.apass.esp.inteceptor;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.gfb.framework.utils.AESUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -50,7 +51,7 @@ public class EspAppRSAHandler {
 	 * @return Object
 	 * @throws Throwable
 	 */
-	@Around("execution(* com.apass.esp.web..*.*(..)) or execution(* com.apass.esp.noauth..*.*(..))")
+	@Around("execution(* com.apass.esp.web..*.*(..)) || execution(* com.apass.esp.noauth..*.*(..))")
 	private Object handleRSAInteceptor(ProceedingJoinPoint point) throws Throwable {
 		Object[] arr = point.getArgs();
 		if (arr == null || arr.length == 0) {
@@ -77,7 +78,7 @@ public class EspAppRSAHandler {
 			try {
 				// 私钥解密接受数据
 				String paraStr = RSAUtils.decryptByPrivateKey(paraValue, privateKey);
-				newPara[i] = GsonUtils.convertMap(paraStr);
+				newPara[i] = JsonUtil.toMap(paraStr);
 				isFlag = true;
 			} catch (Exception e) {
 				LOGGER.error("RSA解密参数异常-------->", e);
