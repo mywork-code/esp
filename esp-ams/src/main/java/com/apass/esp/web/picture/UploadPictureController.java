@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.picture.AddPictureEntity;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -29,7 +29,7 @@ public class UploadPictureController extends BaseController{
      * 日志
      */
     private static final Logger LOGGER                 = LoggerFactory.getLogger(BannerController.class);
-    private static final String CREDIT_UPLOAD_PICTURE_URL = "picture/uploadPictures";
+    private static final String CREDIT_UPLOAD_PICTURE_URL = "pictures/uploadPictures";
 
     @Autowired
     private ImageService   imageService;
@@ -57,19 +57,18 @@ public class UploadPictureController extends BaseController{
      */
     @ResponseBody
     @RequestMapping(value = "/addPicture", method = RequestMethod.POST)
-    public Response addBannerInfor(AddPictureEntity  pageModel) {
+    public Response addBannerInfor(@RequestParam("pictureFile")  MultipartFile   pictureFile) {
         try {
             //图片
-            MultipartFile file = pageModel.getPictureFile();
-            String imgType = ImageTools.getImgType(file);
+            String imgType = ImageTools.getImgType(pictureFile);
             String fileName = System.currentTimeMillis() + "." + imgType;
-            String fileUrl = nfsOther  + "/" + fileName;
+            String fileUrl = nfsOther + fileName;
             
-            FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, file);
+            FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, pictureFile);
             //获取图片的全路径
             String pictureUrl=imageService.getImageUrl(fileUrl);
             
-            return Response.success("图片地址为:"+pictureUrl);
+            return Response.success(pictureUrl);
         }catch (Exception e) {
             LOGGER.error("上传图片失败！", e);
             return Response.fail("上传图片失败！");

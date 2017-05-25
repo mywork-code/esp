@@ -1,6 +1,6 @@
 $(function(){
-
-	//确认   添加  banner信息
+	$('#showUrl').window('close');
+	//确认   
 	$("#agreeAdd").click(function(){
 		var pictureFile= $("#pictureFile").val();
 		if(pictureFile=='' || null==pictureFile){
@@ -22,8 +22,14 @@ $(function(){
 	            }
 				var respon=JSON.parse(data);
 				if(respon.status=="1"){
-					$.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
-					 $('#addBannerInfor').window('close');
+				   $("#remark").val(respon.msg);
+					$('#showUrl').window({
+			            minimizable:false,
+			            maximizable:false,
+			            collapsible:false,
+			            modal:true  
+					});
+					$('#showUrl').window('open');
 				}else{
 					$.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
 				}
