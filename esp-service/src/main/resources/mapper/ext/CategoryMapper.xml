@@ -18,11 +18,11 @@
 	order by sort_order asc
   </select>
   
-  <select id="selectByCategoryName" resultMap="BaseResultMap" parameterType="java.lang.String">
+  <select id="selectByCategoryName" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from t_esp_category
-    where category_name = #{categoryName} and status != '2'
+    where category_name = #{categoryName} and status != '2' and level = #{level}
   </select>
 
   <!--查询客户端首页的前3个类目信息  -->

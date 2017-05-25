@@ -15,7 +15,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     List<Category> selectByParentKey(@Param("parentId") Long parentId);
     
-    List<Category> selectByCategoryName(@Param("categoryName") String categoryName);
+    List<Category> selectByCategoryName(@Param("categoryName") String categoryName,@Param("level") long level);
     
     List<Category> selectCategoryList(Long levelId);
     
