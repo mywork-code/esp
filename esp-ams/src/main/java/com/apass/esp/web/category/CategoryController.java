@@ -138,8 +138,8 @@ public class CategoryController {
             if (file.isEmpty()) {
                 throw new RuntimeException("上传图片不能为空!");
             }
-            String fileName = file.getOriginalFilename();
-            String url = categoryPath + "cate_" + System.currentTimeMillis() + fileName;
+            String imgType = ImageTools.getImgType(file);
+            String url = categoryPath + "cate_" + System.currentTimeMillis() + "." + imgType;
             /**
              * 图片校验
              */
