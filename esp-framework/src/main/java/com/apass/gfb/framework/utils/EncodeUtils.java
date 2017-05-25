@@ -43,6 +43,9 @@ public class EncodeUtils {
 	 * @return String
 	 */
 	public static String base64Decode(String value) {
+		if(StringUtils.isEmpty(value)){
+			return null;
+		}
 		byte[] data = Base64.decodeBase64(value);
 		return convertString(data);
 	}

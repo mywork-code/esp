@@ -46,6 +46,7 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +56,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -862,7 +859,7 @@ public class OrderService {
 		List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
 
 		if (null == orderList || orderList.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		for (OrderInfoEntity order : orderList) {
