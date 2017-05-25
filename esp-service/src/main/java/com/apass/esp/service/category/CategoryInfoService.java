@@ -80,13 +80,13 @@ public class CategoryInfoService {
 		for(int i=0;i<voList.size();i++){
 			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
 				voList.get(i).setCategoryTitle("舒适生活从此开启");
-				voList.get(i).setPictureUrl("http://img04.tooopen.com/images/20130712/tooopen_17270713.jpg");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711495360.jpg");
 			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
 				voList.get(i).setCategoryTitle("让您和您的家人省心更省力");
-				voList.get(i).setPictureUrl("http://img06.tooopen.com/images/20170514/tooopen_sy_210126153448.jpg");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711712715.jpg");
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
 				voList.get(i).setCategoryTitle("家装没有你想的那么贵");
-				voList.get(i).setPictureUrl("http://img07.tooopen.com/images/20170427/tooopen_sy_207057725658.jpg");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711887280.jpg");
 			}
 		}
 		return voList;
