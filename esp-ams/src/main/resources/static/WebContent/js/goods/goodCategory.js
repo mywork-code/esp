@@ -254,8 +254,8 @@ $(function() {
 	}
 	
 	$('#optMenu').menu({    
-	    onClick:function(item){    
-	    	console.log(item);
+	    onClick:function(item){   
+	    	debugger;
 	    	if(item.text == '编辑'){
 	    		$("#editCategoryDetail").window('open');
 	    		if(categoryLevel == 3){

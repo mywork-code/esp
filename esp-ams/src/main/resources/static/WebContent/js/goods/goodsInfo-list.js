@@ -544,6 +544,7 @@ $(function() {
 		$("#addWriteGoodsInfo").css('display','none');
 		$("#addUpLoadGoodsPicture").css('display','none');
 		$("#addGoodsStock").css('display','none');
+		$('#tablelist').datagrid('load', {});
 		
 		//关闭窗口
 		$('#addGoodsInfo').window('close');
