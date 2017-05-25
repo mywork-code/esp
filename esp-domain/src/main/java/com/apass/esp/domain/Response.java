@@ -1,5 +1,6 @@
 package com.apass.esp.domain;
 
+import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.enums.StatusCode;
 
 /**
@@ -86,6 +87,16 @@ public class Response {
 
 	public static Response success(String msg, Object data) {
 		return new Response(StatusCode.SUCCESS_CODE.getCode(), msg, data);
+	}
+
+	public static Response fail(String msg, ErrorCode errorCode) {
+		String message = "友好提示文案(" + errorCode.getCode() + ")";
+		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
+	}
+
+	public static Response fail(ErrorCode errorCode) {
+		String message = "友好提示文案(" + errorCode.getCode() + ")";
+		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 
 	public static Response expire(String msg) {
