@@ -244,6 +244,9 @@ public class CategoryInfoService {
 	 */
 	public Category addCategory(CategoryDto categoryDto){
 	        Integer sortOrder = categoryMapper.getMaxSortOrder(categoryDto.getLevel());
+	        if(sortOrder == null){
+	        	sortOrder =1;
+	        }
 		/**
 		 * 验证数据库中是否存在类目名称
 		 */
