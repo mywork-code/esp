@@ -369,7 +369,6 @@ $(function() {
     });
 	//添加一级类目
 	$("#addFirstCategory").click(function(){
-		debugger;
 		showCategroyName('1');
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');
@@ -409,11 +408,35 @@ $(function() {
 	// 确认添加 
 	$("#addConfirmGoodCategory").click(function(){
 		debugger;
+		var reg;
 		var categoryName = $("#addCategoryName").textbox('getValue');
 		if(categoryName == null || categoryName == ''){
 			$.messager.alert("提示", "请输入类目名称", "info");
 			return;
 		}
+		if(categoryLevel == 1){
+			reg=/^[\u2E80-\u9FFF]+$/;
+			if(categoryName.length > 5 || !regExp_pattern(categoryName,reg)){
+				$.messager.alert("提示", "类目名称不能超过5个汉字", "info");
+				return;
+			}
+		}else if(categoryLevel == 2){
+			reg= /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+			if(categoryName.length > 15){
+				$.messager.alert("提示", "字数长度不能大于15", "info");
+				return;
+			}
+			if(!regExp_pattern(categoryName,reg)){
+				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字或字母,请输入重新输入", "info");
+				return;
+			}
+		}else if(categoryLevel == 3){
+			if(categoryName.length > 20){
+				$.messager.alert("提示", "字数长度不能大于20", "info");
+				return;
+			}
+		}
+		
 		if(categoryLevel==3 && (picUrl==null || picUrl == '')){
 			$.messager.alert("提示", "请先上传图片。", "info");
 			return;
@@ -639,4 +662,7 @@ function loadPic (id,pictureUrl)
 		$ ("#"+id).attr ("src", '');
 	}
 }
-
+/**正则校验**/
+function regExp_pattern(str, pattern) {
+    return pattern.test(str);
+}
