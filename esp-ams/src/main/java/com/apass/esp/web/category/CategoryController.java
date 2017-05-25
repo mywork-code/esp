@@ -297,9 +297,7 @@ public class CategoryController {
             if (!ListeningRegExpUtils.lengthStr(name, 1, 15)) {
                 throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
             }
-            if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)
-                    || !ListeningRegExpUtils.isLetterCharacter(name)
-                    || !ListeningRegExpUtils.isChineseCharacter(name)) {
+            if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)) {
                 throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
             }
         }
