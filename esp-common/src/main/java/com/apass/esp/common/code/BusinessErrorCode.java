@@ -23,6 +23,7 @@ public enum BusinessErrorCode implements ErrorCode{
 
   //5xxx 服务异常
   INTERNAL_ERROR(5000,"服务异常，请稍后重试"),
+  OPERATION_FREQUENTLY(5001,"请求过于频繁")
   ;
 
   private Integer code;
