@@ -51,6 +51,10 @@ public class ListeningRegExpUtils {
         return length <= max && length >= min;
     }
 
+    public static boolean lengthStr(String value, int min, int max){
+    	int length = StringUtils.length(value);
+    	return length <= max && length >= min;
+    }
     /**
      * get the string value bytes length
      * 
