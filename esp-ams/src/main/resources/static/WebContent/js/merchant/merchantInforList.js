@@ -173,7 +173,6 @@ $(function () {
 
     //确认   添加商户信息
     $("#agreeAdd").click(function () {
-
         var merchantCode = $("#addMerchantCode").textbox('getValue');
         if (null == merchantCode || ("") == merchantCode) {
             $.messager.alert("<span style='color: black;'>提示</span>", "商户编码不能为空！", 'info');

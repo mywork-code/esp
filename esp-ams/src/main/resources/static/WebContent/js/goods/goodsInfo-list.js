@@ -253,6 +253,20 @@ $(function() {
      * 新增商品
      */
     $(".add-btn").click(function() {
+		 $('#addCenterAttrDataGrid').datagrid({
+			 url : ctx + '/categoryinfo/category/list',
+			 rownumbers : false,
+			 queryParams:{
+				'parentId':'null',
+			 }
+		});
+		$('#addEastAttrDataGrid').datagrid({
+			 url : ctx + '/categoryinfo/category/list',
+			 rownumbers : false,
+			 queryParams:{
+				'parentId':'null',
+			 }
+		});
     	$('#addGoodsInfo').window('open');
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
@@ -455,7 +469,10 @@ $(function() {
     	categoryId1 = firstCategory.categoryId;
     	categoryId2 = secondCategory.categoryId;
     	categoryId3 = thirdCategory.categoryId;
+    	$("#addPlanDecrible #one").css('font-weight','lighter');
     	$("#addPlanDecrible #two").css('font-weight','bold');
+    	$("#addPlanDecrible #three").css('font-weight','lighter');
+    	$("#addPlanDecrible #four").css('font-weight','lighter');
     	
     	$("#addSelectCategoryList").css('display','none');
     	$("#addWriteGoodsInfo").css('display','block');
@@ -477,7 +494,10 @@ $(function() {
 	
 	//添加商品：上一步
 	$("#previousStepAddGood").click(function() {
+		$("#addPlanDecrible #one").css('font-weight','bold');
 		$("#addPlanDecrible #two").css('font-weight','lighter');
+    	$("#addPlanDecrible #three").css('font-weight','lighter');
+    	$("#addPlanDecrible #four").css('font-weight','lighter');
 		
 		$("#addSelectCategoryList").css('display','block');
     	$("#addWriteGoodsInfo").css('display','none');
@@ -487,7 +507,10 @@ $(function() {
 	
 	//大图：下一步
 	$("#nextStepUpLoadPic").click(function() {
-		$("#addPlanDecrible #four").css('font-weight','bold');
+		$("#addPlanDecrible #one").css('font-weight','lighter');
+		$("#addPlanDecrible #two").css('font-weight','lighter');
+    	$("#addPlanDecrible #three").css('font-weight','lighter');
+    	$("#addPlanDecrible #four").css('font-weight','bold');
 		
 		$("#addSelectCategoryList").css('display','none');
     	$("#addWriteGoodsInfo").css('display','none');
@@ -499,8 +522,11 @@ $(function() {
 	
 	//大图：上一步
 	$("#previousStepUpLoadPic").click(function() {
+		$("#addPlanDecrible #one").css('font-weight','lighter');
+		$("#addPlanDecrible #two").css('font-weight','bold');
 		$("#addPlanDecrible #three").css('font-weight','lighter');
-		
+    	$("#addPlanDecrible #four").css('font-weight','lighter');
+    	
 		$("#addSelectCategoryList").css('display','none');
     	$("#addWriteGoodsInfo").css('display','block');
     	$("#addUpLoadGoodsPicture").css('display','none');
@@ -509,6 +535,9 @@ $(function() {
 	
 	//库存：保存
 	$("#saveGoodsStock").click(function() {
+		$("#addPlanDecrible #one").css('font-weight','lighter');
+		$("#addPlanDecrible #two").css('font-weight','lighter');
+		$("#addPlanDecrible #three").css('font-weight','lighter');
 		$("#addPlanDecrible #four").css('font-weight','bold');
 		
 		$("#addSelectCategoryList").css('display','none');
@@ -522,6 +551,9 @@ $(function() {
 	
 	//库存：上一步
 	$("#previousStepGoodsStock").click(function() {
+		$("#addPlanDecrible #one").css('font-weight','lighter');
+		$("#addPlanDecrible #two").css('font-weight','lighter');
+		$("#addPlanDecrible #three").css('font-weight','bold');
 		$("#addPlanDecrible #four").css('font-weight','lighter');
 		
 		$("#addSelectCategoryList").css('display','none');
@@ -1634,13 +1666,15 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 				finalGoodId = addGoodId;//新增库存时所需商品id
 				$("#addLogogoodsId").val(addGoodId);
 				$("#addBannerGoodsId").val(addGoodId);
-				$("#addPlanDecrible #three").css('font-weight','bold');
+				$("#addPlanDecrible #one").css('font-weight','lighter');
+		    	$("#addPlanDecrible #two").css('font-weight','lighter');
+		    	$("#addPlanDecrible #three").css('font-weight','bold');
+		    	$("#addPlanDecrible #four").css('font-weight','lighter');
 				
 				$("#addSelectCategoryList").css('display','none');
 		    	$("#addWriteGoodsInfo").css('display','none');
 		    	$("#addUpLoadGoodsPicture").css('display','block');
 		    	$("#addGoodsStock").css('display','none');
-		    	
 		    	loadBanner("addGoodsbannerList",addGoodId);
 			}else{
 				$.messager.alert("提示", data, "info");
