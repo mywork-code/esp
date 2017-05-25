@@ -2,6 +2,7 @@ package com.apass.esp.service.category;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
@@ -9,6 +10,7 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.lf5.viewer.categoryexplorer.CategoryElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,16 +117,16 @@ public class CategoryInfoService {
 	 * @param categoryName
 	 * @return
 	 */
-	public List<Category> getCategoryList(String categoryName){
-		return categoryMapper.selectByCategoryName(categoryName);
+	public List<Category> getCategoryList(String categoryName,long level){
+		return categoryMapper.selectByCategoryName(categoryName,level);
 	}
 	/**
 	 * 根据类目名称，查询获取重复类目名称有几个
 	 * @param categoryName
 	 * @return
 	 */
-	public int egtCategoryCount(String categoryName){
-		List<Category> list = getCategoryList(categoryName);
+	public int egtCategoryCount(String categoryName,long level){
+		List<Category> list = getCategoryList(categoryName,level);
 		return (list!=null && !list.isEmpty())?list.size():0;
 	}
 	/**
@@ -168,7 +170,7 @@ public class CategoryInfoService {
 		/**
 		 * 验证数据库中是否存在类目名称
 		 */
-		if(egtCategoryCount(categoryName)>=1 && (v!=null&&!v.getCategoryName().equals(categoryName))){
+		if(egtCategoryCount(categoryName,v.getLevel())>=1 && (v!=null&&!v.getCategoryName().equals(categoryName))){
 			throw new RuntimeException("此类目名称已重复！");
 		}
 		
@@ -189,15 +191,24 @@ public class CategoryInfoService {
 	 * @param id
 	 */
 	public void deleteCategoryById(long id){
+		
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
 	   if(cateList != null && !cateList.isEmpty()){
 		  throw new RuntimeException("该商品分类下存在下级分类!");
 	   }
-	   //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
-	   int count = goodsService.getBelongCategoryGoodsNumber(id);
-	   if(count>0){
-		 throw new RuntimeException("该商品分类下存在商品!");
+	   //根据Id，查出相对应的类目信息
+	   CategoryVo v = getCategoryById(id);
+	   Long level3 = Long.parseLong(CategoryLevel.CATEGORY_LEVEL3.getCode());
+	   if(v.getLevel() == level3){
+		   
+		  //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
+		   int count = goodsService.getBelongCategoryGoodsNumber(id);
+		   if(count>0){
+			 throw new RuntimeException("该商品分类下存在商品!");
+		   }
 	   }
+	   
+	   
 	   //逻辑删除类目
 	   deleCategory(id);
 	}
@@ -236,7 +247,7 @@ public class CategoryInfoService {
 		/**
 		 * 验证数据库中是否存在类目名称
 		 */
-		if(egtCategoryCount(categoryDto.getCategoryName())!=0){
+		if(egtCategoryCount(categoryDto.getCategoryName(),categoryDto.getLevel())!=0){
 		    throw new RuntimeException("此类目名称已重复！");
 		}
 		

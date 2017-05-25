@@ -399,6 +399,8 @@ $(function() {
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');
 		categoryLevel = 3;
+		$("#addCategoryFilePic").val('');
+		loadPic("addShowCategoryPicId",null);
 	});
 	//取消添加
 	$("#addDisGoodCategory").click(function(){
