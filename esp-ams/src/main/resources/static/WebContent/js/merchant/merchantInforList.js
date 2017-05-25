@@ -244,7 +244,7 @@ $(function () {
         var merchantProvince = $("#addMerchantProvince").combobox('getValue');//数据库存储对应省市的code更加灵活
 //		var merchantProvince = $("#addMerchantProvince").combobox('getText');
         var merchantCity = $("#addMerchantCity").combobox('getValue');
-        var merchantArea = $("#addMerchantArea").textbox('getValue');
+        var merchantArea = $("#addMerchantArea").combobox('getValue');
         var channel = $("#channelAdd").textbox('getValue');
         var merchantAddress = $("#addMerchantAddress").textbox('getValue');
         var merchantPostcode = $("#addMerchantPostcode").textbox('getValue');
@@ -261,6 +261,18 @@ $(function () {
         var manageType = $("#addManageType").textbox('getValue');
         var orgCode = $("#addOrgCode").textbox('getValue');
 
+        if(merchantCity==null||merchantCity.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在城市不能为空！", 'warning');
+            return;
+        }
+        if(merchantProvince==null||merchantProvince.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在省份不能为空！", 'warning');
+            return;
+        }
+        if(merchantArea==null||merchantArea.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在区不能为空！", 'warning');
+            return;
+        }
         var params = {
             merchantCode: merchantCode,//商户编码
             merchantName: merchantName,//商户名称
@@ -315,6 +327,10 @@ $(function () {
     });
     //取消  添加商户信息
     $("#cancelAdd").click(function () {
+        $("#channelAdd").textbox('setValue', '');
+        $("#addMerchantProvince").combobox('setValue', '');
+        $("#addMerchantCity").combobox('setValue', '');
+        $("#addMerchantArea").combobox('setValue', '');
         $('#addMerchantInfor').window('close');
     });
 
@@ -326,7 +342,16 @@ $(function () {
                 method: "get",
                 url: ctx + "/application/nation/queryNations?districtCode=" + code,
                 valueField: 'code',
-                textField: 'name'
+                textField: 'name',
+                onChange: function (n, o) {
+                    var city = $("#editMerchantCity").combobox('getValue');
+                    $('#editMerchantArea').combobox({
+                        method: "get",
+                        url: ctx + "/application/nation/queryAreas?districtCode=" + city,
+                        valueField: 'code',
+                        textField: 'name',
+                    });
+                }
             });
         }
     });
@@ -334,6 +359,10 @@ $(function () {
     $("#channelAdd").combobox({
         onChange: function (n, o) {
             var channel = $("#channelAdd").combobox('getValue');
+            if(channel==null||channel.length==0){
+                $('#addMerchantCode').textbox('setValue','');
+                return;
+            }
             var aId = $("#addMerchantArea").textbox('getValue');
             var pId = $("#addMerchantProvince").textbox('getValue');
             var cId = $("#addMerchantCity").textbox('getValue');
@@ -370,7 +399,7 @@ $(function () {
 
     //编辑   商户信息
     $.Edit = function (row) {
-    	
+
         //加载省份 和城市
         loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
         //string转json对象
@@ -518,6 +547,18 @@ $(function () {
         var manageType = $("#editManageType").textbox('getValue');
         var orgCode = $("#editOrgCode").textbox('getValue');
 
+        if(merchantCity==null||merchantCity.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在城市不能为空！", 'warning');
+            return;
+        }
+        if(merchantProvince==null||merchantProvince.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在省份不能为空！", 'warning');
+            return;
+        }
+        if(merchantArea==null||merchantArea.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "所在区不能为空！", 'warning');
+            return;
+        }
         var remark = $("#message").textbox('getValue');
 
         var params = {
@@ -628,13 +669,15 @@ $(function () {
 
 
 function loadDirect(provinceId, cityId, areaId) {
-	debugger;
     $('#' + provinceId).combobox({
         method: "get",
         url: ctx + "/application/nation/queryNations",
         valueField: 'code',
         textField: 'name',
         onSelect: function (data) {
+            $('#addMerchantCode').textbox('setValue', '');
+            $("#" + cityId).textbox('setValue', '');
+            $("#" + areaId).combobox('loadData', {});
             $("#" + areaId).textbox('setValue', '');
             console.log(data);
             $('#' + cityId).combobox({
@@ -644,6 +687,8 @@ function loadDirect(provinceId, cityId, areaId) {
                 valueField: 'code',
                 textField: 'name',
                 onSelect: function (data) {
+                    $("#" + areaId).combobox('loadData', {});
+                    $('#addMerchantCode').textbox('setValue', '');
                     console.log(data);
                     $('#' + areaId).combobox({
                         method: "get",
@@ -655,6 +700,10 @@ function loadDirect(provinceId, cityId, areaId) {
                             var cId = $("#" + cityId).textbox('getValue');
                             var aId = $("#" + areaId).textbox('getValue');
                             var channel = $('#channelAdd').textbox('getValue');
+                            if(cId==null||cId.length==0){
+                                $.messager.alert("<span style='color: black;'>提示</span>", '请先选择所在城市！', 'error');
+                                return;
+                            }
                             if (channel.length == 0 || channel == '') {
                                 return;
                             } else {
