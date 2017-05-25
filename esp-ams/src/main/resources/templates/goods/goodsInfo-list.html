@@ -119,9 +119,9 @@
 	<input type="hidden" id="merchantSettleRate" name="merchantSettleRate" value="${merchantSettleRate!}">
 <!-- ====================================================--------添加商品 始-------------================================================= -->
 	<!-- 添加商品 -->
-	<div id="addGoodsInfo" class="easyui-window"
+	<div id="addGoodsInfo" class="easyui-window"  hidden="hidden"
 		title="<font color='black'>添加商品</font>"
-		style="width: 700px; height: 500px;text-align: center;overflow:scroll;"
+		style="width: 700px; height: 500px;text-align: center;overflow:scroll; display: none;"
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
 		<!-- 进度描述 -->
 		<div style="height: 35px" align="left" id="addPlanDecrible">
@@ -506,7 +506,7 @@
 			</div>
 		</div>
 		<!-- 新增库存 -->
-		<div id="editGoodsStock" style="width: 100%;min-height: 400px">
+		<div id="editGoodsStock" style="width: 100%; height: 100%">
 			<!-- 库存查询录入 -->
 			<div id="editGoodsStockInfoDiv">
 		  		<tr style="margin-top: 22px;">
