@@ -308,7 +308,6 @@ $(function() {
     		 ] ],
     		 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
     			 var id = row.categoryId;
-    			
     			 $('#addEastAttrDataGrid').datagrid({
     				 url : ctx + '/categoryinfo/category/list',
     				 rownumbers : false,
@@ -625,20 +624,20 @@ $(function() {
 	});
 	
 	//点击选择商品分类
-	$("#editPlanDecrible #one").click(function(){
-		debugger;
-		$("#editPlanDecrible #one").css('font-weight','bold');
-		$("#editPlanDecrible #two").css('font-weight','lighter');
-		$("#editPlanDecrible #three").css('font-weight','lighter');
-		$("#editPlanDecrible #four").css('font-weight','lighter');
-		
-		$("#editSelectCategoryList").css('display','block');
-		$("#editWriteGoodsInfo").css('display','none');
-		$("#editUpLoadGoodsPicture").css('display','none');
-		$("#editGoodsStock").css('display','none');
-		
-		loadEditDatagrid();
-	});
+//	$("#editPlanDecrible #one").click(function(){
+//		debugger;
+//		$("#editPlanDecrible #one").css('font-weight','bold');
+//		$("#editPlanDecrible #two").css('font-weight','lighter');
+//		$("#editPlanDecrible #three").css('font-weight','lighter');
+//		$("#editPlanDecrible #four").css('font-weight','lighter');
+//		
+//		$("#editSelectCategoryList").css('display','block');
+//		$("#editWriteGoodsInfo").css('display','none');
+//		$("#editUpLoadGoodsPicture").css('display','none');
+//		$("#editGoodsStock").css('display','none');
+//		
+//		loadEditDatagrid();
+//	});
 	
 	//点击填写商品信息
 	$("#editPlanDecrible #two").click(function(){
@@ -898,7 +897,6 @@ $(function() {
 				}else{
 					$.messager.alert("提示", response.msg);
 				}
-				
 			}
 		});
 	});
@@ -923,7 +921,7 @@ $(function() {
 	    				window.top.location = ctx + "/logout";
 	    				return false;
 					}
-					if(data == 'success'){
+					if(data == 'SUCCESS'){
 						$.messager.alert("提示", "保存商品详情成功", "info");
 					}
 				}
@@ -944,11 +942,13 @@ $(function() {
 			url : ctx + '/application/goods/management/upeditor',
 			data : params,
 			success : function(data) {
-				debugger;
 				if(data.message=='timeout'){
 					$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
 					window.top.location = ctx + "/logout";
 					return false;
+				}
+				if(data == 'SUCCESS'){
+					$.messager.alert("提示", "保存商品详情成功", "info");
 				}
 			}
 		});
@@ -1503,7 +1503,6 @@ String.prototype.splice = function(idx, rem, str) {
 
 //保存添加的商品信息
 function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
-	debugger;
 	var merchantCode=$("#addmerchantCode").textbox('getValue'), 
 	goodsModel=$("#addgoodsModel").textbox('getValue'),
 	goodsName=$("#addgoodsName").textbox('getValue'), 
@@ -1634,14 +1633,14 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 				finalGoodId = addGoodId;//新增库存时所需商品id
 				$("#addLogogoodsId").val(addGoodId);
 				$("#addBannerGoodsId").val(addGoodId);
-				debugger;
-				loadBanner("addGoodsbannerList",addGoodId);
 				$("#addPlanDecrible #three").css('font-weight','bold');
 				
 				$("#addSelectCategoryList").css('display','none');
 		    	$("#addWriteGoodsInfo").css('display','none');
 		    	$("#addUpLoadGoodsPicture").css('display','block');
 		    	$("#addGoodsStock").css('display','none');
+		    	
+		    	loadBanner("addGoodsbannerList",addGoodId);
 			}else{
 				$.messager.alert("提示", data, "info");
 			}
@@ -1659,7 +1658,6 @@ function ifLogout(data){
 }
 //加载商品大图列表
 function loadBanner(datagridId,goodsId){
-	debugger;
 	$('#'+datagridId).datagrid({
         height:250,
         width:"100%",
@@ -1669,7 +1667,7 @@ function loadBanner(datagridId,goodsId){
 		rownumbers : true,
         columns: [[
 //                {field: 'bannerName', title: '名称', width: 100},
-                {field: 'bannerImgUrl', title: '地址', width: 355,
+                {field: 'bannerImgUrl', title: '地址', width: 100,
                     formatter : function(value, row, index) {
                     	 var content = "";
                     	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
