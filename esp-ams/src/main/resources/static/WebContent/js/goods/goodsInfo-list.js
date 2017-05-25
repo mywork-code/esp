@@ -541,6 +541,7 @@ $(function() {
 	$.editGoods = function(index) {//编缉初始化
 		debugger;
 		$('#editGoodsInfo').window('open');
+		
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
 		
 		editGoodId = rowData.id;
