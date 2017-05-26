@@ -1,5 +1,6 @@
 package com.apass.esp.web.feedback;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.service.feedback.FeedBackService;
@@ -36,9 +37,9 @@ public class FeedbackController {
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
 
 		if (StringUtils.isAnyBlank(feedbackType,comments,mobile)) {
-//			LOGGER.error("请求参数[feedbackType,comments,mobile]为空...");
-//			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-			return Response.fail("意见反馈失败！");
+			LOGGER.error("请求参数[feedbackType,comments,mobile]为空...");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+//			return Response.fail("意见反馈失败！");
 		}
 		if(comments.length()>300){
 			return Response.fail("输入是字数不得超过300字！");
