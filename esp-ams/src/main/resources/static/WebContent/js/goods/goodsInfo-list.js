@@ -18,7 +18,7 @@
  */
 $(function() {
 	//初始化
-	$('#addGoodsInfo').window('close');
+//	$('#addGoodsInfo').window('close');
 	$('#editGoodsInfo').window('close');
 	$('#goodsStockInfo').window('close');
 	$('#addGoodsStockInfoWin').window('close');
@@ -247,27 +247,21 @@ $(function() {
     	var params = {};
     	$('#tablelist').datagrid('load', params);
     });
-    //===================================-----新增商品----====================================================//-----------------------
+//==============================================-----新增商品 始----====================================================//-----------------------
     
     /** 
      * 新增商品
      */
     $(".add-btn").click(function() {
-		 $('#addCenterAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				'parentId':'null',
-			 }
-		});
-		$('#addEastAttrDataGrid').datagrid({
-			 url : ctx + '/categoryinfo/category/list',
-			 rownumbers : false,
-			 queryParams:{
-				'parentId':'null',
-			 }
-		});
+		 
     	$('#addGoodsInfo').window('open');
+    	//关闭添加商品窗口--监听方法
+//	   ('#addGoodsInfo').window({
+//		   onBeforeClose:function(){ 
+//		     alert(111);
+//		   }
+//		});
+	   
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
@@ -277,23 +271,19 @@ $(function() {
     	$("#addWriteGoodsInfo").css('display','none');
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','none');
-    	//加载商品类目信息
+    	
     	$('#addWestAttrDataGrid').datagrid({  
-    		url : ctx + '/categoryinfo/category/list',
     		striped : true, 
     		fitColumns : true,
     		rownumbers : true,
     		singleSelect : true,
-    		queryParams:{},
-    		//pagination : true,
-    		sortOrder : 'asc',  
+    		pagination : false,
     		columns : [[ 
     		 {  
-    			width : '200',  
+    			width : '100',  
     			title : '类目名称',  
     			field : 'categoryName',
     			align : 'center',
-    			sortable : true  
     		 }, 
     		 {  
     			 width : '50',  
@@ -301,7 +291,6 @@ $(function() {
     			 field : 'level',
     			 align : 'center',
     			 hidden: 'hidden',
-    			 sortable : true  
     		 }, 
     		 {  
     			 width : '50',  
@@ -309,7 +298,6 @@ $(function() {
     			 field : 'sortOrder',  
     			 align : 'center',
     			 hidden: 'hidden',
-    			 sortable : true  
     		 }, 
     		 {  
     			 width : '50',  
@@ -317,137 +305,194 @@ $(function() {
     			 field : 'categoryId',  
     			 align : 'center',
     			 hidden: 'hidden',
-    			 sortable : true  
-    		 }
-    		 ] ],
-    		 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
-    			 var id = row.categoryId;
-    			 $('#addEastAttrDataGrid').datagrid({
-    				 url : ctx + '/categoryinfo/category/list',
-    				 rownumbers : false,
-    				 queryParams:{
-    					'parentId':'null',
-    				 }
-    			 })
-    			 $('#addCenterAttrDataGrid').datagrid({  
-    			    url : ctx + '/categoryinfo/category/list',
-    				striped : true, 
-    				fitColumns : true,
-    				rownumbers : true,
-    				singleSelect : true,
-    				queryParams:{
-    					'parentId':id,
-    				},
-    				sortOrder : 'asc',  
-    				columns : [[ 
-    				 {  
-    					width : '200',  
-    					title : '类目名称',  
-    					field : 'categoryName',
-    					align : 'center',
-    					sortable : true  
-    				 }, 
-    				 {  
-    					 width : '50',  
-    					 title : '级别',  
-    					 field : 'level',
-    					 align : 'center',
-    					 hidden: 'hidden',
-    					 sortable : true  
-    				 }, 
-    				 {  
-    					 width : '50',  
-    					 title : '排序序号',  
-    					 field : 'sortOrder',  
-    					 align : 'center',
-    					 hidden: 'hidden',
-    					 sortable : true  
-    				 }, 
-    				 {  
-    					 width : '50',  
-    					 title : '类目 id',  
-    					 field : 'categoryId',  
-    					 align : 'center',
-    					 hidden: 'hidden',
-    					 sortable : true  
-    				 }, 
-    				 {  
-    					 width : '50',  
-    					 title : '父id',  
-    					 field : 'parentId',  
-    					 align : 'center',
-    					 hidden: 'hidden',
-    					 sortable : true  
-    				 }
-    				 ] ],
-    				 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
-    					 var id = row.categoryId;
-    					 $('#addEastAttrDataGrid').datagrid({  
-    						 url : ctx + '/categoryinfo/category/list',
-    							striped : true, 
-    							fitColumns : true,
-    							rownumbers : true,
-    							singleSelect : true,
-    							queryParams:{
-    								'parentId':id,
-    							},
-    							sortOrder : 'asc',
-    							columns : [[ 
-    						 {  
-    							width : '100',  
-    							title : '类目名称',  
-    							field : 'categoryName',
-    							align : 'center',
-    							sortable : true  
-    						 }, 
-    						 {  
-    							 width : '100',  
-    							 title : '级别',  
-    							 field : 'level',
-    							 align : 'center',
-    							 hidden: 'hidden',
-    							 sortable : true  
-    						 }, 
-    						 {  
-    							 width : '50',  
-    							 title : '排序序号',  
-    							 field : 'sortOrder',  
-    							 align : 'center',
-    							 hidden: 'hidden',
-    							 sortable : true  
-    						 }, 
-    						 {  
-    							 width : '50',  
-    							 title : '类目 id',  
-    							 field : 'categoryId',  
-    							 align : 'center',
-    							 hidden: 'hidden',
-    							 sortable : true  
-    						 }, 
-    						 {  
-    							 width : '50',  
-    							 title : '父id',  
-    							 field : 'parentId',  
-    							 align : 'center',
-    							 hidden: 'hidden',
-    							 sortable : true  
-    						 }, 
-    						 {  
-    							 width : '50',  
-    							 title : '图片url',  
-    							 field : 'pictureUrl',  
-    							 align : 'center',
-    							 hidden: 'hidden',
-    							 sortable : true  
-    						 }
-    						 ] ]
-    					 });
-    				 }
-    			 });
-             }
+    		 }] ],
+    		 onClickRow: function (index, row) {
+    			 firstClickRowFunction(index,row)
+    		 },
+             loader : function(param, success, error) {
+                $.ajax({
+                    url : ctx + '/categoryinfo/category/list',
+                    data : param,
+                    type : "get",
+                    dataType : "json",
+                    success : function(data) {
+                        $.validateResponse(data, function() {
+                            success(data.rows);
+                        });
+                    }
+                })
+            }
          });
+    	
     });
-    
+    debugger;
+    /**监听关闭窗口事件**/
+    $('#addGoodsInfo').window({    
+ 	   onBeforeClose:function(){ 
+ 		   var params = {};
+ 	       $('#tablelist').datagrid('load', params);
+ 	   }
+ 	}); 
+    $('#addGoodsInfo').window('close'); 
+    /**单击一级类目执行方法**/
+	function firstClickRowFunction(indexFirst,rowFirst){
+		 var id = rowFirst.categoryId;
+//		 $('#eastAttrDataGrid').datagrid({
+//			 url : ctx + '/categoryinfo/category/list',
+//			 rownumbers : false,
+//			 queryParams:{
+//				'parentId':'null',
+//			 }
+//		 })
+		 debugger;
+		 $('#addEastAttrDataGrid').datagrid({
+		   rownumbers : false,
+		   striped : false,
+		   loader : function(param, success, error) {
+	            $.ajax({
+	                url : ctx + '/categoryinfo/category/list',
+	                data : {'parentId':-2,},
+	                type : "get",
+	                dataType : "json",
+	                success : function(data) {
+	                    $.validateResponse(data, function() {
+	                        success(data.rows);
+	                    });
+	                }
+	            })
+		       }
+		  });
+		 $('#addCenterAttrDataGrid').datagrid({  
+			striped : true, 
+			fitColumns : true,
+			rownumbers : true,
+			singleSelect : true,
+			queryParams:{
+				'parentId':id,
+			},
+			columns : [[ 
+			 {  
+				width : '100',  
+				title : '类目名称',  
+				field : 'categoryName',
+				align : 'center',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '级别',  
+				 field : 'level',
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '排序序号',  
+				 field : 'sortOrder',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '类目 id',  
+				 field : 'categoryId',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '父id',  
+				 field : 'parentId',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }] ],
+			 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
+				secondClickRowFunction(index,row);
+			 },
+			 loader : function(param, success, error) {
+	            $.ajax({
+	                url : ctx + '/categoryinfo/category/list',
+	                data : param,
+	                type : "get",
+	                dataType : "json",
+	                success : function(data) {
+	                    $.validateResponse(data, function() {
+	                        success(data.rows);
+	                    });
+	                }
+	            })
+	        }
+		 });
+	}
+	/**单击二级类目执行方法**/
+	function secondClickRowFunction(indexSecond,rowSecond){
+		 var id = rowSecond.categoryId;
+		 $('#addEastAttrDataGrid').datagrid({  
+				striped : true, 
+				fitColumns : true,
+				rownumbers : true,
+				singleSelect : true,
+				queryParams:{
+					'parentId':id,
+				},
+				sortOrder : 'asc',
+				columns : [[ 
+			 {  
+				width : '100',  
+				title : '类目名称',  
+				field : 'categoryName',
+				align : 'center',
+			 }, 
+			 {  
+				 width : '100',  
+				 title : '级别',  
+				 field : 'level',
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '排序序号',  
+				 field : 'sortOrder',  
+				 align : 'center',
+				 hidden: 'hidden',
+				 sortable : true  
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '类目 id',  
+				 field : 'categoryId',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '父id',  
+				 field : 'parentId',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }, 
+			 {  
+				 width : '50',  
+				 title : '图片url',  
+				 field : 'pictureUrl',  
+				 align : 'center',
+				 hidden: 'hidden',
+			 }  ] ],
+			 loader : function(param, success, error) {
+	            $.ajax({
+	                url : ctx + '/categoryinfo/category/list',
+	                data : param,
+	                type : "get",
+	                dataType : "json",
+	                success : function(data) {
+	                    $.validateResponse(data, function() {
+	                        success(data.rows);
+	                    });
+	                }
+	            })
+	        }
+		 });
+	}
     //商品分类 ：下一步
     $("#confirmGoodsCategory").click(function(){
     	var firstCategory = $('#addWestAttrDataGrid').datagrid('getSelected');
@@ -563,7 +608,7 @@ $(function() {
 		$("#addGoodsStock").css('display','none');;
 	});
 	
-	//===================================-----新增商品----====================================================//===================
+	//===================================-----新增商品 末----====================================================//===================
 	
 	
 	//==================================-------编辑商品 始--------===================================================================//````````````````````
@@ -1528,6 +1573,7 @@ $(function() {
 		
 	});
 	
+
 });
 
 //往string中的某个位置插入内容

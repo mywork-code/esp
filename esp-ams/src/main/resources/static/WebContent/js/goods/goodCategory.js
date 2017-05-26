@@ -472,7 +472,6 @@ $(function() {
 	            }
 			 }  ] ],
 			 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
-				 debugger;
 				secondClickRowFunction(index,row);
 			 },
 			 loader : function(param, success, error) {
