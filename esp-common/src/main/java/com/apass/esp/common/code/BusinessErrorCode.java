@@ -20,6 +20,7 @@ public enum BusinessErrorCode implements ErrorCode{
   //3xxx 订单问题
   ORDER_STATUS_INVALID(3001,"订单状态无效"),
 
+  //4xxx 依懒服务问题
 
   //5xxx 服务异常
   INTERNAL_ERROR(5000,"服务异常，请稍后重试"),
