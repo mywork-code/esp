@@ -70,6 +70,7 @@ $(function() {
             }
 		 }  ] ],
 		 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
+			 debugger;
 			 var id = row.categoryId;
 			 clickPid = row.categoryId;
 			 ifClickAndLevel = row.level;
@@ -255,7 +256,6 @@ $(function() {
 	
 	$('#optMenu').menu({    
 	    onClick:function(item){   
-	    	debugger;
 	    	if(item.text == '编辑'){
 	    		$("#editCategoryDetail").window('open');
 	    		if(categoryLevel == 3){
@@ -373,6 +373,7 @@ $(function() {
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');
 		categoryLevel = 1;
+		clickPid = null;
 	});
 	//添加二级类目
 	$("#addSecondCategory").click(function(){
@@ -409,7 +410,6 @@ $(function() {
 	
 	// 确认添加 
 	$("#addConfirmGoodCategory").click(function(){
-		debugger;
 		var reg;
 		var categoryName = $("#addCategoryName").textbox('getValue');
 		if(categoryName == null || categoryName == ''){
