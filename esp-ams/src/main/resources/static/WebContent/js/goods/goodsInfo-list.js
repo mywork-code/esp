@@ -658,20 +658,20 @@ $(function() {
 	});
 	
 	//点击选择商品分类
-//	$("#editPlanDecrible #one").click(function(){
-//		debugger;
-//		$("#editPlanDecrible #one").css('font-weight','bold');
-//		$("#editPlanDecrible #two").css('font-weight','lighter');
-//		$("#editPlanDecrible #three").css('font-weight','lighter');
-//		$("#editPlanDecrible #four").css('font-weight','lighter');
-//		
-//		$("#editSelectCategoryList").css('display','block');
-//		$("#editWriteGoodsInfo").css('display','none');
-//		$("#editUpLoadGoodsPicture").css('display','none');
-//		$("#editGoodsStock").css('display','none');
-//		
-//		loadEditDatagrid();
-//	});
+	$("#editPlanDecrible #one").click(function(){
+		debugger;
+		$("#editPlanDecrible #one").css('font-weight','bold');
+		$("#editPlanDecrible #two").css('font-weight','lighter');
+		$("#editPlanDecrible #three").css('font-weight','lighter');
+		$("#editPlanDecrible #four").css('font-weight','lighter');
+		
+		$("#editSelectCategoryList").css('display','block');
+		$("#editWriteGoodsInfo").css('display','none');
+		$("#editUpLoadGoodsPicture").css('display','none');
+		$("#editGoodsStock").css('display','none');
+		
+		loadEditDatagrid();
+	});
 	
 	//点击填写商品信息
 	$("#editPlanDecrible #two").click(function(){
@@ -781,7 +781,7 @@ $(function() {
 			url : ctx + '/application/goods/management/edit',
 			success : function(response) {
 				debugger;
-				var data = JSON.stringify(response);
+				var data = JSON.parse(response);
 				ifLogout(data);
 				debugger;
 				if(data.status == '1'){
