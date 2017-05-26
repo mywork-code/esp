@@ -8,8 +8,10 @@ import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -62,10 +64,19 @@ public class CategoryController {
     @Value("${nfs.category}")
     private String categoryPath;
 
-    @RequestMapping(value = "/list")
     @ResponseBody
-    public List<CategoryVo> listConfigByPid(CategoryDto dto) {
-        return cateService.listCategory(dto);
+    @RequestMapping("/list")
+    public ResponsePageBody<CategoryVo>  listConfigByPid(CategoryDto dto) {
+    	ResponsePageBody<CategoryVo> resposeList=new ResponsePageBody<CategoryVo>();
+    	try{
+    		List<CategoryVo> list = cateService.listCategory(dto);
+    		resposeList.setRows(list);
+    		resposeList.setStatus("1");
+    		resposeList.setTotal(list.size());
+    	}catch(Exception e){
+    		LOGGER.error("查询商品类目失败。。",e);
+    	}
+        return resposeList;
     }
     
     /**
