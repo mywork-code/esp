@@ -361,6 +361,7 @@ $(function() {
             url : ctx + '/categoryinfo/category/refresh',
             data : {},
             type : "POST",
+            contentType : 'application/json',
             dataType : "json",
             success : function(data) {
             	$.messager.alert("提示",data.msg,'info');
