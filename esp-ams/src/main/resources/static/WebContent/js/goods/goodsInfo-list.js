@@ -263,7 +263,7 @@ $(function() {
 //		     alert(111);
 //		   }
 //		});
-	   
+	    
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
@@ -273,6 +273,9 @@ $(function() {
     	$("#addWriteGoodsInfo").css('display','none');
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','none');
+    	
+    	$ ("#addGoodsLogoImg").attr ("src", '');
+    	$("#addGoodsLogoFile").val('');
     	
     	$('#addWestAttrDataGrid').datagrid({  
     		striped : true, 
@@ -624,15 +627,44 @@ $(function() {
 	
 	
 //=======================================-------编辑商品 始--------===================================================================//````````````````````
+	//监听编辑商品输入商品名称事件
+//	var $editgoodsName = $("#editgoodsName"),$edit_last = $("#editgoodsNameL");
+//	$editgoodsName.on("keydown",function(){
+//		alert("keydown");
+//		var len = $editMerchantPostcode.textbox('getValue').length;
+//		$edit_last.html(len);
+//	})
+	$("input",$("#editgoodsName").next("span")).keyup(function(){ 
+		var len = $("#editgoodsName").textbox('getText').length;
+		var canLen;
+		console.log(len);
+		if(len>15){
+			canLen = len - 15;
+			$("#editgoodsNameL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 15 - len;
+			$("#editgoodsNameL").text('还可以输入'+canLen+'个字');
+		}
+	})
 	
+	$("input",$("#editgoodsTitle").next("span")).keyup(function(){ 
+		var len = $("#editgoodsTitle").textbox('getText').length;
+		var canLen;
+		console.log(len);
+		if(len>15){
+			canLen = len - 15;
+			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 15 - len;
+			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
+		}
+	})
 	/**
 	 * 编辑
 	 */
 	$.editGoods = function(index) {//编缉初始化
 		$('#editGoodsInfo').window('open');
-		
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
-		
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		$("#editGoodsId").val(rowData.id);
@@ -910,7 +942,7 @@ $(function() {
 	
 	// 添加--上传大图
 	$("#addFileSumbit").click(function() {
-		var addBannerPicOrder=$("#addBannerPicOrder").textbox('getValue');
+		var addBannerPicOrder=$("#addBannerPicOrder").numberbox('getValue');
 		var addBannerPicFile=$("#addBannerPicFile").val();
 		var addBannerGoodsId=$("#addBannerGoodsId").val();
 		/**
@@ -939,7 +971,7 @@ $(function() {
 				if(response.msg=="success"){
 					debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
-					$("#addBannerPicOrder").textbox('clear');
+					$("#addBannerPicOrder").numberbox('clear');
 					$("#addBannerPicFile").val('')
 //					var param = {};
 //	            	param['goodsId'] = goodsId;
@@ -955,7 +987,7 @@ $(function() {
 	
 	// 编辑--上传大图
 	$("#editFileSumbit").click(function() {
-		var editBannerPicOrder=$("#editBannerPicOrder").textbox('getValue');
+		var editBannerPicOrder=$("#editBannerPicOrder").numberbox('getValue');
 		var editBannerPicFile=$("#editBannerPicFile").val();
 		var editBannerGoodsId=$("#editBannerGoodsId").val();
 		/**
@@ -979,7 +1011,7 @@ $(function() {
 				if(response.msg=="success"){
 					debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
-					$("#editBannerPicOrder").textbox('clear');
+					$("#editBannerPicOrder").numberbox('clear');
 					$("#editBannerPicFile").val('')
 					debugger;
 					loadBanner("editGoodsbannerList",editGoodId);
@@ -992,13 +1024,16 @@ $(function() {
 	
 	//确定 获取编辑器的html
 	$("#addGetAllHtml").click(function() {
-			debugger;
 		 	var params = {};
 			params['id']=addGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 			params['goodsDetail'] = UE.getEditor('addEditor').getAllHtml();;
 			params['goodsContent'] = UE.getEditor('addEditor').getContent();
+			if(UE.getEditor('addEditor').getContent() == null || UE.getEditor('addEditor').getContent()==''){
+				$.messager.alert("提示", "请输入详情信息", "info");
+				return;
+			}
 			$.ajax({
 				type : "POST",
 				url : ctx + '/application/goods/management/upeditor',
@@ -1026,6 +1061,10 @@ $(function() {
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 		params['goodsDetail'] = UE.getEditor('editEditor').getAllHtml();;
 		params['goodsContent'] = UE.getEditor('editEditor').getContent();
+		if(UE.getEditor('editEditor').getContent() == null || UE.getEditor('editEditor').getContent()==''){
+			$.messager.alert("提示", "请输入详情信息", "info");
+			return;
+		}
 		$.ajax({
 			type : "POST",
 			url : ctx + '/application/goods/management/upeditor',

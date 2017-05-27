@@ -53,6 +53,16 @@
     background-size: 18px;
      border: 1px #707070 solid;
 }
+
+.wltitlele {
+	font-size: 18px;
+    padding: 8px;
+    margin: 4px;
+    width: 100px;
+    background: #e6e6e6;
+    border-radius: 8px;
+    text-align: center;
+}
 </style>
 </head>
 <body>
@@ -244,9 +254,9 @@
 		<div id="addUpLoadGoodsPicture" style="width: 100%;min-height:200px;">
 			<!-- 商品墙图片 -->
 			<div id="addGoodWallPic" style="border: 1px solid lightblue;width: 100%;">
-				<table>
+				<p class="wltitlele">商品墙图片:</p>
+				<table class="details_table" style="width:100%;">
 					<tr>
-						<td>商品墙图片:</td>
 						<td>
 							<img id='addGoodsLogoImg' src=""/>
 							<form id="addLogoFilepic"  method="POST" enctype="multipart/form-data" modelAttribute="logoFileModel">	
@@ -263,14 +273,14 @@
 			<br/>
 			<!-- 商品大图  -->
 			<div id="addGoodBigPic" style="width:100%; min-height: 300px;border: 1px solid lightblue;">
-				<div>商品大图：</div>
+				<p class="wltitlele">商品大图 :</p>
 				<div>
 					<form id="addBannerListpic"  method="POST" enctype="multipart/form-data" modelAttribute="bannerModel">	
 						<table class="details_table" style="width: 92%">
 							<input type="hidden" name = "bannerGoodsId" id = "addBannerGoodsId">
 							<tr>
 								<td align="right"><font color="red">*</font>排序1:</td>
-								<td><input class="easyui-textbox" type="text" id="addBannerPicOrder" name="bannerPicOrder"
+								<td><input class="easyui-numberbox" type="text" id="addBannerPicOrder" name="bannerPicOrder"
 									style="width: 100%;" /></td>
 							</tr>
 							<tr>
@@ -292,7 +302,7 @@
 			</div>	
 			<br/>
 			<!-- 商品详情 -->	
-			<div>商品详情：</div>
+			<p class="wltitlele">商品详情:</p>
 			<div id="addGoodDetails" style="width:100%; min-height: 300px;border: 1px solid lightblue;">
 			    <script id="addEditor" type="text/plain" style="width:100%;height:200px;"></script>
 			</div>
@@ -386,13 +396,13 @@
 					<input type="hidden" id="editid" name="editid"/>
 					<tr>
 						<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
-						<td colspan="1" width="60%"><input class="easyui-textbox" data-options="validType:'length[1,15]'"
-							id="editgoodsName" name="editgoodsName" style="width: 100%;" /><span id="editgoodsNameL"></span></td>
+						<td colspan="1" width="60%" align="left"><input class="easyui-textbox" data-options="validType:'length[1,15]'"
+							id="editgoodsName" name="editgoodsName" style="width: 50%;" /><span id="editgoodsNameL"></span></td>
 					</tr>
 					<tr>
 						<td width="20%" align="right"><font color="red">*</font>商品小标题:</td>
-						<td colspan="1" width="60%"><input class="easyui-textbox" data-options="validType:'length[1,22]'"
-							type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 100%;" /><span id="editgoodsTitleL"></span></td>
+						<td colspan="1" width="60%" align="left"><input class="easyui-textbox" data-options="validType:'length[1,22]'"
+							type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 50%;" /><span id="editgoodsTitleL"></span></td>
 					</tr>
 					<tr>
 					<td width="20%" align="right"><font color="red">*</font>商品最小单元分类:</td>
@@ -406,17 +416,17 @@
 					</tr>
 					<tr>
 						<td align="right"><font color="red">*</font>上架日期:</td>
-						<td><input id="editlistTime" name="editlistTime" editable="false"
+						<td align="left"><input id="editlistTime" name="editlistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
 						<td align="right"><font color="red">*</font>下架日期:</td>
-						<td><input id="editdelistTime" name="editdelistTime" editable="false"
+						<td align="left"><input id="editdelistTime" name="editdelistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
 						<td align="right">生产日期:</td>
-						<td><input id="editproDate" name="editproDate"
+						<td align="left"><input id="editproDate" name="editproDate"
 							 class="easyui-datebox"
 							style="width: 50%;" /></td>
 					</tr>
@@ -450,9 +460,9 @@
 		<div id="editUpLoadGoodsPicture" style="width: 100%;min-height:200px;">
 			<!-- 商品墙图片 -->
 			<div id="editGoodWallPic" style="border: 1px solid lightblue;width: 100%;">
-				<table>
-					<tr>
-						<td>商品墙图片:</td>
+			<p class="wltitlele">商品墙图片:</p>
+				<table class="details_table" style="width:100%;">
+					 <tr>
 						<td>
 							<img id='editGoodsLogoImg' src=""/>
 							<form id="editLogoFilepic"  method="POST" enctype="multipart/form-data" modelAttribute="logoFileModel">	
@@ -469,13 +479,14 @@
 			<br/>
 			<!-- 商品大图  -->
 			<div id="editGoodBigPic" style="width:100%; min-height: 300px;border: 1px solid lightblue;">
+			<p class="wltitlele">商品大图:</p>
 				<div>
 					<form id="editBannerListpic"  method="POST" enctype="multipart/form-data" modelAttribute="bannerModel">	
-						<table class="details_table" style="width: 92%">
+						<table   style="width: 92%">
 							<input type="hidden" name = "bannerGoodsId" id = "editBannerGoodsId">
 							<tr>
 								<td align="right"><font color="red">*</font>排序:</td>
-								<td><input class="easyui-textbox" type="text" id="editBannerPicOrder" name="bannerPicOrder"
+								<td><input class="easyui-numberbox" type="text" id="editBannerPicOrder" name="bannerPicOrder"
 									style="width: 100%;" /></td>
 							</tr>
 							<tr>
@@ -497,6 +508,7 @@
 			</div>	
 			<br/>
 			<!-- 商品详情 -->	
+			<p class="wltitlele">商品详情:</p>
 			<div id="editGoodDetails" style="width:100%; min-height: 300px;border: 1px solid lightblue;">
 			    <script id="editEditor" type="text/plain" style="width:900px;height:200px;"></script>
 			    <a href="javascript:void(0);" id="editGetAllHtml"

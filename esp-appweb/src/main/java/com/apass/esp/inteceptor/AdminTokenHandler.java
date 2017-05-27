@@ -1,12 +1,11 @@
 package com.apass.esp.inteceptor;
 
-import com.apass.gfb.framework.jwt.core.JsonTokenHelper;
-import com.apass.gfb.framework.jwt.domains.TokenInfo;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -16,7 +15,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import com.apass.gfb.framework.jwt.core.JsonTokenHelper;
+import com.apass.gfb.framework.jwt.domains.TokenInfo;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 
 /**
  * 
@@ -49,7 +51,7 @@ public class AdminTokenHandler {
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
-//	@Around("execution(* com.apass.esp.web..*.*(..))")
+//    @Around("execution(* com.apass.esp.web..*.*(..))")
 	private Object handleTokenInteceptor(ProceedingJoinPoint point)
 			throws Throwable {
 		// 研究怎样过滤掉 注册controller

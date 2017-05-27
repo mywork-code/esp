@@ -4,8 +4,8 @@
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.MonitorEntity" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="host" property="host" jdbcType="VARCHAR" />
-    <result column="application" property="application" jdbcType="VARCHAR" />
     <result column="env" property="env" jdbcType="VARCHAR" />
+    <result column="application" property="application" jdbcType="VARCHAR" />
     <result column="method_name" property="methodName" jdbcType="VARCHAR" />
     <result column="method_desciption" property="methodDesciption" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
@@ -13,30 +13,31 @@
     <result column="message" property="message" jdbcType="VARCHAR" />
     <result column="invoke_date" property="invokeDate" jdbcType="TIMESTAMP" />
     <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
+    <result column="flag" property="flag" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, host, application, env,method_name, method_desciption, status, time, message, invoke_date,
-    error_message
+    id, host, env, application, method_name, method_desciption, status, time, message, 
+    invoke_date, error_message, flag
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from t_monitor
+    from t_apass_monitor
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from t_monitor
+    delete from t_apass_monitor
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_apass_monitor (host, application,env, method_name,
-      method_desciption, status, time, 
-      message, invoke_date, error_message
-      )
-    values (#{host,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR},#{env,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
-      #{methodDesciption,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{time,jdbcType=VARCHAR}, 
-      #{message,jdbcType=VARCHAR}, #{invokeDate,jdbcType=TIMESTAMP}, #{errorMessage,jdbcType=VARCHAR}
-      )
+    insert into t_apass_monitor (host, env, application, 
+      method_name, method_desciption, status, 
+      time, message, invoke_date, 
+      error_message, flag)
+    values (#{host,jdbcType=VARCHAR}, #{env,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR}, 
+      #{methodName,jdbcType=VARCHAR}, #{methodDesciption,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{time,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, #{invokeDate,jdbcType=TIMESTAMP}, 
+      #{errorMessage,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
     insert into t_apass_monitor
@@ -44,11 +45,11 @@
       <if test="host != null" >
         host,
       </if>
-      <if test="application != null" >
-        application,
-      </if>
       <if test="env != null" >
         env,
+      </if>
+      <if test="application != null" >
+        application,
       </if>
       <if test="methodName != null" >
         method_name,
@@ -71,16 +72,19 @@
       <if test="errorMessage != null" >
         error_message,
       </if>
+      <if test="flag != null" >
+        flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="host != null" >
         #{host,jdbcType=VARCHAR},
       </if>
-      <if test="application != null" >
-        #{application,jdbcType=VARCHAR},
-      </if>
       <if test="env != null" >
         #{env,jdbcType=VARCHAR},
+      </if>
+      <if test="application != null" >
+        #{application,jdbcType=VARCHAR},
       </if>
       <if test="methodName != null" >
         #{methodName,jdbcType=VARCHAR},
@@ -103,6 +107,9 @@
       <if test="errorMessage != null" >
         #{errorMessage,jdbcType=VARCHAR},
       </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
@@ -111,11 +118,11 @@
       <if test="host != null" >
         host = #{host,jdbcType=VARCHAR},
       </if>
-      <if test="application != null" >
-        application = #{application,jdbcType=VARCHAR},
-      </if>
       <if test="env != null" >
         env = #{env,jdbcType=VARCHAR},
+      </if>
+      <if test="application != null" >
+        application = #{application,jdbcType=VARCHAR},
       </if>
       <if test="methodName != null" >
         method_name = #{methodName,jdbcType=VARCHAR},
@@ -138,21 +145,25 @@
       <if test="errorMessage != null" >
         error_message = #{errorMessage,jdbcType=VARCHAR},
       </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.MonitorEntity" >
     update t_apass_monitor
     set host = #{host,jdbcType=VARCHAR},
-      application = #{application,jdbcType=VARCHAR},
       env = #{env,jdbcType=VARCHAR},
+      application = #{application,jdbcType=VARCHAR},
       method_name = #{methodName,jdbcType=VARCHAR},
       method_desciption = #{methodDesciption,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       time = #{time,jdbcType=VARCHAR},
       message = #{message,jdbcType=VARCHAR},
       invoke_date = #{invokeDate,jdbcType=TIMESTAMP},
-      error_message = #{errorMessage,jdbcType=VARCHAR}
+      error_message = #{errorMessage,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

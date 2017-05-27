@@ -133,7 +133,8 @@ public class ShopHomeController {
        			 goodsList =goodsPageList.getDataList();
       		     returnMap.put("totalCount", goodsPageList.getTotalCount());
               }else{
-            	  goodsList = goodService.loadGoodsList();
+//            	  goodsList = goodService.loadGoodsList();//加载所以商品
+            	  goodsList = goodService.loadRecommendGoods();//加载精选商品
               }
               
                for (GoodsBasicInfoEntity goodsInfo : goodsList) {
