@@ -35,3 +35,8 @@ ALTER TABLE esp.`t_esp_merchant_info` ADD COLUMN `channel`  int(11) NULL COMMENT
 ALTER TABLE esp.`t_esp_merchant_info` ADD COLUMN `merchant_area`  varchar(8) NULL COMMENT '商户所在区' AFTER `merchant_city`;
 ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `channel`  int(11) NULL COMMENT '商户渠道' AFTER `merchant_name`;
 ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `merchant_area`  varchar(8) NULL COMMENT '商户所在区' AFTER `merchant_city`;
+
+/**在monitor表中添加一列  flag 用来表示监控了哪些方法*/
+ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `flag`  varchar(1) NULL DEFAULT 0 COMMENT '用于区分配置数据和非配置(0:非配置数据，1:配置数据)' AFTER `error_message`;
+/**修改monitor表中的status列可以为空*/
+ALTER TABLE esp.`t_apass_monitor` MODIFY COLUMN `status`  int(11) NULL DEFAULT 1 COMMENT '调用耗时(ms)否调用成功0，失败 1，成功' AFTER `method_desciption`;

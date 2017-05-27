@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ESP管理平台</title> <#include "../common/component/library.html"/>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/monitor/monitorindex.js"></script>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+<!-- 添加设置时间和次数 -->
+	<div id="tb">
+		<div class="search">
+			<table style="width: 100%;">
+				<tr>
+				    <td width="10%" align="right"></td>
+				    <td colspan="2">
+					   <select id="days" class="easyui-combobox">
+					      <option value="-1" selected>近24小时统计</option>
+					      <option value="-5">近5天统计</option>
+					      <option value="-10">近10天统计</option>
+					      <option value="-15">近15天统计</option>
+					   </select>
+					</td>
+					<td width="30%" >
+					   <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a>
+					   <a
+						href="javascript:void(0);" class="easyui-linkbutton add-btn"
+						data-options="iconCls:'icon-search'">添&nbsp;加&nbsp;</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+<div id="list"></div>
+
+<!-- 用户添加 -->
+	<div id="monitorDetails">
+		<form id="monitorForm" method="POST">
+			<table style="width: 100%;height: auto;">
+				<tr>
+					<td width="20%" align="right">主机：</td>
+					<td><input type="text" id="host" name="host"
+						style="width: 320px;" data-options="required:true" maxlength="255" /><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">应用名称：</td>
+					<td><input type="text" id="application" name="application"
+						data-options="required:true" style="width: 320px;" maxlength="255" /><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">方法名称：</td>
+					<td><input type="text" id="methodName" name="methodName"
+						style="width: 320px;" maxlength="255"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right">方法描述：</td>
+					<td><input type="text" id="methodDesciption" name="methodDesciption"
+						style="width: 320px;" maxlength="255"></input><span
+						style="color: red;">*</span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

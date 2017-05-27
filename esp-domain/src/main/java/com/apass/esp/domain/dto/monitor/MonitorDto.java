@@ -38,6 +38,8 @@ public class MonitorDto {
     private String monitorTime;
     
     private String monitorTimes;
+    
+    private String flag;
 
     public String getHost() {
         return host;
@@ -125,6 +127,14 @@ public class MonitorDto {
 
 	public void setMonitorTimes(String monitorTimes) {
 		this.monitorTimes = monitorTimes;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
 	}
     
     

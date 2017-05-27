@@ -3,6 +3,7 @@ package com.apass.esp.service.monitor;
 
 import com.apass.esp.domain.dto.monitor.MonitorDto;
 import com.apass.esp.domain.entity.MonitorEntity;
+import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.enums.MonitorStatus;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
@@ -38,7 +39,7 @@ public class MonitorService {
         BeanUtils.copyProperties(monitorEntity, monitorDto);
         return monitorEntityMapper.insert(monitorEntity);
     }
-
+    
     /**
      * 次数
      * @param date
@@ -60,6 +61,34 @@ public class MonitorService {
         return monitorEntityMapper.getMonitorEntityByMethodName(currentDate, date, methodName,env,application);
     }
 
+    /**
+     * 非配置数据分页
+     * @param query
+     * @return
+     */
+    public  ResponsePageBody<MonitorVo> pageListMonitor(MonitorQuery query){
+    	ResponsePageBody<MonitorVo> respBody = new ResponsePageBody<>();
+    	List<MonitorEntity> list = monitorEntityMapper.monitorList(query);
+    	List<MonitorVo> result = new ArrayList<MonitorVo>();
+    	
+    	for (MonitorEntity ms : list) {
+    		MonitorVo vo = new MonitorVo();
+    		vo.setApplication(ms.getApplication());
+            vo.setHost(ms.getHost());
+            vo.setMethodDesciption(ms.getMethodDesciption());
+            vo.setMethodName(ms.getMethodName());
+            result.add(vo);
+		}
+    	if (CollectionUtils.isEmpty(list)) {
+            respBody.setTotal(0);
+        } else {
+            respBody.setTotal(monitorEntityMapper.monitorListCount(query));
+        }
+        respBody.setRows(result);
+        respBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+    	return respBody;
+    }
+    
     public  ResponsePageBody<MonitorVo> pageListMonitorLog(MonitorQuery query){
         ResponsePageBody<MonitorVo> respBody = new ResponsePageBody<>();
         List<MonitorEntityStatistics> list = monitorEntityMapper.pageList(query);
