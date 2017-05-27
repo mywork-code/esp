@@ -627,15 +627,44 @@ $(function() {
 	
 	
 //=======================================-------编辑商品 始--------===================================================================//````````````````````
+	//监听编辑商品输入商品名称事件
+//	var $editgoodsName = $("#editgoodsName"),$edit_last = $("#editgoodsNameL");
+//	$editgoodsName.on("keydown",function(){
+//		alert("keydown");
+//		var len = $editMerchantPostcode.textbox('getValue').length;
+//		$edit_last.html(len);
+//	})
+	$("input",$("#editgoodsName").next("span")).keyup(function(){ 
+		var len = $("#editgoodsName").textbox('getText').length;
+		var canLen;
+		console.log(len);
+		if(len>15){
+			canLen = len - 15;
+			$("#editgoodsNameL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 15 - len;
+			$("#editgoodsNameL").text('还可以输入'+canLen+'个字');
+		}
+	})
 	
+	$("input",$("#editgoodsTitle").next("span")).keyup(function(){ 
+		var len = $("#editgoodsTitle").textbox('getText').length;
+		var canLen;
+		console.log(len);
+		if(len>15){
+			canLen = len - 15;
+			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 15 - len;
+			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
+		}
+	})
 	/**
 	 * 编辑
 	 */
 	$.editGoods = function(index) {//编缉初始化
 		$('#editGoodsInfo').window('open');
-		
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
-		
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		$("#editGoodsId").val(rowData.id);
@@ -913,7 +942,7 @@ $(function() {
 	
 	// 添加--上传大图
 	$("#addFileSumbit").click(function() {
-		var addBannerPicOrder=$("#addBannerPicOrder").textbox('getValue');
+		var addBannerPicOrder=$("#addBannerPicOrder").numberbox('getValue');
 		var addBannerPicFile=$("#addBannerPicFile").val();
 		var addBannerGoodsId=$("#addBannerGoodsId").val();
 		/**
@@ -942,7 +971,7 @@ $(function() {
 				if(response.msg=="success"){
 					debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
-					$("#addBannerPicOrder").textbox('clear');
+					$("#addBannerPicOrder").numberbox('clear');
 					$("#addBannerPicFile").val('')
 //					var param = {};
 //	            	param['goodsId'] = goodsId;
@@ -958,7 +987,7 @@ $(function() {
 	
 	// 编辑--上传大图
 	$("#editFileSumbit").click(function() {
-		var editBannerPicOrder=$("#editBannerPicOrder").textbox('getValue');
+		var editBannerPicOrder=$("#editBannerPicOrder").numberbox('getValue');
 		var editBannerPicFile=$("#editBannerPicFile").val();
 		var editBannerGoodsId=$("#editBannerGoodsId").val();
 		/**
@@ -982,7 +1011,7 @@ $(function() {
 				if(response.msg=="success"){
 					debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
-					$("#editBannerPicOrder").textbox('clear');
+					$("#editBannerPicOrder").numberbox('clear');
 					$("#editBannerPicFile").val('')
 					debugger;
 					loadBanner("editGoodsbannerList",editGoodId);
