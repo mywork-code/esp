@@ -470,6 +470,7 @@ public class OrderInfoController {
                 }
             }
             resultMap.put("orderInfoList", resultList);
+            resultMap.put("postage", "0");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517
             return Response.success("操作成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
