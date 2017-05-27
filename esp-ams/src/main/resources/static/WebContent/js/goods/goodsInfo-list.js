@@ -1024,13 +1024,16 @@ $(function() {
 	
 	//确定 获取编辑器的html
 	$("#addGetAllHtml").click(function() {
-			debugger;
 		 	var params = {};
 			params['id']=addGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 			params['goodsDetail'] = UE.getEditor('addEditor').getAllHtml();;
 			params['goodsContent'] = UE.getEditor('addEditor').getContent();
+			if(UE.getEditor('addEditor').getContent() == null || UE.getEditor('addEditor').getContent()==''){
+				$.messager.alert("提示", "请输入详情信息", "info");
+				return;
+			}
 			$.ajax({
 				type : "POST",
 				url : ctx + '/application/goods/management/upeditor',
@@ -1058,6 +1061,10 @@ $(function() {
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 		params['goodsDetail'] = UE.getEditor('editEditor').getAllHtml();;
 		params['goodsContent'] = UE.getEditor('editEditor').getContent();
+		if(UE.getEditor('editEditor').getContent() == null || UE.getEditor('editEditor').getContent()==''){
+			$.messager.alert("提示", "请输入详情信息", "info");
+			return;
+		}
 		$.ajax({
 			type : "POST",
 			url : ctx + '/application/goods/management/upeditor',
