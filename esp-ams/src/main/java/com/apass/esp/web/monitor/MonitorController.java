@@ -81,7 +81,7 @@ public class MonitorController {
     		 return Response.fail("方法描述长度不能超过255个字符!");
     	 }
     	 
-    	 //int record = monitorService.insertMonitor(monitorDto);
+    	 int record = monitorService.insertMonitor(monitorDto);
          return Response.success("success");
     }
     
