@@ -2,24 +2,14 @@ package com.apass.esp.domain.entity;
 
 import java.util.Date;
 
-/**
- * Created by xianzhi.wang on 2017/5/18.
- */
 public class MonitorEntity {
     private Integer id;
 
     private String host;
 
-    private String application;
     private String env;
 
-    public String getEnv() {
-        return env;
-    }
-
-    public void setEnv(String env) {
-        this.env = env;
-    }
+    private String application;
 
     private String methodName;
 
@@ -35,6 +25,8 @@ public class MonitorEntity {
 
     private String errorMessage;
 
+    private String flag;
+
     public Integer getId() {
         return id;
     }
@@ -49,6 +41,14 @@ public class MonitorEntity {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
     }
 
     public String getApplication() {
@@ -113,5 +113,13 @@ public class MonitorEntity {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 }

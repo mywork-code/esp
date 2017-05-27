@@ -24,6 +24,7 @@
             `invoke_date` BETWEEN #{date}
         AND #{currentDate}
         AND env = #{env}
+        AND flag = '0'
         AND STATUS = '0') a GROUP BY
             method_name,
             application
@@ -48,6 +49,7 @@
         AND
         #{currentDate}
         AND status=0
+        AND flag = '0'
     </select>
 
     <sql id="query_where_clause">
@@ -61,6 +63,19 @@
             <if test="status != null">
                 status = #{status}
             </if>
+            AND flag = '0'
+        </trim>
+    </sql>
+    
+    <sql id="query_where_clause_flag1">
+        <trim prefix="where" prefixOverrides="and|or">
+            <if test="startCreateDate != null">
+                <![CDATA[  and invoke_date >= #{startCreateDate} ]]>
+            </if>
+            <if test="endCreateDate != null and endCreateDate != '' ">
+                <![CDATA[  and invoke_date <= #{endCreateDate} ]]>
+            </if>
+            AND flag = '1'
         </trim>
     </sql>
 
@@ -79,6 +94,20 @@
         <if test="startRecordIndex != null">
             <include refid="PAGINATION.MYSQL_PAGINATION" />
         </if>
+    </select>
+    
+    <select id="monitorList" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.query.MonitorQuery">
+    	select * from t_apass_monitor
+    	<include refid="query_where_clause_flag1" />
+    	order by invoke_date desc
+        <if test="startRecordIndex != null">
+            <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+    </select>
+    <select id="monitorListCount" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.MonitorQuery">
+        select count(*) from t_apass_monitor
+        <include refid="query_where_clause_flag1" />
+        order by invoke_date desc
     </select>
 
     <select id ="count" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.MonitorQuery">
@@ -99,7 +128,7 @@
       select sum(time) time,count(*) total_monitor_num from t_apass_monitor
       where
       env = #{env} and application = #{application}
-      and method_name = #{methodName} and status = #{status}
+      and method_name = #{methodName} and status = #{status} and flag = '0'
         <if test="startCreateDate != null">
             <![CDATA[  and invoke_date >= #{startCreateDate} ]]>
         </if>
