@@ -197,8 +197,8 @@ public class ListeningRegExpUtils {
      * @param value
      * @return
      */
-    public static final long valueLength(String value){
-    	long length = 0;
+    public static final int valueLength(String value){
+    	int length = 0;
     	if (StringUtils.isBlank(value)) {
             return length;
         }
@@ -215,4 +215,10 @@ public class ListeningRegExpUtils {
     	
     	return length;
     }
+    
+    public static boolean lengthValue(String value, int min, int max){
+    	int length = valueLength(value);
+    	return length <= max && length >= min;
+    }
+    
 }
