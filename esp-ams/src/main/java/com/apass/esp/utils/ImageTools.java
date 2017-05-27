@@ -101,7 +101,7 @@ public class ImageTools {
 			int width = getImgWidth(file.getInputStream());
 			int height = getImgHeight(file.getInputStream());
 
-			if (width == 750 && height == 420) {
+			if (width == 750 && height == 248) {
 				return true;
 			}
 		} catch (IOException e) {
@@ -121,7 +121,7 @@ public class ImageTools {
 	        int width = getImgWidth(file.getInputStream());
 	        int height = getImgHeight(file.getInputStream());
 	        
-	        if (width == 750 && height == 280) {
+	        if (width == 750 && height == 230) {
 	            return true;
 	        }
 	    } catch (IOException e) {

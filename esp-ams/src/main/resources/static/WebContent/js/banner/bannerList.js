@@ -104,10 +104,10 @@ $(function(){
 		onSelect:function(){
 			if($("#bannerType").combobox('getValue') == "index"){
 				$("#fondSpan").empty();
-				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：420px;大小：≤500kb</font>");
+				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：248px;大小：≤500kb</font>");
 			}else{
 				$("#fondSpan").empty();	
-				$("#fondSpan").append("<font color='blue'>支持格式：.png或.jpg;宽：750px,高：280px;大小：≤500kb</font>");
+				$("#fondSpan").append("<font color='blue'>支持格式：.png或.jpg;宽：750px,高：230px;大小：≤500kb</font>");
 			}
 		}
 	});
