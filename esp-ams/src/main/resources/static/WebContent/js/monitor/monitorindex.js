@@ -49,7 +49,7 @@ $(function(){
 			}
 			var methodDesciption = $("#monitorForm #methodDesciption").val();
 			if ($.trim(methodDesciption) == "") {
-				$.messager.alert("操作提示", "邮箱不能为空", "warning");
+				$.messager.alert("操作提示", "方法描述不能为空", "warning");
 				return false;
 			}
 		},
