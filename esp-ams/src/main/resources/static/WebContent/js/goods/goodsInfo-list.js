@@ -567,6 +567,23 @@ $(function() {
 	
 	//大图：下一步
 	$("#nextStepUpLoadPic").click(function() {
+		debugger;
+		var goodWallPic = $("#addGoodsLogoImg").attr("src");
+		if(goodWallPic==null || goodWallPic==''){
+			$.messager.alert("提示", "商品墙图片为空，请上传！", "info");
+			return;
+		}
+		var addGoodBanenrList = $("#addGoodsbannerList").datagrid("getRows"); 
+		if(addGoodBanenrList==null || addGoodBanenrList==''){
+			$.messager.alert("提示", "商品大图为空，请上传！", "info");
+			return;
+		}
+		var addEditor = UE.getEditor('addEditor').getContent();
+		if(addEditor==null || addEditor==''){
+			$.messager.alert("提示", "商品详情不能为空,请添加！", "info");
+			return;
+		}
+		
 		$("#addPlanDecrible #one").css('font-weight','lighter');
 		$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
