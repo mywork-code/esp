@@ -51,7 +51,7 @@ public class AdminTokenHandler {
 	 * @throws Throwable
 	 */
 	@SuppressWarnings("unchecked")
-    @Around("execution(* com.apass.esp.web..*.*(..))")
+//    @Around("execution(* com.apass.esp.web..*.*(..))")
 	private Object handleTokenInteceptor(ProceedingJoinPoint point)
 			throws Throwable {
 		// 研究怎样过滤掉 注册controller
