@@ -263,7 +263,7 @@ $(function() {
 //		     alert(111);
 //		   }
 //		});
-	   
+	    
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
@@ -273,6 +273,9 @@ $(function() {
     	$("#addWriteGoodsInfo").css('display','none');
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','none');
+    	
+    	$ ("#addGoodsLogoImg").attr ("src", '');
+    	$("#addGoodsLogoFile").val('');
     	
     	$('#addWestAttrDataGrid').datagrid({  
     		striped : true, 

@@ -1,5 +1,6 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.service.monitor.MonitorService;
@@ -65,11 +66,11 @@ public class MonitorScheduleTask {
         Date date = new Date();
         date = DateFormatUtil.addDMinutes(date, Integer.valueOf(time) * (-1));
         date = DateFormatUtil.addDMinutes(date, -30);
-
         List<MonitorEntityStatistics> monitorEntityStatisticsList = monitorService.getMonitorEntitybyTime(date,env);
         if (CollectionUtils.isEmpty(monitorEntityStatisticsList)) {
             return;
         }
+        LOGGER.info("date {}，time {},times{} ,monitorEntityStatisticsList {},monitorEntityStatisticsList.size {}",date, time,times,JsonUtil.toJsonString(monitorEntityStatisticsList),monitorEntityStatisticsList.size());
         int confTimes = Integer.valueOf(times);
         for (MonitorEntityStatistics monitorEntityStatistics : monitorEntityStatisticsList
                 ) {
@@ -78,6 +79,8 @@ public class MonitorScheduleTask {
                 continue;
             }
             List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date, monitorEntityStatistics.getMethodName(),env,monitorEntityStatistics.getApplication());
+            LOGGER.info("date {}，time {},times{} ,monitorEntityStatisticsList {},list {]",date, time,times,JsonUtil.toJsonString(monitorEntityStatisticsList),JsonUtil.toJsonString(list));
+
             if(CollectionUtils.isEmpty(list)){
                 continue;
             }
@@ -110,6 +113,7 @@ public class MonitorScheduleTask {
                     break;
                 }
             }
+            LOGGER.info("date{} ,mailSenderInfo{} ",date,sb.toString());
             mailSenderInfo.setContent(sb.toString());
             for (int i=0;i<emailAddress.length;i++) {
                 mailSenderInfo.setToAddress(emailAddress[i]);
