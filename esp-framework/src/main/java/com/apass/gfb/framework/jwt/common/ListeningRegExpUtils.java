@@ -192,7 +192,27 @@ public class ListeningRegExpUtils {
         return matches(pattern, value);
     }
 
-    // public static void main(String[] args) {
-    // System.err.println(isMultiMails("soeku@qq.com", ";"));
-    // }
+    /**
+     * 验证字符串长度（汉字*2 其它 1）
+     * @param value
+     * @return
+     */
+    public static final long valueLength(String value){
+    	long length = 0;
+    	if (StringUtils.isBlank(value)) {
+            return length;
+        }
+    	
+    	char[] ch = value.toCharArray();
+    	
+    	for (char c : ch) {
+			if(isChineseCharacter(String.valueOf(c))){
+				length+=2;
+			}else{
+				length++;
+			}
+		}
+    	
+    	return length;
+    }
 }
