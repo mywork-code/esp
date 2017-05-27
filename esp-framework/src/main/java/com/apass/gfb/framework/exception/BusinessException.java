@@ -1,5 +1,7 @@
 package com.apass.gfb.framework.exception;
 
+import com.apass.esp.common.code.BusinessErrorCode;
+
 /**
  * 业务异常
  */
@@ -11,6 +13,16 @@ public class BusinessException extends Exception {
 
     private String            errorCode;
     private String            errorDesc;
+
+    private BusinessErrorCode businessErrorCode;
+
+    public BusinessErrorCode getBusinessErrorCode() {
+        return businessErrorCode;
+    }
+
+    public void setBusinessErrorCode(BusinessErrorCode businessErrorCode) {
+        this.businessErrorCode = businessErrorCode;
+    }
 
     public BusinessException() {
         super();
@@ -27,7 +39,7 @@ public class BusinessException extends Exception {
     }
 
     public BusinessException(String code, String message) {
-        this(code, message, null);
+        this(code, message, null,null);
     }
 
     public BusinessException(String message) {
@@ -36,6 +48,28 @@ public class BusinessException extends Exception {
 
     public BusinessException(String message, Throwable t) {
         this(null, message, t);
+    }
+
+
+
+    //--------------------------------------------------------------------------//
+    public BusinessException(String code, String message, Throwable t,BusinessErrorCode businessErrorCode) {
+        super(t);
+        this.errorCode = code;
+        this.errorDesc = message;
+        this.businessErrorCode = businessErrorCode;
+    }
+
+    public BusinessException(String code, String message,BusinessErrorCode businessErrorCode) {
+        this(code, message, null,businessErrorCode);
+    }
+
+    public BusinessException(String message,BusinessErrorCode businessErrorCode) {
+        this(null, message,businessErrorCode);
+    }
+
+    public BusinessException(String message, Throwable t,BusinessErrorCode businessErrorCode) {
+        this(null, message, t,businessErrorCode);
     }
 
     public String getErrorCode() {

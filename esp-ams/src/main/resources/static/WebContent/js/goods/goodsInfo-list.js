@@ -567,6 +567,23 @@ $(function() {
 	
 	//大图：下一步
 	$("#nextStepUpLoadPic").click(function() {
+		debugger;
+		var goodWallPic = $("#addGoodsLogoImg").attr("src");
+		if(goodWallPic==null || goodWallPic==''){
+			$.messager.alert("提示", "商品墙图片为空，请上传！", "info");
+			return;
+		}
+		var addGoodBanenrList = $("#addGoodsbannerList").datagrid("getRows"); 
+		if(addGoodBanenrList==null || addGoodBanenrList==''){
+			$.messager.alert("提示", "商品大图为空，请上传！", "info");
+			return;
+		}
+		var addEditor = UE.getEditor('addEditor').getContent();
+		if(addEditor==null || addEditor==''){
+			$.messager.alert("提示", "商品详情不能为空,请添加！", "info");
+			return;
+		}
+		
 		$("#addPlanDecrible #one").css('font-weight','lighter');
 		$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
@@ -651,11 +668,11 @@ $(function() {
 		var len = $("#editgoodsTitle").textbox('getText').length;
 		var canLen;
 		console.log(len);
-		if(len>15){
-			canLen = len - 15;
+		if(len>22){
+			canLen = len - 22;
 			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 15 - len;
+			canLen = 22 - len;
 			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -696,6 +713,7 @@ $(function() {
 			url : ctx + '/application/goods/management/loalEditor',
 			data : params,
 			success : function(data) {
+				debugger;
 				UE.getEditor('editEditor').execCommand('inserthtml', data);//加载编辑器
 			}
 		});
