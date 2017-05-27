@@ -1,5 +1,6 @@
 package com.apass.esp.service.order;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
@@ -244,64 +245,7 @@ public class OrderService {
 		// 2 修改商品数目
 		for (PurchaseRequestDto purchase : purchaseList) {
 			goodsStockArray[index++] = String.valueOf(purchase.getGoodsStockId());
-			// 商品购买数量
-			// Long buyNum = Long.valueOf(purchase.getBuyNum());
-			// 商品Id
-			// Long goodsId = purchase.getGoodsId();
-			// 商品库存Id
-			// Long goodsStockId = purchase.getGoodsStockId();
-			// 默认调用尝试次数
-			// Integer errorNum = errorNo;
-			// GoodsInfoEntity goodsInfo = goodsDao.select(goodsId);
-			// if (null == goodsInfo) {
-			// throw new BusinessException("商品信息不存在,请联系客服!");
-			// }
-			// for (int i = 0; i < errorNum; i++) {
-			// LOGGER.info("confirmOrder->userId:{},开始修改商品数量,商品Id:{},商品库存Id:{},购买数量:{},递归剩余尝试次数:{}",
-			// userId, goodsId,goodsStockId, buyNum, errorNum);
-			// GoodsStockInfoEntity goodsStock =
-			// goodsStockDao.select(goodsStockId);
-			// if (null == goodsStock) {
-			// throw new BusinessException("商品信息不存在,请联系客服!");
-			// }
-			// LOGGER.info("confirmOrder->userId:{},商品库存Id:{},购买数量:{},商品库存:{},递归剩余尝试次数:{}",
-			// userId, goodsStockId,buyNum, goodsStock.getStockCurrAmt(),
-			// errorNum);
-			// goodsStock.setStockAmt(goodsStock.getStockCurrAmt());
-			// // 减库存
-			// if (goodsStock.getStockCurrAmt() >= buyNum) {
-			// Long stockCurrAmt = goodsStock.getStockCurrAmt() - buyNum;
-			// goodsStock.setStockCurrAmt(stockCurrAmt);
-			// Integer successFlag =
-			// goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
-			// LOGGER.info("confirmOrder->userId:{}->successFlag:{},商品库存Id:{},购买数量:{},递归尝试次数:{}",
-			// userId,successFlag, goodsStockId, buyNum, errorNum);
-			// if (successFlag == 0) {
-			// if (errorNum <= 0) {
-			// LOGGER.info("confirmOrder->userId:{},商品库存Id:{},递归剩余尝试次数:{}.尝试次数已用完,商品更新失败",
-			// userId,goodsStockId, errorNum);
-			// throw new BusinessException(goodsInfo.getGoodsName() + "商品库存不足");
-			// }
-			// errorNum--;
-			// LOGGER.info("confirmOrder->userId:{},商品库存Id:{},递归剩余尝试次数:{}.此次库存修改失败,准备下次更新",
-			// userId, goodsStockId,errorNum);
-			// continue;
-			// } else if (successFlag > 1) {
-			// LOGGER.info("confirmOrder->userId:{},商品库存Id:{},购买数量:{},更新异常",
-			// userId, goodsStockId, buyNum);
-			// throw new BusinessException(goodsInfo.getGoodsName() +
-			// "商品库存更新异常请联系客服!");
-			// } else if (successFlag == 1) {
-			// LOGGER.info("confirmOrder->userId:{},商品库存Id:{},购买数量:{}
-			// 该商品库存更新成功", userId, goodsStockId, buyNum);
-			// break;
-			// }
-			// } else {
-			// throw new BusinessException(goodsInfo.getGoodsName() + "商品库存不足");
-			// }
-			// }
 		}
-		// LOGGER.info("confirmOrder->userId:{},该订单商品库存更新成功!", userId);
 		// 3 删除购物车记录
 		if (StringUtils.isNotEmpty(sourceFlag) && sourceFlag.equals(ORDERSOURCECARTFLAG)) {
 			Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -312,7 +256,7 @@ public class OrderService {
 			} catch (Exception e) {
 				LOG.info(requestId, "删除购物车中商品失败", "");
 				LOGGER.error("删除购物车中商品失败", e);
-				throw new BusinessException("删除购物车中商品失败", e);
+				throw new BusinessException("删除购物车中商品失败", e, BusinessErrorCode.CART_DELETE_ERROR);
 			}
 		}
 		// 4 生成订单
