@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
+import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.service.monitor.MonitorService;
@@ -42,6 +43,46 @@ public class MonitorController {
 
         int record = monitorService.insertMonitor(monitorDto);
         return Response.success("添加成功", record);
+    }
+    
+    @RequestMapping(value = "/addMonitor")
+    @ResponseBody
+    public Response addMonitor(MonitorDto monitorDto){
+    	
+    	 //设置初始值
+    	 monitorDto.setInvokeDate(new Date());
+    	 monitorDto.setFlag(MonitorFlag.MONITOR_FLAG1.getCode());
+    	 
+    	 if( StringUtils.isBlank(monitorDto.getHost()) ){
+    		 return Response.fail("主机不能为空!");
+    	 }
+    	 if( StringUtils.length(monitorDto.getHost()) > 255 ){
+    		 return Response.fail("主机长度不能超过255个字符!");
+    	 }
+    	 
+    	 if( StringUtils.isBlank(monitorDto.getApplication()) ){
+    		 return Response.fail("应用名称不能为空!");
+    	 }
+    	 if( StringUtils.length(monitorDto.getApplication()) > 255 ){
+    		 return Response.fail("应用名称长度不能超过255个字符!");
+    	 }
+    	 
+    	 if( StringUtils.isBlank(monitorDto.getMethodName()) ){
+    		 return Response.fail("方法名称不能为空!");
+    	 }
+    	 if( StringUtils.length(monitorDto.getMethodName()) > 255 ){
+    		 return Response.fail("方法名称长度不能超过255个字符!");
+    	 }
+    	 
+    	 if( StringUtils.isBlank(monitorDto.getMethodDesciption()) ){
+    		 return Response.fail("方法描述不能为空!");
+    	 }
+    	 if( StringUtils.length(monitorDto.getMethodDesciption()) > 255 ){
+    		 return Response.fail("方法描述长度不能超过255个字符!");
+    	 }
+    	 
+    	 int record = monitorService.insertMonitor(monitorDto);
+         return Response.success("success");
     }
     
     @RequestMapping(value = "/editMonitorSetUp", method = RequestMethod.POST)
@@ -79,6 +120,11 @@ public class MonitorController {
   public String index(){
     return "monitor/index";
   }
+  
+  @RequestMapping(value = "/monitorindex", method = RequestMethod.GET)
+  public String monitorIndex(){
+	  return "monitor/monitorIndex";
+  }
 
   @RequestMapping(value = "/list", method = RequestMethod.GET)
   @ResponseBody
@@ -95,5 +141,19 @@ public class MonitorController {
 	 query.setEndCreateDate(DateFormatUtil.dateToString(new Date())+" 23:59:59");
 	
     return  monitorService.pageListMonitorLog(query);
+  }
+  
+  @RequestMapping(value = "/monitorlist", method = RequestMethod.GET)
+  @ResponseBody
+  public ResponsePageBody<MonitorVo> listFlag1(MonitorQuery query){
+	  
+	  if(query.getDays() == null || query.getDays() == 0){
+			 query.setStartCreateDate(DateFormatUtil.dateToString(new Date())+" 00:00:00");
+		 }else{
+			 Calendar cal = Calendar.getInstance();
+			 cal.add(cal.DATE, query.getDays());
+			 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime())+" 00:00:00"); 
+		 }
+	  return  monitorService.pageListMonitor(query);
   }
 }
