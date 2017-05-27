@@ -23,6 +23,7 @@ public enum BusinessErrorCode implements ErrorCode {
   CART_UPDATEINFO_ERROR(2007, "更新购物车信息失败"),
   GOODS_UPDATEINFO_ERROR(2008, "更新商品信息失败"),
   GOODS_STATUS_INVALID(2009, "商品状态无效"),
+  CART_DELETE_ERROR(2010,"删除购物车错误"),
 
   //3xxx 订单问题
   ORDER_STATUS_INVALID(3001, "订单状态无效"),

@@ -1,17 +1,13 @@
 package com.apass.esp.web.order;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
-import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.LogStashKey;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
@@ -21,7 +17,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
@@ -36,7 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,27 +96,39 @@ public class OrderInfoController {
                 return Response.fail(NO_USER);
             }
             if (!StringUtils.isNumeric(userIdStr)) {
-                return Response.fail("用户名传入非法!");
+//                return Response.fail("用户名传入非法!");
+                LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             if (null == addressIdStr) {
-                return Response.fail("用户收货地址不能为空");
+                //return Response.fail("用户收货地址不能为空");
+                LOGGER.error("用户收货地址不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             if (!StringUtils.isNumeric(addressIdStr)) {
-                return Response.fail("地址信息传入非法!");
+//                return Response.fail("地址信息传入非法!");
+                LOGGER.error("地址信息传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long addressId = Long.valueOf(addressIdStr);
             if (StringUtils.isEmpty(buyInfo)) {
-                return Response.fail("购买商品信息不能为空!");
+//                return Response.fail("购买商品信息不能为空!");
+                LOGGER.error("购买商品信息不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             if (StringUtils.isEmpty(totalPaymentStr)) {
-                return Response.fail("购买商品总金额不能为空!");
+//                return Response.fail("购买商品总金额不能为空!");
+                LOGGER.error("购买商品总金额不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             } else {
                 totalPayment = new BigDecimal(totalPaymentStr);
             }
             List<PurchaseRequestDto> purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
             if (purchaseList.isEmpty()) {
-                return Response.fail("请选择所购买的商品");
+//                return Response.fail("请选择所购买的商品");
+                LOGGER.error("请选择所购买的商品");
+                return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
             }
             deviceType="android";
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
@@ -130,10 +136,10 @@ public class OrderInfoController {
             resultMap.put("orderList", orders);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("订单生成失败!请稍后再试");
+            return Response.fail(BusinessErrorCode.ORDER_CREATE_ERROR);
         }
         return Response.success("订单生成成功!", resultMap);
     }
