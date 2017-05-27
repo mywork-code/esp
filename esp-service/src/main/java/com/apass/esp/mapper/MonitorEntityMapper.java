@@ -1,14 +1,14 @@
 package com.apass.esp.mapper;
 
-import com.apass.esp.common.model.QueryParams;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.Date;
-import java.util.List;
 
 public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> {
 
@@ -36,4 +36,13 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
     List<MonitorEntityStatistics> pageList(MonitorQuery query);
 
     Integer count(MonitorQuery query);
+    
+    /**
+     * 非配置数据的分页查询
+     * @param query
+     * @return
+     */
+    List<MonitorEntity> monitorList(MonitorQuery query);
+
+    Integer monitorListCount(MonitorQuery query);
 }
