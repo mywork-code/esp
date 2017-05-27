@@ -147,9 +147,14 @@ public class ShopHomeController {
                     
                     String logoUrl = goodsInfo.getGoodsLogoUrl();
                     String siftUrl = goodsInfo.getGoodsSiftUrl();
-                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                    if(null !=logoUrl){
+                        goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                        goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+                    }else{
+                        goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(siftUrl));
+                        goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(siftUrl));
+                    }
                     goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
                     goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
                 }
             }
