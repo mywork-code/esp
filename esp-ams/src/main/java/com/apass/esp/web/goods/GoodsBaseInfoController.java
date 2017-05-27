@@ -470,6 +470,9 @@ public class GoodsBaseInfoController {
         if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
             return "商品详情不能为空,请添加！";
         }
+        if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
+        	return "商品类目不能为空，请先选择类目！";
+        }
 
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));

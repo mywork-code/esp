@@ -668,11 +668,11 @@ $(function() {
 		var len = $("#editgoodsTitle").textbox('getText').length;
 		var canLen;
 		console.log(len);
-		if(len>15){
-			canLen = len - 15;
+		if(len>22){
+			canLen = len - 22;
 			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 15 - len;
+			canLen = 22 - len;
 			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -713,6 +713,7 @@ $(function() {
 			url : ctx + '/application/goods/management/loalEditor',
 			data : params,
 			success : function(data) {
+				debugger;
 				UE.getEditor('editEditor').execCommand('inserthtml', data);//加载编辑器
 			}
 		});
