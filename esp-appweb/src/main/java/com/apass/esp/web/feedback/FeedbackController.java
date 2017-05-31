@@ -1,9 +1,8 @@
 package com.apass.esp.web.feedback;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.FeedBack;
-import com.apass.esp.service.feedback.FeedBackService;
-import com.apass.gfb.framework.utils.CommonUtils;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-import java.util.Map;
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.FeedBack;
+import com.apass.esp.service.feedback.FeedBackService;
+import com.apass.gfb.framework.utils.CommonUtils;
 
 @Controller
 @RequestMapping("v1/feedback")
@@ -36,12 +38,12 @@ public class FeedbackController {
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
 
 		if (StringUtils.isAnyBlank(feedbackType,comments,mobile)) {
-//			LOGGER.error("请求参数[feedbackType,comments,mobile]为空...");
-//			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-			return Response.fail("意见反馈失败！");
+			LOGGER.error("参数值不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		if(comments.length()>300){
-			return Response.fail("输入是字数不得超过300字！");
+			LOGGER.error("输入是字数不得超过300字！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}
 		Date date=new Date();
 		FeedBack fb=new FeedBack();
@@ -53,6 +55,7 @@ public class FeedbackController {
 		if(result==1){
 			return Response.success("意见反馈保存成功!");
 		}
-		return Response.fail("意见反馈失败！");
+		LOGGER.error("意见反馈失败！");
+		return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
 	}
 }
