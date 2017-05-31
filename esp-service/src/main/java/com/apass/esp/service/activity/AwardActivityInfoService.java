@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.domain.Response;
@@ -153,7 +154,7 @@ public class AwardActivityInfoService {
     public AwardActivityInfoVo getActivityByName(AwardActivity.ActivityName name) throws BusinessException {
         AwardActivityInfo ai = awardActivityInfoMapper.selectByName(name.getValue());
         if (ai == null) {
-            throw new BusinessException("未查到指定的活动【" + name.getDesc() + "】");
+            throw new BusinessException("未查到指定的活动【" + name.getDesc() + "】",BusinessErrorCode.ACTIVITY_NOT_EXIST);
         }
         AwardActivityInfoVo vo = new AwardActivityInfoVo();
         vo.setId(ai.getId());
