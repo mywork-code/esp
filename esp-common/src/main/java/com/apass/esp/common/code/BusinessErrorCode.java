@@ -24,6 +24,7 @@ public enum BusinessErrorCode implements ErrorCode {
   GOODS_UPDATEINFO_ERROR(2008, "更新商品信息失败"),
   GOODS_STATUS_INVALID(2009, "商品状态无效"),
   CART_DELETE_ERROR(2010,"删除购物车错误"),
+  SYN_CART_FAILED(2011,"同步商品失败"),
 
   //3xxx 订单问题
   ORDER_STATUS_INVALID(3001, "订单状态无效"),
@@ -66,13 +67,30 @@ public enum BusinessErrorCode implements ErrorCode {
   LOAD_CONTRACT_TEMPLATE_ERROR(5005, "加载合同模板失败"),
   CONTRACT_PDF_ERROR(5006, "生成合同PDF异常"),
   READ_CONTRACT_ERROR(5007, "读取未签章合同PDF文件失败"),
+  PHONE_VALIDATE_FAILED(5008,"手机号验证失败"),
+  IDCARD_VALIDATE_FAILED(5009,"身份证号验证失败"),
+  BIND_VALIDATE_FAILED(5010,"绑定失败"),
 
   //6xxx
   ADDRESS_UPDATE_FAILED(6001, "更新地址信息失败"),
   CUSTOMER_NOT_EXIST(6002, "用户不存在"),
   ACTIVITY_NOT_EXIST(6003, "活动不存在"),
-
-
+  USER_HASBIND_BANKCARD(6004,"用户已绑银行卡"),
+  USER_BINDIDCART_BINDBANKCART(6005,"上传身份证绑定卡片"),
+  BANKCARD_NOTBELONG_BANK(6006,"卡号与银行不匹配"),
+  SIGN_YOUR_NAME(6007,"未签名"),
+  USER_HASBIND_IDCARD(6008,"用户已绑身份证"),
+  REGISTER_HAS_FAILED(6009,"注册失败"),
+  BIND_HAS_EXIST(6010,"绑定关系已存在"),
+  GET_INFO_FAILED(6011,"获取信息失败"),
+  ACTIVITY_HASNOT_START(6012,"活动未开始"),
+  ADD_INFO_FAILED(6013,"添加失败,请稍后再试或联系客服!"),
+  QUREY_INFO_FAILED(6014,"查询失败,请稍后再试或联系客服!"),
+  DELETE_INFO_FAILED(6015,"删除失败,请稍后再试或联系客服!"),
+  UPLOAD_PICTURE_FAILED(6016,"上传图片失败"),
+  EDIT_INFO_FAILED(6017,"操作失败,请稍后再试或联系客服!"),
+  DETAIL_INFO_FAILED(6018,"查看失败,请稍后再试或联系客服!"),
+  ADD_INFO_INVALID(6019,"提交无效")
   ;
   private Integer code;
   private String msg;

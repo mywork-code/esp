@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.enums.AwardActivity.ActivityName;
@@ -63,9 +64,11 @@ public class RegisterInfoController {
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
 		Matcher m = p.matcher(mobile2);
  		if (StringUtils.isAnyBlank(mobile2)) {
-			return Response.fail("手机号不能为空！");
+ 			logger.error("手机号不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (!m.matches()) {
-			return Response.fail("手机号格式不正确,请重新输入！");
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}
 		try {
 			Response resp=registerInfoService.isWeChatUser(mobile2);
@@ -78,9 +81,9 @@ public class RegisterInfoController {
 			}
 		} catch (Exception e) {
 			logger.error("手机号验证失败", e);
-			return Response.fail("手机号验证失败!");
+			return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
 		}
-		return Response.fail("手机号验证失败！");
+		return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
 	}
 	  /**
 		 * <pre>
@@ -101,11 +104,14 @@ public class RegisterInfoController {
 //			Pattern p2 = Pattern.compile("^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$");
 //			Matcher m2 = p2.matcher(identityNo);
 			if (StringUtils.isAnyBlank(mobile2)) {
-				return Response.fail("手机号不能为空");
+				logger.error("手机号不能为空！");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 			}else if(!m.matches()){
-				return Response.fail("手机号格式不正确,请重新输入");
+				logger.error("手机号格式不正确,请重新输入！");
+				return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 			}else if(StringUtils.isAnyBlank(identityNo)){
-				return Response.fail("身份证号不能为空");
+				logger.error("身份证号不能为空");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 			}
 //			else if(!m2.matches()){
 //				return Response.fail("身份证号格式不正确,请重新输入！");
@@ -120,15 +126,16 @@ public class RegisterInfoController {
 						respMap.put("identityFalge", "same");
 					}else{
 //						respMap.put("identityFalge", "different");
-						return Response.fail("手机号"+mobile+"在微信公众号的注册信息与所输入的身份证号不符");
+						logger.error("手机号{}在微信公众号的注册信息与所输入的身份证号不符",mobile);
+						return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 					}
 					return Response.success("身份证号验证成功！",respMap);
 				}
 			} catch (Exception e) {
 				logger.error("身份证号验证失败", e);
-				return Response.fail("身份证号验证失败!");
+				return Response.fail(BusinessErrorCode.IDCARD_VALIDATE_FAILED);
 			}
-			return Response.fail("手机号"+mobile+"在微信公众号的注册信息与所输入的身份证号不符");
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 		}
 	
     /**
@@ -152,23 +159,29 @@ public class RegisterInfoController {
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
 		Matcher m = p.matcher(mobile2);
 		if (StringUtils.isAnyBlank(mobile2, smsType)) {
-			return Response.fail("手机号不能为空");
+			logger.error("手机号不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确,请重新输入！");
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (StringUtils.isBlank( randomCode)) {
-			return Response.fail("验证码不能为空");
+			logger.error("验证码不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (StringUtils.isBlank( randomFlage)) {
-			return Response.fail("验证码不正确");
+			logger.error("验证码不正确");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
 			String cacheKey = "activityRegistRandom_"+ randomFlage;
 			String cacheJson = cacheManager.get(cacheKey);
 			Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
 			if(cacheJsonMap == null || !cacheJsonMap.containsKey("value")){
-				return Response.fail("验证码不正确");
+				logger.error("验证码不正确");
+				return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 			}
 			if(!StringUtils.equalsIgnoreCase((String)cacheJsonMap.get("value"), randomCode)){
-				return Response.fail("验证码不正确");
+				logger.error("验证码不正确");
+				return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 			}
 //		    Boolean Flage=registerInfoService.isSendMes(smsType, mobile2);
 			//判断短信验证码是否有效
@@ -180,10 +193,10 @@ public class RegisterInfoController {
 //			else{
 //				return Response.fail("短信发送过于频繁，请稍后再试！");
 //			}
-			return Response.fail("发送验证码失败,请稍后再试");
+			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
-			return Response.fail("网络异常,发送验证码失败,请稍后再试");
+			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
 		}
 	}
 	/**
@@ -206,34 +219,44 @@ public class RegisterInfoController {
 		Pattern p = Pattern.compile("^1[0-9]{10}$");
 		Matcher m = p.matcher(mobile2);
 		if (StringUtils.isBlank( smsType)) {
-			return Response.fail("手机号验证码类型不能为空");
+			logger.error("手机号验证码类型不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (StringUtils.isBlank( mobile2)) {
-			return Response.fail("手机号不能为空");
+			logger.error("手机号不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确,请重新输入！");
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (StringUtils.isBlank( code)) {
-			return Response.fail("短信验证码不能为空");
+			logger.error("短信验证码不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (StringUtils.isBlank( randomCode)) {
-			return Response.fail("随机码不能为空");
+			logger.error("随机码不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (StringUtils.isBlank( InviterId)) {
-			return Response.fail("邀请人的id不能为空");
+			logger.error("邀请人的id不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (StringUtils.isBlank( randomFlage)) {
-			return Response.fail("随机码标识不能为空");
+			logger.error("随机码标识不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
 			String cacheKey = "activityRegistRandom_"+ randomFlage;
 			String cacheJson = cacheManager.get(cacheKey);
 			Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
 			if(cacheJsonMap == null || !cacheJsonMap.containsKey("value")){
-				return Response.fail("验证码不正确");
+				logger.error("验证码不正确");
+				return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 			}
 			if(!StringUtils.equalsIgnoreCase((String)cacheJsonMap.get("value"), randomCode)){
-				return Response.fail("验证码不正确");
+				logger.error("验证码不正确");
+				return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 			}
 	        Map<String,Object> respMap=new HashMap<String,Object>(); 
 	        boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile2, code);//判断短信验证码是否填写正确
 	        if(!result2){
-	        	return Response.fail("手机验证码不正确");
+	        	logger.error("手机验证码不正确");
+	        	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 	        }
         	Response resp=registerInfoService.isNewCustomer(mobile2,InviterId);
     		if("1".equals(resp.getStatus())){
@@ -245,20 +268,23 @@ public class RegisterInfoController {
     			    	userFlage=InviterId.equals(rrse.get("userId").toString());
     			    }
     				if(userFlage){
-    					return Response.fail("绑定关系失败,自己不能邀请自己！");
+    					logger.error("绑定关系失败,自己不能邀请自己！");
+    					return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
     				}
     				
     			    ActivityName activityName=ActivityName.INTRO;//获取活动名称
 			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
 					if(null==aInfoVo){
-						return Response.fail("绑定关系失败,无有效活动！");
+						logger.error("绑定关系失败,无有效活动！");
+    					return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 					}
 					SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 					Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
 					Date nowtime=new Date();
 					int result=nowtime.compareTo(aStartDate);
 					if(result<0){
-						return Response.fail("绑定关系失败,活动还未开始！");
+						logger.error("绑定关系失败,活动还未开始！");
+    					return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 					}
     				AwardBindRel abr=new AwardBindRel();
     				abr.setInviteMobile(mobile2);
@@ -276,7 +302,8 @@ public class RegisterInfoController {
         				aRel.setUpdateDate(new Date());
         				awardBindRelService.insertAwardBindRel(aRel);
     				}else if(abrel==1){
-    					return Response.fail("校验失败，您在当前活动中已与其他用户绑定过关系!");
+    					logger.error("校验失败，您在当前活动中已与其他用户绑定过关系!");
+    					return Response.fail(BusinessErrorCode.BIND_HAS_EXIST);
     				}
     				respMap.put("isAppUser", "old");
     			}else if("new".equals(falge)){
@@ -284,10 +311,12 @@ public class RegisterInfoController {
     			}
     			return Response.success("校验成功！", respMap);
 	        		}
-	        return Response.fail("校验失败,请重新注册！");
+    		
+    		logger.error("校验失败,请重新注册！");
+	        return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
 		} catch (Exception e) {
 			logger.error("校验失败,请重新注册", e);
-			return Response.fail("校验失败,请重新注册!");
+			return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
 		}
 	}
 	/**
@@ -313,23 +342,32 @@ public class RegisterInfoController {
 		Pattern pas3 = Pattern.compile("^[0-9]*$");
 		Matcher mas3 = pas3.matcher(password);
 		if (StringUtils.isBlank( mobile2)) {
-			return Response.fail("手机号不能为空");
+			logger.error("手机号不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if(!m.matches()){
-			return Response.fail("手机号格式不正确,请重新输入！");
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (StringUtils.isAnyBlank(password)) {
-			return Response.fail("密码不能为空");
+			logger.error("密码不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}else if (password.length()<6){
-			return Response.fail("请输入6-12位字母与数字的组合");
+			logger.error("请输入6-12位字母与数字的组合");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (password.length()>12){
-			return Response.fail("请输入6-12位字母与数字的组合");
+			logger.error("请输入6-12位字母与数字的组合");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (mas2.matches()){
-			return Response.fail("请输入6-12位字母与数字的组合！");
+			logger.error("请输入6-12位字母与数字的组合");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (mas3.matches()){
-			return Response.fail("请输入6-12位字母与数字的组合！");
+			logger.error("请输入6-12位字母与数字的组合");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (!mas.matches()){
-			return Response.fail("请输入6-12位字母与数字的组合！");
+			logger.error("请输入6-12位字母与数字的组合");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
 		}else if (StringUtils.isAnyBlank(InviterId)) {
-			return Response.fail("邀请人的id不能为空");
+			logger.error("邀请人的id不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
 			   Response resp=registerInfoService.regsitNew(mobile2,password,InviterId);
@@ -337,14 +375,16 @@ public class RegisterInfoController {
 	        		ActivityName activityName=ActivityName.INTRO;//获取活动名称
  			        AwardActivityInfoVo aInfoVo=awardActivityInfoService.getActivityByName(activityName);
 	 			   	if(null==aInfoVo){
-						return Response.fail("绑定关系失败,无有效活动！");
+		 			   	logger.error("绑定关系失败,无有效活动！");
+						return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 					}
 					SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 					Date aStartDate=sdf.parse(aInfoVo.getaStartDate());
 					Date nowtime=new Date();
 					int result=nowtime.compareTo(aStartDate);
 					if(result<0){
-						return Response.fail("绑定关系失败,活动还未开始！");
+						logger.error("绑定关系失败,活动还未开始！");
+						return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 					}
     				AwardBindRel abr=new AwardBindRel();
     				abr.setInviteMobile(mobile2);
@@ -363,14 +403,16 @@ public class RegisterInfoController {
     	    				aRel.setUpdateDate(new Date());
     	    				awardBindRelService.insertAwardBindRel(aRel);
     				}else if(abrel==1){
-    					return Response.fail("校验失败，您在当前活动中已与其他用户绑定过关系!");
+    					logger.error("校验失败，您在当前活动中已与其他用户绑定过关系!");
+    					return Response.fail(BusinessErrorCode.BIND_HAS_EXIST);
     				}
 	        	return Response.success("注册成功！");
 	        }
-	        return Response.fail("注册新用户失败");
+	        logger.error("注册新用户失败");
+	        return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
 		} catch (Exception e) {
 			logger.error("注册新用户失败！", e);
-			return Response.fail("注册新用户失败");
+			return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
 		}
 	}
 	
@@ -385,7 +427,8 @@ public class RegisterInfoController {
 	public Response getInviterInfo(@RequestBody Map<String, Object> paramMap) {
 		String InviterId=   CommonUtils.getValue(paramMap, "InviterId");//邀请人的id
 		if (StringUtils.isBlank( InviterId)) {
-			return Response.fail("邀请人的id不能为空");
+			logger.error("邀请人的id不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
 			 Response resp =registerInfoService.getInviterInfo(InviterId);
@@ -393,10 +436,11 @@ public class RegisterInfoController {
 				 Map<String,Object> rrse=(Map<String, Object>) resp.getData();
 				 return Response.success("获取邀请人的信息成功！", rrse);
 			 }
-			 return Response.fail("获取邀请人的信息失败！");
+			 logger.error("获取邀请人的信息失败！");
+			 return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
 		} catch (Exception e) {
 			logger.error("获取邀请人的信息失败！", e);
-			return Response.fail("获取邀请人的信息失败!");
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
 		}
 	}
 	
@@ -416,10 +460,10 @@ public class RegisterInfoController {
 				return Response.success("获取有效活动开始时间成功！",result);
 			} catch (BusinessException e) {
 				logger.error("获取有效活动开始时间失败！", e);
-				return Response.fail("活动未开始!");
+				return Response.fail(BusinessErrorCode.ACTIVITY_HASNOT_START);
 			}catch (ParseException e) {
 				logger.error("获取有效活动开始时间失败！", e);
-				return Response.fail("活动未开始!");
+				return Response.fail(BusinessErrorCode.ACTIVITY_HASNOT_START);
 			}
 	}
 	

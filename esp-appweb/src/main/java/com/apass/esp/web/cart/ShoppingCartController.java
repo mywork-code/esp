@@ -1,7 +1,6 @@
 package com.apass.esp.web.cart;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,13 +10,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.apass.esp.service.common.ImageService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
@@ -36,13 +34,10 @@ import com.apass.gfb.framework.utils.GsonUtils;
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ShoppingCartController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ShoppingCartController.class);
 
     @Autowired
     private ShoppingCartService shoppingCartService;
-
-    @Autowired
-    private ImageService imageService;
 
     /**
      * 添加商品到购物车
@@ -66,7 +61,8 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
         
         if (StringUtils.isAnyBlank(userId, goodsStockId, count)) {
-            return Response.fail("用户ID、商品库存ID、数量不能为空");
+        	logger.error("用户ID、商品库存ID、数量不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         try {
@@ -84,7 +80,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("商品添加到购物车失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
         }
     }
 
@@ -108,7 +104,8 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
         
         if (StringUtils.isBlank(userId)) {
-            return Response.fail("用户ID不能为空");
+        	logger.error("用户ID不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         try {
@@ -131,7 +128,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("查看购物车中商品失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
     }
     
@@ -156,7 +153,8 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(userId)) {
-            return Response.fail("用户ID不能为空");
+        	logger.error("用户ID不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -173,11 +171,11 @@ public class ShoppingCartController {
             return Response.success("查看购物车中商品成功", resultMap);
 
         } catch (BusinessException e) {
-            LOGGER.error(e.getErrorDesc(), e);
+            logger.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
-            LOGGER.error("查看购物车中商品失败:", e);
-            return Response.fail("查看购物车中商品失败,请稍后再试或联系客服!");
+            logger.error("查看购物车中商品失败:", e);
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
     }
 
@@ -198,15 +196,16 @@ public class ShoppingCartController {
             String count = CommonUtils.getValue(paramMap, ParamsCode.COUNT);
 
             if (StringUtils.isAnyBlank(userId, goodsStockId, count)) {
-                return Response.fail("用户ID、商品库存ID、数量不能为空");
+            	logger.error("用户ID、商品库存ID、数量不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
 
             shoppingCartService.setGoodsAmount(userId, goodsStockId, count);
 
             return Response.success("商品数量修改成功");
         } catch (Exception e) {
-            LOGGER.error("商品数量修改失败:", e);
-            return Response.fail("商品数量修改失败,请稍后再试或联系客服!");
+            logger.error("商品数量修改失败:", e);
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         }
     }
 
@@ -243,7 +242,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("删除购物车中商品失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.DELETE_INFO_FAILED);
         }
     }
 
@@ -269,7 +268,8 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
         
         if (StringUtils.isBlank(userId)) {
-            return Response.fail("用户ID不能为空");
+        	logger.error("用户ID不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -289,7 +289,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("修改商品数量失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         }
 
     }
@@ -314,7 +314,8 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(goodsId)) {
-            return Response.fail("商品id不能为空");
+        	logger.error("商品id不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -326,7 +327,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("查看商品规格失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.DETAIL_INFO_FAILED);
         }
 
         return Response.successResponse(resultMap);
@@ -359,11 +360,13 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isAnyBlank(userId, goodsId, preGoodsStockId, secGoodsStockId, num)) {
-            return Response.fail("用户id、商品id、商品库存id、商品购买数量不能为空");
+        	logger.error("用户id、商品id、商品库存id、商品购买数量不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         if(StringUtils.equals(preGoodsStockId, secGoodsStockId)){
-            return Response.fail("商品规格未修改,本次提交无效");
+        	logger.error("商品规格未修改,本次提交无效");
+            return Response.fail(BusinessErrorCode.ADD_INFO_INVALID);
         }
 
         try {
@@ -376,7 +379,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("修改商品规格失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         }
 
     }
@@ -402,11 +405,13 @@ public class ShoppingCartController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(userId)) {
-            return Response.fail("用户ID不能为空");
+        	logger.error("用户ID不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         if (StringUtils.isBlank(isSelectInfo)) {
-            return Response.fail("商品信息不能为空");
+        	logger.error("商品信息不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         try {
@@ -426,7 +431,7 @@ public class ShoppingCartController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("同步购物车商品勾选标记失败");
+            return Response.fail(BusinessErrorCode.SYN_CART_FAILED);
         }
     }
 
