@@ -1,18 +1,8 @@
 package com.apass.esp.web.category;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.domain.vo.CategoryVo;
-import com.apass.esp.service.category.CategoryInfoService;
-import com.apass.esp.utils.FileUtilsCommons;
-import com.apass.esp.utils.ImageTools;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,12 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ImageTools;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
  * 商品类别操作类
@@ -148,7 +145,7 @@ public class CategoryController {
     public Response uploadPicFile(MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                throw new RuntimeException("上传图片不能为空!");
+                throw new BusinessException("上传图片不能为空!");
             }
             String imgType = ImageTools.getImgType(file);
             String url = categoryPath + "cate_" + System.currentTimeMillis() + "." + imgType;
@@ -183,16 +180,16 @@ public class CategoryController {
     public Response updateCategorySort(@RequestBody CategoryDto dto) {
         try {
             if (dto.getCategoryIdNew() == 0 || dto.getCategoryIdNew() == null) {
-                throw new RuntimeException("传入id为空！");
+                throw new BusinessException("传入id为空！");
             }
             if (dto.getCategoryIdOld() == 0 || dto.getCategoryIdOld() == null) {
-                throw new RuntimeException("传入id为空！");
+                throw new BusinessException("传入id为空！");
             }
             if (dto.getSortOrderNew() == null || dto.getSortOrderNew() == 0) {// 要上移的对象
-                throw new RuntimeException("请明确当前分类的排序！");
+                throw new BusinessException("请明确当前分类的排序！");
             }
             if (dto.getSortOrderOld() == null || dto.getSortOrderOld() == 0) {
-                throw new RuntimeException("请明确当前分类的排序！");
+                throw new BusinessException("请明确当前分类的排序！");
             }
 
             // 要上移的对象
@@ -202,7 +199,7 @@ public class CategoryController {
             cateService.updateCateSortOrder(dto.getCategoryIdOld(), dto.getSortOrderOld(),
                     SpringSecurityUtils.getLoginUserDetails().getUsername());
             return Response.success("修改商品分类排序成功！");
-        } catch (RuntimeException e) {
+        } catch (BusinessException e) {
             LOGGER.error("修改商品分类排序失败", e);
             return Response.fail(e.getMessage());
         }
@@ -216,7 +213,7 @@ public class CategoryController {
     public Response deleCategoryById(Long id) {
         try {
             if (id == null || id == 0) {
-                throw new RuntimeException("传入id为空！");
+                throw new BusinessException("传入id为空！");
             }
             cateService.deleteCategoryById(id);
             return Response.success("删除分类成功!");
@@ -246,11 +243,12 @@ public class CategoryController {
      * 修改分类验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void validateUpdateCategoryDto(CategoryDto dto) {
+    public void validateUpdateCategoryDto(CategoryDto dto) throws BusinessException {
 
         if (dto.getCategoryId() == 0 || dto.getCategoryId() == null) {
-            throw new RuntimeException("传入id为空！");
+            throw new BusinessException("传入id为空！");
         }
         commonValidate(dto);
     }
@@ -259,25 +257,26 @@ public class CategoryController {
      * 新增分类验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void validateAddCategoryDto(CategoryDto dto) {
+    public void validateAddCategoryDto(CategoryDto dto) throws BusinessException {
 
         commonValidate(dto);    
 
         if (dto.getLevel() == 3) {
             if (StringUtils.isBlank(dto.getPictureUrl())) {
-                throw new RuntimeException("三级必须上传图标！");
+                throw new BusinessException("三级必须上传图标！");
             }
         }
 
         if (dto.getLevel() > 1) {
             if (dto.getParentId() == 0 || dto.getParentId() == null) {
-                throw new RuntimeException("请确定上级分类");
+                throw new BusinessException("请确定上级分类");
             }
         }
 
         // if (dto.getSortOrder() == null || dto.getSortOrder() == 0) {
-        // throw new RuntimeException("请明确当前分类的排序！");
+        // throw new BusinessException("请明确当前分类的排序！");
         // }
     }
 
@@ -285,38 +284,39 @@ public class CategoryController {
      * 修改和新增分类都要用到的验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void commonValidate(CategoryDto dto) {
+    public void commonValidate(CategoryDto dto) throws BusinessException {
 
         if (dto.getLevel() == 0 || dto.getLevel() == null) {
-            throw new RuntimeException("请输入该类目的排列位置");
+            throw new BusinessException("请输入该类目的排列位置");
         }
 
         if (dto.getLevel() < 1 || dto.getLevel() > 3) {
-            throw new RuntimeException("请输入该类目的有效排列位置");
+            throw new BusinessException("请输入该类目的有效排列位置");
         }
 
         // 如果是一级分类 name的值为汉字，切长度为1,5之间
         if (dto.getLevel() == 1) {
             if (!ListeningRegExpUtils.lengthStr(dto.getCategoryName(), 1, 5)
                     || !ListeningRegExpUtils.isChineseCharacter(dto.getCategoryName())) {
-                throw new RuntimeException("类目名称格式不正确，请输入[1-5]个汉字");
+                throw new BusinessException("类目名称格式不正确，请输入[1-5]个汉字");
             }
         }
         // 如果是二级分类
         if (dto.getLevel() == 2) {
             String name = dto.getCategoryName();
             if (!ListeningRegExpUtils.lengthValue(name, 1, 15)) {
-                throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
+                throw new BusinessException("类目名称格式不正确，请输入15位以下汉字和字母！");
             }
             if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)) {
-                throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
+                throw new BusinessException("类目名称格式不正确，请输入15位以下汉字和字母！");
             }
         }
         // 如果是三级分类
         if (dto.getLevel() == 3) {
             if (!ListeningRegExpUtils.lengthValue(dto.getCategoryName(), 1, 20)) {
-                throw new RuntimeException("类目名称格式不正确，请输入20位以下汉字，字母，数字，特殊字符！");
+                throw new BusinessException("类目名称格式不正确，请输入20位以下汉字，字母，数字，特殊字符！");
             }
         }
 
