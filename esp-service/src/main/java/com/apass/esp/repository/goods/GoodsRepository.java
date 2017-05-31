@@ -138,4 +138,19 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 	public int getBelongCategoryGoodsNumber(long id){
     	return this.getSqlSession().selectOne("getBelongCategoryGoodsNumber",id);
     }
+	/**
+	 * 根据类目id查询其类目下所有已经下架了的商品信息
+	 * @param id
+	 * @return
+	 */
+	public List<GoodsInfoEntity> getDownCategoryGoodsByCategoryId(long id){
+		return this.getSqlSession().selectList("getDownCategoryGoodsByCategoryId", id);
+	}
+	/**
+	 * 更新已经下架商品的目录
+	 * @param id
+	 */
+	public void updateGoodsCategoryStatus(long id){
+		 this.getSqlSession().update("updateGoodsCategoryStatus", id);
+	}
 }
