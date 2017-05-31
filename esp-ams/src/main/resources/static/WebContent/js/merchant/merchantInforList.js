@@ -113,7 +113,7 @@ $(function () {
     //添加商户信息
     $("#add").click(function () {
         //清空弹出框中的数据
-        $("#channelAdd").textbox('setValue', '');
+        $("#channelAdd").combobox('setValue', '');
         $("#addMerchantCode").textbox('setValue', '');
         $("#addMerchantName").textbox('setValue', '');
         $("#addMerchantProvince").combobox('setValue', '');
@@ -244,7 +244,7 @@ $(function () {
 //		var merchantProvince = $("#addMerchantProvince").combobox('getText');
         var merchantCity = $("#addMerchantCity").combobox('getValue');
         var merchantArea = $("#addMerchantArea").combobox('getValue');
-        var channel = $("#channelAdd").textbox('getValue');
+        var channel = $("#channelAdd").combobox('getValue');
         var merchantAddress = $("#addMerchantAddress").textbox('getValue');
         var merchantPostcode = $("#addMerchantPostcode").textbox('getValue');
         var merchantType = $("#addMerchantType").combobox('getValue');
@@ -326,7 +326,7 @@ $(function () {
     });
     //取消  添加商户信息
     $("#cancelAdd").click(function () {
-        $("#channelAdd").textbox('setValue', '');
+        $("#channelAdd").combobox('setValue', '');
         $("#addMerchantProvince").combobox('setValue', '');
         $("#addMerchantCity").combobox('setValue', '');
         $("#addMerchantArea").combobox('setValue', '');
@@ -398,7 +398,6 @@ $(function () {
 
     //编辑   商户信息
     $.Edit = function (row) {
-
         //加载省份 和城市
         loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
         //string转json对象
@@ -698,7 +697,7 @@ function loadDirect(provinceId, cityId, areaId) {
                             var pId = $("#" + provinceId).textbox('getValue');
                             var cId = $("#" + cityId).textbox('getValue');
                             var aId = $("#" + areaId).textbox('getValue');
-                            var channel = $('#channelAdd').textbox('getValue');
+                            var channel = $('#channelAdd').combobox('getValue');
                             if(cId==null||cId.length==0){
                                 $.messager.alert("<span style='color: black;'>提示</span>", '请先选择所在城市！', 'error');
                                 return;

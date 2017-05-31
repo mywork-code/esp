@@ -1,5 +1,6 @@
 package com.apass.esp.web.category;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,10 +119,11 @@ public class CategoryController {
      * 编辑 
      * 
      * @param dto
+     * @throws BusinessException 
      */
     @RequestMapping(value = "/edit")
     @ResponseBody
-    public Response updateCategoryName(@RequestBody CategoryDto dto) {
+    public Response updateCategoryName(@RequestBody CategoryDto dto) throws BusinessException {
         try {
             validateUpdateCategoryDto(dto);
             cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName(),dto.getPictureUrl(),
