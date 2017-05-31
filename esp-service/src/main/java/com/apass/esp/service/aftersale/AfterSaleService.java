@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
@@ -112,7 +113,7 @@ public class AfterSaleService {
             if (resultMap.containsKey(idNum.getGoodsStockId()) && goodsStockIdList.contains(idNum.getGoodsStockId())) {
                 if (resultMap.get(idNum.getGoodsStockId()).getGoodsNum().intValue() < idNum.getGoodsNum()) {
                     LOG.info(requestId, "商品库存id退货数量大于购买数量", String.valueOf(idNum.getGoodsStockId()));
-                    throw new BusinessException("无效的商品数量");
+                    throw new BusinessException("无效的商品数量",BusinessErrorCode.PARAM_VALUE_ERROR);
                 }
                 
                 // 计算退货商品总金额
@@ -121,14 +122,14 @@ public class AfterSaleService {
                 goodsStockIdList.remove(idNum.getGoodsStockId());
             } else {
                 LOG.info(requestId, "订单详情表中无该商品库存id", String.valueOf(idNum.getGoodsStockId()));
-                throw new BusinessException("无效的商品id");
+                throw new BusinessException("无效的商品id",BusinessErrorCode.PARAM_VALUE_ERROR);
             }
         }
 
         /** 3. 校验 服务端计算的退货金额 与 页面传过来的是否一致 */
         if (operate.equals(YesNo.NO.getCode()) && refundAmt.compareTo(returnPriceVal) != 0) {
             LOG.info(requestId, "退货金额计算错误", String.valueOf(refundAmt));
-            throw new BusinessException("退货金额错误");
+            throw new BusinessException("退货金额错误",BusinessErrorCode.PARAM_VALUE_ERROR);
         }
 
         /** 4. 售后数据入库操作 */
@@ -167,7 +168,7 @@ public class AfterSaleService {
         //保存 退货信息
         orderRefundDao.insert(refundInfo);
         if (null == refundInfo.getId()) {
-            throw new BusinessException("退货信息保存失败!");
+            throw new BusinessException("退货信息保存失败!",BusinessErrorCode.ORDER_REFUNDINFO_SAVE_FAILED);
         }
 
         //插入售后流程数据
@@ -187,7 +188,7 @@ public class AfterSaleService {
             // 保存退货详情
             refundDetailInfoDao.insert(refundDetailInfo);
             if (null == refundDetailInfo.getId()) {
-                throw new BusinessException("退货详情保存失败!");
+                throw new BusinessException("退货详情保存失败!",BusinessErrorCode.ORDER_REFUNDDETAIL_SAVE_FAILED);
             }
         }
 
@@ -197,7 +198,7 @@ public class AfterSaleService {
         oiDto.setStatus(OrderStatus.ORDER_RETURNING.getCode());
         Integer subOrderUpdateStatus = orderInfoDao.update(oiDto);
         if (subOrderUpdateStatus < 1) {
-            throw new BusinessException("订单状态更新失败!");
+            throw new BusinessException("订单状态更新失败!",BusinessErrorCode.NO);
         }
         
     }
@@ -217,19 +218,19 @@ public class AfterSaleService {
         }
         if (null == orderInfo) {
             LOG.info(requestId, "查询订单数据为空", orderId);
-            throw new BusinessException("当前订单编号不存在,不允许进行售后操作!");
+            throw new BusinessException("当前订单编号不存在,不允许进行售后操作!",BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         // 已收货的订单才允许退换货
         if (!orderInfo.getStatus().equals(OrderStatus.ORDER_COMPLETED.getCode())) {
             LOG.info(requestId, "校验订单状态", "当前订单状态非交易完成，不支持退换货");
-            throw new BusinessException("当前订单状态不支持售后操作!");
+            throw new BusinessException("当前订单状态不支持售后操作!",BusinessErrorCode.ORDER_STATUS_INVALID);
         }
         
         // 交易完成的订单 7天内 才可售后操作
         if(DateFormatUtil.isExpired(orderInfo.getAcceptGoodsDate(), 7)){
             LOG.info(requestId, "订单交易完成超过7天不能进行售后操作", "");
-            throw new BusinessException("当前订单状态不支持售后操作!");
+            throw new BusinessException("当前订单状态不支持售后操作!",BusinessErrorCode.ORDER_STATUS_INVALID);
         }
         
         Map<String, Object> map = new HashMap<String, Object>();
@@ -238,7 +239,7 @@ public class AfterSaleService {
         // 每个订单只允许一次售后操作
         if(null != refundInfoList && !refundInfoList.isEmpty()){
             LOG.info(requestId, "当前订单已做过售后操作，不能再次进行售后操作", "");
-            throw new BusinessException("当前订单状态不支持售后操作!");
+            throw new BusinessException("当前订单状态不支持售后操作!",BusinessErrorCode.ORDER_STATUS_INVALID);
         }
         
         return orderInfo;
@@ -257,7 +258,7 @@ public class AfterSaleService {
         Dto.setNodeName(nodeName);
         serviceProcessDao.insert(Dto);
         if (null == Dto.getId()) {
-            throw new BusinessException("保存售后流程信息失败!");
+            throw new BusinessException("保存售后流程信息失败!",BusinessErrorCode.ORDER_REFUNDSAVE_FAILED);
         }
     }
     
@@ -277,7 +278,7 @@ public class AfterSaleService {
 		Dto.setApprovalComments(approvalComments);
 		serviceProcessDao.insert(Dto);
 		if (null == Dto.getId()) {
-			throw new BusinessException("保存售后流程信息失败!");
+			throw new BusinessException("保存售后流程信息失败!",BusinessErrorCode.ORDER_REFUNDSAVE_FAILED);
 		}
 	}
 
@@ -312,7 +313,7 @@ public class AfterSaleService {
         // 售后中的订单才允许提交物流信息
         if (!orderInfo.getStatus().equals(OrderStatus.ORDER_RETURNING.getCode())) {
             LOG.info(requestId, "校验订单状态,当前订单状态不能提交物流信息", orderInfo.getStatus());
-            throw new BusinessException("当前订单状态不能提交物流信息!");
+            throw new BusinessException("当前订单状态不能提交物流信息!",BusinessErrorCode.ORDER_STATUS_INVALID);
         }
         
         /** 2. 查询售后信息 */
