@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.service.nation.NationService;
@@ -59,7 +60,7 @@ public class RegionController {
             return Response.success("success", dictList);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            return Response.fail("省份查询失败!");
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
     }
 }
