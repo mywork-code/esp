@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.coffers.CoffersBaseService;
 import com.apass.esp.service.withdraw.WithdrawService;
@@ -44,7 +45,8 @@ public class WithdrawController {
 	    try{
 	        String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
 	        if(StringUtils.isBlank(userId)){
-	            return Response.fail("参数有误");
+	        	LOGGER.error("参数有误");
+	            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 	        }
 	        
 	        resultMap = withdrawService.queryWithdrawByUserId(userId);
@@ -52,7 +54,7 @@ public class WithdrawController {
 	        return Response.success("提现页面查询成功", resultMap);
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
-	        return Response.fail(e.getMessage());
+	        return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
 	    }
 	}
 	
@@ -72,7 +74,8 @@ public class WithdrawController {
             
 	    try{
 	        if(StringUtils.isAnyBlank(userId,amount,cardBank,cardNo)){
-	            return Response.fail("参数有误");
+	        	LOGGER.error("参数有误");
+	            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 	        }
 	        LOGGER.info("确认提现传参内容userId:{},amount:{},cardBank:{},cardNo:{}",userId,amount,cardBank,cardNo);
 	        
@@ -81,7 +84,7 @@ public class WithdrawController {
 	        return Response.success("提现成功！", resultMap);
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
-	        return Response.fail(e.getMessage());
+	        return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
 	    }
 	}
 
