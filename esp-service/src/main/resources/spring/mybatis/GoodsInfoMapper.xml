@@ -100,6 +100,7 @@
 	<![CDATA[
 		SELECT
 		t.ID id,
+		t.category_id3 categoryId3,
 		t.category_code categoryCode,
 		t.goods_name goodsName,
 		t.goods_title goodsTitle,
