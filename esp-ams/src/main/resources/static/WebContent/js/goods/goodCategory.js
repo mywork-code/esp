@@ -172,6 +172,11 @@ $(function() {
 	$("#editConfirmGoodCategory").click(function(){
 		debugger;
 		var categoryName = $("#editCategoryName").textbox('getValue');
+		var leng = getLenString(categoryName);
+		if(leng > 15){
+			$.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
+			return;
+		}
 		var params = {
 			'categoryId':categoryId,
 			'categoryName':categoryName,
@@ -277,9 +282,11 @@ $(function() {
 				return;
 			}
 		}else if(categoryLevel == 2){
+			debugger;
 			reg= /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
-			if(categoryName.length > 15){
-				$.messager.alert("提示", "字数长度不能大于15", "info");
+			var leng = getLenString(categoryName);
+			if(leng > 15){
+				$.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
 				return;
 			}
 			if(!regExp_pattern(categoryName,reg)){

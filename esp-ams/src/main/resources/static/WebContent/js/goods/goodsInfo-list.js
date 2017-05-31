@@ -1529,6 +1529,44 @@ $(function() {
 			}
 		});
 	});
+	//编辑商品--上传logo
+	$("#editUpLogoBtn").click(function() {
+		debugger;
+		var editGoodsLogoFile=$('#editGoodsLogoFile').val();
+		if (null == editGoodsLogoFile || ("") == editGoodsLogoFile) {
+			$.messager.alert("提示", "请选择文件！", "info");
+			return;
+		}
+//		var pos = "." + editGoodsLogoFile.replace(/.+\./, "");
+//		if(pos!=".png"){
+//			$.messager.alert("提示", '请导入正确的文件格式', "info");
+//			return;
+//		}
+		//提交from
+		var thisform = $("#editLogoFilepic");
+		thisform.form("submit",{
+			url : ctx + '/application/goods/management/uplogoFile',
+			success : function(data) {
+				var flag1 = data.indexOf('登录系统');
+				var flag2 = data.indexOf('</div');
+				//console.log(data+"==========>"+flag);;
+				if(flag1 != -1 && flag2 != -1){
+					$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+					window.top.location = ctx + "/logout";
+					return false;
+				}
+				
+				var response = JSON.parse(data);
+				$.validateResponse(response, function() {
+					$(".search-btn").click();
+				});
+				
+				if(response.status=="1"){
+					loadLogo("editGoodsLogoImg",response.data);
+				}
+			}
+		});
+	});
 	
 	//上传库存logo
 	$("#upStockLogoBtn").click(function() {

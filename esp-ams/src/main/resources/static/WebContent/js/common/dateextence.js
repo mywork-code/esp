@@ -167,3 +167,18 @@ function deleteCookie(name) {
 	document.cookie = name + "=v; expires=" + date.toGMTString();
 }
 
+//计算字符串长度：一个汉字算两个长度
+function getLenString(str){
+	var len = 0;
+	var re = new RegExp(/^[\u2E80-\u9FFF]+$/);
+	for(i=0;i<str.length;i++){
+		var cha = str.charAt(i);
+		if(re.test(cha)){
+			len = len + 2;
+		}else{
+			len = len + 1;
+		}	
+	}
+	
+	return len;
+}
