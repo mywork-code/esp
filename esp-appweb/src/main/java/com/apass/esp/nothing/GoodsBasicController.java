@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -34,7 +35,8 @@ public class GoodsBasicController {
 			Map<String, Object> returnMap = new HashMap<>();
 			// Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
 			if (null == goodsId) {
-				return Response.fail("商品号不能为空!");
+				LOGGER.error("商品号不能为空!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 			}
 			goodService.loadGoodsBasicInfoById(Long.valueOf(goodsId), returnMap);
 			return Response.success("加载成功", returnMap);
@@ -43,7 +45,7 @@ public class GoodsBasicController {
 			return Response.fail(e.getErrorDesc());
 		} catch (Exception e) {
 			LOGGER.error("GoodsBasic loadGoodsBasicInfo fail", e);
-			return Response.fail("获取商品基本信息失败");
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
 		}
 	}
 }
