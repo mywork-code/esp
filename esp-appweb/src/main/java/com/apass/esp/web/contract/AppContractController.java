@@ -1,5 +1,6 @@
 package com.apass.esp.web.contract;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.contract.BuySellContractDTO;
 import com.apass.esp.service.contract.ContractService;
@@ -38,7 +39,8 @@ public class AppContractController {
 		String orderIdStr = CommonUtils.getValue(paramMap, "orderIdStr");
 		String[] orderIdArray=orderIdStr.split(",");
 		if(orderIdArray==null||orderIdArray.length<=0){
-			return Response.fail("订单ID信息不能为空");
+			LOGGER.error("订单ID信息不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 
 		try{
@@ -49,7 +51,7 @@ public class AppContractController {
 			return Response.fail(e.getErrorDesc());
 		}catch(Exception e){
 			LOGGER.error("查询合同信息失败",e);
-			return Response.fail("查询合同信息失败");
+			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
 		}
 
 	}
