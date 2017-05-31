@@ -7,6 +7,7 @@ import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -162,8 +163,9 @@ public class CategoryInfoService {
 	 * 根据类别id修改类别名称
 	 * @param id
 	 * @param categoryName
+	 * @throws BusinessException 
 	 */
-	public void updateCategoryNameById(long id ,String categoryName,String pictureUrl,String userName){
+	public void updateCategoryNameById(long id ,String categoryName,String pictureUrl,String userName) throws BusinessException{
 		
 		//根据id获取类目信息
 		CategoryVo v= getCategoryById(id);
@@ -171,7 +173,7 @@ public class CategoryInfoService {
 		 * 验证数据库中是否存在类目名称
 		 */
 		if(egtCategoryCount(categoryName,v.getLevel())>=1 && (v!=null&&!v.getCategoryName().equals(categoryName))){
-			throw new RuntimeException("此类目名称已重复！");
+			throw new BusinessException("此类目名称已重复！");
 		}
 		
 		Category cate = new Category();
@@ -189,12 +191,13 @@ public class CategoryInfoService {
 	/**
 	 * 根据类目id，删除分类
 	 * @param id
+	 * @throws BusinessException 
 	 */
-	public void deleteCategoryById(long id){
+	public void deleteCategoryById(long id) throws BusinessException{
 		
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
 	   if(cateList != null && !cateList.isEmpty()){
-		  throw new RuntimeException("该商品分类下存在下级分类!");
+		  throw new BusinessException("该商品分类下存在下级分类!");
 	   }
 	   //根据Id，查出相对应的类目信息
 	   CategoryVo v = getCategoryById(id);
@@ -204,7 +207,7 @@ public class CategoryInfoService {
 		  //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
 		   int count = goodsService.getBelongCategoryGoodsNumber(id);
 		   if(count>0){
-			 throw new RuntimeException("该商品分类下存在商品!");
+			 throw new BusinessException("该商品分类下存在商品!");
 		   }
 	   }
 	   
@@ -241,8 +244,9 @@ public class CategoryInfoService {
 	 * 新增一个类别
 	 * @param categoryDto
 	 * @return
+	 * @throws BusinessException 
 	 */
-	public Category addCategory(CategoryDto categoryDto){
+	public Category addCategory(CategoryDto categoryDto) throws BusinessException{
 	        Integer sortOrder = categoryMapper.getMaxSortOrder(categoryDto.getLevel());
 	        if(sortOrder == null){
 	        	sortOrder =1;
@@ -251,7 +255,7 @@ public class CategoryInfoService {
 		 * 验证数据库中是否存在类目名称
 		 */
 		if(egtCategoryCount(categoryDto.getCategoryName(),categoryDto.getLevel())!=0){
-		    throw new RuntimeException("此类目名称已重复！");
+		    throw new BusinessException("此类目名称已重复！");
 		}
 		
 		Category cate = new Category();

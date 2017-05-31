@@ -9,6 +9,7 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -110,7 +111,7 @@ public class CategoryController {
             validateAddCategoryDto(dto);
             cateService.addCategory(dto);
             return Response.success("添加分类成功！");
-        } catch (RuntimeException e) {
+        } catch (BusinessException e) {
             LOGGER.error("添加类目 失败。。",e);
             return Response.fail(e.getMessage());
         }
@@ -129,7 +130,7 @@ public class CategoryController {
             cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName(),dto.getPictureUrl(),
                     SpringSecurityUtils.getLoginUserDetails().getUsername());
             return Response.success("修改商品类目成功！");
-        } catch (RuntimeException e) {
+        } catch (BusinessException e) {
             LOGGER.error("修改商品类目失败。。",e);
             return Response.fail(e.getMessage());
         }
@@ -219,7 +220,7 @@ public class CategoryController {
             }
             cateService.deleteCategoryById(id);
             return Response.success("删除分类成功!");
-        } catch (RuntimeException e) {
+        } catch (BusinessException e) {
             LOGGER.error("删除商品分类失败", e);
             return Response.fail(e.getMessage());
         }
