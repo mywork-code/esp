@@ -362,8 +362,8 @@ public class OrderService {
 			orderInfo.setUserId(userId);
 			orderInfo.setOrderAmt(orderAmt);
 			MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-			String orderId =commonService.createOrderId(userId);
-					//commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
+			String orderId =//commonService.createOrderId(userId);
+					commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
 			orderList.add(orderId);
 			orderInfo.setDeviceType(deviceType);
 			orderInfo.setOrderId(orderId);
