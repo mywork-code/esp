@@ -12,8 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -31,6 +34,8 @@ import com.apass.gfb.framework.utils.GsonUtils;
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class AfterSaleController {
 
+	private static final Logger logger = LoggerFactory.getLogger(AfterSaleController.class);
+			
     @Autowired
     private AfterSaleService afterSaleService;
     
@@ -55,7 +60,8 @@ public class AfterSaleController {
         LOG.info(requestId, methodDesc, userId);
         
         if(StringUtils.isAnyBlank(userId, orderId, returnImage)){
-            return Response.fail("数据不能为空");
+        	logger.error("数据不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         try {
@@ -69,7 +75,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("售后商品图片上传失败!");
+            return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
         }
         
     }
@@ -106,40 +112,47 @@ public class AfterSaleController {
             BigDecimal returnPriceVal = new BigDecimal(returnPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
             
             if (StringUtils.isBlank(userId)) {
-                return Response.fail("用户名不能为空");
+            	logger.error("用户名不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             
             if(StringUtils.isBlank(orderId)){
-                return Response.fail("订单编号不能为空");
+            	logger.error("订单编号不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             
             if(!RefundReason.isLegal(reason)){
-                return Response.fail("退换货原因不合法");
+            	logger.error("退换货原因不合法");
+                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
             }
             
             // Yes-1:换货  No-0:退货
             if(!YesNo.isLegal(operate)){
-                return Response.fail("退换货操作不合法");
+            	logger.error("退换货操作不合法");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             
             // 退货时校验退款金额
             if(operate.equals(YesNo.NO.getCode()) && StringUtils.isBlank(returnPrice)){
-                return Response.fail("退款金额不能为空");
+            	logger.error("退款金额不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             
             if(StringUtils.isBlank(returngoodsInfo)){
-                return Response.fail("请先选择要退换货的商品");
+            	logger.error("请先选择要退换货的商品");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             
             if(imageNumVal > 3 || imageNumVal < 1){
-                return Response.fail("请上传1~3张图片");
+            	logger.error("请上传1~3张图片");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             
             List<GoodsStockIdNumDto> returngoodsList = GsonUtils.convertList(returngoodsInfo, GoodsStockIdNumDto.class);
             
             if(null == returngoodsList || returngoodsList.isEmpty()){
                 LOG.info(requestId, methodDesc, "未提交要退换货的商品数据");
-                return Response.fail("请选择需要退换货的商品");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             
             afterSaleService.returnGoods(requestId, userId, orderId, returnPriceVal, operate, reason, content, returngoodsList, imageNumVal);
@@ -152,7 +165,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("退换货操作失败,请联系客服!");
+            return Response.fail(BusinessErrorCode.OPERATION_INFO_FAILED);
         }
     }
     
@@ -179,7 +192,8 @@ public class AfterSaleController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if(StringUtils.isAnyBlank(userId, orderId)){
-            return Response.fail("用户id、订单号不能为空");
+        	logger.error("用户id、订单号不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         try {
@@ -192,7 +206,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("售后进度查询失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
        
     }
@@ -221,7 +235,8 @@ public class AfterSaleController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
         
         if (StringUtils.isAnyBlank(userId, refundId, orderId, logisticsName, logisticsNo)) {
-            return Response.fail("用户id、订单编号、物流厂商、物流单号不能为空");
+        	logger.error("用户id、订单编号、物流厂商、物流单号不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         try {
@@ -234,7 +249,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("提交售后物流信息失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
         }
     }
     
