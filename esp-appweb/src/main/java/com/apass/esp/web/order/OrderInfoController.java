@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
@@ -101,6 +102,13 @@ public class OrderInfoController {
                 LOGGER.error("用户名传入非法!");
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
+            if(StringUtils.isEmpty(deviceType)){
+                deviceType="android";
+            }
+            if(!deviceType.equalsIgnoreCase(DeviceType.ANDROID.getName())||!deviceType.equalsIgnoreCase(DeviceType.IOS.getName())){
+                LOGGER.error("下单渠道参数错误");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+            }
             Long userId = Long.valueOf(userIdStr);
             if (null == addressIdStr) {
                 //return Response.fail("用户收货地址不能为空");
@@ -131,7 +139,6 @@ public class OrderInfoController {
                 LOGGER.error("请选择所购买的商品");
                 return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
             }
-            deviceType="android";
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
                     purchaseList, sourceFlag,deviceType);
             resultMap.put("orderList", orders);

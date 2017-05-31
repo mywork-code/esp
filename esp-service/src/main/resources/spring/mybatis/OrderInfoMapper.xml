@@ -267,6 +267,7 @@
              name,
              telephone,
              addressId,
+             device_type,
              create_date,
              update_date
             )
@@ -291,6 +292,7 @@
 	        #{name, jdbcType=VARCHAR},
 	        #{telephone, jdbcType=VARCHAR},
 	        #{addressId, jdbcType=BIGINT},
+	        #{deviceType, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
 	        CURRENT_TIMESTAMP);
 	</insert>
