@@ -70,6 +70,7 @@ public enum BusinessErrorCode implements ErrorCode {
   PHONE_VALIDATE_FAILED(5008,"手机号验证失败"),
   IDCARD_VALIDATE_FAILED(5009,"身份证号验证失败"),
   BIND_VALIDATE_FAILED(5010,"绑定失败"),
+  LOGIN_HAS_INVALID(5011,"登录失效，请重新登录"),
 
   //6xxx
   ADDRESS_UPDATE_FAILED(6001, "更新地址信息失败"),
