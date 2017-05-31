@@ -165,7 +165,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.OPERATION_INFO_FAILED);
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         }
     }
     

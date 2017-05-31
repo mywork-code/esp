@@ -24,6 +24,7 @@ public enum BusinessErrorCode implements ErrorCode {
   GOODS_UPDATEINFO_ERROR(2008, "更新商品信息失败"),
   GOODS_STATUS_INVALID(2009, "商品状态无效"),
   CART_DELETE_ERROR(2010,"删除购物车错误"),
+  SYN_CART_FAILED(2011,"同步商品失败"),
 
   //3xxx 订单问题
   ORDER_STATUS_INVALID(3001, "订单状态无效"),
@@ -87,7 +88,9 @@ public enum BusinessErrorCode implements ErrorCode {
   QUREY_INFO_FAILED(6014,"查询失败,请稍后再试或联系客服!"),
   DELETE_INFO_FAILED(6015,"删除失败,请稍后再试或联系客服!"),
   UPLOAD_PICTURE_FAILED(6016,"上传图片失败"),
-  OPERATION_INFO_FAILED(6017,"操作失败,请稍后再试或联系客服!")
+  EDIT_INFO_FAILED(6017,"操作失败,请稍后再试或联系客服!"),
+  DETAIL_INFO_FAILED(6018,"查看失败,请稍后再试或联系客服!"),
+  ADD_INFO_INVALID(6019,"提交无效")
   ;
   private Integer code;
   private String msg;
