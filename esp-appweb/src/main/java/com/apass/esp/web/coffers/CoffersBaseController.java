@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.coffers.CoffersBaseService;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -26,7 +27,7 @@ import com.google.common.collect.Maps;
 @Controller
 @RequestMapping("/coffers")
 public class CoffersBaseController {
-    private static final Logger LOGGER=LoggerFactory.getLogger(CoffersBaseController.class);
+    private static final Logger logger=LoggerFactory.getLogger(CoffersBaseController.class);
 
     @Autowired
     private CoffersBaseService coffersBaseService;
@@ -39,19 +40,21 @@ public class CoffersBaseController {
 	@ResponseBody
 	public Response queryCoffers(@RequestBody Map<String, Object> paramMap) {
 	    Map<String,Object> resultMap = Maps.newHashMap();
-	    LOGGER.info("请求参数：[{}]",paramMap);
+	    logger.info("请求参数：[{}]",paramMap);
 	    try{
 	        String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
 	        if(StringUtils.isBlank(userId)){
-	            return Response.fail("参数有误");
+	        	logger.error("参数有误");
+	            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 	        }
 	        
 	        resultMap = coffersBaseService.queryCoffers(userId);
 
 	        return Response.success("我的金库页面查询成功", resultMap);
 	    }catch(Exception e){
-	        LOGGER.error(e.getMessage(),e);
-	        return Response.fail("我的金库页面查询失败");
+	        logger.error(e.getMessage(),e);
+	        logger.error("我的金库页面查询失败");
+	        return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
 	    }
 	}
 
