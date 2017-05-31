@@ -457,6 +457,9 @@
 	<select id="select" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
 	<![CDATA[
 		SELECT
+			a.category_id1 categoryId1,
+			a.category_id2 categoryId2,
+			a.category_id3 categoryId3,
 			a.ID id,
 			a.goods_name goodsName,
 			a.goods_title goodsTit,
@@ -554,6 +557,9 @@
 	<select id="selectByPK" parameterType="Long" resultType="GoodsInfoEntity">
 	<![CDATA[
 		SELECT
+			category_id1 categoryId1,
+			category_id2 categoryId2,
+			category_id3 categoryId3,
 			ID id,
 			ID goodId,
 			category_code categoryCode,

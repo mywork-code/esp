@@ -466,7 +466,6 @@ public class GoodsBaseInfoController {
         if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
             return "商品墙图片为空，请上传！";
         }
-
         if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
             return "商品详情不能为空,请添加！";
         }

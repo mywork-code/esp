@@ -9,6 +9,7 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -110,7 +111,7 @@ public class CategoryController {
             validateAddCategoryDto(dto);
             cateService.addCategory(dto);
             return Response.success("添加分类成功！");
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             LOGGER.error("添加类目 失败。。",e);
             return Response.fail(e.getMessage());
         }
@@ -120,10 +121,11 @@ public class CategoryController {
      * 编辑 
      * 
      * @param dto
+     * @throws BusinessException 
      */
     @RequestMapping(value = "/edit")
     @ResponseBody
-    public Response updateCategoryName(@RequestBody CategoryDto dto) {
+    public Response updateCategoryName(@RequestBody CategoryDto dto) throws BusinessException {
         try {
             validateUpdateCategoryDto(dto);
             cateService.updateCategoryNameById(dto.getCategoryId(), dto.getCategoryName(),dto.getPictureUrl(),
@@ -245,8 +247,9 @@ public class CategoryController {
      * 修改分类验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void validateUpdateCategoryDto(CategoryDto dto) {
+    public void validateUpdateCategoryDto(CategoryDto dto) throws BusinessException {
 
         if (dto.getCategoryId() == 0 || dto.getCategoryId() == null) {
             throw new RuntimeException("传入id为空！");
@@ -258,8 +261,9 @@ public class CategoryController {
      * 新增分类验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void validateAddCategoryDto(CategoryDto dto) {
+    public void validateAddCategoryDto(CategoryDto dto) throws BusinessException {
 
         commonValidate(dto);    
 
@@ -284,8 +288,9 @@ public class CategoryController {
      * 修改和新增分类都要用到的验证
      * 
      * @param dto
+     * @throws BusinessException 
      */
-    public void commonValidate(CategoryDto dto) {
+    public void commonValidate(CategoryDto dto) throws BusinessException {
 
         if (dto.getLevel() == 0 || dto.getLevel() == null) {
             throw new RuntimeException("请输入该类目的排列位置");
@@ -306,7 +311,7 @@ public class CategoryController {
         if (dto.getLevel() == 2) {
             String name = dto.getCategoryName();
             if (!ListeningRegExpUtils.lengthValue(name, 1, 15)) {
-                throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
+                throw new BusinessException("类目名称格式不正确，请输入15位以下汉字和字母！");
             }
             if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)) {
                 throw new RuntimeException("类目名称格式不正确，请输入15位以下汉字和字母！");
