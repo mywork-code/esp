@@ -15,6 +15,7 @@ import org.tempuri.SendMessageService;
 import org.tempuri.SendMessageServiceSoap;
 import org.tempuri.SmsMessageData;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -139,7 +140,8 @@ public class MobileSmsService {
 				flag = this.sendSms(mobile, msg, "逐鹿验证码短信", "230");
 			}
 			if (!flag) {
-				throw new BusinessException("短信发送失败,请稍后再试");
+				logger.error("{}--{}短信发送失败,请稍后再试",new Object[]{"MobileSmsService","sendMobileVerificationCode"});
+				throw new BusinessException("短信发送失败,请稍后再试",BusinessErrorCode.MESSAGE_SEND_FAILED);
 			}
 		} catch (Exception e) {
 			logger.error("send sms fail", e);
@@ -168,7 +170,8 @@ public class MobileSmsService {
 				flag = this.sendSms(mobile, msg, "逐鹿通知类短信", "231");
 			}
 			if (!flag) {
-				throw new BusinessException("短信发送失败,请稍后再试.");
+				logger.error("{}--{}短信发送失败,请稍后再试",new Object[]{"MobileSmsService","sendNoticeSms"});
+				throw new BusinessException("短信发送失败,请稍后再试",BusinessErrorCode.MESSAGE_SEND_FAILED);
 			}
 			return flag;
 		} catch (Exception e) {
