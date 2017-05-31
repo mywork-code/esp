@@ -83,6 +83,9 @@ public enum BusinessErrorCode implements ErrorCode {
   BIND_HAS_EXIST(6010,"绑定关系已存在"),
   GET_INFO_FAILED(6011,"获取信息失败"),
   ACTIVITY_HASNOT_START(6012,"活动未开始"),
+  ADD_INFO_FAILED(6013,"添加信息失败"),
+  QUREY_INFO_FAILED(6014,"查询信息失败"),
+  DELETE_INFO_FAILED(6015,"删除信息失败")
   ;
   private Integer code;
   private String msg;
