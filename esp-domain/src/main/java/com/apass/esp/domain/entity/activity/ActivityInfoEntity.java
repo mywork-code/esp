@@ -35,6 +35,10 @@ public class ActivityInfoEntity {
 	 */
 	private Long goodsId;
 	/**
+	 * 三级类目id
+	 */
+	private Long categoryId3;
+	/**
 	 *活动状态
 	 */
 	private String status;
@@ -164,4 +168,11 @@ public class ActivityInfoEntity {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	public Long getCategoryId3() {
+		return categoryId3;
+	}
+	public void setCategoryId3(Long categoryId3) {
+		this.categoryId3 = categoryId3;
+	}
+	
 }

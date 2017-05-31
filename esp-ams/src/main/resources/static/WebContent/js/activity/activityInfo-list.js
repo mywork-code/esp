@@ -31,7 +31,12 @@ $(function() {
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                }, {
+                },{  
+       		 		title : '三级类目 id',  
+       		 		field : 'categoryId3', 
+       		 	    width : 90,  
+       		 		align : 'center'
+       		 	}, {
                     title : '商品大标题',
                     field : 'goodsTitle',
                     width : 90,
