@@ -321,6 +321,5 @@ public class CategoryController {
                 throw new BusinessException("类目名称格式不正确，请输入20位以下汉字，字母，数字，特殊字符！");
             }
         }
-
     }
 }

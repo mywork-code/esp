@@ -1531,7 +1531,6 @@ $(function() {
 	});
 	//编辑商品--上传logo
 	$("#editUpLogoBtn").click(function() {
-		debugger;
 		var editGoodsLogoFile=$('#editGoodsLogoFile').val();
 		if (null == editGoodsLogoFile || ("") == editGoodsLogoFile) {
 			$.messager.alert("提示", "请选择文件！", "info");
