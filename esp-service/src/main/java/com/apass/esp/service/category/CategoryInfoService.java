@@ -211,7 +211,7 @@ public class CategoryInfoService {
 			 throw new BusinessException("该商品分类下存在商品!");
 		   }
 	   }
-	   List<GoodsInfoEntity>  goodsList=goodsService.getDownCategoryGoodsByCategoryId(id);
+	   List<GoodsInfoEntity> goodsList=goodsService.getDownCategoryGoodsByCategoryId(id);
 	   //将要删除的目录id下的所有已经下架的商品的类目设置为空
 	   for(int i=0;i<goodsList.size();i++){
 		   goodsService.updateGoodsCategoryStatus(goodsList.get(i).getId());
