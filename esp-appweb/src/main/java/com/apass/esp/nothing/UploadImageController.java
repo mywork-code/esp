@@ -9,8 +9,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.RefundImageDto;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -22,6 +25,8 @@ import com.apass.gfb.framework.logstash.LOG;
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class UploadImageController {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UploadImageController.class);
 
     @Autowired
     private AfterSaleService afterSaleService;
@@ -47,11 +52,13 @@ public class UploadImageController {
         LOG.info(requestId, methodDesc, userId);
         
         if(StringUtils.isAnyBlank(userId, orderId)){
-            return Response.fail("数据不能为空");
+        	LOGGER.error("数据不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         
         if(imageList.size() > 3 || imageList.size() < 1){
-            return Response.fail("请上传1~3张照片");
+        	LOGGER.error("请上传1~3张照片");
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         
         try {
@@ -65,7 +72,7 @@ public class UploadImageController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail("售后商品图片上传失败!");
+            return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
         }
         
     }

@@ -1,5 +1,6 @@
 package com.apass.esp.service.contract;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.contract.BuySellContractDTO;
 import com.apass.esp.domain.dto.contract.ContractProductDTO;
 import com.apass.esp.domain.dto.contract.EstampRequest;
@@ -30,6 +31,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
@@ -53,6 +56,7 @@ import java.util.Map;
  */
 @Component
 public class ContractService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContractService.class);
     /**
      * 签章Client
      */
@@ -147,7 +151,8 @@ public class ContractService {
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            throw new BusinessException("合同生成失败", e);
+        	LOGGER.error("合同生成失败");
+            throw new BusinessException("合同生成失败", BusinessErrorCode.CONTRACT_BUILD_FAILED);
         }
     }
 

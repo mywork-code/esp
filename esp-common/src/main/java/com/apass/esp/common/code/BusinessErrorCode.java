@@ -6,6 +6,7 @@ package com.apass.esp.common.code;
  */
 public enum BusinessErrorCode implements ErrorCode {
   OK(0000, "操作成功"),
+  NO(0001, "操作失败"),
 
   //10xx 参数问题
   PARAM_IS_EMPTY(1001, "参数为空"),
@@ -50,6 +51,7 @@ public enum BusinessErrorCode implements ErrorCode {
   LOGISTICSNAMENO_SAVE_FAILED(3020, "保存物流厂商、单号信息失败"),
   AFTERSALES_PROCESSDATA_NULL(3021, "售后流程数据为空"),
   AFTERSALES_PROCESSDATA_ERROR(3022, "售后流程状态错误"),
+  ORDER_PAY_FAILED(3023,"订单支付失败!请重新支付"),
 
 
   //4xxx 与依懒服务相互调用问题
@@ -91,7 +93,10 @@ public enum BusinessErrorCode implements ErrorCode {
   UPLOAD_PICTURE_FAILED(6016,"上传图片失败"),
   EDIT_INFO_FAILED(6017,"操作失败,请稍后再试或联系客服!"),
   DETAIL_INFO_FAILED(6018,"查看失败,请稍后再试或联系客服!"),
-  ADD_INFO_INVALID(6019,"提交无效")
+  ADD_INFO_INVALID(6019,"提交无效"),
+  LOAD_INFO_FAILED(6020,"加载信息失败"),
+  GET_RANDOMCODE_FAILED(6021,"获取随机验证码失败"),
+  CALLBACK_FUNCTION_FAILED(6022,"回调失败")
   ;
   private Integer code;
   private String msg;

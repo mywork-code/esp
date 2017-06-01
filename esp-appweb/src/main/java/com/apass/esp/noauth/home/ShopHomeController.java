@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -104,7 +105,8 @@ public class ShopHomeController {
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("indexInit fail", e);
-            return Response.fail("首页加载失败");
+            LOGGER.error("首页加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
     
@@ -125,7 +127,8 @@ public class ShopHomeController {
         		  String page = CommonUtils.getValue(paramMap, "page");
         		  String rows = CommonUtils.getValue(paramMap, "rows");
         		  if(StringUtils.isEmpty(categoryId)){
-           				 return Response.fail("类目id不能空！");
+        			  LOGGER.error("类目id不能空！");
+           			  return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
            		  }
        			 GoodsBasicInfoEntity  goodsInfoEntity=new GoodsBasicInfoEntity();
        			 goodsInfoEntity.setCategoryId1(Long.parseLong(categoryId));//设置1级类目Id
@@ -172,7 +175,8 @@ public class ShopHomeController {
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
-            return Response.fail("加载商品列表失败！");
+            LOGGER.error("加载商品列表失败！");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
     
@@ -189,7 +193,8 @@ public class ShopHomeController {
             Long goodsId = CommonUtils.getLong(paramMap,"goodsId");
             String userId = CommonUtils.getValue(paramMap, "userId");
             if(null==goodsId){
-                return Response.fail("商品号不能为空!");
+            	LOGGER.error("商品号不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if (!StringUtils.isEmpty(userId)) {
                 int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
@@ -199,11 +204,12 @@ public class ShopHomeController {
             return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
         catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail("获取商品基本信息失败");
+            LOGGER.error("获取商品基本信息失败");
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
     }
 
@@ -219,7 +225,8 @@ public class ShopHomeController {
             Map<String,Object> returnMap = new HashMap<>();
             Long goodsId = CommonUtils.getLong(paramMap,"goodsId");
             if(null==goodsId){
-                return Response.fail("商品号不能为空!");
+            	LOGGER.error("商品号不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             List<GoodsStockInfoEntity> goodsStockList = goodService.loadDetailInfoByGoodsId(goodsId);
             for (GoodsStockInfoEntity goodsStock : goodsStockList) {
@@ -238,7 +245,8 @@ public class ShopHomeController {
             return Response.success("加载成功", returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsStockInfo fail", e);
-            return Response.fail("获取商品库存信息失败");
+            LOGGER.error("获取商品库存信息失败");
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
     } 
     

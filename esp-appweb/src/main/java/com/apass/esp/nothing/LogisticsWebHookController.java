@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.logistics.TrackingData;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -50,7 +51,8 @@ public class LogisticsWebHookController {
         
         if (null == trackData) {
             LOG.info("webHook[" + dataStr + "]回调失败");
-            return Response.fail("webHook[" + dataStr + "]回调失败");
+            LOGGER.error("webHook[{}]回调失败",dataStr);
+            return Response.fail(BusinessErrorCode.CALLBACK_FUNCTION_FAILED);
         }
         
         String trackingNumber = trackData.getTrackingNumber();

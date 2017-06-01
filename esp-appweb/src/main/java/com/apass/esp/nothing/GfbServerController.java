@@ -9,10 +9,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
@@ -51,14 +53,14 @@ public class GfbServerController {
 		        LOG.info(requestId, loanPmtDueDate, GsonUtils.toJson(param));
 		        
 		        Map<String, Object> resultMap = new HashMap<String, Object>();
-		        if(null !=loanPmtDueDate && loanPmtDueDate!=""){
+		        if(StringUtils.isNotBlank(loanPmtDueDate)){
 		        	resultMap.put("loanPmtDueDate", loanPmtDueDate);
 		        	return Response.successResponse(resultMap);
 		        }
 		        return Response.fail("通过vbsid查询VBS账单日失败!");
 			} catch (Exception e) {
 				LOGGER.error("通过vbsid查询VBS账单日失败", e);
-				return Response.fail("通过vbsid查询VBS账单日失败!");
+				return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
 			}
 	    }
 }

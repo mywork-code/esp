@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.purchase.PurchaseService;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
@@ -43,18 +44,21 @@ public class PurchaseController {
             Long goodsId = CommonUtils.getLong(paramMap, ParamsCode.GOODS_ID);
             Long goodsStockId = CommonUtils.getLong(paramMap, ParamsCode.GOODS_STOCK_ID);
             if(null==userId){
-                return Response.fail("对不起!用户号不能为空");
+            	LOGGER.error("对不起!用户号不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if(null==goodsId){
-                return Response.fail("对不起!商品号不能为空");
+            	LOGGER.error("对不起!商品号不能为空");
+            	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if(null==goodsStockId){
-                return Response.fail("对不起!商品库存号不能为空");
+            	LOGGER.error("对不起!商品库存号不能为空");
+            	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             purchaseService.buyRightNowInit(returnMap,userId,goodsId,goodsStockId);
         } catch (Exception e) {
             LOGGER.error("立即购买初始化失败!请稍后再试", e);
-            return Response.fail("立即购买初始化失败!请稍后再试");
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         }
         return Response.successResponse(returnMap);
     }
