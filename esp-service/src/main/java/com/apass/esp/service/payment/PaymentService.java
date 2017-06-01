@@ -124,6 +124,7 @@ public class PaymentService {
         String txnDesc = obtainTxnDesc(orderDetailList);
         
 		// 支付
+		//TODO 是否需要判断支付类型做相应的处理
 		PayResponseDto payResp = defary(userId, paymentType, totalAmt, txnDesc, cardNo,orderList);
 		if (null == payResp) {
 			throw new BusinessException("支付失败");
@@ -342,19 +343,27 @@ public class PaymentService {
 		payReq.setPayAmt(totalAmt);
 		payReq.setPayType(paymentType);
 		// 首付金额
-		Response response = paymentHttpClient.getCustomerInfo("",userId);
+		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
+				//paymentHttpClient.getCustomerInfo("",userId);
 		if(response==null||!response.getStatus().equals("1")){
 			throw new BusinessException("客户信息查询失败");
 		}
-		CustomerInfo customer = Response.resolveResult(response,CustomerInfo.class);
-		if (customer == null) {
+		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+		if (customerBasicInfo == null) {
 			throw new BusinessException("客户信息查询失败");
 		}
-		PayInfoEntity payInfo = calculateCreditPayRatio(customer.getAvailableAmount(), totalAmt);
-
+		Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
+		if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+			throw new BusinessException("额度信息查询失败");
+		}
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+		if (customerBasicInfo == null) {
+			throw new BusinessException("额度信息查询失败");
+		}
+		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
 		if(StringUtils.isNotEmpty(cardNo)){
-			if (!cardNo.equals(customer.getCardNo())) {
+			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
 				throw new BusinessException("支付银行卡号与绑定银行卡号不符");
 			}
 			payReq.setAccNo(cardNo);
