@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -40,6 +41,7 @@ import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.service.RolesService;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -82,6 +84,8 @@ public class GoodsBaseInfoController {
     private SystemParamService    systemParamService;
     @Autowired
     private MerchantInforService  merchantInforService;
+    @Autowired
+    private CategoryInfoService   categoryInfoService;
     /**
      * 图片服务器地址
      */
@@ -213,6 +217,12 @@ public class GoodsBaseInfoController {
                 pagination.getDataList().get(i)
                     .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
                         systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+                
+                Long categoryId=pagination.getDataList().get(i).getCategoryId3();
+                Category category=categoryInfoService.selectNameById(categoryId);
+                if(null !=category){
+                	pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
+                }
             }
             respBody.setTotal(pagination.getTotalCount());
             respBody.setRows(pagination.getDataList());

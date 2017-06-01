@@ -283,4 +283,12 @@ public class CategoryInfoService {
 	public void updateStatus1To0(){
 		categoryMapper.updateStatus1To0();
 	}
+	/**
+	 * 跟进类目id查询类目名称
+	 * @param id
+	 * @return
+	 */
+	public Category selectNameById(Long id){
+		return categoryMapper.selectByPrimaryKey(id);
+	}
 }

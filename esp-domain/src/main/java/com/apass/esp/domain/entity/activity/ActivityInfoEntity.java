@@ -39,6 +39,10 @@ public class ActivityInfoEntity {
 	 */
 	private Long categoryId3;
 	/**
+	 * 三级类目名称
+	 */
+	private String categoryName3;
+	/**
 	 *活动状态
 	 */
 	private String status;
@@ -173,6 +177,12 @@ public class ActivityInfoEntity {
 	}
 	public void setCategoryId3(Long categoryId3) {
 		this.categoryId3 = categoryId3;
+	}
+	public String getCategoryName3() {
+		return categoryName3;
+	}
+	public void setCategoryName3(String categoryName3) {
+		this.categoryName3 = categoryName3;
 	}
 	
 }
