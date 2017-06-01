@@ -142,8 +142,7 @@ public class GoodsInfoEntity {
     
     /**商品三级分类*/
     private Long categoryId3;
-    /**商品三级分类名称*/
-    private String categoryName3;
+    
 
     public Long getCategoryId1() {
         return categoryId1;
@@ -448,11 +447,4 @@ public class GoodsInfoEntity {
         this.merchantType = merchantType;
     }
 
-	public String getCategoryName3() {
-		return categoryName3;
-	}
-
-	public void setCategoryName3(String categoryName3) {
-		this.categoryName3 = categoryName3;
-	}
 }

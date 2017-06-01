@@ -66,6 +66,7 @@ public class ShoppingCartController {
         }
 
         try {
+
             Map<String, Object> resultMap = new HashMap<String, Object>();
             
             shoppingCartService.addGoodsToCart(requestId, userId, goodsStockId, count);

@@ -40,7 +40,7 @@ public class EspActivityHttpClient {
 	// 初始化合同
 	private static final String INIT_CONTRACT_URL = "/espReWardActivity/initContract";
 
-	// 最近的一次签名
+	// 初始化合同
 	private static final String LATE_SIGN_URL = "/espReWardActivity/latestSignature";
 
 	/**

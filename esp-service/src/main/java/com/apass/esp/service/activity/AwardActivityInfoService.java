@@ -1,22 +1,12 @@
 package com.apass.esp.service.activity;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.common.model.QueryParams;
-import com.apass.esp.common.utils.NumberUtils;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
-import com.apass.esp.domain.entity.AwardActivityInfo;
-import com.apass.esp.domain.entity.activity.BankEntity;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.mapper.AwardActivityInfoMapper;
-import com.apass.esp.repository.httpClient.EspActivityHttpClient;
-import com.apass.esp.repository.payment.PaymentHttpClient;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,8 +15,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.*;
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.common.model.QueryParams;
+import com.apass.esp.common.utils.NumberUtils;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
+import com.apass.esp.domain.entity.AwardActivityInfo;
+import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.entity.activity.BankEntity;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.mapper.AwardActivityInfoMapper;
+import com.apass.esp.repository.httpClient.EspActivityHttpClient;
+import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
 public class AwardActivityInfoService {
@@ -165,12 +174,7 @@ public class AwardActivityInfoService {
 	public Map<String, Object> getBindCardImformation(String requestId, long userId) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			//CustomerInfo customerInfo =
-            Response response = paymentHttpClient.getCustomerInfo(requestId, userId);
-            if(response==null||!response.getStatus().equals("1")){
-                return null;
-            }
-            CustomerInfo customerInfo = Response.resolveResult(response,CustomerInfo.class);
+			CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo(requestId, userId);
 			// 客户信息不存在
 			if (customerInfo == null) {
 				return null;
@@ -202,7 +206,7 @@ public class AwardActivityInfoService {
 			resultMap.put("cardBank", customerInfo.getCardBank());
 			resultMap.put("bankCode", customerInfo.getBankCode());
 			return resultMap;
-		} catch (Exception e) {
+		} catch (BusinessException e) {
 			LOGGER.error("查询用户是否绑卡及绑卡信息", e);
 			return new HashMap<String, Object>();
 		}

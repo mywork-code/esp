@@ -75,8 +75,8 @@ $(function() {
            		 		hidden: 'hidden'
            		 	}, 
            		 	{  
-           		 		title : '三级类目名称',  
-           		 		field : 'categoryName3', 
+           		 		title : '三级类目 id',  
+           		 		field : 'categoryId3', 
            		 	    width : 90,  
            		 		align : 'center'
 //           		 		hidden: 'hidden'
@@ -1528,6 +1528,7 @@ $(function() {
 	});
 	//编辑商品--上传logo
 	$("#editUpLogoBtn").click(function() {
+		debugger;
 		var editGoodsLogoFile=$('#editGoodsLogoFile').val();
 		if (null == editGoodsLogoFile || ("") == editGoodsLogoFile) {
 			$.messager.alert("提示", "请选择文件！", "info");

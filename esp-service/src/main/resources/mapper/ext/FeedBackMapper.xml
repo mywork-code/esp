@@ -7,11 +7,9 @@
     
     <select id="pageEffectiveList" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />
-        from t_esp_feedback
-        order by create_date desc
+        from t_esp_feedback order by create_date desc
         <if test="startRecordIndex != null">
            <include refid="PAGINATION.MYSQL_PAGINATION" />
         </if>
-
      </select>
 </mapper>

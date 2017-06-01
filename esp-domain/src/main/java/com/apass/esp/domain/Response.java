@@ -1,11 +1,7 @@
 package com.apass.esp.domain;
 
 import com.apass.esp.common.code.ErrorCode;
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.enums.StatusCode;
-import com.apass.esp.domain.enums.YesNo;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 接口响应对象
@@ -105,17 +101,5 @@ public class Response {
 
 	public static Response expire(String msg) {
 		return new Response(StatusCode.EXPIRE_CODE.getCode(), msg, null);
-	}
-
-	public static <T> T resolveResult(Response response, Class<T> cls){
-		if (response == null) {
-			return null;
-		}
-		if (YesNo.isYes(response.getStatus())) {
-			String respJson = response.getData().toString();
-			return GsonUtils.convertObj(respJson, cls);
-		} else {
-			return null;
-		}
 	}
 }
