@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.enums.ApprovalStatus;
 import com.apass.esp.service.activity.ActivityInfoService;
-import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
@@ -37,9 +35,7 @@ public class ActivityInfoController {
 
     @Autowired
     private ActivityInfoService activityInfoService;
-    @Autowired
-    private CategoryInfoService categoryInfoService;
-    
+
     private static final String TIMETYE = "yyyy-MM-dd HH:mm:ss";
 
     /**
@@ -254,13 +250,6 @@ public class ActivityInfoController {
                 respBody.setTotal(0);
                 respBody.setStatus("1");
                 return respBody;
-            }
-            for(int i=0;i<pagination.getDataList().size();i++){
-            	   Long categoryId=pagination.getDataList().get(i).getCategoryId3();
-                   Category category=categoryInfoService.selectNameById(categoryId);
-                   if(null !=category){
-                   	pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
-                   }
             }
             respBody.setTotal(pagination.getTotalCount());
             respBody.setRows(pagination.getDataList());

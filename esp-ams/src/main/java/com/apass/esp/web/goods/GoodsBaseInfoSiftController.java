@@ -18,10 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.SiftGoodFileModel;
-import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -51,9 +49,7 @@ public class GoodsBaseInfoSiftController {
 	private static final String GOODS_SIFT_PAGE = "goods/sift-page";
 	@Autowired
 	private GoodsService goodsService;
-	@Autowired
-	private CategoryInfoService categoryInfoService;
-	
+
 	@Value("${nfs.rootPath}")
 	private String rootPath;
 
@@ -110,13 +106,6 @@ public class GoodsBaseInfoSiftController {
 				respBody.setStatus(CommonCode.SUCCESS_CODE);
 				return respBody;
 			}
-		    for(int i=0;i<pagination.getDataList().size();i++){
-         	   Long categoryId=pagination.getDataList().get(i).getCategoryId3();
-                Category category=categoryInfoService.selectNameById(categoryId);
-                if(null !=category){
-                	pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
-                }
-         }
 			respBody.setTotal(pagination.getTotalCount());
 			respBody.setRows(pagination.getDataList());
 			respBody.setStatus(CommonCode.SUCCESS_CODE);

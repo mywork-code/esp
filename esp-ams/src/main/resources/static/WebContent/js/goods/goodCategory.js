@@ -119,6 +119,7 @@ $(function() {
 	                if (!r) {
 	                    return;
 	                }
+	                debugger;
 	                var params = {
 	                	"id" : categoryId
 	                };
@@ -145,6 +146,7 @@ $(function() {
 	                    	}
 	        			}
 	        		});
+	                
 	            });
 	    	}else if(item.text == '上移'){
 	    		if(categoryLevel=='1'){
@@ -168,6 +170,7 @@ $(function() {
 	
 	//确认编辑 
 	$("#editConfirmGoodCategory").click(function(){
+		debugger;
 		var categoryName = $("#editCategoryName").textbox('getValue');
 		var leng = getLenString(categoryName);
 		if(leng > 15){
@@ -189,7 +192,11 @@ $(function() {
 			success : function(data) {
 				ifLogout(data);
 				if(data.status=="1"){
+<<<<<<< HEAD
 					$.messager.alert("提示",data.msg,'info');
+=======
+            		$.messager.alert("提示",data.msg,'info');  
+>>>>>>> 8aef7afe0026eb6fdd48e78a056560a3bf0d29f1
             		//关闭弹出窗
             		$('#editCategoryDetail').window('close');
             		//var params={'categoryId':categoryId};
@@ -233,6 +240,7 @@ $(function() {
 	});
 	//添加二级类目
 	$("#addSecondCategory").click(function(){
+		debugger;
 		if(ifClickAndLevel != 1){
 			$.messager.alert("提示", "请先选中一个一级类目", "info");
 			return;
@@ -245,10 +253,12 @@ $(function() {
 	});
 	//添加三级类目
 	$("#addThirdCategory").click(function(){
+		debugger;
 		if(ifClickAndLevel != 2){
 			$.messager.alert("提示", "请先选中一个二级类目", "info");
 			return;
 		}
+		
 		showCategroyName('3');
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');

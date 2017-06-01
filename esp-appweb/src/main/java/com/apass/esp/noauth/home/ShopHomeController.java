@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -30,7 +29,6 @@ import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
-import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -64,8 +62,6 @@ public class ShopHomeController {
 
     @Autowired
     private ImageService imageService;
-    @Autowired
-    private CategoryInfoService categoryInfoService;
     
     @Autowired
     private GoodsStockInfoRepository goodsStockInfoRepository;
@@ -119,8 +115,7 @@ public class ShopHomeController {
      * 
      * @return
      */
-    @SuppressWarnings("null")
-	@POST
+    @POST
     @Path("/loadGoodsList")
     public Response loadGoodsList(Map<String, Object> paramMap){
         try {
@@ -140,37 +135,9 @@ public class ShopHomeController {
        			 Pagination<GoodsBasicInfoEntity> goodsPageList= goodsService.loadGoodsByCategoryId(goodsInfoEntity,page, rows);
        			 goodsList =goodsPageList.getDataList();
       		     returnMap.put("totalCount", goodsPageList.getTotalCount());
-      		     //设置类目张的banner
-      		     List<BannerInfoEntity> banners=null;
-      		     BannerInfoEntity  bity=new BannerInfoEntity();
-      		     
-                 Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
-                 if("1".equals(category.getSortOrder())){//家用电器banner图
-                	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
-                 }else if("2".equals(category.getSortOrder())){//家居百货banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
-                 }else if("3".equals(category.getSortOrder())){//美妆生活banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
-                 }
-                 banners.add(bity);
-                 returnMap.put("banners", banners);
               }else{
 //            	  goodsList = goodService.loadGoodsList();//加载所以商品
             	  goodsList = goodService.loadRecommendGoods();//加载精选商品
-            	  
-            	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
-                    for(BannerInfoEntity banner : banners){
-//                        banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
-                        banner.setActivityUrl(banner.getActivityUrl());
-
-                        banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
-
-                        banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
-                    }
-                    returnMap.put("banners", banners);
               }
               
                for (GoodsBasicInfoEntity goodsInfo : goodsList) {
@@ -195,6 +162,16 @@ public class ShopHomeController {
                 }
             }
             returnMap.put("goodsList", goodsList);
+            List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
+            for(BannerInfoEntity banner : banners){
+//                banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+                banner.setActivityUrl(banner.getActivityUrl());
+
+                banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
+                banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+            }
+            returnMap.put("banners", banners);
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
