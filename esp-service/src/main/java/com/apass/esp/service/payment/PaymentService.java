@@ -645,21 +645,30 @@ public class PaymentService {
 		    String requestIdOrder=requestId+"_"+orderDetail.getOrderId();
 			orderService.validateGoodsStock(requestIdOrder,orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
 		}
-		Response response = paymentHttpClient.getCustomerInfo(requestId,userId);
+		Response response  =  commonHttpClient.getCustomerBasicInfo(requestId, userId);
 		if(response==null||!response.getStatus().equals("1")){
 			throw new BusinessException("客户信息查询失败");
 		}
-		CustomerInfo customer = Response.resolveResult(response,CustomerInfo.class);
-		if (customer == null) {
+		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+		if (customerBasicInfo == null) {
 			throw new BusinessException("客户信息查询失败");
 		}
+
+		Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
+		if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+			throw new BusinessException("额度信息查询失败");
+		}
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+		if (customerBasicInfo == null) {
+			throw new BusinessException("额度信息查询失败");
+		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customer.getAvailableAmount(), totalAmt);
+		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 		payInfo.setCardPayAmt(totalAmt);
-		payInfo.setBankCode(customer.getBankCode());
-		payInfo.setCardNo(customer.getCardNo());
-		payInfo.setCardType(customer.getCardType());
-		payInfo.setCardBank(customer.getCardBank());
+		payInfo.setBankCode(customerBasicInfo.getBankCode());
+		payInfo.setCardNo(customerBasicInfo.getCardNo());
+		payInfo.setCardType(customerBasicInfo.getCardType());
+		payInfo.setCardBank(customerBasicInfo.getCardBank());
 		return payInfo;
 	}
 
