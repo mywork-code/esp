@@ -105,7 +105,7 @@ public class OrderInfoController {
             if(StringUtils.isEmpty(deviceType)){
                 deviceType="android";
             }
-            if(!deviceType.equalsIgnoreCase(DeviceType.ANDROID.getName())||!deviceType.equalsIgnoreCase(DeviceType.IOS.getName())){
+            if(!deviceType.equalsIgnoreCase(DeviceType.ANDROID.getName())&&!deviceType.equalsIgnoreCase(DeviceType.IOS.getName())){
                 LOGGER.error("下单渠道参数错误");
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }

@@ -34,22 +34,22 @@ $(function(){
 		onSubmit : function() {
 			var host = $("#monitorForm #host").val();
 			if ($.trim(host) == "") {
-				$.messager.alert("<font color='black'>操作提示</font>", "主机不能为空", "warning");
+				$.messager.alert("操作提示", "主机不能为空", "warning");
 				return false;
 			}
 			var application = $("#monitorForm #application").val();
 			if ($.trim(application) == "") {
-				$.messager.alert("<font color='black'>操作提示</font>", "应用名称不能为空", "warning");
+				$.messager.alert("操作提示", "应用名称不能为空", "warning");
 				return false;
 			}
 			var methodName = $("#monitorForm #methodName").val();
 			if ($.trim(methodName) == "") {
-				$.messager.alert("<font color='black'>操作提示</font>", "方法名称不能为空", "warning");
+				$.messager.alert("操作提示", "方法名称不能为空", "warning");
 				return false;
 			}
 			var methodDesciption = $("#monitorForm #methodDesciption").val();
 			if ($.trim(methodDesciption) == "") {
-				$.messager.alert("<font color='black'>操作提示</font>", "方法描述不能为空", "warning");
+				$.messager.alert("操作提示", "方法描述不能为空", "warning");
 				return false;
 			}
 		},

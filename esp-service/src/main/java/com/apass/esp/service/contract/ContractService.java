@@ -1,12 +1,8 @@
 package com.apass.esp.service.contract;
 
 import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.dto.contract.BuySellContractDTO;
-import com.apass.esp.domain.dto.contract.ContractProductDTO;
-import com.apass.esp.domain.dto.contract.EstampRequest;
-import com.apass.esp.domain.dto.contract.SealLocation;
-import com.apass.esp.domain.dto.contract.SealRequest;
-import com.apass.esp.domain.dto.contract.SignatureRequest;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.contract.*;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.contract.ContractScheduleEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
@@ -15,16 +11,16 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.repository.bill.TransactionRepository;
 import com.apass.esp.repository.contract.ContractScheduleRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.FreemarkerUtils;
+import com.apass.gfb.framework.utils.*;
 import com.google.common.collect.Lists;
 import com.itextpdf.text.pdf.BaseFont;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,18 +34,9 @@ import org.springframework.stereotype.Component;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lixining on 2017/4/1.
@@ -67,6 +54,10 @@ public class ContractService {
      */
     @Autowired
     private PaymentHttpClient paymentHttpClient;
+
+    @Autowired
+    private CommonHttpClient commonHttpClient;
+
     /**
      * 订单信息DAO
      */
@@ -165,7 +156,12 @@ public class ContractService {
      */
     private void handleSeal(Long userId, String mainOrderId, String contractPath, BuySellContractDTO contractDTO) throws BusinessException {
         try {
-            String signature = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
+            Response response = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
+            if(response==null||response.getStatus().equals("1")){
+                return;
+            }
+            Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
+            String signature =   resultMap.containsKey("signature") ? ((String) resultMap.get("signature")) : null;
             if (StringUtils.isBlank(signature) || signature.length() < 10) {
                 throw new BusinessException("签名信息不存在");
             }
@@ -255,27 +251,40 @@ public class ContractService {
         }
 
         // Step 3. 查询客户and签名信息
-        CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
-        if (customerInfo == null) {
+       // Response response  = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
+        Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
+        if(response==null||!response.getStatus().equals("1")){
+            throw new BusinessException("客户信息查询失败");
+        }
+        CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+        if (customerBasicInfo == null) {
             throw new BusinessException("客户信息查询失败");
         }
         // Step 2. 查询
         BigDecimal orderBalanceAmount = CommonUtils.subtract(orderTotalAmount, orderDownPaymentAmount); // 尾款
         BuySellContractDTO model = new BuySellContractDTO();
         model.setUserId(userId);
-        model.setRealName(customerInfo.getRealName()); // 真实姓名
+        model.setRealName(customerBasicInfo.getRealName()); // 真实姓名
         String contractNoR9 = CommonUtils.leftPad(mainOrderId, 9, "0");
         model.setContractNo("CPS" + contractNoR9); // 合同编号
-        model.setIdentityNo(customerInfo.getIdentityNo()); // 身份证号码
-        model.setMobile(customerInfo.getMobile()); // 手机号码
+        model.setIdentityNo(customerBasicInfo.getIdentityNo()); // 身份证号码
+        model.setMobile(customerBasicInfo.getMobile()); // 手机号码
         model.setCompanyAddress("上海市虹口区欧阳路196号10号楼一层13室"); // 公司地址
         model.setProductList(productList); // 购买产品列表
         model.setOrderAmount(orderTotalAmount); // 订单金额
         model.setDownPayment(orderDownPaymentAmount); // 首付金额
         model.setBalancePayment(orderBalanceAmount); // 尾款
 
+        Response responseCredit  = commonHttpClient.getCustomerCreditInfo("contract_ps_" + mainOrderId, userId);
+        if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+            throw new BusinessException("客户额度信息查询失败");
+        }
+        CustomerCreditInfo customerCreditInfo =  Response.resolveResult(response,CustomerCreditInfo.class);
+        if(customerCreditInfo==null){
+            throw new BusinessException("客户额度信息查询失败");
+        }
         // 账单日
-        int billDay = CommonUtils.getInt(customerInfo.getBillDate());
+        int billDay = CommonUtils.getInt(customerCreditInfo.getBillDate());
         String currentYearMonth = DateFormatUtil.dateToString(new Date(), "yyyy-MM");
         Calendar billDateCalendar = Calendar.getInstance();
         billDateCalendar.setTime(DateFormatUtil.string2date(currentYearMonth + "-" + CommonUtils.leftPad(billDay + "", 2, "0")));
@@ -309,8 +318,8 @@ public class ContractService {
         model.setPayEndDay(CommonUtils.leftPad(CommonUtils.getValue(endCalendar.get(Calendar.DAY_OF_MONTH)), 2, "0"));
 
         model.setFeeAmount(new BigDecimal("0"));// 手续费
-        model.setPayBankName(customerInfo.getCardBank()); // 还款银行
-        model.setPayBankCardNo(customerInfo.getCardNo());// 还款卡号
+        model.setPayBankName(customerBasicInfo.getCardBank()); // 还款银行
+        model.setPayBankCardNo(customerBasicInfo.getCardNo());// 还款卡号
         model.setContractDate(DateFormatUtil.datetime2String(new Date())); // 合同签署日期
         return model;
     }
@@ -414,23 +423,37 @@ public class ContractService {
             productList.add(tempProduct);
         }
         // Step 3. 查询客户and签名信息
-        CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
-        if (customerInfo == null) {
+        Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
+        if(response==null||!response.getStatus().equals("1")){
             throw new BusinessException("客户信息查询失败");
         }
+        CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+        if (customerBasicInfo == null) {
+            throw new BusinessException("客户信息查询失败");
+        }
+
+        Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
+        if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+            throw new BusinessException("额度信息查询失败");
+        }
+        CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+        if (customerBasicInfo == null) {
+            throw new BusinessException("额度信息查询失败");
+        }
+
         // Step 2. 查询
         BuySellContractDTO model = new BuySellContractDTO();
         model.setUserId(userId);
-        model.setRealName(customerInfo.getRealName()); // 真实姓名
+        model.setRealName(customerBasicInfo.getRealName()); // 真实姓名
         String contractNoR9 = CommonUtils.leftPad(mainOrderId, 9, "0");
         model.setContractNo("CPS" + contractNoR9); // 合同编号
-        model.setIdentityNo(customerInfo.getIdentityNo()); // 身份证号码
-        model.setMobile(customerInfo.getMobile()); // 手机号码
+        model.setIdentityNo(customerBasicInfo.getIdentityNo()); // 身份证号码
+        model.setMobile(customerBasicInfo.getMobile()); // 手机号码
         model.setCompanyAddress("上海市虹口区欧阳路196号10号楼一层13室"); // 公司地址
         model.setProductList(productList); // 购买产品列表
 
         // 账单日
-        int billDay = CommonUtils.getInt(customerInfo.getBillDate());
+        int billDay = CommonUtils.getInt(customerCreditInfo.getBillDate());
         String currentYearMonth = DateFormatUtil.dateToString(new Date(), "yyyy-MM");
         Calendar billDateCalendar = Calendar.getInstance();
         billDateCalendar.setTime(DateFormatUtil.string2date(currentYearMonth + "-" + CommonUtils.leftPad(billDay + "", 2, "0")));
@@ -464,8 +487,8 @@ public class ContractService {
         model.setPayEndDay(CommonUtils.leftPad(CommonUtils.getValue(endCalendar.get(Calendar.DAY_OF_MONTH)), 2, "0"));
 
         model.setFeeAmount(new BigDecimal("0"));// 手续费
-        model.setPayBankName(customerInfo.getCardBank()); // 还款银行
-        model.setPayBankCardNo(customerInfo.getCardNo());// 还款卡号
+        model.setPayBankName(customerBasicInfo.getCardBank()); // 还款银行
+        model.setPayBankCardNo(customerBasicInfo.getCardNo());// 还款卡号
         model.setContractDate(DateFormatUtil.datetime2String(new Date())); // 合同签署日期
         return model;
     }

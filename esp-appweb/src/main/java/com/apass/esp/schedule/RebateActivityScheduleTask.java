@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ import java.util.Map;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class RebateActivityScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(RebateActivityScheduleTask.class);
 
@@ -52,8 +53,8 @@ public class RebateActivityScheduleTask {
      * 5分钟执行一次 测试
      */
 
-//	@Scheduled(cron = "0 0 1 * * ?")
-    @Scheduled(cron = "0 0/5 * * * *")
+	@Scheduled(cron = "0 0 1 * * ?")
+    //@Scheduled(cron = "0 0/30 * * * *")
     public void validateActivityEndtime() {
         try {
             LOGGER.info("邀请人获得返点结算定时任务开始");

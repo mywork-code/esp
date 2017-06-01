@@ -1,6 +1,7 @@
 package com.apass.esp.repository.payment;
 
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
@@ -60,7 +61,7 @@ public class PaymentHttpClient {
    * @return
    * @throws BusinessException
    */
-  public CustomerInfo getCustomerInfo(String requestId, Long userId) throws BusinessException {
+  public Response getCustomerInfo(String requestId, Long userId){
     try {
       Map<String, Object> request = new HashMap<String, Object>();
       request.put("userId", userId);
@@ -71,15 +72,21 @@ public class PaymentHttpClient {
       StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
       String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
       LOG.logstashResponse(requestId, "获取客户信息返回数据:", responseJson);
-      Response response = GsonUtils.convertObj(responseJson, Response.class);
-      return resolveResult(response, CustomerInfo.class);
+      Response response =// JsonUtil.fromJson(responseJson,Response.class);
+              GsonUtils.convertObj(responseJson, Response.class);
+      if(response==null){
+        return Response.fail("调用客户信息查询服务异常");
+      }
+      return response;
+      //return resolveResult(response, CustomerInfo.class);
     } catch (Exception e) {
-      LOG.logstashException(requestId, "调用客户信息查询服务异常", "", e);
-      throw new BusinessException("调用客户信息查询服务异常", e);
+      LOGGER.error(requestId, "调用客户信息查询服务异常", "", e);
+      return Response.fail("调用客户信息查询服务异常");
+      //throw new BusinessException("调用客户信息查询服务异常", e);
     }
   }
 
-  public String getSignatureBase64Info(String requestId, Long userId) throws BusinessException {
+  public Response getSignatureBase64Info(String requestId, Long userId) throws BusinessException {
     try {
       Map<String, Object> request = new HashMap<String, Object>();
       request.put("userId", userId);
@@ -91,12 +98,14 @@ public class PaymentHttpClient {
       LOG.logstashResponse(requestId, "获取客户签名返回数据:", responseJson);
       Response response = GsonUtils.convertObj(responseJson, Response.class);
       if (response == null || !YesNo.isYes(response.getStatus())) {
-        throw new BusinessException("签名信息查询失败");
+        return Response.fail("签名信息查询失败");
+       // throw new BusinessException("签名信息查询失败");
       }
-      Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
-      return resultMap.containsKey("signature") ? ((String) resultMap.get("signature")) : null;
+      return response;
+      //Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
+      //return resultMap.containsKey("signature") ? ((String) resultMap.get("signature")) : null;
     } catch (Exception e) {
-      throw new BusinessException("调用客户信息查询服务异常", e);
+      return Response.fail("签名信息查询失败");
     }
   }
 
@@ -133,7 +142,7 @@ public class PaymentHttpClient {
    * @return
    * @throws BusinessException
    */
-  public <T> T resolveResult(Response response, Class<T> cls) throws BusinessException {
+  public  <T> T resolveResult(Response response, Class<T> cls) throws BusinessException {
     if (response == null) {
       throw new BusinessException("接口请求异常稍后再试");
     }
@@ -194,8 +203,7 @@ public class PaymentHttpClient {
       Object data = result.getData();
       return data != null ? ((Double)data).intValue() :null;
     } catch (Exception e) {
-      LOGGER.error("queryForEsp_creditPayAuthority_error接口调用异常:{}", e);
-      throw new BusinessException("调用账单系统异常", e);
+      return -1;
     }
   }
 

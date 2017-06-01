@@ -111,7 +111,7 @@ public class CategoryController {
             return Response.success("添加分类成功！");
         } catch (BusinessException e) {
             LOGGER.error("添加类目 失败。。",e);
-            return Response.fail(e.getMessage());
+            return Response.fail(e.getErrorDesc());
         }
     }
 
@@ -131,7 +131,7 @@ public class CategoryController {
             return Response.success("修改商品类目成功！");
         } catch (BusinessException e) {
             LOGGER.error("修改商品类目失败。。",e);
-            return Response.fail(e.getMessage());
+            return Response.fail(e.getErrorDesc());
         }
 
     }
@@ -203,7 +203,7 @@ public class CategoryController {
             return Response.success("修改商品分类排序成功！");
         } catch (BusinessException e) {
             LOGGER.error("修改商品分类排序失败", e);
-            return Response.fail(e.getMessage());
+            return Response.fail(e.getErrorDesc());
         }
     }
 
@@ -221,7 +221,7 @@ public class CategoryController {
             return Response.success("删除分类成功!");
         } catch (BusinessException e) {
             LOGGER.error("删除商品分类失败", e);
-            return Response.fail(e.getMessage());
+            return Response.fail(e.getErrorDesc());
         }
     }
     
@@ -321,6 +321,5 @@ public class CategoryController {
                 throw new BusinessException("类目名称格式不正确，请输入20位以下汉字，字母，数字，特殊字符！");
             }
         }
-
     }
 }
