@@ -189,7 +189,7 @@ $(function() {
 			success : function(data) {
 				ifLogout(data);
 				if(data.status=="1"){
-            		$.messager.alert( );  
+					$.messager.alert("提示",data.msg,'info');
             		//关闭弹出窗
             		$('#editCategoryDetail').window('close');
             		//var params={'categoryId':categoryId};
