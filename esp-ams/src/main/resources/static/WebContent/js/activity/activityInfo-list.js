@@ -32,8 +32,8 @@ $(function() {
                     width : 90,
                     align : 'center'
                 },{  
-       		 		title : '三级类目 id',  
-       		 		field : 'categoryId3', 
+       		 		title : '三级类目名称',  
+       		 		field : 'categoryName3', 
        		 	    width : 90,  
        		 		align : 'center'
        		 	}, {
