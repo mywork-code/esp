@@ -83,14 +83,14 @@ public class CategoryInfoService {
 		//在此添加客户端首页3个类目小标题和图片
 		for(int i=0;i<voList.size();i++){
 			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("舒适生活从此开启");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711495360.jpg");
+				voList.get(i).setCategoryTitle("大小家电 尽在掌握");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332171181.png");
 			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("让您和您的家人省心更省力");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711712715.jpg");
+				voList.get(i).setCategoryTitle("日常生活 必备良品");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332208591.png");
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("家装没有你想的那么贵");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1495711887280.jpg");
+				voList.get(i).setCategoryTitle("生活就该 如此精致");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332235068.png");
 			}
 		}
 		return voList;
@@ -211,7 +211,7 @@ public class CategoryInfoService {
 			 throw new BusinessException("该商品分类下存在商品!");
 		   }
 	   }
-	   List<GoodsInfoEntity>  goodsList=goodsService.getDownCategoryGoodsByCategoryId(id);
+	   List<GoodsInfoEntity> goodsList=goodsService.getDownCategoryGoodsByCategoryId(id);
 	   //将要删除的目录id下的所有已经下架的商品的类目设置为空
 	   for(int i=0;i<goodsList.size();i++){
 		   goodsService.updateGoodsCategoryStatus(goodsList.get(i).getId());
@@ -282,5 +282,13 @@ public class CategoryInfoService {
 	 */
 	public void updateStatus1To0(){
 		categoryMapper.updateStatus1To0();
+	}
+	/**
+	 * 跟进类目id查询类目名称
+	 * @param id
+	 * @return
+	 */
+	public Category selectNameById(Long id){
+		return categoryMapper.selectByPrimaryKey(id);
 	}
 }
