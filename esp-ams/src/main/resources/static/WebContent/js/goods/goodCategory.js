@@ -192,7 +192,11 @@ $(function() {
 			success : function(data) {
 				ifLogout(data);
 				if(data.status=="1"){
+<<<<<<< HEAD
+					$.messager.alert("提示",data.msg,'info');
+=======
             		$.messager.alert("提示",data.msg,'info');  
+>>>>>>> 8aef7afe0026eb6fdd48e78a056560a3bf0d29f1
             		//关闭弹出窗
             		$('#editCategoryDetail').window('close');
             		//var params={'categoryId':categoryId};
