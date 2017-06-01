@@ -155,7 +155,7 @@ public class ShopHomeController {
                  	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
                 	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
                  }
-                 banners.set(0, bity);
+                 banners.add(bity);
                  returnMap.put("banners", banners);
               }else{
 //            	  goodsList = goodService.loadGoodsList();//加载所以商品
