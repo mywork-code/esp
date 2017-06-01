@@ -140,7 +140,7 @@ public class ShopHomeController {
        			 Pagination<GoodsBasicInfoEntity> goodsPageList= goodsService.loadGoodsByCategoryId(goodsInfoEntity,page, rows);
        			 goodsList =goodsPageList.getDataList();
       		     returnMap.put("totalCount", goodsPageList.getTotalCount());
-      		     //设置类目张的banner
+      		      //设置类目张的banner
       		     List<BannerInfoEntity> banners=null;
       		     BannerInfoEntity  bity=new BannerInfoEntity();
       		     
