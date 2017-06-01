@@ -1,12 +1,8 @@
 package com.apass.esp.service.contract;
 
 import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.dto.contract.BuySellContractDTO;
-import com.apass.esp.domain.dto.contract.ContractProductDTO;
-import com.apass.esp.domain.dto.contract.EstampRequest;
-import com.apass.esp.domain.dto.contract.SealLocation;
-import com.apass.esp.domain.dto.contract.SealRequest;
-import com.apass.esp.domain.dto.contract.SignatureRequest;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.contract.*;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.contract.ContractScheduleEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
@@ -21,10 +17,7 @@ import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.FreemarkerUtils;
+import com.apass.gfb.framework.utils.*;
 import com.google.common.collect.Lists;
 import com.itextpdf.text.pdf.BaseFont;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,18 +31,9 @@ import org.springframework.stereotype.Component;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lixining on 2017/4/1.
@@ -165,7 +149,12 @@ public class ContractService {
      */
     private void handleSeal(Long userId, String mainOrderId, String contractPath, BuySellContractDTO contractDTO) throws BusinessException {
         try {
-            String signature = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
+            Response response = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
+            if(response==null||response.getStatus().equals("1")){
+                return;
+            }
+            Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
+            String signature =   resultMap.containsKey("signature") ? ((String) resultMap.get("signature")) : null;
             if (StringUtils.isBlank(signature) || signature.length() < 10) {
                 throw new BusinessException("签名信息不存在");
             }
@@ -255,7 +244,11 @@ public class ContractService {
         }
 
         // Step 3. 查询客户and签名信息
-        CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
+        Response response  = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
+        if(response==null||!response.getStatus().equals("1")){
+            throw new BusinessException("客户信息查询失败");
+        }
+        CustomerInfo customerInfo = Response.resolveResult(response,CustomerInfo.class);
         if (customerInfo == null) {
             throw new BusinessException("客户信息查询失败");
         }
@@ -414,7 +407,11 @@ public class ContractService {
             productList.add(tempProduct);
         }
         // Step 3. 查询客户and签名信息
-        CustomerInfo customerInfo = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
+        Response response = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
+        if(response==null||!response.getStatus().equals("1")){
+            throw new BusinessException("客户信息查询失败");
+        }
+        CustomerInfo customerInfo = Response.resolveResult(response,CustomerInfo.class);
         if (customerInfo == null) {
             throw new BusinessException("客户信息查询失败");
         }

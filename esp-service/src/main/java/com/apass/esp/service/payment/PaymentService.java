@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.Response;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.monitor.annotation.Monitor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,6 +65,8 @@ public class PaymentService {
 
 	@Autowired
 	private PaymentHttpClient paymentHttpClient;
+	@Autowired
+	private CommonHttpClient commonHttpClient;
 	@Autowired
 	private OrderInfoRepository orderDao;
 	@Autowired
@@ -336,7 +342,14 @@ public class PaymentService {
 		payReq.setPayAmt(totalAmt);
 		payReq.setPayType(paymentType);
 		// 首付金额
-		CustomerInfo customer = paymentHttpClient.getCustomerInfo("",userId);
+		Response response = paymentHttpClient.getCustomerInfo("",userId);
+		if(response==null||!response.getStatus().equals("1")){
+			throw new BusinessException("客户信息查询失败");
+		}
+		CustomerInfo customer = Response.resolveResult(response,CustomerInfo.class);
+		if (customer == null) {
+			throw new BusinessException("客户信息查询失败");
+		}
 		PayInfoEntity payInfo = calculateCreditPayRatio(customer.getAvailableAmount(), totalAmt);
 
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
@@ -423,13 +436,44 @@ public class PaymentService {
 
 		resultMap.put("orderAmt", totalAmt);
 
-		CustomerInfo customer = paymentHttpClient.getCustomerInfo(requestId,userId);
-		resultMap.put("bankCode", customer.getBankCode());
-		resultMap.put("cardNo", customer.getCardNo());
-		resultMap.put("cardBank", customer.getCardBank());
-		resultMap.put("cardType", customer.getCardType());
+		//Response response = paymentHttpClient.getCustomerInfo(requestId,userId);
+		Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
+		if(response==null||!response.getStatus().equals("1")){
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			return resultMap;
+			//throw new BusinessException("客户信息查询失败");
+		}
+		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
+		if (customerBasicInfo == null) {
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			return resultMap;
+		}
+		resultMap.put("bankCode", customerBasicInfo.getBankCode());
+		resultMap.put("cardNo", customerBasicInfo.getCardNo());
+		resultMap.put("cardBank", customerBasicInfo.getCardBank());
+		resultMap.put("cardType", customerBasicInfo.getCardType());
 
 		Integer num = paymentHttpClient.creditPayAuthority(userId);
+		if(num==-1){
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			return resultMap;
+		}
+
+		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
+		if(response==null||!response.getStatus().equals("1")){
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			return resultMap;
+		}
+		CustomerCreditInfo customerCreditInfo= Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+		if (customerCreditInfo == null) {
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			resultMap.put("page", page);
+			return resultMap;
+		}
 		if(num != null && num >= 3){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
@@ -437,10 +481,10 @@ public class PaymentService {
 			return resultMap;
 		}
 			//1、用户可用额度为0
-			BigDecimal availableAmt = customer.getAvailableAmount();
+			BigDecimal availableAmt = customerCreditInfo.getAvailableAmount();
 			if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
-				if("06".equals(customer.getStatus())
-						|| "03".equals(customer.getStatus())){
+				if("06".equals(customerBasicInfo.getStatus())
+						|| "03".equals(customerBasicInfo.getStatus())){
 					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 				} else {
 					if(totalAmt.compareTo(new BigDecimal(1000)) >= 0 ){
@@ -453,14 +497,14 @@ public class PaymentService {
 			} else {
 				//2、用户可用额度>0
 				// 计算额度支付金额
-				PayInfoEntity payInfo = calculateCreditPayRatio(customer.getAvailableAmount(), totalAmt);
+				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 				boolean overDue = paymentHttpClient.hasOverDueBill(userId);
 				if(overDue){
 					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 				} else {
 					Map<String, Object> param = Maps.newHashMap();
 					param.put("userId", userId);
-					param.put("customerId", customer.getCustomerId());
+					param.put("customerId", customerCreditInfo.getCustomerId());
 					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
 					String availableFlag = paymentHttpClient.creditPaymentAuth(param);
 					// 支持额度支付
@@ -592,7 +636,14 @@ public class PaymentService {
 		    String requestIdOrder=requestId+"_"+orderDetail.getOrderId();
 			orderService.validateGoodsStock(requestIdOrder,orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
 		}
-		CustomerInfo customer = paymentHttpClient.getCustomerInfo(requestId,userId);
+		Response response = paymentHttpClient.getCustomerInfo(requestId,userId);
+		if(response==null||!response.getStatus().equals("1")){
+			throw new BusinessException("客户信息查询失败");
+		}
+		CustomerInfo customer = Response.resolveResult(response,CustomerInfo.class);
+		if (customer == null) {
+			throw new BusinessException("客户信息查询失败");
+		}
 		// 设置不同支付方式支付金额
 		payInfo = calculateCreditPayRatio(customer.getAvailableAmount(), totalAmt);
 		payInfo.setCardPayAmt(totalAmt);
