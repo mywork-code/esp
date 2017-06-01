@@ -83,7 +83,7 @@ public class RepeatRequestAspect {
 
 		// Step 2. 设置Token标记, 请求继续执行
 		try {
-			cacheManager.set(uniquekey, YesNo.YES.getCode(), 10);
+			cacheManager.set(uniquekey, YesNo.YES.getCode(), 60 * 5);
 			return joinPoint.proceed();
 		} catch (BusinessException e) {
 			LOG.error("您的请求失败", e);
