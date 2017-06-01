@@ -1,5 +1,6 @@
 package com.apass.esp.web.payment;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -64,12 +65,14 @@ public class PaymentController {
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
             
             if (!StringUtils.isNumeric(userIdStr)) {
-                return Response.fail("用户名传入非法!");
+            	LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
-                return Response.fail("请选择要支付的订单!");
+            	LOGGER.error("请选择要支付的订单!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
         } catch (BusinessException e) {
@@ -77,7 +80,7 @@ public class PaymentController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
-            return Response.fail("订单支付失败!请重新支付");
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         }
         return Response.success("支付成功",resultMap);
     }
@@ -104,18 +107,22 @@ public class PaymentController {
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
             
             if (!StringUtils.isNumeric(userIdStr)) {
-                return Response.fail("用户名传入非法!");
+            	LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             if (StringUtils.isEmpty(paymentType)) {
-                return Response.fail("请选择支付方式!");
+            	LOGGER.error("请选择支付方式!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if (!PaymentType.CARD_PAYMENT.getCode().equals(paymentType) && !PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)) {
-                return Response.fail("请选择正确支付方式!");
+            	LOGGER.error("请选择正确支付方式!");
+            	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
-                return Response.fail("请选择要支付的订单!");
+            	LOGGER.error("请选择要支付的订单!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             PayInfoEntity payInfo = paymentService.confirmPayMethod(requestId , userId, orderList,paymentType);
             resultMap.put("resultMap", payInfo);
@@ -124,7 +131,7 @@ public class PaymentController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
-            return Response.fail("订单支付失败!请重新支付");
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         }
         return Response.success("支付成功",resultMap);
     }
@@ -152,20 +159,24 @@ public class PaymentController {
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
             
             if (!StringUtils.isNumeric(userIdStr)) {
-                return Response.fail("用户名传入非法!");
+            	LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             if (StringUtils.isEmpty(paymentType)) {
-                return Response.fail("请选择支付方式!");
+            	LOGGER.error("请选择支付方式!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if(PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)){
                 if (StringUtils.isEmpty(cardNo)) {
-                    return Response.fail("请填写银行卡号!");
+                	LOGGER.error("请填写银行卡号!");
+                    return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
                 }
             }
             List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
-                return Response.fail("请选择要支付的订单!");
+            	LOGGER.error("请选择要支付的订单!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             payPage = paymentService.defary(requestId,userId, orderList, paymentType,cardNo);
             
@@ -174,7 +185,7 @@ public class PaymentController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
-            return Response.fail("订单支付失败!请重新支付");
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         }
         return Response.success("支付页获取成功", payPage);
     }
@@ -192,14 +203,15 @@ public class PaymentController {
 		try {
 			String orderList = CommonUtils.getValue(paramMap, "orderList"); // 订单ID
 			if (StringUtils.isEmpty(orderList)) {
-				return Response.fail("订单ID不能为空!");
+				LOGGER.error("订单ID不能为空!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 			}
 			String orderArray[]=orderList.split(",");
 			String response = paymentService.queryPayStatus(orderArray);
 			resMap.put("pstatus", response);
 		} catch (Exception e) {
 			LOGGER.error("交易状态查询", e);
-			return Response.fail("交易状态查询");
+			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
 		}
 		return Response.success("交易状态查询", resMap);
 	}
@@ -220,7 +232,8 @@ public class PaymentController {
             String orderList = CommonUtils.getValue(paramMap, "orderList"); // 订单ID
             String userIdStr = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             if (StringUtils.isEmpty(orderList)) {
-                return Response.fail("订单ID不能为空!");
+            	LOGGER.error("订单ID不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             String requestId = logStashSign + "_" + userIdStr;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -233,7 +246,7 @@ public class PaymentController {
             return Response.fail(e.getErrorDesc());
         }  catch (Exception e) {
             LOGGER.error("返回库存处理失败", e);
-            return Response.fail("返回库存处理失败");
+            return Response.fail(BusinessErrorCode.NO);
         }
         return Response.success("返回库存处理成功", resMap);
     }

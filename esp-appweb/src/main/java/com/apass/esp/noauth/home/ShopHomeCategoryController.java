@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -72,7 +73,8 @@ public class ShopHomeCategoryController {
    		     return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			logger.error("indexCategoryInit fail", e);
-            return Response.fail("首页类目信息加载失败");
+			logger.error("首页类目信息加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
 		}
    	}
     /**
@@ -88,7 +90,8 @@ public class ShopHomeCategoryController {
    			 String page = CommonUtils.getValue(paramMap, "page");
    			 String rows = CommonUtils.getValue(paramMap, "rows");
    			 if(StringUtils.isEmpty(categoryId)){
-   				 return Response.fail("类目id不能空！");
+   				 logger.error("类目id不能空！");
+   				 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
    			 }
    			 Map<String, Object> returnMap = new HashMap<String, Object>();
    			 
@@ -127,7 +130,8 @@ public class ShopHomeCategoryController {
    			 return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			logger.error("indexCategoryInit fail", e);
-            return Response.fail("首页类目信息加载失败");
+			logger.error("首页类目信息加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
 		}
    	}
 }

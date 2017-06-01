@@ -6,9 +6,12 @@ import java.util.List;
 
 import com.apass.esp.domain.enums.CityEnums;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.domain.entity.nation.NationEntity;
 import com.apass.esp.repository.nation.NationRepository;
@@ -24,6 +27,7 @@ import com.apass.gfb.framework.exception.BusinessException;
  */
 @Service
 public class NationService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(NationService.class);
     /**
      * 直辖市
      */
@@ -61,7 +65,8 @@ public class NationService {
         try {
             dataList = nationRepository.selectCityList(districtCode);
         } catch (Exception e) {
-            throw new BusinessException("城市列表查询失败", e);
+        	LOGGER.error("城市列表查询失败",e);
+            throw new BusinessException("城市列表查询失败",BusinessErrorCode.QUREY_INFO_FAILED);
         }
         boolean isCentrlCity = CENTRL_CITY_LIST.contains(districtCode);
 
@@ -131,7 +136,8 @@ public class NationService {
         try {
             dataList = nationRepository.selectCityList(districtCode);
         } catch (Exception e) {
-            throw new BusinessException("城市列表查询失败", e);
+        	LOGGER.error("城市列表查询失败",e);
+            throw new BusinessException("城市列表查询失败",BusinessErrorCode.QUREY_INFO_FAILED);
         }
         if (CollectionUtils.isEmpty(dataList)) {
             return result;

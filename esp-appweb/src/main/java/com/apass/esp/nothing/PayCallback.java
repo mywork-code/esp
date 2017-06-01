@@ -1,5 +1,6 @@
 package com.apass.esp.nothing;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -83,13 +84,14 @@ public class PayCallback {
 		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
 		if (StringUtils.isAnyEmpty(status, orderId)) {
-			return Response.fail("请选择支付方式!");
+			LOGGER.error("请选择支付方式!");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
 			paymentService.callback(requestId, orderId, status);
 		} catch (Exception e) {
 			LOGGER.error("订单支付失败", e);
-			return Response.fail("订单支付失败!请重新支付");
+			return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
 		}
 		addRebateRecord(status, orderId);
 		return Response.success("支付成功");

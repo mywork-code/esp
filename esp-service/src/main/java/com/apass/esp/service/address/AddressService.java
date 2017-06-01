@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.enums.AddressDefaultStatus;
 import com.apass.esp.domain.enums.YesNo;
@@ -36,8 +37,8 @@ public class AddressService {
 			List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoList(userId);
 			return addressInfoList;
 		} catch (Exception e) {
-			LOGGER.error("查询订单信息失败===>", e);
-			throw new BusinessException("查询订单信息失败！", e);
+			LOGGER.error("查询地址信息失败===>", e);
+			throw new BusinessException("查询地址信息失败！", BusinessErrorCode.QUREY_INFO_FAILED);
 		}		
 	}
 	
@@ -58,8 +59,8 @@ public class AddressService {
 			addressInfoRepository.insert(addAddressInfo);
 			return addAddressInfo.getId();
 		} catch (Exception e) {
-			LOGGER.error("查询订单信息失败===>", e);
-			throw new BusinessException("查询订单信息失败！", e);
+			LOGGER.error("新增地址信息失败===>", e);
+			throw new BusinessException("新增地址信息失败！", BusinessErrorCode.ADD_INFO_FAILED);
 		}		
 	}
 	
@@ -81,14 +82,14 @@ public class AddressService {
 			//更新地址的信息
 			Integer updateFlag = addressInfoRepository.updateAddressInfo(addInfo);
 			if(updateFlag != 1){
-			    throw new BusinessException("更新地址信息失败");
+			    throw new BusinessException("更新地址信息失败",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 			}
 			//更新完地址信息，将最新的地址信息返回
 			List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoList(addInfo.getUserId());
 			return addressInfoList;
 		} catch (Exception e) {
 			LOGGER.error("更新地址信息失败===>", e);
-			throw new BusinessException("更新地址信息失败！", e);
+			throw new BusinessException("更新地址信息失败！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
 	}
 	
@@ -112,8 +113,8 @@ public class AddressService {
 			List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoList(userId);
 			return addressInfoList;
 		} catch (Exception e) {
-			LOGGER.error("更新地址信息失败===>", e);
-			throw new BusinessException("更新地址信息失败！", e);
+			LOGGER.error("删除地址信息失败===>", e);
+			throw new BusinessException("删除地址信息失败！", BusinessErrorCode.DELETE_INFO_FAILED);
 		}
 	}
 	/**

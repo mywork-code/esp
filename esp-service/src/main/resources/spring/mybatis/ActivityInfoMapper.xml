@@ -103,6 +103,7 @@
 				  t.remark,
 				  f.delist_time delistTime,
 				  f.list_time listTime,
+				  f.category_id3 categoryId3,
 				  f.merchant_code merchantCode,
 				  f.goods_name goodsName,
 				  f.goods_model goodsModel,

@@ -50,40 +50,37 @@ $(function() {
                     field : 'merchantName',
                     width : 90,
                     align : 'center'
-                },
-                {  
-       			 width : '50',  
-       			 title : '类目 id',  
-       			 field : 'categoryId1',  
-       			 align : 'center',
-       			 hidden: 'hidden'
-       		 	}, 
-       		 	{  
-       		 		width : '50',  
-       		 		title : '类目 id',  
-       		 		field : 'categoryId2',  
-       		 		align : 'center',
-       		 		hidden: 'hidden'
-       		 	}, 
-       		 	{  
-       		 		width : '50',  
-       		 		title : '类目 id',  
-       		 		field : 'categoryId3',  
-       		 		align : 'center',
-       		 		hidden: 'hidden'
-       		 	}, 
-                {
+                },{
                 	title : '商户名称',
                 	field : 'merchantName',
                 	width : 90,
                 	align : 'center'
-                },
-                {
+                },{
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                }, {
+                },{  
+       			    title : '一级类目 id',  
+       			    field : 'categoryId1',
+       			    width : 90,  
+       			    align : 'center',
+       			    hidden: 'hidden'
+           		 	}, 
+           		 	{  
+           		 		title : '二级类目 id',  
+           		 		field : 'categoryId2',  
+           		 	    width : 90,  
+           		 		align : 'center',
+           		 		hidden: 'hidden'
+           		 	}, 
+           		 	{  
+           		 		title : '三级类目 id',  
+           		 		field : 'categoryId3', 
+           		 	    width : 90,  
+           		 		align : 'center'
+//           		 		hidden: 'hidden'
+           		 	},  {
                     title : '商品型号',
                     field : 'goodsModel',
                     width : 80,

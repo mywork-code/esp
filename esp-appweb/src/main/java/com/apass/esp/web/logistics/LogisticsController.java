@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -50,7 +51,7 @@ public class LogisticsController {
             String orderId = CommonUtils.getValue(paramMap, "orderId");
             if (StringUtils.isEmpty(orderId)) {
                 LOGGER.info("订单Id不能为空");
-                return Response.fail("您的订单信息缺失!稍后再试");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             returnMap= logisticsService.loadLogisticInfo(orderId);
         } catch (BusinessException e) {
@@ -58,7 +59,7 @@ public class LogisticsController {
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("物流信息查询失败!", e);
-            return Response.fail("物流信息查询失败!");
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
         return Response.successResponse(returnMap);
     }

@@ -40,3 +40,6 @@ ALTER TABLE esp.`t_esp_merchant_temp_info` ADD COLUMN `merchant_area`  varchar(8
 ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `flag`  varchar(1) NULL DEFAULT 0 COMMENT '用于区分配置数据和非配置(0:非配置数据，1:配置数据)' AFTER `error_message`;
 /**修改monitor表中的status列可以为空*/
 ALTER TABLE esp.`t_apass_monitor` MODIFY COLUMN `status`  int(11) NULL DEFAULT 1 COMMENT '调用耗时(ms)否调用成功0，失败 1，成功' AFTER `method_desciption`;
+/**在t_esp_order_info表中增加一列，订单下单渠道**/
+ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `device_type`  varchar(10) NULL DEFAULT 'android' COMMENT '下单渠道（ios,android）' AFTER `down_payment_amount`;
+

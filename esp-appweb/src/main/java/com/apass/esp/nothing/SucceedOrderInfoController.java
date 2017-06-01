@@ -1,5 +1,6 @@
 package com.apass.esp.nothing;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
@@ -39,7 +40,8 @@ public class SucceedOrderInfoController {
                 return Response.fail(NO_USER);
             }
             if (!StringUtils.isNumeric(userIdStr)) {
-                return Response.fail("用户名传入非法!");
+            	LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             String orderDate = orderService.latestSuccessOrderTime(userId);
@@ -48,7 +50,7 @@ public class SucceedOrderInfoController {
             return Response.success("success", GsonUtils.toJson(resultMap));
         } catch (Exception e) {
             LOGGER.error("检测最新赊购信息失败", e);
-            return Response.fail("检测最新赊购订单信息失败");
+            return Response.fail(BusinessErrorCode.NO);
         }
     }
 }
