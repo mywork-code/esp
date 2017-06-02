@@ -52,7 +52,7 @@ public class EspAppRSAHandler {
 	 * @return Object
 	 * @throws Throwable
 	 */
-	//@Around("execution(* com.apass.esp.web..*.*(..)) || execution(* com.apass.esp.noauth..*.*(..))")
+	@Around("execution(* com.apass.esp.web..*.*(..)) || execution(* com.apass.esp.noauth..*.*(..))")
 	private Object handleRSAInteceptor(ProceedingJoinPoint point) throws Throwable {
 		Object[] arr = point.getArgs();
 		if (arr == null || arr.length == 0) {
