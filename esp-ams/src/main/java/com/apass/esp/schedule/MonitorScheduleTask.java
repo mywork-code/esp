@@ -53,11 +53,11 @@ public class MonitorScheduleTask {
     @Value("${monitor.env}")
     public String env;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void monitorSchedule() {
         String time = cacheManager.get("monitor_time");//间隔时间
         String times = cacheManager.get("monitor_times");//该时间的次数
-       // time="1";
+        // time="1";
         //times="2";
         if (StringUtils.isAnyEmpty(time, times)) {
             LOGGER.info("请先配置间隔时间，该时间内的次数");
@@ -65,7 +65,7 @@ public class MonitorScheduleTask {
         }
         Date date = new Date();
         date = DateFormatUtil.addDMinutes(date, Integer.valueOf(time) * (-1));
-        date = DateFormatUtil.addDMinutes(date, -30);
+        date = DateFormatUtil.addDMinutes(date, -5);
         List<MonitorEntityStatistics> monitorEntityStatisticsList = monitorService.getMonitorEntitybyTime(date,env);
         if (CollectionUtils.isEmpty(monitorEntityStatisticsList)) {
             return;
@@ -120,6 +120,12 @@ public class MonitorScheduleTask {
                 MailUtil mailUtil = new MailUtil();
                 mailUtil.sendTextMail(mailSenderInfo);
             }
+            for (int i = 0; i <list.size() ; i++) {
+                MonitorEntity monitorEntity = list.get(i);
+                monitorEntity.setStatus(2);
+                monitorService.updateMonitor(monitorEntity);
+            }
+
         }
     }
 }
