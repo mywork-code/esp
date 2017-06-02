@@ -77,7 +77,7 @@ public class PaymentController {
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -128,7 +128,7 @@ public class PaymentController {
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -182,7 +182,7 @@ public class PaymentController {
             
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -243,7 +243,7 @@ public class PaymentController {
             paymentService.leavePayRollStock(requestId,orders);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.NO);
         }  catch (Exception e) {
             LOGGER.error("返回库存处理失败", e);
             return Response.fail(BusinessErrorCode.NO);
