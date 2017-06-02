@@ -342,7 +342,7 @@ public class PaymentService {
 		// 首付金额
 		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
 				//paymentHttpClient.getCustomerInfo("",userId);
-		if(response==null||!response.isSuccess()){
+		if(!response.isSuccess()){
 			throw new BusinessException("客户信息查询失败");
 		}
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -468,7 +468,8 @@ public class PaymentService {
 		}
 		Integer num = (Integer)resp.getData();
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
-		if(!resp.isSuccess()){
+
+		if(!responseCredit.isSuccess()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
@@ -653,7 +654,7 @@ public class PaymentService {
 			orderService.validateGoodsStock(requestIdOrder,orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
 		}
 		Response response  =  commonHttpClient.getCustomerBasicInfo(requestId, userId);
-		if(response==null||!response.getStatus().equals("1")){
+		if(!response.isSuccess()){
 			throw new BusinessException("客户信息查询失败");
 		}
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -662,7 +663,7 @@ public class PaymentService {
 		}
 
 		Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
-		if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+		if(!responseCredit.isSuccess()){
 			throw new BusinessException("额度信息查询失败");
 		}
 		CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
