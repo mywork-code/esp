@@ -1,29 +1,8 @@
 package com.apass.esp.service.payment;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import com.apass.esp.domain.Response;
-import com.apass.esp.repository.httpClient.CommonHttpClient;
-import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
-import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
-import com.apass.monitor.annotation.Monitor;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
@@ -39,6 +18,9 @@ import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockLogRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
@@ -46,8 +28,24 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 订单支付
@@ -322,8 +320,6 @@ public class PaymentService {
 	/**
 	 * 调用BSS 支付接口
 	 * 
-	 * @param orderInfoList
-	 *            订单列表
 	 * @param userId
 	 *            用户id
 	 * @param paymentType
@@ -452,7 +448,6 @@ public class PaymentService {
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
-			//throw new BusinessException("客户信息查询失败");
 		}
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
 		if (customerBasicInfo == null) {
@@ -466,14 +461,15 @@ public class PaymentService {
 		resultMap.put("cardType", customerBasicInfo.getCardType());
 
 		Response resp = paymentHttpClient.creditPayAuthority(userId);
-		if(resp==null||!resp.isSuccess()){
+		if(!resp.isSuccess()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
 		}
 		Integer num = (Integer)resp.getData();
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
-		if(!response.isSuccess()){
+
+		if(!responseCredit.isSuccess()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
@@ -510,7 +506,7 @@ public class PaymentService {
 				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 				Response overDue = paymentHttpClient.hasOverDueBill(userId);
 				boolean overDue1 = false;
-				if(overDue==null||!overDue.isSuccess()){
+				if(!overDue.isSuccess()){
 					overDue1=false;
 				}else{
 					overDue1 = (boolean)overDue.getData();

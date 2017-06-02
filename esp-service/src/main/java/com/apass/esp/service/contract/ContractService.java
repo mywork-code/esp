@@ -398,14 +398,14 @@ public class ContractService {
      * @param orderIdArray - 订单ID列表
      * @return BuySellContractDTO
      */
-    public BuySellContractDTO getContractParamModelByOrderIdList(String[] orderIdArray) throws BusinessException {
+	public BuySellContractDTO getContractParamModelByOrderIdList(String[] orderIdArray) throws BusinessException {
         Long userId = null;
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("orderIdArray", orderIdArray);
         // Step 1. 根据主订单号查询订单列表
         List<OrderInfoEntity> orderInfoEntityList = orderInfoRepository.selectByOrderIdList(paramMap);
         if (CollectionUtils.isEmpty(orderInfoEntityList)) {
-            throw new BusinessException("订单记录不存在");
+            throw new BusinessException("订单记录不存在",BusinessErrorCode.ORDER_NOT_EXIST);
         }
         userId=orderInfoEntityList.get(0).getUserId();
         List<String> orders = Arrays.asList(orderIdArray);
@@ -425,20 +425,20 @@ public class ContractService {
         // Step 3. 查询客户and签名信息
         Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
         if(!response.isSuccess()){
-            throw new BusinessException("客户信息查询失败");
+            throw new BusinessException("客户信息查询失败",BusinessErrorCode.CUSTOMER_QUERYINFO_FAILED);
         }
         CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
         if (customerBasicInfo == null) {
-            throw new BusinessException("客户信息查询失败");
+            throw new BusinessException("客户信息查询失败",BusinessErrorCode.CUSTOMER_QUERYINFO_FAILED);
         }
 
         Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
         if(!responseCredit.isSuccess()){
-            throw new BusinessException("额度信息查询失败");
+            throw new BusinessException("额度信息查询失败",BusinessErrorCode.QUOTA_QUERYINFO_FAILED);
         }
         CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
         if (customerBasicInfo == null) {
-            throw new BusinessException("额度信息查询失败");
+            throw new BusinessException("额度信息查询失败",BusinessErrorCode.QUOTA_QUERYINFO_FAILED);
         }
 
         // Step 2. 查询

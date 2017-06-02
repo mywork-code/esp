@@ -95,7 +95,18 @@ public enum BusinessErrorCode implements ErrorCode {
   ADD_INFO_INVALID(6019,"提交无效"),
   LOAD_INFO_FAILED(6020,"加载信息失败"),
   GET_RANDOMCODE_FAILED(6021,"获取随机验证码失败"),
-  CALLBACK_FUNCTION_FAILED(6022,"回调失败")
+  CALLBACK_FUNCTION_FAILED(6022,"回调失败"),
+  CUSTOMER_QUERYINFO_FAILED(6023,"客户信息查询失败"),
+  QUOTA_QUERYINFO_FAILED(6024,"额度信息查询失败"),
+  CUSTOMERINFO_BINDCARD_FAILED(6025,"查询客户基本信息及绑卡信息查询服务异常"),
+  CUSTOMER_RATEQUERY_EXCEPTION(6026,"查询用户的费率信息服务异常"),
+  CUSTOMER_QUOTAQUERY_EXCEPTION(6027,"查询用户的额度信息服务异常"),
+  CHECK_CUSTOMERBANK_EXCEPTION(6028,"验卡是否本人以及是否支持该银行接口调用异常"),
+  BIND_CARTINTEFACE_EXCEPTION(6029,"绑卡接口调用异常"),
+  BANKING_LIST_EXCEPTION(6030,"银行卡列表接口调用异常"),
+  UPLOAD_ANALYSISIDCARD_EXCEPTION(6031,"上传并解析身份证图片接口调用异常"),
+  BIND_CONTRACT_EXCEPTION(6032,"绑卡合同接口调用异常"),
+  INIT_CONTRACT_EXCEPTION(6033,"初始化合同接口调用异常")
   ;
   private Integer code;
   private String msg;
