@@ -42,7 +42,7 @@ public class GoodsBasicController {
 			return Response.success("加载成功", returnMap);
 		} catch (BusinessException e) {
 			LOGGER.error("GoodsBasic loadGoodsBasicInfo fail", e);
-			return Response.fail(e.getErrorDesc());
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
 		} catch (Exception e) {
 			LOGGER.error("GoodsBasic loadGoodsBasicInfo fail", e);
 			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);

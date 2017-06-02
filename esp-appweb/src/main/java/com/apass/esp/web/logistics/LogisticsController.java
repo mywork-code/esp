@@ -56,7 +56,7 @@ public class LogisticsController {
             returnMap= logisticsService.loadLogisticInfo(orderId);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         } catch (Exception e) {
             LOGGER.error("物流信息查询失败!", e);
             return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
