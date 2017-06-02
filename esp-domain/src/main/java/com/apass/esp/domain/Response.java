@@ -1,10 +1,8 @@
 package com.apass.esp.domain;
 
 import com.apass.esp.common.code.ErrorCode;
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.domain.enums.YesNo;
-import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
@@ -122,7 +120,8 @@ public class Response {
 	public boolean isSuccess(){
 		if (YesNo.isYes(status)) {
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 }
