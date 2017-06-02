@@ -207,8 +207,11 @@ public class PaymentController {
 				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 			}
 			String orderArray[]=orderList.split(",");
-			String response = paymentService.queryPayStatus(orderArray);
-			resMap.put("pstatus", response);
+			Response response = paymentService.queryPayStatus(orderArray);
+			if(response==null||!response.isSuccess()){
+                return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            }
+			resMap.put("pstatus", (String)response.getData());
 		} catch (Exception e) {
 			LOGGER.error("交易状态查询", e);
 			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);

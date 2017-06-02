@@ -1,6 +1,7 @@
 package com.apass.esp.service.order;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
@@ -815,7 +816,13 @@ public class OrderService {
 				if (OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
 					PayRequestDto req = new PayRequestDto();
 					req.setOrderId(order.getOrderId());
-					String payRealStatus = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
+					String payRealStatus ="";
+					Response response = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
+					if(response==null||!response.isSuccess()){
+						payRealStatus = "1";
+					}else{
+						payRealStatus = (String)response.getData();
+					}
 					// 0:支付成功 非零:支付失败
 					if (!YesNo.NO.getCode().equals(payRealStatus)) {
 						GoodsStockLogEntity sotckLog = goodsStcokLogDao.loadByOrderId(order.getOrderId());
