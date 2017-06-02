@@ -1,18 +1,5 @@
 package com.apass.esp.web.monitor;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
@@ -23,6 +10,18 @@ import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by xianzhi.wang on 2017/5/18.
@@ -39,6 +38,7 @@ public class MonitorController {
 
 
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
+		@ResponseBody
     public Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
 
         int record = monitorService.insertMonitor(monitorDto);
