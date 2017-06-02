@@ -279,7 +279,7 @@ public class ContractService {
         if(!responseCredit.isSuccess()){
             throw new BusinessException("客户额度信息查询失败");
         }
-        CustomerCreditInfo customerCreditInfo =  Response.resolveResult(response,CustomerCreditInfo.class);
+        CustomerCreditInfo customerCreditInfo =  Response.resolveResult(responseCredit,CustomerCreditInfo.class);
         if(customerCreditInfo==null){
             throw new BusinessException("客户额度信息查询失败");
         }
@@ -436,7 +436,7 @@ public class ContractService {
         if(!responseCredit.isSuccess()){
             throw new BusinessException("额度信息查询失败",BusinessErrorCode.QUOTA_QUERYINFO_FAILED);
         }
-        CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+        CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
         if (customerBasicInfo == null) {
             throw new BusinessException("额度信息查询失败",BusinessErrorCode.QUOTA_QUERYINFO_FAILED);
         }

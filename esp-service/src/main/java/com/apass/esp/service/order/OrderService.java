@@ -818,7 +818,7 @@ public class OrderService {
 					req.setOrderId(order.getOrderId());
 					String payRealStatus ="";
 					Response response = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
-					if(response==null||!response.isSuccess()){
+					if(!response.isSuccess()){
 						payRealStatus = "1";
 					}else{
 						payRealStatus = (String)response.getData();

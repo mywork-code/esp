@@ -350,10 +350,10 @@ public class PaymentService {
 			throw new BusinessException("客户信息查询失败");
 		}
 		Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
-		if(responseCredit==null||!responseCredit.isSuccess()){
+		if(!responseCredit.isSuccess()){
 			throw new BusinessException("额度信息查询失败");
 		}
-		CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
 		if (customerBasicInfo == null) {
 			throw new BusinessException("额度信息查询失败");
 		}
@@ -666,7 +666,7 @@ public class PaymentService {
 		if(!responseCredit.isSuccess()){
 			throw new BusinessException("额度信息查询失败");
 		}
-		CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
 		if (customerBasicInfo == null) {
 			throw new BusinessException("额度信息查询失败");
 		}
@@ -742,7 +742,7 @@ public class PaymentService {
         //支付状态
 		String payRealStatus="";
 		Response res = paymentHttpClient.gateWayTransStatusQuery(requestId,req);
-		if(res==null||!res.isSuccess()){
+		if(!res.isSuccess()){
 			payRealStatus="01";
 		}else{
 			payRealStatus =(String)res.getData();
