@@ -89,7 +89,7 @@ public class ShoppingCartService {
         if(null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
                 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())){
             LOG.info(requestId, "该商品已下架", goodsStockId);
-            throw new BusinessException("该商品已下架");
+            throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
         }
         
         //商品库存如果都为0 则提示商品下架
@@ -103,13 +103,13 @@ public class ShoppingCartService {
         }
         if (offShelfFlag) {
             LOG.info(requestId, "商品各规格数量都为0", goodsStockId);
-            throw new BusinessException("商品已下架");
+            throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
         }
         
         
         if(goodsStockInfo.getStockCurrAmt() < 1 || goodsStockInfo.getStockCurrAmt() < countVal){
             LOG.info(requestId, "该商品库存不足", goodsStockId);
-            throw new BusinessException("该商品库存不足");
+            throw new BusinessException("该商品库存不足",BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
         }
         
         // 计算商品折扣后价格
@@ -144,7 +144,7 @@ public class ShoppingCartService {
                     Integer updateFlag = cartInfoRepository.update(saveToCart);
                     if(updateFlag != 1){
                         LOG.info(requestId, "购物车已存在该商品", "更新商品数量失败");
-                        throw new BusinessException("添加商品到购物车失败");
+                        throw new BusinessException("添加商品到购物车失败",BusinessErrorCode.GOODS_ADDTOCART_ERROR);
                     }
                     break;
                 }
@@ -157,7 +157,7 @@ public class ShoppingCartService {
             int numOfType = null == cartInfoList ? 0 : cartInfoList.size();
             if(numOfType >= 99){
                 LOG.info(requestId, "购物车商品种类数已满", String.valueOf(numOfType));
-                throw new BusinessException("您的购物车已满，快去结算吧!");
+                throw new BusinessException("您的购物车已满，快去结算吧!",BusinessErrorCode.GOODS_ADDTOCART_FULL);
             }
             
             CartInfoEntity saveToCart = new CartInfoEntity();
@@ -169,7 +169,7 @@ public class ShoppingCartService {
             cartInfoRepository.insert(saveToCart);
             if(null == saveToCart.getId()){
                 LOG.info(requestId, "购物车不存该商品", "插入商品信息失败");
-                throw new BusinessException("添加商品到购物车失败");
+                throw new BusinessException("添加商品到购物车失败",BusinessErrorCode.GOODS_ADDTOCART_ERROR);
             }
         }
 
