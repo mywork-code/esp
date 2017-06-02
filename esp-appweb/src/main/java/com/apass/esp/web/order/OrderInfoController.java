@@ -182,7 +182,7 @@ public class OrderInfoController {
             orderService.cancelOrder(requestId, userId, orderId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("订单取消失败!请稍后再试");
@@ -224,7 +224,7 @@ public class OrderInfoController {
             orderService.deleyReceiveGoods(requestId, userId, orderId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("延迟收货失败!请稍后再试");
@@ -268,7 +268,7 @@ public class OrderInfoController {
             dto = orderService.getOrderDetailInfoDto(requestId, orderId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("确认收货失败!请稍后再试");
@@ -312,7 +312,7 @@ public class OrderInfoController {
             orderService.deleteOrderInfo(requestId, userId, orderId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.DELETE_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("删除订单失败!请稍后再试");
@@ -358,7 +358,7 @@ public class OrderInfoController {
             return Response.success("重新下单初始化成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("重新下单初始化失败");
@@ -403,7 +403,7 @@ public class OrderInfoController {
             return Response.success("重新下单添加至购物车成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("重新下单添加至购物车失败");
@@ -450,7 +450,7 @@ public class OrderInfoController {
             orderService.modifyShippingAddress(requestId, addressId, orderId, userId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("修改订单收货地址失败!请稍后再试");
@@ -543,7 +543,7 @@ public class OrderInfoController {
             return Response.success("查询地址信息成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("查询订单失败请稍后再试");
@@ -584,7 +584,7 @@ public class OrderInfoController {
             return Response.success("查询订单明细成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("订单明细查询失败");
@@ -673,7 +673,7 @@ public class OrderInfoController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             LOGGER.error("修改订单收货地址失败,请稍后再试或联系客服");
@@ -712,7 +712,7 @@ public class OrderInfoController {
 
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.GOODS_ADDTOCART_ERROR);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("商品信息加入购物车失败", e);
             return Response.fail(BusinessErrorCode.GOODS_ADDTOCART_ERROR);

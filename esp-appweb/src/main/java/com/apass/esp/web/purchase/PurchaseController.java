@@ -58,7 +58,7 @@ public class PurchaseController {
             purchaseService.buyRightNowInit(returnMap,userId,goodsId,goodsStockId);
         } catch (Exception e) {
             LOGGER.error("立即购买初始化失败!请稍后再试", e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail(BusinessErrorCode.BUY_NOWINIT_FAILED);
         }
         return Response.successResponse(returnMap);
     }

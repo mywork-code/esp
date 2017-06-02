@@ -24,7 +24,7 @@ public enum BusinessErrorCode implements ErrorCode {
   CART_UPDATEINFO_ERROR(2007, "更新购物车信息失败"),
   GOODS_UPDATEINFO_ERROR(2008, "更新商品信息失败"),
   GOODS_STATUS_INVALID(2009, "商品状态无效"),
-  CART_DELETE_ERROR(2010,"删除购物车错误"),
+  CART_DELETE_ERROR(2010,"删除购物车商品错误"),
   SYN_CART_FAILED(2011,"同步商品失败"),
   GOODS_ALREADY_REMOV(2012,"商品已经下架"),
   CART_FULL(2013,"购物车已满"),
@@ -62,6 +62,7 @@ public enum BusinessErrorCode implements ErrorCode {
   AFTERSALES_PROCESSDATA_NULL(3021, "售后流程数据为空"),
   AFTERSALES_PROCESSDATA_ERROR(3022, "售后流程状态错误"),
   ORDER_PAY_FAILED(3023,"订单支付失败!请重新支付"),
+  ORDERSTATUS_NOTALLOW_CANCEL(3024,"对不起!当前订单状态不能取消该订单"),
 
 
   //4xxx 与依懒服务相互调用问题
@@ -116,7 +117,9 @@ public enum BusinessErrorCode implements ErrorCode {
   BANKING_LIST_EXCEPTION(6030,"银行卡列表接口调用异常"),
   UPLOAD_ANALYSISIDCARD_EXCEPTION(6031,"上传并解析身份证图片接口调用异常"),
   BIND_CONTRACT_EXCEPTION(6032,"绑卡合同接口调用异常"),
-  INIT_CONTRACT_EXCEPTION(6033,"初始化合同接口调用异常")
+  INIT_CONTRACT_EXCEPTION(6033,"初始化合同接口调用异常"),
+  ADDRESS_NOT_EXIST(6034,"地址信息不存在"),
+  BUY_NOWINIT_FAILED(6035,"立即购买初始化失败!请稍后再试")
   ;
   private Integer code;
   private String msg;

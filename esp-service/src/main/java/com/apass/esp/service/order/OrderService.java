@@ -138,7 +138,8 @@ public class OrderService {
 			return orderDetailInfo;
 		} catch (Exception e) {
 			LOG.info(requestId, "查询订单详细信息失败", "");
-			throw new BusinessException("查询订单详细信息失败！", e);
+			LOGGER.error("查询订单详细信息失败", e);
+			throw new BusinessException("查询订单详细信息失败！", BusinessErrorCode.ORDER_DETAIL_ERROR);
 		}
 	}
 
@@ -386,7 +387,7 @@ public class OrderService {
 			Integer successStatus = orderInfoRepository.insert(orderInfo);
 			if (successStatus < 1) {
 				LOG.info(requestId, "生成订单", "订单表数据插入失败");
-				throw new BusinessException("订单生成失败!");
+				throw new BusinessException("订单生成失败!",BusinessErrorCode.ORDER_NOT_EXIST);
 			}
 			// 插入商品级订单
 			for (PurchaseRequestDto purchase : purchaseList) {
@@ -415,7 +416,7 @@ public class OrderService {
 					Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
 					if (orderDetailSuccess < 1) {
 						LOG.info(requestId, "生成订单", "订单详情表数据插入失败");
-						throw new BusinessException("订单生成失败!");
+						throw new BusinessException("订单生成失败!",BusinessErrorCode.ORDER_NOT_EXIST);
 					}
 				}
 			}
@@ -622,11 +623,11 @@ public class OrderService {
 		OrderInfoEntity order = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == order) {
 			LOG.info(requestId, "查询订单表信息", "数据为空");
-			throw new BusinessException("对不起!该订单不存在!");
+			throw new BusinessException("对不起!该订单不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
 			LOG.info(requestId, "校验订单状态", "当前订单状态不能取消该订单");
-			throw new BusinessException("对不起!当前订单状态不能取消该订单");
+			throw new BusinessException("对不起!当前订单状态不能取消该订单",BusinessErrorCode.ORDERSTATUS_NOTALLOW_CANCEL);
 		}
 		dealWithInvalidOrder(requestId, orderId);
 	}
@@ -714,15 +715,15 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("对不起!订单信息为空");
+			throw new BusinessException("对不起!订单信息为空",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_SEND.getCode().equals(orderInfo.getStatus())) {
 			LOG.info(requestId, "校验订单状态,当前订单状态不能延迟收货", orderId);
-			throw new BusinessException("当前订单状态不能延迟收货");
+			throw new BusinessException("当前订单状态不能延迟收货",BusinessErrorCode.ORDER_DELEY_RECEIVE_ERROR);
 		}
 		if (orderInfo.getExtendAcceptGoodsNum() >= 1) {
 			LOG.info(requestId, "每笔订单只能一次延长收货", orderId);
-			throw new BusinessException("每笔订单只能延长一次");
+			throw new BusinessException("每笔订单只能延长一次",BusinessErrorCode.ORDER_DELEY_RECEIVE_ERROR);
 		}
 
 		if (null != orderInfo.getLastAcceptGoodsDate()) {
@@ -745,11 +746,11 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("对不起!订单信息为空");
+			throw new BusinessException("对不起!订单信息为空",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_SEND.getCode().equals(orderInfo.getStatus())) {
 			LOG.info(requestId, "当前订单状态不能确认收货", orderId);
-			throw new BusinessException("当前订单状态不能确认收货");
+			throw new BusinessException("当前订单状态不能确认收货",BusinessErrorCode.ORDER_CONFIRM_ERROR);
 		}
 
 		orderInfo.setAcceptGoodsDate(new Date());
@@ -769,12 +770,12 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("对不起!订单信息为空");
+			throw new BusinessException("对不起!订单信息为空",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_CANCEL.getCode().equals(orderInfo.getStatus())
 				&& !OrderStatus.ORDER_COMPLETED.getCode().equals(orderInfo.getStatus())) {
 			LOG.info(requestId, "当前订单状态不能删除订单", orderId);
-			throw new BusinessException("当前订单状态不能删除订单");
+			throw new BusinessException("当前订单状态不能删除订单",BusinessErrorCode.ORDER_DELETE_ERROR);
 		}
 		orderInfoRepository.updateStatusByOrderId(orderInfo.getOrderId(), OrderStatus.ORDER_DELETED.getCode());
 	}
@@ -847,7 +848,7 @@ public class OrderService {
 	public OrderDetailInfoDto getOrderDetailInfoDto(String requestId,String orderId) throws BusinessException{
 	    
 	    if(StringUtils.isBlank(orderId)){
-	        throw new BusinessException("订单Id不能为空!");
+	        throw new BusinessException("订单Id不能为空!",BusinessErrorCode.PARAM_IS_EMPTY);
 	    }
 	    
         OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
@@ -968,7 +969,7 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, null);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("该订单信息不存在!");
+			throw new BusinessException("该订单信息不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		resultMap.put("orderInfo", orderInfo);
 		if (orderInfo.getStatus().equals(OrderStatus.ORDER_COMPLETED.getCode())) {
@@ -994,16 +995,16 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("该订单信息不存在!");
+			throw new BusinessException("该订单信息不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_NOPAY.getCode().equals(orderInfo.getStatus())) {
 			LOG.info(requestId, "当前状态不能修改订单地址", orderId);
-			throw new BusinessException("当前状态不能修改订单地址");
+			throw new BusinessException("当前状态不能修改订单地址",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
 		AddressInfoEntity address = addressInfoDao.select(addressId);
 		if (null == address) {
 			LOG.info(requestId, "查询地址信息,数据为空", addressId.toString());
-			throw new BusinessException("当前地址信息不存在");
+			throw new BusinessException("当前地址信息不存在",BusinessErrorCode.ADDRESS_NOT_EXIST);
 		}
 		orderInfo.setProvince(address.getProvince());
 		orderInfo.setCity(address.getCity());
@@ -1027,7 +1028,7 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", orderId);
-			throw new BusinessException("该订单不存在!");
+			throw new BusinessException("该订单不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		List<GoodsInfoInCartEntity> goodsList = new ArrayList<GoodsInfoInCartEntity>();
@@ -1040,7 +1041,7 @@ public class OrderService {
 			GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
 			// 判断库存
 			if (goodsStock.getStockCurrAmt() <= 0) {
-				throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
+				throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!",BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
 			}
 			GoodsInfoInCartEntity goodInfo = new GoodsInfoInCartEntity();
 			goodInfo.setGoodsId(goodsStock.getGoodsId());
@@ -1168,7 +1169,7 @@ public class OrderService {
 						Integer updateFlag = cartInfoRepository.update(saveToCart);
 						if (updateFlag != 1) {
 							LOG.info(requestId, "添加商品到购物车,更新商品数量失败", "");
-							throw new BusinessException("添加商品到购物车失败");
+							throw new BusinessException("添加商品到购物车失败",BusinessErrorCode.GOODS_ADDTOCART_ERROR);
 						}
 						break;
 					}
@@ -1179,7 +1180,7 @@ public class OrderService {
 				int numOfType = null == cartInfoList ? 0 : cartInfoList.size();
 				if (numOfType >= 99) {
 					LOG.info(requestId, "购物车商品种类数已满", String.valueOf(numOfType));
-					throw new BusinessException("您的购物车已满，快去结算吧!");
+					throw new BusinessException("您的购物车已满，快去结算吧!",BusinessErrorCode.CART_FULL);
 				}
 				CartInfoEntity saveToCart = new CartInfoEntity();
 				saveToCart.setUserId(userId);
@@ -1190,7 +1191,7 @@ public class OrderService {
 				cartInfoRepository.insert(saveToCart);
 				if (null == saveToCart.getId()) {
 					LOG.info(requestId, "添加商品到购物车,插入商品数据失败", "");
-					throw new BusinessException("添加商品到购物车失败");
+					throw new BusinessException("添加商品到购物车失败",BusinessErrorCode.GOODS_ADDTOCART_ERROR);
 				}
 			}
 		}
@@ -1210,11 +1211,11 @@ public class OrderService {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, addressInfoDto.getUserId());
 		if (null == orderInfo) {
 			LOG.info(requestId, "查询订单信息,数据为空", "");
-			throw new BusinessException("该订单信息不存在!");
+			throw new BusinessException("该订单信息不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_NOPAY.getCode().equals(orderInfo.getStatus())) {
 			LOG.info(requestId, "当前订单状态不能修改地址", "");
-			throw new BusinessException("当前订单状态不能修改地址");
+			throw new BusinessException("当前订单状态不能修改地址",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
 
 		// 待付款订单不能修改省、市、区地址
@@ -1222,7 +1223,7 @@ public class OrderService {
 				|| !orderInfo.getCity().equals(addressInfoDto.getCity())
 				|| !orderInfo.getDistrict().equals(addressInfoDto.getDistrict())) {
 			LOG.info(requestId, "待付款订单不能修改省、市、区地址", "");
-			throw new BusinessException("待付款订单不能修改省、市、区地址");
+			throw new BusinessException("待付款订单不能修改省、市、区地址",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
 
 		Long addressId = addressService.addAddressInfo(addressInfoDto);
@@ -1280,15 +1281,15 @@ public class OrderService {
 	public void payAfterFail(String orderId, Long userId) throws BusinessException {
 		OrderInfoEntity order = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == order) {
-			throw new BusinessException("对不起!该订单不存在!");
+			throw new BusinessException("对不起!该订单不存在!",BusinessErrorCode.ORDER_NOT_EXIST);
 		}
 		if (!OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
-			throw new BusinessException("对不起,当前订单状态不合法");
+			throw new BusinessException("对不起,当前订单状态不合法",BusinessErrorCode.ORDER_STATUS_INVALID);
 		}
 		// 校验是否有库存不足或商品下架
 		List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
 		if (null == orderDetails || orderDetails.size() == 0) {
-			throw new BusinessException("该订单信息异常");
+			throw new BusinessException("该订单信息异常",BusinessErrorCode.ORDER_DETAIL_ERROR);
 		}
 
 		reOrder("", orderId, userId);
