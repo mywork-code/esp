@@ -1,6 +1,7 @@
 package com.apass.esp.noauth.home;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,19 +142,19 @@ public class ShopHomeController {
        			 goodsList =goodsPageList.getDataList();
       		     returnMap.put("totalCount", goodsPageList.getTotalCount());
       		     //设置类目张的banner
-      		     List<BannerInfoEntity> banners=null;
+      		     List<BannerInfoEntity> banners=new ArrayList<BannerInfoEntity>();
       		     BannerInfoEntity  bity=new BannerInfoEntity();
       		     
                  Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
-                 if("1".equals(category.getSortOrder())){//家用电器banner图
+                 if("1".equals(String.valueOf(category.getSortOrder()))){//家用电器banner图
                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
                 	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
-                 }else if("2".equals(category.getSortOrder())){//家居百货banner图
+                 }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
                  	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
                 	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
-                 }else if("3".equals(category.getSortOrder())){//美妆生活banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334813246.png");
+                 }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
+                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496401288300.png");
+                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496401288300.png");
                  }
                  banners.add(bity);
                  returnMap.put("banners", banners);
