@@ -74,7 +74,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.GOODS_ADDTOCART_ERROR);
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.GOODS_ADDTOCART_ERROR);
