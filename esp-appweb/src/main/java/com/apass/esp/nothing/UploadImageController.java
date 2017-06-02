@@ -69,7 +69,7 @@ public class UploadImageController {
             return Response.success("售后商品图片上传成功!");
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
