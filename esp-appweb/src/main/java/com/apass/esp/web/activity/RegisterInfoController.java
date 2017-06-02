@@ -1,22 +1,5 @@
 package com.apass.esp.web.activity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -30,6 +13,22 @@ import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/activity/regist")
 public class RegisterInfoController {
@@ -196,6 +195,9 @@ public class RegisterInfoController {
 			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
+			return Response.fail(e.getBusinessErrorCode());
+		} catch (Exception e) {
+			logger.error("mobile verification code send fail", e);
 			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
 		}
 	}
@@ -313,10 +315,10 @@ public class RegisterInfoController {
 	        		}
     		
     		logger.error("校验失败,请重新注册！");
-	        return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
+	        return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 		} catch (Exception e) {
 			logger.error("校验失败,请重新注册", e);
-			return Response.fail(BusinessErrorCode.REGISTER_HAS_FAILED);
+			return Response.fail(BusinessErrorCode.BIND_VALIDATE_FAILED);
 		}
 	}
 	/**
@@ -460,10 +462,10 @@ public class RegisterInfoController {
 				return Response.success("获取有效活动开始时间成功！",result);
 			} catch (BusinessException e) {
 				logger.error("获取有效活动开始时间失败！", e);
-				return Response.fail(BusinessErrorCode.ACTIVITY_HASNOT_START);
+				return Response.fail(e.getBusinessErrorCode());
 			}catch (ParseException e) {
 				logger.error("获取有效活动开始时间失败！", e);
-				return Response.fail(BusinessErrorCode.ACTIVITY_HASNOT_START);
+				return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
 			}
 	}
 	

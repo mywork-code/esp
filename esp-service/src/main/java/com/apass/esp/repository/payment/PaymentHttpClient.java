@@ -32,7 +32,7 @@ public class PaymentHttpClient {
 
   @Value("${gfbwechat.request.address}")
   public String gfbReqUrl;
-  
+
   //  支付请求地址
   private static final String APASSPAYREQ = "/apassPay/pay";
 
@@ -52,7 +52,7 @@ public class PaymentHttpClient {
   private static final String OVER_DUE_BILL_URL = "/billshowHis/statement/ifHaveOverDue";
 
   private static final String NEW_CUSTOMER_FLAG_URL = "/myCenter/search/customerFlag";
-  
+
 
   /**
    * 调用GFB获取客户信息
@@ -74,7 +74,7 @@ public class PaymentHttpClient {
       LOG.logstashResponse(requestId, "获取客户信息返回数据:", responseJson);
       Response response =// JsonUtil.fromJson(responseJson,Response.class);
               GsonUtils.convertObj(responseJson, Response.class);
-      if(response==null){
+      if(response==null||!response.isSuccess()){
         return Response.fail("调用客户信息查询服务异常");
       }
       return response;
@@ -97,7 +97,7 @@ public class PaymentHttpClient {
       String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
       LOG.logstashResponse(requestId, "获取客户签名返回数据:", responseJson);
       Response response = GsonUtils.convertObj(responseJson, Response.class);
-      if (response == null || !YesNo.isYes(response.getStatus())) {
+      if (response == null || !response.isSuccess()) {
         return Response.fail("签名信息查询失败");
        // throw new BusinessException("签名信息查询失败");
       }

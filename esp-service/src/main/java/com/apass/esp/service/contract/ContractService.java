@@ -157,7 +157,7 @@ public class ContractService {
     private void handleSeal(Long userId, String mainOrderId, String contractPath, BuySellContractDTO contractDTO) throws BusinessException {
         try {
             Response response = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
-            if(response==null||response.getStatus().equals("1")){
+            if(!response.isSuccess()){
                 return;
             }
             Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
