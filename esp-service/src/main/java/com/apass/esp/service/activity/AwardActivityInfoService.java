@@ -11,7 +11,11 @@ import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
 import com.apass.esp.mapper.AwardActivityInfoMapper;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerRateInfo;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -37,6 +41,9 @@ public class AwardActivityInfoService {
 
     @Autowired
     private PaymentHttpClient paymentHttpClient;
+
+    @Autowired
+    private CommonHttpClient commonHttpClient;
 
     @Autowired
     private EspActivityHttpClient espActivityHttpClient;
@@ -166,41 +173,48 @@ public class AwardActivityInfoService {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			//CustomerInfo customerInfo =
-            Response response = paymentHttpClient.getCustomerInfo(requestId, userId);
-            if(!response.isSuccess()){
+            Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
+            if(response==null||!response.isSuccess()){
                 return null;
             }
-            CustomerInfo customerInfo = Response.resolveResult(response,CustomerInfo.class);
+            CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
 			// 客户信息不存在
-			if (customerInfo == null) {
+			if (customerBasicInfo == null) {
 				return null;
 			}
 			resultMap.put("userId", userId);
-			resultMap.put("mobile", customerInfo.getMobile());
-			resultMap.put("customerId", customerInfo.getCustomerId());
-			resultMap.put("identityExpires", customerInfo.getIdentityExpires());
-			if(StringUtils.isNotBlank(customerInfo.getRealName())){
-				resultMap.put("realName", customerInfo.getRealName());
+			resultMap.put("mobile", customerBasicInfo.getMobile());
+			resultMap.put("customerId", customerBasicInfo.getCustomerId());
+			resultMap.put("identityExpires", customerBasicInfo.getIdentityExpires());
+			if(StringUtils.isNotBlank(customerBasicInfo.getRealName())){
+				resultMap.put("realName", customerBasicInfo.getRealName());
 			}
 			// 身份信息未认证
-			if (StringUtils.isEmpty(customerInfo.getIdentityNo())) {
+			if (StringUtils.isEmpty(customerBasicInfo.getIdentityNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode());
 				return resultMap;
 			}
-			resultMap.put("identityNo", customerInfo.getIdentityNo());
-			resultMap.put("customerStatus", customerInfo.getStatus());
-			resultMap.put("repaymentDate", customerInfo.getRepaymentDate());//还款日
+			resultMap.put("identityNo", customerBasicInfo.getIdentityNo());
+			resultMap.put("customerStatus", customerBasicInfo.getStatus());
+            Response response2 =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
+            if(response2!=null&&response2.isSuccess()){
+                CustomerCreditInfo customerCreditInfo =  Response.resolveResult(response2,CustomerCreditInfo.class);
+                if(customerCreditInfo!=null){
+                    resultMap.put("repaymentDate",customerCreditInfo.getRepaymentDate());//还款日
+                }
+            }
+
 			// 银行卡未绑定
-			if (StringUtils.isAnyEmpty(customerInfo.getBankCode(), customerInfo.getCardBank(),
-					customerInfo.getCardType(), customerInfo.getCardNo())) {
+			if (StringUtils.isAnyEmpty(customerBasicInfo.getBankCode(), customerBasicInfo.getCardBank(),
+                    customerBasicInfo.getCardType(), customerBasicInfo.getCardNo())) {
 				resultMap.put("status", AwardActivity.BIND_STATUS.UNBINDED.getCode());
 				return resultMap;
 			}
 			resultMap.put("status", AwardActivity.BIND_STATUS.BINDED.getCode());
-			resultMap.put("cardType", customerInfo.getCardType());
-			resultMap.put("cardNo", customerInfo.getCardNo());
-			resultMap.put("cardBank", customerInfo.getCardBank());
-			resultMap.put("bankCode", customerInfo.getBankCode());
+			resultMap.put("cardType", customerBasicInfo.getCardType());
+			resultMap.put("cardNo", customerBasicInfo.getCardNo());
+			resultMap.put("cardBank", customerBasicInfo.getCardBank());
+			resultMap.put("bankCode", customerBasicInfo.getBankCode());
 			return resultMap;
 		} catch (Exception e) {
 			LOGGER.error("查询用户是否绑卡及绑卡信息", e);

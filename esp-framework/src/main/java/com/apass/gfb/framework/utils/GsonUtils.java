@@ -104,7 +104,11 @@ public class GsonUtils {
 		if (StringUtils.isBlank(json)) {
 			return null;
 		}
-		return gson.fromJson(json, cls);
+		try{
+			return gson.fromJson(json, cls);
+		} catch (Exception e ){
+			return null;
+		}
 	}
 
 	/**
