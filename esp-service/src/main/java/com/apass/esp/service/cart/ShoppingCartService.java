@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,14 +74,14 @@ public class ShoppingCartService {
         
         if(countVal < 1){
             LOG.info(requestId, "商品数量异常", String.valueOf(countVal));
-            throw new BusinessException("购买商品不能少于1件");
+            throw new BusinessException("购买商品不能少于1件", BusinessErrorCode.GOODS_ADDTOCART_ERROR);
         }
         
         // 查询商品库存信息(获取商品价格、当前库存量)
         GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(goodsStockIdVal);
         if(null == goodsStockInfo){
             LOG.info(requestId, "通过商品库存id查询商品库存信息为空", goodsStockId);
-            throw new BusinessException("无效的商品id");
+            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_NOT_EXIST);
         }
         
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
