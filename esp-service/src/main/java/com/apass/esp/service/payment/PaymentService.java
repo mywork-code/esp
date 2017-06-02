@@ -466,7 +466,7 @@ public class PaymentService {
 			resultMap.put("page", page);
 			return resultMap;
 		}
-		Integer num = (Integer)resp.getData();
+		Integer num = ((Double)resp.getData()).intValue();
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
 
 		if(!responseCredit.isSuccess()){
