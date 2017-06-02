@@ -1,5 +1,4 @@
 $(function () {
-    $('#addMerchantInfor').window('close');
     $('#editMerchantInfor').window('close');
 
     //Grid 列表
@@ -149,7 +148,6 @@ $(function () {
 
     //邮编校验
     $("input", $("#addMerchantPostcode").next("span")).blur(function () {
-
         var postCode = $("#addMerchantPostcode").textbox('getValue');
         //正则对象的标准声明方式，RegExp
         var pattern = new RegExp(/^\d{6}$/);  //只能输入6位数字
@@ -331,7 +329,43 @@ $(function () {
         $("#addMerchantCity").combobox('setValue', '');
         $("#addMerchantArea").combobox('setValue', '');
         $('#addMerchantInfor').window('close');
+        //加载省份 和城市
+        $("#addMerchantCity").combobox({
+            method: "get",
+            url: ctx + "/application/nation/queryNations",
+            valueField: '',
+            textField: '',
+        })
+        $("#addMerchantArea").combobox({
+        	method: "get",
+        	url: ctx + "/application/nation/queryNations",
+        	valueField: '',
+        	textField: '',
+        })
     });
+    /**监听关闭添加商品窗口事件**/
+    $('#addMerchantInfor').window({    
+ 	   onBeforeClose:function(){
+ 		  $("#channelAdd").combobox('setValue', '');
+ 	        $("#addMerchantProvince").combobox('setValue', '');
+ 	        $("#addMerchantCity").combobox('setValue', '');
+ 	        $("#addMerchantArea").combobox('setValue', '');
+ 	        //加载省份 和城市
+ 	        $("#addMerchantCity").combobox({
+ 	            method: "get",
+ 	            url: ctx + "/application/nation/queryNations",
+ 	            valueField: '',
+ 	            textField: '',
+ 	        })
+ 	        $("#addMerchantArea").combobox({
+ 	        	method: "get",
+ 	        	url: ctx + "/application/nation/queryNations",
+ 	        	valueField: '',
+ 	        	textField: '',
+ 	        })
+ 	   }
+ 	}); 
+    $('#addMerchantInfor').window('close');
 
     //监听事件,当页面省(直辖市)回显时加载对应二级区域
     $("#editMerchantProvince").combobox({
@@ -677,7 +711,6 @@ function loadDirect(provinceId, cityId, areaId) {
             $("#" + cityId).textbox('setValue', '');
             $("#" + areaId).combobox('loadData', {});
             $("#" + areaId).textbox('setValue', '');
-            console.log(data);
             $('#' + cityId).combobox({
                 //url:ctx + "/application/merchantinfor/merchant/queryCity?provinceId="+data.code,
                 method: "get",
@@ -687,7 +720,6 @@ function loadDirect(provinceId, cityId, areaId) {
                 onSelect: function (data) {
                     $("#" + areaId).combobox('loadData', {});
                     $('#addMerchantCode').textbox('setValue', '');
-                    console.log(data);
                     $('#' + areaId).combobox({
                         method: "get",
                         url: ctx + "/application/nation/queryAreas?districtCode=" + data.code,
