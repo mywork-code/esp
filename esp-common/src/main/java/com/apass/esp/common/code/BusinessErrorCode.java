@@ -95,7 +95,9 @@ public enum BusinessErrorCode implements ErrorCode {
   ADD_INFO_INVALID(6019,"提交无效"),
   LOAD_INFO_FAILED(6020,"加载信息失败"),
   GET_RANDOMCODE_FAILED(6021,"获取随机验证码失败"),
-  CALLBACK_FUNCTION_FAILED(6022,"回调失败")
+  CALLBACK_FUNCTION_FAILED(6022,"回调失败"),
+  CUSTOMER_QUERYINFO_FAILED(6023,"客户信息查询失败"),
+  QUOTA_QUERYINFO_FAILED(6024,"额度信息查询失败")
   ;
   private Integer code;
   private String msg;
