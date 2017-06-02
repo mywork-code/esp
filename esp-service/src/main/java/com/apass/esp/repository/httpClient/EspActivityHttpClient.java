@@ -1,5 +1,6 @@
 package com.apass.esp.repository.httpClient;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
@@ -61,7 +62,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("验卡是否本人 以及是否支持该银行接口调用异常:{}", e);
-			return Response.fail("验卡是否本人 以及是否支持该银行接口调用异常");
+			return Response.fail("验卡是否本人以及是否支持该银行接口调用异常",BusinessErrorCode.CHECK_CUSTOMERBANK_EXCEPTION);
 		}
 
 	}
@@ -84,7 +85,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("绑卡接口调用异常:{}", e);
-			return Response.fail("绑卡接口调用异常");
+			return Response.fail("绑卡接口调用异常",BusinessErrorCode.BIND_CARTINTEFACE_EXCEPTION);
 		}
 	}
 
@@ -107,7 +108,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("银行卡列表接口调用异常:{}", e);
-			return Response.fail("银行卡列表接口调用异常");
+			return Response.fail("银行卡列表接口调用异常",BusinessErrorCode.BANKING_LIST_EXCEPTION);
 		}
 	}
 
@@ -129,7 +130,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("上传并解析身份证图片接口调用异常:{}", e);
-			return Response.fail("上传并解析身份证图片接口调用异常");
+			return Response.fail("上传并解析身份证图片接口调用异常",BusinessErrorCode.UPLOAD_ANALYSISIDCARD_EXCEPTION);
 		}
 	}
 
@@ -151,7 +152,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("绑卡合同片接口调用异常:{}", e);
-			return Response.fail("绑卡合同接口调用异常");
+			return Response.fail("绑卡合同接口调用异常",BusinessErrorCode.BIND_CONTRACT_EXCEPTION);
 		}
 	}
 
@@ -167,7 +168,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("初始化合同片接口调用异常:{}", e);
-			return Response.fail("初始化合同接口调用异常");
+			return Response.fail("初始化合同接口调用异常",BusinessErrorCode.INIT_CONTRACT_EXCEPTION);
 		}
 	}
 
@@ -183,7 +184,7 @@ public class EspActivityHttpClient {
 			return result;
 		} catch (Exception e) {
 			LOGGER.error("初始化合同片接口调用异常:{}", e);
-			return Response.fail("初始化合同接口调用异常");
+			return Response.fail("初始化合同接口调用异常",BusinessErrorCode.INIT_CONTRACT_EXCEPTION);
 		}
 	}
 
