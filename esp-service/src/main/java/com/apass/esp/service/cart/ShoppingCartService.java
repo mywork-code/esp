@@ -157,7 +157,7 @@ public class ShoppingCartService {
             int numOfType = null == cartInfoList ? 0 : cartInfoList.size();
             if(numOfType >= 99){
                 LOG.info(requestId, "购物车商品种类数已满", String.valueOf(numOfType));
-                throw new BusinessException("您的购物车已满，快去结算吧!",BusinessErrorCode.GOODS_ADDTOCART_FULL);
+                throw new BusinessException("您的购物车已满，快去结算吧!",BusinessErrorCode.CART_FULL);
             }
             
             CartInfoEntity saveToCart = new CartInfoEntity();
@@ -239,7 +239,7 @@ public class ShoppingCartService {
         
         if(null == goodsStockIdArr || goodsStockIdArr.length == 0){
             LOG.info(requestId, "没有提交要删除的商品库存id", "");
-            throw new BusinessException("请选择要删除的商品");
+            throw new BusinessException("请选择要删除的商品",BusinessErrorCode.GOODS_STOCKID_ERROR);
         }
         
         CartInfoEntity cartDto = new CartInfoEntity();
@@ -247,7 +247,7 @@ public class ShoppingCartService {
         List<CartInfoEntity> cartInfoList = cartInfoRepository.filter(cartDto);
         if(null == cartInfoList || cartInfoList.isEmpty()){
             LOG.info(requestId, "查询该用户购物车商品信息", "该用户购物车为空");
-            throw new BusinessException("该用户购物车为空");
+            throw new BusinessException("该用户购物车为空",BusinessErrorCode.CART_NULL);
         }
         List<String> goodsStockIdStringList = new LinkedList<String>();
         for(CartInfoEntity ci : cartInfoList){
@@ -256,7 +256,7 @@ public class ShoppingCartService {
         for(String goodsStockId : goodsStockIdArr){
             if(!goodsStockIdStringList.contains(goodsStockId)){
                 LOG.info(requestId, "删除商品失败,购物车中无此商品", goodsStockId);
-                throw new BusinessException("删除商品失败");
+                throw new BusinessException("删除商品失败",BusinessErrorCode.GOODS_DELETE_ERROR);
             }
         }
 
@@ -286,7 +286,7 @@ public class ShoppingCartService {
         
         if (null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()) {
             LOG.info(requestId, "查询数据库购物车表数据", "数据为空");
-            throw new BusinessException("购物车为空");
+            throw new BusinessException("购物车为空",BusinessErrorCode.CART_NULL);
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
@@ -498,7 +498,7 @@ public class ShoppingCartService {
         List<GoodsInfoInCartEntity> goodsInfoInCartList = cartInfoRepository.getGoodsInfoInCart(userIdVal);
         if(null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()){
             LOG.info(requestId, "修改商品数量", "该用户购物车为空");
-            throw new BusinessException("该用户购物车为空");
+            throw new BusinessException("该用户购物车为空",BusinessErrorCode.CART_NULL);
         }
         
         Map<Long, GoodsInfoInCartEntity> cartInfoMap= new HashMap<Long, GoodsInfoInCartEntity>();
@@ -517,12 +517,12 @@ public class ShoppingCartService {
                 goodsStockIdList.remove(idNum.getGoodsStockId());
             } else {
                 LOG.info(requestId, "购物车无此商品或商品库存id重复", String.valueOf(idNum.getGoodsStockId()));
-                throw new BusinessException("无效的商品库存id");
+                throw new BusinessException("无效的商品库存id",BusinessErrorCode.GOODS_STOCKID_ERROR);
             }
             
             if(idNum.getGoodsNum() < 1){
                 LOG.info(requestId, "修改购物车商品数量时,提交的商品数量有误", String.valueOf(idNum.getGoodsNum()));
-                throw new BusinessException("修改购物车商品数量时,所选商品数量错误");
+                throw new BusinessException("修改购物车商品数量时,所选商品数量错误",BusinessErrorCode.GOODS_AMOUNT_ERROR);
             }
             
             CartInfoEntity cartDto = new CartInfoEntity();
@@ -541,7 +541,7 @@ public class ShoppingCartService {
             int updateGoodsNumFlag =cartInfoRepository.updateGoodsNum(cartDto);
             if(updateGoodsNumFlag != 1){
                 LOG.info(requestId, "更新购物车中该商品数量失败", String.valueOf(idNum.getGoodsStockId()));
-                throw new BusinessException("更新商品数量失败");
+                throw new BusinessException("更新商品数量失败",BusinessErrorCode.GOODS_UPDATEINFO_ERROR);
             }
         }
         synMessage += synFlag.equals("0") ? "数量超出可购买范围!" : "";
@@ -586,13 +586,13 @@ public class ShoppingCartService {
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
         if(null == goodsInfo){
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
-            throw new BusinessException("无效的商品id");
+            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
         
         List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
         if(null == goodsInfo || goodsStockSkuList.isEmpty()){
             LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
-            throw new BusinessException("无效的商品id");
+            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
         
         // 根据市场价和折扣率 计算商品价格
@@ -632,7 +632,7 @@ public class ShoppingCartService {
         
         if(null == goodsStockInfoList || goodsStockInfoList.isEmpty()){
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
-            throw new BusinessException("无效的商品id");
+            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
         
         Map<Long, GoodsStockInfoEntity> resultMap= new HashMap<Long, GoodsStockInfoEntity>();
@@ -642,7 +642,7 @@ public class ShoppingCartService {
         }
         if(!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)){
             LOG.info(requestId, "商品库存id与商品id不匹配", "");
-            throw new BusinessException("无效的商品id或库存id");
+            throw new BusinessException("无效的商品id或库存id",BusinessErrorCode.GOODS_ID_ERROR);
         }
         
         // 2.删除购物车中原商品
@@ -730,7 +730,7 @@ public class ShoppingCartService {
         List<CartInfoEntity> cartInfoList = cartInfoRepository.filter(cto);
         if(null == cartInfoList || cartInfoList.isEmpty()){
             LOG.info(requestId, "查询购物车商品信息", "数据为空");
-            throw new BusinessException("无效的用户名!");
+            throw new BusinessException("无效的用户名!",BusinessErrorCode.GOODS_NOT_EXIST);
         }
         
         // 存放改该用户购物车中商品id的 list
@@ -745,12 +745,12 @@ public class ShoppingCartService {
                 goodsStockIdList.remove(gis.getGoodsStockId());
             } else {
                 LOG.info(requestId, "购物车中无此商品或提交的商品库存id重复", "");
-                throw new BusinessException("无效的商品库存id");
+                throw new BusinessException("无效的商品库存id",BusinessErrorCode.GOODS_STOCKID_ERROR);
             }
             
             if(!YesNo.isLegal(gis.getIsSelect())){
                 LOG.info(requestId, "提交的勾选标记字段不合法", "");
-                throw new BusinessException("商品勾选标记字段不合法");
+                throw new BusinessException("商品勾选标记字段不合法",BusinessErrorCode.GOODS_CHECKOPTION_ERROR);
             }
             
             CartInfoEntity cartDto = new CartInfoEntity();

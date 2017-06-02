@@ -27,7 +27,13 @@ public enum BusinessErrorCode implements ErrorCode {
   CART_DELETE_ERROR(2010,"删除购物车错误"),
   SYN_CART_FAILED(2011,"同步商品失败"),
   GOODS_ALREADY_REMOV(2012,"商品已经下架"),
-  GOODS_ADDTOCART_FULL(2013,"购物车已满"),
+  CART_FULL(2013,"购物车已满"),
+  CART_NULL(2014,"购物车为空"),
+  GOODS_STOCKID_ERROR(2015,"商品库存id为空"),
+  GOODS_DELETE_ERROR(2016,"删除商品失败"),
+  GOODS_AMOUNT_ERROR(2017,"商品数量有误"),
+  GOODS_ID_ERROR(2018,"商品ID有误"),
+  GOODS_CHECKOPTION_ERROR(2019,"商品勾选标记字段有误"),
   
   
   
