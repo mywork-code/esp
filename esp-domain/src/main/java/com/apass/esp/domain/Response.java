@@ -118,4 +118,11 @@ public class Response {
 			return null;
 		}
 	}
+
+	public boolean isSuccess(){
+		if (YesNo.isYes(status)) {
+			return true;
+		}
+		return false;
+	}
 }

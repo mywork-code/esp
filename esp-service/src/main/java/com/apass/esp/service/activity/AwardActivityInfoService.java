@@ -167,7 +167,7 @@ public class AwardActivityInfoService {
 		try {
 			//CustomerInfo customerInfo =
             Response response = paymentHttpClient.getCustomerInfo(requestId, userId);
-            if(response==null||!response.getStatus().equals("1")){
+            if(!response.isSuccess()){
                 return null;
             }
             CustomerInfo customerInfo = Response.resolveResult(response,CustomerInfo.class);
