@@ -1,5 +1,6 @@
 package com.apass.esp.repository.httpClient;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -64,12 +65,12 @@ public class CommonHttpClient {
             LOG.logstashResponse(requestId, "查询客户基本信息及绑卡信息返回数据:", responseJson);
             Response response = GsonUtils.convertObj(responseJson, Response.class);
             if (response == null) {
-                return Response.fail("查询客户基本信息及绑卡信息查询服务异常");
+                return Response.fail("查询客户基本信息及绑卡信息查询服务异常",BusinessErrorCode.CUSTOMERINFO_BINDCARD_FAILED);
             }
             return response;
         } catch (Exception e) {
             LOGGER.error(requestId, "查询客户基本信息及绑卡信息查询服务异常", "", e);
-            return Response.fail("查询客户基本信息及绑卡信息查询服务异常");
+            return Response.fail("查询客户基本信息及绑卡信息查询服务异常",BusinessErrorCode.CUSTOMERINFO_BINDCARD_FAILED);
         }
     }
 
@@ -93,12 +94,12 @@ public class CommonHttpClient {
             LOG.logstashResponse(requestId, "查询用户的费率信息返回数据:", responseJson);
             Response response = GsonUtils.convertObj(responseJson, Response.class);
             if (response == null) {
-                return Response.fail("查询用户的费率信息服务异常");
+                return Response.fail("查询用户的费率信息服务异常",BusinessErrorCode.CUSTOMER_RATEQUERY_EXCEPTION);
             }
             return response;
         } catch (Exception e) {
             LOGGER.error(requestId, "查询用户的费率信息服务异常", "", e);
-            return Response.fail("查询用户的费率信息服务异常");
+            return Response.fail("查询用户的费率信息服务异常",BusinessErrorCode.CUSTOMER_RATEQUERY_EXCEPTION);
         }
     }
 
@@ -122,12 +123,12 @@ public class CommonHttpClient {
             LOG.logstashResponse(requestId, "查询用户的额度信息返回数据:", responseJson);
             Response response = GsonUtils.convertObj(responseJson, Response.class);
             if (response == null ) {
-                return Response.fail("查询用户的额度信息服务异常");
+                return Response.fail("查询用户的额度信息服务异常",BusinessErrorCode.CUSTOMER_QUOTAQUERY_EXCEPTION);
             }
             return response;
         } catch (Exception e) {
             LOGGER.error(requestId, "查询用户的额度信息服务异常", "", e);
-            return Response.fail("查询用户的额度信息服务异常");
+            return Response.fail("查询用户的额度信息服务异常",BusinessErrorCode.CUSTOMER_QUOTAQUERY_EXCEPTION);
         }
     }
 }
