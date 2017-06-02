@@ -466,7 +466,7 @@ public class PaymentService {
 			resultMap.put("page", page);
 			return resultMap;
 		}
-		Integer num = (Integer)resp.getData();
+		Integer num = ((Double)resp.getData()).intValue();
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
 
 		if(!responseCredit.isSuccess()){
@@ -474,7 +474,7 @@ public class PaymentService {
 			resultMap.put("page", page);
 			return resultMap;
 		}
-		CustomerCreditInfo customerCreditInfo= Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
 		if (customerCreditInfo == null) {
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
