@@ -253,7 +253,7 @@ public class ContractService {
         // Step 3. 查询客户and签名信息
        // Response response  = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
         Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
-        if(response==null||!response.getStatus().equals("1")){
+        if(!response.isSuccess()){
             throw new BusinessException("客户信息查询失败");
         }
         CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -276,7 +276,7 @@ public class ContractService {
         model.setBalancePayment(orderBalanceAmount); // 尾款
 
         Response responseCredit  = commonHttpClient.getCustomerCreditInfo("contract_ps_" + mainOrderId, userId);
-        if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+        if(!responseCredit.isSuccess()){
             throw new BusinessException("客户额度信息查询失败");
         }
         CustomerCreditInfo customerCreditInfo =  Response.resolveResult(response,CustomerCreditInfo.class);
@@ -424,7 +424,7 @@ public class ContractService {
         }
         // Step 3. 查询客户and签名信息
         Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
-        if(response==null||!response.getStatus().equals("1")){
+        if(!response.isSuccess()){
             throw new BusinessException("客户信息查询失败");
         }
         CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -433,7 +433,7 @@ public class ContractService {
         }
 
         Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
-        if(responseCredit==null||!responseCredit.getStatus().equals("1")){
+        if(!responseCredit.isSuccess()){
             throw new BusinessException("额度信息查询失败");
         }
         CustomerCreditInfo customerCreditInfo = Response.resolveResult(response,CustomerCreditInfo.class);
