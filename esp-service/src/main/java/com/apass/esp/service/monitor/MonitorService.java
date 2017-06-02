@@ -30,6 +30,13 @@ public class MonitorService {
     public MonitorEntityMapper monitorEntityMapper;
 
     /**
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int updateMonitor(MonitorEntity monitorEntity) {
+        return monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+    }
+    /**
      * @param monitorDto
      * @return
      */

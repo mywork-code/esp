@@ -53,33 +53,31 @@ public class MonitorScheduleTask {
     @Value("${monitor.env}")
     public String env;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void monitorSchedule() {
         String time = cacheManager.get("monitor_time");//间隔时间
-        String times = cacheManager.get("monitor_times");//该时间的次数
-       // time="1";
+//        String times = cacheManager.get("monitor_times");//该时间的次数
+        // time="1";
         //times="2";
-        if (StringUtils.isAnyEmpty(time, times)) {
-            LOGGER.info("请先配置间隔时间，该时间内的次数");
-            return;
+        if (StringUtils.isAnyEmpty(time)) {
+            time = "5";
         }
         Date date = new Date();
         date = DateFormatUtil.addDMinutes(date, Integer.valueOf(time) * (-1));
-        date = DateFormatUtil.addDMinutes(date, -30);
         List<MonitorEntityStatistics> monitorEntityStatisticsList = monitorService.getMonitorEntitybyTime(date,env);
         if (CollectionUtils.isEmpty(monitorEntityStatisticsList)) {
             return;
         }
-        LOGGER.info("date {}，time {},times{} ,monitorEntityStatisticsList {},monitorEntityStatisticsList.size {}",date, time,times,JsonUtil.toJsonString(monitorEntityStatisticsList),monitorEntityStatisticsList.size());
-        int confTimes = Integer.valueOf(times);
+        LOGGER.info("date {}，time {},times{} ,monitorEntityStatisticsList {},monitorEntityStatisticsList.size {}",date, time,JsonUtil.toJsonString(monitorEntityStatisticsList),monitorEntityStatisticsList.size());
+//        int confTimes = Integer.valueOf(times);
         for (MonitorEntityStatistics monitorEntityStatistics : monitorEntityStatisticsList
                 ) {
 
-            if (confTimes > monitorEntityStatistics.getTotalMonitorNum()) {
-                continue;
-            }
+//            if (confTimes > monitorEntityStatistics.getTotalMonitorNum()) {
+//                continue;
+//            }
             List<MonitorEntity> list = monitorService.getMonitorEntityByMethodName(date, monitorEntityStatistics.getMethodName(),env,monitorEntityStatistics.getApplication());
-            LOGGER.info("date {}，time {},times{} ,monitorEntityStatisticsList {},list {]",date, time,times,JsonUtil.toJsonString(monitorEntityStatisticsList),JsonUtil.toJsonString(list));
+            LOGGER.info("date {}，time {},monitorEntityStatisticsList {},list {]",date, time,JsonUtil.toJsonString(monitorEntityStatisticsList),JsonUtil.toJsonString(list));
 
             if(CollectionUtils.isEmpty(list)){
                 continue;
@@ -120,6 +118,12 @@ public class MonitorScheduleTask {
                 MailUtil mailUtil = new MailUtil();
                 mailUtil.sendTextMail(mailSenderInfo);
             }
+            for (int i = 0; i <list.size() ; i++) {
+                MonitorEntity monitorEntity = list.get(i);
+                monitorEntity.setStatus(2);
+                monitorService.updateMonitor(monitorEntity);
+            }
+
         }
     }
 }

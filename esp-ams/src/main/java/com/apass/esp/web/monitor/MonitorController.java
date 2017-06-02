@@ -132,15 +132,14 @@ public class MonitorController {
 	  
 	  //如果days为空，就查询当天的数据
 	 if(query.getDays() == null || query.getDays() == 0){
-		 query.setStartCreateDate(DateFormatUtil.dateToString(new Date())+" 00:00:00");
-	 }else{
-		 Calendar cal = Calendar.getInstance();
-		 cal.add(cal.DATE, query.getDays());
-		 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime())+" 00:00:00"); 
+		 query.setDays(-1);
 	 }
+	 
+	 Calendar cal = Calendar.getInstance();
+	 cal.add(cal.DATE, query.getDays());
+	 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),"")); 
 	 query.setEndCreateDate(DateFormatUtil.dateToString(new Date())+" 23:59:59");
-	
-    return  monitorService.pageListMonitorLog(query);
+     return  monitorService.pageListMonitorLog(query);
   }
   
   @RequestMapping(value = "/monitorlist", method = RequestMethod.GET)
@@ -148,12 +147,13 @@ public class MonitorController {
   public ResponsePageBody<MonitorVo> listFlag1(MonitorQuery query){
 	  
 	  if(query.getDays() == null || query.getDays() == 0){
-			 query.setStartCreateDate(DateFormatUtil.dateToString(new Date())+" 00:00:00");
-		 }else{
-			 Calendar cal = Calendar.getInstance();
-			 cal.add(cal.DATE, query.getDays());
-			 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime())+" 00:00:00"); 
-		 }
+		 query.setDays(-1);
+	  }
+	  
+	  Calendar cal = Calendar.getInstance();
+	  cal.add(cal.DATE, query.getDays());
+	  query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),"")); 
+	  query.setEndCreateDate(DateFormatUtil.dateToString(new Date())+" 23:59:59");
 	  return  monitorService.pageListMonitor(query);
   }
 }
