@@ -86,7 +86,6 @@ public enum BusinessErrorCode implements ErrorCode {
   REGISTER_HAS_FAILED(6009,"注册失败"),
   BIND_HAS_EXIST(6010,"绑定关系已存在"),
   GET_INFO_FAILED(6011,"获取信息失败"),
-  ACTIVITY_HASNOT_START(6012,"活动未开始"),
   ADD_INFO_FAILED(6013,"添加失败,请稍后再试或联系客服!"),
   QUREY_INFO_FAILED(6014,"查询失败,请稍后再试或联系客服!"),
   DELETE_INFO_FAILED(6015,"删除失败,请稍后再试或联系客服!"),

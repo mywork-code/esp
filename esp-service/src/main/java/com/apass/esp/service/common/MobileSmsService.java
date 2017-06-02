@@ -117,7 +117,7 @@ public class MobileSmsService {
 	 * @return String
 	 * @throws BusinessException
 	 */
-	public void sendMobileVerificationCode(String type, String mobile) throws BusinessException {
+	public void sendMobileVerificationCode(String type, String mobile) throws Exception {
 		try {
 			// 创建随机码
 			String code = createRandom(true, 6);
@@ -145,6 +145,7 @@ public class MobileSmsService {
 			}
 		} catch (Exception e) {
 			logger.error("send sms fail", e);
+			throw e;
 		}
 	}
 
