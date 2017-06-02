@@ -76,7 +76,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
@@ -124,7 +124,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
@@ -171,7 +171,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             logger.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         } catch (Exception e) {
             logger.error("查看购物车中商品失败:", e);
             return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
@@ -238,7 +238,7 @@ public class ShoppingCartController {
             return Response.success("删除购物车中商品成功");
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.DELETE_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.DELETE_INFO_FAILED);
@@ -285,7 +285,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
@@ -323,7 +323,7 @@ public class ShoppingCartController {
             resultMap = shoppingCartService.getGoodsStockSkuInfo(requestId, goodsId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.DETAIL_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.DETAIL_INFO_FAILED);
@@ -375,7 +375,7 @@ public class ShoppingCartController {
             return Response.success("修改商品规格成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
@@ -427,7 +427,7 @@ public class ShoppingCartController {
 
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.SYN_CART_FAILED);
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.SYN_CART_FAILED);
