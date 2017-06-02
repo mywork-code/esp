@@ -474,7 +474,7 @@ public class PaymentService {
 			resultMap.put("page", page);
 			return resultMap;
 		}
-		CustomerCreditInfo customerCreditInfo= Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
 		if (customerCreditInfo == null) {
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
