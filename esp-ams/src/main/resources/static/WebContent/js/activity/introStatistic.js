@@ -64,7 +64,6 @@ $(function(){
 
     //查询
     $(".search-btn").click(function(){
-    	debugger;
         var startCreateDate=$("#createDate1").datebox('getValue');
         var endCreateDate=$("#createDate2").datebox('getValue');
         if(startCreateDate!=null && startCreateDate!=''&&endCreateDate!=null && endCreateDate!=''){
@@ -74,7 +73,6 @@ $(function(){
     			$('#createDate2').datebox('setValue','');
     			return;
     		}
-    		
     	}
         var params={};
         params['startCreateDate'] = startCreateDate;

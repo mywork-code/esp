@@ -330,6 +330,8 @@ $(function() {
     /**监听关闭添加商品窗口事件**/
     $('#addGoodsInfo').window({    
  	   onBeforeClose:function(){ 
+ 		  $("#addgoodsNameL").text('');
+ 	      $("#addgoodsTitleL").text('');
  		   var params = {};
  	       $('#tablelist').datagrid('load', params);
  	   }
@@ -664,13 +666,39 @@ $(function() {
 	$("input",$("#editgoodsTitle").next("span")).keyup(function(){ 
 		var len = $("#editgoodsTitle").textbox('getText').length;
 		var canLen;
-		console.log(len);
 		if(len>22){
 			canLen = len - 22;
 			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
 		}else{
 			canLen = 22 - len;
 			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
+		}
+	})
+	
+	//添加--商品名称动态提醒
+	$("input",$("#addgoodsName").next("span")).keyup(function(){
+		var len = $("#addgoodsName").textbox('getText').length;
+		var canLen;
+		if(len>15){
+			canLen = len - 15;
+			$("#addgoodsNameL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 15 - len;
+			$("#addgoodsNameL").text('还可以输入'+canLen+'个字');
+		}
+	})
+	
+	//添加--商品小标题动态提醒
+	$("input",$("#addgoodsTitle").next("span")).keyup(function(){ 
+		var len = $("#addgoodsTitle").textbox('getText').length;
+		var canLen;
+		console.log(len);
+		if(len>22){
+			canLen = len - 22;
+			$("#addgoodsTitleL").text('已经超出'+canLen+'个字');
+		}else{
+			canLen = 22 - len;
+			$("#addgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
 	/**
