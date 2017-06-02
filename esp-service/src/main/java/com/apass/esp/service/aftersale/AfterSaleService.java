@@ -522,7 +522,7 @@ public class AfterSaleService {
         String[] imagelist = returnImage.split(",");
         if(imagelist.length > 3){
             LOG.info(requestId, "计算图片数量", "图片数量超过3张");
-            throw new BusinessException("最多只能上传3张照片");
+            throw new BusinessException("最多只能上传3张照片",BusinessErrorCode.UPLOAD_PICTURE_FAILED);
         }
         String dir = userId + "/" + orderId;
         for (int i = 0; i < imagelist.length; i++) {
