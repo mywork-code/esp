@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.bill.StatementEntity;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.repository.bill.BillRepository;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -24,6 +25,9 @@ import com.google.common.collect.Maps;
 public class BillService {
     @Autowired
     private BillRepository billRepository;
+    
+    @Autowired
+    private TransactionService transactionService;
     
     @Autowired
     private CustomerServiceClient customerServiceClient;
@@ -43,10 +47,10 @@ public class BillService {
     /**
      * 
      * @param userId用户Id
-     * @return true:有逾期
+     * @return true:分期
      * @throws BusinessException
      */
-    public boolean queryStatement(Long userId) throws BusinessException{
+    public boolean queryStatement(Long userId,String orderId) throws BusinessException{
         Map<String,Object> paramMap = Maps.newHashMap();
         paramMap.put("userId", userId);
         // 1、查询客户信息
@@ -57,19 +61,25 @@ public class BillService {
         String billDay = customerInfo.getBillDate();
         // String billDay = "18";
         if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
-            throw new RuntimeException("额度已失效.");
+            return false;//如果没有授信，则无额度消费，一起有今后按钮
+            //throw new RuntimeException("额度已失效.");
         }
         
-        String currDay = DateFormatUtil.getNowDay(); // 当日
         Date outStmtBillDate = null; // 当前已出账单日 时间格式
-        Date currDate = new Date();
-        // 比较当日是否本月已出账单
-        if (Integer.parseInt(billDay) <= Integer.parseInt(currDay)) { // 当月账单已出
-            outStmtBillDate = DateFormatUtil.mergeDate(currDate, Integer.parseInt(billDay));
-        } else { // 已出账单为上月账单
-            outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(currDate, -1),
-                    Integer.parseInt(billDay));
+        
+        TxnInfoEntity txnInfoEntity = transactionService.queryTxnByOrderId(orderId);
+        if(txnInfoEntity != null){
+            Date txnDate = txnInfoEntity.getTxnDate();
+            String txnDay = DateFormatUtil.dateToString(txnDate, "dd");
+            if(Integer.parseInt(billDay)>Integer.parseInt(txnDay)){
+                outStmtBillDate = DateFormatUtil.mergeDate(txnDate, Integer.parseInt(billDay));
+            }else{
+                outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(txnDate, 1), Integer.parseInt(billDay));
+            }
+        }else{
+            throw new RuntimeException("交易流水数据有误");
         }
+        
         paramMap.put("stmtDate",DateFormatUtil.dateToString(outStmtBillDate));
         
         List<StatementEntity> statements = billRepository.billRepository(paramMap);

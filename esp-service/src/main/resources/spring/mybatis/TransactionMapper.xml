@@ -24,6 +24,46 @@
 		</where>
 	</sql>
 	
+	<!-- 查询字段 -->
+	<sql id="allColumns">
+		TXN_ID AS txnId,
+		ORDER_ID AS orderId,
+		USER_ID AS userId,
+		TXN_TYPE AS txnType,
+		TXN_DATE AS txnDate,
+		TXN_DATE AS txnDateDes,
+		TXN_AMT AS txnAmt,
+		POST_DATE AS postDate,
+		TXN_DESC AS txnDesc,
+		ORIG_TRANS_DATE AS origTransDate,
+		ORIG_TXN_CODE AS origTxnCode,
+		ORIG_TXN_AMT AS origTxnAmt,
+		STMT_DATE AS stmtDate,
+		LOAN_ID	AS loanId,
+		CONTRACT_NO AS contractNo,
+		OPEN_BANK_ID AS	openBankId,
+		OPEN_BANK AS openBank,
+		CARD_ID AS cardId,
+		USR_NAME AS	usrName,
+		CERT_TYPE AS certType,
+		CERT_ID AS certId,
+		PURPOSE AS purpose,
+		STATE AS state,
+		CITY AS city,
+		SUB_BANK AS subBank,
+		FLAG AS flag,
+		STATUS AS status,
+		SEND_TIME AS sendTime,
+		SUCCESS_AMT AS successAmt,
+		FAILURE_AMT AS failureAmt,
+		ERR_IND	AS errInd,
+		SETTLE_FLAG as settleFlag,
+		CREATE_USER AS createUser,
+		CREATE_DATE AS createDate,
+		UPDATE_USER AS updateUser,
+		UPDATE_DATE AS updateDate
+	</sql>
+	
 	<!-- 查询数据 -->
 	<select id="queryTransactionInforPage" parameterType="TxnInfoEntity" resultType="TxnInfoEntity">
 		<![CDATA[
@@ -87,6 +127,22 @@
 	<select id="selectDownpaymentByOrderId" parameterType="java.lang.String" resultType="TxnInfoEntity">
 		<![CDATA[
 			SELECT TXN_AMT AS txnAmt,	TXN_TYPE AS txnType FROM T_APASS_TXN_INFO WHERE ORDER_ID = #{value} AND TXN_TYPE = 'T01'
+		]]>
+	</select>
+	
+	<!--查询订单交易 时间-->
+	<select id="queryTxnByOrderId" parameterType="java.lang.String" resultType="TxnInfoEntity">
+		<![CDATA[
+			SELECT
+				txnInfo.txn_date txnDate,
+				txnInfo.txn_amt txnAmt,
+				orderInfo.payType txnType
+			FROM
+				t_apass_txn_info txnInfo
+			LEFT JOIN t_esp_order_info orderInfo ON txnInfo.order_id = orderInfo.order_id
+			WHERE
+				orderInfo.order_id = #{value}
+			AND orderInfo.payType = 'T02'
 		]]>
 	</select>
    
