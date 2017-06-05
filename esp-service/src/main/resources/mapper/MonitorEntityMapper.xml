@@ -14,10 +14,11 @@
     <result column="invoke_date" property="invokeDate" jdbcType="TIMESTAMP" />
     <result column="error_message" property="errorMessage" jdbcType="VARCHAR" />
     <result column="flag" property="flag" jdbcType="VARCHAR" />
+    <result column="notice" property="notice" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, host, env, application, method_name, method_desciption, status, time, message, 
-    invoke_date, error_message, flag
+    invoke_date, error_message, flag,notice
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -33,11 +34,11 @@
     insert into t_apass_monitor (host, env, application, 
       method_name, method_desciption, status, 
       time, message, invoke_date, 
-      error_message, flag)
+      error_message, flag,notice)
     values (#{host,jdbcType=VARCHAR}, #{env,jdbcType=VARCHAR}, #{application,jdbcType=VARCHAR}, 
       #{methodName,jdbcType=VARCHAR}, #{methodDesciption,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
       #{time,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, #{invokeDate,jdbcType=TIMESTAMP}, 
-      #{errorMessage,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR})
+      #{errorMessage,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR},#{notice,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.MonitorEntity" useGeneratedKeys="true" keyProperty="id" >
     insert into t_apass_monitor
@@ -75,6 +76,9 @@
       <if test="flag != null" >
         flag,
       </if>
+      <if test="notice != null" >
+        notice,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="host != null" >
@@ -109,6 +113,9 @@
       </if>
       <if test="flag != null" >
         #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="notice != null" >
+        #{notice,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -148,6 +155,9 @@
       <if test="flag != null" >
         flag = #{flag,jdbcType=VARCHAR},
       </if>
+      <if test="notice != null" >
+        flag = #{notice,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -163,7 +173,8 @@
       message = #{message,jdbcType=VARCHAR},
       invoke_date = #{invokeDate,jdbcType=TIMESTAMP},
       error_message = #{errorMessage,jdbcType=VARCHAR},
-      flag = #{flag,jdbcType=VARCHAR}
+      flag = #{flag,jdbcType=VARCHAR},
+      notice = #{notice,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

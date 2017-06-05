@@ -42,4 +42,5 @@ ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `flag`  varchar(1) NULL DEFAULT 0 C
 ALTER TABLE esp.`t_apass_monitor` MODIFY COLUMN `status`  int(11) NULL DEFAULT 1 COMMENT '调用耗时(ms)否调用成功0，失败 1，成功' AFTER `method_desciption`;
 /**在t_esp_order_info表中增加一列，订单下单渠道**/
 ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `device_type`  varchar(10) NULL DEFAULT 'android' COMMENT '下单渠道（ios,android）' AFTER `down_payment_amount`;
-
+/**在monitor表中添加一列  notice 用来表示是否已发邮件通知**/
+ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `notice`  int(11) NULL DEFAULT 0 COMMENT '是否已发邮件通知' AFTER `flag`;
