@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.AddCategoryPictureDto;
+import com.apass.esp.domain.enums.CategoryPicture;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -89,16 +90,16 @@ public class upCategoryPicturesController extends BaseController{
          String categoryPictureName=null;
          String categoryBannerPictureName=null;
          if("1".equals(categoryType)){
-        	 categoryTypeName="categoryElectric";
-        	 categoryPictureName="categoryElectric"+ "." + categoryPictureType;
+        	 categoryTypeName=CategoryPicture.CATEGORY_PICTURE1.getMessage();
+        	 categoryPictureName=categoryTypeName+ "." + categoryPictureType;
         	 categoryBannerPictureName="categoryElectricBanner"+ "." + categoryBannerPictureType;
          }else if("2".equals(categoryType)){
-        	 categoryTypeName="categoryDepot";
-        	 categoryPictureName="categoryDepot"+ "." + categoryPictureType;
+        	 categoryTypeName=CategoryPicture.CATEGORY_PICTURE2.getMessage();
+        	 categoryPictureName=categoryTypeName+ "." + categoryPictureType;
         	 categoryBannerPictureName="categoryDepotBanner"+ "." + categoryBannerPictureType;
          }else if("3".equals(categoryType)){
-        	 categoryTypeName="categoryBeauty";
-        	 categoryPictureName="categoryBeauty"+ "." + categoryPictureType;
+        	 categoryTypeName=CategoryPicture.CATEGORY_PICTURE3.getMessage();
+        	 categoryPictureName=categoryTypeName+ "." + categoryPictureType;
         	 categoryBannerPictureName="categoryBeautyBanner"+ "." + categoryBannerPictureType;
          }
          String categoryPictureFileUrl = nfsOther + categoryPictureName;
