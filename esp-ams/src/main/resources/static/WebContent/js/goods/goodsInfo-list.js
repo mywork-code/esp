@@ -36,71 +36,51 @@ $(function() {
         rownumbers : true,
         pagination : true,
         striped:true,
-//        fit:true,
-//        fitColumns:true,
         toolbar : '#tb',
-//        rowStyler:function(rowIndex,rowData){
-//        	if(rowData.colFalgt=='1'){
-//        		return 'background-color:#6293BB;';
-//        	}
-//        },
         columns : [[
                 {
                     title : '商户名称',
                     field : 'merchantName',
                     width : 90,
                     align : 'center'
-                },{
-                	title : '商户名称',
-                	field : 'merchantName',
-                	width : 90,
-                	align : 'center'
-                },{
+                },
+                {
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },{  
-       			    title : '一级类目 id',  
-       			    field : 'categoryId1',
-       			    width : 90,  
-       			    align : 'center',
-       			    hidden: 'hidden'
-           		 	}, 
-           		 	{  
-           		 		title : '二级类目 id',  
-           		 		field : 'categoryId2',  
-           		 	    width : 90,  
-           		 		align : 'center',
-           		 		hidden: 'hidden'
-           		 	}, 
-           		 	{  
-           		 		title : '三级类目名称',  
-           		 		field : 'categoryName3', 
-           		 	    width : 90,  
-           		 		align : 'center'
-//           		 		hidden: 'hidden'
-           		 	},  {
+                },
+       		 	{  
+       		 		title : '三级类目名称',  
+       		 		field : 'categoryName3', 
+       		 	    width : 90,  
+       		 		align : 'center'
+       		 	}, 
+       		 	{
                     title : '商品型号',
                     field : 'goodsModel',
                     width : 80,
                     align : 'center'
-                }, {
+                }, 
+                {
                     title : '商品小标题',
                     field : 'goodsTitle',
                     width : 90,
                     align : 'center'
-                }, {
+                }, 
+                {
                     title : '商品类型',
                     field : 'goodsTypeDesc',
                     width : 80,
                     align : 'center',
-                },{
+                }, 
+                {
                     title : '规格类型',
                     field : 'goodsSkuType',
                     width : 80,
                     align : 'center'
-                },{
+                }, 
+                {
                     title : '商品生产日期',
                     field : 'proDate',
                     width : 120,
@@ -110,7 +90,8 @@ $(function() {
                     		return new Date(value).Format("yyyy-MM-dd");
                     	}
                     }
-                },{
+                }, 
+                {
                     title : '保质期',
                     field : 'keepDate',
                     width : 80,
@@ -120,22 +101,26 @@ $(function() {
                     		return value+"个月";
                     	}
                     }
-                },{
+                }, 
+                {
                     title : '生产厂家',
                     field : 'supNo',
                     width : 90,
                     align : 'center'
-                },{
+                }, 
+                {
                     title : '排序',
                     field : 'sordNo',
                     width : 60,
                     align : 'center'
-                },{
+                }, 
+                {
                     title : '状态',
                     field : 'statusDesc',
                     width : 80,
                     align : 'center',
-                },{
+                }, 
+                {
                     title : '商品上架时间',
                     field : 'listTime',
                     width : 140,
@@ -143,7 +128,8 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                }, {
+                }, 
+                {
                     title : '商品下架时间',
                     field : 'delistTime',
                     width : 140,
@@ -151,17 +137,20 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },{
+                },
+                {
                     title : '创建人',
                     field : 'createUser',
                     width : 100,
                     align : 'center'
-                },{
+                },
+                {
                     title : '修改人',
                     field : 'updateUser',
                     width : 100,
                     align : 'center'
-                },{
+                },
+                {
                     title : '创建时间',
                     field : 'createDate',
                     width : 140,
@@ -169,7 +158,8 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },{
+                },
+                {
                     title : '修改时间',
                     field : 'updateDate',
                     width : 140,
@@ -177,7 +167,8 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },{
+                },
+                {
                     title : '操作',
                     field : 'opt',
                     width : 150,
