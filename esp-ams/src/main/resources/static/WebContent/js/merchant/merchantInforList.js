@@ -111,13 +111,12 @@ $(function () {
 
     //添加商户信息
     $("#add").click(function () {
-        //清空弹出框中的数据
+       //清空弹出框中的数据
         $("#channelAdd").combobox('setValue', '');
         $("#addMerchantCode").textbox('setValue', '');
         $("#addMerchantName").textbox('setValue', '');
-        $("#addMerchantProvince").combobox('setValue', '');
-        $("#addMerchantCity").combobox('setValue', '');
-        $("#addMerchantArea").combobox('setValue', '');
+        $("#addMerchantCity").combobox('setValue', '请选择');
+        $("#addMerchantArea").combobox('setValue', '请选择');
         $("#addMerchantAddress").textbox('setValue', '');
         $("#addMerchantReturnAddress").textbox('setValue', '');
         $("#addMerchantReturnName").textbox('setValue', '');
@@ -142,6 +141,7 @@ $(function () {
         });
         //加载省份 和城市
         loadDirect("addMerchantProvince", "addMerchantCity", "addMerchantArea");
+        $("#addMerchantProvince").combobox('setValue', '请选择');
         $('#addMerchantInfor').window('open');
     });
 
@@ -399,6 +399,9 @@ $(function () {
             var aId = $("#addMerchantArea").textbox('getValue');
             var pId = $("#addMerchantProvince").textbox('getValue');
             var cId = $("#addMerchantCity").textbox('getValue');
+            if(aId=='请选择'||pId=='请选择'||cId=='请选择'){
+                return;
+            }
             if(channel.length==0||aId.length==0||pId.length==0||cId.length==0){
                 return;
             }
@@ -701,6 +704,7 @@ $(function () {
 
 
 function loadDirect(provinceId, cityId, areaId) {
+
     $('#' + provinceId).combobox({
         method: "get",
         url: ctx + "/application/nation/queryNations",
@@ -730,6 +734,7 @@ function loadDirect(provinceId, cityId, areaId) {
                             var cId = $("#" + cityId).textbox('getValue');
                             var aId = $("#" + areaId).textbox('getValue');
                             var channel = $('#channelAdd').combobox('getValue');
+                            //$("#" + cityId).combobox('setValue','请选择');
                             if(cId==null||cId.length==0){
                                 $.messager.alert("<span style='color: black;'>提示</span>", '请先选择所在城市！', 'error');
                                 return;
@@ -762,11 +767,16 @@ function loadDirect(provinceId, cityId, areaId) {
                                 });
 
                             }
-
+                            //$("#" + cityId).combobox('setValue','');
                         }
                     });
+                    $("#" + areaId).combobox('setValue','请选择');
+
                 }
             });
+            $("#" + areaId).combobox('setValue','请选择');
+            debugger;
+            $("#" + cityId).combobox('setValue','请选择');
         }
     });
 
