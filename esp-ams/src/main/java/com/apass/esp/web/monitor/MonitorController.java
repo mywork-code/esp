@@ -53,12 +53,12 @@ public class MonitorController {
     	 monitorDto.setInvokeDate(new Date());
     	 monitorDto.setFlag(MonitorFlag.MONITOR_FLAG1.getCode());
     	 
-    	 if( StringUtils.isBlank(monitorDto.getHost()) ){
+    	 /*if( StringUtils.isBlank(monitorDto.getHost()) ){
     		 return Response.fail("主机不能为空!");
     	 }
     	 if( StringUtils.length(monitorDto.getHost()) > 255 ){
     		 return Response.fail("主机长度不能超过255个字符!");
-    	 }
+    	 }*/
     	 
     	 if( StringUtils.isBlank(monitorDto.getApplication()) ){
     		 return Response.fail("应用名称不能为空!");
