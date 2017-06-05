@@ -32,11 +32,11 @@ $(function(){
 		url : ctx + "/noauth/monitor/addMonitor",
 		method : 'POST',
 		onSubmit : function() {
-			var host = $("#monitorForm #host").val();
-			if ($.trim(host) == "") {
-				$.messager.alert("<font color='black'>操作提示</font>", "主机不能为空", "warning");
-				return false;
-			}
+//			var host = $("#monitorForm #host").val();
+//			if ($.trim(host) == "") {
+//				$.messager.alert("<font color='black'>操作提示</font>", "主机不能为空", "warning");
+//				return false;
+//			}
 			var application = $("#monitorForm #application").val();
 			if ($.trim(application) == "") {
 				$.messager.alert("<font color='black'>操作提示</font>", "应用名称不能为空", "warning");

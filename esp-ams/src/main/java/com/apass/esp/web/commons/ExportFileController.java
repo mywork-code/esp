@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -28,10 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.ExportBusConfig;
 import com.apass.esp.service.activity.ActivityInfoService;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -74,6 +77,9 @@ public class ExportFileController {
 
     @Autowired
     private ActivityInfoService activityInfoService;
+    
+    @Autowired
+    private CategoryInfoService   categoryInfoService;
 
     /**
      * 导出文件
@@ -513,6 +519,16 @@ public class ExportFileController {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             BeanUtils.populate(goodsInfoEntity, map);
             list = goodsService.pageList(goodsInfoEntity);
+            if(!CollectionUtils.isEmpty(list)){
+            	for (Object g : list) {
+            		GoodsInfoEntity b = (GoodsInfoEntity)g;
+            		Long categoryId = b.getCategoryId3();
+                    Category category=categoryInfoService.selectNameById(categoryId);
+                    b.setCategoryName3(category!=null ? category.getCategoryName() : "" );
+    			}
+            }
+            
+            
         } else if (busCode.equals(ExportBusConfig.BUS_ACTIVITY.getCode())) {
             list = activityInfoService.activityPageList(map);
         }
