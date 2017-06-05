@@ -7,7 +7,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
-import com.apass.monitor.annotation.Monitor;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -53,7 +52,6 @@ public class CommonHttpClient {
      * @param userId
      * @return
      */
-    @Monitor(methodDesc="查询客户基本信息及绑卡信息")
     public Response getCustomerBasicInfo(String requestId, Long userId) {
         try {
             Map<String, Object> request = new HashMap<String, Object>();
@@ -83,7 +81,6 @@ public class CommonHttpClient {
      * @param userId
      * @return
      */
-    @Monitor(methodDesc="返回用户的费率信息及CustomerId")
     public Response getCustomerRateInfo(String requestId, Long userId) {
         try {
             Map<String, Object> request = new HashMap<String, Object>();
@@ -113,7 +110,6 @@ public class CommonHttpClient {
      * @param userId
      * @return
      */
-    @Monitor(methodDesc="返回用户的费率信息及CustomerId")
     public Response getCustomerCreditInfo(String requestId, Long userId) {
         try {
             Map<String, Object> request = new HashMap<String, Object>();
