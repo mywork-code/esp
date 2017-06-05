@@ -1060,8 +1060,6 @@ $(function() {
 	$("#addGetAllHtml").click(function() {
 		 	var params = {};
 			params['id']=addGoodId;
-//			var goodsDetails = UE.getEditor('editor').getAllHtml();
-//			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 			params['goodsDetail'] = UE.getEditor('addEditor').getAllHtml();;
 			params['goodsContent'] = UE.getEditor('addEditor').getContent();
 			if(UE.getEditor('addEditor').getContent() == null || UE.getEditor('addEditor').getContent()==''){
