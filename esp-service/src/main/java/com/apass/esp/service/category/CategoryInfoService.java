@@ -15,6 +15,7 @@ import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
+import com.apass.esp.domain.enums.CategoryPicture;
 import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
@@ -89,33 +90,27 @@ public class CategoryInfoService {
 		}
 		//在此添加客户端首页3个类目小标题和图片
 		for(int i=0;i<voList.size();i++){
+			CategoryVo v = voList.get(i);
+			String cacheKey = null;
 			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
-				String cacheKey = "categoryElectric";
-				String cacheJson = cacheManager.get(cacheKey);
-				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
-				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
-				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
-				voList.get(i).setCategoryTitle(categoryTitle);
-				voList.get(i).setPictureUrl(categoryPictureUrl);
+				 cacheKey = CategoryPicture.CATEGORY_PICTURE1.getMessage();
 			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
-				String cacheKey = "categoryDepot";
-				String cacheJson = cacheManager.get(cacheKey);
-				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
-				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
-				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
-				voList.get(i).setCategoryTitle(categoryTitle);
-				voList.get(i).setPictureUrl(categoryPictureUrl);
+				 cacheKey = CategoryPicture.CATEGORY_PICTURE2.getMessage();
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
-				String cacheKey = "categoryBeauty";
-				String cacheJson = cacheManager.get(cacheKey);
-				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
-				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
-				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
-				voList.get(i).setCategoryTitle(categoryTitle);
-				voList.get(i).setPictureUrl(categoryPictureUrl);
+				 cacheKey = CategoryPicture.CATEGORY_PICTURE3.getMessage();
 			}
+			getCategoryVoMessage(cacheKey, v);
 		}
 		return voList;
+	}
+	
+	private void getCategoryVoMessage(String cacheKey,CategoryVo v){
+		String cacheJson = cacheManager.get(cacheKey);
+		Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+		String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
+		String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
+		v.setCategoryTitle(categoryTitle);
+		v.setPictureUrl(categoryPictureUrl);
 	}
 	/**
 	 * entity 转  vo 
