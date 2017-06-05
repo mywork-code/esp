@@ -90,7 +90,7 @@ public class CategoryInfoService {
 				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332208591.png");
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
 				voList.get(i).setCategoryTitle("生活就该 如此精致");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332235068.png");
+				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496657778719.png");
 			}
 		}
 		return voList;

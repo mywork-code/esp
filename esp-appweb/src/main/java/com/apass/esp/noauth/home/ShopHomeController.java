@@ -151,8 +151,8 @@ public class ShopHomeController {
                  	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
                 	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496401288300.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496401288300.png");
+                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
+                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
                  }
                  banners.add(bity);
                  returnMap.put("banners", banners);
