@@ -25,7 +25,9 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
+import com.apass.esp.domain.enums.CategoryPicture;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -33,10 +35,12 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 首页
@@ -71,6 +75,11 @@ public class ShopHomeController {
     private GoodsStockInfoRepository goodsStockInfoRepository;
     @Autowired
     private GoodsService goodsService;
+    /**
+	  * 缓存
+	  */
+	 @Autowired
+	 private CacheManager cacheManager;
     
     /**
      *  首页初始化 加载banner和精品商品 
@@ -144,16 +153,16 @@ public class ShopHomeController {
       		     BannerInfoEntity  bity=new BannerInfoEntity();
       		     
                  Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
+                 String cacheKey=null;
                  if("1".equals(String.valueOf(category.getSortOrder()))){//家用电器banner图
-                	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
+                	 cacheKey = CategoryPicture.CATEGORY_PICTURE1.getMessage();
                  }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
+                	 cacheKey = CategoryPicture.CATEGORY_PICTURE2.getMessage();
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
+                	 cacheKey = CategoryPicture.CATEGORY_PICTURE3.getMessage();
                  }
+                 getBannerInfoMessage(cacheKey,bity);
+                 
                  banners.add(bity);
                  returnMap.put("banners", banners);
               }else{
@@ -202,6 +211,16 @@ public class ShopHomeController {
         }
     }
     
+	private void getBannerInfoMessage(String cacheKey,BannerInfoEntity bity){
+		String cacheJson = cacheManager.get(cacheKey);
+		 Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+		 String categoryBannerPictureUrl=(String) cacheJsonMap.get("categoryBannerPictureUrl");
+   	     bity.setBannerImgUrlNew(categoryBannerPictureUrl);
+   	     bity.setBannerImgUrl(categoryBannerPictureUrl);
+	}
+	
+	
+	
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
      * 

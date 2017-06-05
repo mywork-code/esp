@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/pictures/upCategoryPictures.js"></script>
+</head>
+	<body>
+ 		<h2 align="center">上传类目相关图片</h2>
+ 		 <div>
+		  	 <form id="addPicturFile"  action="${rc.contextPath}/application/category/picture/addCategoryPicture" method="POST" enctype="multipart/form-data">
+	           <table class="details_table" style="width:92%">
+	           		<tr>
+	           			<td width="10%" align="right">类目名称：</td>
+				        <td>
+					    <select class="easyui-combobox" style="width: 150px;" id="categoryType" name="categoryType">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="家用电器" value="1">家用电器</option>
+						   <option label="家居百货" value="2">家居百货</option>
+						   <option label="美妆生活" value="3">美妆生活</option>
+						</select>
+				  	</td>
+	           		</tr>
+	           		<tr>
+	           			<td width="10%" align="right">类目小标题:</td>
+	           			<td ><input id="categoryTitle" name="categoryTitle" class="easyui-textbox" style="width: 150px;" /></td>    
+	           		</tr>
+	           		<tr>
+	               	 	<td width="30%" align="right">类目图片:</td>
+						<td align="left"><input type="file" style="width: 180px;" name="categoryPictureFile" id="categoryPictureFile"/></td>
+		        	</tr>
+		        	<tr>
+	               	 	<td width="30%" align="right">类目Banner图片:</td>
+						<td align="left"><input type="file" style="width: 180px;" name="categoryBannerPictureFile" id="categoryBannerPictureFile"/></td>
+				
+		        	</tr>
+		        	<tr>
+		        		 <td width="50%" align="right">
+					 	 <a href="javascript:void(0);" id="agreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+					    </td>
+		        	</tr>
+	           </table>
+		   </form>	
+	   </div>
+		
+	</body>
+</html>
