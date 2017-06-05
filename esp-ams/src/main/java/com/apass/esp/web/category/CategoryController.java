@@ -302,23 +302,23 @@ public class CategoryController {
         if (dto.getLevel() == 1) {
             if (!ListeningRegExpUtils.lengthStr(dto.getCategoryName(), 1, 5)
                     || !ListeningRegExpUtils.isChineseCharacter(dto.getCategoryName())) {
-                throw new BusinessException("类目名称格式不正确，请输入[1-5]个汉字");
+                throw new BusinessException("类目名称不能超过5个汉字");
             }
         }
         // 如果是二级分类
         if (dto.getLevel() == 2) {
             String name = dto.getCategoryName();
             if (!ListeningRegExpUtils.lengthValue(name, 1, 15)) {
-                throw new BusinessException("类目名称格式不正确，请输入15位以下汉字和字母！");
+                throw new BusinessException("类目名称格式不正确，只能输入汉字或字母,请重新输入");
             }
             if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)) {
-                throw new BusinessException("类目名称格式不正确，请输入15位以下汉字和字母！");
+                throw new BusinessException("类目名称格式不正确，只能输入汉字或字母,请重新输入");
             }
         }
         // 如果是三级分类
         if (dto.getLevel() == 3) {
             if (!ListeningRegExpUtils.lengthValue(dto.getCategoryName(), 1, 20)) {
-                throw new BusinessException("类目名称格式不正确，请输入20位以下汉字，字母，数字，特殊字符！");
+                throw new BusinessException("类目名称格式不正确，请输入重新输入。");
             }
         }
     }
