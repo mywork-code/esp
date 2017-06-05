@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.monitor.annotation.Monitor;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
@@ -78,6 +79,7 @@ public class LogisticsHttpClient {
      * Json方式 查询订单物流轨迹
      * @throws Exception 
      */
+    @Monitor(methodDesc="Json方式 查询订单物流轨迹")
     public String getOrderTracesByJson(String requestData) throws Exception {
         String dataSign = encrypt(requestData, appKey, "UTF-8");
         ArrayList<NameValuePair> list = new ArrayList<>();
@@ -188,6 +190,7 @@ public class LogisticsHttpClient {
      * @return
      * @throws BusinessException
      */
+    @Monitor(methodDesc="trackingmore 单个接口订阅")
     public TrackingData subscribeSignleTracking(TrackingRequestDto request) throws BusinessException {
         String reqStr;
         try {
@@ -225,6 +228,7 @@ public class LogisticsHttpClient {
      * @return
      * @throws BusinessException
      */
+    @Monitor(methodDesc="获取跟踪单个跟踪结果")
     public TrackingData getSignleTrackings(String subAddress) throws BusinessException {
         try {
             //设置请求头
@@ -266,6 +270,7 @@ public class LogisticsHttpClient {
      * @return
      * @throws BusinessException 
      */
+    @Monitor(methodDesc="根据物流单号查询物流公司编码")
     public List<Map<String, String>> carriersDetect(String trackNum) throws BusinessException {
         Map<String, String> param = Maps.newHashMap();
         param.put("tracking_number", trackNum);
