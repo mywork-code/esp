@@ -384,7 +384,7 @@ public class GoodsBaseInfoController {
             }
         }
         if (listEntity.size() >= 5) {
-            return Response.fail("最多只能上传5张banner图,清删除后再上传！");
+            return Response.fail("最多只能上传5张商品大图,请删除后再上传！");
         }
 
         try {
