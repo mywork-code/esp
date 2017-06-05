@@ -2,7 +2,6 @@ package com.apass.esp.search.manager;
 
 
 import com.apass.esp.search.condition.GoodTestSearchCondition;
-import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
@@ -25,15 +24,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
+ * 暂时用不到，先注释掉
  */
-@Service
+//@Service
 public class IndexManager<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexManager.class);
 

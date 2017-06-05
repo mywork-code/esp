@@ -1,13 +1,16 @@
 package com.apass.esp.repository.logistics;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.apass.esp.domain.dto.logistics.TrackingData;
+import com.apass.esp.domain.dto.logistics.TrackingMeta;
+import com.apass.esp.domain.dto.logistics.TrackingRequestDto;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.HttpClientUtils;
+import com.apass.gfb.framework.utils.JacksonUtils;
+import com.apass.monitor.annotation.Monitor;
+import com.google.common.collect.Maps;
+import com.google.gson.reflect.TypeToken;
+import net.sf.json.JSONObject;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
@@ -18,18 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.logistics.TrackingData;
-import com.apass.esp.domain.dto.logistics.TrackingMeta;
-import com.apass.esp.domain.dto.logistics.TrackingRequestDto;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpClientUtils;
-import com.apass.gfb.framework.utils.JacksonUtils;
-import com.google.common.collect.Maps;
-import com.google.gson.reflect.TypeToken;
-
-import net.sf.json.JSONObject;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class LogisticsHttpClient {
@@ -78,6 +76,7 @@ public class LogisticsHttpClient {
      * Json方式 查询订单物流轨迹
      * @throws Exception 
      */
+    @Monitor(methodDesc="查询订单物流轨迹")
     public String getOrderTracesByJson(String requestData) throws Exception {
         String dataSign = encrypt(requestData, appKey, "UTF-8");
         ArrayList<NameValuePair> list = new ArrayList<>();

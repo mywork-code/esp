@@ -16,14 +16,15 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
 import java.io.InputStream;
 import java.net.InetAddress;
 
 /**
  * Created by xianzhi.wang on 2017/5/15.
+ * 暂时用不到，先注释掉
  */
-@Component
+//@Component
 public class ESClientManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientManager.class);
 
