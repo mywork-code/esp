@@ -65,10 +65,10 @@ $(function(){
   //查询
     $(".search-btn").click(function () {
         var params = {};
-        params['days'] = $("#days").combobox('getValue');
+        //params['days'] = $("#days").combobox('getvalue');
         $('#list').datagrid('load', params);
     });
-	
+    
     //Grid
     $('#list').datagrid({
         title : '接口监控',
@@ -80,12 +80,7 @@ $(function(){
         striped:true,
         toolbar : '#tb',
         columns :[[
-            {
-                title : '主机',
-                field : 'host',
-                width : 150,
-                align : 'center'
-            }, {
+             {
                 title : '应用',
                 field : 'application',
                 width : 150,
