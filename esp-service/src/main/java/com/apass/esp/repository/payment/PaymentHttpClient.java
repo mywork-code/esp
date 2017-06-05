@@ -11,6 +11,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+import com.apass.monitor.annotation.Monitor;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class PaymentHttpClient {
         }
     }
 
+    @Monitor(methodDesc="获取客户签名返回数据")
     public Response getSignatureBase64Info(String requestId, Long userId) throws BusinessException {
         try {
             Map<String, Object> request = new HashMap<String, Object>();
@@ -116,6 +118,7 @@ public class PaymentHttpClient {
      * @return 1:可以信用支付    0:不能信用支付
      * @throws BusinessException
      */
+    @Monitor(methodDesc="调用GFB 额度支付权限查询")
     public Response creditPaymentAuth(Map<String, Object> paramMap) throws BusinessException {
         try {
             String address = gfbReqUrl + CREDITPAYAUTH;

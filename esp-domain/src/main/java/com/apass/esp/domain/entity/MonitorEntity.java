@@ -27,6 +27,16 @@ public class MonitorEntity {
 
     private String flag;
 
+    private int notice;
+
+    public int getNotice() {
+        return notice;
+    }
+
+    public void setNotice(int notice) {
+        this.notice = notice;
+    }
+
     public Integer getId() {
         return id;
     }
