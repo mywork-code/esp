@@ -247,7 +247,7 @@ public class GoodsBaseInfoController {
     public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
-
+        
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(), pageModel.getGoodsName(),
             pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
             || pageModel.getDelistTime().equals("")||pageModel.getCategoryId1().equals("")||pageModel.getCategoryId2().equals("")
