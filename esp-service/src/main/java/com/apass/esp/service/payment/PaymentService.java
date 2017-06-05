@@ -88,7 +88,9 @@ public class PaymentService {
 	 *            支付方式
 	 * @throws BusinessException
 	 */
+
 	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
+	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
 	public String defary(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo) throws BusinessException {
 		// 校验订单状态
 		Map<String, Object> data = validateDefary(requestId,userId, orderList);
@@ -208,7 +210,8 @@ public class PaymentService {
      * @throws BusinessException
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
-    private void modifyGoodsStock(String requestId, Long userId, OrderInfoEntity orderInfo) throws BusinessException {
+	@Monitor(methodDesc = "根据订单详情列表修改商品库存")
+	private void modifyGoodsStock(String requestId, Long userId, OrderInfoEntity orderInfo) throws BusinessException {
         //获取该订单详情列表
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderInfo.getOrderId() + "");
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
@@ -329,6 +332,7 @@ public class PaymentService {
 	 * @return
 	 * @throws BusinessException
 	 */
+	@Monitor(methodDesc = "调用BSS 支付接口")
 	private Response defary(Long userId, String paymentType, BigDecimal totalAmt, String txnDesc, String cardNo,List<String> orderList) throws BusinessException {
 		// 随机设置交易流水主订单号
 		String mainOrder = obtainMainOrderId(orderList);
@@ -374,7 +378,7 @@ public class PaymentService {
 	 * @return
 	 * @throws BusinessException
 	 */
-
+	@Monitor(methodDesc = "调用BSS 查询支付状态")
 	public Response queryPayStatus(String orderArray[]) throws BusinessException {
 	    //数组转换成集合
 	    List<String> orders = Arrays.asList(orderArray);
@@ -395,6 +399,7 @@ public class PaymentService {
 	 * @return
 	 * @throws BusinessException
 	 */
+	@Monitor(methodDesc = "校验订单及支付")
 	public Map<String, Object> validateDefary(String requestId,Long userId, List<String> orderList) throws BusinessException {
 		Map<String, Object> data = Maps.newHashMap();
 		List<OrderInfoEntity> orderInfoList = Lists.newArrayList();
@@ -634,6 +639,7 @@ public class PaymentService {
 	 * @return
 	 * @throws BusinessException
 	 */
+	@Monitor(methodDesc="支付方式选择确认")
 	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType) throws BusinessException {
 		PayInfoEntity payInfo = new PayInfoEntity();
 		payInfo.setUserId(userId);
@@ -734,6 +740,7 @@ public class PaymentService {
 	 * @param orders
 	 * @throws BusinessException
 	 */
+	@Monitor(methodDesc="确认离开支付页  未支付尝试回滚库存")
     public void leavePayRollStock(String requestId , List<String> orders) throws BusinessException {
         PayRequestDto req = new PayRequestDto();
         
@@ -767,6 +774,7 @@ public class PaymentService {
      * @return
      * @throws BusinessException 
      */
+	@Monitor(methodDesc="获取主订单号[获取订单列表中最小的一个]")
     public String obtainMainOrderId(List<String> orders) throws BusinessException {
         if (null == orders || orders.size() == 0) {
             throw new BusinessException("订单传入非法");
