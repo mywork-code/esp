@@ -51,7 +51,7 @@ $(function() {
                     align : 'center'
                 },
        		 	{  
-       		 		title : '三级类目名称',  
+       		 		title : '类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
        		 		align : 'center'
