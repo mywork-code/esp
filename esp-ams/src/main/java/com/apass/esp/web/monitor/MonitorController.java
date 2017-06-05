@@ -146,14 +146,6 @@ public class MonitorController {
   @ResponseBody
   public ResponsePageBody<MonitorVo> listFlag1(MonitorQuery query){
 	  
-	  if(query.getDays() == null || query.getDays() == 0){
-		 query.setDays(-1);
-	  }
-	  
-	  Calendar cal = Calendar.getInstance();
-	  cal.add(cal.DATE, query.getDays());
-	  query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),"")); 
-	  query.setEndCreateDate(DateFormatUtil.dateToString(new Date())+" 23:59:59");
 	  return  monitorService.pageListMonitor(query);
   }
 }
