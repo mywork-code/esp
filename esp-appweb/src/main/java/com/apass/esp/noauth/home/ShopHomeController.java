@@ -33,10 +33,12 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 首页
@@ -71,6 +73,11 @@ public class ShopHomeController {
     private GoodsStockInfoRepository goodsStockInfoRepository;
     @Autowired
     private GoodsService goodsService;
+    /**
+	  * 缓存
+	  */
+	 @Autowired
+	 private CacheManager cacheManager;
     
     /**
      *  首页初始化 加载banner和精品商品 
@@ -145,14 +152,26 @@ public class ShopHomeController {
       		     
                  Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
                  if("1".equals(String.valueOf(category.getSortOrder()))){//家用电器banner图
-                	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334905399.png");
+                	 String cacheKey = "categoryElectric";
+     				 String cacheJson = cacheManager.get(cacheKey);
+     				 Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+     				 String categoryBannerPictureUrl=(String) cacheJsonMap.get("categoryBannerPictureUrl");
+                	 bity.setBannerImgUrlNew(categoryBannerPictureUrl);
+                	 bity.setBannerImgUrl(categoryBannerPictureUrl);
                  }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496334888081.png");
+                	 String cacheKey = "categoryDepot";
+     				 String cacheJson = cacheManager.get(cacheKey);
+     				 Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+     				 String categoryBannerPictureUrl=(String) cacheJsonMap.get("categoryBannerPictureUrl");
+                 	 bity.setBannerImgUrlNew(categoryBannerPictureUrl);
+                	 bity.setBannerImgUrl(categoryBannerPictureUrl);
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
-                 	 bity.setBannerImgUrlNew("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
-                	 bity.setBannerImgUrl("http://espapp.sit.apass.cn/static/eshop/other/1496657921561.png");
+                	 String cacheKey = "categoryBeauty";
+     				 String cacheJson = cacheManager.get(cacheKey);
+     				 Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+     				 String categoryBannerPictureUrl=(String) cacheJsonMap.get("categoryBannerPictureUrl");
+                 	 bity.setBannerImgUrlNew(categoryBannerPictureUrl);
+                	 bity.setBannerImgUrl(categoryBannerPictureUrl);
                  }
                  banners.add(bity);
                  returnMap.put("banners", banners);

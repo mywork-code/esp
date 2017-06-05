@@ -1,5 +1,16 @@
 package com.apass.esp.service.category;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -8,19 +19,10 @@ import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.lf5.viewer.categoryexplorer.CategoryElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.apass.gfb.framework.utils.GsonUtils;
 /**
  * 商品分类操作service
  */
@@ -33,7 +35,12 @@ public class CategoryInfoService {
 	private CategoryMapper categoryMapper;
 	@Autowired
 	private GoodsService goodsService;
-
+	 /**
+	  * 缓存
+	  */
+	 @Autowired
+	 private CacheManager cacheManager;
+	 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
 	    List<CategoryVo> cate1List = getCategoryVoListByParentId(dto.getParentId());
@@ -83,14 +90,29 @@ public class CategoryInfoService {
 		//在此添加客户端首页3个类目小标题和图片
 		for(int i=0;i<voList.size();i++){
 			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("大小家电 尽在掌握");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332171181.png");
+				String cacheKey = "categoryElectric";
+				String cacheJson = cacheManager.get(cacheKey);
+				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
+				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
+				voList.get(i).setCategoryTitle(categoryTitle);
+				voList.get(i).setPictureUrl(categoryPictureUrl);
 			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("日常生活 必备良品");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496332208591.png");
+				String cacheKey = "categoryDepot";
+				String cacheJson = cacheManager.get(cacheKey);
+				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
+				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
+				voList.get(i).setCategoryTitle(categoryTitle);
+				voList.get(i).setPictureUrl(categoryPictureUrl);
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
-				voList.get(i).setCategoryTitle("生活就该 如此精致");
-				voList.get(i).setPictureUrl("http://espapp.sit.apass.cn/static/eshop/other/1496657778719.png");
+				String cacheKey = "categoryBeauty";
+				String cacheJson = cacheManager.get(cacheKey);
+				Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+				String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
+				String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
+				voList.get(i).setCategoryTitle(categoryTitle);
+				voList.get(i).setPictureUrl(categoryPictureUrl);
 			}
 		}
 		return voList;
