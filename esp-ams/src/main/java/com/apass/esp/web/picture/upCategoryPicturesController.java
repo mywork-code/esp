@@ -41,13 +41,12 @@ public class upCategoryPicturesController extends BaseController{
  /**
   * 图片服务器地址
   */
-// @Value("${nfs.rootPath}")
-// private String              rootPath;
-//
-// @Value("${nfs.other}")
-// private String              nfsOther;
- private String              rootPath="D:/";
- private String              nfsOther="picture/";
+ @Value("${nfs.rootPath}")
+ private String              rootPath;
+
+ @Value("${nfs.other}")
+ private String              nfsOther;
+
  /**
   * 缓存
   */
