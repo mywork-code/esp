@@ -512,7 +512,7 @@ public class PaymentService {
 				Response overDue = paymentHttpClient.hasOverDueBill(userId);
 				boolean overDue1 = false;
 				if(!overDue.isSuccess()){
-					overDue1=false;
+					overDue1=true;
 				}else{
 					overDue1 = (boolean)overDue.getData();
 				}

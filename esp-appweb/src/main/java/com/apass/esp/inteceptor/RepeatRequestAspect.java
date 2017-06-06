@@ -1,5 +1,7 @@
 package com.apass.esp.inteceptor;
 
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.gfb.framework.cache.CacheManager;
@@ -29,9 +31,9 @@ import java.util.Map;
  * @author admin
  *
  */
-@Aspect
-@Component
-@Order(value = Ordered.HIGHEST_PRECEDENCE + 200)
+//@Aspect
+//@Component
+//@Order(value = Ordered.HIGHEST_PRECEDENCE + 200)
 public class RepeatRequestAspect {
 	/**
 	 * 日志
@@ -71,14 +73,14 @@ public class RepeatRequestAspect {
 			String exists = cacheManager.get(uniquekey);
 			if (StringUtils.equals(exists, YesNo.YES.getCode())) {
 				LOG.info("Request key ->" + uniquekey);
-				throw new BusinessException("您的请求过快, 先休息一下吧");
+				throw new BusinessException("您的请求过快, 先休息一下吧",BusinessErrorCode.OPERATION_FREQUENTLY);
 			}
 		} catch (BusinessException e) {
 			LOG.error("您的请求失败", e);
-			return handleErrorMsg(e.getErrorDesc(), returnType);
+			return handleErrorMsg(e.getBusinessErrorCode(), returnType);
 		} catch (Exception e) {
 			LOG.error("服务繁忙, 请稍后再试", e);
-			return handleErrorMsg("服务繁忙, 请稍后再试", returnType);
+			return handleErrorMsg(BusinessErrorCode.INTERNAL_ERROR ,returnType);
 		}
 
 		// Step 2. 设置Token标记, 请求继续执行
@@ -87,10 +89,10 @@ public class RepeatRequestAspect {
 			return joinPoint.proceed();
 		} catch (BusinessException e) {
 			LOG.error("您的请求失败", e);
-			return handleErrorMsg(e.getErrorDesc(), returnType);
+			return handleErrorMsg(e.getBusinessErrorCode(), returnType);
 		} catch (Exception e) {
 			LOG.error("服务繁忙, 请稍后再试", e);
-			return handleErrorMsg("服务繁忙, 请稍后再试", returnType);
+			return handleErrorMsg(BusinessErrorCode.INTERNAL_ERROR, returnType);
 		} finally {
 			cacheManager.delete(uniquekey);
 		}
@@ -122,8 +124,14 @@ public class RepeatRequestAspect {
 	/**
 	 * 处理异常信息
 	 */
-	private Object handleErrorMsg(String msg, Class<?> returnType) {
+	private Object handleErrorMsg(ErrorCode code, Class<?> returnType) {
 		Map<String, Object> resultMap = Maps.newHashMap();
+		String msg = null;
+		if(code == BusinessErrorCode.OPERATION_FREQUENTLY){
+			msg = "抱歉，小安暂时无法提供更多服务，请尝试刷新或联系客服【" + code.getCode() + "】";
+		}else{
+			msg = "抱歉，小安暂时无法提供更多服务，请联系客服【" + code.getCode() + "】";
+		}
 		resultMap.put("msg", msg);
 		resultMap.put("status", StatusCode.FAILED_CODE.getCode());
 		return GsonUtils.convertObj(resultMap, returnType);
