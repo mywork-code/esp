@@ -251,7 +251,7 @@ $(function() {
 //		     alert(111);
 //		   }
 //		});
-	    
+    	addGoodId = '';
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
     	$("#addPlanDecrible #three").css('font-weight','lighter');
@@ -1801,6 +1801,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
  	formObj.append("<input type='text' name='goodsTitle' value='"+goodsTitle+"'/>");
  	formObj.append("<input type='text' name='listTime'  dataType='Require' value='"+listTime+"'/>");
 	formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
+	formObj.append("<input type='text' name='goodId' value='"+addGoodId+"'/>");
 	if(proDate!=""){
 		formObj.append("<input type='text' name='proDate' value='"+proDate+" 00:00:00'/>");
 	}
@@ -1816,7 +1817,6 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	formObj.form("submit",{ 
 		url : ctx + '/application/goods/management/add',
 		success : function(data) {
-			debugger;
 			var flag1 = data.indexOf('登录系统');
 			var flag2 = data.indexOf('</div');
 			//console.log(data+"==========>"+flag);;

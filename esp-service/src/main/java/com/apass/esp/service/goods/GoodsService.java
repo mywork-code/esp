@@ -10,6 +10,7 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.gfb.framework.utils.RandomUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,6 +260,11 @@ public class GoodsService {
      * @param entity
      */
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+    	if(entity.getGoodId() != null ){
+    		entity.setId(entity.getGoodId());
+    		updateService(entity);
+    		return entity;
+    	}
         int count  = goodsDao.insert(entity);
         if(count == 1){
             //商品编号
