@@ -96,7 +96,12 @@ public class Response {
 	}
 
 	public static Response fail(String msg, ErrorCode errorCode) {
-		String message = msg(errorCode) ;
+		String message = null;
+		if(errorCode != null){
+			message = msg(errorCode) ;
+		}else{
+			message = msg;
+		}
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 	

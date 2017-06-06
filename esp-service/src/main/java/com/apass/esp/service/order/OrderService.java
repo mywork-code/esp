@@ -1,5 +1,21 @@
 package com.apass.esp.service.order;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
@@ -48,17 +64,6 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -1293,75 +1298,6 @@ public class OrderService {
 		}
 
 		reOrder("", orderId, userId);
-		// Date now = new Date();
-		//
-		// Map<Long, Long> paramMap = Maps.newHashMap();
-		// for (OrderDetailInfoEntity orderDetail : orderDetails) {
-		//
-		// boolean payAvailFlag = false;
-		// Long goodsId = orderDetail.getGoodsId();
-		// Long goodsStockId = orderDetail.getGoodsStockId();
-		// //校验下架
-		// GoodsInfoEntity goodsInfo = goodsDao.select(goodsId);
-		// if (null == goodsInfo) {
-		// throw new BusinessException("商品号:" + goodsId + ",不存在或商户号不存在！");
-		// }
-		// if (now.before(goodsInfo.getListTime()) ||
-		// now.after(goodsInfo.getDelistTime()) ||
-		// !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
-		// payAvailFlag=true;
-		// }
-		//
-		// if (!payAvailFlag) {
-		// List<GoodsStockInfoEntity> goodsList =
-		// goodsStockDao.loadByGoodsId(goodsId);
-		// boolean offFlag=true;
-		// for (GoodsStockInfoEntity goodsStock : goodsList) {
-		// if (goodsStock.getStockCurrAmt()>0) {
-		// offFlag=false;
-		// break;
-		// }
-		// }
-		// if (offFlag) {
-		// payAvailFlag=true;
-		// }
-		// }
-		//
-		// //校验库存
-		// GoodsDetailInfoEntity goodsDetail =
-		// goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsId,goodsStockId);
-		// if (goodsDetail.getStockCurrAmt() < orderDetail.getGoodsNum()) {
-		// payAvailFlag = true;
-		// }
-		// if (!payAvailFlag) {
-		// paramMap.put(orderDetail.getGoodsStockId(),
-		// orderDetail.getGoodsNum());
-		// }
-		// }
-		// if (paramMap.size()==0) {
-		// throw new BusinessException("您的订单中不含有下架或库存不足情况");
-		// }
-		// List<CartInfoEntity> carts = Lists.newArrayList();
-		//
-		// for (Long goodsStockId : paramMap.keySet()) {
-		// Long buyNum = paramMap.get(goodsStockId);
-		// GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
-		// buyNum = buyNum < goodsStock.getStockCurrAmt() ? buyNum :
-		// goodsStock.getStockCurrAmt();
-		// CartInfoEntity cart = new CartInfoEntity();
-		// cart.setGoodsNum(buyNum.intValue());
-		// cart.setGoodsSelectedPrice(commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
-		// goodsStockId));
-		// cart.setIsSelect("1");
-		// cart.setUserId(userId);
-		// cart.setGoodsStockId(goodsStockId);
-		// carts.add(cart);
-		// }
-		// if (carts.size()==0) {
-		// throw new BusinessException("您的订单中不含有下架或库存不足情况");
-		// }
-		// 插入购物车
-		// cartInfoRepository.insertList(carts);
 		// 删除订单
 		orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
 	}
