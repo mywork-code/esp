@@ -1,5 +1,9 @@
 package com.apass.esp.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.domain.enums.YesNo;
@@ -92,12 +96,26 @@ public class Response {
 	}
 
 	public static Response fail(String msg, ErrorCode errorCode) {
-		String message = "友好提示文案(" + errorCode.getCode() + ")";
+		String message = msg(errorCode) ;
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
+	}
+	
+	public static String msg(ErrorCode errorCode){
+		String message = null;
+		if(errorCode == BusinessErrorCode.CART_FULL){
+		    message = BusinessErrorCode.CART_FULL.getMsg();
+		}else if(errorCode == BusinessErrorCode.GOODS_ALREADY_REMOV){
+			message = BusinessErrorCode.GOODS_ALREADY_REMOV.getMsg();
+		}else if(errorCode == BusinessErrorCode.GOODS_STOCK_NOTENOUGH){
+			message = BusinessErrorCode.GOODS_STOCK_NOTENOUGH.getMsg();
+		}else{
+			message = "抱歉，小安暂时无法提供更多服务，请联系客服【" + errorCode.getCode() + "】";
+		}
+		return message;
 	}
 
 	public static Response fail(ErrorCode errorCode) {
-		String message = "友好提示文案(" + errorCode.getCode() + ")";
+		String message = msg(errorCode);
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 

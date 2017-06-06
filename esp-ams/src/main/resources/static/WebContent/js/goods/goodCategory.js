@@ -245,6 +245,7 @@ $(function() {
 	});
 	//添加三级类目
 	$("#addThirdCategory").click(function(){
+		picUrl = '';
 		if(ifClickAndLevel != 2){
 			$.messager.alert("提示", "请先选中一个二级类目", "info");
 			return;
@@ -276,7 +277,6 @@ $(function() {
 				return;
 			}
 		}else if(categoryLevel == 2){
-			debugger;
 			reg= /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
 			var leng = getLenString(categoryName);
 			if(leng > 15){
@@ -293,11 +293,11 @@ $(function() {
 				return;
 			}
 		}
-		
 		if(categoryLevel==3 && (picUrl==null || picUrl == '')){
 			$.messager.alert("提示", "请先上传图片。", "info");
 			return;
 		}
+		
 		var params = {
 			"categoryName":categoryName,
 			"level":categoryLevel,
@@ -333,7 +333,6 @@ $(function() {
 	
 	//添加上传图标
 	$("#addUpLogoBtn").click(function(){
-		debugger;
 		var addCategoryFilePic=$('#addCategoryFilePic').val();
 		if (null == addCategoryFilePic || ("") == addCategoryFilePic) {
 			$.messager.alert("提示", "请选择文件！", "info");
