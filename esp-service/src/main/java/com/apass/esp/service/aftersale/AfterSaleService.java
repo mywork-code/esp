@@ -36,6 +36,7 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.repository.refund.RefundDetailInfoRepository;
 import com.apass.esp.repository.refund.ServiceProcessRepository;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.fileview.FileViewService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -76,6 +77,9 @@ public class AfterSaleService {
 
     @Autowired
     private FileViewService fileViewService;
+    
+    @Autowired
+    private ImageService imageService;
     
     @Autowired
     private MerchantInforRepository memChantRepository;
@@ -488,6 +492,7 @@ public class AfterSaleService {
             goodsInfo.setBuyNum(refundDetailInfo.getGoodsNum());
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
             goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+            goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsStock.getStockLogo()));
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
