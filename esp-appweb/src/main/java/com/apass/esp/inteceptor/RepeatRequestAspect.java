@@ -31,9 +31,9 @@ import java.util.Map;
  * @author admin
  *
  */
-@Aspect
-@Component
-@Order(value = Ordered.HIGHEST_PRECEDENCE + 200)
+//@Aspect
+//@Component
+//@Order(value = Ordered.HIGHEST_PRECEDENCE + 200)
 public class RepeatRequestAspect {
 	/**
 	 * 日志
