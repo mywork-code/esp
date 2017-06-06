@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,6 +46,7 @@ public class upCategoryPicturesController extends BaseController{
 
  @Value("${nfs.other}")
  private String              nfsOther;
+
  /**
   * 缓存
   */
@@ -117,7 +117,7 @@ public class upCategoryPicturesController extends BaseController{
          paramMap.put("categoryBannerPictureUrl", categoryBannerPictureUrl);
          
          String randomCacheKey = categoryTypeName;
-         cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap), 7*24*60*60);
+         cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap));
          
          return Response.success("上传成功！");
      }catch (Exception e) {
