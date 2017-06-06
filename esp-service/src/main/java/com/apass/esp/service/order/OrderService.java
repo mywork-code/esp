@@ -497,7 +497,7 @@ public class OrderService {
 
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
-				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
+				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量", BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
 			}
 			if (purchase.getBuyNum() <= 0) {
 				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
