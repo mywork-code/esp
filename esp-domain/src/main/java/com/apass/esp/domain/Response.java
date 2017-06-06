@@ -92,12 +92,12 @@ public class Response {
 	}
 
 	public static Response fail(String msg, ErrorCode errorCode) {
-		String message = "抱歉，小安暂时无法提供更多服务,请联系客服[" + errorCode.getCode() + "]";
+		String message = "抱歉，小安暂时无法提供更多服务,请联系客服【" + errorCode.getCode() + "】";
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 
 	public static Response fail(ErrorCode errorCode) {
-		String message = "抱歉，小安暂时无法提供更多服务,请联系客服[" + errorCode.getCode() + "]";
+		String message = "抱歉，小安暂时无法提供更多服务,请联系客服【" + errorCode.getCode() + "】";
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 
