@@ -170,7 +170,7 @@ $ (function ()
 			                        if (orderStatus == 'D05')
 			                        {
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-				                        content += " onclick='refundDeal(\"" + row.orderId + "\",\"" + row.refundId + "\",\"" + row.refundType+ "\");'>退款受理</a>";
+				                        content += " onclick='refundDeal(\"" + row.orderId + "\",\"" + row.refundId + "\",\"" + row.refundType+ "\");'>售后受理</a>";
 			                        }
 			                        }
 			                        return content;
@@ -480,6 +480,25 @@ $ (function ()
 		});
 	});
 	
+	//图片放大，缩小
+	$("#goodsUrlListDiv").on("click","img",function(){
+		if($(this).attr("data-show") == 'true'){
+			$(this).animate({ 
+				width: "30px",
+				height: "30px"
+			}, 200,function(){
+				$(this).attr("data-show","false")
+			});	
+		}else {
+			$(this).animate({ 
+				width: "100%",
+				height: "100%"
+			}, 200,function(){
+				$(this).attr("data-show","true")
+			});
+		}
+	})
+	
 });
 
 /**
@@ -513,7 +532,6 @@ function refundDeal (orderId,refundId,refundType)
 	    {
 		    if (data.status == "1" && data.rows.length > 0)
 		    {
-		    	debugger;
 			    var dataObject = data.rows[0];
 			    // 填写售后详细信息
 			    var goodsRefundPrice = dataObject.goodsPrice*dataObject.goodsNum;
@@ -526,7 +544,6 @@ function refundDeal (orderId,refundId,refundType)
 			    $ ("#serviceDetailList #remark").val (dataObject.remark);
 //			    $ ("#goodsUrl").attr ("src", ctx + "/fileView/query?picUrl=" + dataObject.goodsUrl);
 			    //图片显示 
-				debugger;
 				if(dataObject.goodsUrl != null){
 					var goodsUrlArr = dataObject.goodsUrl.split(",");//url是用,分隔的数组
 					$.each(goodsUrlArr,function(index,value){
@@ -545,7 +562,6 @@ function refundDeal (orderId,refundId,refundType)
 				    type : "post",
 				    dataType : "json",
 				    success : function (data){
-				    	debugger;
 				    	if(data.rows.length==1){
 				    		var response = data.rows[0];
 						    $ ("#serviceDetailList #sLogisticsName").val (response.dataName);
@@ -555,7 +571,6 @@ function refundDeal (orderId,refundId,refundType)
 				    }
 				});
 			    
-			    debugger
 			    // 设置确认付款状态按钮为只读（售后完成）
 			    if (dataObject.status == "RS03"&&dataObject.refundType=='0')
 			    {
