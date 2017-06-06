@@ -1659,7 +1659,7 @@ $(function() {
 	    	if(goodsPriceRate==''){
 	    		$("#goodsPrice").textbox('setValue',newValue);
 	    	}else{
-	    		$("#goodsPrice").textbox('setValue',FormatAfterDotNumber(newValue*goodsPriceRate,2));
+	    		$("#goodsPrice").textbox('setValue',FormatAfterDotNumber((newValue*goodsPriceRate).toFixed(1),2));
 	    	}
 	    }  
 	});
@@ -1669,7 +1669,7 @@ $(function() {
 	    	if(goodsPriceRate==''){
 	    		$("#editgoodsPrice").textbox('setValue',newValue);
 	    	}else{
-	    		$("#editgoodsPrice").textbox('setValue',FormatAfterDotNumber(newValue*goodsPriceRate,2));
+	    		$("#editgoodsPrice").textbox('setValue',FormatAfterDotNumber((newValue*goodsPriceRate).toFixed(1),2));
 	    	}
 	    }  
 	});
