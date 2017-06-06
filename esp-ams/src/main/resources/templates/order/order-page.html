@@ -237,10 +237,13 @@
 
 
 	<!-- 退货详情列表 -->
-	<div id="serviceDetailList" class="easyui-dialog" title="申请退货订单详情"
+	<div id="serviceDetailList" class="easyui-dialog" title="申请退/换货订单详情"
 		style="width: 650px; height: 400px;"
 		data-options="iconCls:'icon-save',resizable:true,modal:true">
-		<h2 style="text-align: center;">申请退货订单详情</h2>
+		<h2 style="text-align: center;">
+			<font class="return" >申请退货订单详情</font>
+			<font class="swap" >申请换货订单详情</font>
+		</h2>
 		<form id="refundDetailForm" method="POST">
 			<table>
 				<tr>

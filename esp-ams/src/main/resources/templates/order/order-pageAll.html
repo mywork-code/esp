@@ -241,11 +241,14 @@
 		</div>
 	</div>
 
-	<!-- 退货详情列表 -->
-	<div id="serviceDetailList" class="easyui-dialog" title="申请退货订单详情"
+	<!-- 退换货详情列表 -->
+	<div id="serviceDetailList" class="easyui-dialog" title="申请退/换货订单详情"
 		style="width: 650px; height: 400px;"
 		data-options="iconCls:'icon-save',resizable:true,modal:true">
-		<h2 style="text-align: center;">客户退款受理</h2>
+		<h2 style="text-align: center;">
+			<font class="return" >客户退货受理</font>
+			<font class="swap" >客户换货受理</font>
+		</h2>
 		<form id="refundDetailForm" method="POST">
 			<table>
 				<tr>

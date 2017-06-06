@@ -950,8 +950,6 @@ $ (function ()
 				$(this).attr("data-show","true")
 			});
 		}
-		
-		
 	})
 
 	$ ("#serviceDetailList .close-btn").click (function ()
