@@ -107,7 +107,8 @@ public class CommonService {
         GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
         BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return price.setScale(0, BigDecimal.ROUND_DOWN);
+//        return price.setScale(0, BigDecimal.ROUND_DOWN);
+          return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
     }
 
     /**
