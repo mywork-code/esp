@@ -48,7 +48,7 @@ public class AppContractController {
 			return Response.successResponse(bsc);
 		} catch (BusinessException e) {
 			LOGGER.error(e.getErrorDesc(),e);
-			return Response.fail(e.getBusinessErrorCode());
+			return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
 		}catch(Exception e){
 			LOGGER.error("查询合同信息失败",e);
 			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
