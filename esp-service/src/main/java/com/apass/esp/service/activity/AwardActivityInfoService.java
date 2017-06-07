@@ -273,6 +273,22 @@ public class AwardActivityInfoService {
         BankEntity e7 = new BankEntity();
         e7.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_PAB.getCode());
         e7.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_PAB.getMessage());
+
+        BankEntity e8 = new BankEntity();
+        e8.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CCB.getCode());
+        e8.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CCB.getMessage());
+
+        BankEntity e9 = new BankEntity();
+        e9.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_BOC.getCode());
+        e9.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_BOC.getMessage());
+
+        BankEntity e10 = new BankEntity();
+        e10.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CMB.getCode());
+        e10.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CMB.getMessage());
+
+        BankEntity e11 = new BankEntity();
+        e11.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_ABC.getCode());
+        e11.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_ABC.getMessage());
         list.add(e1);
         list.add(e2);
         list.add(e3);
@@ -280,6 +296,10 @@ public class AwardActivityInfoService {
         list.add(e5);
         list.add(e6);
         list.add(e7);
+        list.add(e8);
+        list.add(e9);
+        list.add(e10);
+        list.add(e11);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("bankList", list);
         map.put("bankTotal", list.size());
