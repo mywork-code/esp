@@ -137,7 +137,7 @@ public class Response {
 		}
 	}
 
-	public boolean isSuccess(){
+	public boolean statusResult(){
 		if (YesNo.isYes(status)) {
 			return true;
 		} else {

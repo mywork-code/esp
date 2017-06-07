@@ -31,6 +31,8 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +128,7 @@ public class PaymentService {
 		// 支付
 		//TODO 是否需要判断支付类型做相应的处理
 		Response response = defary(userId, paymentType, totalAmt, txnDesc, cardNo,orderList);
-		if (null == response||!response.isSuccess()) {
+		if (null == response||!response.statusResult()) {
 			throw new BusinessException("支付失败");
 		}
 		PayResponseDto rayResp = (PayResponseDto)response.getData();
@@ -346,7 +348,7 @@ public class PaymentService {
 		// 首付金额
 		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
 				//paymentHttpClient.getCustomerInfo("",userId);
-		if(!response.isSuccess()){
+		if(!response.statusResult()){
 			throw new BusinessException("客户信息查询失败");
 		}
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -354,7 +356,7 @@ public class PaymentService {
 			throw new BusinessException("客户信息查询失败");
 		}
 		Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
-		if(!responseCredit.isSuccess()){
+		if(!responseCredit.statusResult()){
 			throw new BusinessException("额度信息查询失败");
 		}
 		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
@@ -416,6 +418,24 @@ public class PaymentService {
 			    LOG.info(requestId, "订单状态不允许付款", orderId+"订单状态不允许付款");
 				throw new BusinessException("订单状态不允许付款");
 			}
+			/**
+			 * 查询订单下的所有的订单详情
+			 */
+			List<OrderDetailInfoEntity> orderDetailList =  orderDetailDao.queryOrderDetailInfo(orderId);
+			for (OrderDetailInfoEntity detail : orderDetailList) {
+				//商品的购买数量
+				Long goodNum = detail.getGoodsNum();
+				//商品的当前库存
+				Long stockCurrAmt = detail.getStockCurrAmt();
+				if(goodNum > stockCurrAmt){
+					LOG.info(requestId, "订单状态不允许付款", orderId+"商品的库存不足");
+					throw new BusinessException(detail.getGoodsName() + "商品库存不足\n请修改商品数量");
+				}
+				//验证商品是否已经下架
+				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
+			}
+			
+			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
 			orderInfoList.add(orderInfo);
 		}
@@ -449,7 +469,7 @@ public class PaymentService {
 
 		//Response response = paymentHttpClient.getCustomerInfo(requestId,userId);
 		Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
-		if(!response.isSuccess()){
+		if(!response.statusResult()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
@@ -466,7 +486,7 @@ public class PaymentService {
 		resultMap.put("cardType", customerBasicInfo.getCardType());
 
 		Response resp = paymentHttpClient.creditPayAuthority(userId);
-		if(!resp.isSuccess()){
+		if(!resp.statusResult()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
@@ -474,7 +494,7 @@ public class PaymentService {
 		Integer num = ((Double)resp.getData()).intValue();
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
 
-		if(!responseCredit.isSuccess()){
+		if(!responseCredit.statusResult()){
 			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			resultMap.put("page", page);
 			return resultMap;
@@ -511,7 +531,7 @@ public class PaymentService {
 				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 				Response overDue = paymentHttpClient.hasOverDueBill(userId);
 				boolean overDue1 = false;
-				if(!overDue.isSuccess()){
+				if(!overDue.statusResult()){
 					overDue1=true;
 				}else{
 					overDue1 = (boolean)overDue.getData();
@@ -524,7 +544,7 @@ public class PaymentService {
 					param.put("customerId", customerCreditInfo.getCustomerId());
 					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
 					Response response1 = paymentHttpClient.creditPaymentAuth(param);
-					if(!response1.isSuccess()){
+					if(!response1.statusResult()){
 						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
 					}else{
 						// 支持额度支付
@@ -660,7 +680,7 @@ public class PaymentService {
 			orderService.validateGoodsStock(requestIdOrder,orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
 		}
 		Response response  =  commonHttpClient.getCustomerBasicInfo(requestId, userId);
-		if(!response.isSuccess()){
+		if(!response.statusResult()){
 			throw new BusinessException("客户信息查询失败");
 		}
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -669,7 +689,7 @@ public class PaymentService {
 		}
 
 		Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
-		if(!responseCredit.isSuccess()){
+		if(!responseCredit.statusResult()){
 			throw new BusinessException("额度信息查询失败");
 		}
 		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
@@ -749,7 +769,7 @@ public class PaymentService {
         //支付状态
 		String payRealStatus="";
 		Response res = paymentHttpClient.gateWayTransStatusQuery(requestId,req);
-		if(!res.isSuccess()){
+		if(!res.statusResult()){
 			payRealStatus="01";
 		}else{
 			payRealStatus =(String)res.getData();
