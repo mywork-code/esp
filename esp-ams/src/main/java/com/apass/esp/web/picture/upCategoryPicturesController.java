@@ -117,7 +117,7 @@ public class upCategoryPicturesController extends BaseController{
          paramMap.put("categoryBannerPictureUrl", categoryBannerPictureUrl);
          
          String randomCacheKey = categoryTypeName;
-         cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap));
+         cacheManager.set(randomCacheKey, GsonUtils.toJson(paramMap),365*24*60*60);
          
          return Response.success("上传成功！");
      }catch (Exception e) {
