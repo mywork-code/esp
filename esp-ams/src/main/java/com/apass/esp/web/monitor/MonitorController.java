@@ -95,9 +95,9 @@ public class MonitorController {
 				 BeanUtils.copyProperties(monitorEntity1, monitorDto);
 				 monitorService.updateMonitor(monitorEntity1);
 			 }
+		 }else{
+			 int record = monitorService.insertMonitor(monitorDto);
 		 }
-
-    	 int record = monitorService.insertMonitor(monitorDto);
          return Response.success("success",record);
     }
     
