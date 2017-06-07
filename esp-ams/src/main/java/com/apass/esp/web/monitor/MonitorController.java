@@ -98,7 +98,7 @@ public class MonitorController {
 		 }else{
 			 int record = monitorService.insertMonitor(monitorDto);
 		 }
-         return Response.success("success",record);
+         return Response.success("success");
     }
     
     @RequestMapping(value = "/editMonitorSetUp", method = RequestMethod.POST)
