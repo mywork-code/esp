@@ -41,12 +41,14 @@ public class MonitorController {
 
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
-    public Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
-
+    public synchronized Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
+		monitorDto.setFlag("0");
 		//成功的
+
 		if(monitorDto.getStatus()==1){
 			MonitorEntity monitorEntity  =  monitorService.getByCurrentDay(new Date(),monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
 			if(monitorEntity==null){
+				monitorDto.setNotice(1);
 				monitorService.insertMonitor(monitorDto);
 			}else{
 				Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
@@ -57,6 +59,7 @@ public class MonitorController {
 		}else{
 			int record = monitorService.insertMonitor(monitorDto);
 		}
+
         return Response.success("添加成功");
     }
     
@@ -148,7 +151,7 @@ public class MonitorController {
 	 if(query.getDays() == null || query.getDays() == 0){
 		 query.setDays(-1);
 	 }
-	 
+
 	 Calendar cal = Calendar.getInstance();
 	 cal.add(cal.DATE, query.getDays());
 	 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),"")); 
