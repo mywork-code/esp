@@ -50,11 +50,9 @@ public class MonitorController {
 				monitorService.insertMonitor(monitorDto);
 			}else{
 				Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
-				monitorDto.setNotice(monitorEntity.getNotice()+1);
-				monitorDto.setTime(String.valueOf(str));
-				MonitorEntity monitorEntity1 = new MonitorEntity();
-				BeanUtils.copyProperties(monitorEntity1, monitorDto);
-				monitorService.updateMonitor(monitorEntity1);
+				monitorEntity.setNotice(monitorEntity.getNotice()+1);
+				monitorEntity.setTime(String.valueOf(str));
+				monitorService.updateMonitor(monitorEntity);
 			}
 		}else{
 			int record = monitorService.insertMonitor(monitorDto);
