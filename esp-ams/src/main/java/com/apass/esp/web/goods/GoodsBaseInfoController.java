@@ -281,7 +281,6 @@ public class GoodsBaseInfoController {
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
                        HttpServletRequest request) {
         String message = SUCCESS;
-
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsModel(), pageModelEdit.getGoodsName(),
             pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
             || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
@@ -293,6 +292,7 @@ public class GoodsBaseInfoController {
             goodsService.updateService(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
+            return Response.fail("编辑商品失败");
         }
         return Response.success(message);
     }
