@@ -22,7 +22,7 @@
         <table style="min-width: 1040px;">
             <tr>
                 <td width="4%" align="center" nowrap="nowrap">放款状态：</td>
-                <td width="360px" style="float: left;" align="left">
+                <td width="8%" style="float: left;" align="left">
                     <select  id="createDate1" class="easyui-combobox" style="width:145px">
                     	<option value="">aitem1</option>   
 					    <option value="2">未放款</option>   
@@ -30,18 +30,39 @@
 					    <option value="1">放款失败</option>   
                     </select>
                 </td>
-                <td width="4%" align="center" nowrap="nowrap">时间：</td>
-                <td width="360px" style="float: left;" align="left">
-                    <input id="createDate1" class="easyui-datebox"  style="width:145px"/>~
-                    <input id="createDate2" class="easyui-datebox"  style="width:145px"/>
+                <td width="4%" align="center" nowrap="nowrap">姓名：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="realName" class="easyui-textbox">
                 </td>
-                <td width="30%">
+                <td width="4%" align="center" nowrap="nowrap">手机号：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="mobile" class="easyui-textbox">
+                </td>
+            </tr>
+            
+            <tr>
+                <td width="4%" align="center" nowrap="nowrap">放款时间：</td>
+                <td width="360px" style="float: left;" align="left">
+                    <input id="arrivedDate1" class="easyui-datetimebox"  style="width:145px"/>~
+                    <input id="arrivedDate2" class="easyui-datetimebox"  style="width:145px"/>
+                </td>
+                <td width="4%" align="center" nowrap="nowrap">申请提现时间：</td>
+                <td width="360px" style="float: left;" align="left">
+                    <input id="applyDate1" class="easyui-datetimebox"  style="width:145px"/>~
+                    <input id="applyDate2" class="easyui-datetimebox"  style="width:145px"/>
+                </td>
+                <td colspan="2">
                     <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
-                    <a href="javascript:void(0);" class="easyui-linkbutton"  id="reset">重&nbsp;置&nbsp;</a> &nbsp;&nbsp;
                 </td>
             </tr>
             <tr>
-            
+            	<td>
+            		<input type="file">
+            	</td>
+                <td width="30%" >
+                    <a href="javascript:void(0);" class="easyui-linkbutton"  id="import">导&nbsp;入&nbsp;</a> &nbsp;&nbsp;
+                    <a href="javascript:void(0);" class="easyui-linkbutton"  id="export">导&nbsp;入&nbsp;</a> &nbsp;&nbsp;
+                </td>
             </tr>
         </table>
     </div>
