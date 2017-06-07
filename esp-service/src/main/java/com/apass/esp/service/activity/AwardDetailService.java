@@ -7,6 +7,7 @@ import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.domain.vo.AwardBindRelIntroVo;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.mapper.AwardBindRelMapper;
@@ -14,10 +15,13 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.BeanUtils;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -34,6 +38,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class AwardDetailService {
@@ -240,5 +246,60 @@ public class AwardDetailService {
 			}
 		}
 		return v;
+	}
+
+	public ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList(HttpServletRequest request) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		
+		//封装参数
+		paramMap = encapMethod(request);
+		
+		
+		return null;
+	}
+
+	private Map<String,Object> encapMethod(HttpServletRequest request) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		String page = HttpWebUtils.getValue(request, "page");
+		String rows = HttpWebUtils.getValue(request, "rows");
+		Integer pageNoNum = Integer.parseInt(page);
+        Integer pageSizeNum = Integer.parseInt(rows);
+        
+		String loanStatus = HttpWebUtils.getValue(request, "loanStatus");
+		String realName = HttpWebUtils.getValue(request, "realName");
+		String mobile = HttpWebUtils.getValue(request, "mobile");
+		String arrivedDate1 = HttpWebUtils.getValue(request, "arrivedDate1");
+		String arrivedDate2 = HttpWebUtils.getValue(request, "arrivedDate2");
+		String applyDate1 = HttpWebUtils.getValue(request, "applyDate1");
+		String applyDate2 = HttpWebUtils.getValue(request, "applyDate2");
+		
+		if(pageNoNum != null){
+			paramMap.put("pageNoNum", pageNoNum);
+		}
+		if(pageSizeNum != null){
+			paramMap.put("pageSizeNum", pageSizeNum);
+		}
+		if(StringUtils.isNotBlank(loanStatus)){
+			paramMap.put("loanStatus", loanStatus);
+		}
+		if(StringUtils.isNotBlank(realName)){
+			paramMap.put("realName", realName);
+		}
+		if(StringUtils.isNotBlank(mobile)){
+			paramMap.put("mobile", mobile);
+		}
+		if(StringUtils.isNotBlank(arrivedDate1)){
+			paramMap.put("arrivedDate1", arrivedDate1);
+		}
+		if(StringUtils.isNotBlank(arrivedDate2)){
+			paramMap.put("arrivedDate2", arrivedDate2);
+		}
+		if(StringUtils.isNotBlank(applyDate1)){
+			paramMap.put("applyDate1", applyDate1);
+		}
+		if(StringUtils.isNotBlank(applyDate2)){
+			paramMap.put("applyDate2", applyDate2);
+		}
+		return paramMap;
 	}
 }

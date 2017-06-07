@@ -1,28 +1,12 @@
 package com.apass.esp.web.activity;
 
-import com.apass.esp.common.model.QueryParams;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
-import com.apass.esp.domain.entity.AwardActivityInfo;
-import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.AwardBindRelIntroVo;
-import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
-import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.esp.utils.ResponsePageIntroStaticBody;
-import com.apass.esp.web.banner.BannerController;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpWebUtils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -67,16 +67,12 @@ $(function(){
         ]],
         loader : function(param, success, error) {
             $.ajax({
-                url : ctx + '/activity/introduce/statistic/list',
+                url : ctx + '/activity/introduce/loans/list',
                 data : param,
                 type : "get",
                 dataType : "json",
                 success : function(data) {
                     $.validateResponse(data, function() {
-                    	$("#manSum").html(data.allCount);
-                    	$("#cashSum").html(data.bankAmtSum);
-                    	$("#amountSum").html(data.creditAmtSum);
-                    	$("#returnCashSum").html(data.rebateAmtSum);
                         success(data);
                     });
                 }
@@ -86,75 +82,39 @@ $(function(){
 
     //查询
     $(".search-btn").click(function(){
-        var startCreateDate=$("#createDate1").datebox('getValue');
-        var endCreateDate=$("#createDate2").datebox('getValue');
-        if(startCreateDate!=null && startCreateDate!=''&&endCreateDate!=null && endCreateDate!=''){
-    		if(startCreateDate>endCreateDate){
-    			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
-    			$('#createDate1').datebox('setValue','');
-    			$('#createDate2').datebox('setValue','');
+        var loanStatus=$("#loanStatus").combobox('getValue');
+        var realName=$("#realName").textbox('getValue');
+        var mobile=$("#mobile").textbox('getValue');
+        var arrivedDate1=$("#arrivedDate1").datetimebox('getValue');
+        var arrivedDate2=$("#arrivedDate2").datetimebox('getValue');
+        var applyDate1=$("#applyDate1").datetimebox('getValue');
+        var applyDate2=$("#applyDate2").datetimebox('getValue');
+        
+        if(arrivedDate1!=null && arrivedDate1!=''&&arrivedDate2!=null && arrivedDate2!=''){
+    		if(arrivedDate1>arrivedDate2){
+    			$.messager.alert("<span style='color: black;'>提示</span>","放款时间：开始时间应早于结束时间！",'info');
+    			$('#arrivedDate1').datebox('setValue','');
+    			$('#arrivedDate2').datebox('setValue','');
     			return;
     		}
     	}
-        var params={};
-        params['startCreateDate'] = startCreateDate;
-        params['endCreateDate'] = endCreateDate;
+        if(applyDate1!=null && applyDate1!=''&&applyDate2!=null && applyDate2!=''){
+        	if(arrivedDate1>arrivedDate2){
+        		$.messager.alert("<span style='color: black;'>提示</span>","申请提现时间：开始时间应早于结束时间！",'info');
+        		$('#applyDate1').datebox('setValue','');
+        		$('#applyDate2').datebox('setValue','');
+        		return;
+        	}
+        }
+        var params={
+        		loanStatus:"loanStatus",
+        		realName:"realName",
+        		mobile:"mobile",
+        		arrivedDate1:"arrivedDate1",
+        		arrivedDate2:"arrivedDate2",
+        		applyDate1:"applyDate1",
+        		applyDate2:"applyDate2",
+        };
         $('#list').datagrid('load',params);
     });
-
-    // 重置
-    $("#reset").click(function(){
-        $("#createDate1").textbox('setValue','');
-        $("#createDate2").textbox('setValue','');
-        var params={};
-        $('#list').datagrid('load',params);
-    });
-    
-    //查询已放款和预计放款
-    $("#awarddetail").combobox({ 
-    	onBeforeLoad:function(){
-    		$('#awarddetail').combobox('setValue',-1);
-    		awarddetai(-1);
-    	},
-    	onChange:function(){
-    		var days = $("#awarddetail").combobox('getValue');
-    		awarddetai(days);
-    	}
-    });
-    
-    function awarddetai(days){
-    	$.ajax({
-            url : ctx + '/activity/introduce/sumAmountGroupByType',
-            data : {"days":days},
-            type : "POST",
-            dataType : "json",
-            success : function(data) {
-        		 $("#loadAmount").html(data.loadAmount);
-             	 $("#expectLoadAmount").html(data.expectLoadAmount);
-            }
-        });
-    }
-    //查询拉取人数
-    $("#awardbindrel").combobox({ 
-    	onBeforeLoad:function(){
-    		$('#awardbindrel').combobox('setValue',-1);
-    		awardbindrel(-1);
-    	},
-    	onChange:function(){
-    		var days = $("#awardbindrel").combobox('getValue');
-    		awardbindrel(days);
-    	}
-    });
-    
-    function awardbindrel(days){
-    	$.ajax({
-            url : ctx + '/activity/introduce/inviterUserCountByTime',
-            data : {"days":days},
-            type : "POST",
-            dataType : "json",
-            success : function(data) {
-            	$("#personSum").html(data);
-            }
-        });
-    }
 });
