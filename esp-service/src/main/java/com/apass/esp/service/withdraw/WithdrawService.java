@@ -28,6 +28,7 @@ import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 
 /**
@@ -60,6 +61,7 @@ public class WithdrawService {
         //查询用户是否绑卡
         String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
         Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
+        LOGGER.info("是否绑卡查询结果：{}",GsonUtils.toJson(result));
         if (result == null || result.size() == 0) {
             LOGGER.info("该用户不存在,userId:{}",userId);
             throw new RuntimeException("对不起,该用户不存在!");
@@ -86,7 +88,7 @@ public class WithdrawService {
         }
         result.put("totalCoun",totalCoun);//赏金 ，全部提现金额
         
-        return null;
+        return result;
     }
    
 }
