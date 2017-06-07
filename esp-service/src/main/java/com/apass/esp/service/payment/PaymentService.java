@@ -431,6 +431,8 @@ public class PaymentService {
 					LOG.info(requestId, "订单状态不允许付款", orderId+"商品的库存不足");
 					throw new BusinessException(detail.getGoodsName() + "商品库存不足\n请修改商品数量");
 				}
+				//验证商品是否已经下架
+				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 			}
 			
 			
