@@ -36,6 +36,34 @@ public class MonitorService {
     public int updateMonitor(MonitorEntity monitorEntity) {
         return monitorEntityMapper.updateByPrimaryKey(monitorEntity);
     }
+
+    /**
+     * @return
+     */
+
+    public void Monitorlog(MonitorDto monitorDto) {
+        monitorDto.setFlag("0");
+        if (monitorDto.getStatus() == 1) {
+            MonitorEntity monitorEntity = monitorEntityMapper.getByCurrentDay(new Date(), monitorDto.getMethodName(), monitorDto.getEnv(), monitorDto.getApplication());
+            if (monitorEntity == null) {
+                monitorDto.setNotice(1);
+                MonitorEntity monitorEntity1 = new MonitorEntity();
+                BeanUtils.copyProperties(monitorEntity1, monitorDto);
+                monitorEntityMapper.insert(monitorEntity1);
+            } else {
+                Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
+                monitorEntity.setNotice(monitorEntity.getNotice() + 1);
+                monitorEntity.setTime(String.valueOf(str));
+                monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+            }
+        } else {
+            //int record = monitorEntityMapper.insert(monitorDto);
+            MonitorEntity monitorEntity1 = new MonitorEntity();
+            BeanUtils.copyProperties(monitorEntity1, monitorDto);
+            monitorEntityMapper.insert(monitorEntity1);
+        }
+    }
+
     /**
      * @param monitorDto
      * @return

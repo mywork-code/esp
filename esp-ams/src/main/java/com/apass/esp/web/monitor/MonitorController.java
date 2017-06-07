@@ -41,25 +41,9 @@ public class MonitorController {
 
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
-    public synchronized Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
-		monitorDto.setFlag("0");
+    public  Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
 		//成功的
-
-		if(monitorDto.getStatus()==1){
-			MonitorEntity monitorEntity  =  monitorService.getByCurrentDay(new Date(),monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
-			if(monitorEntity==null){
-				monitorDto.setNotice(1);
-				monitorService.insertMonitor(monitorDto);
-			}else{
-				Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
-				monitorEntity.setNotice(monitorEntity.getNotice()+1);
-				monitorEntity.setTime(String.valueOf(str));
-				monitorService.updateMonitor(monitorEntity);
-			}
-		}else{
-			int record = monitorService.insertMonitor(monitorDto);
-		}
-
+		monitorService.Monitorlog(monitorDto);
         return Response.success("添加成功");
     }
     
