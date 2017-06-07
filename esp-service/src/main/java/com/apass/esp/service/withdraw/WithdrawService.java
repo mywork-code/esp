@@ -70,6 +70,7 @@ public class WithdrawService {
             paramMap.put("page", "1");//已绑卡
         }else{
             paramMap.put("page","0");//未绑卡
+            throw new RuntimeException("该用户未绑卡,请先绑卡");
         }
         String cardNo = (String)result.get("cardNo");
         paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
