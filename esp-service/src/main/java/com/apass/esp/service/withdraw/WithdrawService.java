@@ -67,12 +67,13 @@ public class WithdrawService {
             throw new RuntimeException("对不起,该用户不存在!");
         }
         if(AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))){
-            result.put("page", "1");//已绑卡
+            paramMap.put("page", "1");//已绑卡
         }else{
-            result.put("page","0");//未绑卡
+            paramMap.put("page","0");//未绑卡
         }
-        result.put("cardNo",result.get("cardNo"));//银行卡号
-        result.put("cardBank",result.get("cardBank"));//银行名称
+        String cardNo = (String)result.get("cardNo");
+        paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
+        paramMap.put("cardBank",result.get("cardBank"));//银行名称
         
         //查询全部可提金额金额
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
@@ -86,9 +87,9 @@ public class WithdrawService {
                 }
             }
         }
-        result.put("totalCoun",totalCoun);//赏金 ，全部提现金额
+        paramMap.put("totalCoun",totalCoun);//赏金 ，全部提现金额
         
-        return result;
+        return paramMap;
     }
    
 }
