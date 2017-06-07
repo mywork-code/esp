@@ -174,7 +174,7 @@ public class AwardActivityInfoService {
 		try {
 			//CustomerInfo customerInfo =
             Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
-            if(response==null||!response.isSuccess()){
+            if(response==null||!response.statusResult()){
                 return null;
             }
             CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -197,7 +197,7 @@ public class AwardActivityInfoService {
 			resultMap.put("identityNo", customerBasicInfo.getIdentityNo());
 			resultMap.put("customerStatus", customerBasicInfo.getStatus());
             Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,userId);
-            if(responseCredit!=null&&responseCredit.isSuccess()){
+            if(responseCredit!=null&&responseCredit.statusResult()){
                 CustomerCreditInfo customerCreditInfo =  Response.resolveResult(responseCredit,CustomerCreditInfo.class);
                 if(customerCreditInfo!=null){
                     resultMap.put("repaymentDate",customerCreditInfo.getRepaymentDate());//还款日
