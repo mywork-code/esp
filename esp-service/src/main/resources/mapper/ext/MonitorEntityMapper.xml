@@ -136,7 +136,7 @@
         AND
         application = #{application}
         AND
-        DATE_FORMAT(invoke_date,'%Y-%m-%d')=DATE_FORMAT(#{date}, '%Y-%m-%d')
+        DATE_FORMAT(invoke_date,'%Y-%m-%d')==DATE_FORMAT(#{date}, '%Y-%m-%d')
     </select>
 
     <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
@@ -150,6 +150,12 @@
         <if test="endCreateDate != null and endCreateDate != '' ">
             <![CDATA[  and invoke_date <= #{endCreateDate} ]]>
         </if>
+    </select>
+
+    <select id="getSuccessCount" resultType="com.apass.esp.domain.entity.MonitorEntity" >
+      SELECT * from t_apass_monitor where
+      env = #{env} and application = #{application}
+      and method_name = #{methodName} and status = 1 and flag = '0'
     </select>
 
 </mapper>
