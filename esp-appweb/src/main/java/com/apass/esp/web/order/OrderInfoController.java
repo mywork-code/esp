@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.CityEnums;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.service.activity.AwardActivityInfoService;
@@ -64,7 +65,7 @@ public class OrderInfoController {
 
     /**
      * 下单
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -81,8 +82,8 @@ public class OrderInfoController {
         String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
 
         String sourceFlag = CommonUtils.getValue(paramMap, "sourceFlag"); // 订单来源标记[购物车
-                                                                          // 或
-                                                                          // 直接购买]
+        // 或
+        // 直接购买]
         String deviceType = CommonUtils.getValue(paramMap, "deviceType");//订单渠道
         String requestId = logStashSign + "_" + userIdStr;
         paramMap.remove("x-auth-token"); // 输出日志前删除会话token
@@ -94,7 +95,7 @@ public class OrderInfoController {
 
             BigDecimal totalPayment = null;
             if (null == userIdStr) {
-            	LOGGER.error("对不起!用户号不能为空");
+                LOGGER.error("对不起!用户号不能为空");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if (!StringUtils.isNumeric(userIdStr)) {
@@ -102,10 +103,10 @@ public class OrderInfoController {
                 LOGGER.error("用户名传入非法!");
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
-            if(StringUtils.isEmpty(deviceType)){
-                deviceType="android";
+            if (StringUtils.isEmpty(deviceType)) {
+                deviceType = "android";
             }
-            if(!deviceType.equalsIgnoreCase(DeviceType.ANDROID.getName())&&!deviceType.equalsIgnoreCase(DeviceType.IOS.getName())){
+            if (!deviceType.equalsIgnoreCase(DeviceType.ANDROID.getName()) && !deviceType.equalsIgnoreCase(DeviceType.IOS.getName())) {
                 LOGGER.error("下单渠道参数错误");
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
@@ -140,7 +141,7 @@ public class OrderInfoController {
                 return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
             }
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
-                    purchaseList, sourceFlag,deviceType);
+                    purchaseList, sourceFlag, deviceType);
             resultMap.put("orderList", orders);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
@@ -154,7 +155,7 @@ public class OrderInfoController {
 
     /**
      * 取消订单
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -173,7 +174,7 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (null == userId) {
-        	LOGGER.error("对不起!用户号不能为空");
+            LOGGER.error("对不起!用户号不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -193,7 +194,7 @@ public class OrderInfoController {
 
     /**
      * 延迟收货
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -212,11 +213,11 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (null == userId) {
-        	LOGGER.error("登录失效请重新登录!");
+            LOGGER.error("登录失效请重新登录!");
             return Response.fail(BusinessErrorCode.LOGIN_HAS_INVALID);
         }
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("请求订单信息不能为空!");
+            LOGGER.error("请求订单信息不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -235,7 +236,7 @@ public class OrderInfoController {
 
     /**
      * 确认收货
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -255,11 +256,11 @@ public class OrderInfoController {
 
         OrderDetailInfoDto dto = null;
         if (null == userId) {
-        	LOGGER.error("登录失效请重新登录!");
+            LOGGER.error("登录失效请重新登录!");
             return Response.fail(BusinessErrorCode.LOGIN_HAS_INVALID);
         }
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("请求订单信息不能为空!");
+            LOGGER.error("请求订单信息不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -280,7 +281,7 @@ public class OrderInfoController {
 
     /**
      * 删除订单
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -303,7 +304,7 @@ public class OrderInfoController {
             return Response.fail(BusinessErrorCode.LOGIN_HAS_INVALID);
         }
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("请求订单信息不能为空!");
+            LOGGER.error("请求订单信息不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -323,7 +324,7 @@ public class OrderInfoController {
 
     /**
      * 我的订单-重新下单
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -346,7 +347,7 @@ public class OrderInfoController {
             return Response.fail(BusinessErrorCode.LOGIN_HAS_INVALID);
         }
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("重新下单该笔订单号不能为空!");
+            LOGGER.error("重新下单该笔订单号不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -368,7 +369,7 @@ public class OrderInfoController {
 
     /**
      * 重新下单添加至购物车
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -387,7 +388,7 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("重新下单订单号不能为空");
+            LOGGER.error("重新下单订单号不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         if (null == userId) {
@@ -413,7 +414,7 @@ public class OrderInfoController {
 
     /**
      * 修改订单收货地址
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -433,16 +434,16 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isEmpty(orderId)) {
-        	LOGGER.error("请求订单信息不能为空!");
+            LOGGER.error("请求订单信息不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         if (null == addressId) {
-        	LOGGER.error("请求地址信息不能为空!");
-        	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            LOGGER.error("请求地址信息不能为空!");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
         if (null == userId) {
-        	LOGGER.error("请求地址信息不能为空!");
-        	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            LOGGER.error("请求地址信息不能为空!");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         try {
@@ -461,7 +462,7 @@ public class OrderInfoController {
 
     /**
      * 根据 userId、订单状态(可选) 查询订单信息
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -480,7 +481,7 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(userId)) {
-        	LOGGER.error("对不起!用户号不能为空");
+            LOGGER.error("对不起!用户号不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -492,11 +493,17 @@ public class OrderInfoController {
                     statusStr);
             //添加新的图片地址
             for (OrderDetailInfoDto list : resultList) {
+                String province = list.getProvince();
+                if (StringUtils.isNotEmpty(province)) {
+                    if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+                        list.setProvince("");
+                    }
+                }
                 List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
-                for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList ) {
-                   if(StringUtils.isNoneEmpty(l.getGoodsLogoUrl())){
-                       l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
-                   }
+                for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
+                    if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
+                        l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
+                    }
                 }
             }
             resultMap.put("orderInfoList", resultList);
@@ -514,7 +521,7 @@ public class OrderInfoController {
 
     /**
      * 查询订单收货地址及签收信息
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -532,7 +539,7 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(orderId)) {
-        	LOGGER.error("订单号不能为空");
+            LOGGER.error("订单号不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -553,7 +560,7 @@ public class OrderInfoController {
 
     /**
      * 查询订单详情[根据订单号查询订单明细]
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -571,7 +578,7 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(orderId)) {
-        	LOGGER.error("订单号不能为空");
+            LOGGER.error("订单号不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
@@ -594,7 +601,7 @@ public class OrderInfoController {
 
     /**
      * 查询 用户 待付款、待发货、待收货 订单数量
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -605,7 +612,7 @@ public class OrderInfoController {
             Map<String, String> resultMap = new HashMap<String, String>();
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             if (StringUtils.isBlank(userId)) {
-            	LOGGER.error("用户id不能为空");
+                LOGGER.error("用户id不能为空");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             resultMap = orderService.getOrderNum(userId);
@@ -618,7 +625,7 @@ public class OrderInfoController {
 
     /**
      * 修改待付款订单收货地址
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -643,18 +650,18 @@ public class OrderInfoController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
         if (StringUtils.isBlank(orderId)) {
-        	LOGGER.error("订单号不能为空!");
+            LOGGER.error("订单号不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         if (StringUtils.isBlank(userId)) {
-        	LOGGER.error("用户id不能为空!");
-        	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            LOGGER.error("用户id不能为空!");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         if (StringUtils.isAnyBlank(name, telephone, province, city, district, address)) {
-        	LOGGER.error("地址信息字段不能为空!");
-        	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            LOGGER.error("地址信息字段不能为空!");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
         try {
@@ -684,7 +691,7 @@ public class OrderInfoController {
 
     /**
      * 待付款页付款库存不足或商品下架时 删除订单加入购物车
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -696,16 +703,16 @@ public class OrderInfoController {
             String userIdStr = CommonUtils.getValue(paramMap, "userId");
 
             if (StringUtils.isBlank(orderId)) {
-            	LOGGER.error("订单号不能为空!");
+                LOGGER.error("订单号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if (StringUtils.isBlank(userIdStr)) {
-            	LOGGER.error("用户号不能为空!");
-            	return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                LOGGER.error("用户号不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             if (!StringUtils.isNumeric(userIdStr)) {
-            	LOGGER.error("用户名传入非法!");
-            	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+                LOGGER.error("用户名传入非法!");
+                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
             orderService.payAfterFail(orderId, userId);
