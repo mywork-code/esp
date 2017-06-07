@@ -41,7 +41,7 @@ public class MonitorService {
      * @return
      */
 
-    public void Monitorlog(MonitorDto monitorDto) {
+    public synchronized  void Monitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {
             MonitorEntity monitorEntity = monitorEntityMapper.getByCurrentDay(new Date(), monitorDto.getMethodName(), monitorDto.getEnv(), monitorDto.getApplication());
