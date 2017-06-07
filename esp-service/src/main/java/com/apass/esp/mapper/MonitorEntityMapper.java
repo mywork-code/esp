@@ -14,6 +14,8 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
 
     List<MonitorEntityStatistics> getMonitorEntitybyTime(@Param("currentDate") Date currentDate, @Param("date") Date date,@Param("env") String env);
 
+    MonitorEntity getByCurrentDay(@Param("date") Date date,@Param("methodName") String methodName,@Param("env") String env,@Param("application")String application);
+
     /**
      * 查询一段时间内的数据
      * @param currentDate
