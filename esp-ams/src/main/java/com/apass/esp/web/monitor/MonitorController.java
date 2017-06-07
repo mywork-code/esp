@@ -43,8 +43,23 @@ public class MonitorController {
 		@ResponseBody
     public Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
 
-        int record = monitorService.insertMonitor(monitorDto);
-        return Response.success("添加成功", record);
+		//成功的
+		if(monitorDto.getStatus()==1){
+			MonitorEntity monitorEntity  =  monitorService.getByCurrentDay(new Date(),monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
+			if(monitorEntity==null){
+				monitorService.insertMonitor(monitorDto);
+			}else{
+				Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
+				monitorDto.setNotice(monitorEntity.getNotice()+1);
+				monitorDto.setTime(String.valueOf(str));
+				MonitorEntity monitorEntity1 = new MonitorEntity();
+				BeanUtils.copyProperties(monitorEntity1, monitorDto);
+				monitorService.updateMonitor(monitorEntity1);
+			}
+		}else{
+			int record = monitorService.insertMonitor(monitorDto);
+		}
+        return Response.success("添加成功");
     }
     
     @RequestMapping(value = "/addMonitor")
@@ -82,22 +97,7 @@ public class MonitorController {
     	 if( StringUtils.length(monitorDto.getMethodDesciption()) > 255 ){
     		 return Response.fail("方法描述长度不能超过255个字符!");
     	 }
-    	 //成功的
-    	 if(monitorDto.getStatus()==1){
-			 MonitorEntity monitorEntity  =  monitorService.getByCurrentDay(new Date(),monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
-			 if(monitorEntity==null){
-				 monitorService.insertMonitor(monitorDto);
-			 }else{
-				 Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
-				 monitorDto.setNotice(monitorEntity.getNotice()+1);
-				 monitorDto.setTime(String.valueOf(str));
-				 MonitorEntity monitorEntity1 = new MonitorEntity();
-				 BeanUtils.copyProperties(monitorEntity1, monitorDto);
-				 monitorService.updateMonitor(monitorEntity1);
-			 }
-		 }else{
-			 int record = monitorService.insertMonitor(monitorDto);
-		 }
+		int record = monitorService.insertMonitor(monitorDto);
          return Response.success("success");
     }
     
