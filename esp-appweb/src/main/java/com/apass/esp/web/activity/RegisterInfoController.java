@@ -195,7 +195,7 @@ public class RegisterInfoController {
 			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
 		} catch (BusinessException e) {
 			logger.error("mobile verification code send fail", e);
-			return Response.fail(e.getBusinessErrorCode());
+			return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
 		} catch (Exception e) {
 			logger.error("mobile verification code send fail", e);
 			return Response.fail(BusinessErrorCode.MESSAGE_SEND_FAILED);
@@ -462,7 +462,7 @@ public class RegisterInfoController {
 				return Response.success("获取有效活动开始时间成功！",result);
 			} catch (BusinessException e) {
 				logger.error("获取有效活动开始时间失败！", e);
-				return Response.fail(e.getBusinessErrorCode());
+				return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
 			}catch (ParseException e) {
 				logger.error("获取有效活动开始时间失败！", e);
 				return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
