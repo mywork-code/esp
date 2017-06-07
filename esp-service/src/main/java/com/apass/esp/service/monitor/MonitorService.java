@@ -46,7 +46,13 @@ public class MonitorService {
         BeanUtils.copyProperties(monitorEntity, monitorDto);
         return monitorEntityMapper.insert(monitorEntity);
     }
-    
+
+    public MonitorEntity getByCurrentDay(Date date, String methodName,String env,String application){
+        return monitorEntityMapper.getByCurrentDay(date, methodName,env,application);
+    }
+
+
+
     /**
      * 次数
      * @param date

@@ -3,10 +3,12 @@ package com.apass.esp.web.monitor;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
+import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.service.monitor.MonitorService;
+import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -80,9 +82,23 @@ public class MonitorController {
     	 if( StringUtils.length(monitorDto.getMethodDesciption()) > 255 ){
     		 return Response.fail("方法描述长度不能超过255个字符!");
     	 }
-    	 
+    	 //成功的
+    	 if(monitorDto.getStatus()==1){
+			 MonitorEntity monitorEntity  =  monitorService.getByCurrentDay(new Date(),monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
+			 if(monitorEntity==null){
+				 monitorService.insertMonitor(monitorDto);
+			 }else{
+				 Integer str = Integer.valueOf(monitorDto.getTime())+Integer.valueOf(monitorEntity.getTime());
+				 monitorDto.setNotice(monitorEntity.getNotice()+1);
+				 monitorDto.setTime(String.valueOf(str));
+				 MonitorEntity monitorEntity1 = new MonitorEntity();
+				 BeanUtils.copyProperties(monitorEntity1, monitorDto);
+				 monitorService.updateMonitor(monitorEntity1);
+			 }
+		 }
+
     	 int record = monitorService.insertMonitor(monitorDto);
-         return Response.success("success");
+         return Response.success("success",record);
     }
     
     @RequestMapping(value = "/editMonitorSetUp", method = RequestMethod.POST)

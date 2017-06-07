@@ -124,6 +124,21 @@
         ) t1
     </select>
 
+    <select id="getByCurrentDay" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        t_apass_monitor
+        where
+        method_name = #{methodName}
+        AND
+        env = #{env}
+        AND
+        application = #{application}
+        AND
+        DATE_FORMAT(invoke_date,'%Y-%m-%d')==DATE_FORMAT(#{date}, '%Y-%m-%d')
+    </select>
+
     <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
       select sum(time) time,count(*) total_monitor_num from t_apass_monitor
       where
@@ -136,4 +151,5 @@
             <![CDATA[  and invoke_date <= #{endCreateDate} ]]>
         </if>
     </select>
+
 </mapper>
