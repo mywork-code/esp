@@ -502,7 +502,7 @@ public class OrderService {
 
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
-				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量", BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
+				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
 			}
 			if (purchase.getBuyNum() <= 0) {
 				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
@@ -1046,7 +1046,7 @@ public class OrderService {
 			GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
 			// 判断库存
 			if (goodsStock.getStockCurrAmt() <= 0) {
-				throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!",BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
+				throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
 			}
 			GoodsInfoInCartEntity goodInfo = new GoodsInfoInCartEntity();
 			goodInfo.setGoodsId(goodsStock.getGoodsId());
