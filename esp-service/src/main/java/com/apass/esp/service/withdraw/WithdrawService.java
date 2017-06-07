@@ -68,27 +68,26 @@ public class WithdrawService {
         }
         if(AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))){
             paramMap.put("page", "1");//已绑卡
-        }else{
-            paramMap.put("page","0");//未绑卡
-            throw new RuntimeException("该用户未绑卡,请先绑卡");
-        }
-        String cardNo = (String)result.get("cardNo");
-        paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
-        paramMap.put("cardBank",result.get("cardBank"));//银行名称
-        
-        //查询全部可提金额金额
-        List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
-        BigDecimal totalCoun = BigDecimal.ZERO;
-        if(awardDetails != null && awardDetails.size()>0){
-            for (AwardDetail awardDetail : awardDetails) {
-                if(awardDetail.getType() == 0){
-                    totalCoun = totalCoun.add(awardDetail.getAmount());
-                }else if(awardDetail.getType() == 1){
-                    totalCoun = totalCoun.subtract(awardDetail.getAmount());
+            String cardNo = (String)result.get("cardNo");
+            paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
+            paramMap.put("cardBank",result.get("cardBank"));//银行名称
+            
+            //查询全部可提金额金额
+            List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+            BigDecimal totalCoun = BigDecimal.ZERO;
+            if(awardDetails != null && awardDetails.size()>0){
+                for (AwardDetail awardDetail : awardDetails) {
+                    if(awardDetail.getType() == 0){
+                        totalCoun = totalCoun.add(awardDetail.getAmount());
+                    }else if(awardDetail.getType() == 1){
+                        totalCoun = totalCoun.subtract(awardDetail.getAmount());
+                    }
                 }
             }
+            paramMap.put("totalCoun",totalCoun);//赏金 ，全部提现金额
+        }else{
+            paramMap.put("page","0");//未绑卡
         }
-        paramMap.put("totalCoun",totalCoun);//赏金 ，全部提现金额
         
         return paramMap;
     }
