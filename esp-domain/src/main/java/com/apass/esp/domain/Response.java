@@ -1,8 +1,5 @@
 package com.apass.esp.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.enums.StatusCode;
