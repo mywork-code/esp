@@ -69,7 +69,7 @@ public class WithdrawService {
         if(AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))){
             paramMap.put("page", "1");//已绑卡
             String cardNo = (String)result.get("cardNo");
-            paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号
+            paramMap.put("cardNo",cardNo.substring(cardNo.length()-4, cardNo.length()));//银行卡号后4位
             paramMap.put("cardBank",result.get("cardBank"));//银行名称
             
             //查询全部可提金额金额
