@@ -157,7 +157,7 @@ public class ContractService {
     private void handleSeal(Long userId, String mainOrderId, String contractPath, BuySellContractDTO contractDTO) throws BusinessException {
         try {
             Response response = paymentHttpClient.getSignatureBase64Info("contract_ps_" + mainOrderId, Long.valueOf(userId));
-            if(!response.isSuccess()){
+            if(!response.statusResult()){
                 return;
             }
             Map<String, Object> resultMap = GsonUtils.convert((String) response.getData());
@@ -253,7 +253,7 @@ public class ContractService {
         // Step 3. 查询客户and签名信息
        // Response response  = paymentHttpClient.getCustomerInfo("contract_ps_" + mainOrderId, userId);
         Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
-        if(!response.isSuccess()){
+        if(!response.statusResult()){
             throw new BusinessException("客户信息查询失败");
         }
         CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -276,7 +276,7 @@ public class ContractService {
         model.setBalancePayment(orderBalanceAmount); // 尾款
 
         Response responseCredit  = commonHttpClient.getCustomerCreditInfo("contract_ps_" + mainOrderId, userId);
-        if(!responseCredit.isSuccess()){
+        if(!responseCredit.statusResult()){
             throw new BusinessException("客户额度信息查询失败");
         }
         CustomerCreditInfo customerCreditInfo =  Response.resolveResult(responseCredit,CustomerCreditInfo.class);
@@ -424,7 +424,7 @@ public class ContractService {
         }
         // Step 3. 查询客户and签名信息
         Response response  =  commonHttpClient.getCustomerBasicInfo("contract_ps_" + mainOrderId, userId);
-        if(!response.isSuccess()){
+        if(!response.statusResult()){
             throw new BusinessException("客户信息查询失败",BusinessErrorCode.CUSTOMER_QUERYINFO_FAILED);
         }
         CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
@@ -433,7 +433,7 @@ public class ContractService {
         }
 
         Response responseCredit =  commonHttpClient.getCustomerCreditInfo("",userId);
-        if(!responseCredit.isSuccess()){
+        if(!responseCredit.statusResult()){
             throw new BusinessException("额度信息查询失败",BusinessErrorCode.QUOTA_QUERYINFO_FAILED);
         }
         CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);

@@ -74,7 +74,7 @@ public class PaymentHttpClient {
             LOG.logstashResponse(requestId, "获取客户信息返回数据:", responseJson);
             Response response =// JsonUtil.fromJson(responseJson,Response.class);
                     GsonUtils.convertObj(responseJson, Response.class);
-            if (response == null || !response.isSuccess()) {
+            if (response == null || !response.statusResult()) {
                 return Response.fail("调用客户信息查询服务异常");
             }
             return response;
@@ -97,7 +97,7 @@ public class PaymentHttpClient {
             String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
             LOG.logstashResponse(requestId, "获取客户签名返回数据:", responseJson);
             Response response = GsonUtils.convertObj(responseJson, Response.class);
-            if (response == null || !response.isSuccess()) {
+            if (response == null || !response.statusResult()) {
                 return Response.fail("签名信息查询失败");
                 // throw new BusinessException("签名信息查询失败");
             }
@@ -126,7 +126,7 @@ public class PaymentHttpClient {
             String responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
             LOGGER.info("payment_creditPaymentAuth_repJson:{}", responseJson);
             Response resp = GsonUtils.convertObj(responseJson, Response.class);
-            if (resp == null || !resp.isSuccess()) {
+            if (resp == null || !resp.statusResult()) {
                 return Response.fail("额度支付权限查询异常");
             }
             HashMap<String, String> result = resolveResult(resp, HashMap.class);
@@ -203,7 +203,7 @@ public class PaymentHttpClient {
             String responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
             LOGGER.info("queryForEsp_creditPayAuthority_repJson:{}", responseJson);
             Response resp = GsonUtils.convertObj(responseJson, Response.class);
-            if (resp == null || !resp.isSuccess()) {
+            if (resp == null || !resp.statusResult()) {
                 return Response.fail("查询未结清借款&额度消费已出账笔数查询异常");
             }
             return resp;
@@ -231,7 +231,7 @@ public class PaymentHttpClient {
             responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
             LOGGER.info("payment_paystatusQuery_repJson:{}", responseJson);
             Response resp = GsonUtils.convertObj(responseJson, Response.class);
-            if (resp == null || !resp.isSuccess()) {
+            if (resp == null || !resp.statusResult()) {
                 return Response.fail("调用账单系统异常");
             }
             return resp;
@@ -262,7 +262,7 @@ public class PaymentHttpClient {
             responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
             LOG.logstashResponse(requestId, "调用BSS支付返回内容", responseJson);
             Response resp = GsonUtils.convertObj(responseJson, Response.class);
-            if (resp == null || !resp.isSuccess()) {
+            if (resp == null || !resp.statusResult()) {
                 return Response.fail("gateWayTransStatusQuery_error接口调用异常");
             }
             return resp;
