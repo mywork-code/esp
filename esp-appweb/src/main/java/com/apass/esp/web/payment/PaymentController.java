@@ -77,7 +77,7 @@ public class PaymentController {
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -128,7 +128,7 @@ public class PaymentController {
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -182,7 +182,7 @@ public class PaymentController {
             
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
@@ -208,7 +208,7 @@ public class PaymentController {
 			}
 			String orderArray[]=orderList.split(",");
 			Response response = paymentService.queryPayStatus(orderArray);
-			if(response==null||!response.isSuccess()){
+			if(response==null||!response.statusResult()){
                 return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
             }
 			resMap.put("pstatus", (String)response.getData());

@@ -42,6 +42,7 @@
 		orderdetail.SUP_NO supNo,
 		goodsbaseinfo.goods_model goodsModel,
 		goodsstockinfo.goods_sku_attr goodsSkuAttr,
+		goodsstockinfo.stock_curr_amt stockCurrAmt,
 		orderdetail.CREATE_DATE createDate,
 		orderdetail.UPDATE_DATE updateDate
 		FROM
