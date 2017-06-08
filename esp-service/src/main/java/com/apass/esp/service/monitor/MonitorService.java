@@ -70,7 +70,7 @@ public class MonitorService {
                         Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity1.getTime());
                         monitorEntity1.setNotice(monitorEntity1.getNotice() + 1);
                         monitorEntity1.setTime(String.valueOf(str));
-                        monitorEntityMapper.updateByPrimaryKey(monitorEntity1);
+                        monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity1);
                     }
                     concurrentHashMap.putIfAbsent(key, monitorEntity1);
                 } else {
@@ -78,7 +78,7 @@ public class MonitorService {
                     Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
                     monitorEntity.setNotice(monitorEntity.getNotice() + 1);
                     monitorEntity.setTime(String.valueOf(str));
-                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                    monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity);
                 }
             }
             cacheManager.unlock(key,lockTimeOut);
