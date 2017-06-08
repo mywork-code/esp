@@ -151,12 +151,12 @@ public class ShopHomeController {
                 	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryElectricBanner.png");
            	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryElectricBanner.png");
                  }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
-                	  bity.setBannerImgUrlNew(espImageUrl+" /static/eshop/other/categoryDepotBanner.png");
-           	          bity.setBannerImgUrl(espImageUrl+" /static/eshop/other/categoryDepotBanner.png");
+                	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryDepotBanner.png");
+           	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryDepotBanner.png");
                 	
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
-               	  bity.setBannerImgUrlNew(espImageUrl+" /static/eshop/other/categoryBeautyBanner.png");
-       	          bity.setBannerImgUrl(espImageUrl+" /static/eshop/other/categoryBeautyBanner.png");
+               	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryBeautyBanner.png");
+       	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryBeautyBanner.png");
                  }
                  banners.add(bity);
                  returnMap.put("banners", banners);
