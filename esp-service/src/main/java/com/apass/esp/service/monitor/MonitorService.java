@@ -168,19 +168,25 @@ public class MonitorService {
             vo.setHost(ms.getHost());
             vo.setMethodDesciption(ms.getMethodDescrption());
             vo.setMethodName(ms.getMethodName());
+            MonitorEntityStatistics failStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
+                , MonitorStatus.FAIL.getVal());
+
             MonitorEntityStatistics successStatistics = monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
                     query.getEndCreateDate(), ms.getMethodName(), ms.getEnv(), ms.getApplication()
                     , MonitorStatus.SUCCESS.getVal());
-            int totalMonitorNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
 
-            vo.setSuccessInvokeNum(totalMonitorNum);
-            vo.setFailInvokeNum(ms.getTotalMonitorNum() - totalMonitorNum);
-            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
+            int successNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
+            int failNum =  failStatistics.getTotalMonitorNum();
+            Integer totalNum = successNum + failNum;
+            vo.setSuccessInvokeNum(successNum);
+            vo.setFailInvokeNum(failNum);
+            vo.setTotalInvokeNum(totalNum);
             long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
-            if (totalMonitorNum == 0) {
+            if (successNum == 0) {
                 vo.setAvgTime(0L);
             } else {
-                vo.setAvgTime(time / totalMonitorNum);
+                vo.setAvgTime(time / successNum);
             }
             result.add(vo);
         }
