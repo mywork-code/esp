@@ -165,9 +165,20 @@ public class ShopHomeController {
                  
                  banners.add(bity);
                  returnMap.put("banners", banners);
-              }else{
-//            	  goodsList = goodService.loadGoodsList();//加载所以商品
+              }else if(null !=flage && flage.equals("recommend")){
             	  goodsList = goodService.loadRecommendGoods();//加载精选商品
+            	  
+          	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
+                  for(BannerInfoEntity banner : banners){
+                      banner.setActivityUrl(banner.getActivityUrl());
+
+                      banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
+                      banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+                  }
+                  returnMap.put("banners", banners);
+              }else{
+            	  goodsList = goodService.loadGoodsList();//加载所以商品
             	  
             	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
                     for(BannerInfoEntity banner : banners){
