@@ -230,7 +230,7 @@ public class CacheManager {
     Long currt_lock_timeout_Str = Long.valueOf(getStr(lockKey)); // redis里的时间
 
     if (currt_lock_timeout_Str != null && currt_lock_timeout_Str == lockvalue) {//如果是加锁者 则删除锁 如果不是则等待自动过期 重新竞争加锁
-      redisTemplate.delete(lockKey); //删除键
+      delete(lockKey); //删除键
     }
   }
 }
