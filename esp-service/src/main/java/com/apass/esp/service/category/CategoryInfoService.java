@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
@@ -36,11 +37,9 @@ public class CategoryInfoService {
 	private CategoryMapper categoryMapper;
 	@Autowired
 	private GoodsService goodsService;
-	 /**
-	  * 缓存
-	  */
-	 @Autowired
-	 private CacheManager cacheManager;
+	 
+	 @Value("${esp.image.uri}")
+	 private String              espImageUrl;
 	 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
@@ -91,27 +90,20 @@ public class CategoryInfoService {
 		//在此添加客户端首页3个类目小标题和图片
 		for(int i=0;i<voList.size();i++){
 			CategoryVo v = voList.get(i);
-			String cacheKey = null;
 			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 cacheKey = CategoryPicture.CATEGORY_PICTURE1.getMessage();
+				 v.setCategoryTitle("大小家电 尽在掌握");
+				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryElectric.png");
 			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 cacheKey = CategoryPicture.CATEGORY_PICTURE2.getMessage();
+				 v.setCategoryTitle("日常生活 必备良品");
+				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryDepot.png");
 			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 cacheKey = CategoryPicture.CATEGORY_PICTURE3.getMessage();
+				 v.setCategoryTitle("生活就该 如此精致");
+				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryBeauty.png");
 			}
-			getCategoryVoMessage(cacheKey, v);
 		}
 		return voList;
 	}
 	
-	private void getCategoryVoMessage(String cacheKey,CategoryVo v){
-		String cacheJson = cacheManager.get(cacheKey);
-		Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
-		String categoryTitle=(String) cacheJsonMap.get("categoryTitle");
-		String categoryPictureUrl=(String) cacheJsonMap.get("categoryPictureUrl");
-		v.setCategoryTitle(categoryTitle);
-		v.setPictureUrl(categoryPictureUrl);
-	}
 	/**
 	 * entity 转  vo 
 	 * @param cate

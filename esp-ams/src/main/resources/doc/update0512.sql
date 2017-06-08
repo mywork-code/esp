@@ -46,4 +46,5 @@ ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `device_type`  varchar(10) NULL DE
 ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `notice`  int(11) NULL DEFAULT 0 COMMENT '是否已发邮件通知' AFTER `flag`;
 /**修改monitor表中的host列可以为空*/
 ALTER TABLE esp.`t_apass_monitor` MODIFY COLUMN `host`  varchar(255) NULL COMMENT '主机' AFTER `id`;
+DELETE FROM esp.`t_apass_monitor`;
 
