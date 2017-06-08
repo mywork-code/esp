@@ -121,7 +121,7 @@ public class MonitorScheduleTask {
       }
       for (int i = 0; i < list.size(); i++) {
         MonitorEntity monitorEntity = list.get(i);
-        monitorEntity.setNotice(1);
+        monitorEntity.setNotice(-1);
         monitorService.updateMonitor(monitorEntity);
       }
 

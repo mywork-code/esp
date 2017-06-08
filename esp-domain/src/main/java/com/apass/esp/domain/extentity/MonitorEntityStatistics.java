@@ -11,6 +11,7 @@ public class MonitorEntityStatistics {
     private String methodDescrption;
     private Long time;
     private String host;
+    private Integer notice;
 
     public String getMethodDescrption() {
         return methodDescrption;
@@ -66,5 +67,13 @@ public class MonitorEntityStatistics {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public Integer getNotice() {
+        return notice;
+    }
+
+    public void setNotice(Integer notice) {
+        this.notice = notice;
     }
 }

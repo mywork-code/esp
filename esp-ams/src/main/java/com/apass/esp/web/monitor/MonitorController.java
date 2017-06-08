@@ -3,10 +3,12 @@ package com.apass.esp.web.monitor;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
+import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.service.monitor.MonitorService;
+import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -39,10 +41,10 @@ public class MonitorController {
 
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
-    public Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
+    public  Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
 
-        int record = monitorService.insertMonitor(monitorDto);
-        return Response.success("添加成功", record);
+		monitorService.Monitorlog(monitorDto);
+        return Response.success("添加成功");
     }
     
     @RequestMapping(value = "/addMonitor")
@@ -80,8 +82,7 @@ public class MonitorController {
     	 if( StringUtils.length(monitorDto.getMethodDesciption()) > 255 ){
     		 return Response.fail("方法描述长度不能超过255个字符!");
     	 }
-    	 
-    	 int record = monitorService.insertMonitor(monitorDto);
+		int record = monitorService.insertMonitor(monitorDto);
          return Response.success("success");
     }
     
@@ -134,7 +135,7 @@ public class MonitorController {
 	 if(query.getDays() == null || query.getDays() == 0){
 		 query.setDays(-1);
 	 }
-	 
+
 	 Calendar cal = Calendar.getInstance();
 	 cal.add(cal.DATE, query.getDays());
 	 query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),"")); 

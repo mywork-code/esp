@@ -33,6 +33,21 @@ public class RandomUtils {
 		}
 		return buffer.toString();
 	}
+	
+	/**
+	 * 生成指定位数的随机字符串
+	 * 
+	 * @param length
+	 * @return String
+	 */
+	public static final String getRandomExcept0ol1(int length) {
+		StringBuffer buffer = new StringBuffer();
+		String s = "23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ";
+		for (int i = 0; i < length; i++) {
+			buffer.append(s.charAt(random.nextInt(s.length())));
+		}
+		return buffer.toString();
+	}
 
 	/**
 	 * 生成指定位数的随机字符串

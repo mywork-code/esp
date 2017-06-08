@@ -165,9 +165,19 @@ public class AwardActivity {
 
     // 可选择银行列表
     public enum BANK_ENTITY {
-        BANKLIST_ICBC("ICBC", "工商银行"), BANKLIST_CMBC("CMBC", "民生银行"), BANKLIST_CEB("CEB", "光大银行"), BANKLIST_GDB(
-                "CGB", "广发银行"), BANKLIST_CITIC("CITIC", "中信银行"), BANKLIST_CIB("CIB", "兴业银行"), BANKLIST_PAB(
-                "PAB", "平安银行");
+        BANKLIST_ICBC("ICBC", "工商银行"),
+        BANKLIST_CMBC("CMBC", "民生银行"),
+        BANKLIST_CEB("CEB", "光大银行"),
+        BANKLIST_GDB("CGB", "广发银行"),
+        BANKLIST_CITIC("CITIC", "中信银行"),
+        BANKLIST_CIB("CIB", "兴业银行"),
+        BANKLIST_PAB("PAB", "平安银行")
+        ,
+        BANKLIST_CCB("CCB", "建设银行"),
+        BANKLIST_BOC("BOC", "中国银行"),
+        BANKLIST_CMB("CMB", "招商银行"),
+        BANKLIST_ABC("ABC", "农业银行")
+        ;
         BANK_ENTITY(String code, String message) {
             this.code = code;
             this.message = message;

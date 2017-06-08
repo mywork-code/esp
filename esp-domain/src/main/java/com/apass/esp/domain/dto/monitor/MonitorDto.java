@@ -40,6 +40,15 @@ public class MonitorDto {
     private String monitorTimes;
     
     private String flag;
+    private int  notice;
+
+    public int getNotice() {
+        return notice;
+    }
+
+    public void setNotice(int notice) {
+        this.notice = notice;
+    }
 
     public String getHost() {
         return host;
