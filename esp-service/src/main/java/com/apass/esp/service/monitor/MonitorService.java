@@ -28,9 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MonitorService {
     @Autowired
     public MonitorEntityMapper monitorEntityMapper;
+    
+    public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
-
-    public ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
     /**
      * @return
@@ -43,7 +43,6 @@ public class MonitorService {
     /**
      * @return
      */
-
     public void Monitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {

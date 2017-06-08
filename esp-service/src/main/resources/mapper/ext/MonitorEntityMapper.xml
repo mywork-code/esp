@@ -26,7 +26,7 @@
         AND #{currentDate}
         AND env = #{env}
         AND flag = '0'
-        AND STATUS = '0') a GROUP BY
+        AND STATUS = '0' AND notice = 0) a GROUP BY
             method_name,
             application
     </select>
@@ -152,10 +152,5 @@
         </if>
     </select>
 
-    <select id="getSuccessCount" resultType="com.apass.esp.domain.entity.MonitorEntity" >
-      SELECT * from t_apass_monitor where
-      env = #{env} and application = #{application}
-      and method_name = #{methodName} and status = 1 and flag = '0'
-    </select>
 
 </mapper>
