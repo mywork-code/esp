@@ -646,11 +646,11 @@ $(function() {
 		var len = $("#editgoodsName").textbox('getText').length;
 		var canLen;
 		console.log(len);
-		if(len>15){
-			canLen = len - 15;
+		if(len>18){
+			canLen = len - 18;
 			$("#editgoodsNameL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 15 - len;
+			canLen = 18 - len;
 			$("#editgoodsNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -658,11 +658,11 @@ $(function() {
 	$("input",$("#editgoodsTitle").next("span")).keyup(function(){ 
 		var len = $("#editgoodsTitle").textbox('getText').length;
 		var canLen;
-		if(len>22){
-			canLen = len - 22;
+		if(len>25){
+			canLen = len - 25;
 			$("#editgoodsTitleL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 22 - len;
+			canLen = 25 - len;
 			$("#editgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -671,11 +671,11 @@ $(function() {
 	$("input",$("#addgoodsName").next("span")).keyup(function(){
 		var len = $("#addgoodsName").textbox('getText').length;
 		var canLen;
-		if(len>15){
-			canLen = len - 15;
+		if(len>18){
+			canLen = len - 18;
 			$("#addgoodsNameL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 15 - len;
+			canLen = 18 - len;
 			$("#addgoodsNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -685,11 +685,11 @@ $(function() {
 		var len = $("#addgoodsTitle").textbox('getText').length;
 		var canLen;
 		console.log(len);
-		if(len>22){
-			canLen = len - 22;
+		if(len>25){
+			canLen = len - 25;
 			$("#addgoodsTitleL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 22 - len;
+			canLen = 25 - len;
 			$("#addgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
