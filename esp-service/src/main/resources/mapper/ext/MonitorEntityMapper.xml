@@ -136,7 +136,7 @@
         AND
         application = #{application}
         AND
-        DATE_FORMAT(invoke_date,'%Y-%m-%d')==DATE_FORMAT(#{date}, '%Y-%m-%d')
+        DATE_FORMAT(invoke_date,'%Y-%m-%d')=DATE_FORMAT(#{date}, '%Y-%m-%d')
     </select>
 
     <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
