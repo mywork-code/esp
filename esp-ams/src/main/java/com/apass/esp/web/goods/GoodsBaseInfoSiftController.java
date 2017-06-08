@@ -207,7 +207,7 @@ public class GoodsBaseInfoSiftController {
 
 			if (!(checkSiftGoodsImgSize && checkImgType)) {// 230*300; .png,.jpg
 				file.getInputStream().close();
-				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：284px,高：284px,格式：.jpg,.png");
+				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：264px,高：230px,格式：.jpg,.png");
 			} else if (size > 1024 * 512) {
 				file.getInputStream().close();
 				return Response.fail("文件不能大于500kb!");
