@@ -31,19 +31,18 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 
+
 /**
- * @description 我的金库
+ * @description 提现
  *
  * @author xiaohai
- * @version $Id: CoffersBaseService.java, v 0.1 2017年6月6日 下午3:30:22 xiaohai Exp $
+ * @version $Id: WithdrawService.java, v 0.1 2017年6月8日 上午9:29:43 xiaohai Exp $
  */
 @Service
 @Transactional
 public class WithdrawService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WithdrawService.class);
-    @Autowired
-    private AwardBindRelMapper awardBindRelMapper;
     @Autowired
     private AwardDetailMapper awardDetailMapper;
     @Autowired
