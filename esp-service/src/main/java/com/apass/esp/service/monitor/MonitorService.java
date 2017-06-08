@@ -30,7 +30,7 @@ public class MonitorService {
     public MonitorEntityMapper monitorEntityMapper;
 
 
-    public volatile ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
+    public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
     /**
      * @return
@@ -44,26 +44,26 @@ public class MonitorService {
      * @return
      */
 
-    public synchronized void Monitorlog(MonitorDto monitorDto) {
+    public  void Monitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {
             String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName();
             if (!concurrentHashMap.containsKey(key)) {
-                //MonitorEntity monitorEntity = monitorEntityMapper.getByCurrentDay(new Date(), monitorDto.getMethodName(), monitorDto.getEnv(), monitorDto.getApplication());
                 monitorDto.setNotice(1);
                 MonitorEntity monitorEntity1 = new MonitorEntity();
                 BeanUtils.copyProperties(monitorEntity1, monitorDto);
                 monitorEntityMapper.insert(monitorEntity1);
                 concurrentHashMap.putIfAbsent(key, monitorEntity1);
             } else {
-                MonitorEntity monitorEntity = concurrentHashMap.get(key);
-                Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
-                monitorEntity.setNotice(monitorEntity.getNotice() + 1);
-                monitorEntity.setTime(String.valueOf(str));
-                monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                synchronized(this){
+                    MonitorEntity monitorEntity = concurrentHashMap.get(key);
+                    Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
+                    monitorEntity.setNotice(monitorEntity.getNotice() + 1);
+                    monitorEntity.setTime(String.valueOf(str));
+                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                }
             }
         } else {
-            //int record = monitorEntityMapper.insert(monitorDto);
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
             monitorEntityMapper.insert(monitorEntity);
