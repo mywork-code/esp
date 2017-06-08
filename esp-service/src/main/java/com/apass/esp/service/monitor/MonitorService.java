@@ -10,7 +10,9 @@ import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.mapper.MonitorEntityMapper;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MonitorService {
     @Autowired
     public MonitorEntityMapper monitorEntityMapper;
-    
+
+    @Autowired
+    private CacheManager cacheManager;
+
     public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
 
@@ -45,22 +50,24 @@ public class MonitorService {
     /**
      * @return
      */
-    public void Monitorlog(MonitorDto monitorDto) {
+
+    public void addMonitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         Date date = new Date();
-
+        String dateFormat = DateFormatUtils.format(date,"YYYY-MM-dd");
+        String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
         if (monitorDto.getStatus() == 1) {
-            String dateFormat = DateFormatUtils.format(date,"YYYY-MM-dd");
-            String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
-            synchronized (MonitorService.class) {
+            Long lockTimeOut =  cacheManager.lock(key,1000);
+            if(lockTimeOut != null){
                 if (!concurrentHashMap.containsKey(key)) {
                     List<MonitorEntity> monitorEntityList =  monitorEntityMapper.getSuccessCount(date,monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
-                    monitorDto.setNotice(1);
                     MonitorEntity monitorEntity1 = new MonitorEntity();
                     BeanUtils.copyProperties(monitorEntity1, monitorDto);
                     if(CollectionUtils.isEmpty(monitorEntityList)){
+                        monitorEntity1.setNotice(1);
                         monitorEntityMapper.insert(monitorEntity1);
                     }else{
+                        monitorEntity1=monitorEntityList.get(0);
                         Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity1.getTime());
                         monitorEntity1.setNotice(monitorEntity1.getNotice() + 1);
                         monitorEntity1.setTime(String.valueOf(str));
@@ -75,6 +82,7 @@ public class MonitorService {
                     monitorEntityMapper.updateByPrimaryKey(monitorEntity);
                 }
             }
+            cacheManager.unlock(key,lockTimeOut);
         } else {
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
