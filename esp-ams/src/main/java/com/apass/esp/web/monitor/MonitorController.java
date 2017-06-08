@@ -3,12 +3,10 @@ package com.apass.esp.web.monitor;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
-import com.apass.esp.domain.entity.MonitorEntity;
 import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.service.monitor.MonitorService;
-import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -43,7 +41,7 @@ public class MonitorController {
 		@ResponseBody
     public  Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
 
-		monitorService.Monitorlog(monitorDto);
+		monitorService.addMonitorlog(monitorDto);
         return Response.success("添加成功");
     }
     

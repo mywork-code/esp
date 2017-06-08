@@ -10,7 +10,9 @@ import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.mapper.MonitorEntityMapper;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ public class MonitorService {
     @Autowired
     public MonitorEntityMapper monitorEntityMapper;
 
+    @Autowired
+    private CacheManager cacheManager;
+
 
     public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
@@ -44,25 +49,27 @@ public class MonitorService {
      * @return
      */
 
-    public  void Monitorlog(MonitorDto monitorDto) {
+    public void addMonitorlog(MonitorDto monitorDto) {
+        String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName() + DateFormatUtil.dateToString(new Date());
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {
-            String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName();
-            if (!concurrentHashMap.containsKey(key)) {
-                monitorDto.setNotice(1);
-                MonitorEntity monitorEntity1 = new MonitorEntity();
-                BeanUtils.copyProperties(monitorEntity1, monitorDto);
-                monitorEntityMapper.insert(monitorEntity1);
-                concurrentHashMap.putIfAbsent(key, monitorEntity1);
-            } else {
-                synchronized(this){
-                    MonitorEntity monitorEntity = concurrentHashMap.get(key);
-                    Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
-                    monitorEntity.setNotice(monitorEntity.getNotice() + 1);
-                    monitorEntity.setTime(String.valueOf(str));
-                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+            Long lockTimeOut =  cacheManager.lock(key,1000);
+            if(lockTimeOut != null){
+                if (!concurrentHashMap.containsKey(key)) {
+                    monitorDto.setNotice(1);
+                    MonitorEntity monitorEntity1 = new MonitorEntity();
+                    BeanUtils.copyProperties(monitorEntity1, monitorDto);
+                    monitorEntityMapper.insert(monitorEntity1);
+                    concurrentHashMap.putIfAbsent(key, monitorEntity1);
+                } else {
+                        MonitorEntity monitorEntity = concurrentHashMap.get(key);
+                        Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
+                        monitorEntity.setNotice(monitorEntity.getNotice() + 1);
+                        monitorEntity.setTime(String.valueOf(str));
+                        monitorEntityMapper.updateByPrimaryKey(monitorEntity);
                 }
             }
+            cacheManager.unlock(key,lockTimeOut);
         } else {
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
