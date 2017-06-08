@@ -12,6 +12,7 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.utils.BaseConstants;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,19 +41,31 @@ public class MonitorService {
         return monitorEntityMapper.updateByPrimaryKey(monitorEntity);
     }
 
+
     /**
      * @return
      */
     public void Monitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
+        Date date = new Date();
+
         if (monitorDto.getStatus() == 1) {
-            String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName();
+            String dateFormat = DateFormatUtils.format(date,"YYYY-MM-dd");
+            String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
             synchronized (MonitorService.class) {
                 if (!concurrentHashMap.containsKey(key)) {
+                    List<MonitorEntity> monitorEntityList =  monitorEntityMapper.getSuccessCount(date,monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
                     monitorDto.setNotice(1);
                     MonitorEntity monitorEntity1 = new MonitorEntity();
                     BeanUtils.copyProperties(monitorEntity1, monitorDto);
-                    monitorEntityMapper.insert(monitorEntity1);
+                    if(CollectionUtils.isEmpty(monitorEntityList)){
+                        monitorEntityMapper.insert(monitorEntity1);
+                    }else{
+                        Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity1.getTime());
+                        monitorEntity1.setNotice(monitorEntity1.getNotice() + 1);
+                        monitorEntity1.setTime(String.valueOf(str));
+                        monitorEntityMapper.updateByPrimaryKey(monitorEntity1);
+                    }
                     concurrentHashMap.putIfAbsent(key, monitorEntity1);
                 } else {
                     MonitorEntity monitorEntity = concurrentHashMap.get(key);

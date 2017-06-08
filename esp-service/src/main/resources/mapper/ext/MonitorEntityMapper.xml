@@ -152,5 +152,13 @@
         </if>
     </select>
 
+    <select id="getSuccessCount" resultType="com.apass.esp.domain.entity.MonitorEntity" >
+        SELECT * from t_apass_monitor where
+        env = #{env} and application = #{application}
+        and method_name = #{methodName} and status = 1 and flag = '0'
+        and DATE_FORMAT(invoke_date,'%Y-%m-%d')=DATE_FORMAT(#{date}, '%Y-%m-%d')
+
+    </select>
+
 
 </mapper>
