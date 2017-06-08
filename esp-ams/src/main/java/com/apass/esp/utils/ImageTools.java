@@ -142,7 +142,7 @@ public class ImageTools {
 			int width = getImgWidth(file.getInputStream());
 			int height = getImgHeight(file.getInputStream());
 
-			if (width == 284 && height == 284) {// 284px*284px
+			if (width == 320 && height == 254) {// 320px*254px
 				return true;
 			}
 		} catch (IOException e) {
