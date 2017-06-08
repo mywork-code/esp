@@ -72,7 +72,7 @@ public class RandomController {
         ServletOutputStream output = null;
         try {
             HttpWebUtils.setViewHeader(response, MediaType.IMAGE_JPEG_VALUE);
-            String random = RandomUtils.getRandom(4);
+            String random = RandomUtils.getRandomExcept0ol1(4);
             HttpWebUtils.getSession(request).setAttribute("random", random);
             byte[] image = ImageUtils.getRandomImgage(random);
             output = response.getOutputStream();
