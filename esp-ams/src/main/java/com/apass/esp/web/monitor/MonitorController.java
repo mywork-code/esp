@@ -42,7 +42,7 @@ public class MonitorController {
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
     public  Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
-		//成功的
+
 		monitorService.Monitorlog(monitorDto);
         return Response.success("添加成功");
     }
