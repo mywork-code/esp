@@ -30,7 +30,7 @@ public class MonitorService {
     public MonitorEntityMapper monitorEntityMapper;
 
 
-    public volatile ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
+    public ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
     /**
      * @return
@@ -44,26 +44,26 @@ public class MonitorService {
      * @return
      */
 
-    public synchronized void Monitorlog(MonitorDto monitorDto) {
+    public void Monitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {
             String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName();
-            if (!concurrentHashMap.containsKey(key)) {
-                //MonitorEntity monitorEntity = monitorEntityMapper.getByCurrentDay(new Date(), monitorDto.getMethodName(), monitorDto.getEnv(), monitorDto.getApplication());
-                monitorDto.setNotice(1);
-                MonitorEntity monitorEntity1 = new MonitorEntity();
-                BeanUtils.copyProperties(monitorEntity1, monitorDto);
-                monitorEntityMapper.insert(monitorEntity1);
-                concurrentHashMap.putIfAbsent(key, monitorEntity1);
-            } else {
-                MonitorEntity monitorEntity = concurrentHashMap.get(key);
-                Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
-                monitorEntity.setNotice(monitorEntity.getNotice() + 1);
-                monitorEntity.setTime(String.valueOf(str));
-                monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+            synchronized (MonitorService.class) {
+                if (!concurrentHashMap.containsKey(key)) {
+                    monitorDto.setNotice(1);
+                    MonitorEntity monitorEntity1 = new MonitorEntity();
+                    BeanUtils.copyProperties(monitorEntity1, monitorDto);
+                    monitorEntityMapper.insert(monitorEntity1);
+                    concurrentHashMap.putIfAbsent(key, monitorEntity1);
+                } else {
+                    MonitorEntity monitorEntity = concurrentHashMap.get(key);
+                    Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
+                    monitorEntity.setNotice(monitorEntity.getNotice() + 1);
+                    monitorEntity.setTime(String.valueOf(str));
+                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                }
             }
         } else {
-            //int record = monitorEntityMapper.insert(monitorDto);
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
             monitorEntityMapper.insert(monitorEntity);
@@ -146,19 +146,19 @@ public class MonitorService {
             vo.setHost(ms.getHost());
             vo.setMethodDesciption(ms.getMethodDescrption());
             vo.setMethodName(ms.getMethodName());
-            MonitorEntityStatistics successStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
-                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
-                , MonitorStatus.SUCCESS.getVal());
+            MonitorEntityStatistics successStatistics = monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                    query.getEndCreateDate(), ms.getMethodName(), ms.getEnv(), ms.getApplication()
+                    , MonitorStatus.SUCCESS.getVal());
             vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
             vo.setFailInvokeNum(ms.getTotalMonitorNum() - successStatistics.getTotalMonitorNum());
             vo.setTotalInvokeNum(ms.getTotalMonitorNum());
-            long time = successStatistics.getTime()!=null?successStatistics.getTime():0;
-            int totalMonitorNum = successStatistics.getNotice() == null ? 0:successStatistics.getNotice();
+            long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
+            int totalMonitorNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
 
-            if(totalMonitorNum==0){
-            	vo.setAvgTime(0L);
-            }else{
-            	vo.setAvgTime(time / totalMonitorNum);
+            if (totalMonitorNum == 0) {
+                vo.setAvgTime(0L);
+            } else {
+                vo.setAvgTime(time / totalMonitorNum);
             }
             result.add(vo);
         }
