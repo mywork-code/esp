@@ -10,6 +10,7 @@
         <result column="method_desciption" property="methodDescrption" jdbcType="VARCHAR"/>
         <result column="time" property="time" jdbcType="BIGINT"/>
         <result column="host" property="host" jdbcType="VARCHAR"/>
+        <result column="notice" property="notice" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="getMonitorEntitybyTime" resultMap="StatisticResultMap">
@@ -86,7 +87,6 @@
              application,
              method_name,
              method_desciption,
-             sum(time) as time,
              count(*) as total_monitor_num
       from t_apass_monitor
         <include refid="query_where_clause" />
@@ -140,7 +140,7 @@
     </select>
 
     <select id="statisticsTimeAndNum" resultMap="StatisticResultMap">
-      select sum(time) time,count(*) total_monitor_num from t_apass_monitor
+      select sum(time) time,count(*) total_monitor_num,notice from t_apass_monitor
       where
       env = #{env} and application = #{application}
       and method_name = #{methodName} and status = #{status} and flag = '0'
