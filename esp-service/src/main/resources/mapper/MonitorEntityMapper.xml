@@ -156,7 +156,7 @@
         flag = #{flag,jdbcType=VARCHAR},
       </if>
       <if test="notice != null" >
-        flag = #{notice,jdbcType=INTEGER},
+        notice = #{notice,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
