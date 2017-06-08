@@ -57,9 +57,11 @@ textarea {
 								<a href="javascript:void(0);"
 									class="easyui-linkbutton" id="addThirdCategory"
 									data-options="iconCls:'icon-add'">添 &nbsp;加 &nbsp;三&nbsp;级 &nbsp;类 &nbsp;目&nbsp;</a>&nbsp;
-								<a href="javascript:void(0);"
-									class="easyui-linkbutton" id="flashCategory"
-									data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;分 &nbsp;类 &nbsp;</a>
+								<@apass.role value="GOODS_CATEGORY_FLUSH">
+									<a href="javascript:void(0);"
+										class="easyui-linkbutton" id="flashCategory"
+										data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;分 &nbsp;类 &nbsp;</a>
+								</@apass.role>
 							</td>
 						</tr>
 					</table>
