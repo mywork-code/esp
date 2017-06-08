@@ -54,7 +54,7 @@ public class MonitorService {
     public void addMonitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         Date date = new Date();
-        String dateFormat = DateFormatUtils.format(date,"YYYY-MM-dd");
+        String dateFormat = DateFormatUtils.format(date,"yyyy-MM-dd");
         String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
         if (monitorDto.getStatus() == 1) {
             Long lockTimeOut =  cacheManager.lock(key,1000);
