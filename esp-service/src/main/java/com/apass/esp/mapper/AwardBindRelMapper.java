@@ -11,4 +11,10 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
      * @return
      */
     Integer selectCountByUserId(Long valueOf);
+    /**
+     * 查看是否已被邀请
+     * @param moblie
+     * @return
+     */
+    Integer selectCountByInviteMobile(String moblie);
 }
