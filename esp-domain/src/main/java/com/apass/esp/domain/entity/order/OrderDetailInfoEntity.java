@@ -105,6 +105,12 @@ public class OrderDetailInfoEntity {
      * 商品规格
      */
     private String     goodsSkuAttr;
+    
+    /**
+     * 
+     * 商品的当前库存
+     */
+    private Long stockCurrAmt;
 
     public String getGoodsModel() {
         return goodsModel;
@@ -281,5 +287,13 @@ public class OrderDetailInfoEntity {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public Long getStockCurrAmt() {
+		return stockCurrAmt;
+	}
+
+	public void setStockCurrAmt(Long stockCurrAmt) {
+		this.stockCurrAmt = stockCurrAmt;
+	}
 
 }

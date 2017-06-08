@@ -17,7 +17,7 @@ public class BusinessException extends Exception {
     private BusinessErrorCode businessErrorCode;
 
     public BusinessErrorCode getBusinessErrorCode() {
-        return businessErrorCode == null ? BusinessErrorCode.NO : businessErrorCode;
+        return businessErrorCode;
     }
 
     public void setBusinessErrorCode(BusinessErrorCode businessErrorCode) {

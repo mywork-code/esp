@@ -1,8 +1,5 @@
 package com.apass.esp.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.enums.StatusCode;
@@ -96,7 +93,12 @@ public class Response {
 	}
 
 	public static Response fail(String msg, ErrorCode errorCode) {
-		String message = msg(errorCode) ;
+		String message = null;
+		if(errorCode != null){
+			message = msg(errorCode) ;
+		}else{
+			message = msg;
+		}
 		return new Response(StatusCode.FAILED_CODE.getCode(), message, null);
 	}
 	
@@ -135,7 +137,7 @@ public class Response {
 		}
 	}
 
-	public boolean isSuccess(){
+	public boolean statusResult(){
 		if (YesNo.isYes(status)) {
 			return true;
 		} else {

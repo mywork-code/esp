@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -25,9 +26,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
-import com.apass.esp.domain.enums.CategoryPicture;
 import com.apass.esp.domain.utils.ConstantsUtils;
-import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -35,12 +34,10 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
-import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 首页
@@ -75,12 +72,9 @@ public class ShopHomeController {
     private GoodsStockInfoRepository goodsStockInfoRepository;
     @Autowired
     private GoodsService goodsService;
-    /**
-	  * 缓存
-	  */
-	 @Autowired
-	 private CacheManager cacheManager;
-    
+	 
+	 @Value("${esp.image.uri}")
+	 private String              espImageUrl;
     /**
      *  首页初始化 加载banner和精品商品 
      * @return
@@ -153,21 +147,33 @@ public class ShopHomeController {
       		     BannerInfoEntity  bity=new BannerInfoEntity();
       		     
                  Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
-                 String cacheKey=null;
                  if("1".equals(String.valueOf(category.getSortOrder()))){//家用电器banner图
-                	 cacheKey = CategoryPicture.CATEGORY_PICTURE1.getMessage();
+                	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryElectricBanner.png");
+           	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryElectricBanner.png");
                  }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
-                	 cacheKey = CategoryPicture.CATEGORY_PICTURE2.getMessage();
+                	  bity.setBannerImgUrlNew(espImageUrl+" /static/eshop/other/categoryDepotBanner.png");
+           	          bity.setBannerImgUrl(espImageUrl+" /static/eshop/other/categoryDepotBanner.png");
+                	
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
-                	 cacheKey = CategoryPicture.CATEGORY_PICTURE3.getMessage();
+               	  bity.setBannerImgUrlNew(espImageUrl+" /static/eshop/other/categoryBeautyBanner.png");
+       	          bity.setBannerImgUrl(espImageUrl+" /static/eshop/other/categoryBeautyBanner.png");
                  }
-                 getBannerInfoMessage(cacheKey,bity);
-                 
                  banners.add(bity);
                  returnMap.put("banners", banners);
-              }else{
-//            	  goodsList = goodService.loadGoodsList();//加载所以商品
+              }else if(null !=flage && flage.equals("recommend")){
             	  goodsList = goodService.loadRecommendGoods();//加载精选商品
+            	  
+          	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
+                  for(BannerInfoEntity banner : banners){
+                      banner.setActivityUrl(banner.getActivityUrl());
+
+                      banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+
+                      banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+                  }
+                  returnMap.put("banners", banners);
+              }else{
+            	  goodsList = goodService.loadGoodsList();//加载所以商品
             	  
             	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
                     for(BannerInfoEntity banner : banners){
@@ -211,15 +217,6 @@ public class ShopHomeController {
         }
     }
     
-	private void getBannerInfoMessage(String cacheKey,BannerInfoEntity bity){
-		String cacheJson = cacheManager.get(cacheKey);
-		 Map<String ,Object> cacheJsonMap = GsonUtils.convert(cacheJson);
-		 String categoryBannerPictureUrl=(String) cacheJsonMap.get("categoryBannerPictureUrl");
-   	     bity.setBannerImgUrlNew(categoryBannerPictureUrl);
-   	     bity.setBannerImgUrl(categoryBannerPictureUrl);
-	}
-	
-	
 	
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)

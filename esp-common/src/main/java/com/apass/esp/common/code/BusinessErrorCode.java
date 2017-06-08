@@ -6,7 +6,7 @@ package com.apass.esp.common.code;
  */
 public enum BusinessErrorCode implements ErrorCode {
   OK(0000, "操作成功"),
-  NO(0001, "操作失败"),
+  NO(1000, "操作失败"),
 
   //10xx 参数问题
   PARAM_IS_EMPTY(1001, "参数为空"),

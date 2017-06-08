@@ -70,7 +70,7 @@ public class AfterSaleController {
             return Response.success("售后商品图片上传成功!");
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getBusinessErrorCode());
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
@@ -160,7 +160,7 @@ public class AfterSaleController {
             
         } catch(BusinessException e){
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getBusinessErrorCode());
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
