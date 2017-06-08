@@ -47,5 +47,5 @@ public interface MonitorEntityMapper extends GenericMapper<MonitorEntity, Long> 
 
     Integer monitorListCount(MonitorQuery query);
 
-
+    List<MonitorEntity> getSuccessCount(@Param("date") Date date,@Param("methodName") String methodName,@Param("env") String env,@Param("application")String application);
 }

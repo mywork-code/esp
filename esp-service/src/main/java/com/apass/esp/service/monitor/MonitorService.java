@@ -14,6 +14,7 @@ import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +35,8 @@ public class MonitorService {
     @Autowired
     private CacheManager cacheManager;
 
-
     public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
+
 
     /**
      * @return
@@ -45,28 +46,40 @@ public class MonitorService {
         return monitorEntityMapper.updateByPrimaryKey(monitorEntity);
     }
 
+
     /**
      * @return
      */
 
     public void addMonitorlog(MonitorDto monitorDto) {
-        String key = monitorDto.getEnv() + monitorDto.getApplication() + monitorDto.getMethodName() + DateFormatUtil.dateToString(new Date());
         monitorDto.setFlag("0");
+        Date date = new Date();
+        String dateFormat = DateFormatUtils.format(date,"YYYY-MM-dd");
+        String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
         if (monitorDto.getStatus() == 1) {
             Long lockTimeOut =  cacheManager.lock(key,1000);
             if(lockTimeOut != null){
                 if (!concurrentHashMap.containsKey(key)) {
-                    monitorDto.setNotice(1);
+                    List<MonitorEntity> monitorEntityList =  monitorEntityMapper.getSuccessCount(date,monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
                     MonitorEntity monitorEntity1 = new MonitorEntity();
                     BeanUtils.copyProperties(monitorEntity1, monitorDto);
-                    monitorEntityMapper.insert(monitorEntity1);
+                    if(CollectionUtils.isEmpty(monitorEntityList)){
+                        monitorEntity1.setNotice(1);
+                        monitorEntityMapper.insert(monitorEntity1);
+                    }else{
+                        monitorEntity1=monitorEntityList.get(0);
+                        Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity1.getTime());
+                        monitorEntity1.setNotice(monitorEntity1.getNotice() + 1);
+                        monitorEntity1.setTime(String.valueOf(str));
+                        monitorEntityMapper.updateByPrimaryKey(monitorEntity1);
+                    }
                     concurrentHashMap.putIfAbsent(key, monitorEntity1);
                 } else {
-                        MonitorEntity monitorEntity = concurrentHashMap.get(key);
-                        Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
-                        monitorEntity.setNotice(monitorEntity.getNotice() + 1);
-                        monitorEntity.setTime(String.valueOf(str));
-                        monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                    MonitorEntity monitorEntity = concurrentHashMap.get(key);
+                    Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
+                    monitorEntity.setNotice(monitorEntity.getNotice() + 1);
+                    monitorEntity.setTime(String.valueOf(str));
+                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
                 }
             }
             cacheManager.unlock(key,lockTimeOut);
@@ -153,19 +166,19 @@ public class MonitorService {
             vo.setHost(ms.getHost());
             vo.setMethodDesciption(ms.getMethodDescrption());
             vo.setMethodName(ms.getMethodName());
-            MonitorEntityStatistics successStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
-                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
-                , MonitorStatus.SUCCESS.getVal());
+            MonitorEntityStatistics successStatistics = monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                    query.getEndCreateDate(), ms.getMethodName(), ms.getEnv(), ms.getApplication()
+                    , MonitorStatus.SUCCESS.getVal());
             vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
             vo.setFailInvokeNum(ms.getTotalMonitorNum() - successStatistics.getTotalMonitorNum());
             vo.setTotalInvokeNum(ms.getTotalMonitorNum());
-            long time = successStatistics.getTime()!=null?successStatistics.getTime():0;
-            int totalMonitorNum = successStatistics.getNotice() == null ? 0:successStatistics.getNotice();
+            long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
+            int totalMonitorNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
 
-            if(totalMonitorNum==0){
-            	vo.setAvgTime(0L);
-            }else{
-            	vo.setAvgTime(time / totalMonitorNum);
+            if (totalMonitorNum == 0) {
+                vo.setAvgTime(0L);
+            } else {
+                vo.setAvgTime(time / totalMonitorNum);
             }
             result.add(vo);
         }
