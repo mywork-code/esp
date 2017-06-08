@@ -56,8 +56,10 @@ public class MonitorService {
             Date date = new Date();
             String dateFormat = DateFormatUtils.format(date,"yyyy-MM-dd");
             String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
-            Long lockTimeOut =  cacheManager.lock(key,1000);
-            if(lockTimeOut != null){
+            //            Long lockTimeOut =  cacheManager.lock(key,1000);
+//            if(lockTimeOut != null){
+//            }
+            synchronized (this){
                 if (!concurrentHashMap.containsKey(key)) {
                     List<MonitorEntity> monitorEntityList =  monitorEntityMapper.getSuccessCount(date,monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
                     MonitorEntity monitorEntity1 = new MonitorEntity();
@@ -81,7 +83,8 @@ public class MonitorService {
                     monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity);
                 }
             }
-            cacheManager.unlock(key,lockTimeOut);
+
+//            cacheManager.unlock(key,lockTimeOut);
         } else {
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
