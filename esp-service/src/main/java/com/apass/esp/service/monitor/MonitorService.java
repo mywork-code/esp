@@ -12,7 +12,6 @@ import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,12 +168,12 @@ public class MonitorService {
             MonitorEntityStatistics successStatistics = monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
                     query.getEndCreateDate(), ms.getMethodName(), ms.getEnv(), ms.getApplication()
                     , MonitorStatus.SUCCESS.getVal());
-            vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
-            vo.setFailInvokeNum(ms.getTotalMonitorNum() - successStatistics.getTotalMonitorNum());
-            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
-            long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
             int totalMonitorNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
 
+            vo.setSuccessInvokeNum(totalMonitorNum);
+            vo.setFailInvokeNum(ms.getTotalMonitorNum() - totalMonitorNum);
+            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
+            long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
             if (totalMonitorNum == 0) {
                 vo.setAvgTime(0L);
             } else {
