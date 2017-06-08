@@ -3,7 +3,6 @@ package com.apass.esp.service.monitor;
 
 import com.apass.esp.domain.dto.monitor.MonitorDto;
 import com.apass.esp.domain.entity.MonitorEntity;
-import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.enums.MonitorStatus;
 import com.apass.esp.domain.extentity.MonitorEntityStatistics;
 import com.apass.esp.domain.query.MonitorQuery;
@@ -140,36 +139,20 @@ public class MonitorService {
             vo.setHost(ms.getHost());
             vo.setMethodDesciption(ms.getMethodDescrption());
             vo.setMethodName(ms.getMethodName());
-            MonitorEntity monitorEntity =  monitorEntityMapper.getSuccessCount(ms.getMethodName(),ms.getEnv(),ms.getApplication());
-            if(monitorEntity==null){
-                vo.setTotalInvokeNum(ms.getTotalMonitorNum());
-                vo.setFailInvokeNum(ms.getTotalMonitorNum());
-                vo.setSuccessInvokeNum(0);
-                vo.setAvgTime(0L);
+            MonitorEntityStatistics successStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
+                , MonitorStatus.SUCCESS.getVal());
+            vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
+            vo.setFailInvokeNum(ms.getTotalMonitorNum() - successStatistics.getTotalMonitorNum());
+            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
+            long time = successStatistics.getTime()!=null?successStatistics.getTime():0;
+            int totalMonitorNum = successStatistics.getNotice() == null ? 0:successStatistics.getNotice();
+
+            if(totalMonitorNum==0){
+            	vo.setAvgTime(0L);
             }else{
-                vo.setSuccessInvokeNum(monitorEntity.getNotice());
-                vo.setFailInvokeNum(ms.getTotalMonitorNum()-1);
-                vo.setTotalInvokeNum(monitorEntity.getNotice()+ms.getTotalMonitorNum()-1);
-                int successTimes = Integer.valueOf(monitorEntity.getTime())/monitorEntity.getNotice();
-                vo.setAvgTime(Long.valueOf(successTimes));
+            	vo.setAvgTime(time / totalMonitorNum);
             }
-//            MonitorEntityStatistics failStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
-//                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
-//            , MonitorStatus.FAIL.getVal());
-//            vo.setFailInvokeNum(failStatistics.getTotalMonitorNum());
-//            MonitorEntityStatistics successStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
-//                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
-//                ,MonitorStatus.SUCCESS.getVal());
-          //  vo.setSuccessInvokeNum(successStatistics.getTotalMonitorNum());
-
-          //  long time = successStatistics.getTime()!=null?successStatistics.getTime():0;
-            //int totalMonitorNum = successStatistics.getTotalMonitorNum();
-
-//            if(totalMonitorNum==0){
-//            	vo.setAvgTime(0L);
-//            }else{
-//            	vo.setAvgTime(time / totalMonitorNum);
-//            }
             result.add(vo);
         }
 
