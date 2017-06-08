@@ -1786,7 +1786,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "排序不能为空！", "info");
 		return;
 	}
-	
+	debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
 	formObj.append("<input type='text' name='categoryId1' value='"+categoryId1+"'/>");
