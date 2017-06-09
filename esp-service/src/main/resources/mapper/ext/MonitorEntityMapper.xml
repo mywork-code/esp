@@ -86,8 +86,7 @@
              env,
              application,
              method_name,
-             method_desciption,
-             count(*) + sum(notice) - 1 total_monitor_num
+             method_desciption
       from t_apass_monitor
         <include refid="query_where_clause" />
        group by host,application,method_name
