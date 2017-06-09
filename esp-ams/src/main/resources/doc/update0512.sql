@@ -15,6 +15,9 @@ CREATE TABLE esp.`t_esp_category` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品分类信息表';
 
+alter table esp.`t_esp_category` add index cname_idx(`category_name`);
+alter table esp.`t_esp_category` add index parentId_idx(`parent_id`);
+
 DROP TABLE IF EXISTS esp.t_esp_feedback;
 CREATE TABLE esp.`t_esp_feedback` (
  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
@@ -24,6 +27,9 @@ CREATE TABLE esp.`t_esp_feedback` (
  `create_date` datetime NOT NULL COMMENT '反馈时间',
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='意见反馈信息表';
+
+alter table esp.`t_esp_feedback` add index mobile_idx(`mobile`);
+
 
 /**在商品的基础表中添加三列*/
 ALTER TABLE esp.`t_esp_goods_base_info` ADD COLUMN `category_id1`  bigint(20) NULL COMMENT '商品分类一级Id' AFTER `id`;
@@ -46,5 +52,7 @@ ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `device_type`  varchar(10) NULL DE
 ALTER TABLE esp.`t_apass_monitor` ADD COLUMN `notice`  int(11) NULL DEFAULT 0 COMMENT '是否已发邮件通知' AFTER `flag`;
 /**修改monitor表中的host列可以为空*/
 ALTER TABLE esp.`t_apass_monitor` MODIFY COLUMN `host`  varchar(255) NULL COMMENT '主机' AFTER `id`;
+
+alter table esp.`t_apass_monitor` add index env_method_idx(`env`,`method_name`);
 DELETE FROM esp.`t_apass_monitor`;
 

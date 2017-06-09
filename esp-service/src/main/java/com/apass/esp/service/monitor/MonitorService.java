@@ -56,8 +56,10 @@ public class MonitorService {
             Date date = new Date();
             String dateFormat = DateFormatUtils.format(date,"yyyy-MM-dd");
             String key = dateFormat+"_"+monitorDto.getEnv()+"_" + monitorDto.getApplication()+"_" + monitorDto.getMethodName();
-            Long lockTimeOut =  cacheManager.lock(key,1000);
-            if(lockTimeOut != null){
+            //            Long lockTimeOut =  cacheManager.lock(key,1000);
+//            if(lockTimeOut != null){
+//            }
+            synchronized (this){
                 if (!concurrentHashMap.containsKey(key)) {
                     List<MonitorEntity> monitorEntityList =  monitorEntityMapper.getSuccessCount(date,monitorDto.getMethodName(),monitorDto.getEnv(),monitorDto.getApplication());
                     MonitorEntity monitorEntity1 = new MonitorEntity();
@@ -70,7 +72,7 @@ public class MonitorService {
                         Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity1.getTime());
                         monitorEntity1.setNotice(monitorEntity1.getNotice() + 1);
                         monitorEntity1.setTime(String.valueOf(str));
-                        monitorEntityMapper.updateByPrimaryKey(monitorEntity1);
+                        monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity1);
                     }
                     concurrentHashMap.putIfAbsent(key, monitorEntity1);
                 } else {
@@ -78,10 +80,11 @@ public class MonitorService {
                     Integer str = Integer.valueOf(monitorDto.getTime()) + Integer.valueOf(monitorEntity.getTime());
                     monitorEntity.setNotice(monitorEntity.getNotice() + 1);
                     monitorEntity.setTime(String.valueOf(str));
-                    monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+                    monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity);
                 }
             }
-            cacheManager.unlock(key,lockTimeOut);
+
+//            cacheManager.unlock(key,lockTimeOut);
         } else {
             MonitorEntity monitorEntity = new MonitorEntity();
             BeanUtils.copyProperties(monitorEntity, monitorDto);
@@ -165,19 +168,25 @@ public class MonitorService {
             vo.setHost(ms.getHost());
             vo.setMethodDesciption(ms.getMethodDescrption());
             vo.setMethodName(ms.getMethodName());
+            MonitorEntityStatistics failStatistics =  monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
+                query.getEndCreateDate(),ms.getMethodName(),ms.getEnv(),ms.getApplication()
+                , MonitorStatus.FAIL.getVal());
+
             MonitorEntityStatistics successStatistics = monitorEntityMapper.statisticsTimeAndNum(query.getStartCreateDate(),
                     query.getEndCreateDate(), ms.getMethodName(), ms.getEnv(), ms.getApplication()
                     , MonitorStatus.SUCCESS.getVal());
-            int totalMonitorNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
 
-            vo.setSuccessInvokeNum(totalMonitorNum);
-            vo.setFailInvokeNum(ms.getTotalMonitorNum() - totalMonitorNum);
-            vo.setTotalInvokeNum(ms.getTotalMonitorNum());
+            int successNum = successStatistics.getNotice() == null ? 0 : successStatistics.getNotice();
+            int failNum =  failStatistics.getTotalMonitorNum();
+            Integer totalNum = successNum + failNum;
+            vo.setSuccessInvokeNum(successNum);
+            vo.setFailInvokeNum(failNum);
+            vo.setTotalInvokeNum(totalNum);
             long time = successStatistics.getTime() != null ? successStatistics.getTime() : 0;
-            if (totalMonitorNum == 0) {
+            if (successNum == 0) {
                 vo.setAvgTime(0L);
             } else {
-                vo.setAvgTime(time / totalMonitorNum);
+                vo.setAvgTime(time / successNum);
             }
             result.add(vo);
         }

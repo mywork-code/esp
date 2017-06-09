@@ -9,6 +9,7 @@ import java.util.Map;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -266,7 +267,9 @@ public class GoodsService {
     		return entity;
     	}
         int count  = goodsDao.insert(entity);
+        
         if(count == 1){
+        	LOGGER.info("保存商品成功,保存内容：{}",GsonUtils.toJson(entity));
             //商品编号
             StringBuffer sb = new StringBuffer();
             String merchantCode  =entity.getMerchantCode();
@@ -288,7 +291,6 @@ public class GoodsService {
         }
         
         return entity;
-
     }
 
     /**

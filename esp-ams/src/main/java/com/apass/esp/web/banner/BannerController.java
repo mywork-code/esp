@@ -193,13 +193,13 @@ public class BannerController extends BaseController {
                 throw new BusinessException("请选择文件.");
             }
             //电商3期511 20170519 banner 添加设置商品链接
-            if(StringUtils.isNotBlank(activityUrl)){
-            	if("activity".equals(activityName)){
-            		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
-            	}else if("goodId".equals(activityName)){
-            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
-            	}
-            }
+//            if(StringUtils.isNotBlank(activityUrl)){
+//            	if("activity".equals(activityName)){
+//            		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
+//            	}else if("goodId".equals(activityName)){
+//            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
+//            	}
+//            }
             
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
@@ -229,9 +229,9 @@ public class BannerController extends BaseController {
             if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
                 file.getInputStream().close();
                 if("index".equals(bannerType)){
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：420px,格式：.jpg,.png");
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：248px,格式：.jpg,.png");
                 }else{
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：280px,格式：.jpg,.png");
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：230px,格式：.jpg,.png");
                 }
             } else if (size > 1024 * 512) {
                 file.getInputStream().close();
