@@ -233,16 +233,16 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressAllProvincesQuery() {
-        try {
-            return addressCache.get("addressAllProvincesQuery", new Callable<JdApiResponse<JSONObject>>() {
-                @Override
-                public JdApiResponse<JSONObject> call() throws Exception {
+      //  try {
+      //      return addressCache.get("addressAllProvincesQuery", new Callable<JdApiResponse<JSONObject>>() {
+        //        @Override
+       //         public JdApiResponse<JSONObject> call() throws Exception {
                     return request("biz.address.allProvinces.query", null, "biz_address_allProvinces_query_response", JSONObject.class);
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+      //          }
+       //     });
+     //   } catch (Exception e) {
+    //        throw new RuntimeException();
+    //    }
     }
 
     /**
@@ -252,18 +252,18 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressCitysByProvinceIdQuery(final int id) {
-        try {
-            return addressCache.get("addressCitysByProvinceIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
-                @Override
-                public JdApiResponse<JSONObject> call() throws Exception {
+      //  try {
+        //    return addressCache.get("addressCitysByProvinceIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
+       //         @Override
+        //        public JdApiResponse<JSONObject> call() throws Exception {
                     final JSONObject jsonObject = new JSONObject();
                     jsonObject.put("id", id);
                     return request("biz.address.citysByProvinceId.query", jsonObject, "biz_address_citysByProvinceId_query_response", JSONObject.class);
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+          //      }
+      //      });
+     //   } catch (Exception e) {
+     //       throw new RuntimeException();
+   //     }
 
     }
 
@@ -274,18 +274,18 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressTownsByCountyIdQuery(final int id) {
-        try {
-            return addressCache.get("addressTownsByCountyIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
-                @Override
-                public JdApiResponse<JSONObject> call() throws Exception {
+//        try {
+//            return addressCache.get("addressTownsByCountyIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
+//                @Override
+//                public JdApiResponse<JSONObject> call() throws Exception {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("id", id);
                     return request("biz.address.townsByCountyId.query", jsonObject, "biz_address_townsByCountyId_query_response", JSONObject.class);
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+//                }
+//            });
+//        } catch (Exception e) {
+//            throw new RuntimeException();
+//        }
     }
 
     /**
@@ -295,18 +295,18 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressCountysByCityIdQuery(final int id) {
-        try {
-            return addressCache.get("addressCountysByCityIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
-                @Override
-                public JdApiResponse<JSONObject> call() throws Exception {
+//        try {
+//            return addressCache.get("addressCountysByCityIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
+//                @Override
+//                public JdApiResponse<JSONObject> call() throws Exception {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("id", id);
                     return request("biz.address.countysByCityId.query", jsonObject, "biz_address_countysByCityId_query_response", JSONObject.class);
-                }
-            });
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+//                }
+//            });
+//        } catch (Exception e) {
+//            throw new RuntimeException();
+//        }
 
     }
 
@@ -322,10 +322,10 @@ public class JdProductApiClient extends  JdApiClient {
      */
     public List<Stock> getStock(final List<SkuNum> skuNums, final Region region) {
         String hashcode = skuNums.hashCode() + "_" + region.hashCode();
-        try {
-            return stockCache.get(hashcode, new Callable<List<Stock>>() {
-                @Override
-                public List<Stock> call() throws Exception {
+//        try {
+//            return stockCache.get(hashcode, new Callable<List<Stock>>() {
+//                @Override
+//                public List<Stock> call() throws Exception {
                     JdApiResponse<JSONArray> response = stockFororderBatget(skuNums, region);
                     List<Stock> result = new ArrayList<>();
                     if (response.isSuccess()) {
@@ -336,13 +336,13 @@ public class JdProductApiClient extends  JdApiClient {
 
                     } else {
                         LOGGER.warn("getstockerror: {}", response.toString());
-                        throw new Exception();
+                       // throw new Exception();
                     }
-                }
-            });
-        } catch (Exception e) {
-            LOGGER.error("error", e);
-        }
+//                }
+//            });
+//        } catch (Exception e) {
+//            LOGGER.error("error", e);
+//        }
         return new ArrayList<>();
     }
 

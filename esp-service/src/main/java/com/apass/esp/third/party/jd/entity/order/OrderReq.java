@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class OrderReq {
     private String orderNo;
-    private int personId;
+    private int userId;
     private List<SkuNum> skuNumList;
     private AddressInfo addressInfo;
     private String remark;
@@ -58,12 +58,11 @@ public class OrderReq {
     public void setOrderPriceSnap(List<PriceSnap> orderPriceSnap) {
         this.orderPriceSnap = orderPriceSnap;
     }
-
-    public int getPersonId() {
-        return personId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setPersonId(int personId) {
-        this.personId = personId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

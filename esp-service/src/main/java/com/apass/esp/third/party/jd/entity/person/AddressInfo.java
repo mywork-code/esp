@@ -10,7 +10,7 @@ import com.apass.esp.third.party.jd.entity.base.Region;
  * @since JDK 1.8
  */
 public class AddressInfo { private int id;
-    private long personId;
+    private long userId;
     private String receiver;//收货人
     private String aliasName;//地址别名，如果没有设置，默认设置为“姓名 城市名”
 
@@ -38,13 +38,12 @@ public class AddressInfo { private int id;
         this.id = id;
     }
 
-
-    public long getPersonId() {
-        return personId;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setPersonId(long personId) {
-        this.personId = personId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getAddress() {
