@@ -42,7 +42,7 @@ public class MonitorService {
      */
     @Transactional(rollbackFor = Exception.class)
     public int updateMonitor(MonitorEntity monitorEntity) {
-        return monitorEntityMapper.updateByPrimaryKey(monitorEntity);
+        return monitorEntityMapper.updateByPrimaryKeySelective(monitorEntity);
     }
 
 
