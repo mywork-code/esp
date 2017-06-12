@@ -244,4 +244,18 @@
 	]]>
 	</update>
 	
+	<!-- 根据活动的id,查询对应活动的信息 -->
+	<select id="selectActivityById" parameterType="Long" resultType="ActivityInfoEntity">
+	    select 
+	      id,
+	      p_discount_rate,
+	      a_start_date,
+	      a_end_date,
+	      goods_id,
+	      status,
+	      remark,
+	      create_date
+	      from t_esp_activity_info
+	      where id = #{id, jdbcType=BIGINT}
+	</select>
 </mapper> 

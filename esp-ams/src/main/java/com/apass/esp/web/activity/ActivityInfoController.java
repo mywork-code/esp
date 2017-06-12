@@ -20,11 +20,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
+import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.ApprovalStatus;
+import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.service.activity.ActivityInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -39,6 +42,8 @@ public class ActivityInfoController {
     private ActivityInfoService activityInfoService;
     @Autowired
     private CategoryInfoService categoryInfoService;
+    @Autowired
+    private ActivityInfoRepository activityInfoRepository;
     
     private static final String TIMETYE = "yyyy-MM-dd HH:mm:ss";
 
@@ -291,6 +296,31 @@ public class ActivityInfoController {
             }
         }
         return "SUCCESS";
+    }
+    /**
+     * 把活动置为无效
+     * @param id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/setInvalid")
+    public String setInvalid(String id){
+    	try {
+    		if(StringUtils.isBlank(id)){
+        		throw new BusinessException("活动编号不能为空!");
+        	}
+    		ActivityInfoEntity activity = activityInfoRepository.selectActivityById(Long.parseLong(id));
+    		if(activity != null){
+    			activity.setStatus(ActivityInfoStatus.UNEFFECTIVE.getCode());
+    			activityInfoRepository.update(activity);
+    		}
+    		return "SUCCESS";
+		}catch(BusinessException e){
+			LOGGER.error(e.getErrorDesc());
+		} catch (Exception e) {
+			LOGGER.error("把活动置为无效", e);
+		}
+    	return "";
     }
 
 }
