@@ -827,8 +827,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if (goodsName.length>15) {
-			$.messager.alert("提示", "商品名称最多15字！", "info");
+		if (goodsName.length>18) {
+			$.messager.alert("提示", "商品名称最多18字！", "info");
 			return;
 		}
 	
@@ -836,8 +836,8 @@ $(function() {
 			$.messager.alert("提示", "商品大标题不能为空！", "info");
 			return;
 		}
-		if (goodsTitle.length>22) {
-			$.messager.alert("提示", "商品小标题最多22字！", "info");
+		if (goodsTitle.length>25) {
+			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
 		if (null == goodsSkuType || ("") == goodsSkuType) {
