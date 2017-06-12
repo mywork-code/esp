@@ -15,6 +15,16 @@ public class MailSenderInfo {
 
     // 邮件接收者的地址
     private String toAddress;
+    // 邮件接收抄送者的地址
+    private String ccAddress;
+
+    public String getCcAddress() {
+        return ccAddress;
+    }
+
+    public void setCcAddress(String ccAddress) {
+        this.ccAddress = ccAddress;
+    }
 
     // 登陆邮件发送服务器的用户名和密码
     private String userName;

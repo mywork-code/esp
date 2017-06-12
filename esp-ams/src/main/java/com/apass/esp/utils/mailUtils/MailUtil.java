@@ -22,8 +22,10 @@ public class MailUtil {
             Message mailMessage = new MimeMessage(sendMailSession);
             Address from = new InternetAddress(mailInfo.getFromAddress());
             mailMessage.setFrom(from);
+
             Address to = new InternetAddress(mailInfo.getToAddress());
             mailMessage.setRecipient(Message.RecipientType.TO, to);
+            mailMessage.setRecipients(Message.RecipientType.CC,InternetAddress.parse(mailInfo.getCcAddress()));
             mailMessage.setSubject(mailInfo.getSubject());
             mailMessage.setSentDate(new Date());
             String mailContent = mailInfo.getContent();

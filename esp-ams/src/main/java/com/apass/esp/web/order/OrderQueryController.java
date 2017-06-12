@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import com.apass.esp.domain.entity.datadic.DataDicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.service.datadic.DataDicService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.order.OrderService;
@@ -134,6 +136,16 @@ public class OrderQueryController {
             }
             
             List<OrderSubInfoEntity> dataList = orderList.getDataList();
+            
+            if(!CollectionUtils.isEmpty(dataList)){
+            	for (OrderSubInfoEntity order : dataList) {
+					if(order.getPreDelivery().equals(PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
+					}else{
+						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getMessage());
+					}
+				}
+            }
 
             respBody.setTotal(orderList.getTotalCount());
             respBody.setRows(dataList);
