@@ -141,8 +141,17 @@ public class OrderInfoEntity {
      */
     private BigDecimal downPaymentAmount;
 
-    //下单渠道
+    /**
+     * 下单渠道
+     */
     private String deviceType;//android, ios
+    
+    /**
+     * 是否为预发货
+     * @return
+     */
+    private String preDelivery;
+    
     public String getDeviceType() {
         return deviceType;
     }
@@ -337,4 +346,12 @@ public class OrderInfoEntity {
     public void setDownPaymentAmount(BigDecimal downPaymentAmount) {
         this.downPaymentAmount = downPaymentAmount;
     }
+    
+	public String getPreDelivery() {
+		return preDelivery;
+	}
+	public void setPreDelivery(String preDelivery) {
+		this.preDelivery = preDelivery;
+	}
+    
 }

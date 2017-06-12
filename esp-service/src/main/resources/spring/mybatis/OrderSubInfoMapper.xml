@@ -60,7 +60,8 @@
 		concat(orderInfo.province,orderInfo.city,orderInfo.district,orderInfo.address) fullAddress,
 		merchant.merchant_name merchantName,
 		refundInfo.id refundId,
-		refundInfo.refund_type refundType
+		refundInfo.refund_type refundType,
+		orderInfo.pre_delivery preDelivery
 		FROM
 		t_esp_order_info orderInfo 
         left join t_esp_merchant_info merchant on 
