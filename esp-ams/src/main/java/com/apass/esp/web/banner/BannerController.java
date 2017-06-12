@@ -193,13 +193,13 @@ public class BannerController extends BaseController {
                 throw new BusinessException("请选择文件.");
             }
             //电商3期511 20170519 banner 添加设置商品链接
-//            if(StringUtils.isNotBlank(activityUrl)){
-//            	if("activity".equals(activityName)){
-//            		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
-//            	}else if("goodId".equals(activityName)){
-//            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
-//            	}
-//            }
+            if(StringUtils.isNotBlank(activityUrl)){
+            	if("activity".equals(activityName)){
+            		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
+            	}else if("goodId".equals(activityName)){
+            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
+            	}
+            }
             
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);

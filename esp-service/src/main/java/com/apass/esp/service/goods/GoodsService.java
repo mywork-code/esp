@@ -62,6 +62,13 @@ public class GoodsService {
     public List<GoodsBasicInfoEntity> loadRecommendGoods() {
         return goodsDao.loadRecommendGoods();
     }
+    /**
+     * app 加载精品推荐商品列表
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
+        return goodsDao.loadRecommendGoodsList();
+    }
 
     /**
      * 
