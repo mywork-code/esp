@@ -42,8 +42,6 @@ public class ActivityInfoController {
     private ActivityInfoService activityInfoService;
     @Autowired
     private CategoryInfoService categoryInfoService;
-    @Autowired
-    private ActivityInfoRepository activityInfoRepository;
     
     private static final String TIMETYE = "yyyy-MM-dd HH:mm:ss";
 
@@ -309,10 +307,10 @@ public class ActivityInfoController {
     		if(StringUtils.isBlank(id)){
         		throw new BusinessException("活动编号不能为空!");
         	}
-    		ActivityInfoEntity activity = activityInfoRepository.selectActivityById(Long.parseLong(id));
+    		ActivityInfoEntity activity = activityInfoService.selectActivityById(Long.parseLong(id));
     		if(activity != null){
     			activity.setStatus(ActivityInfoStatus.UNEFFECTIVE.getCode());
-    			activityInfoRepository.update(activity);
+    			activityInfoService.update(activity);
     		}
     		return "SUCCESS";
 		}catch(BusinessException e){
