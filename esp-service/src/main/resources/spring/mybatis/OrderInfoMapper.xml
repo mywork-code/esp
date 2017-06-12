@@ -229,7 +229,8 @@
             main_order_id           mainOrderId,
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
 			WHERE 1=1
@@ -532,4 +533,26 @@
 		]]>
 	</select>
 	
+	<!-- 查询待发货订单的信息，切订单的预发货状态为null -->
+	<select id="toBeDeliver" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D02' and pre_delivery is null
+		]]>
+	</select>
+	
+	<update id="updateOrderStatusAndPreDelivery" parameterType="OrderInfoEntity">
+		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR} WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	</update>
 </mapper>

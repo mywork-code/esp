@@ -39,6 +39,7 @@ import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
@@ -211,16 +212,23 @@ public class OrderService {
 
 			logisticsService.subscribeSignleTracking(trackingNumber, carrierCode, orderId, "order");
 
+			/**
+			 * 首先判断一下订单的预发货的状态
+			 *  1.如果为Y，则不更新此字段  2.如果为空，要把值置成N
+			 */
+			OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
+			//如果是否为预发货，字段为空，则更新字段为N,订单的状态改为D03
+			if(StringUtils.isBlank(entity.getPreDelivery())){
+				entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+				entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+				orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+			}
+			
 			orderSubInfoRepository.updateLogisticsInfoByOrderId(map);
 
 			// 更新订单状态为待收货 D03 : 代收货
 			map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
 
-			// 默认收货时间为15天
-			// String lastAcceptgoodsdate =
-			// DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),
-			// 15));
-			// map.put("lastAcceptgoodsdate", lastAcceptgoodsdate);
 			orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
 
 		} catch (Exception e) {
@@ -1317,4 +1325,19 @@ public class OrderService {
 		List<OrderInfoEntity> list = orderInfoRepository.selectByMainOrderId(mainOrderId);
 		return list;
 	}
+	
+	/**
+     * 查询待发货订单的信息，切订单的预发货状态为''
+     */
+    public List<OrderInfoEntity> toBeDeliver() {
+    	return orderInfoRepository.toBeDeliver();
+    }
+    
+    /**
+     * 更新订单的状态为D03待收货，更新predelivery为Y
+     * @param entity
+     */
+    public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
+    	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+    }
 }

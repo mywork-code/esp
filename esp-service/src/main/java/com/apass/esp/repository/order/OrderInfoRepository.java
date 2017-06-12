@@ -139,4 +139,15 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public OrderInfoEntity queryLatestSuccessOrderInfo(Long userId) {
         return getSqlSession().selectOne(getSQL("queryLatestSuccessOrderInfo"), userId);
     }
+    
+    /**
+     * 查询待发货订单的信息，切订单的预发货状态为''
+     */
+    public List<OrderInfoEntity> toBeDeliver() {
+    	return this.getSqlSession().selectList("toBeDeliver");
+    }
+    
+    public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
+    	this.getSqlSession().update("updateOrderStatusAndPreDelivery",entity);
+    }
 }

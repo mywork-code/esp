@@ -146,6 +146,13 @@ $ (function ()
 		                    	align : 'center'
 		                    },
 		                    {
+		                    	title : '是否为预发货',
+		                    	hidden: false,
+		                    	field : 'preDelivery',
+		                    	width : 100,
+		                    	align : 'center'
+		                    },
+		                    {
 		                        title : '操作',
 		                        field : 'opt',
 		                        width : 300,
