@@ -102,11 +102,6 @@ public class MonitorService {
         BeanUtils.copyProperties(monitorEntity, monitorDto);
         return monitorEntityMapper.insert(monitorEntity);
     }
-    
-    @Transactional(rollbackFor = Exception.class)
-    public int insertMonitor(MonitorEntity monitorEntity){
-    	return monitorEntityMapper.insertSelective(monitorEntity);
-    }
 
     public MonitorEntity getByCurrentDay(Date date, String methodName, String env, String application) {
         return monitorEntityMapper.getByCurrentDay(date, methodName, env, application);
