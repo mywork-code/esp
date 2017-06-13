@@ -17,8 +17,8 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.service.order.OrderService;
 
-@Component
-@Configurable
+@Component  
+@Configurable  
 @EnableScheduling
 @Profile("Schedule")
 public class OrderStatusScheduleTask {
@@ -30,7 +30,6 @@ public class OrderStatusScheduleTask {
     
     @Scheduled(cron="0 0 10,17 * * ?")
     public void updateOrderStatusAndPreDelivery(){
-    	System.out.println("我咧个去");
         try {
         	/**
              * 1.查询订单的状态为待发货的状态

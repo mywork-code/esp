@@ -24,6 +24,12 @@ public class CashRefund {
 
     private String mainOrderId;
 
+    private String reason;
+
+    private String memo;
+
+    private Date agreeD;
+
     public Long getId() {
         return id;
     }
@@ -102,5 +108,29 @@ public class CashRefund {
 
     public void setMainOrderId(String mainOrderId) {
         this.mainOrderId = mainOrderId;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public Date getAgreeD() {
+        return agreeD;
+    }
+
+    public void setAgreeD(Date agreeD) {
+        this.agreeD = agreeD;
     }
 }
