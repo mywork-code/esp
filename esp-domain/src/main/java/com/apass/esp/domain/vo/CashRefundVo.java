@@ -1,10 +1,10 @@
-package com.apass.esp.domain.entity;
+package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class CashRefund {
-    private Long id;
+public class CashRefundVo {
+	private Long id;
 
     private Date createDate;
 
@@ -14,11 +14,21 @@ public class CashRefund {
 
     private String orderId;
 
+    private String reason;
+
+    private String memo;
+
     private Integer status;
 
     private Date statusD;
 
     private Integer rejectNum;
+
+    private Long merchantId;
+
+    private String rejectReason;
+
+    private Date merchantVerifyD;
 
     private Long userId;
 
@@ -64,6 +74,22 @@ public class CashRefund {
         this.orderId = orderId;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -86,6 +112,30 @@ public class CashRefund {
 
     public void setRejectNum(Integer rejectNum) {
         this.rejectNum = rejectNum;
+    }
+
+    public Long getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(Long merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
+    public Date getMerchantVerifyD() {
+        return merchantVerifyD;
+    }
+
+    public void setMerchantVerifyD(Date merchantVerifyD) {
+        this.merchantVerifyD = merchantVerifyD;
     }
 
     public Long getUserId() {

@@ -7,20 +7,15 @@
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     <result column="amt" property="amt" jdbcType="DECIMAL" />
     <result column="order_id" property="orderId" jdbcType="VARCHAR" />
-    <result column="reason" property="reason" jdbcType="VARCHAR" />
-    <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="status_d" property="statusD" jdbcType="TIMESTAMP" />
     <result column="reject_num" property="rejectNum" jdbcType="INTEGER" />
-    <result column="merchant_id" property="merchantId" jdbcType="BIGINT" />
-    <result column="reject_reason" property="rejectReason" jdbcType="VARCHAR" />
-    <result column="merchant_verify_d" property="merchantVerifyD" jdbcType="TIMESTAMP" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
     <result column="main_order_id" property="mainOrderId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, create_date, update_date, amt, order_id, reason, memo, status, status_d, reject_num, 
-    merchant_id, reject_reason, merchant_verify_d, user_id, main_order_id
+    id, create_date, update_date, amt, order_id, status, status_d, reject_num, user_id, 
+    main_order_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -34,15 +29,13 @@
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_cash_refund (create_date, update_date, amt, 
-      order_id, reason, memo, 
-      status, status_d, reject_num, 
-      merchant_id, reject_reason, merchant_verify_d, 
-      user_id, main_order_id)
+      order_id, status, status_d, 
+      reject_num, user_id, main_order_id
+      )
     values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{amt,jdbcType=DECIMAL}, 
-      #{orderId,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
-      #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, #{rejectNum,jdbcType=INTEGER}, 
-      #{merchantId,jdbcType=BIGINT}, #{rejectReason,jdbcType=VARCHAR}, #{merchantVerifyD,jdbcType=TIMESTAMP}, 
-      #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR})
+      #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, 
+      #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_cash_refund
@@ -59,12 +52,6 @@
       <if test="orderId != null" >
         order_id,
       </if>
-      <if test="reason != null" >
-        reason,
-      </if>
-      <if test="memo != null" >
-        memo,
-      </if>
       <if test="status != null" >
         status,
       </if>
@@ -73,15 +60,6 @@
       </if>
       <if test="rejectNum != null" >
         reject_num,
-      </if>
-      <if test="merchantId != null" >
-        merchant_id,
-      </if>
-      <if test="rejectReason != null" >
-        reject_reason,
-      </if>
-      <if test="merchantVerifyD != null" >
-        merchant_verify_d,
       </if>
       <if test="userId != null" >
         user_id,
@@ -103,12 +81,6 @@
       <if test="orderId != null" >
         #{orderId,jdbcType=VARCHAR},
       </if>
-      <if test="reason != null" >
-        #{reason,jdbcType=VARCHAR},
-      </if>
-      <if test="memo != null" >
-        #{memo,jdbcType=VARCHAR},
-      </if>
       <if test="status != null" >
         #{status,jdbcType=INTEGER},
       </if>
@@ -117,15 +89,6 @@
       </if>
       <if test="rejectNum != null" >
         #{rejectNum,jdbcType=INTEGER},
-      </if>
-      <if test="merchantId != null" >
-        #{merchantId,jdbcType=BIGINT},
-      </if>
-      <if test="rejectReason != null" >
-        #{rejectReason,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantVerifyD != null" >
-        #{merchantVerifyD,jdbcType=TIMESTAMP},
       </if>
       <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
@@ -150,12 +113,6 @@
       <if test="orderId != null" >
         order_id = #{orderId,jdbcType=VARCHAR},
       </if>
-      <if test="reason != null" >
-        reason = #{reason,jdbcType=VARCHAR},
-      </if>
-      <if test="memo != null" >
-        memo = #{memo,jdbcType=VARCHAR},
-      </if>
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
       </if>
@@ -164,15 +121,6 @@
       </if>
       <if test="rejectNum != null" >
         reject_num = #{rejectNum,jdbcType=INTEGER},
-      </if>
-      <if test="merchantId != null" >
-        merchant_id = #{merchantId,jdbcType=BIGINT},
-      </if>
-      <if test="rejectReason != null" >
-        reject_reason = #{rejectReason,jdbcType=VARCHAR},
-      </if>
-      <if test="merchantVerifyD != null" >
-        merchant_verify_d = #{merchantVerifyD,jdbcType=TIMESTAMP},
       </if>
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
@@ -189,14 +137,9 @@
       update_date = #{updateDate,jdbcType=TIMESTAMP},
       amt = #{amt,jdbcType=DECIMAL},
       order_id = #{orderId,jdbcType=VARCHAR},
-      reason = #{reason,jdbcType=VARCHAR},
-      memo = #{memo,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER},
       status_d = #{statusD,jdbcType=TIMESTAMP},
       reject_num = #{rejectNum,jdbcType=INTEGER},
-      merchant_id = #{merchantId,jdbcType=BIGINT},
-      reject_reason = #{rejectReason,jdbcType=VARCHAR},
-      merchant_verify_d = #{merchantVerifyD,jdbcType=TIMESTAMP},
       user_id = #{userId,jdbcType=BIGINT},
       main_order_id = #{mainOrderId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
