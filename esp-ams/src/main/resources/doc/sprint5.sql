@@ -41,9 +41,9 @@ CREATE TABLE esp.`t_esp_cash_refund_operate` (
 `cash_refund_id` bigint ,
 `reason` varchar(32)  COMMENT '退款原因',
 `memo` varchar(255)  COMMENT '退款说明',
-`merchant_id` bigint  COMMENT '商户id',
+`merchant_name` varchar(32)  COMMENT '商户id',
 `remark` varchar(255)  COMMENT '商户、平台拒绝原因',
 `status` int  COMMENT '1:首次发起退款；2:修改退款；3：同意退款；4：拒绝退款',
-`operator` bigint(255)  COMMENT '平台操作者',
+`operator` varchar(32)  COMMENT '平台操作者',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
