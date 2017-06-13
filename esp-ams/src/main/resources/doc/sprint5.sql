@@ -14,6 +14,9 @@ CREATE TABLE esp.`t_esp_cash_refund` (
 `reject_num` int  COMMENT '拒绝退款的次数',
 `user_id` bigint ,
 `main_order_id` varchar(255) ,
+`reason` varchar(255)  COMMENT '退款原因',
+`memo` varchar(255) COMMENT '退款说明',
+agree_d datetime COMMENT '同意退款时间',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -33,17 +36,3 @@ CREATE TABLE esp.`t_esp_refund_txn` (
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE  IF EXISTS esp.`t_esp_cash_refund_operate`;
-CREATE TABLE esp.`t_esp_cash_refund_operate` (
-`id` bigint(20) NOT NULL AUTO_INCREMENT,
-`create_date` datetime ,
-`update_date` datetime ,
-`cash_refund_id` bigint ,
-`reason` varchar(32)  COMMENT '退款原因',
-`memo` varchar(255)  COMMENT '退款说明',
-`merchant_name` varchar(32)  COMMENT '商户id',
-`remark` varchar(255)  COMMENT '商户、平台拒绝原因',
-`status` int  COMMENT '1:首次发起退款；2:修改退款；3：同意退款；4：拒绝退款',
-`operator` varchar(32)  COMMENT '平台操作者',
-PRIMARY KEY (`id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
