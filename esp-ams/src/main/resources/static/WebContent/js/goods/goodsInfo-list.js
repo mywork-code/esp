@@ -1629,7 +1629,7 @@ $(function() {
 	$.previewProduct = function(id,goodsId) {
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
-        var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id;
+        var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
         if (parentTabs.tabs('exists', subtitle)) {
             parentTabs.tabs('select', subtitle);
             return;

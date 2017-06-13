@@ -665,6 +665,7 @@ public class GoodsBaseInfoController {
     public ModelAndView loadAllBannerPic(HttpServletRequest request) throws Exception {
         Map<String, Object> map = Maps.newHashMap();
         String id = HttpWebUtils.getValue(request, "id");
+        String view = HttpWebUtils.getValue(request, "view");
         List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
         if (!bannerList.isEmpty()) {
             for (int i = 0; i < bannerList.size(); i++) {
@@ -711,7 +712,7 @@ public class GoodsBaseInfoController {
         } else {
             map.put("goodsMaxPrice", "0.00");
         }
-
+        map.put("view", view);
         map.put("goodsLogoUrl", ImageUtils.imageToBase64(rootPath + goodsInfo.getGoodsLogoUrl()));// 商品缩略图
         map.put("goodsStockList", goodsStockList);// 库存信息
         map.put("googsDetail", goodsInfo.getGoogsDetail());// 商品详情
