@@ -25,7 +25,11 @@ public enum OrderStatus {
     
     ORDER_CANCEL("D07","订单失效"),
     
-    ORDER_DELETED("D08","订单删除");
+    ORDER_DELETED("D08","订单删除"),
+    
+    ORDER_REFUNDPROCESSING("D09","退款处理中"),
+    
+    ORDER_TRADCLOSED("D10","交易关闭");
     
     private String code;
     

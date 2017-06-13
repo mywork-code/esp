@@ -34,7 +34,19 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
             throw new BusinessException("通过商户号查询订单列表失败", e);
         }
     }
-
+    
+    /**
+     * 查询被二次拒绝的订单
+     */
+    public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException {
+		try {
+			  Pagination<OrderSubInfoEntity> orderList = page(null,page, getSQL("queryOrderInfoRejectAgain"));
+			  return orderList;
+		} catch (Exception e) {
+			  throw new BusinessException("查询被二次拒绝的订单", e);
+		}
+    }
+    
     /**
      * 更新物流信息通过订单号
      * 
