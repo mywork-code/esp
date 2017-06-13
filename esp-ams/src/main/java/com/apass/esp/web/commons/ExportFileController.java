@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +16,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -27,16 +34,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
+import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.ExportBusConfig;
+import com.apass.esp.domain.enums.AwardActivity.AWARD_STATUS_AMS;
+import com.apass.esp.domain.vo.AwardBindRelIntroVo;
+import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.service.activity.ActivityInfoService;
+import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
@@ -44,10 +63,8 @@ import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 
 /**
  * 导出文件 csv 格式
@@ -80,6 +97,12 @@ public class ExportFileController {
     
     @Autowired
     private CategoryInfoService   categoryInfoService;
+    
+    @Autowired
+    private AwardDetailService   awardDetailService;
+    
+    @Autowired
+    private AwardDetailMapper   awardDetailMapper;
 
     /**
      * 导出文件
@@ -153,8 +176,231 @@ public class ExportFileController {
             }
         }
     }
+    
+    /**
+     * 导入文件
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping("/importFile")
+    @ResponseBody
+    //@LogAnnotion(operationType="",valueType=LogValueTypeEnum.VALUE_EXPORT)
+    public Response importFile(@RequestParam("file") MultipartFile file) {
+    	InputStream in = null;
+    	int countFail = 0;// 导入失败条数
+    	int countSucc = 0;//导入成功条数
+    	 try {
+			in = file.getInputStream();
+			String originalFilename = file.getOriginalFilename();
+			String[] imgTypeArray = originalFilename.split("\\.");
+			String type = imgTypeArray[imgTypeArray.length-1];
+			if(!type.equals("csv") && !type.equals("xls")){
+				return Response.fail("导入文件类型不正确。");
+			}
+			
+			List<AwardBindRelIntroVo> list = readExcel(in);
+			
+			if(list != null){
+				for (AwardBindRelIntroVo awardBindRelIntroVo : list) {
+					AwardDetail awDetail = awardDetailMapper.selectByPrimaryKey(Long.valueOf(awardBindRelIntroVo.getAwardDetailId()));
+					BigDecimal canUserAmt = awardDetailService.getCanUserAmt(awDetail.getUserId(), awDetail.getCreateDate());
+					if(!awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())){
+						countFail++;
+						continue;
+					}
+					if(canUserAmt.doubleValue() != awardBindRelIntroVo.getCanWithdrawAmount().doubleValue()){
+						countFail++;
+						continue;
+					}
+					if(!DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
+        	 				.equals(awardBindRelIntroVo.getApplyDate())){
+						countFail++;
+						continue;
+					}
+					if(awDetail.getAmount().doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
+						countFail++;
+						continue;
+					}
+					if(!awDetail.getRealName().equals(awardBindRelIntroVo.getRealName())){
+						countFail++;
+						continue;
+					}
+					if(!awDetail.getCardNo().equals(awardBindRelIntroVo.getCardNO())){
+						countFail++;
+						continue;
+					}
+					if(!awDetail.getCardBank().equals(awardBindRelIntroVo.getCardBank())){
+						countFail++;
+						continue;
+					}
+					if(awardBindRelIntroVo.getStatus() == null){
+						countFail++;
+						continue;
+					}
+					AwardDetail awardDetail = new AwardDetail();
+					awardDetail.setId(awardBindRelIntroVo.getAwardDetailId());
+					awardDetail.setStatus(awardBindRelIntroVo.getStatus());
+					awardDetail.setReleaseDate(new Date());
+					
+					awardDetailMapper.updateByPrimaryKeySelective(awardDetail);
+				}
+				countSucc = list.size() - countFail; 
+			}
+		} catch (IOException e) {
+			LOG.error("服务器忙，请稍后再试。", e);
+			return Response.fail(e.getMessage());
+		} 
+    	 
+    	return Response.success(countSucc+"条导入成功,"+countFail+"条导入失败");
+    }
 
-    // 导出表
+    /**
+     * 读取Excel中的数据
+     * @param in
+     * @return
+     * @throws IOException 
+     * @throws BusinessException 
+     */
+    private List<AwardBindRelIntroVo> readExcel(InputStream in) throws IOException {
+    	HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
+    	AwardBindRelIntroVo awardBindRelIntroVo = null;
+    	List<AwardBindRelIntroVo> list = new ArrayList<AwardBindRelIntroVo>();
+    	
+    	//循环工作表sheet
+    	for(int numSheet=0; numSheet<hssfWorkbook.getNumberOfSheets(); numSheet++){
+    		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
+            if (hssfSheet == null) {
+                continue;
+            }
+            // 循环行Row
+            for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
+            	 HSSFRow hssfRow = hssfSheet.getRow(rowNum);
+                 if (hssfRow == null) {
+                     continue;
+                 }
+                
+                 awardBindRelIntroVo = new AwardBindRelIntroVo();
+                 awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                 // 循环列Cell
+                 // 0唯一标识1邀请人手机号 2可提现金额  3申请提现提交时间 4申请提现金额 5推荐人姓名6推荐人银行卡号7所属银行8放款时间9放款状态
+                 for (int cellNum = 0; cellNum <=9; cellNum++) {
+                	 HSSFCell xcell = hssfRow.getCell(cellNum);
+                	 if (xcell == null) {
+                		 continue;
+                	 }
+                	 switch(cellNum){
+	                	case 0:
+//	                		 if(StringUtils.isBlank(getValue(xcell))){
+//	                			 throw new BusinessException("第"+rowNum+"行唯一标识奖励明细id不能为空。");
+//	                		 }
+	                		 awardBindRelIntroVo.setAwardDetailId(Long.valueOf(getValue(xcell)));
+	                		 break;
+                	 	case 1:
+//                	 		if(!awDetail.getMobile().equals(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行手机号码不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setMobile(getValue(xcell));
+                	 		break;
+                	 	case 2:
+//                	 		if(canUserAmt.doubleValue() != Double.valueOf(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行可提现金额不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setCanWithdrawAmount(new BigDecimal(getValue(xcell)));
+                	 		break;
+                	 	case 3:
+//                	 		if(!DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
+//                	 				.equals(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行申请提现提交时间不能修改。");
+//                	 			
+//                	 		}
+                	 		awardBindRelIntroVo.setApplyDate(getValue(xcell));
+                	 		break;
+                	 	case 4:
+//                	 		if(awDetail.getAmount().doubleValue() != Double.valueOf(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行申请提现金额不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setAmount(new BigDecimal(getValue(xcell)));
+                	 		break;
+                	 	case 5:
+//                	 		if(!awDetail.getRealName().equals(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行推荐人姓名不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setRealName(getValue(xcell));
+                	 		break;
+                	 	case 6:
+//                	 		if(!awDetail.getCardNo().equals(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行推荐人银行卡号不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setCardNO(getValue(xcell));
+                	 		break;
+                	 	case 7:
+//                	 		if(!awDetail.getCardBank().equals(getValue(xcell))){
+//                	 			throw new BusinessException("第"+rowNum+"行所属银行不能修改。");
+//                	 		}
+                	 		awardBindRelIntroVo.setCardBank(getValue(xcell));
+                	 		break;
+                	 	case 8:
+                	 		awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                	 		break;
+                	 	case 9:
+                	 		awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                	 		Byte status = null;
+        					for (AWARD_STATUS_AMS awardStatus : AwardActivity.AWARD_STATUS_AMS.values()) {
+        						if(awardStatus.getMessage().equals(getValue(xcell))){
+        							status = (byte) awardStatus.getCode();
+        						}
+        					}
+                	 		awardBindRelIntroVo.setStatus(status);
+                	 		break;
+                	 	default:
+                	 		break;
+                	 }
+                	 
+                 }
+                 
+                 list.add(awardBindRelIntroVo);
+            }
+    	}
+    	
+		return list;
+	}
+
+	/**
+	 * @param xhExcel中的每一个格子
+	 * @return Excel中每一个格子中的值
+	 */
+	private String getValue(HSSFCell cell) {
+		String value = null;   
+        //简单的查检列类型   
+        switch(cell.getCellType())   
+        {   
+            case HSSFCell.CELL_TYPE_STRING://字符串   
+                value = cell.getRichStringCellValue().getString();   
+                break;   
+            case HSSFCell.CELL_TYPE_NUMERIC://数字   
+                long dd = (long)cell.getNumericCellValue();   
+                value = dd+"";   
+                break;   
+            case HSSFCell.CELL_TYPE_BLANK:   
+                value = "";   
+                break;      
+            case HSSFCell.CELL_TYPE_FORMULA:   
+                value = String.valueOf(cell.getCellFormula());   
+                break;   
+            case HSSFCell.CELL_TYPE_BOOLEAN://boolean型值   
+                value = String.valueOf(cell.getBooleanCellValue());   
+                break;   
+            case HSSFCell.CELL_TYPE_ERROR:   
+                value = String.valueOf(cell.getErrorCellValue());   
+                break;   
+            default:   
+                break;   
+        }   
+        return value;   
+	}
+
+	// 导出表
     public void generateFile(String filePath, List dataList, String attrs) throws IOException {
         // 第一步：声明一个工作薄
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -190,7 +436,6 @@ public class ExportFileController {
             sheet.autoSizeColumn(i, true);
             cell.setCellValue(cellValue);
         }
-
         // 向单元格里填充数据
         for (int i = 0; i < dataList.size(); i++) {
             row = sheet.createRow(i + 1);
@@ -206,6 +451,9 @@ public class ExportFileController {
                 cellContent.setCellStyle(hssfCellStyle.get(1));
                 if (i == 1) {
                     sheet.autoSizeColumn(j, true);
+                }
+                if(keyArrays[j].equals("awardDetailId")){
+                	sheet.setColumnWidth(0, 0);//设置这一列的宽度为0
                 }
                 cellContent.setCellValue(jsonObject.get(keyArrays[j]) + "");
             }
@@ -527,10 +775,11 @@ public class ExportFileController {
                     b.setCategoryName3(category!=null ? category.getCategoryName() : "" );
     			}
             }
-            
-            
         } else if (busCode.equals(ExportBusConfig.BUS_ACTIVITY.getCode())) {
             list = activityInfoService.activityPageList(map);
+        }else if (busCode.equals(ExportBusConfig.BUS_AWARDINTRO.getCode())){
+        	ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList = awardDetailService.queryAwardIntroList(map);
+        	list = queryAwardIntroList.getRows();
         }
         return list;
     }

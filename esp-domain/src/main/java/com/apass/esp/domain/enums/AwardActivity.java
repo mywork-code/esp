@@ -117,6 +117,27 @@ public class AwardActivity {
             return message;
         }
     }
+    
+    // 处理金额状态
+    public enum AWARD_STATUS_AMS {
+    	SUCCESS(0, "已放款"), FAIL(1, "放款失败"), PROCESSING(2, "待放款");
+    	AWARD_STATUS_AMS(int code, String message) {
+    		this.code = code;
+    		this.message = message;
+    	}
+    	
+    	private int code;
+    	
+    	private String message;
+    	
+    	public int getCode() {
+    		return code;
+    	}
+    	
+    	public String getMessage() {
+    		return message;
+    	}
+    }
 
     // 转提现方法
     public enum AWARD_ACTIVITY_METHOD {
