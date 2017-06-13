@@ -139,7 +139,7 @@ public class OrderQueryController {
             
             if(!CollectionUtils.isEmpty(dataList)){
             	for (OrderSubInfoEntity order : dataList) {
-					if(order.getPreDelivery().equals(PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+					if(StringUtils.isNotBlank(order.getPreDelivery()) && order.getPreDelivery().equals(PreDeliveryType.PRE_DELIVERY_Y.getCode())){
 						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
 					}else{
 						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getMessage());

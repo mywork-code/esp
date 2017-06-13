@@ -7,6 +7,7 @@ import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.domain.vo.AwardBindRelIntroVo;
 import com.apass.esp.domain.vo.AwardBindRelStatisticVo;
 import com.apass.esp.domain.vo.AwardDetailVo;
 import com.apass.esp.mapper.AwardBindRelMapper;
@@ -14,10 +15,12 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.BeanUtils;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -32,8 +35,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class AwardDetailService {
@@ -241,4 +247,69 @@ public class AwardDetailService {
 		}
 		return v;
 	}
+
+	/**
+	 * 根据条件查询放款信息
+	 * @param paramMap
+	 * @return
+	 */
+	public ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList(Map<String, Object> paramMap) {
+		ResponsePageBody<AwardBindRelIntroVo> responseBody = new ResponsePageBody<AwardBindRelIntroVo>();
+		
+		List<AwardBindRelIntroVo> awardBindRelVos = new ArrayList<AwardBindRelIntroVo>();
+		
+		List<AwardDetail> awardDetails  = awardDetailMapper.queryAwardIntroList(paramMap);
+		if(awardDetails != null){
+			for (AwardDetail awardDetail : awardDetails) {
+				AwardBindRelIntroVo awardBindRelIntroVo = new AwardBindRelIntroVo();
+				//奖励明细表id
+				awardBindRelIntroVo.setAwardDetailId(awardDetail.getId());
+				//推荐人用户名
+				awardBindRelIntroVo.setMobile(awardDetail.getMobile());
+				//待提现金额
+				BigDecimal canWithdrawAmount = getCanUserAmt(awardDetail.getUserId(),awardDetail.getCreateDate());	
+				awardBindRelIntroVo.setCanWithdrawAmount(canWithdrawAmount);
+				awardBindRelIntroVo.setApplyDate(DateFormatUtil.dateToString(awardDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+				awardBindRelIntroVo.setAmount(awardDetail.getAmount());
+				awardBindRelIntroVo.setRealName(awardDetail.getRealName());
+				awardBindRelIntroVo.setCardNO(awardDetail.getCardNo());
+				awardBindRelIntroVo.setCardBank(awardDetail.getCardBank());
+				awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(awardDetail.getReleaseDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+				awardBindRelIntroVo.setStatusDes(awardDetail.getStatus());
+				
+				awardBindRelVos.add(awardBindRelIntroVo);
+			}
+			
+		}
+		responseBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+		responseBody.setMsg("查询放款信息成功。");
+		responseBody.setTotal(awardDetailMapper.countAwardIntroList(paramMap));
+		responseBody.setRows(awardBindRelVos);
+		return responseBody;
+	}
+
+	/**
+	 * 查询待提现金额
+	 * @param userId
+	 * @param credate 
+	 * @return
+	 */
+	public BigDecimal getCanUserAmt(Long userId, Date createDate) {
+		Map<String,Object> parMap = Maps.newHashMap();
+		parMap.put("userId", userId);
+		parMap.put("applyDate2", DateFormatUtil.dateToString(createDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+		List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(userId);
+		BigDecimal totalCount = BigDecimal.ZERO;
+        for (AwardDetail awardDetail : awardDetails) {
+            if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
+                totalCount = totalCount.add(awardDetail.getAmount());
+            }
+        }
+        List<AwardDetail> awaDs = awardDetailMapper.queryAwardIntroList(parMap);
+        for (AwardDetail awardDetail : awaDs) {
+        	totalCount = totalCount.subtract(awardDetail.getAmount());
+		}
+        return totalCount;
+	}
+
 }

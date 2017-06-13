@@ -136,4 +136,12 @@ public class ActivityInfoService {
 		activityInfoRepository.updateActivityStatusByEndtime();
 	}
 
+	/**
+	 * 根据id，查询对应的活动的信息
+	 * @param id
+	 * @return
+	 */
+	public ActivityInfoEntity selectActivityById(Long id){
+		return activityInfoRepository.selectActivityById(id);
+	}
 }

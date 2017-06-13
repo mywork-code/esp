@@ -211,4 +211,57 @@
         ]]>
 		<include refid="QueryConditionSql" />
 	</select>
+	
+	
+	
+	<!-- 订单查询页面显示  -->
+	<select id="queryOrderInfoRejectAgain" resultType="OrderSubInfoEntity">
+		SELECT
+		orderInfo.order_id orderId,
+		orderInfo.orderstatus orderStatus,
+		orderInfo.orderstatus orderStatusDsc,
+		orderInfo.user_id userId,
+		orderInfo.merchant_code merchantCode,
+		round(orderInfo.order_amt,2) orderAmt,
+		orderInfo.logistics_name logisticsName,
+		orderInfo.logistics_no logisticsNo,
+	    orderInfo.create_date createDate,
+		orderInfo.payType payType,
+		orderInfo.pay_time payDate,
+		orderInfo.province province,
+		orderInfo.city city,
+		orderInfo.district district,
+		orderInfo.address address,
+		orderInfo.name name,
+		orderInfo.telephone telephone,
+		orderInfo.postcode postcode,
+		orderInfo.paystatus  payStatus,
+		orderInfo.update_date updateDate,
+		concat(orderInfo.province,orderInfo.city,orderInfo.district,orderInfo.address) fullAddress,
+		merchant.merchant_name merchantName,
+		refundInfo.id refundId,
+		refundInfo.refund_type refundType,
+		orderInfo.pre_delivery preDelivery
+		FROM
+		t_esp_order_info orderInfo 
+        left join t_esp_merchant_info merchant on 
+        orderInfo.merchant_code=merchant.merchant_code
+        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+        left join t_esp_cash_refund cashRefund on orderInfo.order_id=cashRefund.order_id
+		where  cashRefund.reject_num = 2
+		ORDER BY orderInfo.create_date DESC
+	</select>
+	
+	<select id="queryOrderInfoRejectAgainCount" resultType="Integer">
+	    SELECT
+		  COUNT(1)
+		FROM
+			t_esp_order_info orderInfo 
+	        left join t_esp_merchant_info merchant on 
+	        orderInfo.merchant_code=merchant.merchant_code
+	        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+	        left join t_esp_cash_refund cashRefund on orderInfo.order_id=cashRefund.order_id
+		where  cashRefund.reject_num = 2
+		ORDER BY orderInfo.create_date DESC
+	</select>
 </mapper>

@@ -108,7 +108,11 @@ $(function() {
                     	 var content = "";
                     	 if(row.status=='0'){
                     		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.checkOneActivity("
-                                 + row.id + ");\">审核</a>&nbsp;&nbsp;";  
+                                 + row.id + ");\">审核</a>&nbsp;&nbsp;"; 
+                    	 }
+                    	 if(row.status=='1'){
+                    		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.setInvalid("
+                                 + row.id + ");\">设为无效</a>&nbsp;&nbsp;";  
                     	 }
                     	 return content;
                     }
@@ -153,6 +157,25 @@ $(function() {
 		ids.push(id);
 		batchDeal(ids);
 	};
+	
+	$.setInvalid = function(id){
+		debugger;
+    	$.extend($.messager.defaults,{ok:"确定",cancel:"取消"});
+		$.messager.confirm('提示框', '你确定设置为无效吗?',function(r){
+	     var params = {};
+			if(r){
+				params['id'] = JSON.stringify(id);
+		    	  $.ajax({
+						type : "POST",
+						url : ctx + '/application/activity/management/setInvalid',
+						data : params,
+						success : function(data) {
+							 $(".search-btn").click();
+						}
+				 });
+			}
+		});
+	}
 	
 	// 批量复核
     $(".checkAll").click(function() {

@@ -51,4 +51,13 @@ public class ActivityInfoRepository extends BaseMybatisRepository<ActivityInfoEn
 	public void updateActivityStatusByEndtime() {
 		this.getSqlSession().update("updateActivityStatusByEndtime");
 	}
+	
+	/**
+	 * 根据id，查询对应的活动的信息
+	 * @param id
+	 * @return
+	 */
+	public ActivityInfoEntity selectActivityById(Long id){
+		return this.getSqlSession().selectOne("selectActivityById", id);
+	}
 }

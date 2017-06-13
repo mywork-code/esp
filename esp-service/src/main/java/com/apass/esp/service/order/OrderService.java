@@ -166,6 +166,21 @@ public class OrderService {
 			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
 		}
 	}
+	
+	/**
+	 * 查询被二次拒绝的订单
+	 * @throws BusinessException 
+	 */
+	public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException{
+		try {
+			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+					.queryOrderInfoRejectAgain(page);
+			return orderDetailInfoList;
+		} catch (Exception e) {
+			LOGGER.error("查询被二次拒绝的订单===>", e);
+			throw new BusinessException("查询被二次拒绝的订单！", e);
+		}
+	}
 
 	/**
 	 * 通过订单号更新物流信息
