@@ -23,7 +23,7 @@ public class Md5Controller {
     @RequestMapping(value = "/getMd5ByFile", method = RequestMethod.POST)
     @ResponseBody
     public Response getMd5ByFile(@RequestBody Map<String, Object> paramMap) {
-        InputStream in  =  ActivityWithDrawController.class.getClassLoader().getResourceAsStream("static/WebContent/js/reset.js");
+        InputStream in  =  Md5Controller.class.getClassLoader().getResourceAsStream("static/WebContent/js/reset.js");
         //java.net.URL url  =  ActivityWithDrawController.class.getClassLoader().getResource("/static/WebContent/js/reset.js");
 
         String s = MD5Utils.getMd5ByFile(in);
