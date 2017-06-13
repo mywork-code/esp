@@ -19,7 +19,7 @@ import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 @Transactional(rollbackFor = { Exception.class })
 public class CashRefundService {
 	
-	private static final Logger   LOGGER = LoggerFactory.getLogger(CashRefundService.class);
+	private static final Logger logger = LoggerFactory.getLogger(CashRefundService.class);
 	
 	@Autowired
 	private CashRefundMapper cashRefundMapper;

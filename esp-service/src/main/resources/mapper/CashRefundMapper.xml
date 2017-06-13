@@ -12,10 +12,13 @@
     <result column="reject_num" property="rejectNum" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
     <result column="main_order_id" property="mainOrderId" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="agree_d" property="agreeD" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, create_date, update_date, amt, order_id, status, status_d, reject_num, user_id, 
-    main_order_id
+    main_order_id, reason, memo, agree_d
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -30,11 +33,13 @@
   <insert id="insert" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_cash_refund (create_date, update_date, amt, 
       order_id, status, status_d, 
-      reject_num, user_id, main_order_id
+      reject_num, user_id, main_order_id, 
+      reason, memo, agree_d
       )
     values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{amt,jdbcType=DECIMAL}, 
       #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, 
-      #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}
+      #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}, 
+      #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{agreeD,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
@@ -67,6 +72,15 @@
       <if test="mainOrderId != null" >
         main_order_id,
       </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="agreeD != null" >
+        agree_d,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="createDate != null" >
@@ -95,6 +109,15 @@
       </if>
       <if test="mainOrderId != null" >
         #{mainOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="agreeD != null" >
+        #{agreeD,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -128,6 +151,15 @@
       <if test="mainOrderId != null" >
         main_order_id = #{mainOrderId,jdbcType=VARCHAR},
       </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="agreeD != null" >
+        agree_d = #{agreeD,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -141,7 +173,10 @@
       status_d = #{statusD,jdbcType=TIMESTAMP},
       reject_num = #{rejectNum,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=BIGINT},
-      main_order_id = #{mainOrderId,jdbcType=VARCHAR}
+      main_order_id = #{mainOrderId,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      agree_d = #{agreeD,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
