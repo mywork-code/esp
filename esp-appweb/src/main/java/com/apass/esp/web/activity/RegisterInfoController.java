@@ -397,8 +397,10 @@ public class RegisterInfoController {
     	        			AwardBindRel aRel=new AwardBindRel();
     	    				aRel.setActivityId(aInfoVo.getId());
     	    				aRel.setUserId(Long.parseLong(InviterId));
+    	    				aRel.setName(rrse.get("name").toString());
     	    				aRel.setMobile(rrse.get("inviteMobile").toString());
     	    				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
+						    aRel.setInviteName(rrse.get("inviteName").toString());
     	    				aRel.setInviteMobile(mobile2);
     	    				aRel.setIsNew(new Byte("1"));//被邀请人是新用户
     	    				aRel.setCreateDate(new Date());

@@ -6,16 +6,19 @@
 		<result column="activity_id" property="activityId" jdbcType="TINYINT" />
 		<result column="user_id" property="userId" jdbcType="BIGINT" />
 		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
 		<result column="is_new" property="isNew" jdbcType="TINYINT" />
 		<result column="invite_user_id" property="inviteUserId"
 			jdbcType="BIGINT" />
 		<result column="invite_mobile" property="inviteMobile"
 			jdbcType="VARCHAR" />
+		<result column="invite_name" property="inviteName"
+				jdbcType="VARCHAR" />
 		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
 		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		id, activity_id, user_id, mobile, is_new, invite_user_id, invite_mobile,
+		id, activity_id, user_id, mobile,name, is_new, invite_user_id, invite_mobile,invite_name,
 		create_date,
 		update_date
 	</sql>
@@ -32,12 +35,12 @@
 	</delete>
 	<insert id="insert" parameterType="com.apass.esp.domain.entity.AwardBindRel"
 		useGeneratedKeys="true" keyProperty="id">
-		insert into t_esp_award_bind_rel (activity_id, user_id, mobile,
-		is_new, invite_user_id, invite_mobile,
+		insert into t_esp_award_bind_rel (activity_id, user_id, mobile,name,
+		is_new, invite_user_id, invite_mobile,invite_name,
 		create_date, update_date)
 		values (#{activityId,jdbcType=TINYINT}, #{userId,jdbcType=BIGINT},
-		#{mobile,jdbcType=VARCHAR},
-		#{isNew,jdbcType=TINYINT}, #{inviteUserId,jdbcType=BIGINT}, #{inviteMobile,jdbcType=VARCHAR},
+		#{mobile,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},
+		#{isNew,jdbcType=TINYINT}, #{inviteUserId,jdbcType=BIGINT}, #{inviteMobile,jdbcType=VARCHAR},#{inviteName,jdbcType=VARCHAR},
 		#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
 	</insert>
 	<insert id="insertSelective" parameterType="com.apass.esp.domain.entity.AwardBindRel"
@@ -53,6 +56,9 @@
 			<if test="mobile != null">
 				mobile,
 			</if>
+			<if test="name != null">
+				name,
+			</if>
 			<if test="isNew != null">
 				is_new,
 			</if>
@@ -61,6 +67,9 @@
 			</if>
 			<if test="inviteMobile != null">
 				invite_mobile,
+			</if>
+			<if test="inviteName != null">
+				invite_name,
 			</if>
 			<if test="createDate != null">
 				create_date,
@@ -79,6 +88,9 @@
 			<if test="mobile != null">
 				#{mobile,jdbcType=VARCHAR},
 			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
 			<if test="isNew != null">
 				#{isNew,jdbcType=TINYINT},
 			</if>
@@ -87,6 +99,9 @@
 			</if>
 			<if test="inviteMobile != null">
 				#{inviteMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteName != null">
+				#{inviteName,jdbcType=VARCHAR},
 			</if>
 			<if test="createDate != null">
 				#{createDate,jdbcType=TIMESTAMP},
@@ -105,6 +120,9 @@
 			<if test="userId != null">
 				user_id = #{userId,jdbcType=BIGINT},
 			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
 			<if test="mobile != null">
 				mobile = #{mobile,jdbcType=VARCHAR},
 			</if>
@@ -116,6 +134,9 @@
 			</if>
 			<if test="inviteMobile != null">
 				invite_mobile = #{inviteMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteName != null">
+				invite_name = #{inviteName,jdbcType=VARCHAR},
 			</if>
 			<if test="createDate != null">
 				create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -134,6 +155,8 @@
 		is_new = #{isNew,jdbcType=TINYINT},
 		invite_user_id = #{inviteUserId,jdbcType=BIGINT},
 		invite_mobile = #{inviteMobile,jdbcType=VARCHAR},
+		name = #{name,jdbcType=VARCHAR},
+		invite_name = #{inviteName,jdbcType=VARCHAR},
 		create_date = #{createDate,jdbcType=TIMESTAMP},
 		update_date = #{updateDate,jdbcType=TIMESTAMP}
 		where id = #{id,jdbcType=BIGINT}
