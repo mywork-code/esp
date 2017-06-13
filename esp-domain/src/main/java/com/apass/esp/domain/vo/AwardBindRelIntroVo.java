@@ -2,11 +2,20 @@ package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
 
+import com.apass.esp.domain.enums.AwardActivity;
+import com.apass.esp.domain.enums.AwardActivity.AWARD_STATUS;
+import com.apass.esp.domain.enums.AwardActivity.AWARD_STATUS_AMS;
+import com.apass.esp.domain.enums.AwardActivity.ActivityName;
+
 /**
  * @author xiaohai
  *
  */
 public class AwardBindRelIntroVo {
+	/**
+	 * 奖励明细表id
+	 */
+	private Long awardDetailId;
 	
 	/**
 	 * 邀请人手机号
@@ -42,12 +51,21 @@ public class AwardBindRelIntroVo {
 	/**
 	 * 放款时间
 	 */
-	private String arrivedDate;
+	private String releaseDate;
 	
 	/**
 	 * 放款状态
 	 */
-	private String status;
+	private Byte status;
+	private String statusDes;
+	
+	public Long getAwardDetailId() {
+		return awardDetailId;
+	}
+
+	public void setAwardDetailId(Long awardDetailId) {
+		this.awardDetailId = awardDetailId;
+	}
 
 	public String getMobile() {
 		return mobile;
@@ -105,20 +123,34 @@ public class AwardBindRelIntroVo {
 		this.cardBank = cardBank;
 	}
 
-	public String getArrivedDate() {
-		return arrivedDate;
+	public String getReleaseDate() {
+		return releaseDate;
 	}
 
-	public void setArrivedDate(String arrivedDate) {
-		this.arrivedDate = arrivedDate;
+	public void setReleaseDate(String releaseDate) {
+		this.releaseDate = releaseDate;
 	}
 
-	public String getStatus() {
+	public Byte getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Byte status) {
 		this.status = status;
+	}
+
+	public String getStatusDes() {
+		return statusDes;
+	}
+
+	public void setStatusDes(Byte status) {
+		String content = "";
+		for (AWARD_STATUS_AMS awardStatus : AwardActivity.AWARD_STATUS_AMS.values()) {
+			if(awardStatus.getCode() == status){
+				content = awardStatus.getMessage();
+			}
+		}
+		this.statusDes = content;
 	}
 	
 	

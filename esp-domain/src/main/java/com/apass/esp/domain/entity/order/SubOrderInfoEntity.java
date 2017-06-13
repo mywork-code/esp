@@ -189,5 +189,4 @@ public class SubOrderInfoEntity {
         this.acceptGoodsType = acceptGoodsType;
     }
 	
-
 }

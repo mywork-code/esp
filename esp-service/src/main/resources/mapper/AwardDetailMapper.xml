@@ -4,6 +4,8 @@
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.AwardDetail" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
     <result column="activity_id" property="activityId" jdbcType="BIGINT" />
     <result column="tax_amount" property="taxAmount" jdbcType="DECIMAL" />
     <result column="amount" property="amount" jdbcType="DECIMAL" />
@@ -13,12 +15,13 @@
     <result column="arrived_date" property="arrivedDate" jdbcType="TIMESTAMP" />
     <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
     <result column="card_bank" property="cardBank" jdbcType="VARCHAR" />
+    <result column="release_date" property="releaseDate" jdbcType="TIMESTAMP" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, activity_id, tax_amount, amount, type, status, order_id, arrived_date, 
-    card_no, card_bank, create_date, update_date
+    id, user_id, real_name, mobile, activity_id, tax_amount, amount, type, status, order_id, arrived_date, 
+    card_no, card_bank, release_date, create_date, update_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -31,15 +34,15 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.AwardDetail" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_award_detail (user_id, activity_id, tax_amount, 
+    insert into t_esp_award_detail (user_id, real_name, mobile, activity_id, tax_amount, 
       amount, type, status, 
       order_id, arrived_date, card_no, 
-      card_bank, create_date, update_date
+      card_bank, release_date, create_date, update_date
       )
-    values (#{userId,jdbcType=BIGINT}, #{activityId,jdbcType=BIGINT}, #{taxAmount,jdbcType=DECIMAL}, 
+    values (#{userId,jdbcType=BIGINT}, #{realName,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{activityId,jdbcType=BIGINT}, #{taxAmount,jdbcType=DECIMAL}, 
       #{amount,jdbcType=DECIMAL}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
       #{orderId,jdbcType=VARCHAR}, #{arrivedDate,jdbcType=TIMESTAMP}, #{cardNo,jdbcType=VARCHAR}, 
-      #{cardBank,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      #{cardBank,jdbcType=VARCHAR}, #{releaseDate,jdbcType=TIMESTAMP}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.AwardDetail" useGeneratedKeys="true" keyProperty="id" >
@@ -127,6 +130,12 @@
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
       <if test="activityId != null" >
         activity_id = #{activityId,jdbcType=BIGINT},
       </if>
@@ -153,6 +162,9 @@
       </if>
       <if test="cardBank != null" >
         card_bank = #{cardBank,jdbcType=VARCHAR},
+      </if>
+      <if test="releaseDate != null" >
+        release_date = #{releaseDate,jdbcType=TIMESTAMP},
       </if>
       <if test="createDate != null" >
         create_date = #{createDate,jdbcType=TIMESTAMP},

@@ -1,6 +1,7 @@
 package com.apass.esp.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -25,4 +26,18 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	 * @return
 	 */
 	List<AwardDetail> querySumAmountGroupByTypeStatus(ActivityBindRelStatisticQuery query);
+
+	/**
+	 * 查询有提现纪录的所有用户
+	 * @param paramMap
+	 * @return
+	 */
+	List<AwardDetail> queryAwardIntroList(Map<String, Object> paramMap);
+
+	/**
+	 * 查询有提现纪录的所有用户总数
+	 * @param paramMap
+	 * @return
+	 */
+	Integer countAwardIntroList(Map<String, Object> paramMap);
 }
