@@ -8,6 +8,16 @@ public class AwardDetailDto {
 
 	private Long userId;
 
+	private String realName;
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
 	private Long activityId;
 
 	private BigDecimal taxAmount;

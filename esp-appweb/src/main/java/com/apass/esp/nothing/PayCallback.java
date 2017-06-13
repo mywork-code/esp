@@ -153,6 +153,7 @@ public class PayCallback {
 							awardDetailDto.setStatus((byte) AwardActivity.AWARD_STATUS.PROCESSING.getCode());
 							// 获得
 							awardDetailDto.setType((byte) AwardActivity.AWARD_TYPE.GAIN.getCode());
+							awardDetailDto.setRealName(awardBindRel.getName());
 							awardDetailDto.setUserId(awardBindRel.getUserId());
 							awardDetailService.addAwardDetail(awardDetailDto);
 							LOGGER.info(
