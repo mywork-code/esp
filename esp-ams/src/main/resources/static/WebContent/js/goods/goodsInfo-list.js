@@ -1627,7 +1627,6 @@ $(function() {
 	};
 	//预览商品
 	$.previewProduct = function(id,goodsId) {
-		debugger;
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id;
