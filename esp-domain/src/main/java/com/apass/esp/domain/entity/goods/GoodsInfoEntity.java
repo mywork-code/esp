@@ -144,8 +144,21 @@ public class GoodsInfoEntity {
     private Long categoryId3;
     /**商品三级分类名称*/
     private String categoryName3;
+    
+    /**
+     * 不支持配送区域
+     */
+    private String unSupportProvince;
 
-    public Long getCategoryId1() {
+    public String getUnSupportProvince() {
+		return unSupportProvince;
+	}
+
+	public void setUnSupportProvince(String unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
+
+	public Long getCategoryId1() {
         return categoryId1;
     }
 
