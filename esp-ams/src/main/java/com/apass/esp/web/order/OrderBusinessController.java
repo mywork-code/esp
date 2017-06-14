@@ -11,13 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.vo.CashRefundVo;
 import com.apass.esp.service.order.OrderService;
-import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
@@ -39,9 +36,6 @@ public class OrderBusinessController {
 
 	@Autowired
 	private OrderService orderService;
-	
-	@Autowired
-	private CashRefundService cashRefundService;
 
 	/**
 	 * 更新订单物流信息、订单信息
