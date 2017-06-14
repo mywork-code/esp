@@ -49,7 +49,10 @@ public class CashRefundService {
         return null;
     }
 
-
+    /**
+     * @param orderId
+     * @return
+     */
     public CashRefundDto getCashRefundByOrderId(String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
 
@@ -58,6 +61,16 @@ public class CashRefundService {
         return cashRefundDto;
     }
 
+    public void update(CashRefundDto cashRefundDto) {
+        CashRefund cashRefund = new CashRefund();
+        BeanUtils.copyProperties(cashRefund, cashRefundDto);
+        cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+    }
+
+    /**
+     * @param orderId
+     * @return
+     */
     public List<TxnInfoDto> getTxnInfoByOrderId(String orderId) {
         List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
         List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();

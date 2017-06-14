@@ -63,7 +63,7 @@ public class RefundController {
         OrderDetailInfoDto orderDetailInfoDto = null;
         List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
         try {
-            txnInfoDtoList =  cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
+            txnInfoDtoList = cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
             orderDetailInfoDto = orderService.getOrderDetailInfoDto("", cashRefundDto.getOrderId());
         } catch (BusinessException e) {
             return Response.fail(BusinessErrorCode.NO);
@@ -74,5 +74,27 @@ public class RefundController {
         return Response.successResponse(resultMap);
     }
 
-
+    /**
+     * 撤销申请
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "v1/refund/cancelRefund", method = RequestMethod.POST)
+    @ResponseBody
+    public Response cancelRefund(@RequestBody Map<String, Object> paramMap) {
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        String orderId = CommonUtils.getValue(paramMap, "orderId");
+        if (StringUtils.isAnyEmpty(userId, orderId)) {
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
+        //1:退款提交，2等待商家审核 才能进行撤销
+        if (cashRefundDto == null || cashRefundDto.getStatus() != 1 || cashRefundDto.getStatus() != 2) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        cashRefundDto.setStatus(4);
+        cashRefundService.update(cashRefundDto);
+        return Response.successResponse();
+    }
 }
