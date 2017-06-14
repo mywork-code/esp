@@ -3,6 +3,7 @@ package com.apass.esp.web.aftersale;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
+import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.service.order.OrderService;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,7 +31,7 @@ import java.util.Map;
  * @since JDK 1.8
  */
 @Controller
-@RequestMapping("cash/refund")
+@RequestMapping("")
 public class RefundController {
 
     @Autowired
@@ -43,7 +46,7 @@ public class RefundController {
      * @param paramMap
      * @return
      */
-    @RequestMapping(value = "/cashRefundDetailByOrderId", method = RequestMethod.POST)
+    @RequestMapping(value = "v1/refund/cashRefundDetailByOrderId", method = RequestMethod.POST)
     @ResponseBody
     public Response cashRefundDetail(@RequestBody Map<String, Object> paramMap) {
         String userId = CommonUtils.getValue(paramMap, "userId");
@@ -52,16 +55,20 @@ public class RefundController {
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
+
         if (cashRefundDto == null) {
             return Response.fail(BusinessErrorCode.NO);
         }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
+        List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
         try {
+            txnInfoDtoList =  cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
             orderDetailInfoDto = orderService.getOrderDetailInfoDto("", cashRefundDto.getOrderId());
         } catch (BusinessException e) {
             return Response.fail(BusinessErrorCode.NO);
         }
+        resultMap.put("txnInfoDtoList", txnInfoDtoList);
         resultMap.put("cashRefundDto", cashRefundDto);
         resultMap.put("orderDetailInfoDto", orderDetailInfoDto);
         return Response.successResponse(resultMap);
