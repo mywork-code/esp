@@ -32,6 +32,33 @@
 			</if>
 		</where>
 	</sql>
+	<sql id="QueryConditionSqlList">
+		<where>
+			<if test="orderId != null and orderId != ''">
+				and orderInfo.order_Id like CONCAT('%',#{orderId},'%')
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				and orderInfo.orderstatus in (${orderStatus})
+			</if>
+			<if test="refundType != null and refundType != ''">
+				and refundInfo.refund_Type like
+				CONCAT('%',#{refundType},'%')
+			</if>
+			<if test="createDate != null and createDate != ''">
+				and date_format(orderInfo.create_date,'%Y-%m-%d') =
+				#{createDate}
+			</if>
+			<if test="telephone != null and telephone != ''">
+				and orderInfo.telephone like CONCAT('%',#{telephone},'%')
+			</if>
+			<if test="merchantCode != null and merchantCode != ''">
+				and orderInfo.merchant_code = #{merchantCode}
+			</if>
+			<if test="name != null and name != ''">
+				and orderInfo.name like CONCAT('%',#{name},'%')
+			</if>
+		</where>
+	</sql>
 	<!-- 订单查询页面显示  -->
 	<select id="querySubOrderDetailInfoByParam" parameterType="Map"
 		resultType="OrderSubInfoEntity">
@@ -68,9 +95,9 @@
         orderInfo.merchant_code=merchant.merchant_code
         left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
 		]]>
-		<include refid="QueryConditionSql" />
+		<include refid="QueryConditionSqlList" />
 	    <![CDATA[
-		ORDER BY orderInfo.create_date DESC
+		ORDER BY orderInfo.orderstatus, orderInfo.create_date DESC
 		]]>
 	</select>
 	<!-- 订单查询 导出  -->
@@ -107,6 +134,7 @@
 			orderInfo.postcode postcode,
 			orderInfo.paystatus payStatus,
 			orderInfo.update_date updateDate,
+			orderInfo.pre_delivery preDelivery,
 			concat(
 				orderInfo.province,
 				orderInfo.city,
@@ -137,7 +165,7 @@
 			LEFT JOIN t_esp_goods_stock_info goodsstockinfo on orderdetail.goods_stock_id=goodsstockinfo.id
 		) orderdetailandgoodtemp ON orderInfo.order_id = orderdetailandgoodtemp.orderIdTemp
 		]]>
-		<include refid="QueryConditionSql" />
+		<include refid="QueryConditionSqlList" />
 	    <![CDATA[
 			ORDER BY orderInfo.create_date DESC,
 			orderinfo.order_id DESC,
@@ -183,7 +211,7 @@
         orderInfo.merchant_code=merchant.merchant_code
         left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
         ]]>
-		<include refid="QueryConditionSql" />
+		<include refid="QueryConditionSqlList" />
 	</select>
 	<!-- 记录总数 -->
 	<select id="querySubOrderDetailInfoByParamForExportCount" parameterType="Map"
@@ -209,59 +237,6 @@
 			LEFT JOIN t_esp_goods_base_info goodsbase ON orderdetail.goods_id = goodsbase.id
 		) orderdetailandgoodtemp ON orderInfo.order_id = orderdetailandgoodtemp.orderIdTemp
         ]]>
-		<include refid="QueryConditionSql" />
-	</select>
-	
-	
-	
-	<!-- 订单查询页面显示  -->
-	<select id="queryOrderInfoRejectAgain" resultType="OrderSubInfoEntity">
-		SELECT
-		orderInfo.order_id orderId,
-		orderInfo.orderstatus orderStatus,
-		orderInfo.orderstatus orderStatusDsc,
-		orderInfo.user_id userId,
-		orderInfo.merchant_code merchantCode,
-		round(orderInfo.order_amt,2) orderAmt,
-		orderInfo.logistics_name logisticsName,
-		orderInfo.logistics_no logisticsNo,
-	    orderInfo.create_date createDate,
-		orderInfo.payType payType,
-		orderInfo.pay_time payDate,
-		orderInfo.province province,
-		orderInfo.city city,
-		orderInfo.district district,
-		orderInfo.address address,
-		orderInfo.name name,
-		orderInfo.telephone telephone,
-		orderInfo.postcode postcode,
-		orderInfo.paystatus  payStatus,
-		orderInfo.update_date updateDate,
-		concat(orderInfo.province,orderInfo.city,orderInfo.district,orderInfo.address) fullAddress,
-		merchant.merchant_name merchantName,
-		refundInfo.id refundId,
-		refundInfo.refund_type refundType,
-		orderInfo.pre_delivery preDelivery
-		FROM
-		t_esp_order_info orderInfo 
-        left join t_esp_merchant_info merchant on 
-        orderInfo.merchant_code=merchant.merchant_code
-        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
-        left join t_esp_cash_refund cashRefund on orderInfo.order_id=cashRefund.order_id
-		where  cashRefund.reject_num = 2
-		ORDER BY orderInfo.create_date DESC
-	</select>
-	
-	<select id="queryOrderInfoRejectAgainCount" resultType="Integer">
-	    SELECT
-		  COUNT(1)
-		FROM
-			t_esp_order_info orderInfo 
-	        left join t_esp_merchant_info merchant on 
-	        orderInfo.merchant_code=merchant.merchant_code
-	        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
-	        left join t_esp_cash_refund cashRefund on orderInfo.order_id=cashRefund.order_id
-		where  cashRefund.reject_num = 2
-		ORDER BY orderInfo.create_date DESC
+		<include refid="QueryConditionSqlList" />
 	</select>
 </mapper>
