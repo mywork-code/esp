@@ -5,4 +5,9 @@
       select <include refid="Base_Column_List" />
       from t_esp_cash_refund where order_id = #{id,jdbcType=BIGINT}
   </select>
+
+    <select id="getCashRefundByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List" />
+        from t_esp_cash_refund where order_id = #{orderId,jdbcType=VARCHAR}
+    </select>
 </mapper>

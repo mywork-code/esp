@@ -119,7 +119,8 @@ public enum BusinessErrorCode implements ErrorCode {
   BIND_CONTRACT_EXCEPTION(6032,"绑卡合同接口调用异常"),
   INIT_CONTRACT_EXCEPTION(6033,"初始化合同接口调用异常"),
   ADDRESS_NOT_EXIST(6034,"地址信息不存在"),
-  BUY_NOWINIT_FAILED(6035,"立即购买初始化失败!请稍后再试")
+  BUY_NOWINIT_FAILED(6035,"立即购买初始化失败!请稍后再试"),
+  CUSTOMER_UPDATE_AMOUNT_EXCEPTION(6036,"退还用户的额度服务异常"),
   ;
   private Integer code;
   private String msg;
