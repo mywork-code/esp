@@ -1,6 +1,7 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,10 +32,12 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
@@ -164,7 +167,20 @@ public class GoodsBaseInfoController {
         LOGGER.info("商品审核初始化成功...");
         return new ModelAndView("goods/goodsInfoCheck-list", map);
     }
-
+    /**
+     * 商品类目列表
+     */
+    @ResponseBody
+    @RequestMapping("/categoryList")
+    public Response categoryList() {
+        try {
+            List<CategoryDo> categoryList = categoryInfoService.goodsCategoryList();
+            return Response.success("success", categoryList);
+        } catch (Exception e) {
+        	  LOGGER.error("商品类目列表加载失败！", e);
+            return Response.fail("商品类目列表加载失败！");
+        }
+    }
     /**
      * 商品管理分页json
      */
@@ -184,6 +200,7 @@ public class GoodsBaseInfoController {
             String goodsType = HttpWebUtils.getValue(request, "goodsType");
             String merchantName = HttpWebUtils.getValue(request, "merchantName");
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
+            String goodsCategoryCombo=HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "status");
             String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
@@ -196,6 +213,20 @@ public class GoodsBaseInfoController {
             goodsInfoEntity.setGoodsType(goodsType);
             goodsInfoEntity.setMerchantName(merchantName);
             goodsInfoEntity.setMerchantType(merchantType);
+            if(StringUtils.isNotBlank(goodsCategoryCombo)){
+            	String[] aArray =goodsCategoryCombo.split("_");
+            	String level=aArray[0];
+            	String id=aArray[1];
+            	if("1".equals(level)){
+            		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+            	}else if("2".equals(level)){
+            		goodsInfoEntity.setCategoryId2(Long.valueOf(id));
+            	}else if("3".equals(level)){
+            		 goodsInfoEntity.setCategoryId3(Long.valueOf(id));
+            	}
+            }
+            
+            
             if(!StringUtils.isAnyBlank(categoryId1,categoryId2,categoryId3)){
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));

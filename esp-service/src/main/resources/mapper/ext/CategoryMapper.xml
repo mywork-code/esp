@@ -37,7 +37,31 @@
       ORDER    BY sort_order ASC 
       LIMIT    3
   </select>
- 
+  
+   <!--查询商品类目列表信息 -->
+  <select id="goodsCategoryList" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+     SELECT 
+		       id              id,
+		       category_name   categoryName,
+		       sort_order      sortOrder,
+		       level           level
+      FROM     t_esp_category 
+      where    status !='2' 
+        and    level = #{level}
+      ORDER    BY sort_order ASC 
+  </select>
+    <select id="goodsCategoryListById" parameterType="java.lang.Long" resultMap="BaseResultMap" >
+     SELECT 
+		       id              id,
+		       category_name   categoryName,
+		       parent_id       parentId,
+		       sort_order      sortOrder,
+		       level           level
+      FROM     t_esp_category 
+      where    status !='2' 
+        and    parent_id = #{parentId}
+      ORDER    BY sort_order ASC 
+  </select>
  <!-- 查询同一级别下，最大的level,在此基础上+1 -->
   <select id="getMaxSortOrder"  resultType="java.lang.Integer">
      select max(sort_order)+1 from t_esp_category
