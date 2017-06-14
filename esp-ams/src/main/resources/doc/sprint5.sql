@@ -36,3 +36,15 @@ CREATE TABLE esp.`t_esp_refund_txn` (
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/** key value 表*/
+DROP TABLE  IF EXISTS esp.`t_esp_kvattr`;
+CREATE TABLE esp.`t_esp_kvattr` (
+`id` bigint(20) NOT NULL AUTO_INCREMENT,
+`create_date` datetime ,
+`update_date` datetime ,
+`key` varchar(255),
+`value` varchar(255),
+`source` varchar(255) COMMENT '可以是不同类型也可以是类的名字',
+PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
