@@ -15,4 +15,6 @@ public interface CashRefundMapper extends GenericMapper<CashRefund, Long>{
 	 * @return
 	 */
 	List<CashRefund> cashRefundByOrderId(@Param("orderId") Long orderId);
+
+	CashRefund getCashRefundByOrderId(@Param("orderId") String orderId);
 }
