@@ -45,6 +45,9 @@ public class CommonHttpClient {
     //返回用户的费率信息及CustomerId
     private static final String GETCUSTOMERCREDITREQURL = "/espCustomer/getCustomerCreditInfo";
 
+    //退还额度
+    private static final String UPDATECUSTOMERAMOUNTQURL = "/espCustomer/updateAvailableAmount";
+
     /**
      * 查询客户基本信息及绑卡信息
      *
@@ -131,4 +134,36 @@ public class CommonHttpClient {
             return Response.fail("查询用户的额度信息服务异常",BusinessErrorCode.CUSTOMER_QUOTAQUERY_EXCEPTION);
         }
     }
+
+    /**
+     * 退还用户的额度
+     *
+     * @param requestId
+     * @param userId
+     * @return
+     */
+    public Response updateAvailableAmount(String requestId, Long userId,String refundAmount) {
+        try {
+            Map<String, Object> request = new HashMap<String, Object>();
+            request.put("userId", userId);
+            request.put("refundAmount", refundAmount);
+            String requestUrl = gfbReqUrl + UPDATECUSTOMERAMOUNTQURL;
+            LOG.info(requestId, "退还用户的额度请求地址:", requestUrl);
+            String requestJson = GsonUtils.toJson(request);
+            LOG.logstashRequest(requestId, "退还用户的额度请求数据:", requestJson);
+            StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+            String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+            LOG.logstashResponse(requestId, "退还用户的额度返回数据:", responseJson);
+            Response response = GsonUtils.convertObj(responseJson, Response.class);
+            if (response == null ) {
+                return Response.fail("退还用户的额度服务异常",BusinessErrorCode.CUSTOMER_UPDATE_AMOUNT_EXCEPTION);
+            }
+            return response;
+        } catch (Exception e) {
+            LOGGER.error(requestId, "退还用户的额度服务异常", "", e);
+            return Response.fail("退还用户的额度服务异常",BusinessErrorCode.CUSTOMER_UPDATE_AMOUNT_EXCEPTION);
+        }
+    }
+
+
 }
