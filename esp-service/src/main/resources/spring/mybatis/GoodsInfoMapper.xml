@@ -84,7 +84,7 @@
 				t.goods_Model goodsModel,
 				t.goods_sift_url goodsSiftUrl,
 				t.sord_no sordNo,
-				un_support_province
+				un_support_province unSupportProvince
 			FROM
 				t_esp_goods_base_info t
 			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
@@ -232,8 +232,8 @@
 	        #{isDelete, jdbcType=VARCHAR},
 	        #{googsDetail, jdbcType=VARCHAR},
 	        #{goodsSkuType, jdbcType=VARCHAR},
-	        #{sordNo, jdbcType=INTEGER}
-	        #{unSupportProvince, jdbcType=VARCHAR});
+	        #{sordNo, jdbcType=INTEGER},
+	        #{unSupportProvince, jdbcType=VARCHAR})
 	]]>
 	</insert>
 	<!-- 更新 -->
@@ -375,6 +375,9 @@
 			</if>
 			<if test="goodsSiftUrl != null and goodsSiftUrl != ''">
 				goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
+			</if>
+			<if test="unSupportProvince != null and unSupportProvince != ''">
+				un_support_province = #{unSupportProvince, jdbcType=VARCHAR},
 			</if>
 		</set>
 	<![CDATA[
