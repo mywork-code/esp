@@ -23,5 +23,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     void updateStatus1To0();
     
+    List<Category> goodsCategoryList(Long levelId);
+    List<Category> goodsCategoryListById(Long parentId);
 }
 
