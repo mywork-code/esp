@@ -355,6 +355,10 @@ public class GoodsService {
         List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
         if (!list.isEmpty()) {
             for (GoodsStockInfoEntity goodsStockInfoEntity : list) {
+                if(goodsStockInfoEntity.getMarketPrice() == null
+                    || goodsStockInfoEntity.getMarketPrice().compareTo(BigDecimal.ZERO) == 0) {
+                    continue;
+                }
                 BigDecimal flagtRate = goodsStockInfoEntity.getGoodsCostPrice()
                     .divide(goodsStockInfoEntity.getMarketPrice(), 6, RoundingMode.HALF_UP);
                 if (flagtRate.compareTo(merchantSettleRate) != -1) {
