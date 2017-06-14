@@ -152,10 +152,15 @@ public class OrderSubInfoEntity {
 
     
     /**
-     * 是否为预发货
+     * 商户是否发货
      * @return
      */
     private String preDelivery;
+    
+    /**
+     * 商户是否发货详细信息
+     */
+    private String preDeliveryMsg;
     
     public String getLogisticsNameDes() {
         return logisticsNameDes;
@@ -522,5 +527,13 @@ public class OrderSubInfoEntity {
 
 	public void setPreDelivery(String preDelivery) {
 		this.preDelivery = preDelivery;
+	}
+
+	public String getPreDeliveryMsg() {
+		return preDeliveryMsg;
+	}
+
+	public void setPreDeliveryMsg(String preDeliveryMsg) {
+		this.preDeliveryMsg = preDeliveryMsg;
 	}
 }

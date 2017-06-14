@@ -1,7 +1,5 @@
 package com.apass.esp.mapper;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 
 import com.apass.esp.domain.entity.CashRefund;
@@ -14,5 +12,6 @@ public interface CashRefundMapper extends GenericMapper<CashRefund, Long>{
 	 * @param orderId
 	 * @return
 	 */
-	List<CashRefund> cashRefundByOrderId(@Param("orderId") Long orderId);
+
+	CashRefund getCashRefundByOrderId(@Param("orderId") String orderId);
 }

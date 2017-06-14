@@ -165,6 +165,20 @@ public class OrderService {
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.querySubOrderDetailInfoByParam(map, page);
+			/**
+			 * add
+			 */
+			List<OrderSubInfoEntity> dataList = orderDetailInfoList.getDataList();
+			if(!CollectionUtils.isEmpty(dataList)){
+            	for (OrderSubInfoEntity order : dataList) {
+					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
+					}
+					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_N.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_N.getMessage());
+					}
+				}
+            }
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
@@ -237,9 +251,8 @@ public class OrderService {
 			 *  1.如果为Y，则不更新此字段  2.如果为空，要把值置成N
 			 */
 			OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
-			//如果是否为预发货，字段为空，则更新字段为N,订单的状态改为D03
-			if(StringUtils.isBlank(entity.getPreDelivery())){
-				entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+			if(!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+				entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
 				entity.setStatus(OrderStatus.ORDER_SEND.getCode());
 				orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
 			}
