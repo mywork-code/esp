@@ -6,6 +6,7 @@ import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -39,6 +40,9 @@ public class RefundController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CommonHttpClient commonHttpClient;
 
     /**
      * 退款详情
@@ -90,10 +94,39 @@ public class RefundController {
         }
         CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
         //1:退款提交，2等待商家审核 才能进行撤销
-        if (cashRefundDto == null || cashRefundDto.getStatus() != 1 || cashRefundDto.getStatus() != 2) {
+        if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
         cashRefundDto.setStatus(4);
+        cashRefundService.update(cashRefundDto);
+        return Response.successResponse();
+    }
+
+
+    /**
+     * 同意退款
+     *
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "v1/refund/agreeRefund", method = RequestMethod.POST)
+    @ResponseBody
+    public Response agreeRefund(@RequestBody Map<String, Object> paramMap) {
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        String orderId = CommonUtils.getValue(paramMap, "orderId");
+        if (StringUtils.isAnyEmpty(userId, orderId)) {
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
+        //1:退款提交 才能进行同意
+        if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(cashRefundDto.getAmt()));
+        if (!res.statusResult()) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        cashRefundDto.setStatus(2);
         cashRefundService.update(cashRefundDto);
         return Response.successResponse();
     }
