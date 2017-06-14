@@ -1,71 +1,74 @@
 package com.apass.esp.domain.vo;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class CashRefundVo {
-	private Long id;
-
-    private Date createDate;
-
-    private Date updateDate;
-
-    private BigDecimal amt;
-
+	
+	/**
+	 * 操作表Id
+	 */
+	private Long operateId;
+	
+	/**
+	 * 记录表Id
+	 */
+	private Long refundId;
+	/**
+	 * 订单Id
+	 */
     private String orderId;
-
+    /**
+	 * 申请退款原因
+	 */
     private String reason;
-
-    private String memo;
-
+    /**
+	 * 申请退款时间
+	 */
+    private Date applyDate;
+    /**
+	 * 订单Id
+	 */
     private Integer status;
-
-    private Date statusD;
-
-    private Integer rejectNum;
-
-    private Long merchantId;
-
-    private String rejectReason;
-
-    private Date merchantVerifyD;
-
-    private Long userId;
-
-    private String mainOrderId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public BigDecimal getAmt() {
-        return amt;
-    }
-
-    public void setAmt(BigDecimal amt) {
-        this.amt = amt;
-    }
-
+    /**
+     * 申请退货的数量
+     */
+    private Integer goodsNum;
+    
+    /**
+     * 申请结果
+     */
+    private String applayResult;
+    
+    /**
+     * 退款类型（分为退货，换货，退款）
+     */
+    private String refundType;
+    
+    /**
+     * 退款处理进度
+     */
+    private String refundProgress;
+    
+    /**
+     * 审核时间
+     */
+    private Date reviewDate;
+    
+    /**
+     * 审核人(商户名字)
+     */
+    private String reviewUser;
+    
+    /**
+     * 审核人(平台管理者)
+     */
+    private String platformUser;
+    
+    /**
+     * 商户备注
+     */
+    private String merchantNote;
+    
     public String getOrderId() {
         return orderId;
     }
@@ -82,14 +85,6 @@ public class CashRefundVo {
         this.reason = reason;
     }
 
-    public String getMemo() {
-        return memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -98,59 +93,92 @@ public class CashRefundVo {
         this.status = status;
     }
 
-    public Date getStatusD() {
-        return statusD;
-    }
+	public Date getApplyDate() {
+		return applyDate;
+	}
 
-    public void setStatusD(Date statusD) {
-        this.statusD = statusD;
-    }
+	public void setApplyDate(Date applyDate) {
+		this.applyDate = applyDate;
+	}
 
-    public Integer getRejectNum() {
-        return rejectNum;
-    }
+	public Long getOperateId() {
+		return operateId;
+	}
 
-    public void setRejectNum(Integer rejectNum) {
-        this.rejectNum = rejectNum;
-    }
+	public void setOperateId(Long operateId) {
+		this.operateId = operateId;
+	}
 
-    public Long getMerchantId() {
-        return merchantId;
-    }
+	public Long getRefundId() {
+		return refundId;
+	}
 
-    public void setMerchantId(Long merchantId) {
-        this.merchantId = merchantId;
-    }
+	public void setRefundId(Long refundId) {
+		this.refundId = refundId;
+	}
 
-    public String getRejectReason() {
-        return rejectReason;
-    }
+	public Integer getGoodsNum() {
+		return goodsNum;
+	}
 
-    public void setRejectReason(String rejectReason) {
-        this.rejectReason = rejectReason;
-    }
+	public void setGoodsNum(Integer goodsNum) {
+		this.goodsNum = goodsNum;
+	}
 
-    public Date getMerchantVerifyD() {
-        return merchantVerifyD;
-    }
+	public String getApplayResult() {
+		return applayResult;
+	}
 
-    public void setMerchantVerifyD(Date merchantVerifyD) {
-        this.merchantVerifyD = merchantVerifyD;
-    }
+	public void setApplayResult(String applayResult) {
+		this.applayResult = applayResult;
+	}
 
-    public Long getUserId() {
-        return userId;
-    }
+	public String getRefundType() {
+		return refundType;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+	public void setRefundType(String refundType) {
+		this.refundType = refundType;
+	}
 
-    public String getMainOrderId() {
-        return mainOrderId;
-    }
+	public String getRefundProgress() {
+		return refundProgress;
+	}
 
-    public void setMainOrderId(String mainOrderId) {
-        this.mainOrderId = mainOrderId;
-    }
+	public void setRefundProgress(String refundProgress) {
+		this.refundProgress = refundProgress;
+	}
+
+	public Date getReviewDate() {
+		return reviewDate;
+	}
+
+	public void setReviewDate(Date reviewDate) {
+		this.reviewDate = reviewDate;
+	}
+
+	public String getReviewUser() {
+		return reviewUser;
+	}
+
+	public void setReviewUser(String reviewUser) {
+		this.reviewUser = reviewUser;
+	}
+
+	public String getMerchantNote() {
+		return merchantNote;
+	}
+
+	public void setMerchantNote(String merchantNote) {
+		this.merchantNote = merchantNote;
+	}
+
+	public String getPlatformUser() {
+		return platformUser;
+	}
+
+	public void setPlatformUser(String platformUser) {
+		this.platformUser = platformUser;
+	}
+	
 }

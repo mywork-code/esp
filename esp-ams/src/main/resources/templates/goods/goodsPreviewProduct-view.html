@@ -157,6 +157,11 @@
             text-indent: 90px;
             line-height: 20px;
         }
+        #Product_details .product .SIZE  .SIZE_costPrice{
+             color: black;
+		   	 padding-left: 100px;
+		     line-height: 20px;
+        }
         #Product_details .product .SIZE  .SIZE_color{
             padding-top: 10px;
             text-indent: 90px;
@@ -232,6 +237,7 @@
 	<div class="easyui-tabs" id="tabs" style="width: 98%;">
 				
 <div id="Product_detailsWrap">
+	<input id="viewName" type="hidden" value="${view!}">
     <div id="Product_details">
         <p class="nav">
             <a class="active">商品</a>
@@ -270,12 +276,13 @@
              <#else>
                   <p class="price">¥ ${goodsMinPrice!}～${goodsMaxPrice!}</p>
              </#if>
-              <#if (goodsStockList?size > 0)>
-            <div class="chose">选择规格数量
+             <#if (goodsStockList?size > 0)>
+             <div class="chose">选择规格数量
                 <div class="SIZE">
                     <img src="${rc.contextPath}/WebContent/images/icon-fail.png" alt="" class="close"/>
                     <img  id='goodsLogoUrl' src="data:image/gif;base64,${goodsStockList[0].stockLogo!}" alt="" class="pro_img"/>
-                    <p class="SIZE_price">￥${(goodsStockList[0].goodsPrice)!}</p>
+                    <p class="SIZE_price">¥${(goodsStockList[0].goodsPrice)!}</p>
+                    <p class="SIZE_costPrice" style="color: black">¥${(goodsStockList[0].goodsCostPrice)!}</p>
                     <p class="SIZE_color">已选择：${(goodsStockList[0].goodsSkuAttr)!}</p>
                     <div class="SIZE_title">${goodsSizeOrColorTitle!}</div>
 	                <div class="SIZE_Chcolor" id="SIZE_Chcolor">
@@ -286,6 +293,7 @@
 							data-compareurl2="${(GoodsStockInfoEntity.goodsCompareUrl2)!}"
 							data-logourl="${(GoodsStockInfoEntity.stockLogo)!}" 
 							data-price="${(GoodsStockInfoEntity.goodsPrice)!}" 
+							data-costPrice="${(GoodsStockInfoEntity.goodsCostPrice)!}" 
 							data-amount="${(GoodsStockInfoEntity.stockCurrAmt)!}">
 								${(GoodsStockInfoEntity.goodsSkuAttr)!}
 							</span>					
@@ -310,6 +318,13 @@
 </div>
 	
 <script>
+	$(function(){
+		debugger;
+		var view = $("#viewName").val();
+		if(view == "list"){
+			$(".SIZE_costPrice").hide();
+		}
+	});
 	var swiper = new Swiper('.swiper-container', {
 		nextButton : '.swiper-button-next',
 		prevButton : '.swiper-button-prev',

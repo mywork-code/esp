@@ -145,4 +145,9 @@ public class AddressService {
         return addressInfoRepository.queryOneAddressByUserId(userId);
     }
 
+
+	public AddressInfoEntity queryOneAddressByAddressId(long addressId) {
+
+		return addressInfoRepository.queryOneAddressByAddressId(addressId);
+	}
 }

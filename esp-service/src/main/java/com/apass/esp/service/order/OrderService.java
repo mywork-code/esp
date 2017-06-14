@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1253,14 +1254,30 @@ public class OrderService {
 			LOG.info(requestId, "待付款订单不能修改省、市、区地址", "");
 			throw new BusinessException("待付款订单不能修改省、市、区地址",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
-
-		Long addressId = addressService.addAddressInfo(addressInfoDto);
+		Long addressId = orderInfo.getAddressId();
+		AddressInfoEntity addressInfoEntity = addressService.queryOneAddressByAddressId(orderInfo.getAddressId());
+		if (addressInfoEntity == null) {
+			addressId = addressService.addAddressInfo(addressInfoDto);
+		}else{
+			addressInfoEntity.setUserId(addressInfoDto.getUserId());
+			addressInfoEntity.setTelephone(addressInfoDto.getTelephone());
+			addressInfoEntity.setAddressId(addressId);
+			addressInfoEntity.setAddress(addressInfoDto.getAddress());
+			addressInfoEntity.setCity(addressInfoDto.getCity());
+			addressInfoEntity.setProvince(addressInfoDto.getProvince());
+			addressInfoEntity.setDistrict(addressInfoDto.getDistrict());
+			addressInfoEntity.setName(addressInfoDto.getName());
+			addressService.updateAddressInfo(addressInfoEntity);
+		}
 
 		OrderInfoEntity orderInfoDto = new OrderInfoEntity();
 		orderInfoDto.setId(orderInfo.getId());
 		orderInfoDto.setAddress(addressInfoDto.getAddress());
 		orderInfoDto.setName(addressInfoDto.getName());
 		orderInfoDto.setTelephone(addressInfoDto.getTelephone());
+		orderInfoDto.setCity(addressInfoDto.getCity());
+		orderInfoDto.setProvince(addressInfoDto.getProvince());
+		orderInfoDto.setDistrict(addressInfoDto.getDistrict());
 		orderInfoDto.setAddressId(addressId);
 		orderInfoRepository.update(orderInfoDto);
 

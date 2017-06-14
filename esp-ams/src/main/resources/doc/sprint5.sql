@@ -9,16 +9,14 @@ CREATE TABLE esp.`t_esp_cash_refund` (
 `update_date` datetime ,
 `amt` decimal(15,4)  COMMENT '退款总金额',
 `order_id` varchar(255)  COMMENT '订单id',
-`reason` varchar(32)  COMMENT '退款原因',
-`memo` varchar(255)  COMMENT '退款说明',
-`status` int  COMMENT '退款状态（1:退款提交，等待商家审核；2：同意退款；3：拒绝退款；4：取消退款；5:退款处理中；6：退款成功；7：退款失败）',
+`status` int  COMMENT '退款状态（1:退款提交，等待商家审核；2：同意退款；3：拒绝退款；4：取消退款；5:退款处理中；6：退款成功；7：退款失败；8：额度释放）',
 `status_d` datetime COMMENT '状态更新时间',
 `reject_num` int  COMMENT '拒绝退款的次数',
-`merchant_id` bigint  COMMENT '商户id',
-`reject_reason` varchar(255)  COMMENT '商户拒绝原因',
-`merchant_verify_d` datetime  COMMENT '商户同意拒绝时间',
 `user_id` bigint ,
 `main_order_id` varchar(255) ,
+`reason` varchar(255)  COMMENT '退款原因',
+`memo` varchar(255) COMMENT '退款说明',
+agree_d datetime COMMENT '同意退款时间',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -37,5 +35,4 @@ CREATE TABLE esp.`t_esp_refund_txn` (
 `amt` decimal(15,4) ,
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
