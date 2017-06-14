@@ -28,7 +28,8 @@ public enum LogStashKey {
     ORDER_QUERY_DETAIL("查询订单详情[根据订单号查询订单明细]","orderQueryDetail"),
     ORDER_NOPAY_MODIFYADDRESS("待付款订单收货地址修改","orderNopayModifyaddress"),
     ORDER_REQUEST_REFUND("退款申请","orderRequestRefund"),
-    
+    ORDER_CHANGE_REQUEST_REFUND("修改退款申请","orderChangeRequestRefund"),
+
     
     
     /***支付相关***/
