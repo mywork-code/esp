@@ -2,6 +2,9 @@ package com.apass.esp.service.refund;
 
 import java.util.List;
 
+import com.apass.esp.domain.dto.aftersale.CashRefundDto;
+import com.apass.esp.domain.entity.AwardDetail;
+import com.apass.esp.utils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,5 +40,14 @@ public class CashRefundService {
 		List<CashRefund> list = cashRefundMapper.cashRefundByOrderId(Long.parseLong(orderId));
 		
 		return null;
+	}
+
+
+	public CashRefundDto getCashRefundByOrderId(String orderId){
+		CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+
+		CashRefundDto cashRefundDto = new CashRefundDto();
+		BeanUtils.copyProperties(cashRefundDto, cashRefund);
+		return cashRefundDto;
 	}
 }
