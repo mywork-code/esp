@@ -19,4 +19,13 @@
 				(SELECT ID FROM T_ESP_WORK_CITY WHERE CODE=#{value})
 		]]>
 	</select>
+	
+	<!-- 根据province查询code -->
+	<select id="queryDistrictCodeByName" resultType="String">
+		<![CDATA[
+			SELECT CODE FROM T_ESP_WORK_CITY WHERE PROVINCE = #{value}
+		]]>
+	</select>
+	
+	
 </mapper> 

@@ -519,11 +519,23 @@ public class OrderService {
 			this.validateGoodsOffShelf(requestId, purchase.getGoodsId());
 
 		}
+		// 校验地址
+		AddressInfoEntity address = addressInfoDao.select(addressId);
+		if (null == address || address.getUserId().longValue() != userId.longValue()) {
+			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
+			throw new BusinessException("该用户地址信息不存在");
+		}
+		
 		// 校验商品库存
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-
+			//校验是否在不配送区域中
+			String unSupportProvinces = goodsDetail.getUnSupportProvince();
+			if(unSupportProvinces.contains(address.getProvince())){
+				LOG.info(requestId, "该商品暂不支持该地域发货，将不计入结算,该商品不支持的省份有：{}", unSupportProvinces);
+				throw new BusinessException("抱歉，"+goodsDetail.getGoodsName() + "商品暂不支持该地域发货，将不计入结算");
+			}
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
@@ -543,12 +555,6 @@ public class OrderService {
 					throw new BusinessException("订单商品购物车中不存在");
 				}
 			}
-		}
-		// 校验地址
-		AddressInfoEntity address = addressInfoDao.select(addressId);
-		if (null == address || address.getUserId().longValue() != userId.longValue()) {
-			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
-			throw new BusinessException("该用户地址信息不存在");
 		}
 	}
 
