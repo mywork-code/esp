@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -42,6 +43,7 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -105,7 +107,9 @@ public class OrderService {
 	private BillService billService;
 	@Autowired
 	private MerchantInforService merchantInforService;
-
+	@Autowired
+	private CashRefundMapper   cashRefundMapper;
+	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -1371,5 +1375,34 @@ public class OrderService {
      */
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+    }
+    /**
+     * 退款申请
+     * @param orderId
+     * @param reason
+     * @param memo
+     * @return
+     */
+    public void requestRefund(String requestId,String orderId,String userId, String reason,String memo) throws BusinessException{
+    	OrderInfoEntity orderInfo=orderInfoRepository.selectByOrderIdAndUserId(orderId,Long.parseLong(userId));
+    	CashRefund  cr=new CashRefund();
+    	if(null !=orderInfo && "D02".equals(orderInfo.getStatus())){
+    		cr.setCreateDate(new Date());
+    		cr.setUpdateDate(new Date());
+    		cr.setAmt(orderInfo.getOrderAmt());
+    		cr.setOrderId(orderId);
+    		cr.setStatus(1);
+    		cr.setStatusD(new Date());
+    		cr.setUserId(Long.parseLong(userId));
+    		cr.setMainOrderId(orderInfo.getMainOrderId());
+    		cr.setReason(reason);
+    		cr.setMemo(memo);
+    		int result=cashRefundMapper.insert(cr);
+    		if(result !=1){
+				LOG.info(requestId, "插入退款申请信息到数据失败!", "");
+				throw new BusinessException("退款申请失败！",BusinessErrorCode.ORDER_REQUEST_REFUND);
+    		}
+    		orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+    	}
     }
 }

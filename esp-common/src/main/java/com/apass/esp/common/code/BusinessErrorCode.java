@@ -63,7 +63,7 @@ public enum BusinessErrorCode implements ErrorCode {
   AFTERSALES_PROCESSDATA_ERROR(3022, "售后流程状态错误"),
   ORDER_PAY_FAILED(3023,"订单支付失败!请重新支付"),
   ORDERSTATUS_NOTALLOW_CANCEL(3024,"对不起!当前订单状态不能取消该订单"),
-
+  ORDER_REQUEST_REFUND(3025,"退款申请失败！"),
 
   //4xxx 与依懒服务相互调用问题
   LOGISTICS_TRACKING_ERROR(4001, "物流跟踪失败"),
