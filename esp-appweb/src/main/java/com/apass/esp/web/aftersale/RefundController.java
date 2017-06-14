@@ -70,7 +70,7 @@ public class RefundController {
         }
         resultMap.put("txnInfoDtoList", txnInfoDtoList);
         resultMap.put("cashRefundDto", cashRefundDto);
-        resultMap.put("orderDetailInfoDto", orderDetailInfoDto);
+        resultMap.put("GoodsInfoInOrderList", orderDetailInfoDto.getOrderDetailInfoList());
         return Response.successResponse(resultMap);
     }
 
