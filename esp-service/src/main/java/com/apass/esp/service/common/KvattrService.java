@@ -72,7 +72,7 @@ public class KvattrService {
             }
         }
         try {
-            return (T) clazz.newInstance();
+            return t;
         } catch (Exception e) {
             return null;
         }
