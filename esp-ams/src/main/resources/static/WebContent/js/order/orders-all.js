@@ -172,6 +172,11 @@ $ (function ()
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 				                        content += " onclick='refundDeal(\"" + row.orderId + "\",\"" + row.refundId + "\",\"" + row.refundType+ "\");'>售后受理</a>";
 			                        }
+			                        //退款处理中  交易关闭
+			                        if(orderStatus == 'D9' || orderStatus == 'D10'){
+			                        	content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+				                        content += " onclick='$.refundDetails(\"" + row.orderId + "\");'>退款详情</a>";
+			                        }
 			                        }
 			                        return content;
 		                        }
@@ -457,23 +462,15 @@ $ (function ()
 				params['createDate'] = $ ("#createDate").textbox ('getValue');
 				params['name'] = $ ("#name").textbox ('getValue');
 				params['telephone'] = $ ("#telephone").textbox ('getValue');
-				params['orderStatus'] = $ ("#orderStatus").textbox ('getValue');
+				var status = $ ("#orderStatus").textbox ('getValue');
+				if(status == ''){
+					params['orderStatus']="'D00','D01','D02','D03','D04','D05','D07','D08','D09','D10'";
+				}else{
+					params['orderStatus'] = "'"+status+"'";
+				}
 				params['refundType'] = $ ("#refundType").combobox ('getValue');
 				params['isAll'] = 't';// t: 是 f: 否 是否导出全部订单信息
 				params['busCode'] = 'E001';// 订单导出code
-				
-				// $.ajax (
-				// {
-				// url : ctx + '/application/business/order/pagelist',
-				// data : params,
-				// type : "post",
-				// dataType : "json",
-				// success : function (data)
-				// {
-				// dataList = data.rows;
-				// exportFile ("tablelist", "订单信息", params);
-				// }
-				// })
 				
 				exportFile ("tablelist", "全部订单信息", params);
 			}
@@ -500,6 +497,15 @@ $ (function ()
 	})
 	
 });
+
+/**
+ * 退款详情
+ * @param orderId
+ */
+
+$.refundDetails = function(orderId){
+
+}
 
 /**
  * 退款受理

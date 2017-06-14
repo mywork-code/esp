@@ -24,6 +24,7 @@ import com.apass.esp.domain.entity.datadic.DataDicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
+import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.service.datadic.DataDicService;
 import com.apass.esp.service.logistics.LogisticsService;
@@ -120,6 +121,12 @@ public class OrderQueryController {
             String merchantCode = listeningCustomSecurityUserDetails.getMerchantCode();
 
             // 通过商户号查收订单详情信息
+            if(StringUtils.isBlank(orderStatus)){
+            	orderStatus = "'D03','D04','D05'";
+            }else{
+           	    orderStatus = "'"+orderStatus+"'";
+            }
+            
             Map<String, String> map = new HashMap<String, String>();
             map.put("orderId", orderId);
             map.put("orderStatus", orderStatus);
@@ -137,16 +144,6 @@ public class OrderQueryController {
             
             List<OrderSubInfoEntity> dataList = orderList.getDataList();
             
-            if(!CollectionUtils.isEmpty(dataList)){
-            	for (OrderSubInfoEntity order : dataList) {
-					if(StringUtils.isNotBlank(order.getPreDelivery()) && order.getPreDelivery().equals(PreDeliveryType.PRE_DELIVERY_Y.getCode())){
-						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
-					}else{
-						order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getMessage());
-					}
-				}
-            }
-
             respBody.setTotal(orderList.getTotalCount());
             respBody.setRows(dataList);
             respBody.setStatus(CommonCode.SUCCESS_CODE);
@@ -208,7 +205,7 @@ public class OrderQueryController {
                 respBody.setRows(list);
                 respBody.setStatus(CommonCode.SUCCESS_CODE);
             }else{
-                respBody.setMsg("物流单号和物流场商不匹配！");
+                respBody.setMsg("物流单号和物流厂商不匹配！");
             }
             
         }catch(Exception e){
@@ -243,6 +240,11 @@ public class OrderQueryController {
             String name = HttpWebUtils.getValue(request, "name");
 
             // 通过商户号查收订单详情信息
+            if(StringUtils.isBlank(orderStatus)){
+            	orderStatus = getOrderAllStatus();
+            }else{
+            	orderStatus = "'"+orderStatus+"'";
+            }
             Map<String, String> map = new HashMap<String, String>();
             map.put("orderId", orderId);
             map.put("orderStatus", orderStatus);
@@ -301,5 +303,21 @@ public class OrderQueryController {
             respBody.setMsg("用户列表查询失败");
         }
         return respBody;
+    }
+        
+    /**
+     * 获取订单的所有的状态
+     * @return
+     */
+    public static String getOrderAllStatus(){
+    	
+    	StringBuffer buffer = new StringBuffer();
+    	for(OrderStatus status : OrderStatus.values()){
+    		if((status.ordinal() > 0) && (status.ordinal() < OrderStatus.values().length)){
+    			buffer.append(",");
+    		}
+    		buffer.append("'"+status.getCode()+"'");
+    	}
+    	return buffer.toString();
     }
 }
