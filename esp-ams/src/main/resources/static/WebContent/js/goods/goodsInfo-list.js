@@ -226,6 +226,7 @@ $(function() {
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").combobox('getValue');
+        params['goodsCategoryCombo']=$("#goodsCategoryCombo").combotree('getValue');
         $('#tablelist').datagrid('load', params);
     });
     // 查询列表
@@ -235,8 +236,26 @@ $(function() {
     	$("#goodsTypes").combobox('setValue','');
     	$("#merchantName").textbox('setValue','');
     	$("#merchantType").combobox('setValue','');
+    	$("#goodsCategoryCombo").combotree('setValue','');
     	var params = {};
     	$('#tablelist').datagrid('load', params);
+    });
+    
+    $("#goodsCategoryCombo").combotree({
+        required : true,
+        loader : function(param, success, error) {
+            $.ajax({
+                url : ctx + "/application/goods/management/categoryList",
+                data : param,
+                type : "get",
+                dataType : "json",
+                success : function(resp) {
+                    $.validateResponse(resp, function() {
+                        success(resp.data);
+                    });
+                }
+            })
+        }
     });
 //==============================================-----新增商品 始----====================================================//-----------------------
     /** 
