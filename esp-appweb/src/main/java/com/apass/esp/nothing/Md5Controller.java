@@ -47,12 +47,13 @@ public class Md5Controller {
     @RequestMapping(value = "/test2", method = RequestMethod.POST)
     @ResponseBody
     public Response test2(@RequestBody Map<String, Object> paramMap) {
+        ShipmentTimeConfigAttr t = new ShipmentTimeConfigAttr();
         try {
-            kvattrService.get("com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr");
+             t =  kvattrService.get(new ShipmentTimeConfigAttr() );
         }catch (Exception e ){
 
         }
 
-        return Response.successResponse();
+        return Response.successResponse(t);
     }
 }

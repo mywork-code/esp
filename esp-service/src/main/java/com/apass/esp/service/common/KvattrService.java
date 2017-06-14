@@ -27,7 +27,7 @@ import java.util.List;
  * @since JDK 1.8
  */
 @Service
-public class KvattrService<T> {
+public class KvattrService {
     private static final Logger LOGGER = LoggerFactory.getLogger(KvattrService.class);
 
     @Autowired
@@ -47,32 +47,24 @@ public class KvattrService<T> {
     }
 
     /**
-     * @param source
      * @return
      */
-    public T get(String source) {
-        List<Kvattr> list = kvattrMapper.getBySource(source);
+    public <T>T get(T t) {
+        Class<?> clazz = t.getClass();
+        List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Object o = null;
-        try {
-            o = Class.forName(source).newInstance();
-        } catch (Exception e) {
-            return null;
-        }
-        Class<?> clazz = o.getClass();
-
         for (Kvattr kvattr : list) {
-            String type = kvattr.getKey().split("_")[0];
-            String fieldName = kvattr.getKey().split("_")[1];
+           // String type = kvattr.getKey().split("_")[0];
+            String fieldName = kvattr.getKey();//.split("_")[1];
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields
                     ) {
                 field.setAccessible(true);
-                if (field.getType().getSimpleName().equalsIgnoreCase(type) && field.getName().equalsIgnoreCase(fieldName)) {
+                if (field.getName().equalsIgnoreCase(fieldName)) {
                     try {
-                        field.set(o, kvattr.getValue());
+                        field.set(t, kvattr.getValue());
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -98,9 +90,10 @@ public class KvattrService<T> {
             try {
                 Object o = field.get(object);
                 if (o != null) {
-                    String clazzName = field.getType().getSimpleName();
+                    //String clazzName = field.getType().getSimpleName();
                     String name = field.getName();
-                    String key = clazzName + "_" + name;
+                    String key = //clazzName + "_" +
+                             name;
                     Kvattr kvattr = new Kvattr();
                     kvattr.setKey(key);
                     kvattr.setValue((String) o);
