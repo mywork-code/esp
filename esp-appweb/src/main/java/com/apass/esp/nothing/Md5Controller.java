@@ -1,10 +1,13 @@
 package com.apass.esp.nothing;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
+import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.web.activity.ActivityWithDrawController;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.MD5Utils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
@@ -20,6 +23,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/jsUtils")
 public class Md5Controller {
+
+    @Autowired
+    private KvattrService kvattrService;
+
     @RequestMapping(value = "/getMd5ByFile", method = RequestMethod.POST)
     @ResponseBody
     public Response getMd5ByFile(@RequestBody Map<String, Object> paramMap) {
@@ -30,5 +37,22 @@ public class Md5Controller {
         return Response.successResponse(s);
     }
 
+    @RequestMapping(value = "/test1", method = RequestMethod.POST)
+    @ResponseBody
+    public Response test(@RequestBody Map<String, Object> paramMap) {
+        kvattrService.add(new ShipmentTimeConfigAttr());
+        return Response.successResponse();
+    }
 
+    @RequestMapping(value = "/test2", method = RequestMethod.POST)
+    @ResponseBody
+    public Response test2(@RequestBody Map<String, Object> paramMap) {
+        try {
+            kvattrService.get("com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr");
+        }catch (Exception e ){
+
+        }
+
+        return Response.successResponse();
+    }
 }
