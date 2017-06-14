@@ -47,6 +47,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.ExportBusConfig;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.AwardActivity.AWARD_STATUS_AMS;
 import com.apass.esp.domain.vo.AwardBindRelIntroVo;
 import com.apass.esp.mapper.AwardDetailMapper;
@@ -763,6 +764,17 @@ public class ExportFileController {
         if (busCode.equals(ExportBusConfig.BUS_ORDER.getCode())) {
             Pagination<OrderSubInfoEntity> orderList = orderService.queryOrderSubDetailInfoByParamForExport(map, page);
             list = orderList.getDataList();
+            if(!CollectionUtils.isEmpty(list)){
+            	for (Object object : list) {
+            		OrderSubInfoEntity order = (OrderSubInfoEntity)object;
+            		if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
+					}
+					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_N.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_N.getMessage());
+					}
+				}
+            }
         } else if (busCode.equals(ExportBusConfig.BUS_GOODS.getCode())) {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             BeanUtils.populate(goodsInfoEntity, map);

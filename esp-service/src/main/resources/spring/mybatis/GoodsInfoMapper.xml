@@ -83,7 +83,8 @@
 				t.goods_Sku_Type goodsSkuType,
 				t.goods_Model goodsModel,
 				t.goods_sift_url goodsSiftUrl,
-				t.sord_no sordNo
+				t.sord_no sordNo,
+				un_support_province unSupportProvince
 			FROM
 				t_esp_goods_base_info t
 			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
@@ -123,7 +124,8 @@
 		t.goods_Model goodsModel,
 		t.goods_sift_url goodsSiftUrl,
 		t_mer.merchant_name merchantName,
-		sord_no SordNo
+		sord_no SordNo,
+		un_support_province
 	FROM
 		t_esp_goods_base_info t LEFT JOIN t_esp_merchant_info t_mer 
 	ON
@@ -205,7 +207,8 @@
              is_delete,
              goods_detail,
              goods_Sku_Type,
-             sord_no)
+             sord_no,
+             un_support_province)
 			values (#{goodsModel, jdbcType=VARCHAR},
 		        #{goodsName, jdbcType=VARCHAR},
 	        #{categoryId1, jdbcType=BIGINT},
@@ -229,7 +232,8 @@
 	        #{isDelete, jdbcType=VARCHAR},
 	        #{googsDetail, jdbcType=VARCHAR},
 	        #{goodsSkuType, jdbcType=VARCHAR},
-	        #{sordNo, jdbcType=INTEGER});
+	        #{sordNo, jdbcType=INTEGER},
+	        #{unSupportProvince, jdbcType=VARCHAR})
 	]]>
 	</insert>
 	<!-- 更新 -->
@@ -371,6 +375,9 @@
 			</if>
 			<if test="goodsSiftUrl != null and goodsSiftUrl != ''">
 				goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
+			</if>
+			<if test="unSupportProvince != null and unSupportProvince != ''">
+				un_support_province = #{unSupportProvince, jdbcType=VARCHAR},
 			</if>
 		</set>
 	<![CDATA[

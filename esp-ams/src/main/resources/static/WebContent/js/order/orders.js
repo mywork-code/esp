@@ -146,9 +146,9 @@ $ (function ()
 		                    	align : 'center'
 		                    },
 		                    {
-		                    	title : '是否为预发货',
+		                    	title : '商家是否发货',
 		                    	hidden: false,
-		                    	field : 'preDelivery',
+		                    	field : 'preDeliveryMsg',
 		                    	width : 100,
 		                    	align : 'center'
 		                    },
@@ -164,18 +164,19 @@ $ (function ()
 			                        
 			                        // 订单状态
 			                        var orderStatus = row.orderStatus;
+			                        var preDelivery = row.preDelivery;
 			                        var content = "";
 			                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 			                        content += " onclick='$.queryOrderDetail(" + JSON.stringify (row) + ");'>查看详情</a>";
 			                        if(grantedAuthority=='permission'){
-			                        if (orderStatus == 'D02')
+			                        if (orderStatus == 'D03' && preDelivery != 'Y')
 			                        {
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 				                        content += " onclick='$.sendGoods(\"" + row.orderId + "\",\""
 				                                + row.logisticsName + "\",\"" + row.logisticsNo + "\");'>我要发货</a>";
 			                        }
 			                        }
-			                        if (orderStatus == 'D03')
+			                        if (orderStatus == 'D03' && preDelivery == 'Y')
 			                        {
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 				                        content += " onclick='$.logisticsInfo(\"" + row.orderId + "\",\""
@@ -251,23 +252,17 @@ $ (function ()
 				params['createDate'] = $ ("#createDate").textbox ('getValue');
 				params['name'] = $ ("#name").textbox ('getValue');
 				params['telephone'] = $ ("#telephone").textbox ('getValue');
-				params['orderStatus'] = $ ("#orderStatus").textbox ('getValue');
+				var status = $ ("#orderStatus").textbox ('getValue');
+				
+				if(status == ''){
+					params['orderStatus']="'D03','D04','D05'";
+				}else{
+					params['orderStatus'] = "'"+status+"'";
+				}
+				
 				params['refundType'] = $ ("#refundType").combobox ('getValue');
 				params['isAll'] = 'f';// t: 是 f: 否 是否导出全部订单信息
 				params['busCode'] = 'E001';// 订单导出code
-				
-				// $.ajax (
-				// {
-				// url : ctx + '/application/business/order/pagelist',
-				// data : params,
-				// type : "post",
-				// dataType : "json",
-				// success : function (data)
-				// {
-				// dataList = data.rows;
-				// exportFile ("tablelist", "订单信息", params);
-				// }
-				// })
 				
 				exportFile ("tablelist", "订单信息", params);
 			}
