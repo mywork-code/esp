@@ -71,11 +71,7 @@ public class KvattrService {
                 }
             }
         }
-        try {
-            return t;
-        } catch (Exception e) {
-            return null;
-        }
+       return t ;
 
     }
 
