@@ -1,1 +1,0 @@
-__dtjavaTestHook__

@@ -40,7 +40,7 @@ public class StaticFileController {
         Map<String, Object> map = new HashMap<>();
         map.put("flag",true);
         map.put("id","app_weex");
-        map.put("url",appWebDomain + "/appweb/WebContent/js/app_weex.js");
+        map.put("url",appWebDomain + "/appweb/WebContent/js/app.weex.js");
         map.put("ver","100");
         map.put("md5",md5);
         return Response.successResponse(map);
