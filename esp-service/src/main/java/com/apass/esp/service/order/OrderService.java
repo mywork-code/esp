@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -42,6 +43,7 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -105,7 +107,9 @@ public class OrderService {
 	private BillService billService;
 	@Autowired
 	private MerchantInforService merchantInforService;
-
+	@Autowired
+	private CashRefundMapper   cashRefundMapper;
+	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -1449,4 +1453,5 @@ public class OrderService {
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
+   
 }

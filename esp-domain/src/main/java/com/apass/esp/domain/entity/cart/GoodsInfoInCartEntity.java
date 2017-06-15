@@ -67,6 +67,19 @@ public class GoodsInfoInCartEntity {
     /** 商户编码 */
     private String merchantCode;
 
+    /**
+     * 不支持配送区域
+     */
+    private String unSupportProvince;
+
+	public String getUnSupportProvince() {
+		return unSupportProvince;
+	}
+
+	public void setUnSupportProvince(String unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
+	
     public Long getUserId() {
         return userId;
     }
