@@ -543,12 +543,7 @@ public class OrderService {
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-			//校验是否在不配送区域中
-			String unSupportProvinces = goodsDetail.getUnSupportProvince();
-			if(unSupportProvinces.contains(address.getProvince())){
-				LOG.info(requestId, "该商品暂不支持该地域发货，将不计入结算,该商品不支持的省份有：{}", unSupportProvinces);
-				throw new BusinessException("抱歉，"+goodsDetail.getGoodsName() + "商品暂不支持该地域发货，将不计入结算");
-			}
+			
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
