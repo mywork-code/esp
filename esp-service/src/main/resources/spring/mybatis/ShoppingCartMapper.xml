@@ -127,6 +127,7 @@
 	            t2.DELIST_TIME              delistTime,   
 	            t2.IS_DELETE                isDelete,   
 	            t2.STATUS                   goodsStatus,
+	            t2.un_support_province      unSupportProvince, 
 	            t3.GOODS_ID                 goodsId,
                 t3.STOCK_CURR_AMT           stockCurrAmt,
                 t3.GOODS_SKU_ATTR           goodsSkuAttr
