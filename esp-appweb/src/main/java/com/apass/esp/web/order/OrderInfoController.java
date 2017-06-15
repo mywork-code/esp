@@ -533,7 +533,7 @@ public class OrderInfoController {
      * @return
      */
     @POST
-    @Path("/queryOrderByOrderId")
+    @Path("/v1/queryOrderByOrderId")
     public Response queryOrderInfoById(Map<String, Object> paramMap) {
 
         String logStashSign = LogStashKey.ORDER_QUERY.getValue();

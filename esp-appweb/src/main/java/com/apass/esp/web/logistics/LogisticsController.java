@@ -74,7 +74,7 @@ public class LogisticsController {
      * @return
      */
     @POST
-    @Path("/loadLosgiticsFristMsgByOrderId")
+    @Path("/v1/loadLosgiticsFristMsgByOrderId")
     public Response loadLosgiticsFristMsgByOrderId(Map<String,Object> paramMap){
     	
     	LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
