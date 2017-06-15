@@ -90,7 +90,6 @@ public class ShoppingCartController {
     @POST
     @Path("/list")
     public Response cartInfoList(Map<String, Object> paramMap) {
-       
         String logStashSign = LogStashKey.CART_LIST.getValue();
         String methodDesc = LogStashKey.CART_LIST.getName();
         
