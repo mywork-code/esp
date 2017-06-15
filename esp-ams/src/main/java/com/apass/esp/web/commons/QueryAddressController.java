@@ -52,6 +52,24 @@ public class QueryAddressController {
 		}
 		return list;
 	}
+	
+	@ResponseBody
+	@RequestMapping("/queryCode")
+	public String queryCodeByName(HttpServletRequest request) {
+		String unSupportCodes = null;
+		try {
+			String unSupportPrivinces = HttpWebUtils.getValue(request, "unSupportPrivinces");
+			if(StringUtils.isNotBlank(unSupportPrivinces)){
+				unSupportCodes = nationService.queryDistrictCodeByProvince(unSupportPrivinces);
+			}
+			if(StringUtils.isNotBlank(unSupportCodes)){
+				unSupportCodes = unSupportCodes.substring(0, unSupportCodes.length()-1);
+			}
+		} catch (Exception e) {
+			LOGGER.error("根据省的名称查询 code出错。", e);
+		}
+		return unSupportCodes;
+	}
 
 	@ResponseBody
 	@RequestMapping("/queryAreas")
