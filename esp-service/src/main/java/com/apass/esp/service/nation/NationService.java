@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.apass.esp.domain.enums.CityEnums;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,4 +213,21 @@ public class NationService {
 
         return result;
     }
+
+
+	/**
+	 * 根据省的名称查询对应code
+	 * @return
+	 */
+	public String queryDistrictCodeByProvince(String supportNames) {
+		StringBuffer codes = new StringBuffer();
+		String[] names= supportNames.split(",");
+		for (String name : names) {
+			String code = nationRepository.queryDistrictCodeByName(name);
+			if(StringUtils.isNotBlank(code)){
+				codes = codes.append(code+",");
+			}
+		}
+		return codes.toString();
+	}
 }

@@ -9,7 +9,7 @@ CREATE TABLE esp.`t_esp_cash_refund` (
 `update_date` datetime ,
 `amt` decimal(15,4)  COMMENT '退款总金额',
 `order_id` varchar(255)  COMMENT '订单id',
-`status` int  COMMENT '退款状态（1:退款提交，等待商家审核；2：同意退款；3：拒绝退款；4：取消退款；5:退款处理中；6：退款成功；7：退款失败；8：额度释放）',
+`status` int  COMMENT '退款状态（1:退款提交，等待商家审核；2：同意退款；3：拒绝退款；4：取消退款；5:退款处理中；6：退款成功；7：退款失败；）',
 `status_d` datetime COMMENT '状态更新时间',
 `reject_num` int  COMMENT '拒绝退款的次数',
 `user_id` bigint ,

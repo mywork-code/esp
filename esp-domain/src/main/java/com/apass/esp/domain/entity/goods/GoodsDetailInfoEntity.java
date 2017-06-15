@@ -66,6 +66,18 @@ public class GoodsDetailInfoEntity {
 	 * 商品状态
 	 */
 	private String status;
+	 /**
+     * 不支持配送区域
+     */
+    private String unSupportProvince;
+
+	public String getUnSupportProvince() {
+		return unSupportProvince;
+	}
+
+	public void setUnSupportProvince(String unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
 
 	public String getStatus() {
         return status;
