@@ -6,15 +6,11 @@ public enum CashRefundStatus {
 
 	CASHREFUND_STATUS2("2", "同意退款"),
 
-	CASHREFUND_STATUS3("3", "拒绝退款"),
+	CASHREFUND_STATUS3("3", "取消退款"),
 	
-	CASHREFUND_STATUS4("4", "取消退款"),
+	CASHREFUND_STATUS4("4", "退款成功"),
 	
-	CASHREFUND_STATUS5("5", "退款处理中"),
-	
-	CASHREFUND_STATUS6("6", "退款成功"),
-	
-	CASHREFUND_STATUS7("7", "退款失败");
+	CASHREFUND_STATUS5("5", "退款失败");
 
 	private String code;
 
