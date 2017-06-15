@@ -856,7 +856,69 @@ public class OrderService {
 		}
 
 		for (OrderInfoEntity order : orderList) {
-			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, userIdVal, order);
+			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, order);
+
+			returnOrders.add(orderDetailInfoDto);
+
+			try {
+				if (OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
+					PayRequestDto req = new PayRequestDto();
+					req.setOrderId(order.getOrderId());
+					String payRealStatus ="";
+					Response response = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
+					if(!response.statusResult()){
+						payRealStatus = "1";
+					}else{
+						payRealStatus = (String)response.getData();
+					}
+					// 0:支付成功 非零:支付失败
+					if (!YesNo.NO.getCode().equals(payRealStatus)) {
+						GoodsStockLogEntity sotckLog = goodsStcokLogDao.loadByOrderId(order.getOrderId());
+						if (null == sotckLog) {
+							continue;
+						}
+						LOG.info(requestId, "库存记录日志", sotckLog.getOrderId());
+						// 存在回滚
+						addGoodsStock(requestId, order.getOrderId());
+						goodsStcokLogDao.deleteByOrderId(order.getOrderId());
+					}
+				}
+
+			} catch (Exception e) {
+				LOGGER.error("订单查询未支付订单商品库存回滚异常", e);
+				LOG.info(requestId, "订单查询未支付订单商品库存回滚异常:orderId:" + order.getOrderId(), "");
+			}
+		}
+		return returnOrders;
+	}
+	
+	/**
+	 * 根据订单的Id和状态查询，订单的详情
+	 * @param requestId
+	 * @param orderId
+	 * @param orderStatus
+	 * @return
+	 * @throws BusinessException
+	 */
+	public List<OrderDetailInfoDto> getOrderDetailInfoByOrderId(String requestId, String orderId, String orderStatus)
+			throws BusinessException {
+
+		OrderInfoEntity orderInfo = new OrderInfoEntity();
+		orderInfo.setOrderId(orderId);
+		if (StringUtils.isNotBlank(orderStatus)) {
+			orderInfo.setStatus(orderStatus);
+		}
+
+		List<OrderDetailInfoDto> returnOrders = new ArrayList<OrderDetailInfoDto>();
+		// 查询客户的所有订单
+		List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
+
+		if (null == orderList || orderList.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		for (OrderInfoEntity order : orderList) {
+			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, order);
 
 			returnOrders.add(orderDetailInfoDto);
 
@@ -900,7 +962,7 @@ public class OrderService {
 	    
         OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
 	    
-        OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity.getUserId(),entity);
+        OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId,entity);
 		List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
 		for (GoodsInfoInOrderDto goodsInfoInOrderDto :goodsInfoInOrderDtoList) {
 			goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
@@ -908,7 +970,7 @@ public class OrderService {
 		return dto;
 	}
 
-    private OrderDetailInfoDto getOrderDetailInfoDto(String requestId, Long userIdVal,
+    private OrderDetailInfoDto getOrderDetailInfoDto(String requestId,
                                                      OrderInfoEntity order) throws BusinessException {
         // 通过子订单号查询订单详情
         OrderDetailInfoEntity orderDetailParam = new OrderDetailInfoEntity();
@@ -967,15 +1029,15 @@ public class OrderService {
         orderDetailInfoDto.setDelayAcceptGoodFlag(order.getExtendAcceptGoodsNum() + "");
         // }
         //账单分期后改为删除按钮
-        boolean billOverDueFlag =  billService.queryStatement(userIdVal,order.getOrderId());
+        boolean billOverDueFlag =  billService.queryStatement(order.getUserId(),order.getOrderId());
         if(billOverDueFlag){
-        	LOGGER.info("userId={},账单分期已逾期",userIdVal);
+        	LOGGER.info("userId={},账单分期已逾期",order.getUserId());
         	orderDetailInfoDto.setRefundAllowedFlag("0");
         } else {
         	try {
         		orderDetailInfoDto.setRefundAllowedFlag("1");
         		// 交易完成的订单是否允许售后操作校验
-        		afterSaleService.orderRufundValidate(requestId, userIdVal, order.getOrderId(), order);
+        		afterSaleService.orderRufundValidate(requestId, order.getUserId(), order.getOrderId(), order);
         	} catch (Exception e) {
         		LOG.info(requestId, "这个捕获只是为了过滤掉订单售后校验逻辑抛出的异常", "");
         		LOGGER.error(e.getMessage(), e);
@@ -983,6 +1045,7 @@ public class OrderService {
         		orderDetailInfoDto.setRefundAllowedFlag("0");
         	}
         }
+        orderDetailInfoDto.setPreDelivery(order.getPreDelivery());
         return orderDetailInfoDto;
     }
 

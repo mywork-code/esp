@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.TrackingmoreStatus;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.common.ConstantRepository;
@@ -247,6 +249,8 @@ public class LogisticsService {
         return resultMap;
     }
 
+    
+    
     /**
      * Trackingmore 获取物流轨迹
      * 
@@ -377,5 +381,35 @@ public class LogisticsService {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
         return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
     }
-
+    
+    /**
+     * 根据订单的Id,查询订单的快递信息，只查询最新的一条
+     * @param orderId
+     * @return
+     * @throws BusinessException
+     */
+    public LogisticsResponseDto loadFristLogisticInfo(String orderId) throws BusinessException{
+    	
+    	LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
+    	//根据订单的id获取订单详情
+    	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
+    	if(orderInfo != null){
+    		logisticInfo.setLogisticCode(orderInfo.getLogisticsNo());
+    		logisticInfo.setShipperCode(orderInfo.getLogisticsName());
+    		
+    		if(StringUtils.equals(orderInfo.getStatus(), OrderStatus.ORDER_SEND.getCode()) && 
+    				StringUtils.equals(orderInfo.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode() )){
+    			List<Trace> traceList =  getSignleTrackingsByOrderId(orderInfo.getOrderId());
+            	if(!CollectionUtils.isEmpty(traceList)){
+            		List<Trace> list = new ArrayList<Trace>();
+            		list.add(traceList.get(0));
+            		logisticInfo.setTraces(list);
+            	}
+    		}
+    	}
+    	
+    	return logisticInfo;
+    }
+    
+    
 }

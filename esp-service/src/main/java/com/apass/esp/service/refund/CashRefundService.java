@@ -17,6 +17,7 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -73,6 +74,29 @@ public class CashRefundService {
     }
     
     /**
+     * 根据退款记录的状态，返回页面所需的数据
+     * @param orderId
+     * @return
+     */
+    public String getCashRundStatus(String orderId){
+    	
+    	CashRefundDto dto = getCashRefundByOrderId(orderId);
+    	//如果记录为空，则返回空
+    	if(dto == null){
+    		return "";
+    	}
+    	//根据状态返回值
+    	if(dto.getStatus() == 1){
+    		return CashRefundVoStatus.CASHREFUND_STATUS1.getCode();
+    	}else if(dto.getStatus() == 2 ||dto.getStatus() == 5  ){
+    		return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
+    	}else if(dto.getStatus() == 4){
+    		return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
+    	}else{
+    		return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
+    	}
+    }
+    /*
      * 退款申请
      * @param orderId
      * @param reason
@@ -120,13 +144,5 @@ public class CashRefundService {
     public CashRefund getRequestRefundInfo(String requestId,String orderId,String userId){
     	return cashRefundMapper.getCashRefundByOrderId(orderId);
     }
-    
-    
-    
-    
-    
-    
-    
-    
     
 }
