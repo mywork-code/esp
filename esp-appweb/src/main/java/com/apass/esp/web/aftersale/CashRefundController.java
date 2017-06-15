@@ -41,8 +41,8 @@ import com.apass.gfb.framework.utils.GsonUtils;
 @Path("/v1/refund")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-public class RefundController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CashRefundService.class);
+public class CashRefundController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CashRefundController.class);
 
     @Autowired
     private CashRefundService cashRefundService;
