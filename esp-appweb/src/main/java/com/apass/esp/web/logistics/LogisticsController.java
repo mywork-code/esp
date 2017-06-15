@@ -10,12 +10,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -64,4 +67,31 @@ public class LogisticsController {
         return Response.successResponse(returnMap);
     }
 
+    /**
+     * 根据订单号查询物流信息的第一条信息
+     * 
+     * @param orderId
+     * @return
+     */
+    @POST
+    @Path("/loadLosgiticsFristMsgByOrderId")
+    public Response loadLosgiticsFristMsgByOrderId(Map<String,Object> paramMap){
+    	
+    	LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
+    	
+    	try {
+    		String orderId = CommonUtils.getValue(paramMap, "orderId");
+        	if(StringUtils.isBlank(orderId)){
+        		LOGGER.info("订单Id不能为空");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        	}
+    		
+    		logisticInfo = logisticsService.loadFristLogisticInfo(orderId);
+		} catch (Exception e) {
+			LOGGER.error("物流信息查询失败!", e);
+			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+		}
+    	
+    	return Response.successResponse(logisticInfo);
+    }
 }

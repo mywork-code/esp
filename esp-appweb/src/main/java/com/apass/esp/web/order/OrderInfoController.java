@@ -8,6 +8,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.CityEnums;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -579,37 +580,14 @@ public class OrderInfoController {
             if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_PAYED.getCode())){
             	//根据订单的Id,查询退款的申请记录，如果无记录，则页面显示退款按钮
             	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
-            	
-            	dto.setCashRefundStatus(cash.getStatus()+"");
-            	
             	if(cash != null){
-            		boolean b = DateFormatUtil.isExpired(cash.getCreateDate(), 1);
-            		 if(cash.getStatus() == 6){
-            			 dto.setCashRefundStatus("同意退款");
-            		 } 
-            		if(b){
-            			//当前时间小
-            			dto.setCashRefundStatus("同意退款");
-            			
-            			//更新数据库字段  恢复额度
-            			
-            			
-            		}else{
-            			//当前时间大
-            			dto.setCashRefundStatus("退款处理中");
+            		if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+            			//更新数据库字段  恢复额度  TODO
             		}
-            		
             	}
+            	//根据返回结果，判断页面要显示的按钮
+            	dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
             }
-            
-            /**
-             * 如果订单的状态是D10(交易失败)
-             */
-            if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_TRADCLOSED.getCode())){
-            	dto.setCashRefundStatus("6");
-            }
-            
-            
             
             resultMap.put("orderInfoList", resultList);
             resultMap.put("postage", "0");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517

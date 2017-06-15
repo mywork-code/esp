@@ -76,7 +76,7 @@ public class OrderDetailInfoDto {
     private String preDelivery;
     
     /**
-     * 退款状态()
+     * 退款状态(1.处理中 2.退款中 3.退款成功 4.取消退款)
      */
     private String cashRefundStatus;
     
