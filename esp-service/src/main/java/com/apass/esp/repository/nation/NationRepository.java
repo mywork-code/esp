@@ -30,4 +30,8 @@ public class NationRepository extends BaseMybatisRepository<NationEntity, Long> 
 		return getSqlSession().selectList(getSQL("selectCityList"), districtCode);
 	}
 
+	public String queryDistrictCodeByName(String supportName) {
+		return getSqlSession().selectOne("queryDistrictCodeByName",supportName);
+	}
+
 }
