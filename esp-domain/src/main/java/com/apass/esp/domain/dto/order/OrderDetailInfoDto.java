@@ -68,7 +68,18 @@ public class OrderDetailInfoDto {
     private String delayAcceptGoodFlag="0";
     
     private List<GoodsInfoInOrderDto> orderDetailInfoList ;
-
+    
+    /**
+     * 商户是否发货
+     * @return
+     */
+    private String preDelivery;
+    
+    /**
+     * 退款状态()
+     */
+    private String cashRefundStatus;
+    
     public String getDelayAcceptGoodFlag() {
         return delayAcceptGoodFlag;
     }
@@ -196,5 +207,21 @@ public class OrderDetailInfoDto {
     public void setRemainingTime(Date remainingTime) {
         this.remainingTime = remainingTime;
     }
+
+	public String getPreDelivery() {
+		return preDelivery;
+	}
+
+	public void setPreDelivery(String preDelivery) {
+		this.preDelivery = preDelivery;
+	}
+
+	public String getCashRefundStatus() {
+		return cashRefundStatus;
+	}
+
+	public void setCashRefundStatus(String cashRefundStatus) {
+		this.cashRefundStatus = cashRefundStatus;
+	}
     
 }

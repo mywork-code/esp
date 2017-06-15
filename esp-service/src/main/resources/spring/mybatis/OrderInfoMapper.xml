@@ -53,7 +53,8 @@
             addressId               addressId,
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
 		]]>
@@ -96,7 +97,8 @@
             addressId               addressId,
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
 		where main_order_id=#{value}
@@ -131,7 +133,8 @@
             addressId               addressId,
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
 		where 1=1
@@ -177,7 +180,8 @@
             addressId               addressId,
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
 			WHERE 1=1
