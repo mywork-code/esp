@@ -1389,54 +1389,5 @@ public class OrderService {
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
-    /**
-     * 退款申请
-     * @param orderId
-     * @param reason
-     * @param memo
-     * @return
-     */
-    public void requestRefund(String requestId,String orderId,String userId, String reason,String memo) throws BusinessException{
-    	OrderInfoEntity orderInfo=orderInfoRepository.selectByOrderIdAndUserId(orderId,Long.parseLong(userId));
-    	CashRefund  cr=new CashRefund();
-    	if(null !=orderInfo && OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())){
-    		cr.setCreateDate(new Date());
-    		cr.setUpdateDate(new Date());
-    		cr.setAmt(orderInfo.getOrderAmt());
-    		cr.setOrderId(orderId);
-    		cr.setStatus(1);
-    		cr.setStatusD(new Date());
-    		cr.setUserId(Long.parseLong(userId));
-    		cr.setMainOrderId(orderInfo.getMainOrderId());
-    		cr.setReason(reason);
-    		cr.setMemo(memo);
-    		int result=cashRefundMapper.insert(cr);
-    		if(result !=1){
-				LOG.info(requestId, "插入退款申请信息到数据失败!", "");
-				throw new BusinessException("退款申请失败！",BusinessErrorCode.ORDER_REQUEST_REFUND);
-    		}
-    		orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
-    	}
-    }
-    
-    /**
-     * 修改退款申请
-     * @param orderId
-     * @param reason
-     * @param memo
-     * @return
-     */
-    public void changeRequestRefund(String requestId,String orderId,String userId, String reason,String memo){
-    	OrderInfoEntity orderInfo=orderInfoRepository.selectByOrderIdAndUserId(orderId,Long.parseLong(userId));
-    	CashRefund  cr=new CashRefund();
-    	if(null !=orderInfo && OrderStatus.ORDER_REFUNDPROCESSING.getCode().equals(orderInfo.getStatus())){
-    		cr.setUpdateDate(new Date());
-    		cr.setOrderId(orderId);
-    		cr.setUserId(Long.parseLong(userId));
-    		cr.setReason(reason);
-    		cr.setMemo(memo);
-    		cashRefundMapper.updateByOrderIdSelective(cr);
-    	}
-    }
-    
+   
 }

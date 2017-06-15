@@ -3,15 +3,16 @@ package com.apass.esp.web.feedback;
 import java.util.Date;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -19,8 +20,9 @@ import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.gfb.framework.utils.CommonUtils;
 
-@Controller
-@RequestMapping("v1/feedback")
+@Path("/v1/refund")
+@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class FeedbackController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackController.class);
 
@@ -30,9 +32,9 @@ public class FeedbackController {
 	/**
 	 * 意见反馈保存
 	 */
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	@ResponseBody
-	public Response saveFeedback(@RequestBody Map<String, Object> paramMap) {
+	@POST
+    @Path("/save")
+	public Response saveFeedback(Map<String, Object> paramMap) {
 		String feedbackType = CommonUtils.getValue(paramMap, "feedbackType");//意见反馈类型
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
