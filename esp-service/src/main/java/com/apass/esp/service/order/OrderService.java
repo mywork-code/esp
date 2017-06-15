@@ -532,11 +532,18 @@ public class OrderService {
 			this.validateGoodsOffShelf(requestId, purchase.getGoodsId());
 
 		}
+		// 校验地址
+		AddressInfoEntity address = addressInfoDao.select(addressId);
+		if (null == address || address.getUserId().longValue() != userId.longValue()) {
+			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
+			throw new BusinessException("该用户地址信息不存在");
+		}
+		
 		// 校验商品库存
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-
+			
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
@@ -556,12 +563,6 @@ public class OrderService {
 					throw new BusinessException("订单商品购物车中不存在");
 				}
 			}
-		}
-		// 校验地址
-		AddressInfoEntity address = addressInfoDao.select(addressId);
-		if (null == address || address.getUserId().longValue() != userId.longValue()) {
-			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
-			throw new BusinessException("该用户地址信息不存在");
 		}
 	}
 
