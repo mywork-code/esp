@@ -1453,7 +1453,12 @@ public class OrderService {
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
-   
+
+
+	public void updateOrderStatus(OrderInfoEntity entity){
+		orderInfoRepository.updateOrderStatus(entity);
+	}
+
     /**
      * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
      */
