@@ -226,7 +226,7 @@ public class CashRefundService {
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
                 if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnAmt));
+                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnInfoEntity.getTxnAmt()));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
                        // cashRefund.setStatus(5);
