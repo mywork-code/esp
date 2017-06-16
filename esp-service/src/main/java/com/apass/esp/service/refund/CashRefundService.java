@@ -1,9 +1,17 @@
 package com.apass.esp.service.refund;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.RefundTxn;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.mapper.RefundTxnMapper;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +45,16 @@ public class CashRefundService {
 
     @Autowired
     private TxnInfoMapper txnInfoMapper;
+
     @Autowired
-    private OrderInfoRepository  orderInfoRepository;
+    private OrderInfoRepository orderInfoRepository;
+
+    @Autowired
+    private CommonHttpClient commonHttpClient;
+
+    @Autowired
+    private RefundTxnMapper refundTxnMapper;
+
 
     /**
      * @param orderId
@@ -72,30 +88,32 @@ public class CashRefundService {
         }
         return txnInfoDtoList;
     }
-    
+
     /**
      * 根据退款记录的状态，返回页面所需的数据
+     *
      * @param orderId
      * @return
      */
-    public String getCashRundStatus(String orderId){
-    	
-    	CashRefundDto dto = getCashRefundByOrderId(orderId);
-    	//如果记录为空，则返回空
-    	if(dto == null){
-    		return "";
-    	}
-    	//根据状态返回值
-    	if(dto.getStatus() == 1){
-    		return CashRefundVoStatus.CASHREFUND_STATUS1.getCode();
-    	}else if(dto.getStatus() == 2 ||dto.getStatus() == 5  ){
-    		return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
-    	}else if(dto.getStatus() == 4){
-    		return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
-    	}else{
-    		return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
-    	}
+    public String getCashRundStatus(String orderId) {
+
+        CashRefundDto dto = getCashRefundByOrderId(orderId);
+        //如果记录为空，则返回空
+        if (dto == null) {
+            return "";
+        }
+        //根据状态返回值
+        if (dto.getStatus() == 1) {
+            return CashRefundVoStatus.CASHREFUND_STATUS1.getCode();
+        } else if (dto.getStatus() == 2 || dto.getStatus() == 5) {
+            return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
+        } else if (dto.getStatus() == 4) {
+            return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
+        } else {
+            return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
+        }
     }
+
     /*
      * 退款申请
      * @param orderId
@@ -103,46 +121,95 @@ public class CashRefundService {
      * @param memo
      * @return
      */
-    public void requestRefund(String requestId,String orderId,String userId, String reason,String memo) 
-    		throws BusinessException{
-    	OrderInfoEntity orderInfo=orderInfoRepository.selectByOrderIdAndUserId(orderId,Long.parseLong(userId));
-    	CashRefund cashRefund=cashRefundMapper.getCashRefundByOrderId(orderId);
-    	CashRefund  cr=new CashRefund();
-    	if(null !=cashRefund){
-    		cr.setOrderId(orderId);
-    		cr.setReason(reason);
-    		cr.setMemo(memo);
-    		cr.setUpdateDate(new Date());
-    		cashRefundMapper.updateByOrderIdSelective(cr);
-    	}else{
-    	  	if(null !=orderInfo && OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())){
-        		cr.setCreateDate(new Date());
-        		cr.setUpdateDate(new Date());
-        		cr.setAmt(orderInfo.getOrderAmt());
-        		cr.setOrderId(orderId);
-        		cr.setStatus(Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode()));
-        		cr.setStatusD(new Date());
-        		cr.setUserId(Long.parseLong(userId));
-        		cr.setMainOrderId(orderInfo.getMainOrderId());
-        		cr.setReason(reason);
-        		cr.setMemo(memo);
-        		int result=cashRefundMapper.insert(cr);
-        		if(result !=1){
-    				LOG.info(requestId, "插入退款申请信息到数据失败!", "");
-    				throw new BusinessException("退款申请失败！",BusinessErrorCode.ORDER_REQUEST_REFUND);
-        		}
-        		orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
-        	}
-    	}
-  
+    public void requestRefund(String requestId, String orderId, String userId, String reason, String memo)
+            throws BusinessException {
+        OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
+        CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+        CashRefund cr = new CashRefund();
+        if (null != cashRefund) {
+            cr.setOrderId(orderId);
+            cr.setReason(reason);
+            cr.setMemo(memo);
+            cr.setUpdateDate(new Date());
+            cashRefundMapper.updateByOrderIdSelective(cr);
+        } else {
+            if (null != orderInfo && OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())) {
+                cr.setCreateDate(new Date());
+                cr.setUpdateDate(new Date());
+                cr.setAmt(orderInfo.getOrderAmt());
+                cr.setOrderId(orderId);
+                cr.setStatus(Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode()));
+                cr.setStatusD(new Date());
+                cr.setUserId(Long.parseLong(userId));
+                cr.setMainOrderId(orderInfo.getMainOrderId());
+                cr.setReason(reason);
+                cr.setMemo(memo);
+                int result = cashRefundMapper.insert(cr);
+                if (result != 1) {
+                    LOG.info(requestId, "插入退款申请信息到数据失败!", "");
+                    throw new BusinessException("退款申请失败！", BusinessErrorCode.ORDER_REQUEST_REFUND);
+                }
+                orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+            }
+        }
+
     }
-    
+
     /**
      * 获取退款申请信息
+     *
      * @return
      */
-    public CashRefund getRequestRefundInfo(String requestId,String orderId,String userId){
-    	return cashRefundMapper.getCashRefundByOrderId(orderId);
+    public CashRefund getRequestRefundInfo(String requestId, String orderId, String userId) {
+        return cashRefundMapper.getCashRefundByOrderId(orderId);
     }
-    
+
+    /**
+     * 同意退款
+     *
+     * @param orderId
+     * @return
+     */
+    public Response agreeRefund(String userId, String orderId) {
+        CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+        //1:退款提交 才能进行同意
+        if (cashRefund == null || cashRefund.getStatus() != 1) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
+        if (CollectionUtils.isEmpty(txnInfoEntityList)) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        BigDecimal txnAmt = new BigDecimal(0);
+        if (txnInfoEntityList.size() == 1) {
+            if (!TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnInfoEntityList.get(0).getTxnType())) {
+                return Response.fail(BusinessErrorCode.NO);
+            } else {
+                txnAmt = txnInfoEntityList.get(0).getTxnAmt();
+              /*  Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnAmt));
+                if(!res.statusResult()){
+                    return  res;
+                }*/
+                RefundTxn refundTxn = new RefundTxn();
+
+                //refundTxnMapper.insert()
+
+                cashRefund.setUpdateDate(new Date());
+                cashRefund.setStatus(2);
+                cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+
+            }
+        } else {
+            for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+                if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                    txnAmt = txnInfoEntity.getTxnAmt();
+                    break;
+                }
+            }
+        }
+
+
+        return res;
+
+    }
 }
