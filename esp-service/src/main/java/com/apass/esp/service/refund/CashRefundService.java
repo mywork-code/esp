@@ -182,8 +182,7 @@ public class CashRefundService {
         if (cashRefund == null || cashRefund.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
-        OrderInfoEntity orderInfoEntity = orderInfoRepository.selectByOrderId(orderId);
-        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
+        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(cashRefund.getMainOrderId());
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
             return Response.fail(BusinessErrorCode.NO);
         }
@@ -230,7 +229,7 @@ public class CashRefundService {
                     Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnAmt));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
-                        cashRefund.setStatus(5);
+                       // cashRefund.setStatus(5);
                         cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                         cashRefundTxn.setStatus("3");
                         cashRefundTxn.setUpdateDate(new Date());
@@ -242,7 +241,7 @@ public class CashRefundService {
                     cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
                     cashRefund.setUpdateDate(new Date());
                     cashRefund.setStatusD(new Date());
-                    cashRefund.setStatus(4);
+                    //cashRefund.setStatus(4);
                     cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                     try {
                         orderService.addGoodsStock("",orderId);
