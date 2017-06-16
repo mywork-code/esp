@@ -3,14 +3,14 @@ package com.apass.esp.domain.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class RefundTxn {
+public class CashRefundTxn {
     private Long id;
 
     private Date createDate;
 
     private Date updateDate;
 
-    private String channel;
+    private String typeCode;
 
     private Long cashRefundId;
 
@@ -48,12 +48,12 @@ public class RefundTxn {
         this.updateDate = updateDate;
     }
 
-    public String getChannel() {
-        return channel;
+    public String getTypeCode() {
+        return typeCode;
     }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
     }
 
     public Long getCashRefundId() {
