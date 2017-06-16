@@ -83,7 +83,7 @@ public class CashRefundService {
     	CashRefundDto dto = getCashRefundByOrderId(orderId);
     	//如果记录为空，则返回空
     	if(dto == null){
-    		return "";
+    		return CashRefundVoStatus.CASHREFUND_STATUS0.getCode();
     	}
     	//根据状态返回值
     	if(dto.getStatus() == 1){
