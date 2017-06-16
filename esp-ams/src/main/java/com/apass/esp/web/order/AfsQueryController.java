@@ -59,13 +59,13 @@ public class AfsQueryController {
             cashRefundDtoVo.setTotalNum(orderDetailInfoDto.getGoodsNumSum());
             list.add(cashRefundDtoVo);
 
-            responsePageBody.setMsg("lkjl");
+            responsePageBody.setMsg("返回成功");
             responsePageBody.setStatus("1");
             responsePageBody.setRows(list);
             //return Response.successResponse(cashRefundDtoVo);
         } catch (Exception e) {
-            responsePageBody.setMsg("lkjl");
-            responsePageBody.setStatus("1");
+            responsePageBody.setMsg("返回失败");
+            responsePageBody.setStatus("0");
             responsePageBody.setRows(list);
             //return Response.fail("");
         }
