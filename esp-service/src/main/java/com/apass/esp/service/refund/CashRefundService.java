@@ -95,23 +95,23 @@ public class CashRefundService {
      * @param orderId
      * @return
      */
-    public String getCashRundStatus(String orderId) {
-
-        CashRefundDto dto = getCashRefundByOrderId(orderId);
-        //如果记录为空，则返回空
-        if (dto == null) {
-            return "";
-        }
-        //根据状态返回值
-        if (dto.getStatus() == 1) {
-            return CashRefundVoStatus.CASHREFUND_STATUS1.getCode();
-        } else if (dto.getStatus() == 2 || dto.getStatus() == 5) {
-            return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
-        } else if (dto.getStatus() == 4) {
-            return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
-        } else {
-            return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
-        }
+    public String getCashRundStatus(String orderId){
+    	
+    	CashRefundDto dto = getCashRefundByOrderId(orderId);
+    	//如果记录为空，则返回空
+    	if(dto == null){
+    		return CashRefundVoStatus.CASHREFUND_STATUS0.getCode();
+    	}
+    	//根据状态返回值
+    	if(dto.getStatus() == 1){
+    		return CashRefundVoStatus.CASHREFUND_STATUS1.getCode();
+    	}else if(dto.getStatus() == 2 ||dto.getStatus() == 5  ){
+    		return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
+    	}else if(dto.getStatus() == 4){
+    		return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
+    	}else{
+    		return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
+    	}
     }
 
     /*

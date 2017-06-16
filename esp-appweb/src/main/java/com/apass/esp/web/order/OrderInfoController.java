@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CityEnums;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.domain.enums.LogStashKey;
@@ -504,6 +505,23 @@ public class OrderInfoController {
             
             List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
                     statusStr);
+            //如果订单的状态为待发货，应该把订单的状态为退款中的并到待发货中 
+            if(StringUtils.isNotBlank(statusStr)&& StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())){
+            	 List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,
+                        OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+            	 if(!CollectionUtils.isEmpty(dtoList)){
+                 	 resultList.addAll(dtoList);
+            	 }
+            }
+            
+            for (OrderDetailInfoDto order : resultList) {
+            	if(StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())){
+            		order.setStatus(OrderStatus.ORDER_PAYED.getCode());
+            	}
+			}
+            
+            
+            
             //添加新的图片地址
             for (OrderDetailInfoDto list : resultList) {
                 String province = list.getProvince();
@@ -584,13 +602,20 @@ public class OrderInfoController {
             
             if(!CollectionUtils.isEmpty(resultList)){
             	dto = resultList.get(0);
+            	//如果订单为退款中的状态，则把订单的状态手动改成待发货状态
+            	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode()) ){
+            		dto.setStatus(OrderStatus.ORDER_PAYED.getCode());
+            	}
             	
             	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_PAYED.getCode())){
                 	//根据订单的Id,查询退款的申请记录，如果无记录，则页面显示退款按钮
                 	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
                 	if(cash != null){
-                		if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-                			//更新数据库字段  恢复额度  TODO
+                		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
+                			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+                    			//更新数据库字段  恢复额度  TODO
+                    			System.out.println("todo");
+                    		}
                 		}
                 	}
                 	//根据返回结果，判断页面要显示的按钮
