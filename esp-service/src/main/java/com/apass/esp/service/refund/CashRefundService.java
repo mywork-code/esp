@@ -8,9 +8,12 @@ import java.util.Map;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.CashRefundTxnMapper;
+import com.apass.esp.repository.goods.GoodsStockLogRepository;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.service.order.OrderService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,8 @@ public class CashRefundService {
     @Autowired
     private CashRefundTxnMapper cashRefundTxnMapper;
 
+    @Autowired
+    private OrderService orderService;
 
     /**
      * @param orderId
@@ -172,10 +177,12 @@ public class CashRefundService {
      */
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+
         //1:退款提交 才能进行同意
         if (cashRefund == null || cashRefund.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
+        OrderInfoEntity orderInfoEntity = orderInfoRepository.selectByOrderId(orderId);
         List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
             return Response.fail(BusinessErrorCode.NO);
@@ -199,6 +206,12 @@ public class CashRefundService {
                 cashRefund.setStatus(2);
                 cashRefund.setStatusD(new Date());
                 cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+
+                try {
+                    orderService.addGoodsStock("",orderId);
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
                 return Response.successResponse();
             }
         } else {
@@ -231,6 +244,11 @@ public class CashRefundService {
                     cashRefund.setStatusD(new Date());
                     cashRefund.setStatus(4);
                     cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+                    try {
+                        orderService.addGoodsStock("",orderId);
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
                     return res;
                 }
             }
