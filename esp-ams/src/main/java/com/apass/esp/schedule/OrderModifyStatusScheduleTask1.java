@@ -39,7 +39,6 @@ public class OrderModifyStatusScheduleTask1 implements SchedulingConfigurer{
 			public void run() {
 				try {
 					orderService.updateOrderStatusAndPreDelivery();
-				    System.out.println("task1");
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
 				}
