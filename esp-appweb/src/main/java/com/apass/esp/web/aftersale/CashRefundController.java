@@ -193,31 +193,5 @@ public class CashRefundController {
             return Response.fail(BusinessErrorCode.ORDER_GET_REQUEST_REFUND);
         }
     }
-    /**
-     * 同意退款
-     *
-     * @param paramMap
-     * @return
-     */
-    @POST
-    @Path("/agreeRefund")
-    public Response agreeRefund(Map<String, Object> paramMap) {
-        String userId = CommonUtils.getValue(paramMap, "userId");
-        String orderId = CommonUtils.getValue(paramMap, "orderId");
-        if (StringUtils.isAnyEmpty(userId, orderId)) {
-            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
-        }
-        CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
-        //1:退款提交 才能进行同意
-        if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
-            return Response.fail(BusinessErrorCode.NO);
-        }
-        Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(cashRefundDto.getAmt()));
-        if (!res.statusResult()) {
-            return Response.fail(BusinessErrorCode.NO);
-        }
-        cashRefundDto.setStatus(2);
-        cashRefundService.update(cashRefundDto);
-        return Response.successResponse();
-    }
+    
 }

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.RefundTxn;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.mapper.RefundTxnMapper;
+import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class CashRefundService {
     private CommonHttpClient commonHttpClient;
 
     @Autowired
-    private RefundTxnMapper refundTxnMapper;
+    private CashRefundTxnMapper cashRefundTxnMapper;
 
 
     /**
@@ -184,32 +184,55 @@ public class CashRefundService {
         if (txnInfoEntityList.size() == 1) {
             if (!TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnInfoEntityList.get(0).getTxnType())) {
                 return Response.fail(BusinessErrorCode.NO);
-            } else {
+            } else {//银行卡支付  处理中
                 txnAmt = txnInfoEntityList.get(0).getTxnAmt();
-              /*  Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnAmt));
-                if(!res.statusResult()){
-                    return  res;
-                }*/
-                RefundTxn refundTxn = new RefundTxn();
-
-                //refundTxnMapper.insert()
-
+                CashRefundTxn cashRefundTxn = new CashRefundTxn();
+                cashRefundTxn.setAmt(txnAmt);
+                cashRefundTxn.setTypeCode(TxnTypeCode.KQEZF_CODE.getCode());
+                cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
+                cashRefundTxn.setStatus("1");
+                cashRefundTxn.setCashRefundId(cashRefund.getId());
+                cashRefundTxn.setCreateDate(new Date());
+                cashRefundTxn.setUpdateDate(new Date());
+                cashRefundTxnMapper.insert(cashRefundTxn);
                 cashRefund.setUpdateDate(new Date());
                 cashRefund.setStatus(2);
                 cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
-
+                return Response.successResponse();
             }
         } else {
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+                CashRefundTxn cashRefundTxn = new CashRefundTxn();
+                cashRefundTxn.setAmt(txnInfoEntity.getTxnAmt());
+                cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
+                cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
+                cashRefundTxn.setStatus("1");
+                cashRefundTxn.setCashRefundId(cashRefund.getId());
+                cashRefundTxn.setCreateDate(new Date());
+                cashRefundTxn.setUpdateDate(new Date());
+                cashRefundTxnMapper.insert(cashRefundTxn);
+
                 if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    txnAmt = txnInfoEntity.getTxnAmt();
-                    break;
+                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnAmt));
+                    if (!res.statusResult()) {
+                        cashRefund.setUpdateDate(new Date());
+                        cashRefund.setStatus(5);
+                        cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+                        cashRefundTxn.setStatus("3");
+                        cashRefundTxn.setUpdateDate(new Date());
+                        cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
+                        return res;
+                    }
+                    cashRefundTxn.setStatus("2");
+                    cashRefundTxn.setUpdateDate(new Date());
+                    cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
+                    cashRefund.setUpdateDate(new Date());
+                    cashRefund.setStatus(4);
+                    cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+                    return res;
                 }
             }
+            return Response.successResponse();
         }
-
-
-        return res;
-
     }
 }
