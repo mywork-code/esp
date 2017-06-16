@@ -1440,7 +1440,7 @@ public class OrderService {
 	}
 	
 	/**
-     * 查询待发货订单的信息，切订单的预发货状态为''
+     * 查询待发货订单的信息，切订单的预发货状态为null
      */
     public List<OrderInfoEntity> toBeDeliver() {
     	return orderInfoRepository.toBeDeliver();
@@ -1454,4 +1454,20 @@ public class OrderService {
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
    
+    /**
+     * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
+     */
+    public void updateOrderStatusAndPreDelivery(){
+    	//获取数据库中所有的待发货状态的订单
+    	List<OrderInfoEntity> orderList = toBeDeliver();
+    	if(!CollectionUtils.isEmpty(orderList)){
+    		for (OrderInfoEntity order : orderList) {
+    			//修改订单状态和是否发货
+    			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+    			order.setStatus(OrderStatus.ORDER_SEND.getCode());
+    			updateOrderStatusAndPreDelivery(order);
+			}
+    	}
+    }
+    
 }

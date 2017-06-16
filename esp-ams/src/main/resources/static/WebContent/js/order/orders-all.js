@@ -489,14 +489,14 @@ $.refundDetails = function (orderId) {
     $('#refundDetails').datagrid(
         {
             title: '订单详细信息',
-            fitColumns : false,
-            pagination : true,
-            rownumbers : true,
-            striped : true,
-            singleSelect : false,
-            pagination : false,
-            nowrap : false,
-            showFooter : true,
+            fitColumns: false,
+            pagination: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: false,
+            pagination: false,
+            nowrap: false,
+            showFooter: true,
             columns: [
                 [
                     {
@@ -504,9 +504,8 @@ $.refundDetails = function (orderId) {
                         field: 'createDate',
                         width: 80,
                         align: 'center',
-                        formatter : function (value, row, index)
-                        {
-                            return new Date (value).Format ("yyyy-MM-dd hh:mm:ss");
+                        formatter: function (value, row, index) {
+                            return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                         }
                     },
                     {
@@ -533,8 +532,7 @@ $.refundDetails = function (orderId) {
                         field: 'statu',
                         width: 80,
                         align: 'center',
-                        formatter : function (value, row, index)
-                        {
+                        formatter: function (value, row, index) {
                             return "退款";
                         }
                     },
@@ -543,17 +541,17 @@ $.refundDetails = function (orderId) {
                         field: 'status',
                         width: 80,
                         align: 'center',
-                        formatter:function(value,row,index){
+                        formatter: function (value, row, index) {
 
-                            if(value=='1'){
+                            if (value == '1') {
                                 return '退款提交';
-                            }else if(value=='2'){
+                            } else if (value == '2') {
                                 return '同意退款';
-                            }else if(value='3'){
+                            } else if (value = '3') {
                                 return "取消退款";
-                            }else if(value=='4'){
+                            } else if (value == '4') {
                                 return '退款成功';
-                            }else{
+                            } else {
                                 return "退款失败";
                             }
 
@@ -565,7 +563,7 @@ $.refundDetails = function (orderId) {
                 $.ajax(
                     {
                         url: ctx + '/application/business/cashRefund/getCashRefundByOrderId',
-                        data: {"orderId":orderId},
+                        data: {"orderId": orderId},
                         type: "post",
                         dataType: "json",
                         success: function (data) {
@@ -578,7 +576,6 @@ $.refundDetails = function (orderId) {
         });
 
 }
-
 
 /**
  * 关闭窗口
