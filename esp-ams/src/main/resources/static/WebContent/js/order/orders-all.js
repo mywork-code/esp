@@ -504,7 +504,7 @@ $ (function ()
  */
 
 $.refundDetails = function(orderId){
-
+	alert("退款详情");
 }
 
 /**
