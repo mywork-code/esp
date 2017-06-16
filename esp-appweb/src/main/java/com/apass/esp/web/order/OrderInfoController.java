@@ -1,5 +1,22 @@
 package com.apass.esp.web.order;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
@@ -8,15 +25,16 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
-import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.CityEnums;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.vo.LogisticsFirstDataVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -27,21 +45,6 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -67,8 +70,9 @@ public class OrderInfoController {
     
     @Autowired
     private CashRefundService cashRefundService;
-
-    //private static final String NO_USER = "";
+    
+    @Autowired
+    private LogisticsService    logisticsService;
 
     private static final String ORDER_ID = "orderId";
 
@@ -576,21 +580,30 @@ public class OrderInfoController {
             /**
              * 如果订单的状态是D02(待发货的状态)
              */
-            OrderDetailInfoDto dto = resultList.get(0);
-            if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_PAYED.getCode())){
-            	//根据订单的Id,查询退款的申请记录，如果无记录，则页面显示退款按钮
-            	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
-            	if(cash != null){
-            		if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-            			//更新数据库字段  恢复额度  TODO
-            		}
-            	}
-            	//根据返回结果，判断页面要显示的按钮
-            	dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
+            OrderDetailInfoDto dto = null;
+            
+            if(!CollectionUtils.isEmpty(resultList)){
+            	dto = resultList.get(0);
+            	
+            	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_PAYED.getCode())){
+                	//根据订单的Id,查询退款的申请记录，如果无记录，则页面显示退款按钮
+                	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
+                	if(cash != null){
+                		if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+                			//更新数据库字段  恢复额度  TODO
+                		}
+                	}
+                	//根据返回结果，判断页面要显示的按钮
+                	dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
+                }
             }
             
-            resultMap.put("orderInfoList", resultList);
+            //根据订单获取物流的信息
+            LogisticsFirstDataVo logisticInfo = logisticsService.loadFristLogisticInfo(orderId);
+            
+            resultMap.put("orderInfoList", dto);
             resultMap.put("postage", "0");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517
+            resultMap.put("logisticInfo", logisticInfo);
             return Response.success("操作成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);

@@ -26,7 +26,7 @@ CREATE TABLE esp.`t_esp_refund_txn` (
 `id` bigint(20) NOT NULL AUTO_INCREMENT,
 `create_date` datetime ,
 `update_date` datetime ,
-`channel` varchar(16)  COMMENT '退款渠道(0:信用额度；1:银联；2：支付宝；3：微信)',
+`type_code` varchar(16)  COMMENT 'T01:首付;T02:信用支付;T05:银行卡全额支付',
 `cash_refund_id` bigint(20)  COMMENT '退款详情id',
 `ori_txn_code` varchar(255)  COMMENT '原始消费交易的queryId',
 `txn_code` varchar(255)  COMMENT '退款返回的交易流水号',
