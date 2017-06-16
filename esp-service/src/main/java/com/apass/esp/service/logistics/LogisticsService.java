@@ -1,6 +1,5 @@
 package com.apass.esp.service.logistics;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,9 +33,9 @@ import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.TrackingmoreStatus;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.LogisticsFirstDataVo;
 import com.apass.esp.repository.common.ConstantRepository;
 import com.apass.esp.repository.logistics.LogisticsHttpClient;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
@@ -388,24 +387,23 @@ public class LogisticsService {
      * @return
      * @throws BusinessException
      */
-    public LogisticsResponseDto loadFristLogisticInfo(String orderId) throws BusinessException{
+    public LogisticsFirstDataVo loadFristLogisticInfo(String orderId) throws BusinessException{
     	
-    	LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
+    	LogisticsFirstDataVo logisticInfo = new LogisticsFirstDataVo();
     	//根据订单的id获取订单详情
     	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
     	if(orderInfo != null){
-    		logisticInfo.setLogisticCode(orderInfo.getLogisticsNo());
-    		logisticInfo.setShipperCode(orderInfo.getLogisticsName());
-    		
-    		if(StringUtils.equals(orderInfo.getStatus(), OrderStatus.ORDER_SEND.getCode()) && 
-    				StringUtils.equals(orderInfo.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode() )){
-    			List<Trace> traceList =  getSignleTrackingsByOrderId(orderInfo.getOrderId());
-            	if(!CollectionUtils.isEmpty(traceList)){
-            		List<Trace> list = new ArrayList<Trace>();
-            		list.add(traceList.get(0));
-            		logisticInfo.setTraces(list);
-            	}
+    		//如果物流商编号和物流单号任何一项为空，则返回空
+    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsNo()) ){
+    			return null;
     		}
+    		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
+    		logisticInfo.setLogisticsName(orderInfo.getLogisticsName());
+    		
+			List<Trace> traceList =  getSignleTrackingsByOrderId(orderInfo.getOrderId());
+        	if(!CollectionUtils.isEmpty(traceList)){
+        		logisticInfo.setTrace(traceList.get(0));
+        	}
     	}
     	
     	return logisticInfo;
