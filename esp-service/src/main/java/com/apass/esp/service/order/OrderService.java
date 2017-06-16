@@ -720,7 +720,7 @@ public class OrderService {
 						LOG.info(requestId, "加库存,根据商品库存id查询商品库存信息,数据为空", orderDetail.getGoodsStockId().toString());
 						throw new BusinessException("商品信息不存在,请联系客服!");
 					}
-					goodsStock.setStockAmt(goodsStock.getStockCurrAmt());
+					//goodsStock.setStockAmt(goodsStock.getStockCurrAmt());
 					// 加库存
 					Long stockCurrAmt = goodsStock.getStockCurrAmt() + orderDetail.getGoodsNum();
 					goodsStock.setStockCurrAmt(stockCurrAmt);
@@ -1453,7 +1453,12 @@ public class OrderService {
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
-   
+
+
+	public void updateOrderStatus(OrderInfoEntity entity){
+		orderInfoRepository.updateOrderStatus(entity);
+	}
+
     /**
      * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
      */
