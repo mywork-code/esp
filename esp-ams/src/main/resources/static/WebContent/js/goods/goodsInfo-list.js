@@ -241,7 +241,7 @@ $(function() {
     });
     
     $("#goodsCategoryCombo").combotree({
-        required : true,
+//        required : true,
         loader : function(param, success, error) {
             $.ajax({
                 url : ctx + "/application/goods/management/categoryList",
