@@ -197,6 +197,7 @@ public class CashRefundService {
                 cashRefundTxnMapper.insert(cashRefundTxn);
                 cashRefund.setUpdateDate(new Date());
                 cashRefund.setStatus(2);
+                cashRefund.setStatusD(new Date());
                 cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                 return Response.successResponse();
             }
@@ -227,6 +228,7 @@ public class CashRefundService {
                     cashRefundTxn.setUpdateDate(new Date());
                     cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
                     cashRefund.setUpdateDate(new Date());
+                    cashRefund.setStatusD(new Date());
                     cashRefund.setStatus(4);
                     cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                     return res;
