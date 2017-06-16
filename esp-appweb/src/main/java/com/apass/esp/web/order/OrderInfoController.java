@@ -613,8 +613,8 @@ public class OrderInfoController {
                 	if(cash != null){
                 		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
                 			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-                    			//更新数据库字段  恢复额度  TODO
-                    			System.out.println("todo");
+                    			//更新数据库字段  恢复额度 
+                				cashRefundService.agreeRefund(cash.getUserId()+"", orderId);
                     		}
                 		}
                 	}
