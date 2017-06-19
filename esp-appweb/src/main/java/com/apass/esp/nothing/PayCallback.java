@@ -14,11 +14,13 @@ import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
+import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +68,7 @@ public class PayCallback {
 
 	@Autowired
 	public AwardDetailService awardDetailService;
-
+	
 	/**
 	 * BSS支付成功或失败回调
 	 * 
@@ -110,6 +113,7 @@ public class PayCallback {
 		String methodDesc = LogStashKey.REFUND_CALLBACK.getName();
 		String status = CommonUtils.getValue(paramMap, "status"); // 退款状态状态[成功 失败]
 		String orderId = CommonUtils.getValue(paramMap, "orderId"); // 订单号
+		String oriTxnCode = CommonUtils.getValue(paramMap, "oriTxnCode"); // 订单号
 		
 		String requestId = logStashSign + "_" + orderId;
 		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -119,7 +123,7 @@ public class PayCallback {
 			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
 		try {
-			paymentService.refundCallback(requestId, orderId, status);
+			paymentService.refundCallback(requestId, orderId, status,oriTxnCode);
 		} catch (Exception e) {
 			LOGGER.error("数据库更新成功", e);
 			return Response.fail(BusinessErrorCode.UPDATE_ORDER_FAILED);

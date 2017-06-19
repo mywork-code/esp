@@ -14,6 +14,7 @@ import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.repository.goods.GoodsStockLogRepository;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,5 +264,14 @@ public class CashRefundService {
 	 */
 	public Integer updateRefundCashStatusByOrderid(CashRefund cashRefund) {
 		return cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+	}
+
+	/**
+	 * 查询所有退款中 的订单
+	 * @param code
+	 * @return
+	 */
+	public List<CashRefund> getCashRefundByStatus(String status) {
+		return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status));
 	}
 }
