@@ -9,10 +9,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,9 +77,18 @@ public class CashRefundController {
         }
         if (cashRefundDto.getStatus() == 1) {
             long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
-            cashRefundDto.setRefundSurplusTime(new Date(surplus));
+            long a  = 24 * 60 * 60 * 1000L - surplus;
+            if (24 * 60 * 60 * 1000L - surplus > 0) {
+                cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L - surplus));
+            } else {
+                cashRefundDto.setRefundSurplusTime(null);
+            }
         } else {
             cashRefundDto.setRefundSurplusTime(null);
+        }
+        Date agreeDate = cashRefundDto.getAgreeD();
+        if(agreeDate!=null){
+            cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
@@ -113,14 +124,12 @@ public class CashRefundController {
         if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
-        cashRefundDto.setStatus(Integer.valueOf(CashRefundVoStatus.CASHREFUND_STATUS4.getCode()));
-        cashRefundService.update(cashRefundDto);
-
-        OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
-        orderInfoEntity.setOrderId(orderId);
-        orderInfoEntity.setStatus(OrderStatus.ORDER_PAYED.getCode());
-        orderService.updateOrderStatus(orderInfoEntity);
-
+        long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
+        if (24 * 60 * 60 * 1000L - surplus < 0) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        cashRefundDto.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS3.getCode()));
+        cashRefundService.updateCashRefundDto(cashRefundDto);
         return Response.successResponse();
     }
 
