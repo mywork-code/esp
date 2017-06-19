@@ -796,7 +796,7 @@ public class PaymentService {
                 orderService.addGoodsStock(requestId, orderId);
             }
         }
-        goodsStockLogDao.deleteByOrderId(req.getOrderId());
+        
     }
     
     /**

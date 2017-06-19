@@ -25,7 +25,6 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
-import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -724,6 +723,11 @@ public class OrderService {
 					// 加库存
 					Long stockCurrAmt = goodsStock.getStockCurrAmt() + orderDetail.getGoodsNum();
 					goodsStock.setStockCurrAmt(stockCurrAmt);
+					if(stockCurrAmt > goodsStock.getStockTotalAmt()){
+						LOGGER.error("当前库存不能大于总库存");
+						throw new BusinessException("当前库存不能大于总库存",BusinessErrorCode.GOODSSTOCK_UPDATE_ERROR);
+					}
+					
 					Integer successFlag = goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
 					if (successFlag == 0) {
 						if (errorNum <= 0) {
@@ -738,13 +742,15 @@ public class OrderService {
 					} else if (successFlag == 1) {
 						break;
 					}
+					
 				}
+				
 			} catch (Exception e) {
 				LOG.info(requestId, "加库存操作失败", orderId);
 				LOGGER.error("加库存操作失败", e);
 				continue;
 			}
-
+			goodsStcokLogDao.deleteByOrderId(orderId);
 		}
 	}
 
@@ -880,7 +886,6 @@ public class OrderService {
 						LOG.info(requestId, "库存记录日志", sotckLog.getOrderId());
 						// 存在回滚
 						addGoodsStock(requestId, order.getOrderId());
-						goodsStcokLogDao.deleteByOrderId(order.getOrderId());
 					}
 				}
 

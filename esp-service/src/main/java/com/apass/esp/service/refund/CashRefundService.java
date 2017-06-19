@@ -83,6 +83,15 @@ public class CashRefundService {
         cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
     }
 
+    public void updateCashRefundDto(CashRefundDto cashRefundDto) {
+        update(cashRefundDto);
+        OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
+        orderInfoEntity.setOrderId(cashRefundDto.getOrderId());
+        orderInfoEntity.setStatus(OrderStatus.ORDER_PAYED.getCode());
+        orderService.updateOrderStatus(orderInfoEntity);
+    }
+
+
     /**
      * @param orderId
      * @return
