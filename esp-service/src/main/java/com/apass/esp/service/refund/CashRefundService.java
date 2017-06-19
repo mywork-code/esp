@@ -104,7 +104,6 @@ public class CashRefundService {
      * @return
      */
     public String getCashRundStatus(String orderId){
-    	//TODO
     	CashRefundDto dto = getCashRefundByOrderId(orderId);
     	//如果记录为空，则返回空
     	if(dto == null){
