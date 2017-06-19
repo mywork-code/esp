@@ -68,8 +68,11 @@ public class CashRefundService {
     public CashRefundDto getCashRefundByOrderId(String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
 
-        CashRefundDto cashRefundDto = new CashRefundDto();
-        BeanUtils.copyProperties(cashRefundDto, cashRefund);
+        CashRefundDto cashRefundDto = null;
+        if(cashRefund != null){
+        	cashRefundDto = new CashRefundDto();
+        	BeanUtils.copyProperties(cashRefundDto, cashRefund);
+        }
         return cashRefundDto;
     }
 
@@ -101,7 +104,7 @@ public class CashRefundService {
      * @return
      */
     public String getCashRundStatus(String orderId){
-    	
+    	//TODO
     	CashRefundDto dto = getCashRefundByOrderId(orderId);
     	//如果记录为空，则返回空
     	if(dto == null){
