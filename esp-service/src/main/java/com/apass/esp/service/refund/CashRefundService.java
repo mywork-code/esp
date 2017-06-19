@@ -256,4 +256,12 @@ public class CashRefundService {
             return Response.successResponse();
         }
     }
+
+	/**
+	 * 根据订单id修改退款状态
+	 * @param cashRefund
+	 */
+	public Integer updateRefundCashStatusByOrderid(CashRefund cashRefund) {
+		return cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+	}
 }

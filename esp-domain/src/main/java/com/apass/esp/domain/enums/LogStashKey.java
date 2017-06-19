@@ -39,7 +39,7 @@ public enum LogStashKey {
     PAY_QUERY_STATUS("支付状态查询","payDefary"),
     PAY_LEAVE_ROLLSTOCK("确认离开支付页未支付尝试回滚库存","leavePayRollStock"),
     PAY_CALLBACK("付款成功Bss回调","payCallBack"),
-    
+    REFUND_CALLBACK("退货成功bss回调","refundCallBack"),
     
     /***物流相关***/
     LOGISTICS_SHOW("查看物流","logisticShow"),

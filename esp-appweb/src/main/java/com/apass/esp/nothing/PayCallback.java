@@ -96,6 +96,36 @@ public class PayCallback {
 		addRebateRecord(status, orderId);
 		return Response.success("支付成功");
 	}
+	
+	/**
+	 * BSS退款成功 || 失败回调
+	 * 
+	 * @param paramMap
+	 * @return
+	 */
+	@POST
+	@Path("/cashRefund/callback")
+	public Response cashRefundCallback(Map<String, Object> paramMap) {
+		String logStashSign = LogStashKey.REFUND_CALLBACK.getValue();
+		String methodDesc = LogStashKey.REFUND_CALLBACK.getName();
+		String status = CommonUtils.getValue(paramMap, "status"); // 退款状态状态[成功 失败]
+		String orderId = CommonUtils.getValue(paramMap, "orderId"); // 订单号
+		
+		String requestId = logStashSign + "_" + orderId;
+		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
+		
+		if (StringUtils.isAnyEmpty(status, orderId)) {
+			LOGGER.error("参数为空：{}",GsonUtils.toJson(paramMap));
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		}
+		try {
+			paymentService.refundCallback(requestId, orderId, status);
+		} catch (Exception e) {
+			LOGGER.error("数据库更新成功", e);
+			return Response.fail(BusinessErrorCode.UPDATE_ORDER_FAILED);
+		}
+		return Response.success("数据库更新失败！");
+	}
 
 	private void addRebateRecord(String status, String mainOrderId) {
 		if (YesNo.isNo(status)) {
