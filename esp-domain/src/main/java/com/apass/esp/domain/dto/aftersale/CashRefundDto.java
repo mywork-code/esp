@@ -37,6 +37,17 @@ public class CashRefundDto {
 
     private Date agreeD;
 
+
+    private Date refundSurplusTime;//剩余退款时间
+
+    public Date getRefundSurplusTime() {
+        return refundSurplusTime;
+    }
+
+    public void setRefundSurplusTime(Date refundSurplusTime) {
+        this.refundSurplusTime = refundSurplusTime;
+    }
+
     public Long getId() {
         return id;
     }
