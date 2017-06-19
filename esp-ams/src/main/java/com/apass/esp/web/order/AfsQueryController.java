@@ -1,10 +1,8 @@
 package com.apass.esp.web.order;
 
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.CashRefundDtoVo;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
-import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.utils.BeanUtils;
@@ -19,9 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * type: class
@@ -52,22 +48,24 @@ public class AfsQueryController {
 
         String orderId = HttpWebUtils.getValue(request, "orderId");
         CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
-        CashRefundDtoVo cashRefundDtoVo = new CashRefundDtoVo();
-        BeanUtils.copyProperties(cashRefundDtoVo, cashRefundDto);
-        try {
-            OrderDetailInfoDto orderDetailInfoDto = orderService.getOrderDetailInfoDto("", orderId);
-            cashRefundDtoVo.setTotalNum(orderDetailInfoDto.getGoodsNumSum());
-            list.add(cashRefundDtoVo);
+        if(cashRefundDto != null) {
+            CashRefundDtoVo cashRefundDtoVo = new CashRefundDtoVo();
+            BeanUtils.copyProperties(cashRefundDtoVo, cashRefundDto);
+            try {
+                OrderDetailInfoDto orderDetailInfoDto = orderService.getOrderDetailInfoDto("", orderId);
+                cashRefundDtoVo.setTotalNum(orderDetailInfoDto.getGoodsNumSum());
+                list.add(cashRefundDtoVo);
 
-            responsePageBody.setMsg("返回成功");
-            responsePageBody.setStatus("1");
-            responsePageBody.setRows(list);
-            //return Response.successResponse(cashRefundDtoVo);
-        } catch (Exception e) {
-            responsePageBody.setMsg("返回失败");
-            responsePageBody.setStatus("0");
-            responsePageBody.setRows(list);
-            //return Response.fail("");
+                responsePageBody.setMsg("返回成功");
+                responsePageBody.setStatus("1");
+                responsePageBody.setRows(list);
+                //return Response.successResponse(cashRefundDtoVo);
+            } catch (Exception e) {
+                responsePageBody.setMsg("返回失败");
+                responsePageBody.setStatus("0");
+                responsePageBody.setRows(list);
+                //return Response.fail("");
+            }
         }
 
         return responsePageBody;
