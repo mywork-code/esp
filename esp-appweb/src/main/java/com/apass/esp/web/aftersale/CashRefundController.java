@@ -1,9 +1,6 @@
 package com.apass.esp.web.aftersale;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +72,12 @@ public class CashRefundController {
 
         if (cashRefundDto == null) {
             return Response.fail(BusinessErrorCode.NO);
+        }
+        if (cashRefundDto.getStatus() == 1) {
+            long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
+            cashRefundDto.setRefundSurplusTime(new Date(surplus));
+        } else {
+            cashRefundDto.setRefundSurplusTime(null);
         }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
