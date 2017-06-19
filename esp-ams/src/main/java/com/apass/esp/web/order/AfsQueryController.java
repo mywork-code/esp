@@ -59,12 +59,10 @@ public class AfsQueryController {
                 responsePageBody.setMsg("返回成功");
                 responsePageBody.setStatus("1");
                 responsePageBody.setRows(list);
-                //return Response.successResponse(cashRefundDtoVo);
             } catch (Exception e) {
                 responsePageBody.setMsg("返回失败");
                 responsePageBody.setStatus("0");
                 responsePageBody.setRows(list);
-                //return Response.fail("");
             }
         }
 
