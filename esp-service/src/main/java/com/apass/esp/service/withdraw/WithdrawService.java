@@ -174,6 +174,7 @@ public class WithdrawService {
             result.put("cardBank", cardBank);
             result.put("amount", BigDecimal.valueOf(Long.valueOf(amount)).subtract(taxAmount));
             result.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
+            result.put("customerId", resultBind.get("customerId"));
             LOGGER.info("提现成功，返回数据：{}",result);
          }else{
              LOGGER.info("提现失败，返回数据：{}",result);
