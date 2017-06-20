@@ -127,7 +127,6 @@ $(function(){
 });
 	
 	function getParam(){
-		debugger;
 		var loanStatus=$("#loanStatus").combobox('getValue');
 	    var realName=$("#realName").textbox('getValue');
 	    var mobile=$("#mobile").textbox('getValue');
@@ -145,7 +144,7 @@ $(function(){
 			}
 		}
 	    if(applyDate1!=null && applyDate1!=''&&applyDate2!=null && applyDate2!=''){
-	    	if(arrivedDate1>arrivedDate2){
+	    	if(applyDate1 > applyDate2){
 	    		$.messager.alert("<span style='color: black;'>提示</span>","申请提现时间：开始时间应早于结束时间！",'info');
 	    		$('#applyDate1').datebox('setValue','');
 	    		$('#applyDate2').datebox('setValue','');
