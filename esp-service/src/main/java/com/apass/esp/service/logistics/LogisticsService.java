@@ -42,10 +42,10 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 @Service
@@ -67,6 +67,8 @@ public class LogisticsService {
     private OrderRefundRepository     orderRefundRepository;
     @Autowired
     private AfterSaleService          afterSaleService;
+    @Autowired
+    private ImageService imageService;
 
     /**
      * 快递鸟查询物流详情
@@ -238,7 +240,7 @@ public class LogisticsService {
         }
         if (null != orderDetailList && orderDetailList.size() > 0) {
             
-            resultMap.put("logoInfo", EncodeUtils.base64Encode(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
+            resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
         }
         resultMap.put("goodsNum", goodsNum);
         ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
