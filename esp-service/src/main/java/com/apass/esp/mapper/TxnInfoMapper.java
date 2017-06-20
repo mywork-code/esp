@@ -1,6 +1,7 @@
 package com.apass.esp.mapper;
 
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -16,6 +17,14 @@ public interface TxnInfoMapper {
    */
   List<TxnInfoEntity> selectByOrderId(String orderId);
 
+   /**
+     * 根据orderId查询去交易流水表的OrigOryid(原始消费交易的queryId)
+	 * @param orderId:订单id
+	 * @return
+	 */
+  String queryOrigTxnIdByOrderid(String orderId);
+
   void updateTime(@Param("orderId") String orderId,@Param("date") Date date);
+
 
 }
