@@ -153,19 +153,19 @@ public class ActivityWithDrawController {
 			requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZEDOPPO.getCode() + "_" + userId;
 		} else {
 			LOGGER.error("参数错误!");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("参数错误!");
 		}
 
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			LOGGER.error("对不起,该用户不存在!");
-			return Response.fail(BusinessErrorCode.CUSTOMER_NOT_EXIST);
+			return Response.fail("对不起,该用户不存在!");
 		}
 		if ("front".equals(idCardType)) {
 			if (!AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 				if(!"00".equals(result.get("customerStatus"))){
 					LOGGER.error("对不起,该用户已绑定身份证");
-					return Response.fail(BusinessErrorCode.USER_HASBIND_IDCARD);
+					return Response.fail("对不起,该用户已绑定身份证");
 				}
 			}
 		}
