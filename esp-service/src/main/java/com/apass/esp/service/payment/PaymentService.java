@@ -1,14 +1,18 @@
 package com.apass.esp.service.payment;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -25,6 +29,8 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.refund.CashRefundService;
+import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -46,6 +52,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +86,10 @@ public class PaymentService {
 	private GoodsStockLogRepository goodsStockLogDao;
 	@Autowired
 	private OrderDetailInfoRepository orderDetailDao;
+	@Autowired
+	private CashRefundService cashRefundService;
+	@Autowired
+	public CashRefundTxnService cashRefundTxnService;
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 
@@ -785,7 +796,7 @@ public class PaymentService {
                 orderService.addGoodsStock(requestId, orderId);
             }
         }
-        goodsStockLogDao.deleteByOrderId(req.getOrderId());
+        
     }
     
     /**
@@ -815,5 +826,53 @@ public class PaymentService {
     private   BigDecimal scale2Decimal(BigDecimal origin){
 			return origin.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}
+	/**
+	 * BSS退款成功 || 失败更新数据库
+	 * @param oriTxnCode 
+	 * @param requestId：日志标记
+	 * @param orderId：订单id
+	 * @param status:订单状态
+	 * @throws BusinessException 
+	 */
+	public void refundCallback(String requestId, String orderId, String status, String oriTxnCode) throws BusinessException {
+		CashRefund cashRefund = new CashRefund();
+		CashRefundTxn cashRefundTxn = new CashRefundTxn();
+		
+		cashRefund.setOrderId(orderId);
+		cashRefund.setUpdateDate(new Date());
+		//退货成功：修改退货信息表和订单表的状态
+		if(YesNo.isYes(status)){
+			//修改退款信息表状态为退款成功
+			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
+			Integer updateRefundCount = cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
+			if(updateRefundCount != 1){
+				LOGGER.error("修改退款信息表失败。。");
+				throw new BusinessException("修改退款信息表失败。。");
+			}
+			//修改退款流水表
+			cashRefundTxn.setOriTxnCode(oriTxnCode);
+			cashRefund.setStatus(2);
+			cashRefund.setUpdateDate(new Date());
+			Integer updateRefundTxnCount = cashRefundTxnService.updateStatusByQueryId(cashRefundTxn);
+			if(updateRefundTxnCount != 1){
+				LOGGER.error("修改退款流水表失败。。");
+			}
+			
+			//修改订单状态为交易关闭
+			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
+	        orderInfoEntity.setOrderId(orderId);
+	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+        	orderService.updateOrderStatus(orderInfoEntity);
+		}else{
+			//退货失败：修改退款表状态
+			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS5.getCode()));
+			Integer updateRefundCount = cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
+			if(updateRefundCount != 1){
+				LOGGER.error("修改退款信息表失败。。");
+				throw new BusinessException("修改退款信息表失败。。");
+			}
+		}
+        
+	}
 
 }

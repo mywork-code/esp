@@ -150,4 +150,9 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	this.getSqlSession().update("updateOrderStatusAndPreDelivery",entity);
     }
+
+    public void updateOrderStatus(OrderInfoEntity entity){
+        this.getSqlSession().update("updateOrderStatus",entity);
+    }
+
 }

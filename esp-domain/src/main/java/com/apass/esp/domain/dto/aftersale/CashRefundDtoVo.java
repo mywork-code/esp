@@ -10,7 +10,16 @@ import java.util.Date;
  * @see
  * @since JDK 1.8
  */
-public class CashRefundDto {
+public class CashRefundDtoVo {
+    public int getTotalNum() {
+        return totalNum;
+    }
+
+    public void setTotalNum(int totalNum) {
+        this.totalNum = totalNum;
+    }
+
+    private int totalNum;
     private Long id;
 
     private Date createDate;
@@ -36,26 +45,6 @@ public class CashRefundDto {
     private String memo;
 
     private Date agreeD;
-
-    private Date SystemProcessDate;
-
-    public Date getSystemProcessDate() {
-        return SystemProcessDate;
-    }
-
-    public void setSystemProcessDate(Date systemProcessDate) {
-        SystemProcessDate = systemProcessDate;
-    }
-
-    private Date refundSurplusTime;//剩余退款时间
-
-    public Date getRefundSurplusTime() {
-        return refundSurplusTime;
-    }
-
-    public void setRefundSurplusTime(Date refundSurplusTime) {
-        this.refundSurplusTime = refundSurplusTime;
-    }
 
     public Long getId() {
         return id;

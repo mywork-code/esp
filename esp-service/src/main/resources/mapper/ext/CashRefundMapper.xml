@@ -6,6 +6,11 @@
         from t_esp_cash_refund where order_id = #{orderId,jdbcType=VARCHAR}
     </select>
     
+    <select id="queryCashRefundByStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" />
+        from t_esp_cash_refund where status = #{status,jdbcType=INTEGER}
+    </select>
+    
    <update id="updateByOrderIdSelective" parameterType="com.apass.esp.domain.entity.CashRefund" >
     update t_esp_cash_refund
     <set >
@@ -48,4 +53,7 @@
     </set>
     where order_id = #{orderId,jdbcType=VARCHAR}
   </update>
+  
+  
+  
 </mapper>

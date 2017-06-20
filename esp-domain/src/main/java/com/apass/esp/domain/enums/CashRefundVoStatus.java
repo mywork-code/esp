@@ -2,7 +2,8 @@ package com.apass.esp.domain.enums;
 
 public enum CashRefundVoStatus {
 
-
+	CASHREFUND_STATUS0("0", "退款"),
+	
 	CASHREFUND_STATUS1("1", "处理中"),
 
 	CASHREFUND_STATUS2("2", "退款中"),
