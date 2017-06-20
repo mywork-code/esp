@@ -59,7 +59,7 @@ public class AfterSaleController {
         
         if(StringUtils.isAnyBlank(userId, orderId, returnImage)){
         	logger.error("数据不能为空");
-            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            return Response.fail("上传数据不能为空");
         }
         
         try {
@@ -73,7 +73,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.UPLOAD_PICTURE_FAILED);
+            return Response.fail("售后商品图片上传失败!");
         }
         
     }
@@ -111,46 +111,46 @@ public class AfterSaleController {
             
             if (StringUtils.isBlank(userId)) {
             	logger.error("用户名不能为空");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("用户名不能为空");
             }
             
             if(StringUtils.isBlank(orderId)){
             	logger.error("订单编号不能为空");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("订单编号不能为空");
             }
             
             if(!RefundReason.isLegal(reason)){
             	logger.error("退换货原因不合法");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+                return Response.fail("退换货原因不合法");
             }
             
             // Yes-1:换货  No-0:退货
             if(!YesNo.isLegal(operate)){
             	logger.error("退换货操作不合法");
-                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+                return Response.fail("退换货操作不合法");
             }
             
             // 退货时校验退款金额
             if(operate.equals(YesNo.NO.getCode()) && StringUtils.isBlank(returnPrice)){
             	logger.error("退款金额不能为空");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("退款金额不能为空");
             }
             
             if(StringUtils.isBlank(returngoodsInfo)){
             	logger.error("请先选择要退换货的商品");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("请先选择要退换货的商品");
             }
             
             if(imageNumVal > 3 || imageNumVal < 1){
             	logger.error("请上传1~3张图片");
-                return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+                return Response.fail("请上传1~3张图片");
             }
             
             List<GoodsStockIdNumDto> returngoodsList = GsonUtils.convertList(returngoodsInfo, GoodsStockIdNumDto.class);
             
             if(null == returngoodsList || returngoodsList.isEmpty()){
                 LOG.info(requestId, methodDesc, "未提交要退换货的商品数据");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("未提交要退换货的商品数据");
             }
             
             afterSaleService.returnGoods(requestId, userId, orderId, returnPriceVal, operate, reason, content, returngoodsList, imageNumVal);
@@ -163,7 +163,7 @@ public class AfterSaleController {
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+            return Response.fail("退换货失败");
         }
     }
     
@@ -234,7 +234,7 @@ public class AfterSaleController {
         
         if (StringUtils.isAnyBlank(userId, refundId, orderId, logisticsName, logisticsNo)) {
         	logger.error("用户id、订单编号、物流厂商、物流单号不能为空");
-            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            return Response.fail("用户id、订单编号、物流厂商、物流单号不能为空");
         }
         
         try {
@@ -244,10 +244,10 @@ public class AfterSaleController {
             return Response.success("提交售后物流信息成功!");
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
+            return Response.fail("提交售后物流信息失败!");
         }
     }
     
