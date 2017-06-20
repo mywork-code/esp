@@ -14,5 +14,13 @@ public interface TxnInfoMapper {
    */
   List<TxnInfoEntity> selectByOrderId(String orderId);
 
+  
+   /**
+     * 根据orderId查询去交易流水表的OrigOryid(原始消费交易的queryId)
+	 * @param orderId:订单id
+	 * @return
+	 */
+  String queryOrigTxnIdByOrderid(String orderId);
+
 
 }
