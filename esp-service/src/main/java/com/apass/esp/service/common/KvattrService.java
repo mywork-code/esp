@@ -46,17 +46,36 @@ public class KvattrService {
         }
     }
 
+
+    public List<Kvattr> getTypeName(Object object) {
+        Class clazz = object.getClass();
+        List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
+        return list;
+    }
+
+    /**
+     * @param list
+     */
+    public void update(List<Kvattr> list) {
+        for (Kvattr kvattr : list
+                ) {
+            kvattr.setCreateDate(new Date());
+            kvattr.setUpdateDate(new Date());
+            kvattrMapper.updateByPrimaryKey(kvattr);
+        }
+    }
+
     /**
      * @return
      */
-    public <T>T get(T t) {
+    public <T> T get(T t) {
         Class<?> clazz = t.getClass();
         List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
         for (Kvattr kvattr : list) {
-           // String type = kvattr.getKey().split("_")[0];
+            // String type = kvattr.getKey().split("_")[0];
             String fieldName = kvattr.getKey();//.split("_")[1];
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields
@@ -71,7 +90,7 @@ public class KvattrService {
                 }
             }
         }
-       return t ;
+        return t;
 
     }
 
@@ -89,7 +108,7 @@ public class KvattrService {
                     //String clazzName = field.getType().getSimpleName();
                     String name = field.getName();
                     String key = //clazzName + "_" +
-                             name;
+                            name;
                     Kvattr kvattr = new Kvattr();
                     kvattr.setKey(key);
                     kvattr.setValue((String) o);

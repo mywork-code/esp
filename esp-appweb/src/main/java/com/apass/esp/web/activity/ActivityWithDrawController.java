@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.enums.AwardActivity;
-import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -77,31 +76,35 @@ public class ActivityWithDrawController {
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode)) {
+		String mobile = CommonUtils.getValue(paramMap, "mobile");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode,mobile)) {
 			LOGGER.error("传入参数均不能为空");
-			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			return Response.fail("传入参数均不能为空");
+		}
+		if(!RegExpUtils.mobile(mobile)){
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
 			LOGGER.error("真实姓名输入不合法");
-			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			return Response.fail("真实姓名输入不合法");
 		}
 
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			LOGGER.error("对不起,该用户不存在!");
-			return Response.fail(BusinessErrorCode.CUSTOMER_NOT_EXIST);
+			return Response.fail("对不起,该用户不存在!");
 		}
 		if (AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))) {
 			LOGGER.error("对不起,该用户已经绑定银行卡!");
-			return Response.fail(BusinessErrorCode.USER_HASBIND_BANKCARD);
+			return Response.fail("对不起,该用户已经绑定银行卡!");
 		}
 		paramMap.put("customerId", result.get("customerId"));
-		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("mobile", mobile);
 		paramMap.put("identityNo", result.get("identityNo"));
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 			LOGGER.error("对不起,请先上传身份证再绑定卡片");
-			return Response.fail(BusinessErrorCode.USER_BINDIDCART_BINDBANKCART);
+			return Response.fail("对不起,请先上传身份证再绑定卡片");
 		}
 		Response res = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res.getStatus())) {
@@ -111,13 +114,13 @@ public class ActivityWithDrawController {
 		Map <String,Object> m =GsonUtils.convert(s);
 		if(!cardBank.equals(m.get("dictName"))){
 			LOGGER.error("卡号与所选银行不匹配!");
-			return Response.fail(BusinessErrorCode.BANKCARD_NOTBELONG_BANK);
+			return Response.fail("卡号与所选银行不匹配!");
 		}
 
 		Response response1 = awardActivityInfoService.latestSignature(paramMap);
 		if (!"1".equals(response1.getStatus())) {
 			LOGGER.error("请先签名!");
-			return Response.fail(BusinessErrorCode.SIGN_YOUR_NAME);
+			return Response.fail("请先签名!");
 		}
 		// 绑卡
 		Response response = awardActivityInfoService.bindCard(paramMap);
@@ -141,7 +144,7 @@ public class ActivityWithDrawController {
 		LOGGER.info(userId, idCardType);
 		if (StringUtils.isAnyEmpty(idCardType, userId)) {
 			LOGGER.error("参数错误!");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("传入参数不能为空");
 		}
 		String requestId = "";
 		if ("front".equals(idCardType)) {
@@ -150,19 +153,19 @@ public class ActivityWithDrawController {
 			requestId = AwardActivity.AWARD_ACTIVITY_METHOD.UPLOADIMGANDRECOGNIZEDOPPO.getCode() + "_" + userId;
 		} else {
 			LOGGER.error("参数错误!");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("参数错误!");
 		}
 
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			LOGGER.error("对不起,该用户不存在!");
-			return Response.fail(BusinessErrorCode.CUSTOMER_NOT_EXIST);
+			return Response.fail("对不起,该用户不存在!");
 		}
 		if ("front".equals(idCardType)) {
 			if (!AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 				if(!"00".equals(result.get("customerStatus"))){
 					LOGGER.error("对不起,该用户已绑定身份证");
-					return Response.fail(BusinessErrorCode.USER_HASBIND_IDCARD);
+					return Response.fail("对不起,该用户已绑定身份证");
 				}
 			}
 		}
@@ -210,8 +213,12 @@ public class ActivityWithDrawController {
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode)) {
+		String mobile = CommonUtils.getValue(paramMap, "mobile");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode,mobile)) {
 			LOGGER.error("参数值错误");
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+		}
+		if(!RegExpUtils.mobile(mobile)){
 			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
@@ -234,7 +241,7 @@ public class ActivityWithDrawController {
 		}
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("identityNo", result.get("identityNo"));
-		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("mobile", mobile);
 		paramMap.put("repaymentDate", result.get("repaymentDate"));
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {
