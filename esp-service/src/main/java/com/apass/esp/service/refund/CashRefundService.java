@@ -261,7 +261,6 @@ public class CashRefundService {
                     } catch (BusinessException e) {
                         e.printStackTrace();
                     }
-                    return res;
                 }
             }
             return Response.successResponse();
