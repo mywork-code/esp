@@ -19,6 +19,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.RegExpUtils;
 
 @Path("/v1/feedback")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -39,13 +40,21 @@ public class FeedbackController {
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
 
-		if (StringUtils.isAnyBlank(feedbackType,comments,mobile)) {
-			LOGGER.error("参数值不能为空！");
-			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		if(StringUtils.isBlank(feedbackType)){
+			return Response.fail("反馈类型不能为空！");
 		}
+		
+		if(StringUtils.isBlank(comments)){
+			return Response.fail("反馈内容不能为空！");
+		}
+		
+		if(StringUtils.isBlank(mobile)){
+			return Response.fail("手机号不能为空！");
+		}
+		
 		if(comments.length()>300){
 			LOGGER.error("输入是字数不得超过300字！");
-			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			return Response.fail("输入是字数不得超过300字！");
 		}
 		Date date=new Date();
 		FeedBack fb=new FeedBack();
@@ -58,6 +67,6 @@ public class FeedbackController {
 			return Response.success("意见反馈保存成功!");
 		}
 		LOGGER.error("意见反馈失败！");
-		return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
+		return Response.fail("意见反馈保存失败!");
 	}
 }
