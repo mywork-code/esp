@@ -226,7 +226,12 @@ $(function() {
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").combobox('getValue');
-        params['goodsCategoryCombo']=$("#goodsCategoryCombo").combotree('getValue');
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+        	goodsCategoryCombo="";
+        }
+        params['goodsCategoryCombo']=goodsCategoryCombo;
+        
         $('#tablelist').datagrid('load', params);
     });
     // 查询列表
