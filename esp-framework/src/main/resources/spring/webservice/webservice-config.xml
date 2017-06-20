@@ -7,11 +7,11 @@
 	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
 	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
-	<cxf:bus>
+<!--	<cxf:bus>
 		<cxf:features>
 			<cxf:logging />
 		</cxf:features>
-	</cxf:bus>
+	</cxf:bus>-->
 	
 	<jaxrs:server address="/rest" basePackages="com.apass.">
 		<jaxrs:providers>
