@@ -51,6 +51,11 @@ public class TxnInfoEntity {
 	 * 交易描述
 	 */
 	private String txnDesc;
+	
+	/**
+	 * 原始交易id,queryId
+	 */
+	private String origTxnId;
 	/**
 	 * 原始交易日期
 	 */
@@ -450,4 +455,13 @@ public class TxnInfoEntity {
 		this.updateDate = updateDate;
 	}
 
+	public String getOrigTxnId() {
+		return origTxnId;
+	}
+
+	public void setOrigTxnId(String origTxnId) {
+		this.origTxnId = origTxnId;
+	}
+
+	
 }

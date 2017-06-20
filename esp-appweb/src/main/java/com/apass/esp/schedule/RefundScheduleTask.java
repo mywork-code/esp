@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.cashRefund.CashRefundHttpClient;
 import com.apass.esp.repository.cashRefund.RefundCashRequest;
 import com.apass.esp.repository.payment.PaymentHttpClient;
@@ -39,6 +41,9 @@ public class RefundScheduleTask {
     
     @Autowired
 	private CashRefundHttpClient cashRefundHttpClient;
+
+    @Autowired
+    private TxnInfoMapper txnInfoMapper;
 
     /**
      * 换货 商家重新发货物流显示已签收， 3天后标记售后完成
@@ -88,7 +93,14 @@ public class RefundScheduleTask {
     			request.setOrderId(cashRefund.getOrderId());
     			request.setTxnAmt(cashRefund.getAmt());
     			request.setTxnDateTime(DateFormatUtil.dateToString(new Date(),"YYYYMMDDhhmmss"));
-    			request.setOrigOryId(cashRefund.getOrderId());
+    			//request.setOrigOryId();
+    			//根据orderId查询去交易流水表的OrigOryid(原始消费交易的queryId)
+    			String OrigOryId = txnInfoMapper.queryOrigTxnIdByOrderid(cashRefund.getOrderId());
+    			if(StringUtils.isBlank(OrigOryId)){
+    				LOGGER.error("交易流水表数据有误，orig_txn_id为空");
+    				return;
+    			}
+    			request.setOrigOryId(OrigOryId);
     			
     			//调bss退款接口
     			cashRefundHttpClient.refundCash(request);
