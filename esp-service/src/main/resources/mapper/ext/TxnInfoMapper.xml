@@ -2,21 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.TxnInfoMapper">
     <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.bill.TxnInfoEntity">
-        <id column="txn_id" property="txnId" jdbcType="BIGINT" />
-        <result column="order_id" property="orderId" jdbcType="VARCHAR" />
-        <result column="user_id" property="userId" jdbcType="BIGINT" />
-        <result column="txn_type" property="txnType" jdbcType="VARCHAR" />
-        <result column="txn_date" property="txnDate" jdbcType="TIMESTAMP" />
-        <result column="txn_amt" property="txnAmt" jdbcType="DECIMAL" />
-        <result column="post_date" property="postDate" jdbcType="TIMESTAMP" />
-        <result column="txn_desc" property="txnDesc" jdbcType="VARCHAR" />
-        <result column="orig_trans_date" property="origTransDate" jdbcType="VARCHAR" />
-        <result column="orig_txn_code" property="origTxnCode" jdbcType="VARCHAR" />
-        <result column="orig_txn_amt" property="origTxnAmt" jdbcType="DECIMAL" />
-        <result column="stmt_date" property="stmtDate" jdbcType="TIMESTAMP" />
-        <result column="loan_id" property="loanId" jdbcType="BIGINT" />
-        <result column="open_bank_id" property="openBankId" jdbcType="VARCHAR" />
-        <result column="open_bank" property="openBank" jdbcType="VARCHAR" />
+        <id column="txn_id" property="txnId" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="txn_type" property="txnType" jdbcType="VARCHAR"/>
+        <result column="txn_date" property="txnDate" jdbcType="TIMESTAMP"/>
+        <result column="txn_amt" property="txnAmt" jdbcType="DECIMAL"/>
+        <result column="post_date" property="postDate" jdbcType="TIMESTAMP"/>
+        <result column="txn_desc" property="txnDesc" jdbcType="VARCHAR"/>
+        <result column="orig_trans_date" property="origTransDate" jdbcType="VARCHAR"/>
+        <result column="orig_txn_code" property="origTxnCode" jdbcType="VARCHAR"/>
+        <result column="orig_txn_amt" property="origTxnAmt" jdbcType="DECIMAL"/>
+        <result column="stmt_date" property="stmtDate" jdbcType="TIMESTAMP"/>
+        <result column="loan_id" property="loanId" jdbcType="BIGINT"/>
+        <result column="open_bank_id" property="openBankId" jdbcType="VARCHAR"/>
+        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -27,9 +27,15 @@
 
     <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_apass_txn_info
         where order_id = #{value}
     </select>
 
+    <update id="update">
+        update t_apass_txn_info
+        set txn_date =#{date}
+        WHERE
+        order_id =#{orderId}
+    </update>
 </mapper>
