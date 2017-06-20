@@ -20,7 +20,7 @@ import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.gfb.framework.utils.CommonUtils;
 
-@Path("/v1/refund")
+@Path("/v1/feedback")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class FeedbackController {
