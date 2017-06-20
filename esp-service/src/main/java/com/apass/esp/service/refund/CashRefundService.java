@@ -254,7 +254,7 @@ public class CashRefundService {
                     cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
                     cashRefund.setUpdateDate(new Date());
                     cashRefund.setStatusD(new Date());
-                    //cashRefund.setStatus(4);
+                    cashRefund.setStatus(2);
                     cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                     try {
                         orderService.addGoodsStock("",orderId);
