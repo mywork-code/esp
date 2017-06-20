@@ -88,6 +88,7 @@ public class CashRefundService {
         orderInfoEntity.setOrderId(cashRefundDto.getOrderId());
         orderInfoEntity.setStatus(OrderStatus.ORDER_PAYED.getCode());
         orderService.updateOrderStatus(orderInfoEntity);
+        txnInfoMapper.updateTime(cashRefundDto.getMainOrderId(),new Date());
     }
 
 

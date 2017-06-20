@@ -1,7 +1,9 @@
 package com.apass.esp.mapper;
 
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,5 +16,6 @@ public interface TxnInfoMapper {
    */
   List<TxnInfoEntity> selectByOrderId(String orderId);
 
+  void updateTime(@Param("orderId") String orderId,@Param("date") Date date);
 
 }

@@ -54,22 +54,22 @@ public class AddressInfoController {
 						
 			if (StringUtils.isAnyBlank(userId, province, city, district, address, name, telephone, isDefault)) {
 				logger.error("地址信息字段不能为空！");
-				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+				return Response.fail("地址信息字段不能为空！");
 			}
 			
 			if (!RegExpUtils.length(name, 4, 16)) {
 				logger.error("收货人姓名输入不合法");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+                return Response.fail("收货人姓名输入不合法！");
             }
 			
 			if (telephone.length() > 15){
 				logger.error("收货人电话输入不合法");
-			    return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			    return Response.fail("收货人电话输入不合法！");
 			}
 			
 			if (address.length() < 5 || address.length() > 80) {
 				logger.error("详细收货地址限5~80字");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+                return Response.fail("详细收货地址限5~80字！");
             }
 			
 			
@@ -92,7 +92,7 @@ public class AddressInfoController {
 			return Response.successResponse(resultMap);
 		} catch (Exception e) {
 		    logger.error("添加地址信息失败，错误原因", e);
-			return Response.fail(BusinessErrorCode.ADD_INFO_FAILED);
+			return Response.fail("添加地址信息失败！");
 		}
 	}	
 
@@ -115,10 +115,10 @@ public class AddressInfoController {
 			
 			List<AddressInfoEntity> addressInfoList = addressService.queryAddressInfo(Long.parseLong(userId));
 			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("查询地址信息成功", resultMap);
+			return Response.success("查询地址信息成功！", resultMap);
 		} catch (Exception e) {
 		    logger.error("查询地址信息失败，错误原因", e);
-			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+			return Response.fail("查询地址信息失败！");
 		}
 	}
 	
@@ -142,10 +142,10 @@ public class AddressInfoController {
             
             AddressInfoEntity defaultAddress = addressService.queryDefaultByUserId(Long.parseLong(userId));
             resultMap.put("defaultAddress", defaultAddress);
-            return Response.success("查询地址信息成功", resultMap);
+            return Response.success("查询地址信息成功！", resultMap);
         } catch (Exception e) {
             logger.error("查询地址信息失败，错误原因", e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail("查询默认地址信息失败！");
         }
     }
     
@@ -177,7 +177,7 @@ public class AddressInfoController {
             return Response.success("查询地址信息成功", resultMap);
         } catch (Exception e) {
             logger.error("查询地址信息失败，错误原因", e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail("查询地址信息失败");
         }
     }
     
@@ -211,17 +211,17 @@ public class AddressInfoController {
             }
             
             if (null != name && !RegExpUtils.length(name, 4, 16)) {
-            	logger.error("收货人姓名输入不合法");
+            	logger.error("收货人姓名输入不合法!");
                 return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
             }
             
             if (null != telephone && telephone.length() > 15){
-            	logger.error("收货人电话输入不合法");
+            	logger.error("收货人电话输入不合法!");
                 return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
             }
             
             if (null != address && (address.length() < 5 || address.length() > 80)) {
-            	logger.error("详细收货地址限5~80字");
+            	logger.error("详细收货地址限5~80字！");
                 return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
             }
 			
@@ -239,13 +239,13 @@ public class AddressInfoController {
             
 			List<AddressInfoEntity> addressInfoList = addressService.updateAddressInfo(addInfo);
 			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("更新地址信息成功", resultMap);
+			return Response.success("更新地址信息成功!", resultMap);
 		} catch (BusinessException e) {
             logger.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             logger.error("更新地址信息失败，错误原因", e);
-			return Response.fail(BusinessErrorCode.ADDRESS_UPDATE_FAILED);
+			return Response.fail("更新地址信息失败!");
 		}
 	}
 	
@@ -274,10 +274,10 @@ public class AddressInfoController {
 			
 			List<AddressInfoEntity> addressInfoList = addressService.deleteAddressInfo(Long.parseLong(userId),idStr.split(","));
 			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("删除地址信息成功", resultMap);
+			return Response.success("删除地址信息成功!", resultMap);
 		} catch (Exception e) {
 		    logger.error("删除地址信息失败，错误原因", e);
-			return Response.fail(BusinessErrorCode.DELETE_INFO_FAILED);
+			return Response.fail("删除地址信息失败!");
 		}
 	}
 }

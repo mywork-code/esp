@@ -75,10 +75,10 @@
         update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
       <if test="key != null" >
-        key = #{key,jdbcType=VARCHAR},
+        `key` = #{key,jdbcType=VARCHAR},
       </if>
       <if test="value != null" >
-        value = #{value,jdbcType=VARCHAR},
+        `value` = #{value,jdbcType=VARCHAR},
       </if>
       <if test="source != null" >
         source = #{source,jdbcType=VARCHAR},
@@ -90,8 +90,8 @@
     update t_esp_kvattr
     set create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP},
-      key = #{key,jdbcType=VARCHAR},
-      value = #{value,jdbcType=VARCHAR},
+      `key` = #{key,jdbcType=VARCHAR},
+      `value` = #{value,jdbcType=VARCHAR},
       source = #{source,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>

@@ -1,6 +1,7 @@
 package com.apass.esp.web.aftersale;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
@@ -29,6 +31,7 @@ import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
@@ -49,10 +52,8 @@ public class CashRefundController {
 
     @Autowired
     private OrderService orderService;
-
     @Autowired
-    private CommonHttpClient commonHttpClient;
-
+    private CommonHttpClient  commonHttpClient;
     /**
      * 退款详情
      *
@@ -68,9 +69,22 @@ public class CashRefundController {
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
-
         if (cashRefundDto == null) {
             return Response.fail(BusinessErrorCode.NO);
+        }
+        if (cashRefundDto.getStatus() == 1) {
+            long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
+            if (24 * 60 * 60 * 1000L - surplus > 0) {
+                cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L - surplus));
+            } else {
+                cashRefundDto.setRefundSurplusTime(null);
+            }
+        } else {
+            cashRefundDto.setRefundSurplusTime(null);
+        }
+        Date agreeDate = cashRefundDto.getAgreeD();
+        if(agreeDate!=null){
+            cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
@@ -106,9 +120,14 @@ public class CashRefundController {
         if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
-        cashRefundDto.setStatus(4);
-        cashRefundService.update(cashRefundDto);
-        return Response.successResponse();
+        long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
+        if (24 * 60 * 60 * 1000L - surplus < 0) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        cashRefundDto.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS3.getCode()));
+        cashRefundService.updateCashRefundDto(cashRefundDto);
+        return Response.success("撤销退款成功");
+        
     }
     
     /**
@@ -133,15 +152,15 @@ public class CashRefundController {
             
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("订单号不能为空!");
             }
             if (StringUtils.isBlank(userId)) {
                 LOGGER.error("用户号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("用户号不能为空!");
             }
             if (StringUtils.isBlank(reason)) {
                 LOGGER.error("退款原因不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("退款原因不能为空!");
             }
             Boolean  falge=cashRefundService.checkRequestRefund(requestId,orderId,userId);
             if(falge){
@@ -155,7 +174,7 @@ public class CashRefundController {
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("退款申请失败", e);
-            return Response.fail(BusinessErrorCode.ORDER_REQUEST_REFUND);
+            return Response.fail("退款申请失败");
         }
         return Response.success("退款申请成功");
     }
@@ -179,11 +198,11 @@ public class CashRefundController {
             
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("订单号不能为空!");
             }
             if (StringUtils.isBlank(userId)) {
                 LOGGER.error("用户号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("用户号不能为空!");
             }
            
             CashRefund cashRefund= cashRefundService.getRequestRefundInfo(requestId,orderId,userId);
@@ -194,7 +213,7 @@ public class CashRefundController {
             return Response.successResponse(resultMap);
         } catch (Exception e) {
             LOGGER.error("查询退款申请信息失败", e);
-            return Response.fail(BusinessErrorCode.ORDER_GET_REQUEST_REFUND);
+            return Response.fail("查询退款申请信息失败");
         }
     }
     /**
