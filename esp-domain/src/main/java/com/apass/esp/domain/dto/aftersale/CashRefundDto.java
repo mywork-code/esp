@@ -37,14 +37,14 @@ public class CashRefundDto {
 
     private Date agreeD;
 
-    private Date SystemProcessDate;
+    private Date systemProcessDate;
 
     public Date getSystemProcessDate() {
-        return SystemProcessDate;
+        return systemProcessDate;
     }
 
     public void setSystemProcessDate(Date systemProcessDate) {
-        SystemProcessDate = systemProcessDate;
+        this.systemProcessDate = systemProcessDate;
     }
 
     private Date refundSurplusTime;//剩余退款时间

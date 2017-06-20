@@ -68,13 +68,11 @@ public class CashRefundController {
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
-
         if (cashRefundDto == null) {
             return Response.fail(BusinessErrorCode.NO);
         }
         if (cashRefundDto.getStatus() == 1) {
             long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
-            long a  = 24 * 60 * 60 * 1000L - surplus;
             if (24 * 60 * 60 * 1000L - surplus > 0) {
                 cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L - surplus));
             } else {
@@ -127,7 +125,7 @@ public class CashRefundController {
         }
         cashRefundDto.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS3.getCode()));
         cashRefundService.updateCashRefundDto(cashRefundDto);
-        return Response.successResponse();
+        return Response.success("撤销退款成功");
     }
 
     /**

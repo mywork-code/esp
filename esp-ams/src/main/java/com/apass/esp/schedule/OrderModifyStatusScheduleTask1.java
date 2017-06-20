@@ -17,10 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.apass.esp.service.order.OrderService;
 
+
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class OrderModifyStatusScheduleTask1 implements SchedulingConfigurer{
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderModifyStatusScheduleTask1.class);
