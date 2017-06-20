@@ -76,9 +76,13 @@ public class ActivityWithDrawController {
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode)) {
+		String mobile = CommonUtils.getValue(paramMap, "mobile");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode,mobile)) {
 			LOGGER.error("传入参数均不能为空");
 			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		}
+		if(!RegExpUtils.mobile(mobile)){
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
 			LOGGER.error("真实姓名输入不合法");
@@ -96,7 +100,7 @@ public class ActivityWithDrawController {
 			return Response.fail(BusinessErrorCode.USER_HASBIND_BANKCARD);
 		}
 		paramMap.put("customerId", result.get("customerId"));
-		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("mobile", mobile);
 		paramMap.put("identityNo", result.get("identityNo"));
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 			LOGGER.error("对不起,请先上传身份证再绑定卡片");
@@ -209,8 +213,12 @@ public class ActivityWithDrawController {
 		String cardNo = CommonUtils.getValue(paramMap, "cardNo");
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
 		String bankCode = CommonUtils.getValue(paramMap, "bankCode");
-		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode)) {
+		String mobile = CommonUtils.getValue(paramMap, "mobile");
+		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode,mobile)) {
 			LOGGER.error("参数值错误");
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+		}
+		if(!RegExpUtils.mobile(mobile)){
 			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
@@ -233,7 +241,7 @@ public class ActivityWithDrawController {
 		}
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("identityNo", result.get("identityNo"));
-		paramMap.put("mobile", result.get("mobile"));
+		paramMap.put("mobile", mobile);
 		paramMap.put("repaymentDate", result.get("repaymentDate"));
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {

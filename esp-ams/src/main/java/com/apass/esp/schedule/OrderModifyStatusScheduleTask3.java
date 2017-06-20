@@ -20,7 +20,7 @@ import com.apass.esp.service.order.OrderService;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class OrderModifyStatusScheduleTask3 implements SchedulingConfigurer{
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderModifyStatusScheduleTask3.class);
