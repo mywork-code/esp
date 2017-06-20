@@ -206,36 +206,38 @@ public class ExportFileController {
 				for (AwardBindRelIntroVo awardBindRelIntroVo : list) {
 					AwardDetail awDetail = awardDetailMapper.selectByPrimaryKey(Long.valueOf(awardBindRelIntroVo.getAwardDetailId()));
 					BigDecimal canUserAmt = awardDetailService.getCanUserAmt(awDetail.getUserId(), awDetail.getCreateDate());
-					if(!awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())){
+					if(StringUtils.isBlank(awardBindRelIntroVo.getMobile()) || !awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())){
 						countFail++;
 						continue;
 					}
-					if(canUserAmt.doubleValue() != awardBindRelIntroVo.getCanWithdrawAmount().doubleValue()){
+					if(awardBindRelIntroVo.getCanWithdrawAmount()==null || canUserAmt.doubleValue() != awardBindRelIntroVo.getCanWithdrawAmount().doubleValue()){
 						countFail++;
 						continue;
 					}
-					if(!DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
+					if(awDetail.getCreateDate()==null || !DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
         	 				.equals(awardBindRelIntroVo.getApplyDate())){
 						countFail++;
 						continue;
 					}
-					if(awDetail.getAmount().doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
+					if(awardBindRelIntroVo.getAmount()==null || awDetail.getAmount().doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
 						countFail++;
 						continue;
 					}
-					if(!awDetail.getRealName().equals(awardBindRelIntroVo.getRealName())){
+					if(awardBindRelIntroVo.getRealName()==null || !awDetail.getRealName().equals(awardBindRelIntroVo.getRealName())){
 						countFail++;
 						continue;
 					}
-					if(!awDetail.getCardNo().equals(awardBindRelIntroVo.getCardNO())){
+					if(awardBindRelIntroVo.getCardNO()==null || !awDetail.getCardNo().equals(awardBindRelIntroVo.getCardNO())){
 						countFail++;
 						continue;
 					}
-					if(!awDetail.getCardBank().equals(awardBindRelIntroVo.getCardBank())){
+					if(awardBindRelIntroVo.getCardBank()==null || !awDetail.getCardBank().equals(awardBindRelIntroVo.getCardBank())){
 						countFail++;
 						continue;
 					}
-					if(awardBindRelIntroVo.getStatus() == null){
+					if(awardBindRelIntroVo.getStatus() == null 
+							|| awardBindRelIntroVo.getStatus()==AwardActivity.AWARD_STATUS_AMS.FAIL.getCode()
+							||  awardBindRelIntroVo.getStatus()==AwardActivity.AWARD_STATUS_AMS.PROCESSING.getCode()){
 						countFail++;
 						continue;
 					}
