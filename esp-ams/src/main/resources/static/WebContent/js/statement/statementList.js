@@ -134,28 +134,24 @@ $(function(){
                 {
                     title : '商品名称',
                     field : 'goodsName',
-                    hidden: true,
                     width : 120,
                     align : 'center'
                 },
                 {
                     title : '商品型号',
                     field : 'goodsModel',
-                    hidden: true,
                     width : 80,
                     align : 'center'
                 },
                 {
                     title : '商品市场价格',
                     field : 'marketPrice',
-                    hidden: true,
                     width : 100,
                     align : 'center'
                 },
                 {
                     title : '商品成本价',
                     field : 'goodsCostPrice',
-                    hidden: true,
                     width : 70,
                     align : 'center'
                 },
@@ -163,14 +159,12 @@ $(function(){
                 {
                     title : '商品购买数量',
                     field : 'goodsNum',
-                    hidden: true,
                     width : 90,
                     align : 'center'
                 },
                 {
                     title : '商品当前库存数量',
                     field : 'stockCurrAmt',
-                    hidden: true,
                     width : 90,
                     align : 'center',
                 }
