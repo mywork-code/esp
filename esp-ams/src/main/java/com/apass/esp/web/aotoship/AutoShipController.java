@@ -44,12 +44,12 @@ public class AutoShipController {
     @Autowired
     private KvattrService kvattrService;
 
-   /* @Autowired
+    @Autowired
     private OrderModifyStatusScheduleTask1 orderModifyStatusScheduleTask1;
     @Autowired
     private OrderModifyStatusScheduleTask2 orderModifyStatusScheduleTask2;
     @Autowired
-    private OrderModifyStatusScheduleTask3 orderModifyStatusScheduleTask3;*/
+    private OrderModifyStatusScheduleTask3 orderModifyStatusScheduleTask3;
 
 
 
@@ -83,9 +83,9 @@ public class AutoShipController {
             List<Kvattr> list = kvattrService.getTypeName(shipmentTimeConfigAttr);
             kvattrService.update(list);
         }
-        //orderModifyStatusScheduleTask1.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime1()));
-       // orderModifyStatusScheduleTask2.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime2()));
-       // orderModifyStatusScheduleTask3.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime3()));
+        orderModifyStatusScheduleTask1.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime1()));
+       orderModifyStatusScheduleTask2.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime2()));
+        orderModifyStatusScheduleTask3.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime3()));
 
         return Response.successResponse();
     }
