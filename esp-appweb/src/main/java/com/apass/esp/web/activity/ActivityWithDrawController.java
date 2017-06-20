@@ -78,29 +78,29 @@ public class ActivityWithDrawController {
 		String cardBank = CommonUtils.getValue(paramMap, "cardBank");
 		if (StringUtils.isAnyBlank(userId, realName, cardNo, bankCode)) {
 			LOGGER.error("传入参数均不能为空");
-			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			return Response.fail("传入参数均不能为空");
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
 			LOGGER.error("真实姓名输入不合法");
-			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			return Response.fail("真实姓名输入不合法");
 		}
 
 		String requestId = AwardActivity.AWARD_ACTIVITY_METHOD.BINDCARD.getCode() + "_" + userId;
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation(requestId, Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			LOGGER.error("对不起,该用户不存在!");
-			return Response.fail(BusinessErrorCode.CUSTOMER_NOT_EXIST);
+			return Response.fail("对不起,该用户不存在!");
 		}
 		if (AwardActivity.BIND_STATUS.BINDED.getCode().equals(result.get("status"))) {
 			LOGGER.error("对不起,该用户已经绑定银行卡!");
-			return Response.fail(BusinessErrorCode.USER_HASBIND_BANKCARD);
+			return Response.fail("对不起,该用户已经绑定银行卡!");
 		}
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("mobile", result.get("mobile"));
 		paramMap.put("identityNo", result.get("identityNo"));
 		if (AwardActivity.BIND_STATUS.UNBINDIDENTITY.getCode().equals(result.get("status"))) {
 			LOGGER.error("对不起,请先上传身份证再绑定卡片");
-			return Response.fail(BusinessErrorCode.USER_BINDIDCART_BINDBANKCART);
+			return Response.fail("对不起,请先上传身份证再绑定卡片");
 		}
 		Response res = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res.getStatus())) {
@@ -110,13 +110,13 @@ public class ActivityWithDrawController {
 		Map <String,Object> m =GsonUtils.convert(s);
 		if(!cardBank.equals(m.get("dictName"))){
 			LOGGER.error("卡号与所选银行不匹配!");
-			return Response.fail(BusinessErrorCode.BANKCARD_NOTBELONG_BANK);
+			return Response.fail("卡号与所选银行不匹配!");
 		}
 
 		Response response1 = awardActivityInfoService.latestSignature(paramMap);
 		if (!"1".equals(response1.getStatus())) {
 			LOGGER.error("请先签名!");
-			return Response.fail(BusinessErrorCode.SIGN_YOUR_NAME);
+			return Response.fail("请先签名!");
 		}
 		// 绑卡
 		Response response = awardActivityInfoService.bindCard(paramMap);
@@ -140,7 +140,7 @@ public class ActivityWithDrawController {
 		LOGGER.info(userId, idCardType);
 		if (StringUtils.isAnyEmpty(idCardType, userId)) {
 			LOGGER.error("参数错误!");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("传入参数不能为空");
 		}
 		String requestId = "";
 		if ("front".equals(idCardType)) {

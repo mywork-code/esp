@@ -1,6 +1,10 @@
 package com.apass.esp.web.aftersale;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -8,13 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundVoStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,7 @@ import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
@@ -32,6 +31,7 @@ import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
@@ -52,9 +52,6 @@ public class CashRefundController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private CommonHttpClient commonHttpClient;
 
     /**
      * 退款详情
@@ -156,15 +153,15 @@ public class CashRefundController {
 
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("订单号不能为空!");
             }
             if (StringUtils.isBlank(userId)) {
                 LOGGER.error("用户号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("用户号不能为空!");
             }
             if (StringUtils.isBlank(reason)) {
                 LOGGER.error("退款原因不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("退款原因不能为空!");
             }
 
             cashRefundService.requestRefund(requestId, orderId, userId, reason, memo);
@@ -174,7 +171,7 @@ public class CashRefundController {
             return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("退款申请失败", e);
-            return Response.fail(BusinessErrorCode.ORDER_REQUEST_REFUND);
+            return Response.fail("退款申请失败");
         }
         return Response.success("退款申请成功");
     }
@@ -200,11 +197,11 @@ public class CashRefundController {
 
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("订单号不能为空!");
             }
             if (StringUtils.isBlank(userId)) {
                 LOGGER.error("用户号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                return Response.fail("用户号不能为空!");
             }
 
             CashRefund cashRefund = cashRefundService.getRequestRefundInfo(requestId, orderId, userId);
@@ -215,7 +212,7 @@ public class CashRefundController {
             return Response.successResponse(resultMap);
         } catch (Exception e) {
             LOGGER.error("查询退款申请信息失败", e);
-            return Response.fail(BusinessErrorCode.ORDER_GET_REQUEST_REFUND);
+            return Response.fail("查询退款申请信息失败");
         }
     }
 
