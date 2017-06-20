@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.LogStashKey;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -51,7 +52,8 @@ public class CashRefundController {
 
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private CommonHttpClient  commonHttpClient;
     /**
      * 退款详情
      *
@@ -125,11 +127,11 @@ public class CashRefundController {
         cashRefundDto.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS3.getCode()));
         cashRefundService.updateCashRefundDto(cashRefundDto);
         return Response.success("撤销退款成功");
+        
     }
-
+    
     /**
      * 退款申请
-     *
      * @param paramMap
      * @return
      */
@@ -137,17 +139,17 @@ public class CashRefundController {
     @Path("/requestRefund")
     public Response requestRefund(Map<String, Object> paramMap) {
         try {
-            String logStashSign = LogStashKey.ORDER_REQUEST_REFUND.getValue();
+        	String logStashSign = LogStashKey.ORDER_REQUEST_REFUND.getValue();
             String methodDesc = LogStashKey.ORDER_REQUEST_REFUND.getName();
-
+            
             String orderId = CommonUtils.getValue(paramMap, "orderId");//订单Id
             String userId = CommonUtils.getValue(paramMap, "userId");//用户id
-            String reason = CommonUtils.getValue(paramMap, "reason");//退款原因
-            String memo = CommonUtils.getValue(paramMap, "memo");//退款说明
-
+            String reason=CommonUtils.getValue(paramMap, "reason");//退款原因
+            String memo=CommonUtils.getValue(paramMap, "memo");//退款说明
+            
             String requestId = logStashSign + "_" + orderId;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
-
+            
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
                 return Response.fail("订单号不能为空!");
@@ -160,22 +162,24 @@ public class CashRefundController {
                 LOGGER.error("退款原因不能为空!");
                 return Response.fail("退款原因不能为空!");
             }
-
-            cashRefundService.requestRefund(requestId, orderId, userId, reason, memo);
+            Boolean  falge=cashRefundService.checkRequestRefund(requestId,orderId,userId);
+            if(falge){
+            	cashRefundService.requestRefund(requestId,orderId,userId, reason,memo);
+            }else{
+            	return Response.fail("该订单已经出账无法申请退款！");
+            }
 
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
         } catch (Exception e) {
             LOGGER.error("退款申请失败", e);
             return Response.fail("退款申请失败");
         }
         return Response.success("退款申请成功");
     }
-
     /**
      * 获取退款申请信息
-     *
      * @param paramMap
      * @return
      */
@@ -183,15 +187,15 @@ public class CashRefundController {
     @Path("/getRequestRefund")
     public Response getRequestRefundInfo(Map<String, Object> paramMap) {
         try {
-            String logStashSign = LogStashKey.ORDER_GET_REQUEST_REFUND.getValue();
+        	String logStashSign = LogStashKey.ORDER_GET_REQUEST_REFUND.getValue();
             String methodDesc = LogStashKey.ORDER_GET_REQUEST_REFUND.getName();
-
+            
             String orderId = CommonUtils.getValue(paramMap, "orderId");//订单Id
             String userId = CommonUtils.getValue(paramMap, "userId");//用户id
-
+            
             String requestId = logStashSign + "_" + orderId;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
-
+            
             if (StringUtils.isBlank(orderId)) {
                 LOGGER.error("订单号不能为空!");
                 return Response.fail("订单号不能为空!");
@@ -200,8 +204,8 @@ public class CashRefundController {
                 LOGGER.error("用户号不能为空!");
                 return Response.fail("用户号不能为空!");
             }
-
-            CashRefund cashRefund = cashRefundService.getRequestRefundInfo(requestId, orderId, userId);
+           
+            CashRefund cashRefund= cashRefundService.getRequestRefundInfo(requestId,orderId,userId);
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("reason", cashRefund.getReason());
             resultMap.put("memo", cashRefund.getMemo());
@@ -212,5 +216,31 @@ public class CashRefundController {
             return Response.fail("查询退款申请信息失败");
         }
     }
-
+    /**
+     * 同意退款
+     *
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/agreeRefund")
+    public Response agreeRefund(Map<String, Object> paramMap) {
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        String orderId = CommonUtils.getValue(paramMap, "orderId");
+        if (StringUtils.isAnyEmpty(userId, orderId)) {
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        CashRefundDto cashRefundDto = cashRefundService.getCashRefundByOrderId(orderId);
+        //1:退款提交 才能进行同意
+        if (cashRefundDto == null || cashRefundDto.getStatus() != 1) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(cashRefundDto.getAmt()));
+        if (!res.statusResult()) {
+            return Response.fail(BusinessErrorCode.NO);
+        }
+        cashRefundDto.setStatus(2);
+        cashRefundService.update(cashRefundDto);
+        return Response.successResponse();
+    }
 }

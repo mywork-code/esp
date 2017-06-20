@@ -1,19 +1,11 @@
 package com.apass.esp.service.refund;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.CashRefundTxn;
-import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.mapper.CashRefundTxnMapper;
-import com.apass.esp.repository.goods.GoodsStockLogRepository;
-import com.apass.esp.repository.httpClient.CommonHttpClient;
-import com.apass.esp.service.order.OrderService;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -23,17 +15,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -61,7 +60,7 @@ public class CashRefundService {
 
     @Autowired
     private OrderService orderService;
-
+    
     /**
      * @param orderId
      * @return
@@ -171,6 +170,57 @@ public class CashRefundService {
             }
         }
 
+    }
+    /**
+     * 判断是否可以进行退款申请
+     * @param requestId
+     * @param orderId
+     * @param userId
+     * @return
+     */
+	public Boolean checkRequestRefund (String requestId, String orderId, String userId){
+    	   Boolean  falge=false;
+    	   String   billDate="";//获取账单日
+    	   Date     txnDate = null;//交易时间
+	try {
+	    	OrderInfoEntity oity=orderInfoRepository.selectByOrderIdAndUserId(orderId,Long.parseLong(userId));
+	    	if(null != oity && "T05".equals(oity.getPayType())){
+	    		falge=true;
+	    	}else{
+		            Response responseCredit =  commonHttpClient.getCustomerCreditInfo(requestId,Long.parseLong(userId));
+		            if(responseCredit!=null&&responseCredit.statusResult()){
+		                CustomerCreditInfo customerCreditInfo =  Response.resolveResult(responseCredit,CustomerCreditInfo.class);
+		                if(customerCreditInfo!=null){
+		                 billDate=customerCreditInfo.getBillDate();//获取账单日
+		                }
+		            }
+		            List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
+		            if(txnInfoEntityList.size()>0){
+		               txnDate=txnInfoEntityList.get(0).getTxnDate();//交易时间
+		            }
+		            Calendar calendar = Calendar.getInstance();
+		            calendar.setTime(txnDate);
+		            int txnYear=calendar.get(Calendar.YEAR);
+		            int txnMonth=calendar.get(Calendar.MONTH);
+		            int txnDay=calendar.get(Calendar.DAY_OF_MONTH);
+		            
+		            int billDateInt=Integer.parseInt(billDate);
+		            Calendar calendar2 = Calendar.getInstance();
+		            if(billDateInt>txnDay){
+		            	calendar2.set(txnYear, txnMonth, billDateInt, 2, 0, 0);
+		            }else{
+		            	calendar2.set(txnYear, txnMonth+1, billDateInt, 2, 0, 0);
+		            }
+		            Long bill=calendar2.getTime().getTime();
+		            Long nowTime=new Date().getTime();
+		            if(nowTime<bill){
+		            	falge=true;
+		            }
+	    	}
+		} catch (Exception e) {
+		e.printStackTrace();
+		}
+	  return falge;
     }
 
     /**
