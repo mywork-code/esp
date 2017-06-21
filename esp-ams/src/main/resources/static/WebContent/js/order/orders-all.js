@@ -146,7 +146,13 @@ $(function () {
                         width: 100,
                         align: 'center'
                     },
-
+                    {
+                    	title : '商家是否发货',
+                    	hidden: false,
+                    	field : 'preDeliveryMsg',
+                    	width : 100,
+                    	align : 'center'
+                    },
                     {
                         title: '操作',
                         field: 'opt',
