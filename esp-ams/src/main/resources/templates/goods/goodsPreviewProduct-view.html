@@ -281,9 +281,9 @@
                 <div class="SIZE">
                     <img src="${rc.contextPath}/WebContent/images/icon-fail.png" alt="" class="close"/>
                     <img  id='goodsLogoUrl' src="data:image/gif;base64,${goodsStockList[0].stockLogo!}" alt="" class="pro_img"/>
-                    <p class="SIZE_price">¥${(goodsStockList[0].goodsPrice)!}</p>
-                    <p class="SIZE_costPrice" style="color: black;font-weight:bold">¥${(goodsStockList[0].goodsCostPrice)!}</p>
-                    <p class="SIZE_color">已选择：${(goodsStockList[0].goodsSkuAttr)!}</p>
+                    <p class="SIZE_price"></p><!-- ¥${(goodsStockList[0].goodsPrice)!} -->
+                    <p class="SIZE_costPrice" style="color: black;font-weight:bold"></p><!-- ¥${(goodsStockList[0].goodsCostPrice)!} -->
+                    <p class="SIZE_color"></p><!--已选择： ${(goodsStockList[0].goodsSkuAttr)!} -->
                     <div class="SIZE_title">${goodsSizeOrColorTitle!}</div>
 	                <div class="SIZE_Chcolor" id="SIZE_Chcolor">
 	                <#if goodsStockList??>	
@@ -300,7 +300,7 @@
 	                </#list>
 					</#if>
 	                </div>
-	                <div class="supply">商品库存：${(goodsStockList[0].stockCurrAmt)!}件</div>
+	                <div class="supply"></div><!-- 商品库存：${(goodsStockList[0].stockCurrAmt)!}件 -->
 	                
 	                <div class="compare_url" id="compareurl1"></div>
 	                <div class="compare_url" id="compareurl2"></div>
