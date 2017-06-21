@@ -162,8 +162,11 @@ public class CashRefundController {
                 LOGGER.error("退款原因不能为空!");
                 return Response.fail("退款原因不能为空!");
             }
+            Boolean  statusFalge=cashRefundService.checkOrderStatus(orderId,userId);
             Boolean  falge=cashRefundService.checkRequestRefund(requestId,orderId,userId);
-            if(falge){
+            if(!statusFalge){
+            	return Response.fail(" 抱歉，商户已发货暂不支持退款!");
+            }else if(falge){
             	cashRefundService.requestRefund(requestId,orderId,userId, reason,memo);
             }else{
             	return Response.fail("该订单已经出账无法申请退款！");
