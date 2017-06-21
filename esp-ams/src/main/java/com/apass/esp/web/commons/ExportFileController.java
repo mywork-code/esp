@@ -297,19 +297,25 @@ public class ExportFileController {
 //	                		 if(StringUtils.isBlank(getValue(xcell))){
 //	                			 throw new BusinessException("第"+rowNum+"行唯一标识奖励明细id不能为空。");
 //	                		 }
-	                		 awardBindRelIntroVo.setAwardDetailId(Long.valueOf(getValue(xcell)));
+	                		 if(!StringUtils.isBlank(getValue(xcell))){
+	                			awardBindRelIntroVo.setAwardDetailId(Long.valueOf(getValue(xcell)));
+	                		 }
 	                		 break;
                 	 	case 1:
 //                	 		if(!awDetail.getMobile().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行手机号码不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setMobile(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setMobile(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 2:
 //                	 		if(canUserAmt.doubleValue() != Double.valueOf(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行可提现金额不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCanWithdrawAmount(new BigDecimal(getValue(xcell)));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCanWithdrawAmount(new BigDecimal(getValue(xcell)));
+                	 		}
                 	 		break;
                 	 	case 3:
 //                	 		if(!DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
@@ -317,31 +323,41 @@ public class ExportFileController {
 //                	 			throw new BusinessException("第"+rowNum+"行申请提现提交时间不能修改。");
 //                	 			
 //                	 		}
-                	 		awardBindRelIntroVo.setApplyDate(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setApplyDate(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 4:
 //                	 		if(awDetail.getAmount().doubleValue() != Double.valueOf(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行申请提现金额不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setAmount(new BigDecimal(getValue(xcell)));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setAmount(new BigDecimal(getValue(xcell)));
+                	 		}
                 	 		break;
                 	 	case 5:
 //                	 		if(!awDetail.getRealName().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行推荐人姓名不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setRealName(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setRealName(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 6:
 //                	 		if(!awDetail.getCardNo().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行推荐人银行卡号不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCardNO(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCardNO(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 7:
 //                	 		if(!awDetail.getCardBank().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行所属银行不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCardBank(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCardBank(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 8:
                 	 		awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));

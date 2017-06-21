@@ -3,6 +3,8 @@ package com.apass.esp.domain.dto.statement;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -111,8 +113,15 @@ public class StatementDto {
     public Long getGoodsNumR() {
 		return goodsNumR;
 	}
-	public void setGoodsNumR(Long goodsNumR) {
+	public void setGoodsNumR(String refundType,Long goodsNumR) {
 		this.goodsNumR = goodsNumR;
+		if(!StringUtils.isBlank(refundType)){
+			if(refundType.equals("退货")){
+				this.returnGoodNum = goodsNumR;
+			}else if(refundType.equals("换货")){
+				this.swapGoodNum = goodsNumR;
+			}
+		}
 	}
 
 	/**
@@ -130,25 +139,17 @@ public class StatementDto {
      */
     private BigDecimal refundAmt;
     
-    public Long getSwapGoodNum() {
-		return swapGoodNum;
-	}
-	public void setSwapGoodNum(String refundType,Long goodsNumR) {
-		if(refundType.equals("0")){
-			this.swapGoodNum = null;
-        }else if(refundType.equals("1")){
-        	this.swapGoodNum = goodsNumR;
-        }
-	}
 	public Long getReturnGoodNum() {
 		return returnGoodNum;
 	}
-	public void setReturnGoodNum(String refundType,Long goodsNumR) {
-		if(refundType.equals("0")){
-			this.returnGoodNum = goodsNumR;
-        }else if(refundType.equals("1")){
-        	this.returnGoodNum = null;
-        }
+	public void setReturnGoodNum(Long returnGoodNum) {
+		this.returnGoodNum = returnGoodNum;
+	}
+	public Long getSwapGoodNum() {
+		return swapGoodNum;
+	}
+	public void setSwapGoodNum(Long swapGoodNum) {
+		this.swapGoodNum = swapGoodNum;
 	}
 	public BigDecimal getRefundAmt() {
 		return refundAmt;

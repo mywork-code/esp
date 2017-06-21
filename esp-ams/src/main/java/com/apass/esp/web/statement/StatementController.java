@@ -75,12 +75,16 @@ public class StatementController extends BaseController {
 
             List<StatementDto> dataList = resultPage.getDataList();
             for (StatementDto statementDto : dataList) {
+            	//结算时间为签收时间加7天
                 String signTime = statementDto.getSignTime();
                 Date signTimeDate = DateFormatUtil.string2date(signTime, DateFormatUtil.YYYY_MM_DD);
                 if(signTimeDate != null){
                     Date signTimeDateAddDays = DateFormatUtil.addDays(signTimeDate, FINALLY_SETTLETIME);
                     statementDto.setSettlementTime(signTimeDateAddDays);
                 }
+                
+                //退货或换货数量赋值
+                statementDto.setGoodsNumR(statementDto.getRefundType(),statementDto.getGoodsNumR());
             }
 
             respBody.setTotal(resultPage.getTotalCount());

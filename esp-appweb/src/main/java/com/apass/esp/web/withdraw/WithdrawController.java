@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.repository.httpClient.EspActivityHttpClient;
-import com.apass.esp.service.coffers.CoffersBaseService;
 import com.apass.esp.service.withdraw.WithdrawService;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.google.common.collect.Maps;
 
 /**
@@ -84,7 +82,7 @@ public class WithdrawController {
 	        LOGGER.info("确认提现传参内容userId:{},amount:{},cardBank:{},cardNo:{}",userId,amount,cardBank,cardNo);
 	        
 	        resultMap = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
-	        String customerId = (String)resultMap.get("customerId");
+	        String customerId = String.valueOf(resultMap.get("customerId"));
 	        //调用供房帮接口：银行卡用过后不可更换
 	        Map<String,Object> parMap = Maps.newHashMap();
 	        parMap.put("customerId",customerId);
@@ -97,6 +95,4 @@ public class WithdrawController {
 	        return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
 	    }
 	}
-
-
 }
