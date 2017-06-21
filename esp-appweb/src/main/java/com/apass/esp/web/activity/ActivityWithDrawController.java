@@ -216,28 +216,28 @@ public class ActivityWithDrawController {
 		String mobile = CommonUtils.getValue(paramMap, "mobile");
 		if (StringUtils.isAnyBlank(userId, realName, cardNo, cardBank, bankCode,mobile)) {
 			LOGGER.error("参数值错误");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("参数值错误");
 		}
 		if(!RegExpUtils.mobile(mobile)){
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("手机号码不正确");
 		}
 		if (!RegExpUtils.length(realName, 4, 20)) {
 			LOGGER.error("真实姓名输入不合法");
-			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			return Response.fail("真实姓名输入不合法");
 		}
 		Map<String, Object> result = awardActivityInfoService.getBindCardImformation("contractInit",
 				Long.valueOf(userId));
 		if (result == null || result.size() == 0) {
 			LOGGER.error("对不起,该用户不存在!");
-			return Response.fail(BusinessErrorCode.CUSTOMER_NOT_EXIST);
+			return Response.fail("对不起,该用户不存在!");
 		}
 		if ("2".equals(result.get("status"))) {
 			LOGGER.error("对不起,请先上传身份证");
-			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+			return Response.fail("对不起,请先上传身份证");
 		}
 		if ("0".equals(result.get("status"))) {
 			LOGGER.error("对不起,该用户已绑定银行卡");
-			return Response.fail(BusinessErrorCode.USER_HASBIND_BANKCARD);
+			return Response.fail("对不起,该用户已绑定银行卡");
 		}
 		paramMap.put("customerId", result.get("customerId"));
 		paramMap.put("identityNo", result.get("identityNo"));
@@ -251,7 +251,7 @@ public class ActivityWithDrawController {
 			Map <String,Object> m =GsonUtils.convert(s);
 			if(!cardBank.equals(m.get("dictName"))){
 				LOGGER.error("卡号与所选银行不匹配!");
-				return Response.fail(BusinessErrorCode.BANKCARD_NOTBELONG_BANK);
+				return Response.fail("卡号与所选银行不匹配!");
 			}
 			Response res = awardActivityInfoService.initContract(paramMap);
 			if (StringUtils.isEmpty(String.valueOf(res.getData()))) {
