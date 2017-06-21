@@ -95,24 +95,24 @@ $(function(){
                 	width : 160,
                 	align : 'center',
                 },
-//                {
-//                	title : '退货数量',
-//                	field : 'returnGoodNum',
-//                	width : 160,
-//                	align : 'center',
-//                },
-//                {
-//                	title : '换货数量',
-//                	field : 'returnGoodNum',
-//                	width : 160,
-//                	align : 'center',
-//                },
-//                {
-//                	title : '退款金额',
-//                	field : 'refundAmt',
-//                	width : 160,
-//                	align : 'center',
-//                },
+                {
+                	title : '退货数量',
+                	field : 'returnGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '换货数量',
+                	field : 'swapGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '退款金额',
+                	field : 'refundAmt',
+                	width : 160,
+                	align : 'center',
+                },
                 {
                 	title : '批复结果',
                 	field : 'isAgree',

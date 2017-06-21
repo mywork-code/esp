@@ -38,7 +38,7 @@
 	        </if> 
 		</where>
 	</sql>
-    <!-- 导出报表的内容 查询 -->
+    <!-- 导出报表的内容 查询 ：与页面相同奶哥，此sql不用了-->
 	<select id="queryStatementPageForExport" parameterType="Map" resultType="StatementDto">
 	<![CDATA[
 	        SELECT

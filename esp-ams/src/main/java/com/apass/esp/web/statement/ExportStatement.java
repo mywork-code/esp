@@ -354,7 +354,7 @@ public class ExportStatement extends BaseController {
     private List<StatementDto> getDataList(Map map) {
         long start = System.currentTimeMillis();
         Page page = new Page();
-        Pagination<StatementDto> queryStatementPage = statementService.queryStatementPage(map, page);
+        Pagination<StatementDto> queryStatementPage = statementService.queryStatementShowPage(map, page);
         List<StatementDto> dataList = queryStatementPage.getDataList();
         for (StatementDto statementDto : dataList) {
             String signTime = statementDto.getSignTime();
@@ -363,6 +363,8 @@ public class ExportStatement extends BaseController {
                 Date signTimeDateAddDays = DateFormatUtil.addDays(signTimeDate, FINALLY_SETTLETIME);
                 statementDto.setSettlementTime(signTimeDateAddDays);
             }
+            //退货或换货数量赋值
+            statementDto.setGoodsNumR(statementDto.getRefundType(),statementDto.getGoodsNumR());
         }
         long end = System.currentTimeMillis();
         System.out.println("获取数据时间===================================================》" + (end - start) / 1000);
