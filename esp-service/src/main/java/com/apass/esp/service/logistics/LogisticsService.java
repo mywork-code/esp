@@ -396,16 +396,19 @@ public class LogisticsService {
     	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
     	if(orderInfo != null){
     		//如果物流商编号和物流单号任何一项为空，则返回空
-    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsNo()) ){
+    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsName()) ){
     			return null;
     		}
     		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
-    		logisticInfo.setLogisticsName(orderInfo.getLogisticsName());
     		
 			List<Trace> traceList =  getSignleTrackingsByOrderId(orderInfo.getOrderId());
         	if(!CollectionUtils.isEmpty(traceList)){
         		logisticInfo.setTrace(traceList.get(0));
         	}
+        	
+        	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
+                    orderInfo.getLogisticsName());
+        	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
     	}
     	
     	return logisticInfo;
