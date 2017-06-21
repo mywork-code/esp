@@ -309,11 +309,9 @@ public class AwardDetailService {
         List<AwardDetail> awaDs = awardDetailMapper.queryAwardIntroList(parMap);
         for (AwardDetail awardDetail : awaDs) {
         	if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
-        		
         		if(awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
         			totalCount = totalCount.subtract(awardDetail.getAmount());
         		}
-        		
         		if(awardDetail.getStatus() == AwardActivity.AWARD_STATUS.PROCESSING.getCode()){
         			totalCount = totalCount.subtract(awardDetail.getAmount());
         		}
