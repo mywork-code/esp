@@ -70,9 +70,9 @@ public class WithdrawController {
 	public Response confirmWithdraw(@RequestBody Map<String, Object> paramMap) {
 	    Map<String,Object> resultMap = Maps.newHashMap();
 	    String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
-            String amount = CommonUtils.getValue(paramMap, "amount");
-            String cardBank = CommonUtils.getValue(paramMap, "cardBank");
-            String cardNo = CommonUtils.getValue(paramMap, "cardNo");
+        String amount = CommonUtils.getValue(paramMap, "amount");
+        String cardBank = CommonUtils.getValue(paramMap, "cardBank");
+        String cardNo = CommonUtils.getValue(paramMap, "cardNo");
             
 	    try{
 	        if(StringUtils.isAnyBlank(userId,amount,cardBank,cardNo)){
