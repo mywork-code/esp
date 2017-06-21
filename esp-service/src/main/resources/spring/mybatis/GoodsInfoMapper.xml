@@ -566,6 +566,7 @@
 			a.goods_title goodsTitle,
 			a.goods_sell_pt goodsSellPt,
 			a.goods_logo_url goodsLogoUrl,
+			a.un_support_province unSupportProvince,
 			c.minPrice marketPrice
 		FROM
 			t_esp_goods_base_info a,
