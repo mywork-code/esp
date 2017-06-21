@@ -270,7 +270,7 @@ public class AwardDetailService {
 				BigDecimal canWithdrawAmount = getCanUserAmt(awardDetail.getUserId(),awardDetail.getCreateDate());	
 				awardBindRelIntroVo.setCanWithdrawAmount(canWithdrawAmount);
 				awardBindRelIntroVo.setApplyDate(DateFormatUtil.dateToString(awardDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
-				awardBindRelIntroVo.setAmount(awardDetail.getAmount());
+				awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
 				awardBindRelIntroVo.setRealName(awardDetail.getRealName());
 				awardBindRelIntroVo.setCardNO(awardDetail.getCardNo());
 				awardBindRelIntroVo.setCardBank(awardDetail.getCardBank());
@@ -300,6 +300,7 @@ public class AwardDetailService {
 		parMap.put("applyDate2", DateFormatUtil.dateToString(createDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 		List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(userId);
 		BigDecimal totalCount = BigDecimal.ZERO;
+		
         for (AwardDetail awardDetail : awardDetails) {
             if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
                 totalCount = totalCount.add(awardDetail.getAmount());
@@ -307,9 +308,19 @@ public class AwardDetailService {
         }
         List<AwardDetail> awaDs = awardDetailMapper.queryAwardIntroList(parMap);
         for (AwardDetail awardDetail : awaDs) {
-        	totalCount = totalCount.subtract(awardDetail.getAmount());
+        	if(awardDetail.getType() == AwardActivity.AWARD_TYPE.WITHDRAW.getCode()){
+        		
+        		if(awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
+        			totalCount = totalCount.subtract(awardDetail.getAmount());
+        		}
+        		
+        		if(awardDetail.getStatus() == AwardActivity.AWARD_STATUS.PROCESSING.getCode()){
+        			totalCount = totalCount.subtract(awardDetail.getAmount());
+        		}
+        		
+        	}
 		}
         return totalCount;
 	}
-
+	
 }
