@@ -164,6 +164,8 @@ public class WithdrawService {
         awardDetail.setCardNo(cardNo);
         awardDetail.setCreateDate(new Date());
         awardDetail.setUpdateDate(new Date());
+        awardDetail.setMobile((String)resultBind.get("mobile"));
+        awardDetail.setRealName((String)resultBind.get("realName"));
         
         //获取扣税金额
         BigDecimal taxAmount = getTaxAmount(userId,amount);
