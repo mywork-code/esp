@@ -171,6 +171,19 @@ public class CashRefundService {
         }
 
     }
+    /*
+     * 判断订单状态是否可以申请退款
+     * @param orderId
+     * @return
+     */
+    public Boolean checkOrderStatus(String orderId, String userId) {
+        OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
+        if(OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())){
+        	return true;
+        }else{
+        	return false;
+        }
+    }
     /**
      * 判断是否可以进行退款申请
      * @param requestId
