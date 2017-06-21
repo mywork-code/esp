@@ -525,7 +525,7 @@
 			a.delist_time delistTime,		
 			a.pro_date proDate,
 			a.keep_date keepDate,
-			a.sup_no supNo
+			a.sup_no supNo			
 		FROM
 			t_esp_goods_base_info a LEFT JOIN 
 	
@@ -636,7 +636,8 @@
 			goods_Sku_Type goodsSkuType,
 			goods_detail googsDetail,
 			goods_sift_url goodsSiftUrl,
-			goods_model goodsModel
+			goods_model goodsModel,
+			un_support_province unSupportProvince
 		FROM
 			t_esp_goods_base_info
 		WHERE
