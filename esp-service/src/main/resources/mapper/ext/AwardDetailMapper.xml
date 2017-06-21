@@ -12,6 +12,7 @@
 	    	<if test="arrivedDate2 !=null and arrivedDate2 != ''"><![CDATA[and release_date <= #{arrivedDate2}]]></if>
 	    	<if test="applyDate1 !=null and applyDate1 != ''"><![CDATA[and create_date > #{applyDate1}]]></if>
 	    	<if test="applyDate2 !=null and applyDate2 != ''"><![CDATA[and create_date <= #{applyDate2}]]></if>
+	    	<if test="userId !=null and userId != ''">and user_Id = #{userId}</if>
 		</where>
 	</sql>
 	
