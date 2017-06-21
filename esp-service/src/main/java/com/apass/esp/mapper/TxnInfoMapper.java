@@ -1,6 +1,8 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.gfb.framework.mybatis.GenericMapper;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +12,7 @@ import java.util.List;
 /**
  * Created by jie.xu on 17/4/28.
  */
-public interface TxnInfoMapper {
+public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
 
   /**
    * 根据订单id查询流水

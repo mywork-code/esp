@@ -47,4 +47,12 @@
         WHERE
         order_id =#{orderId}
     </update>
+    
+      <update id="updateTime" >
+        update t_apass_txn_info
+        set txn_date =#{date}
+        WHERE
+        order_id =#{orderId}
+    </update>
+    
 </mapper>
