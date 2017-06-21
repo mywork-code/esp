@@ -165,7 +165,7 @@ public class CashRefundController {
             Boolean  statusFalge=cashRefundService.checkOrderStatus(orderId,userId);
             Boolean  falge=cashRefundService.checkRequestRefund(requestId,orderId,userId);
             if(!statusFalge){
-            	return Response.fail(" 抱歉，商户已发货暂不支持退款!");
+            	return Response.success("抱歉，商户已发货暂不支持退款",false);
             }else if(falge){
             	cashRefundService.requestRefund(requestId,orderId,userId, reason,memo);
             }else{
@@ -179,7 +179,7 @@ public class CashRefundController {
             LOGGER.error("退款申请失败", e);
             return Response.fail("退款申请失败");
         }
-        return Response.success("退款申请成功");
+        return Response.success("退款申请成功",true);
     }
     /**
      * 获取退款申请信息

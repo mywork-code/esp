@@ -518,6 +518,14 @@ public class OrderService {
 	 */
 	public void validateCorrectInfo(String requestId, BigDecimal totalPayment, Long addressId, Long userId,
 			List<PurchaseRequestDto> purchaseList, String sourceFlag) throws BusinessException {
+		//校验商品的价格是否已经更改
+		for (PurchaseRequestDto purchase : purchaseList) {
+            BigDecimal price = commonService.calculateGoodsPrice(purchase.getGoodsId() ,purchase.getGoodsStockId());
+            if(!(purchase.getPrice().compareTo(price)==0)){
+            	LOG.info(requestId, "id为"+purchase.getGoodsId()+"的商品价格发生改变，请重新购买！",purchase.getGoodsStockId().toString());
+    			throw new BusinessException("商品价格已变动，请重新下单");
+            }
+		}
 		// 校验商品订单总金额
 		BigDecimal countTotalPrice = BigDecimal.ZERO;
 		for (PurchaseRequestDto purchase : purchaseList) {

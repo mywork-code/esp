@@ -172,13 +172,17 @@ public class CashRefundService {
 
     }
     /*
-     * 判断订单状态是否可以申请退款
+     * 根据订单状态判断是否可以申请退款
      * @param orderId
      * @return
      */
     public Boolean checkOrderStatus(String orderId, String userId) {
         OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
-        if(OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())){
+        if(null ==orderInfo){
+        	return false;
+        }else if(OrderStatus.ORDER_PAYED.getCode().equals(orderInfo.getStatus())){
+        	return true;
+        }else if(OrderStatus.ORDER_REFUNDPROCESSING.getCode().equals(orderInfo.getStatus())){
         	return true;
         }else{
         	return false;
