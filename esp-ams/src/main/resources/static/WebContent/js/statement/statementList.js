@@ -103,7 +103,7 @@ $(function(){
                 },
                 {
                 	title : '换货数量',
-                	field : 'returnGoodNum',
+                	field : 'swapGoodNum',
                 	width : 160,
                 	align : 'center',
                 },
