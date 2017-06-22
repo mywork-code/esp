@@ -32,9 +32,9 @@
         where order_id = #{value}
     </select>
     
-    <select id="queryOrigTxnIdByOrderid" resultType="java.lang.String" parameterType="java.lang.String">
+    <select id="queryOrigTxnIdByOrderid" resultMap="BaseResultMap" parameterType="java.lang.String">
        SELECT
-			orig_txn_id
+			<include refid="Base_Column_List"/>
 		FROM
 			t_apass_txn_info
 		WHERE

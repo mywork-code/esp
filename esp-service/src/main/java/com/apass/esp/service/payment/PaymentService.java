@@ -17,6 +17,7 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -65,6 +66,7 @@ import java.util.Map;
  * @version $Id: PaymentService.java, v 0.1 2017年3月3日 下午3:04:04 liuming Exp $
  */
 @Service
+@Transactional(rollbackFor=Exception.class)
 public class PaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
@@ -836,27 +838,24 @@ public class PaymentService {
 	 */
 	public void refundCallback(String requestId, String orderId, String status, String oriTxnCode) throws BusinessException {
 		CashRefund cashRefund = new CashRefund();
-		CashRefundTxn cashRefundTxn = new CashRefundTxn();
-		
 		cashRefund.setOrderId(orderId);
 		cashRefund.setUpdateDate(new Date());
+		CashRefundDto cashDto = getCashRefundByOrderId(orderId);
+		
 		//退货成功：修改退货信息表和订单表的状态
 		if(YesNo.isYes(status)){
 			//修改退款信息表状态为退款成功
+			cashRefund.setId(cashDto.getId());
 			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
+			cashRefund.setStatusD(new Date());
 			Integer updateRefundCount = cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
 			if(updateRefundCount != 1){
 				LOGGER.error("修改退款信息表失败。。");
 				throw new BusinessException("修改退款信息表失败。。");
 			}
-			//修改退款流水表
-			cashRefundTxn.setOriTxnCode(oriTxnCode);
-			cashRefund.setStatus(2);
-			cashRefund.setUpdateDate(new Date());
-			Integer updateRefundTxnCount = cashRefundTxnService.updateStatusByQueryId(cashRefundTxn);
-			if(updateRefundTxnCount != 1){
-				LOGGER.error("修改退款流水表失败。。");
-			}
+			
+			//修改退款流水表状态
+			updateCashRefundTxnByOrderId(oriTxnCode,"2",cashDto.getId());
 			
 			//修改订单状态为交易关闭
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
@@ -864,15 +863,53 @@ public class PaymentService {
 	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
         	orderService.updateOrderStatus(orderInfoEntity);
 		}else{
-			//退货失败：修改退款表状态
-			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS5.getCode()));
-			Integer updateRefundCount = cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
-			if(updateRefundCount != 1){
-				LOGGER.error("修改退款信息表失败。。");
-				throw new BusinessException("修改退款信息表失败。。");
+			//退货失败：修改退款流水表状态
+			updateCashRefundTxnByOrderId(oriTxnCode,"3",cashDto.getId());
+		}
+	}
+	
+	/**
+	 * 根据orderId修改退款流水表
+	 * @param orderId
+	 * @param oriTxnCode 
+	 * @param cashRefundId 
+	 * @return
+	 * @throws BusinessException
+	 */
+	private void updateCashRefundTxnByOrderId(String oriTxnCode,String refundTxnStatus, Long cashRefundId)
+			throws BusinessException {
+		List<CashRefundTxn> cashRefundTxns = cashRefundTxnService.queryCashRefundTxnByCashRefundId(cashRefundId);
+		LOGGER.info("退款流水表数据：{}",GsonUtils.toJson(cashRefundTxns));
+		
+		if(cashRefundTxns == null){
+			LOGGER.error("退款流水表数据有误，退款详情id{}",cashRefundId);
+			throw new BusinessException("退款流水表数据有误");
+		}else{
+			for (CashRefundTxn cashReTxn : cashRefundTxns) {
+				if(TxnTypeCode.SF_CODE.getCode().equals(cashReTxn.getTypeCode()) 
+						|| TxnTypeCode.KQEZF_CODE.getCode().equals(cashReTxn.getTxnCode())){
+					cashReTxn.setOriTxnCode(oriTxnCode);
+					cashReTxn.setStatus(refundTxnStatus);
+					cashReTxn.setUpdateDate(new Date());
+					cashRefundTxnService.updateStatusByCashRefundId(cashReTxn);
+				}
 			}
 		}
-        
+	}
+	/**
+	 * 根据orderId查询退款详情
+	 * @param orderId
+	 * @return
+	 * @throws BusinessException
+	 */
+	private CashRefundDto getCashRefundByOrderId(String orderId)
+			throws BusinessException {
+		CashRefundDto caDto = cashRefundService.getCashRefundByOrderId(orderId);
+		if(caDto == null){
+			LOGGER.error("退款详情表数据有误：{}",orderId);
+			throw new BusinessException("退款详情表数据有误");
+		}
+		return caDto;
 	}
 
 }

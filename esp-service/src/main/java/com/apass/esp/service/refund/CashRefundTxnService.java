@@ -47,14 +47,23 @@ public class CashRefundTxnService {
     @Autowired
     private CashRefundTxnMapper cashRefundTxnMapper;
 
+	/**
+	 * 根据退款详情id查询退款流水数据
+	 * @param id
+	 * @return
+	 */
+	public List<CashRefundTxn> queryCashRefundTxnByCashRefundId(Long cashRefunId) {
+		return cashRefundTxnMapper.queryCashRefundTxnByCashRefundId(cashRefunId);
+	}
+
 
 	/**
-	 * 根据queryId修改退款流水表中的状态
+	 * 根据退款详情id修改退款流水表中的状态
 	 * @param cashRefundTxn
-	 * @return 
+	 * @return
 	 */
-	public Integer updateStatusByQueryId(CashRefundTxn cashRefundTxn) {
-		return cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);		
+	public Integer updateStatusByCashRefundId(CashRefundTxn cashRefundTxn) {
+		return cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);	
 	}
 
    

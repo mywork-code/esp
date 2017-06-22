@@ -59,7 +59,7 @@ public class TxnInfoEntity {
 	/**
 	 * 原始交易日期
 	 */
-	private Date origTransDate;
+	private String origTransDate;
 	/**
 	 * 原交易交易码
 	 */
@@ -247,11 +247,11 @@ public class TxnInfoEntity {
 		this.txnDesc = txnDesc;
 	}
 
-	public Date getOrigTransDate() {
+	public String getOrigTransDate() {
 		return origTransDate;
 	}
 
-	public void setOrigTransDate(Date origTransDate) {
+	public void setOrigTransDate(String origTransDate) {
 		this.origTransDate = origTransDate;
 	}
 
