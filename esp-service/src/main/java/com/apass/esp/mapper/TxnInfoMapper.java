@@ -24,7 +24,7 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
 	 * @param orderId:订单id
 	 * @return
 	 */
-  String queryOrigTxnIdByOrderid(String orderId);
+  TxnInfoEntity queryOrigTxnIdByOrderid(String orderId);
 
   void updateTime(@Param("orderId") String orderId,@Param("date") Date date);
 

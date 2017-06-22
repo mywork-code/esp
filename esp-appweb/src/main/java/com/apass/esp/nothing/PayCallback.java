@@ -111,9 +111,9 @@ public class PayCallback {
 	public Response cashRefundCallback(Map<String, Object> paramMap) {
 		String logStashSign = LogStashKey.REFUND_CALLBACK.getValue();
 		String methodDesc = LogStashKey.REFUND_CALLBACK.getName();
-		String status = CommonUtils.getValue(paramMap, "status"); // 退款状态状态[成功 失败]
+		String status = CommonUtils.getValue(paramMap, "status"); // 退款状态[成功 失败]
 		String orderId = CommonUtils.getValue(paramMap, "orderId"); // 订单号
-		String oriTxnCode = CommonUtils.getValue(paramMap, "oriTxnCode"); // 订单号
+		String oriTxnCode = CommonUtils.getValue(paramMap, "oriTxnCode"); //queryId
 		
 		String requestId = logStashSign + "_" + orderId;
 		LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -125,10 +125,10 @@ public class PayCallback {
 		try {
 			paymentService.refundCallback(requestId, orderId, status,oriTxnCode);
 		} catch (Exception e) {
-			LOGGER.error("数据库更新成功", e);
+			LOGGER.error("数据库更新失败", e);
 			return Response.fail(BusinessErrorCode.UPDATE_ORDER_FAILED);
 		}
-		return Response.success("数据库更新失败！");
+		return Response.success("数据库更新成功！");
 	}
 
 	private void addRebateRecord(String status, String mainOrderId) {
