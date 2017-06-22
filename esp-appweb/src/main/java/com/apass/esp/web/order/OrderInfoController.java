@@ -779,9 +779,12 @@ public class OrderInfoController {
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
-        if (StringUtils.isAnyBlank(name, telephone, province, city, district, address)) {
+        if (StringUtils.isAnyBlank(name, telephone, city, district, address)) {
             LOGGER.error("地址信息字段不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        }
+        if(StringUtils.isEmpty(province)){
+            province=city;
         }
 
         try {
