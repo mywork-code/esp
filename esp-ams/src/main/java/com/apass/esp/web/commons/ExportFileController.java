@@ -204,7 +204,7 @@ public class ExportFileController {
 			
 			if(list != null){
 				for (AwardBindRelIntroVo awardBindRelIntroVo : list) {
-					if(awardBindRelIntroVo.getAwardDetailId()==null || ifLongString(String.valueOf(awardBindRelIntroVo.getAwardDetailId()))){
+					if(awardBindRelIntroVo.getAwardDetailId()==null || !ifLongString(String.valueOf(awardBindRelIntroVo.getAwardDetailId()))){
 						countFail++;
 						continue;
 					}
