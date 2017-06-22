@@ -228,7 +228,7 @@ public class ExportFileController {
 						countFail++;
 						continue;
 					}
-					if(awardBindRelIntroVo.getAmount()==null || awDetail.getAmount().doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
+					if(awardBindRelIntroVo.getAmount()==null || awDetail.getAmount().subtract(awDetail.getTaxAmount()).doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
 						countFail++;
 						continue;
 					}
