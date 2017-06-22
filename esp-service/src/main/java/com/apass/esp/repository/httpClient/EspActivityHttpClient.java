@@ -25,7 +25,6 @@ public class EspActivityHttpClient {
 
 	// 绑定卡片
 	private static final String BIND_CARD_URL = "/espReWardActivity/bindCard";
-	// 绑定卡片
 	private static final String CARD_USE_FLAG = "/espReWardActivity/updateBindCard";
 
 	// 验卡是否本人 以及是否支持该银行
@@ -90,6 +89,28 @@ public class EspActivityHttpClient {
 			return Response.fail("绑卡接口调用异常",BusinessErrorCode.BIND_CARTINTEFACE_EXCEPTION);
 		}
 	}
+	
+	/**
+	 * 修改卡的状态
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Response userCardFlag(Map<String, Object> map) {
+		String requestUrl = gfbReqUrl + CARD_USE_FLAG;
+		String requestJson = GsonUtils.toJson(map);
+		LOGGER.info(" requestUrl :{}", requestUrl);
+		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+		try {
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			LOGGER.info("确认提现接口:{}", responseJson);
+			Response result = GsonUtils.convertObj(responseJson, Response.class);
+			return result;
+		} catch (Exception e) {
+			LOGGER.error("修改卡状态接口调用异常:{}", e);
+			return Response.fail("修改卡状态接口调用异常",BusinessErrorCode.BIND_CARTINTEFACE_EXCEPTION);
+		}
+	}
 
 	/**
 	 * 
@@ -111,28 +132,6 @@ public class EspActivityHttpClient {
 		} catch (Exception e) {
 			LOGGER.error("银行卡列表接口调用异常:{}", e);
 			return Response.fail("银行卡列表接口调用异常",BusinessErrorCode.BANKING_LIST_EXCEPTION);
-		}
-	}
-	
-   /**
-	 * 修改卡的状态
-	 * 
-	 * @param map
-	 * @return
-	 */
-	public Response userCardFlag(Map<String, Object> map) {
-		String requestUrl = gfbReqUrl + CARD_USE_FLAG;
-		String requestJson = GsonUtils.toJson(map);
-		LOGGER.info(" requestUrl :{}", requestUrl);
-		StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
-		try {
-			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-			LOGGER.info("确认提现接口:{}", responseJson);
-			Response result = GsonUtils.convertObj(responseJson, Response.class);
-			return result;
-		} catch (Exception e) {
-			LOGGER.error("修改卡状态接口调用异常:{}", e);
-			return Response.fail("修改卡状态接口调用异常",BusinessErrorCode.BIND_CARTINTEFACE_EXCEPTION);
 		}
 	}
 
