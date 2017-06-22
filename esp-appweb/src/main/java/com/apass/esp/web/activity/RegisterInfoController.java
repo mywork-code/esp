@@ -297,7 +297,13 @@ public class RegisterInfoController {
         				aRel.setActivityId(aInfoVo.getId());
         				aRel.setUserId(Long.parseLong(InviterId));
         				aRel.setMobile(rrse.get("inviteMobile").toString());
+        				if(null !=rrse.get("inviteName")){
+        					aRel.setName(rrse.get("inviteName").toString());
+        				}
         				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
+        				if(null !=rrse.get("name")){
+        					aRel.setInviteName(rrse.get("name").toString());
+        				}
         				aRel.setInviteMobile(mobile2);
         				aRel.setIsNew(new Byte("0"));//被邀请人是老用户
         				aRel.setCreateDate(new Date());
@@ -397,10 +403,14 @@ public class RegisterInfoController {
     	        			AwardBindRel aRel=new AwardBindRel();
     	    				aRel.setActivityId(aInfoVo.getId());
     	    				aRel.setUserId(Long.parseLong(InviterId));
-    	    				aRel.setName(rrse.get("name").toString());
+    	    				if(null !=rrse.get("inviteName")){
+    	    					aRel.setName(rrse.get("inviteName").toString());
+    	    				}
     	    				aRel.setMobile(rrse.get("inviteMobile").toString());
     	    				aRel.setInviteUserId(Long.parseLong(rrse.get("userId").toString()));
-						    aRel.setInviteName(rrse.get("inviteName").toString());
+    	    				if(null !=rrse.get("name")){
+    	    					aRel.setInviteName(rrse.get("name").toString());
+    	    				}
     	    				aRel.setInviteMobile(mobile2);
     	    				aRel.setIsNew(new Byte("1"));//被邀请人是新用户
     	    				aRel.setCreateDate(new Date());
