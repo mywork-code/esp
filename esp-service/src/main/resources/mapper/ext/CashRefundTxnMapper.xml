@@ -9,4 +9,13 @@
     where 
     	cash_refund_id = #{cashRefunId}
   </select>
+  
+  <select id="queryCashRefundTxnByStatus" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	select 
+     	<include refid="Base_Column_List" />
+    from
+        t_esp_refund_txn
+    where 
+    	status = #{status}
+  </select>
 </mapper>

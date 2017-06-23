@@ -16,4 +16,6 @@ public interface CashRefundTxnMapper extends GenericMapper<CashRefundTxn, Long>{
 	 */
 	List<CashRefundTxn> queryCashRefundTxnByCashRefundId(@Param("cashRefunId")Long cashRefunId);
 
+	List<CashRefundTxn> queryCashRefundTxnByStatus(@Param("status")String status);
+
 }

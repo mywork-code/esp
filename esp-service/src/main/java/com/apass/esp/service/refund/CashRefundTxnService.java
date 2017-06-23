@@ -66,5 +66,10 @@ public class CashRefundTxnService {
 		return cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);	
 	}
 
+
+	public List<CashRefundTxn> queryCashRefundTxnByStatus(String status) {
+		return cashRefundTxnMapper.queryCashRefundTxnByStatus(status);
+	}
+
    
 }

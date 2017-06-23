@@ -13,6 +13,7 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -848,14 +849,10 @@ public class PaymentService {
 			cashRefund.setId(cashDto.getId());
 			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
 			cashRefund.setStatusD(new Date());
-			Integer updateRefundCount = cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
-			if(updateRefundCount != 1){
-				LOGGER.error("修改退款信息表失败。。");
-				throw new BusinessException("修改退款信息表失败。。");
-			}
+			cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
 			
 			//修改退款流水表状态
-			updateCashRefundTxnByOrderId(oriTxnCode,"2",cashDto.getId());
+			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),cashDto.getId());
 			
 			//修改订单状态为交易关闭
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
@@ -864,7 +861,7 @@ public class PaymentService {
         	orderService.updateOrderStatus(orderInfoEntity);
 		}else{
 			//退货失败：修改退款流水表状态
-			updateCashRefundTxnByOrderId(oriTxnCode,"3",cashDto.getId());
+			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());
 		}
 	}
 	

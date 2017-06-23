@@ -352,4 +352,13 @@ public class CashRefundService {
 	public List<CashRefund> getCashRefundByStatus(String status) {
 		return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status));
 	}
+
+	/**
+	 * 根据主键id查询退款详情表
+	 * @param cashRefundId
+	 * @return
+	 */
+	public CashRefund getCashRefundById(Long cashRefundId) {
+		return cashRefundMapper.selectByPrimaryKey(cashRefundId);
+	}
 }
