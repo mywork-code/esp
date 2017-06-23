@@ -247,12 +247,12 @@ public class CashRefundService {
                         cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
                         cashRefundTxn.setStatus("3");
                         cashRefundTxn.setUpdateDate(new Date());
-                        cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
+                        cashRefundTxnMapper.updateByTxnTypeAndCashRefundId(cashRefundTxn);
                         return res;
                     }
                     cashRefundTxn.setStatus("2");
                     cashRefundTxn.setUpdateDate(new Date());
-                    cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);
+                    cashRefundTxnMapper.updateByTxnTypeAndCashRefundId(cashRefundTxn);
                     cashRefund.setUpdateDate(new Date());
                     cashRefund.setStatusD(new Date());
                     cashRefund.setStatus(2);
