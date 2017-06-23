@@ -9,6 +9,9 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 
 public interface CashRefundTxnMapper extends GenericMapper<CashRefundTxn, Long>{
 
+    int updateByTxnTypeAndCashRefundId(CashRefundTxn cashRefundTxn);
+
+
 	/**
 	 * 根据退款详情id查询退款流水表数据
 	 * @param cashRefunId
