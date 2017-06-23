@@ -20,13 +20,20 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   List<TxnInfoEntity> selectByOrderId(String orderId);
 
    /**
-     * 根据orderId查询去交易流水表的OrigOryid(原始消费交易的queryId)
+     * 根据orderId和交易类型(t01,505)查询去交易流水表(OrigOryid:原始消费交易的queryId)
 	 * @param orderId:订单id
 	 * @return
 	 */
-  TxnInfoEntity queryOrigTxnIdByOrderid(String orderId);
+  TxnInfoEntity queryTxnInfoByOrderidAndTxntypeInSql(String orderId);
 
   void updateTime(@Param("orderId") String orderId,@Param("date") Date date);
+
+   /**    
+	 * @param orderId订单id
+	 * @param typeCode交易类型
+	 * @return
+	 */
+  TxnInfoEntity queryOrigTxnIdByOrderidAndstatus(@Param("orderId")String orderId, @Param("typeCode")String typeCode);
 
 
 }
