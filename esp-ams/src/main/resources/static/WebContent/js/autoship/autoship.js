@@ -117,19 +117,17 @@ $(function () {
             time3: time3,
             time4: time4
         };
-debugger
         $.ajax({
             url: ctx + "/application/autoship/management/update",
             data: JSON.stringify(param),
             type: "POST",
-            contentType : 'application/json',
+            contentType: 'application/json',
             dataType: "json",
             success: function (data) {
 
             }
         })
-
-        debugger
+        $('#list').datagrid('load',{});
         $('#addIntroConfig').window('close');
     });
 
@@ -137,14 +135,54 @@ debugger
     $("#cancel").click(function () {
         $('#addIntroConfig').window('close');
     });
-
 });
 
 
-function ww4(date) {
-    var h = date.getHours();
-    var m = date.getMinutes();
-    var s = date.getSeconds();
+function ww1(date) {
+    debugger;
+    var h = date.getHours()+"";
+    if (h.length == 1) {
+        h = '0' + h;
+    }
+    var m = date.getMinutes()+"";
+    if (m.length == 1) {
+        m = '0' + m;
+    }
+    var s = date.getSeconds()+"";
+    if (s.length == 1) {
+        s = '0' + s;
+    }
     return h + ":" + m + ":" + s;
-
+}
+function ww2(date) {
+    debugger;
+    var h = date.getHours()+"";
+    if (h.length == 1) {
+        h = '0' + h;
+    }
+    var m = date.getMinutes()+"";
+    if (m.length == 1) {
+        m = '0' + m;
+    }
+    var s = date.getSeconds()+"";
+    if (s.length == 1) {
+        s = '0' + s;
+    }
+    return h + ":" + m + ":" + s;
+}
+function ww3(date) {
+    debugger;
+    var h = date.getHours()+"";
+    if (h.length == 1) {
+        h = '0' + h;
+    }
+    var m = date.getMinutes()+"";
+    if (m.length == 1) {
+        m = '0' + m;
+    }
+    var s = date.getSeconds()+"";
+    if (s.length == 1) {
+        s = '0' + s;
+    }
+    return h + ":" + m + ":" + s;
 }

@@ -80,11 +80,25 @@ public class AutoShipController {
         if (shipmentTimeConfigAttr1 == null) {
             kvattrService.add(shipmentTimeConfigAttr);
         } else {
-            List<Kvattr> list = kvattrService.getTypeName(shipmentTimeConfigAttr);
-            kvattrService.update(list);
+            List<Kvattr> list = kvattrService.getTypeName(shipmentTimeConfigAttr1);
+            List<Kvattr> list2= new ArrayList<>();
+            for (Kvattr kvattr:list
+                 ) {
+                if(kvattr.getKey().equalsIgnoreCase("time1")){
+                    kvattr.setValue(shipmentTimeConfigAttr.getTime1());
+                }
+                if(kvattr.getKey().equalsIgnoreCase("time2")){
+                    kvattr.setValue(shipmentTimeConfigAttr.getTime2());
+                }
+                if(kvattr.getKey().equalsIgnoreCase("time3")){
+                    kvattr.setValue(shipmentTimeConfigAttr.getTime3());
+                }
+                list2.add(kvattr);
+            }
+            kvattrService.update(list2);
         }
         orderModifyStatusScheduleTask1.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime1()));
-       orderModifyStatusScheduleTask2.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime2()));
+        orderModifyStatusScheduleTask2.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime2()));
         orderModifyStatusScheduleTask3.setCron(CronTools.getCron(shipmentTimeConfigAttr.getTime3()));
 
         return Response.successResponse();
