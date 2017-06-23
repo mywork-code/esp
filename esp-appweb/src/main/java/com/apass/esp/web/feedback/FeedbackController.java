@@ -48,9 +48,9 @@ public class FeedbackController {
 			return Response.fail("反馈内容不能为空！");
 		}
 		
-		if(StringUtils.isBlank(mobile)){
-			return Response.fail("手机号不能为空！");
-		}
+//		if(StringUtils.isBlank(mobile)){
+//			return Response.fail("手机号不能为空！");
+//		}
 		
 		if(comments.length()>300){
 			LOGGER.error("输入是字数不得超过300字！");
