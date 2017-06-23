@@ -928,6 +928,9 @@ $(function() {
 			$.messager.alert("提示", "商品排序不能为空！", "info");
 			return;
 		}
+		if (null == unSupportProvince || ("") == unSupportProvince) {
+			unSupportProvince = '';
+		}
 //		if (null == keepDate || ("") == keepDate) {
 //			$.messager.alert("提示", "商品保质期不能为空！", "info");
 //			return;
