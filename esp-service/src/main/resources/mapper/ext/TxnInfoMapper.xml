@@ -31,6 +31,15 @@
         from t_apass_txn_info
         where order_id = #{value}
     </select>
+    
+    <select id="queryOrigTxnIdByOrderid" resultMap="BaseResultMap" parameterType="java.lang.String">
+       SELECT
+			<include refid="Base_Column_List"/>
+		FROM
+			t_apass_txn_info
+		WHERE
+			order_id = #{value} and txn_type in ('T01','T05')
+    </select>
 
     <update id="update">
         update t_apass_txn_info
@@ -38,4 +47,12 @@
         WHERE
         order_id =#{orderId}
     </update>
+    
+      <update id="updateTime" >
+        update t_apass_txn_info
+        set txn_date =#{date}
+        WHERE
+        order_id =#{orderId}
+    </update>
+    
 </mapper>

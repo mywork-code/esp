@@ -96,6 +96,24 @@ $(function(){
                 	align : 'center',
                 },
                 {
+                	title : '退货数量',
+                	field : 'returnGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '换货数量',
+                	field : 'swapGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '退款金额',
+                	field : 'refundAmt',
+                	width : 160,
+                	align : 'center',
+                },
+                {
                 	title : '批复结果',
                 	field : 'isAgree',
                 	width : 70,
@@ -181,6 +199,7 @@ $(function(){
                 dataType : "json",
                 success : function (data)
                 {
+                	debugger;
 	                $.validateResponse (data, function ()
 	                {
 		                success (data);
@@ -246,7 +265,7 @@ $(function(){
 	
 	//导出
 	$(".export-btn").click(function(){
-		$.messager.confirm ('报表信息', '确定要导出吗？', function (r){
+		$.messager.confirm ("<font color='black'>报表信息</font>", '确定要导出吗？', function (r){
 			if(r){
 				var params = getParams();
 				exportStatement("statementListList","报表详情",params);

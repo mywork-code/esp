@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
-import com.apass.esp.service.coffers.CoffersBaseService;
+import com.apass.esp.repository.httpClient.EspActivityHttpClient;
 import com.apass.esp.service.withdraw.WithdrawService;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.google.common.collect.Maps;
 
 /**
@@ -33,6 +32,9 @@ public class WithdrawController {
 
     @Autowired
     private WithdrawService withdrawService;
+	
+	@Autowired
+    private EspActivityHttpClient espActivityHttpClient;
 	/**
 	 * 提现页面查询接口
 	 * @param paramMap
@@ -68,9 +70,9 @@ public class WithdrawController {
 	public Response confirmWithdraw(@RequestBody Map<String, Object> paramMap) {
 	    Map<String,Object> resultMap = Maps.newHashMap();
 	    String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
-            String amount = CommonUtils.getValue(paramMap, "amount");
-            String cardBank = CommonUtils.getValue(paramMap, "cardBank");
-            String cardNo = CommonUtils.getValue(paramMap, "cardNo");
+        String amount = CommonUtils.getValue(paramMap, "amount");
+        String cardBank = CommonUtils.getValue(paramMap, "cardBank");
+        String cardNo = CommonUtils.getValue(paramMap, "cardNo");
             
 	    try{
 	        if(StringUtils.isAnyBlank(userId,amount,cardBank,cardNo)){
@@ -80,13 +82,17 @@ public class WithdrawController {
 	        LOGGER.info("确认提现传参内容userId:{},amount:{},cardBank:{},cardNo:{}",userId,amount,cardBank,cardNo);
 	        
 	        resultMap = withdrawService.confirmWithdraw(userId,amount,cardBank,cardNo);
-	        
+	        String customerId = String.valueOf(resultMap.get("customerId"));
+	        //调用供房帮接口：银行卡用过后不可更换
+	        Map<String,Object> parMap = Maps.newHashMap();
+	        parMap.put("customerId",customerId);
+	        //提现成功后调用供房帮接口标记银行卡已提现
+	        espActivityHttpClient.userCardFlag(parMap);	
+			
 	        return Response.success("提现成功！", resultMap);
 	    }catch(Exception e){
 	        LOGGER.error(e.getMessage(),e);
 	        return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
 	    }
 	}
-
-
 }

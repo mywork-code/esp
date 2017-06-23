@@ -204,7 +204,16 @@ public class ExportFileController {
 			
 			if(list != null){
 				for (AwardBindRelIntroVo awardBindRelIntroVo : list) {
-					AwardDetail awDetail = awardDetailMapper.selectByPrimaryKey(Long.valueOf(awardBindRelIntroVo.getAwardDetailId()));
+					if(awardBindRelIntroVo.getAwardDetailId()==null || !ifLongString(String.valueOf(awardBindRelIntroVo.getAwardDetailId()))){
+						countFail++;
+						continue;
+					}
+						
+					AwardDetail awDetail = awardDetailMapper.selectByPrimaryKey(awardBindRelIntroVo.getAwardDetailId());
+					if(awDetail == null){
+						countFail++;
+						continue;
+					}
 					BigDecimal canUserAmt = awardDetailService.getCanUserAmt(awDetail.getUserId(), awDetail.getCreateDate());
 					if(StringUtils.isBlank(awardBindRelIntroVo.getMobile()) || !awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())){
 						countFail++;
@@ -219,7 +228,7 @@ public class ExportFileController {
 						countFail++;
 						continue;
 					}
-					if(awardBindRelIntroVo.getAmount()==null || awDetail.getAmount().doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
+					if(awardBindRelIntroVo.getAmount()==null || awDetail.getAmount().subtract(awDetail.getTaxAmount()).doubleValue() != awardBindRelIntroVo.getAmount().doubleValue()){
 						countFail++;
 						continue;
 					}
@@ -297,19 +306,25 @@ public class ExportFileController {
 //	                		 if(StringUtils.isBlank(getValue(xcell))){
 //	                			 throw new BusinessException("第"+rowNum+"行唯一标识奖励明细id不能为空。");
 //	                		 }
-	                		 awardBindRelIntroVo.setAwardDetailId(Long.valueOf(getValue(xcell)));
+	                		 if(!StringUtils.isBlank(getValue(xcell)) && ifLongString(getValue(xcell))){
+	                			awardBindRelIntroVo.setAwardDetailId(Long.valueOf(getValue(xcell)));
+	                		 }
 	                		 break;
                 	 	case 1:
 //                	 		if(!awDetail.getMobile().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行手机号码不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setMobile(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setMobile(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 2:
 //                	 		if(canUserAmt.doubleValue() != Double.valueOf(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行可提现金额不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCanWithdrawAmount(new BigDecimal(getValue(xcell)));
+                	 		if(!StringUtils.isBlank(getValue(xcell)) && ifBigDecimalString(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCanWithdrawAmount(new BigDecimal(getValue(xcell)));
+                	 		}
                 	 		break;
                 	 	case 3:
 //                	 		if(!DateFormatUtil.dateToString(awDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS)
@@ -317,31 +332,41 @@ public class ExportFileController {
 //                	 			throw new BusinessException("第"+rowNum+"行申请提现提交时间不能修改。");
 //                	 			
 //                	 		}
-                	 		awardBindRelIntroVo.setApplyDate(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setApplyDate(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 4:
 //                	 		if(awDetail.getAmount().doubleValue() != Double.valueOf(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行申请提现金额不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setAmount(new BigDecimal(getValue(xcell)));
+                	 		if(!StringUtils.isBlank(getValue(xcell)) && ifBigDecimalString(getValue(xcell))){
+                	 			awardBindRelIntroVo.setAmount(new BigDecimal(getValue(xcell)));
+                	 		}
                 	 		break;
                 	 	case 5:
 //                	 		if(!awDetail.getRealName().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行推荐人姓名不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setRealName(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setRealName(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 6:
 //                	 		if(!awDetail.getCardNo().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行推荐人银行卡号不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCardNO(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCardNO(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 7:
 //                	 		if(!awDetail.getCardBank().equals(getValue(xcell))){
 //                	 			throw new BusinessException("第"+rowNum+"行所属银行不能修改。");
 //                	 		}
-                	 		awardBindRelIntroVo.setCardBank(getValue(xcell));
+                	 		if(!StringUtils.isBlank(getValue(xcell))){
+                	 			awardBindRelIntroVo.setCardBank(getValue(xcell));
+                	 		}
                 	 		break;
                 	 	case 8:
                 	 		awardBindRelIntroVo.setReleaseDate(DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
@@ -368,6 +393,37 @@ public class ExportFileController {
     	
 		return list;
 	}
+    
+    /**
+     * 判断字符串是否是Long类型数字
+     * @param str
+     * @return
+     */
+    private boolean ifLongString(String str){
+//    	return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
+    	try {  
+            long num=Long.valueOf(str);//把字符串强制转换为数字   
+            return true;//如果是数字，返回True   
+        } catch (Exception e) {  
+            return false;//如果抛出异常，返回False   
+        }  
+    }
+    
+    /**
+     * 判断字符串是否是BigDecimal类型数字
+     * @param str
+     * @return
+     */
+    private boolean ifBigDecimalString(String str){
+//    	return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
+    	try {  
+    		BigDecimal bigDecimal = new BigDecimal(str);//把字符串强制转换为BigDecimal   
+    		return true;//如果是数字，返回True   
+    	} catch (Exception e) {  
+    		return false;//如果抛出异常，返回False   
+    	}  
+    }
+    
 
 	/**
 	 * @param xhExcel中的每一个格子

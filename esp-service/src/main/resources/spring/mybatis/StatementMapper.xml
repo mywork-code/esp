@@ -38,7 +38,7 @@
 	        </if> 
 		</where>
 	</sql>
-    <!-- 导出报表的内容 查询 -->
+    <!-- 导出报表的内容 查询 ：与页面相同奶哥，此sql不用了-->
 	<select id="queryStatementPageForExport" parameterType="Map" resultType="StatementDto">
 	<![CDATA[
 	        SELECT
@@ -98,11 +98,11 @@
     <!-- 报表管理页面显示 分页查询 -->
 	<select id="queryStatementShowPage" parameterType="Map" resultType="StatementDto">
 	<![CDATA[
-       SELECT
+        SELECT
 			orderinfo.create_date orderCreateDate,
 			orderinfo.order_id orderId,
 			merchantinfo.merchant_name merchantName,
-			orderinfo.name customerName,
+			orderinfo. NAME customerName,
 			orderinfo.telephone customerTelephone,
 			orderinfo.address address,
 			orderinfo.send_outgoodsdate sendOutgoodsdate,
@@ -124,16 +124,17 @@
 			goodsstockinfo.market_price marketPrice,
 			goodsstockinfo.goods_cost_price goodsCostPrice,
 			orderdetailinfo.goods_num goodsNum,
-			goodsstockinfo.stock_curr_amt stockCurrAmt
-	   FROM
-			t_esp_order_info orderinfo 
-			
-			left join t_esp_order_detail_info orderdetailinfo on orderdetailinfo.order_id = orderInfo.order_id
-	        left join t_esp_goods_base_info goodsbaseinfo on goodsbaseinfo.id = orderdetailinfo.goods_id
-	        left join t_esp_goods_stock_info goodsstockinfo on goodsstockinfo.id = orderdetailinfo.goods_stock_id
-			
-	        left join t_esp_merchant_info merchantinfo on orderInfo.merchant_code=merchantinfo.merchant_code
-	        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+			goodsstockinfo.stock_curr_amt stockCurrAmt,
+			refundDetail.goods_num goodsNumR,
+			refundInfo.refund_amt refundAmt
+		FROM
+			t_esp_order_info orderinfo
+		LEFT JOIN t_esp_order_detail_info orderdetailinfo ON orderdetailinfo.order_id = orderInfo.order_id
+		LEFT JOIN t_esp_goods_base_info goodsbaseinfo ON goodsbaseinfo.id = orderdetailinfo.goods_id
+		LEFT JOIN t_esp_goods_stock_info goodsstockinfo ON goodsstockinfo.id = orderdetailinfo.goods_stock_id
+		LEFT JOIN t_esp_merchant_info merchantinfo ON orderInfo.merchant_code = merchantinfo.merchant_code
+		LEFT JOIN t_esp_refund_info refundInfo ON orderInfo.order_id = refundInfo.order_id
+		LEFT JOIN t_esp_refund_detail_info refundDetail ON orderdetailinfo.id= refundDetail.order_detail_id
 	        
 	]]>
 	    <include refid="QueryConditionSql" />
@@ -148,14 +149,13 @@
 		SELECT
 			count(1)
 		FROM
-			t_esp_order_info orderinfo 
-			
-			left join t_esp_order_detail_info orderdetailinfo  on orderdetailinfo.order_id = orderInfo.order_id
-	        left join t_esp_goods_base_info goodsbaseinfo on goodsbaseinfo.id = orderdetailinfo.goods_id
-	        left join t_esp_goods_stock_info goodsstockinfo on goodsstockinfo.id = orderdetailinfo.goods_stock_id
-			
-	        left join t_esp_merchant_info merchantinfo on orderInfo.merchant_code=merchantinfo.merchant_code
-	        left join t_esp_refund_info refundInfo on orderInfo.order_id=refundInfo.order_id
+			t_esp_order_info orderinfo
+		LEFT JOIN t_esp_order_detail_info orderdetailinfo ON orderdetailinfo.order_id = orderInfo.order_id
+		LEFT JOIN t_esp_goods_base_info goodsbaseinfo ON goodsbaseinfo.id = orderdetailinfo.goods_id
+		LEFT JOIN t_esp_goods_stock_info goodsstockinfo ON goodsstockinfo.id = orderdetailinfo.goods_stock_id
+		LEFT JOIN t_esp_merchant_info merchantinfo ON orderInfo.merchant_code = merchantinfo.merchant_code
+		LEFT JOIN t_esp_refund_info refundInfo ON orderInfo.order_id = refundInfo.order_id
+		LEFT JOIN t_esp_refund_detail_info refundDetail ON orderdetailinfo.id= refundDetail.order_detail_id
 	        
 	]]>
 	    <include refid="QueryConditionSql" />

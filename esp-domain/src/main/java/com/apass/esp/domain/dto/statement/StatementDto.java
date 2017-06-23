@@ -1,6 +1,9 @@
 package com.apass.esp.domain.dto.statement;
 
+import java.math.BigDecimal;
 import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
@@ -102,8 +105,59 @@ public class StatementDto {
     private Date   settlementTime;
     /**售后时间**/
     private Date   completionTime;
+    /**
+     * 退/换货商品数量
+     */
+    private Long goodsNumR;
+    
+    public Long getGoodsNumR() {
+		return goodsNumR;
+	}
+	public void setGoodsNumR(String refundType,Long goodsNumR) {
+		this.goodsNumR = goodsNumR;
+		if(!StringUtils.isBlank(refundType)){
+			if(refundType.equals("退货")){
+				this.returnGoodNum = goodsNumR;
+			}else if(refundType.equals("换货")){
+				this.swapGoodNum = goodsNumR;
+			}
+		}
+	}
 
-    public String getCompletionTime() {
+	/**
+     * 退货数量
+     */
+    private Long returnGoodNum;
+    
+    /**
+     * 换货数量
+     */
+    private Long swapGoodNum;
+    
+    /**
+     * 退款金额
+     */
+    private BigDecimal refundAmt;
+    
+	public Long getReturnGoodNum() {
+		return returnGoodNum;
+	}
+	public void setReturnGoodNum(Long returnGoodNum) {
+		this.returnGoodNum = returnGoodNum;
+	}
+	public Long getSwapGoodNum() {
+		return swapGoodNum;
+	}
+	public void setSwapGoodNum(Long swapGoodNum) {
+		this.swapGoodNum = swapGoodNum;
+	}
+	public BigDecimal getRefundAmt() {
+		return refundAmt;
+	}
+	public void setRefundAmt(BigDecimal refundAmt) {
+		this.refundAmt = refundAmt;
+	}
+	public String getCompletionTime() {
         return DateFormatUtil.dateToString(completionTime, DateFormatUtil.YYYY_MM_DD);
     }
 

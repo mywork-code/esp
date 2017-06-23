@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.cashRefund.CashRefundHttpClient;
 import com.apass.esp.repository.cashRefund.RefundCashRequest;
 import com.apass.esp.repository.payment.PaymentHttpClient;
@@ -39,6 +42,9 @@ public class RefundScheduleTask {
     
     @Autowired
 	private CashRefundHttpClient cashRefundHttpClient;
+
+    @Autowired
+    private TxnInfoMapper txnInfoMapper;
 
     /**
      * 换货 商家重新发货物流显示已签收， 3天后标记售后完成
@@ -65,8 +71,13 @@ public class RefundScheduleTask {
     			RefundCashRequest request = new RefundCashRequest();
     			request.setOrderId(cashRefund.getOrderId());
     			request.setTxnAmt(cashRefund.getAmt());
-    			request.setTxnDateTime(DateFormatUtil.dateToString(new Date(),"YYYYMMDDhhmmss"));
-    			request.setOrigOryId(cashRefund.getOrderId());
+    			TxnInfoEntity txnInfoEntity = txnInfoMapper.queryOrigTxnIdByOrderid(cashRefund.getOrderId());
+    			if(txnInfoEntity == null || txnInfoEntity.getTxnDate() == null){
+    				LOGGER.error("此条交易流水表数据有误，订单id：{}",cashRefund.getOrderId());
+    				continue;
+    			}
+    			request.setTxnDateTime(txnInfoEntity.getOrigTransDate());
+    			request.setOrigOryId(txnInfoEntity.getOrigTxnId());
     			
     			//调bss退款接口
 				cashRefundHttpClient.refundCash(request);
@@ -87,9 +98,13 @@ public class RefundScheduleTask {
     			RefundCashRequest request = new RefundCashRequest();
     			request.setOrderId(cashRefund.getOrderId());
     			request.setTxnAmt(cashRefund.getAmt());
-    			request.setTxnDateTime(DateFormatUtil.dateToString(new Date(),"YYYYMMDDhhmmss"));
-    			request.setOrigOryId(cashRefund.getOrderId());
-    			
+    			TxnInfoEntity txnInfoEntity = txnInfoMapper.queryOrigTxnIdByOrderid(cashRefund.getOrderId());
+    			if(txnInfoEntity == null || txnInfoEntity.getTxnDate() == null){
+    				LOGGER.error("此条交易流水表数据有误，订单id：{}",cashRefund.getOrderId());
+    				continue;
+    			}
+    			request.setTxnDateTime(txnInfoEntity.getOrigTransDate());
+    			request.setOrigOryId(txnInfoEntity.getOrigTxnId());
     			//调bss退款接口
     			cashRefundHttpClient.refundCash(request);
     		}
