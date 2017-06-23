@@ -25,7 +25,7 @@
     	cash_refund_id = #{cashRefunId}
   </select>
   
-  <select id="queryCashRefundTxnByStatus" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  <select id="queryCashRefundTxnByStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
   	select 
      	<include refid="Base_Column_List" />
     from

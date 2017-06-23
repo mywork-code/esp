@@ -376,7 +376,9 @@
 			<if test="goodsSiftUrl != null and goodsSiftUrl != ''">
 				goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
 			</if>
+			<if test="unSupportProvince != null">
 				un_support_province = #{unSupportProvince, jdbcType=VARCHAR},
+			</if>
 		</set>
 	<![CDATA[
 		WHERE ID =  #{id, jdbcType=BIGINT}

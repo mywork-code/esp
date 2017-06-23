@@ -32,13 +32,22 @@
         where order_id = #{value}
     </select>
     
-    <select id="queryOrigTxnIdByOrderid" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="queryTxnInfoByOrderidAndTxntypeInSql" resultMap="BaseResultMap" parameterType="java.lang.String">
        SELECT
 			<include refid="Base_Column_List"/>
 		FROM
 			t_apass_txn_info
 		WHERE
 			order_id = #{value} and txn_type in ('T01','T05')
+    </select>
+    
+    <select id="queryOrigTxnIdByOrderidAndstatus" resultMap="BaseResultMap">
+       SELECT
+			<include refid="Base_Column_List"/>
+		FROM
+			t_apass_txn_info
+		WHERE
+			order_id = #{orderId} and txn_type = #{typeCode}
     </select>
 
     <update id="update">
