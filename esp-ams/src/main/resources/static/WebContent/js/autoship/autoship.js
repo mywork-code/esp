@@ -15,11 +15,6 @@ $(function () {
         toolbar: '#tb',
         columns: [[
             {
-                title: '',
-                field: 'status',
-                width: 150,
-                align: 'center'
-            }, {
                 title: '第一时间点',
                 field: 'time1',
                 width: 150,
@@ -51,7 +46,10 @@ $(function () {
                 title: '第四时间点',
                 field: 'time4',
                 width: 150,
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row, index) {
+                    return "<span title='" + value + "'>" + "23:59:59" + "</span>"
+                }
             }
             ,
             {
@@ -103,13 +101,30 @@ $(function () {
 
     //
     $("#agree").click(function () {
-        debugger;
+
         var time1 = $('#time1').textbox('getValue');
         var time2 = $('#time2').textbox('getValue');
         var time3 = $('#time3').textbox('getValue');
         var time4 = $('#time4').textbox('getValue');
-        if (time1 == '' || time1.length == 0 || time2 == '' || time2.length == 0 || time3 == '' || time3.length == 0 || time4 == '' || time4.length == 0) {
-            $.messager.alert("提示", "请输入对应的值");
+        var flag= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time1);
+        var flag2= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time2);
+        var flag3= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time3);
+        debugger
+        if(!flag){
+            $.messager.alert("提示", "第一个时间节点输入错误，请重新输入");
+            return;
+        }
+        if(!flag2){
+            $.messager.alert("提示", "第二个时间节点输入错误，请重新输入");
+            return;
+        }
+        if(!flag3){
+            $.messager.alert("提示", "第三个时间节点输入错误，请重新输入");
+            return;
+        }
+        if(time1==time2||time1==time3||time2==time3){
+            $.messager.alert("提示", "时间节点不能重复，请重新输入");
+            return;
         }
         var param = {
             time1: time1,
@@ -127,7 +142,7 @@ $(function () {
 
             }
         })
-        $('#list').datagrid('load',{});
+        $('#list').datagrid('load', {});
         $('#addIntroConfig').window('close');
     });
 
@@ -135,54 +150,7 @@ $(function () {
     $("#cancel").click(function () {
         $('#addIntroConfig').window('close');
     });
+
 });
 
 
-function ww1(date) {
-    debugger;
-    var h = date.getHours()+"";
-    if (h.length == 1) {
-        h = '0' + h;
-    }
-    var m = date.getMinutes()+"";
-    if (m.length == 1) {
-        m = '0' + m;
-    }
-    var s = date.getSeconds()+"";
-    if (s.length == 1) {
-        s = '0' + s;
-    }
-    return h + ":" + m + ":" + s;
-}
-function ww2(date) {
-    debugger;
-    var h = date.getHours()+"";
-    if (h.length == 1) {
-        h = '0' + h;
-    }
-    var m = date.getMinutes()+"";
-    if (m.length == 1) {
-        m = '0' + m;
-    }
-    var s = date.getSeconds()+"";
-    if (s.length == 1) {
-        s = '0' + s;
-    }
-    return h + ":" + m + ":" + s;
-}
-function ww3(date) {
-    debugger;
-    var h = date.getHours()+"";
-    if (h.length == 1) {
-        h = '0' + h;
-    }
-    var m = date.getMinutes()+"";
-    if (m.length == 1) {
-        m = '0' + m;
-    }
-    var s = date.getSeconds()+"";
-    if (s.length == 1) {
-        s = '0' + s;
-    }
-    return h + ":" + m + ":" + s;
-}
