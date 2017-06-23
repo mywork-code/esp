@@ -1,6 +1,7 @@
 package com.apass.esp.web.order;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -612,8 +613,9 @@ public class OrderInfoController {
                 	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
                 	if(cash != null){
                 		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
-                			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-                    			//更新数据库字段  恢复额度 
+                			//if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+                                if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
+                    				//更新数据库字段  恢复额度
                 				cashRefundService.agreeRefund(cash.getUserId()+"", orderId);
                     		}
                 		}
