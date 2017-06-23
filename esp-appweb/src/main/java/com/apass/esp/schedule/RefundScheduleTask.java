@@ -81,7 +81,8 @@ public class RefundScheduleTask {
     /**
      * 退款：每隔72小时获取所有退款中的订单 向银联发起退款
      */
-    @Scheduled(cron = "0 0 0/3 * * *")
+    //@Scheduled(cron = "0 0 0/3 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")//每5分钟执行一次
     public void cashRefundTask(){
     	//1，查询所有退款中的订单
     	List<CashRefund> cashRefunds = cashRefundService.getCashRefundByStatus(CashRefundStatus.CASHREFUND_STATUS2.getCode());
@@ -108,7 +109,8 @@ public class RefundScheduleTask {
     /**
      * 退款：每隔24小时获取所有退款中的订单 向银联发起退款
      */
-    @Scheduled(cron = "0 0 0/1 * * *")
+    //@Scheduled(cron = "0 0 0/1 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")//每5分钟执行一次
     public void cashRefundTaskAdd(){
     	//1，查询所有退款失败的订单
     	List<CashRefundTxn> cashTxns = cashRefundTxnService.queryCashRefundTxnByStatus(CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode());
