@@ -511,7 +511,12 @@ public class OrderInfoController {
             	 List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,
                         OrderStatus.ORDER_REFUNDPROCESSING.getCode());
             	 if(!CollectionUtils.isEmpty(dtoList)){
-                 	 resultList.addAll(dtoList);
+            	     if(CollectionUtils.isEmpty(resultList)){
+                         resultList=dtoList;
+                     }else{
+                         resultList.addAll(dtoList);
+                     }
+
             	 }
             }
             
