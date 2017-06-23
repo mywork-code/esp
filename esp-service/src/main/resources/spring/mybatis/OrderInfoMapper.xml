@@ -274,7 +274,8 @@
              addressId,
              device_type,
              create_date,
-             update_date
+             update_date,
+             pre_delivery
             )
 			values (
 			#{userId, jdbcType=BIGINT},
@@ -299,7 +300,8 @@
 	        #{addressId, jdbcType=BIGINT},
 	        #{deviceType, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
-	        CURRENT_TIMESTAMP);
+	        CURRENT_TIMESTAMP,
+	        #{preDelivery,jdbcType=VARCHAR});
 	</insert>
 	
 	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
@@ -552,7 +554,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D02' and pre_delivery is null
+			orderstatus = 'D02' and pre_delivery = 'N'
 		]]>
 	</select>
 	
