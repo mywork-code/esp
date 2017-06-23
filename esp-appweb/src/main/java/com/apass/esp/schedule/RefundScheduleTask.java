@@ -38,7 +38,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class RefundScheduleTask {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(RefundScheduleTask.class);
@@ -83,8 +83,9 @@ public class RefundScheduleTask {
      * 退款：每隔72小时获取所有退款中的订单 向银联发起退款
      */
     //@Scheduled(cron = "0 0 0/3 * * *")
-    @Scheduled(cron = "0 0/5 * * * *")//每5分钟执行一次
+    @Scheduled(cron = "0 0/3 * * * *")//每5分钟执行一次
     public void cashRefundTask(){
+    	LOGGER.info("退款job开始执行,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     	//1，查询所有退款中的订单
     	List<CashRefund> cashRefunds = cashRefundService.getCashRefundByStatus(CashRefundStatus.CASHREFUND_STATUS2.getCode());
     	if(cashRefunds != null){
@@ -102,18 +103,18 @@ public class RefundScheduleTask {
     			
     			//调bss退款接口
 				cashRefundHttpClient.refundCash(request);
-    			
 			}
     	}
+    	LOGGER.info("退款job执行结束,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     }
     
     /**
      * 退款：每隔24小时获取所有退款中的订单 向银联发起退款
      */
     //@Scheduled(cron = "0 0 0/1 * * *")
-    @Scheduled(cron = "0 0/5 * * * *")//每5分钟执行一次
+    @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
     public void cashRefundTaskAdd(){
-    	LOGGER.info("退款job开始执行,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+    	LOGGER.info("退款补偿job开始执行,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     	//1，查询所有退款失败的订单
     	List<CashRefundTxn> cashTxns = cashRefundTxnService.queryCashRefundTxnByStatus(CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode());
     	for (CashRefundTxn cashTxn : cashTxns) {
@@ -165,7 +166,7 @@ public class RefundScheduleTask {
 	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
         	orderService.updateOrderStatus(orderInfoEntity);
 		}
-    	LOGGER.info("退款job执行结束,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+    	LOGGER.info("退款补偿job执行结束,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     	
     }
 }
