@@ -64,7 +64,7 @@ public class FeedbackController {
 		fb.setCreateDate(date);
 		Integer result=feedBackService.insert(fb);
 		if(result==1){
-			return Response.success("意见反馈保存成功!");
+			return Response.success("提交成功，非常感谢您的反馈！");
 		}
 		LOGGER.error("意见反馈失败！");
 		return Response.fail("意见反馈保存失败!");
