@@ -139,10 +139,9 @@ $(function () {
             contentType: 'application/json',
             dataType: "json",
             success: function (data) {
-
+                $('#list').datagrid('load', {});
             }
         })
-        $('#list').datagrid('load', {});
         $('#addIntroConfig').window('close');
     });
 
