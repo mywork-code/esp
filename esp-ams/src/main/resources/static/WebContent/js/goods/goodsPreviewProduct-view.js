@@ -1,5 +1,6 @@
 $(function(){
 $("#SIZE_Chcolor").on("click","span",function(){
+	    $("#goodsSkuTempColor").removeAttr("color");
 		$(this).addClass("active").siblings().removeClass();
 		var SIZE_price = $(this).attr("data-price");
 		var SIZE_costPrice = $(this).attr("data-costPrice");
