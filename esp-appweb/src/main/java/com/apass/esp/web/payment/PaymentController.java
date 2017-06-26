@@ -139,7 +139,7 @@ public class PaymentController {
     /**
      * 确认付款
      *
-     * T05 银行卡支付，T02 额度支付(需要cardNo)
+     * T05 银行卡支付，T02 额度支付(需要cardNo),T10 支付宝支付
      * @param paramMap
      * @return
      */

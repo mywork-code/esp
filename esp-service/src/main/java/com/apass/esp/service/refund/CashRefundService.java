@@ -125,9 +125,9 @@ public class CashRefundService {
     	}else if(dto.getStatus() == 2 ||dto.getStatus() == 5  ){
     		return CashRefundVoStatus.CASHREFUND_STATUS2.getCode();
     	}else if(dto.getStatus() == 4){
-    		return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
-    	}else{
     		return CashRefundVoStatus.CASHREFUND_STATUS4.getCode();
+    	}else{
+    		return CashRefundVoStatus.CASHREFUND_STATUS3.getCode();
     	}
     }
 

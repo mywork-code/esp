@@ -1,5 +1,22 @@
 package com.apass.esp.service.payment;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
@@ -39,24 +56,6 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 订单支付
@@ -377,7 +376,7 @@ public class PaymentService {
 		if (customerBasicInfo == null) {
 			throw new BusinessException("额度信息查询失败");
 		}
-		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType);
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
 		if(StringUtils.isNotEmpty(cardNo)){
 			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
@@ -481,16 +480,21 @@ public class PaymentService {
 
 		resultMap.put("orderAmt", totalAmt);
 
-		//Response response = paymentHttpClient.getCustomerInfo(requestId,userId);
+		/**
+		 * 查询用户基本信息和绑卡信息
+		 */
 		Response response = commonHttpClient.getCustomerBasicInfo(requestId,userId);
 		if(!response.statusResult()){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
 		}
+		/**
+		 * 查询用户基本信息和绑卡信息
+		 */
 		CustomerBasicInfo customerBasicInfo = Response.resolveResult(response,CustomerBasicInfo.class);
 		if (customerBasicInfo == null) {
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
 		}
@@ -498,29 +502,36 @@ public class PaymentService {
 		resultMap.put("cardNo", customerBasicInfo.getCardNo());
 		resultMap.put("cardBank", customerBasicInfo.getCardBank());
 		resultMap.put("cardType", customerBasicInfo.getCardType());
-
+		
+		/**
+		 * 查询用户的查询未结清借款&额度消费已出账笔数
+		 */
 		Response resp = paymentHttpClient.creditPayAuthority(userId);
 		if(!resp.statusResult()){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
 		}
 		Integer num = ((Double)resp.getData()).intValue();
+		
+		/**
+		 * 用户的费率信息及CustomerId
+		 */
 		Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId,userId);
 
 		if(!responseCredit.statusResult()){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
 		}
 		CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit,CustomerCreditInfo.class);
 		if (customerCreditInfo == null) {
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			return resultMap;
 		}
 		if(num != null && num >= 3){
-			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;//可银行卡 可支付宝
 			resultMap.put("page", page);
 			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
 			return resultMap;
@@ -542,7 +553,7 @@ public class PaymentService {
 			} else {
 				//2、用户可用额度>0
 				// 计算额度支付金额
-				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"");
 				Response overDue = paymentHttpClient.hasOverDueBill(userId);
 				boolean overDue1 = false;
 				if(!overDue.statusResult()){
@@ -565,7 +576,7 @@ public class PaymentService {
 						if ("1".equals(response1.getData())) {
 							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
 						} else {
-							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
+							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
 						}
 					}
 
@@ -578,7 +589,7 @@ public class PaymentService {
 	}
 
 	/**
-	 * 判断可用支付方式,额度支付金额,银行卡支付金额
+	 * 判断可用支付方式,额度支付金额,银行卡支付金额,支付宝支付金额
 	 * 
 	 * @param creditAvailAmt
 	 *            用户可用额度
@@ -586,18 +597,21 @@ public class PaymentService {
 	 *            订单总金额
 	 * @return
 	 */
-	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt) {
+	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt,String paymentType) {
 
 		PayInfoEntity payInfo = new PayInfoEntity();
-    boolean supportCredit = false;
+		boolean supportCredit = false;
 		// 首付金额
 		BigDecimal downPayAmt = BigDecimal.ZERO;
 		// 信用支付金额
 		BigDecimal creditPayAmt = BigDecimal.ZERO;
-    //银行卡支付
-    BigDecimal cardPayAmt = orderAmt; //默认订单金额
+	    //银行卡支付
+	    BigDecimal cardPayAmt = orderAmt; //默认订单金额
 
-    String paymentType = PaymentType.CARD_PAYMENT.getCode();
+	    if(StringUtils.isBlank(paymentType)){
+	    	paymentType = PaymentType.CARD_PAYMENT.getCode();
+	    }
+	    
 		if(creditAvailAmt != null && creditAvailAmt.compareTo(BigDecimal.ZERO) == 1){
 			// 订单金额的50%
 			BigDecimal halfOrderAmt = orderAmt.multiply(BigDecimal.valueOf(0.5));
@@ -639,14 +653,14 @@ public class PaymentService {
 					cardPayAmt = orderAmt;
 					downPayAmt = BigDecimal.ZERO;
 					creditPayAmt = BigDecimal.ZERO;
-					paymentType = PaymentType.CARD_PAYMENT.getCode();
+					//paymentType = PaymentType.CARD_PAYMENT.getCode();
 				}
 			}
 		}
 		payInfo.setCreditPayAmt(creditPayAmt);
 		payInfo.setCreditPayDownPayAmt(downPayAmt);
-    payInfo.setSupportCreditPay(supportCredit);
-    payInfo.setPaymentType(paymentType);
+		payInfo.setSupportCreditPay(supportCredit);
+		payInfo.setPaymentType(paymentType);
 		// 若使用银行卡支付需要金额
 		payInfo.setCardPayAmt(cardPayAmt);
 		return payInfo;
@@ -711,7 +725,7 @@ public class PaymentService {
 			throw new BusinessException("额度信息查询失败");
 		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
+		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType);
 		payInfo.setCardPayAmt(totalAmt);
 		payInfo.setBankCode(customerBasicInfo.getBankCode());
 		payInfo.setCardNo(customerBasicInfo.getCardNo());

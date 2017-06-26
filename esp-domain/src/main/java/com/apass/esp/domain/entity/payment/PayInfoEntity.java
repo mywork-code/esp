@@ -28,7 +28,7 @@ public class PayInfoEntity {
      */
     private boolean supportCreditPay;
     /**
-     * 支付方式  T02:信用支付  T05:银行卡支付
+     * 支付方式  T02:信用支付  T05:银行卡支付  T10:支付宝
      */
     private String paymentType;
     
