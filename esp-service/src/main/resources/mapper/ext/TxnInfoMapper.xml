@@ -10,6 +10,7 @@
         <result column="txn_amt" property="txnAmt" jdbcType="DECIMAL"/>
         <result column="post_date" property="postDate" jdbcType="TIMESTAMP"/>
         <result column="txn_desc" property="txnDesc" jdbcType="VARCHAR"/>
+        <result column="orig_txn_id" property="origTxnId" jdbcType="VARCHAR"/>
         <result column="orig_trans_date" property="origTransDate" jdbcType="VARCHAR"/>
         <result column="orig_txn_code" property="origTxnCode" jdbcType="VARCHAR"/>
         <result column="orig_txn_amt" property="origTxnAmt" jdbcType="DECIMAL"/>
@@ -21,7 +22,7 @@
 
     <sql id="Base_Column_List">
         txn_id, order_id, user_id, txn_type, txn_date, txn_amt,
-        post_date,txn_desc,orig_trans_date,orig_txn_code,orig_txn_amt,
+        post_date,txn_desc,orig_txn_id,orig_trans_date,orig_txn_code,orig_txn_amt,
         stmt_date, loan_id,open_bank_id,open_bank
     </sql>
 
