@@ -252,6 +252,7 @@ $(function () {
     }
 
     function queryOrderDetail(orderId) {
+        debugger
         $('#orderDetailList').datagrid(
             {
                 url: ctx + '/application/business/order/queryOrderDetailInfo',
@@ -371,21 +372,13 @@ $(function () {
                         }
                     ]
                 ],
-                loader: function (param, success, error) {
-                    debugger
-                    $.ajax(
-                        {
-                            url: ctx + '/application/business/order/pagelistAll',
-                            data: param,
-                            type: "post",
-                            dataType: "json",
-                            success: function (data) {
-                                $.validateResponse(data, function () {
-                                    success(data);
-                                });
-                            }
-                        })
-                }
+                onBeforeLoad : function (param)
+                {
+                    param.orderId = orderId;
+                },
+                onLoadSuccess : function (data)
+                {
+                },
             });
     }
 
