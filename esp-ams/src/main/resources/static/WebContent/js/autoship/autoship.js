@@ -106,24 +106,24 @@ $(function () {
         var time2 = $('#time2').textbox('getValue');
         var time3 = $('#time3').textbox('getValue');
         var time4 = $('#time4').textbox('getValue');
-        var flag= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time1);
-        var flag2= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time2);
-        var flag3= /^[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$/.test(time3);
-        debugger
+        var flag= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
+        var flag2= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
+        var flag3= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
+
         if(!flag){
-            $.messager.alert("提示", "第一个时间节点输入错误，请重新输入");
+            $.messager.alert("<span style='color: black;'>提示</span>", "第一个时间节点输入错误，请重新输入");
             return;
         }
         if(!flag2){
-            $.messager.alert("提示", "第二个时间节点输入错误，请重新输入");
+            $.messager.alert("<span style='color: black;'>提示</span>", "第二个时间节点输入错误，请重新输入");
             return;
         }
         if(!flag3){
-            $.messager.alert("提示", "第三个时间节点输入错误，请重新输入");
+            $.messager.alert("<span style='color: black;'>提示</span>", "第三个时间节点输入错误，请重新输入");
             return;
         }
-        if(time1==time2||time1==time3||time2==time3){
-            $.messager.alert("提示", "时间节点不能重复，请重新输入");
+        if(time1==time2||time1==time3||time2==time3||time1=="23:59:59"||time2=="23:59:59"||time3=="23:59:59"){
+            $.messager.alert("<span style='color: black;'>提示</span>", "时间节点不能重复，请重新输入");
             return;
         }
         var param = {
