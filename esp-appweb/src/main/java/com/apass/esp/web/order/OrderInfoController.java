@@ -608,6 +608,7 @@ public class OrderInfoController {
             
             if(!CollectionUtils.isEmpty(resultList)){
             	dto = resultList.get(0);
+            	dto.setOrderCreateDateStr(DateFormatUtil.dateToString(dto.getOrderCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM));
             	//如果订单为退款中的状态，则把订单的状态手动改成待发货状态
             	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode()) ){
             		dto.setStatus(OrderStatus.ORDER_PAYED.getCode());
