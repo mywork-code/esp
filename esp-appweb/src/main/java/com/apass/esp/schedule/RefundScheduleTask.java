@@ -83,7 +83,7 @@ public class RefundScheduleTask {
      * 退款：每隔72小时获取所有退款中的订单 向银联发起退款
      */
     //@Scheduled(cron = "0 0 0/3 * * *")
-    @Scheduled(cron = "0 0/3 * * * *")//每5分钟执行一次
+    @Scheduled(cron = "0 0/1 * * * *")//每5分钟执行一次
     public void cashRefundTask(){
     	LOGGER.info("退款job开始执行,当前时间{}",DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     	//1，查询所有退款中的订单
@@ -92,7 +92,6 @@ public class RefundScheduleTask {
     		for (CashRefund cashRefund : cashRefunds) {
     			RefundCashRequest request = new RefundCashRequest();
     			request.setOrderId(cashRefund.getOrderId());
-    			request.setTxnAmt(cashRefund.getAmt());
     			TxnInfoEntity txnInfoEntity = txnInfoMapper.queryTxnInfoByOrderidAndTxntypeInSql(cashRefund.getMainOrderId());
     			if(txnInfoEntity == null || txnInfoEntity.getTxnDate() == null){
     				LOGGER.error("此条交易流水表数据有误，订单id：{}",cashRefund.getOrderId());
@@ -100,6 +99,7 @@ public class RefundScheduleTask {
     			}
     			request.setTxnDateTime(txnInfoEntity.getOrigTransDate());
     			request.setOrigOryId(txnInfoEntity.getOrigTxnId());
+    			request.setTxnAmt(txnInfoEntity.getTxnAmt());
     			
     			//调bss退款接口
 				cashRefundHttpClient.refundCash(request);

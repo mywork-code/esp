@@ -756,7 +756,6 @@ $(function() {
 	$.editGoods = function(index) {//编缉初始化
 		$('#editGoodsInfo').window('open');
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
-		debugger;
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		$("#editGoodsId").val(rowData.id);
