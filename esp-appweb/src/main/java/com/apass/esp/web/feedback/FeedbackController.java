@@ -2,6 +2,8 @@ package com.apass.esp.web.feedback;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -56,10 +58,14 @@ public class FeedbackController {
 			LOGGER.error("输入是字数不得超过300字！");
 			return Response.fail("输入是字数不得超过300字！");
 		}
+		String comments2=filterEmoji(comments,"");
+		System.out.println(comments2);
+		String comments3=  filter(comments2);
+		System.out.println(comments3);
 		Date date=new Date();
 		FeedBack fb=new FeedBack();
 		fb.setFeedbackType(feedbackType);
-		fb.setComments(comments);
+		fb.setComments(comments3);
 		fb.setMobile(mobile);
 		fb.setCreateDate(date);
 		Integer result=feedBackService.insert(fb);
@@ -69,4 +75,25 @@ public class FeedbackController {
 		LOGGER.error("意见反馈失败！");
 		return Response.fail("意见反馈保存失败!");
 	}
+	
+	/**
+     * emoji表情替换
+     *
+     * @param source 原字符串
+     * @param slipStr emoji表情替换成的字符串                
+     * @return 过滤后的字符串
+     */
+    public static String filterEmoji(String source,String slipStr) {
+        if(StringUtils.isNotBlank(source)){
+            return source.replaceAll("[\\ud800\\udc00-\\udbff\\udfff\\ud800-\\udfff]", slipStr);
+        }else{
+            return source;
+        }
+    }
+    public String filter(String str) {
+        String regEx = "[`~!@#$%^&*()\\-+={}':;,\\[\\].<>/?￥%…（）_+|【】‘；：”“’。，、？\\s]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.replaceAll("").trim();
+    }
 }
