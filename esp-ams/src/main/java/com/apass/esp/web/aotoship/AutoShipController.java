@@ -1,8 +1,12 @@
 package com.apass.esp.web.aotoship;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.Kvattr;
+import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
+import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
+import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.utils.CronTools;
+import com.apass.esp.utils.ResponsePageBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.Kvattr;
-import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
-import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
-import com.apass.esp.service.common.KvattrService;
-import com.apass.esp.utils.CronTools;
-import com.apass.esp.utils.ResponsePageBody;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * type: class

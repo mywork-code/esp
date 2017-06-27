@@ -252,6 +252,7 @@ $(function () {
     }
 
     function queryOrderDetail(orderId) {
+        debugger
         $('#orderDetailList').datagrid(
             {
                 url: ctx + '/application/business/order/queryOrderDetailInfo',
@@ -371,21 +372,14 @@ $(function () {
                         }
                     ]
                 ],
-                loader: function (param, success, error) {
-                    debugger
-                    $.ajax(
-                        {
-                            url: ctx + '/application/business/order/pagelistAll',
-                            data: param,
-                            type: "post",
-                            dataType: "json",
-                            success: function (data) {
-                                $.validateResponse(data, function () {
-                                    success(data);
-                                });
-                            }
-                        })
-                }
+                onBeforeLoad : function (param)
+                {
+                    param.orderId = orderId;
+                },
+                onLoadSuccess : function (data)
+                {
+                    
+                },
             });
     }
 
@@ -550,11 +544,11 @@ $.refundDetails = function (orderId) {
                         formatter: function (value, row, index) {
 
                             if (value == '1') {
-                                return '退款提交';
+                                return '等待审核';
                             } else if (value == '2') {
-                                return '同意退款';
+                                return '等待退款';
                             } else if (value = '3') {
-                                return "取消退款";
+                                return '退款成功';
                             } else if (value == '4') {
                                 return '退款成功';
                             } else {

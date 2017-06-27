@@ -368,15 +368,15 @@
 		</div>
 		<!-- 选择商品分类  -->
 		<div class="easyui-layout" id="editSelectCategoryList" data-options="fit:true,border:false">  
-			<div data-options="region:'west',split:false,title:'一级类目',collapsible:false" style="width:33%;">  
+			<div data-options="region:'west',split:true,title:'一级类目',collapsible:false" style="width:35%;">  
 				<div id="editWestAttrDataGrid" data-options="fit:true,border:false">
 				</div>
 		    </div>  
-		    <div data-options="region:'center',split:false,title:'二级类目',collapsible:false" style="width:34%;">  
+		    <div data-options="region:'center',split:true,title:'二级类目',collapsible:false" style="width:34%;">  
 		    	<div id="editCenterAttrDataGrid" data-options="fit:true,border:false">
 		    	</div> 
 		    </div>  
-		    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:33%;;">  
+		    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:31%;;">  
 		        <div id="editEastAttrDataGrid" data-options="fit:true,border:false">
 		        </div> 
 		    </div> 
@@ -415,13 +415,13 @@
 							type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 50%;" /><span id="editgoodsTitleL"></span></td>
 					</tr>
 					<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品最小单元分类:</td>
+					<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
 					<td align="left"><select class="easyui-combobox" editable="false"
 							data-options="required:true" style="width: 100%" id="editgoodsSkuType"
 							name="editgoodsSkuType">
 								<option value="">请选择</option>
 								<option value="颜色">颜色</option>
-								<option value="型号">型号</option>
+								<option value="尺寸">尺寸</option>
 						</select></td>
 					</tr>
 					<tr>
