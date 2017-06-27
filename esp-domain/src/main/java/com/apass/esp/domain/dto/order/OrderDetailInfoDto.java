@@ -28,6 +28,17 @@ public class OrderDetailInfoDto {
      * 订单生成时间
      */
     private Date orderCreateDate;
+
+    private String orderCreateDateStr;
+
+    public String getOrderCreateDateStr() {
+        return orderCreateDateStr;
+    }
+
+    public void setOrderCreateDateStr(String orderCreateDateStr) {
+        this.orderCreateDateStr = orderCreateDateStr;
+    }
+
     /**
      * 待付款订单剩余时间
      */
