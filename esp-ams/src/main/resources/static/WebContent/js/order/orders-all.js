@@ -252,7 +252,6 @@ $(function () {
     }
 
     function queryOrderDetail(orderId) {
-        debugger
         $('#orderDetailList').datagrid(
             {
                 url: ctx + '/application/business/order/queryOrderDetailInfo',
@@ -484,25 +483,22 @@ $(function () {
 
 $.refundDetails = function (orderId) {
 
-    $("#refundDetails").dialog("open");
+    $("#refundDetails").window("open");
 
-    $('#refundDetails').datagrid(
+    $('#refundDetail').datagrid(
         {
-            title: '订单详细信息',
-            fitColumns: false,
-            pagination: true,
+            title: '退款详情',
+            fitColumns: true,
             rownumbers: true,
             striped: true,
-            singleSelect: false,
-            pagination: false,
+            singleSelect: true,
             nowrap: false,
-            showFooter: true,
             columns: [
                 [
                     {
                         title: '退款申请时间',
                         field: 'createDate',
-                        width: 80,
+                        width: 160,
                         align: 'center',
                         formatter: function (value, row, index) {
                             return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
@@ -517,7 +513,7 @@ $.refundDetails = function (orderId) {
                     {
                         title: '退款申请说明',
                         field: 'memo',
-                        width: 80,
+                        width: 180,
                         align: 'center'
                     },
                     {
@@ -568,6 +564,9 @@ $.refundDetails = function (orderId) {
                         dataType: "json",
                         success: function (data) {
                             $.validateResponse(data, function () {
+                            	if(data.rows == null){
+                            		$.messager.alert("返回值为空。");
+                            	}
                                 success(data);
                             });
                         }
@@ -581,7 +580,7 @@ $.refundDetails = function (orderId) {
  * 关闭窗口
  */
 $("#refundDetails .close-btn").click(function () {
-    $("#refundDetails ").dialog("close");
+    $("#refundDetails ").window("close");
 });
 /**
  * 退款受理
