@@ -115,7 +115,8 @@ public class PaymentController {
             	LOGGER.error("请选择支付方式!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            if (!PaymentType.CARD_PAYMENT.getCode().equals(paymentType) && !PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)) {
+            if (!PaymentType.CARD_PAYMENT.getCode().equals(paymentType) && !PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)
+            		&& !PaymentType.ALIPAY_PAYMENT.getCode().equals(paymentType)) {
             	LOGGER.error("请选择正确支付方式!");
             	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }

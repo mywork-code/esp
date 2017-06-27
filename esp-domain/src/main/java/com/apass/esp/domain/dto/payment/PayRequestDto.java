@@ -32,7 +32,7 @@ public class PayRequestDto {
 	private BigDecimal payAmt;
 
 	/**
-	 * 支付方式 T02：信用支付、T05：卡全额支付
+	 * 支付方式 T02：信用支付、T05：卡全额支付、T10：支付宝全额
 	 * <p>
 	 * 必填
 	 */
