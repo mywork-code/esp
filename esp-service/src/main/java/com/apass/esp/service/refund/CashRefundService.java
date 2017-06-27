@@ -211,7 +211,7 @@ public class CashRefundService {
 		                 billDate=customerCreditInfo.getBillDate();//获取账单日
 		                }
 		            }
-		            List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
+		            List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(oity.getMainOrderId());
 		            if(txnInfoEntityList.size()>0){
 		               txnDate=txnInfoEntityList.get(0).getTxnDate();//交易时间
 		            }
