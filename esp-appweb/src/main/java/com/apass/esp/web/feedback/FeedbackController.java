@@ -58,14 +58,20 @@ public class FeedbackController {
 			LOGGER.error("输入是字数不得超过300字！");
 			return Response.fail("输入是字数不得超过300字！");
 		}
-		String comments2=filterEmoji(comments,"");
-		System.out.println(comments2);
-		String comments3=  filter(comments2);
-		System.out.println(comments3);
+//		String comments2=filterEmoji(comments,"");
+//		String comments3=  filter(comments2);
+		
+		Boolean falge=EmojiFilter.containsEmoji(comments);
+		String csom="";
+		if(falge){
+			csom=EmojiFilter.filterEmoji(comments);
+		}else{
+			csom=comments;
+		}
 		Date date=new Date();
 		FeedBack fb=new FeedBack();
 		fb.setFeedbackType(feedbackType);
-		fb.setComments(comments3);
+		fb.setComments(csom);
 		fb.setMobile(mobile);
 		fb.setCreateDate(date);
 		Integer result=feedBackService.insert(fb);
