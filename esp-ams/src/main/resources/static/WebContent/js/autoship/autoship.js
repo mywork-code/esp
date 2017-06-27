@@ -106,9 +106,9 @@ $(function () {
         var time2 = $('#time2').textbox('getValue');
         var time3 = $('#time3').textbox('getValue');
         var time4 = $('#time4').textbox('getValue');
-        var flag= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
-        var flag2= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
-        var flag3= /^[0-2][0-3]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
+        var flag= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
+        var flag2= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
+        var flag3= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
 
         if(!flag){
             $.messager.alert("<span style='color: black;'>提示</span>", "第一个时间节点输入错误，请重新输入");
