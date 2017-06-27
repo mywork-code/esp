@@ -106,19 +106,19 @@ $(function () {
         var time2 = $('#time2').textbox('getValue');
         var time3 = $('#time3').textbox('getValue');
         var time4 = $('#time4').textbox('getValue');
-        var flag= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
-        var flag2= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
-        var flag3= /^[2][0-3]|[0-1][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
-
-        if(!flag){
+        var flag= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
+        var flag2= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
+        var flag3= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
+debugger
+        if(!flag||time1.split(":")[0]>=24){
             $.messager.alert("<span style='color: black;'>提示</span>", "第一个时间节点输入错误，请重新输入");
             return;
         }
-        if(!flag2){
+        if(!flag2||time2.split(":")[0]>=24){
             $.messager.alert("<span style='color: black;'>提示</span>", "第二个时间节点输入错误，请重新输入");
             return;
         }
-        if(!flag3){
+        if(!flag3||time3.split(":")[0]>=24){
             $.messager.alert("<span style='color: black;'>提示</span>", "第三个时间节点输入错误，请重新输入");
             return;
         }
@@ -150,6 +150,41 @@ $(function () {
         $('#addIntroConfig').window('close');
     });
 
+    $("#time1").textbox('textbox').bind('keyup', function (event) {
+        var e = event || window.event;
+       // var k = e.keyCode || e.which;
+       // var timeValue = $("#time1").textbox('getValue');
+        var val = $(this).get(0).value;
+        if(!/^[0-9]{0}([0-9]|[:])+$/.test(val)||$(this).get(0).value.length > 8){//含有数字和：以外的字符，则执行
+            $("#time1").textbox('setValue', val.substr(0,val.length-1));
+            event.preventDefault();
+            return false
+        }
+    });
+
+    $("#time2").textbox('textbox').bind('keyup', function (event) {
+        var e = event || window.event;
+        // var k = e.keyCode || e.which;
+        // var timeValue = $("#time1").textbox('getValue');
+        var val = $(this).get(0).value;
+        if(!/^[0-9]{0}([0-9]|[:])+$/.test(val)||$(this).get(0).value.length > 8){//含有数字和：以外的字符，则执行
+            $("#time2").textbox('setValue', val.substr(0,val.length-1));
+            event.preventDefault();
+            return false
+        }
+    });
+
+    $("#time3").textbox('textbox').bind('keyup', function (event) {
+        var e = event || window.event;
+        // var k = e.keyCode || e.which;
+        // var timeValue = $("#time1").textbox('getValue');
+        var val = $(this).get(0).value;
+        if(!/^[0-9]{0}([0-9]|[:])+$/.test(val)||$(this).get(0).value.length > 8){//含有数字和：以外的字符，则执行
+            $("#time3").textbox('setValue', val.substr(0,val.length-1));
+            event.preventDefault();
+            return false
+        }
+    });
 });
 
 
