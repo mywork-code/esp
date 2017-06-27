@@ -544,11 +544,11 @@ $.refundDetails = function (orderId) {
                         formatter: function (value, row, index) {
 
                             if (value == '1') {
-                                return '退款提交';
+                                return '等待审核';
                             } else if (value == '2') {
-                                return '同意退款';
+                                return '等待退款';
                             } else if (value = '3') {
-                                return "取消退款";
+                                return '退款成功';
                             } else if (value == '4') {
                                 return '退款成功';
                             } else {

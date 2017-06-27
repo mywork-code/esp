@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mockito.asm.tree.TryCatchBlockNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -401,7 +402,15 @@ public class LogisticsService {
     		}
     		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
     		
-			List<Trace> traceList =  getSignleTrackingsByOrderId(orderInfo.getOrderId());
+			List<Trace> traceList =  null;
+					
+			try{
+				//如果查询物流出现异常的时候，就默认轨迹不存在
+				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+			}catch(Exception e){
+				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+			}
+					
         	if(!CollectionUtils.isEmpty(traceList)){
         		logisticInfo.setTrace(traceList.get(0));
         	}
