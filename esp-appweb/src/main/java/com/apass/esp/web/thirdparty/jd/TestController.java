@@ -3,6 +3,8 @@ package com.apass.esp.web.thirdparty.jd;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.Test;
+import com.apass.esp.mapper.TestMapper;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -59,6 +61,11 @@ public class TestController {
 
     @Autowired
     private JdOrderApiClient jdOrderApiClient;
+
+
+    @Autowired
+    private TestMapper testMapper;
+
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     @ResponseBody
@@ -161,7 +168,7 @@ public class TestController {
             Object object = jsonObject.get("page_num");
             int pageNum = Integer.parseInt(String.valueOf(object));
             JdApiResponse<String> jdApiResponse1 = jdProductApiClient.productSkuQuery(pageNum);
-            if(jdApiResponse1==null){
+            if (jdApiResponse1 == null) {
                 continue;
             }
             String skuStr = jdApiResponse1.getResult();
@@ -173,30 +180,30 @@ public class TestController {
                 skuNum.setSkuId(Long.valueOf(s));
                 List<Long> skulist = new ArrayList<Long>();
                 skulist.add(Long.valueOf(s));
-                JdApiResponse<JSONArray> jsonArrayJdApiResponse   = jdProductApiClient.priceSellPriceGet(skulist);
-                if(jsonArrayJdApiResponse==null){
+                JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skulist);
+                if (jsonArrayJdApiResponse == null) {
                     continue;
                 }
                 JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
-                if(productPriceList==null){
+                if (productPriceList == null) {
                     continue;
                 }
-                JSONObject jsonObject12 =null;
-                try{
-                    jsonObject12 =   (JSONObject) productPriceList.get(0);
-                }catch (Exception e){
-                    continue;
-                }
-
-                if(jsonObject12==null){
+                JSONObject jsonObject12 = null;
+                try {
+                    jsonObject12 = (JSONObject) productPriceList.get(0);
+                } catch (Exception e) {
                     continue;
                 }
 
-                if(jdApiResponse2==null){
+                if (jsonObject12 == null) {
+                    continue;
+                }
+
+                if (jdApiResponse2 == null) {
                     continue;
                 }
                 JSONObject jsonObject1 = jdApiResponse2.getResult();
-                if(jsonObject1==null){
+                if (jsonObject1 == null) {
                     continue;
                 }
                 String name = (String) jsonObject1.get("name");//商品名称
@@ -204,13 +211,14 @@ public class TestController {
                 BigDecimal price = (BigDecimal) jsonObject12.get("price");
                 BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
                 Test test = new Test();
-                LOGGER.info("jdPrice {},price {},skuId {},name {}",jdPrice,price,skuId,name);
-                test.setJdPrice(jdPrice);
+                LOGGER.info("jdPrice {},price {},skuId {},name {}", jdPrice, price, skuId, name);
+                test.setSkuid(skuId);
                 test.setName(name);
+                test.setJdprice(jdPrice);
                 test.setPrice(price);
-                test.setSkuId(skuId);
-                list.add(test);
-                LOGGER.info("list.size() {}",list.size());
+                //list.add(test);
+                testMapper.insert(test);
+                LOGGER.info("list.size() {}", list.size());
             }
         }
         try {
