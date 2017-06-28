@@ -42,6 +42,7 @@ public class OrderModifyStatusScheduleTask{
 	@PostConstruct
 	public void init() {
 		threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(10);
 		threadPoolTaskScheduler.initialize();
 
 		List<Kvattr> attrs = kvattrService.getTypeName(new ShipmentTimeConfigAttr());
@@ -70,6 +71,7 @@ public class OrderModifyStatusScheduleTask{
 	@Scheduled(cron = "59 59 23 * * ?")
 	public void updateOrderStatusAndPreDelivery(){
         try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron:{59 59 23 * * ?} execute:" + new Date());
         	orderService.updateOrderStatusAndPreDelivery();
         } catch (Exception e) {
         	logger.error("修改订单状态任务出错",e);
@@ -86,6 +88,7 @@ public class OrderModifyStatusScheduleTask{
 		future1 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron1:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
@@ -109,6 +112,7 @@ public class OrderModifyStatusScheduleTask{
 		future2 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron2:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
@@ -132,6 +136,7 @@ public class OrderModifyStatusScheduleTask{
 		future3 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron3:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);

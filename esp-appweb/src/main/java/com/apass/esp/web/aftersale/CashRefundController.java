@@ -28,6 +28,7 @@ import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
+import com.apass.esp.web.feedback.EmojiFilter;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -163,12 +164,21 @@ public class CashRefundController {
                 LOGGER.error("退款原因不能为空!");
                 return Response.fail("退款原因不能为空!");
             }
+            //判断退款说明是否有特殊表情符号
+            Boolean falge4=EmojiFilter.containsEmoji(memo);
+            String csom="";
+    		if(falge4){
+    			csom=EmojiFilter.filterEmoji(memo);
+    		}else{
+    			csom=memo;
+    		}
+            
             Boolean  statusFalge=cashRefundService.checkOrderStatus(orderId,userId);
             Boolean  falge=cashRefundService.checkRequestRefund(requestId,orderId,userId);
             if(!statusFalge){
             	return Response.success("抱歉，商户已发货暂不支持退款",false);
             }else if(falge){
-            	cashRefundService.requestRefund(requestId,orderId,userId, reason,memo);
+            	cashRefundService.requestRefund(requestId,orderId,userId, reason,csom);
             }else{
             	return Response.fail("该订单已经出账无法申请退款！");
             }
