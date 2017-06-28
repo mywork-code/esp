@@ -1483,6 +1483,7 @@ public class OrderService {
     			//修改订单状态和是否发货
     			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
     			order.setStatus(OrderStatus.ORDER_SEND.getCode());
+    			order.setUpdateDate(new Date());
     			updateOrderStatusAndPreDelivery(order);
 			}
     	}
