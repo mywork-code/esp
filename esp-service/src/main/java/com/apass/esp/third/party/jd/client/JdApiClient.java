@@ -39,8 +39,10 @@ public abstract class JdApiClient {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("method", UrlUtils.encode(method));
         params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
-        JSONObject token = jdTokenManager.getToken();
-        params.put("access_token", UrlUtils.encode(token.getString("access_token")));
+        //JSONObject token = jdTokenManager.getToken();
+        params.put("access_token",
+                "5a590fba845f42d5ad7f32baf794f1e58");
+               // UrlUtils.encode(token.getString("access_token")));
         params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         params.put("format", UrlUtils.encode("json"));
         params.put("v", UrlUtils.encode(JdConstants.API_VERSION));
@@ -53,14 +55,16 @@ public abstract class JdApiClient {
         try {
             response = HttpClientUtils.getMethodGetContent(url, headerparams);
         } catch (Exception e) {
-            LOGGER.error("response {} return is not 200", response);
+            LOGGER.error("response {} return is not 200, param_json {}", response,UrlUtils.encode(param_json));
+            return null;
         }
         JdApiResponse res = new JdApiResponse(key, response, clazz);
         if (!res.isSuccess()) {
             if ("0010".equals(res.getResultCode()) && "0".equals(res.getCode())) {
                 return res;
             }
-            LOGGER.error("request error,token: {},url: {},response: {}", token, url, response);
+            //LOGGER.error("request error,token: {},url: {},response: {}", token, url, response);
+            LOGGER.error("request error,token: {},url: {},response: {}", url, response);
         }
         return res;
     }

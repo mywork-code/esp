@@ -157,8 +157,6 @@ public class TestController {
         JSONArray jsonArray = jdApiResponse.getResult();
         List<Test> list = new ArrayList<>();
         for (Object jsonArray1 : jsonArray) {
-
-
             JSONObject jsonObject = (JSONObject) jsonArray1;
             Object object = jsonObject.get("page_num");
             int pageNum = Integer.parseInt(String.valueOf(object));
@@ -175,28 +173,44 @@ public class TestController {
                 skuNum.setSkuId(Long.valueOf(s));
                 List<Long> skulist = new ArrayList<Long>();
                 skulist.add(Long.valueOf(s));
-                JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skulist).getResult();
+                JdApiResponse<JSONArray> jsonArrayJdApiResponse   = jdProductApiClient.priceSellPriceGet(skulist);
+                if(jsonArrayJdApiResponse==null){
+                    continue;
+                }
+                JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
                 if(productPriceList==null){
                     continue;
                 }
-                JSONObject jsonObject12 = (JSONObject) productPriceList.get(0);
+                JSONObject jsonObject12 =null;
+                try{
+                    jsonObject12 =   (JSONObject) productPriceList.get(0);
+                }catch (Exception e){
+                    continue;
+                }
+
+                if(jsonObject12==null){
+                    continue;
+                }
+
                 if(jdApiResponse2==null){
                     continue;
                 }
                 JSONObject jsonObject1 = jdApiResponse2.getResult();
+                if(jsonObject1==null){
+                    continue;
+                }
                 String name = (String) jsonObject1.get("name");//商品名称
                 long skuId = Long.valueOf(s);
                 BigDecimal price = (BigDecimal) jsonObject12.get("price");
                 BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
                 Test test = new Test();
+                LOGGER.info("jdPrice {},price {},skuId {},name {}",jdPrice,price,skuId,name);
                 test.setJdPrice(jdPrice);
                 test.setName(name);
                 test.setPrice(price);
                 test.setSkuId(skuId);
                 list.add(test);
-                if(list.size()==2000){
-                    break;
-                }
+                LOGGER.info("list.size() {}",list.size());
             }
         }
         try {
@@ -204,8 +218,6 @@ public class TestController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         return Response.success("1", jdApiResponse);
     }
 
@@ -220,7 +232,6 @@ public class TestController {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow row = sheet.createRow(0);
-
 
 //        // 第三步：创建第一行（也可以称为表头）
 //        for (int i = 0; i < 4; i++) {
