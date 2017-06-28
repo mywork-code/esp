@@ -31,6 +31,7 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
+import com.apass.esp.domain.enums.DownPaymentType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -106,7 +107,7 @@ public class PaymentService {
 
 	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
 	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
-	public String defary(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo) throws BusinessException {
+	public String defary(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
 		// 校验订单状态
 		Map<String, Object> data = validateDefary(requestId,userId, orderList);
 		BigDecimal totalAmt = (BigDecimal) data.get("totalAmt");
@@ -140,7 +141,7 @@ public class PaymentService {
         
 		// 支付
 		//TODO 是否需要判断支付类型做相应的处理
-		Response response = defary(userId, paymentType, totalAmt, txnDesc, cardNo,orderList);
+		Response response = defary(userId, paymentType, totalAmt, txnDesc, cardNo,orderList,systemType,downPayType);
 		if (null == response||!response.statusResult()) {
 			throw new BusinessException("支付失败");
 		}
@@ -348,7 +349,7 @@ public class PaymentService {
 	 * @throws BusinessException
 	 */
 	@Monitor(methodDesc = "调用BSS 支付接口")
-	private Response defary(Long userId, String paymentType, BigDecimal totalAmt, String txnDesc, String cardNo,List<String> orderList) throws BusinessException {
+	private Response defary(Long userId, String paymentType, BigDecimal totalAmt, String txnDesc, String cardNo,List<String> orderList,String systemType,String downPayType) throws BusinessException {
 		// 随机设置交易流水主订单号
 		String mainOrder = obtainMainOrderId(orderList);
 		PayRequestDto payReq = new PayRequestDto();
@@ -358,6 +359,8 @@ public class PaymentService {
 		// 支付总金额
 		payReq.setPayAmt(totalAmt);
 		payReq.setPayType(paymentType);
+		payReq.setSystemType(systemType);
+		payReq.setDownPayType(downPayType);
 		// 首付金额
 		Response response = commonHttpClient.getCustomerBasicInfo("",userId);
 				//paymentHttpClient.getCustomerInfo("",userId);
@@ -376,7 +379,7 @@ public class PaymentService {
 		if (customerBasicInfo == null) {
 			throw new BusinessException("额度信息查询失败");
 		}
-		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType);
+		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,downPayType);
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
 		if(StringUtils.isNotEmpty(cardNo)){
 			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
@@ -553,7 +556,7 @@ public class PaymentService {
 			} else {
 				//2、用户可用额度>0
 				// 计算额度支付金额
-				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"");
+				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"","");
 				Response overDue = paymentHttpClient.hasOverDueBill(userId);
 				boolean overDue1 = false;
 				if(!overDue.statusResult()){
@@ -597,7 +600,7 @@ public class PaymentService {
 	 *            订单总金额
 	 * @return
 	 */
-	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt,String paymentType) {
+	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt,String paymentType1,String downPayType) {
 
 		PayInfoEntity payInfo = new PayInfoEntity();
 		boolean supportCredit = false;
@@ -608,9 +611,7 @@ public class PaymentService {
 	    //银行卡支付
 	    BigDecimal cardPayAmt = orderAmt; //默认订单金额
 
-	    if(StringUtils.isBlank(paymentType)){
-	    	paymentType = PaymentType.CARD_PAYMENT.getCode();
-	    }
+	    String paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
 	    
 		if(creditAvailAmt != null && creditAvailAmt.compareTo(BigDecimal.ZERO) == 1){
 			// 订单金额的50%
@@ -646,6 +647,7 @@ public class PaymentService {
 					creditPayAmt = orderAmt.subtract(downPayAmt);
 				}
 			}
+			
 			if(supportCredit){
 				if(creditPayAmt.compareTo(new BigDecimal(1000)) == -1) {
 					//信用支付额度< 1000 时 不支持信用分期
@@ -653,7 +655,18 @@ public class PaymentService {
 					cardPayAmt = orderAmt;
 					downPayAmt = BigDecimal.ZERO;
 					creditPayAmt = BigDecimal.ZERO;
-					//paymentType = PaymentType.CARD_PAYMENT.getCode();
+					
+					if(StringUtils.isBlank(paymentType1)){
+						paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
+					}
+					
+					if(StringUtils.equals(PaymentType.CREDIT_PAYMENT.getCode(), paymentType)){
+						if(StringUtils.equals(DownPaymentType.ALIPAY_PAYMENT.getCode(), downPayType)){
+							paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
+						}else if(StringUtils.equals(DownPaymentType.CARD_PAYMENT.getCode(), downPayType)){
+							paymentType = PaymentType.CARD_PAYMENT.getCode();
+						}
+					}
 				}
 			}
 		}
@@ -663,6 +676,7 @@ public class PaymentService {
 		payInfo.setPaymentType(paymentType);
 		// 若使用银行卡支付需要金额
 		payInfo.setCardPayAmt(cardPayAmt);
+		payInfo.setDownPayType(downPayType);
 		return payInfo;
 	}
 
@@ -688,11 +702,12 @@ public class PaymentService {
 	 * @throws BusinessException
 	 */
 	@Monitor(methodDesc="支付方式选择确认")
-	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType) throws BusinessException {
+	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType,String downPayType) throws BusinessException {
 		PayInfoEntity payInfo = new PayInfoEntity();
 		payInfo.setUserId(userId);
 		// 设置支付方式
 		payInfo.setPaymentType(paymentType);
+		payInfo.setDownPayType(downPayType);
 
 		Map<String, Object> validateMap = validateDefary(requestId,userId, orderList);
 		BigDecimal totalAmt = (BigDecimal) validateMap.get("totalAmt");
@@ -725,7 +740,7 @@ public class PaymentService {
 			throw new BusinessException("额度信息查询失败");
 		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType);
+		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,downPayType);
 		payInfo.setCardPayAmt(totalAmt);
 		payInfo.setBankCode(customerBasicInfo.getBankCode());
 		payInfo.setCardNo(customerBasicInfo.getCardNo());

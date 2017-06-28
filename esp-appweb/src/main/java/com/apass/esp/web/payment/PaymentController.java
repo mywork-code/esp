@@ -23,6 +23,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,7 @@ public class PaymentController {
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
-            List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList = new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -102,6 +104,7 @@ public class PaymentController {
             String userIdStr = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);      //  用户号
             String orderListStr = CommonUtils.getValue(paramMap, "orderList");      //  订单订单列表
             String paymentType = CommonUtils.getValue(paramMap, "paymentType");         //  选择支付方式
+            String downPayType = CommonUtils.getValue(paramMap, "downPayType");  //  选择首付支付方式
             
             String requestId = logStashSign + "_" + userIdStr;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -120,12 +123,12 @@ public class PaymentController {
             	LOGGER.error("请选择正确支付方式!");
             	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
-            List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList =  new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            PayInfoEntity payInfo = paymentService.confirmPayMethod(requestId , userId, orderList,paymentType);
+            PayInfoEntity payInfo = paymentService.confirmPayMethod(requestId , userId, orderList,paymentType,downPayType);
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);
@@ -155,6 +158,8 @@ public class PaymentController {
             String paymentType = CommonUtils.getValue(paramMap, "paymentType");     //  选择支付方式
             String orderListStr = CommonUtils.getValue(paramMap, "orderList");      //  订单订单列表
             String cardNo = CommonUtils.getValue(paramMap, "cardNo");      //  银行卡号
+            String systemType = CommonUtils.getValue(paramMap, "systemType");      //  系统类型
+            String downPayType = CommonUtils.getValue(paramMap, "downPayType");     //  选择首付支付方式
             
             String requestId = logStashSign + "_" + userIdStr;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -174,12 +179,12 @@ public class PaymentController {
                     return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
                 }
             }
-            List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList = new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            payPage = paymentService.defary(requestId,userId, orderList, paymentType,cardNo);
+            payPage = paymentService.defary(requestId,userId, orderList, paymentType,cardNo,systemType,downPayType);
             
         } catch (BusinessException e) {
             LOGGER.error(e.getErrorDesc(), e);

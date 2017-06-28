@@ -50,6 +50,11 @@ public class PayInfoEntity {
      */
     private String bankCode;
     
+    /**
+     * 首付，支付方式
+     */
+    private String downPayType;
+    
     public String getCardType() {
         return cardType;
     }
@@ -110,4 +115,11 @@ public class PayInfoEntity {
     public void setCardPayAmt(BigDecimal cardPayAmt) {
         this.cardPayAmt = cardPayAmt;
     }
+	public String getDownPayType() {
+		return downPayType;
+	}
+	public void setDownPayType(String downPayType) {
+		this.downPayType = downPayType;
+	}
+    
 }
