@@ -54,9 +54,9 @@ public class FeedbackController {
 //			return Response.fail("手机号不能为空！");
 //		}
 		
-		if(comments.length()>300){
-			LOGGER.error("输入是字数不得超过300字！");
-			return Response.fail("输入是字数不得超过300字！");
+		if(comments.length()>255){
+			LOGGER.error("输入是字数不得超过255字！");
+			return Response.fail("输入是字数不得超过255字！");
 		}
 //		String comments2=filterEmoji(comments,"");
 //		String comments3=  filter(comments2);
