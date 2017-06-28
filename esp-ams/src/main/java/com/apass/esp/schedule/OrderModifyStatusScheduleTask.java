@@ -42,6 +42,7 @@ public class OrderModifyStatusScheduleTask{
 	@PostConstruct
 	public void init() {
 		threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(10);
 		threadPoolTaskScheduler.initialize();
 
 		List<Kvattr> attrs = kvattrService.getTypeName(new ShipmentTimeConfigAttr());
