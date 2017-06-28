@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
@@ -42,6 +41,9 @@ public class OrderModifyStatusScheduleTask{
 	
 	@PostConstruct
 	public void init() {
+		threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.initialize();
+
 		List<Kvattr> attrs = kvattrService.getTypeName(new ShipmentTimeConfigAttr());
 		if(!CollectionUtils.isEmpty(attrs)){
 			for (Kvattr kvattr : attrs) {
@@ -61,11 +63,6 @@ public class OrderModifyStatusScheduleTask{
 
 	@Autowired
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-	
-	@Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler(){
-        return new ThreadPoolTaskScheduler();
-    }
 	
 	private ScheduledFuture<?> future1;
 	private ScheduledFuture<?> future2;
