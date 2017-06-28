@@ -559,7 +559,7 @@
 	</select>
 	
 	<update id="updateOrderStatusAndPreDelivery" parameterType="OrderInfoEntity">
-		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR},update_date = NOW() WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR},update_date = #{updateDate,jdbcType=TIMESTAMP} WHERE order_id =  #{orderId, jdbcType=VARCHAR}
 	</update>
 
 
