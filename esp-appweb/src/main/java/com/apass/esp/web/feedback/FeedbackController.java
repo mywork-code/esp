@@ -55,8 +55,8 @@ public class FeedbackController {
 //		}
 		
 		if(comments.length()>255){
-			LOGGER.error("输入是字数不得超过255字！");
-			return Response.fail("输入是字数不得超过255字！");
+			LOGGER.error("反馈内容输入的字数过长！");
+			return Response.fail("反馈内容输入的字数过长！");
 		}
 //		String comments2=filterEmoji(comments,"");
 //		String comments3=  filter(comments2);
