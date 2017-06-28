@@ -61,8 +61,7 @@ public class OrderModifyStatusScheduleTask{
 	}
 
 
-	@Autowired
-    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
+	private ThreadPoolTaskScheduler threadPoolTaskScheduler;
 	
 	private ScheduledFuture<?> future1;
 	private ScheduledFuture<?> future2;
