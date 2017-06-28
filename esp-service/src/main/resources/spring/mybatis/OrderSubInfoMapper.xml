@@ -111,15 +111,15 @@
 			orderInfo.user_id userId,
 			orderInfo.merchant_code merchantCode,
 			merchant.merchant_name merchantName,
-			orderdetailandgoodtemp.goodsIdTemp goodsId,
-			orderdetailandgoodtemp.goodsNameTemp goodsName,
-		  	orderdetailandgoodtemp.goodsTypeTemp goodsType,
-		  	orderdetailandgoodtemp.goodsTypeTemp goodsTypeDesc,
-			orderdetailandgoodtemp.goodsModelTemp goodsModel,
-			orderdetailandgoodtemp.goodsSkuTypeTemp goodsSkuType,
-			orderdetailandgoodtemp.goodsSkuAttrTemp goodsSkuAttr,
-			orderdetailandgoodtemp.goodsNumTemp goodsNum,
-			round(orderdetailandgoodtemp.goodsPriceTemp, 2) orderAmt,
+			goodsbase.id goodsId,
+			goodsbase.goods_name goodsName,
+			orderdetail.goods_type goodsType,
+			orderdetail.goods_type goodsTypeDesc,
+			goodsbase.goods_model goodsModel,
+			goodsbase.goods_sku_type goodsSkuType,
+			goodsstockinfo.goods_sku_attr goodsSkuAttr,
+			orderdetail.goods_num goodsNum,
+			round(orderdetail.goods_price, 2) orderAmt,
 			orderInfo.logistics_name logisticsName,
 			orderInfo.logistics_no logisticsNo,
 			orderInfo.create_date createDate,
@@ -129,7 +129,7 @@
 			orderInfo.city city,
 			orderInfo.district district,
 			orderInfo.address address,
-			orderInfo.NAME name,
+			orderInfo. NAME NAME,
 			orderInfo.telephone telephone,
 			orderInfo.postcode postcode,
 			orderInfo.paystatus payStatus,
@@ -147,30 +147,15 @@
 			t_esp_order_info orderInfo
 		LEFT JOIN t_esp_merchant_info merchant ON orderInfo.merchant_code = merchant.merchant_code
 		LEFT JOIN t_esp_refund_info refundInfo ON orderInfo.order_id = refundInfo.order_id
-		LEFT JOIN (
-			SELECT
-				orderdetail.order_id orderIdTemp,
-				orderdetail.goods_num goodsNumTemp,
-				goodsbase.id goodsIdTemp,
-				goodsbase.goods_name goodsNameTemp,
-				orderdetail.goods_type goodsTypeTemp,
-				goodsstockinfo.goods_sku_attr goodsSkuAttrTemp,
-				orderdetail.goods_price goodsPriceTemp,
-				goodsbase.goods_model goodsModelTemp,
-				goodsbase.goods_sku_type goodsSkuTypeTemp,
-				orderdetail.update_date orderdetailUpdateDateTemp
-			FROM
-				t_esp_order_detail_info orderdetail
-			LEFT JOIN t_esp_goods_base_info goodsbase ON orderdetail.goods_id = goodsbase.id
-			LEFT JOIN t_esp_goods_stock_info goodsstockinfo on orderdetail.goods_stock_id=goodsstockinfo.id
-		) orderdetailandgoodtemp ON orderInfo.order_id = orderdetailandgoodtemp.orderIdTemp
+		LEFT JOIN t_esp_order_detail_info orderdetail ON orderInfo.order_id = orderdetail.order_id
+		LEFT JOIN t_esp_goods_base_info goodsbase ON orderdetail.goods_id = goodsbase.id
+		LEFT JOIN t_esp_goods_stock_info goodsstockinfo ON orderdetail.goods_stock_id = goodsstockinfo.id
 		]]>
 		<include refid="QueryConditionSqlList" />
 	    <![CDATA[
 			ORDER BY orderInfo.create_date DESC,
 			orderinfo.order_id DESC,
 			orderdetailandgoodtemp.orderdetailUpdateDateTemp DESC
-		
 		]]>
 	</select>
 
