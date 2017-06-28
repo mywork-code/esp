@@ -60,30 +60,32 @@
 
 	var _index2 = _interopRequireDefault(_index);
 
-	var _index3 = __webpack_require__(21);
+	var _index3 = __webpack_require__(59);
 
 	var _index4 = _interopRequireDefault(_index3);
 
-	var _index5 = __webpack_require__(27);
+	var _index5 = __webpack_require__(67);
 
 	var _index6 = _interopRequireDefault(_index5);
 
-	var _index7 = __webpack_require__(14);
+	var _index7 = __webpack_require__(70);
 
 	var _index8 = _interopRequireDefault(_index7);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// 自定义属性
+	Vue.use(_index8.default
 
 	// create the app instance.
 	// here we inject the router and store to all child components,
 	// making them available everywhere as `this.$router` and `this.$store`.
 	// to use until by `this.$options.untils`
-	exports.default = new Vue(Vue.util.extend({ el: '#root', router: _index2.default, store: _index4.default, event: _index6.default, utils: _index8.default }, _App2.default)); //  监听
-	/**
-	 * Created by x298017064010 on 17/6/12.
-	 */
+	); /**
+	    * Created by x298017064010 on 17/6/12.
+	    */
+
+	exports.default = new Vue(Vue.util.extend({ el: '#root', router: _index2.default, store: _index4.default, event: _index6.default }, _App2.default));
+
 
 	_index2.default.push('/');
 
@@ -147,9 +149,17 @@
 	//
 
 	exports.default = {
+	    data: function data() {
+	        return {};
+	    },
+
 	    methods: {},
 	    created: function created() {
-	        this.$options.utils.nativeLog(this.$getConfig());
+	        //            Vue.LogHelper(this.$getConfig())
+
+	        //            this.$store.dispatch('LOCAL_DATA')
+
+
 	    }
 	};
 
@@ -188,21 +198,31 @@
 
 	var _welcome2 = _interopRequireDefault(_welcome);
 
-	var _banner = __webpack_require__(17);
+	var _banner = __webpack_require__(15);
 
 	var _banner2 = _interopRequireDefault(_banner);
 
+	var _identity = __webpack_require__(19);
+
+	var _identity2 = _interopRequireDefault(_identity);
+
+	var _information = __webpack_require__(51);
+
+	var _information2 = _interopRequireDefault(_information);
+
+	var _bankCard = __webpack_require__(55);
+
+	var _bankCard2 = _interopRequireDefault(_bankCard);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	/**
-	 * Created by x298017064010 on 17/6/12.
-	 */
-
-	Vue.use(_vueRouter2.default);
+	Vue.use(_vueRouter2.default); /**
+	                               * Created by x298017064010 on 17/6/12.
+	                               */
 
 	exports.default = new _vueRouter2.default({
 	    // mode: 'abstract',    // 不需要设置模式, 系统自动匹配
-	    routes: [{ path: '/root', component: _root2.default }, { path: '/demo', component: _welcome2.default }, { path: '/banner', component: _banner2.default },
+	    routes: [{ path: '/root', component: _root2.default }, { path: '/demo', component: _welcome2.default }, { path: '/banner', component: _banner2.default }, { path: '/identity', component: _identity2.default }, { path: '/information', component: _information2.default }, { path: '/bankCard', component: _bankCard2.default },
 
 	    // { path: '/article/:url(.*)?', component: ArticleView },
 	    // { path: '/item/:id(\\d+)', component: CommentView },
@@ -2976,7 +2996,7 @@
 	__vue_exports__ = __webpack_require__(13)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(16)
+	var __vue_template__ = __webpack_require__(14)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -3033,44 +3053,39 @@
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
-	var _index = __webpack_require__(14);
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 
-	var _index2 = _interopRequireDefault(_index);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var eventModule = weex.requireModule('event'); // 自定义模块
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-
 	module.exports = {
 	    data: function data() {
 	        return {
@@ -3132,9 +3147,7 @@
 
 	    methods: {
 
-	        onClick: function onClick(item) {
-	            _index2.default.nativeLog(item);
-	        },
+	        onClick: function onClick(item) {},
 	        jump: function jump() {
 
 	            // 跳转主页面
@@ -3163,43 +3176,6 @@
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _NativeLogUtil = __webpack_require__(15);
-
-	var _NativeLogUtil2 = _interopRequireDefault(_NativeLogUtil);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	    nativeLog: _NativeLogUtil2.default
-	};
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = nativeLog;
-	var eventModule = weex.requireModule('event'); // 自定义模块, 要求event字段与原生一致
-
-	function nativeLog(msg) {
-	    console.log('To Native: ', msg);
-	    eventModule.nativeLog(msg, function (e) {});
-	}
-
-/***/ }),
-/* 16 */
 /***/ (function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -3273,21 +3249,21 @@
 	module.exports.render._withStripped = true
 
 /***/ }),
-/* 17 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 	var __vue_styles__ = []
 
 	/* styles */
-	__vue_styles__.push(__webpack_require__(18)
+	__vue_styles__.push(__webpack_require__(16)
 	)
 
 	/* script */
-	__vue_exports__ = __webpack_require__(19)
+	__vue_exports__ = __webpack_require__(17)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(20)
+	var __vue_template__ = __webpack_require__(18)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -3317,13 +3293,13 @@
 
 
 /***/ }),
-/* 18 */
+/* 16 */
 /***/ (function(module, exports) {
 
 	module.exports = {}
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -3367,17 +3343,14 @@
 	};
 
 /***/ }),
-/* 20 */
+/* 18 */
 /***/ (function(module, exports) {
 
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
 	    staticClass: ["wrapper"]
 	  }, [_c('scroller', {
-	    staticClass: ["scroller"],
-	    attrs: {
-	      "t": "1123"
-	    }
+	    staticClass: ["scroller"]
 	  }, [_c('image', {
 	    style: {
 	      width: _vm.imgWidth,
@@ -3394,6 +3367,81 @@
 	module.exports.render._withStripped = true
 
 /***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(20)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(21)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(50)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/views/wallet/identity.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-7bba2ab9"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "flex": 1,
+	    "backgroundColor": "#eeeeee"
+	  },
+	  "header": {
+	    "flexDirection": "row",
+	    "justifyContent": "center",
+	    "alignItems": "center"
+	  },
+	  "agree": {
+	    "marginTop": 50,
+	    "marginLeft": 50,
+	    "marginRight": 50
+	  },
+	  "btn-commit": {
+	    "marginTop": 20,
+	    "marginLeft": 50,
+	    "marginRight": 50
+	  },
+	  "cover-flow": {
+	    "width": 750,
+	    "height": 300,
+	    "backgroundColor": "#FFA500"
+	  }
+	}
+
+/***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3403,25 +3451,1812 @@
 	    value: true
 	});
 
-	var _vuex = __webpack_require__(22);
+	var _itView = __webpack_require__(22);
+
+	var _itView2 = _interopRequireDefault(_itView);
+
+	var _hint = __webpack_require__(30);
+
+	var _hint2 = _interopRequireDefault(_hint);
+
+	var _infoCell = __webpack_require__(34);
+
+	var _infoCell2 = _interopRequireDefault(_infoCell);
+
+	var _agreeBtn = __webpack_require__(42);
+
+	var _agreeBtn2 = _interopRequireDefault(_agreeBtn);
+
+	var _ccButton = __webpack_require__(46);
+
+	var _ccButton2 = _interopRequireDefault(_ccButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var eventModule = weex.requireModule('event'); // 自定义模块, 要求event字段与原生一致
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    components: { itView: _itView2.default, hint: _hint2.default, infoCell: _infoCell2.default, ccButton: _ccButton2.default, agreeBtn: _agreeBtn2.default },
+	    data: function data() {
+	        return {
+	            isShowAgreeBtn: false, // 合同按钮显隐开关
+	            isAgreeFinish: false, // 合同签写完成的状态
+	            isClick: false, // 提交按钮可点击状态
+
+	            selectEdu: '',
+	            selectMarry: ''
+	        };
+	    },
+
+	    methods: {
+	        clickCommit: function clickCommit() {
+	            if (!this.isClick) {
+	                return;
+	            }
+	            //                this.$store.dispatch('HOME_PAGE')
+	            Vue.NaviHelper.push('router_information', '信息认证');
+	        },
+	        changeNameInput: function changeNameInput(e) {
+	            console.log('inputName:', e.value);
+	        },
+	        openEduCard: function openEduCard(a) {
+	            //                var click = a.target.event.click;
+	            //                a.target.event.click = null;
+	            var that = this;
+	            eventModule.openSelectView('请选择教育程度', this.selectEdu, function (e) {
+	                console.log('selectEdu:', e);
+	                that.selectEdu = e.result;
+
+	                //                    a.target.event.click = click
+	            });
+	        },
+	        openMarryCard: function openMarryCard() {
+	            var that = this;
+	            eventModule.openSelectView('请选择婚姻状况', this.selectMarry, function (e) {
+	                console.log('selectMarry:', e);
+	                that.selectMarry = e.result;
+	            });
+	        },
+	        pushAgreePage: function pushAgreePage() {
+	            console.log('pushAgreePage:');
+	            this.isAgreeFinish = !this.isAgreeFinish;
+	        }
+	    },
+	    computed: {},
+	    created: function created() {}
+	};
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(23)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(24)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(29)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/wallet/itView.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-1f94ce37"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "backgroundColor": "#FFFFFF",
+	    "flex": 1,
+	    "justifyContent": "center",
+	    "alignItems": "center"
+	  },
+	  "image": {
+	    "marginTop": 50,
+	    "marginBottom": 10
+	  },
+	  "text": {
+	    "marginTop": 10,
+	    "marginBottom": 30
+	  }
+	}
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _ccImage = __webpack_require__(25);
+
+	var _ccImage2 = _interopRequireDefault(_ccImage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    components: { ccImage: _ccImage2.default },
+	    props: {
+	        src: {
+	            type: String,
+	            default: ''
+	        },
+	        title: {
+	            type: String,
+	            default: ''
+	        }
+	    },
+	    data: function data() {
+	        return {};
+	    },
+
+	    methods: {},
+	    created: function created() {}
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(26)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(27)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(28)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/common/ccImage.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-64869cd4"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+	module.exports = {}
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    props: {
+	        src: {
+	            type: String,
+	            default: ''
+	            //                default: 'http://ok7s5wpmw.bkt.clouddn.com/wx_logo.png'
+	        }
+	    },
+	    data: function data() {
+	        return {
+	            src: '',
+	            imgWidth: 0,
+	            imgHeight: 0
+	        };
+	    },
+
+	    methods: {
+	        load: function load(e) {
+	            // 图片加载完成回调
+	            var _e$size = e.size,
+	                naturalWidth = _e$size.naturalWidth,
+	                naturalHeight = _e$size.naturalHeight;
+
+	            this.imgWidth = naturalWidth;
+	            this.imgHeight = naturalHeight;
+	        }
+	    },
+	    created: function created() {}
+	};
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('image', {
+	    style: {
+	      width: _vm.imgWidth,
+	      height: _vm.imgHeight
+	    },
+	    attrs: {
+	      "src": _vm.src
+	    },
+	    on: {
+	      "load": _vm.load
+	    }
+	  })])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('ccImage', {
+	    staticClass: ["image"],
+	    attrs: {
+	      "src": _vm.src
+	    }
+	  }), _c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.title))])], 1)
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(31)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(32)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(33)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/wallet/hint.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-1e21cae4"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "flexDirection": "row",
+	    "alignItems": "flex-start",
+	    "padding": 20
+	  },
+	  "text": {
+	    "flex": 1,
+	    "color": "#FFA500",
+	    "fontSize": 25,
+	    "marginLeft": 10
+	  }
+	}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _ccImage = __webpack_require__(25);
+
+	var _ccImage2 = _interopRequireDefault(_ccImage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    components: { ccImage: _ccImage2.default },
+	    props: {
+	        title: {
+	            type: String,
+	            default: ''
+	        }
+	    },
+	    data: function data() {
+	        return {
+	            src: 'local/Prompt.png'
+	        };
+	    },
+
+	    methods: {},
+	    created: function created() {}
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('ccImage', {
+	    staticClass: ["image"],
+	    attrs: {
+	      "src": _vm.src
+	    }
+	  }), _c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.title))])], 1)
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(35)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(36)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(41)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/wallet/infoCell.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-9911e992"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "backgroundColor": "#FFFFFF"
+	  },
+	  "content": {
+	    "flexDirection": "row",
+	    "justifyContent": "center",
+	    "padding": 30
+	  },
+	  "content-left": {
+	    "flex": 1,
+	    "flexDirection": "row"
+	  },
+	  "content-right": {
+	    "flex": 2
+	  },
+	  "content-right-text": {
+	    "flex": 1,
+	    "flexDirection": "row",
+	    "justifyContent": "flex-end"
+	  },
+	  "content-right-btn": {
+	    "flex": 1,
+	    "flexDirection": "row",
+	    "justifyContent": "flex-end"
+	  },
+	  "content-right-input": {
+	    "flex": 1,
+	    "flexDirection": "row",
+	    "justifyContent": "flex-end"
+	  },
+	  "content-right-inputMoney": {
+	    "flex": 1,
+	    "flexDirection": "row",
+	    "justifyContent": "flex-end"
+	  },
+	  "input": {
+	    "flex": 1,
+	    "textAlign": "right"
+	  },
+	  "btn": {
+	    "flex": 1
+	  },
+	  "btn-text": {
+	    "textAlign": "right"
+	  },
+	  "btn-text-placeholder": {
+	    "color": "#aaaaaa",
+	    "textAlign": "right"
+	  },
+	  "arrow": {
+	    "marginLeft": 10
+	  }
+	}
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _ccImage = __webpack_require__(25);
+
+	var _ccImage2 = _interopRequireDefault(_ccImage);
+
+	var _ccLine = __webpack_require__(37);
+
+	var _ccLine2 = _interopRequireDefault(_ccLine);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    components: { ccImage: _ccImage2.default, ccLine: _ccLine2.default },
+	    props: {
+	        // 区分不同的cell
+	        types: {
+	            required: true,
+	            type: String,
+	            default: ''
+	        },
+	        // 显示主题文本
+	        title: {
+	            type: String,
+	            default: ''
+	        },
+	        // 显示选项卡文本, 选中后才展示
+	        selectValue: {
+	            type: String,
+	            default: ''
+	        },
+	        // 显示占位文本
+	        placeholder: {
+	            type: String,
+	            default: '请输入...'
+	        },
+	        // 仅显示姓名与身份证内容
+	        textValue: {
+	            type: String,
+	            default: ''
+	        },
+	        // 是否显示分割线
+	        isLineShow: {
+	            type: Boolean,
+	            default: true
+	        },
+	        // 是否显示箭头标识
+	        isHintShow: {
+	            type: Boolean,
+	            default: false
+	        },
+	        maxLength: {
+	            type: Number
+	        },
+	        // 监听cell点击事件
+	        onClick: {
+	            type: Function
+	        },
+	        // 监听输入的文本数据
+	        onChange: {
+	            type: Function
+	        }
+	    },
+	    data: function data() {
+	        return {};
+	    },
+
+	    methods: {},
+	    created: function created() {},
+	    update: function update() {}
+	};
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(38)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(39)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(40)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/common/ccLine.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-177545ee"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "backgroundColor": "#aaaaaa",
+	    "height": 2,
+	    "marginLeft": 15,
+	    "marginRight": 15
+	  }
+	}
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    components: {},
+	    props: {
+	        // 是否显示分割线
+	        isLineShow: {
+	            type: Boolean,
+	            default: true
+	        }
+	    },
+	    data: function data() {
+	        return {};
+	    },
+
+	    methods: {},
+	    created: function created() {}
+	};
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return (_vm.isLineShow) ? _c('div', {
+	    staticClass: ["wrapper"]
+	  }) : _vm._e()
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('ccLine', {
+	    attrs: {
+	      "isLineShow": _vm.isLineShow
+	    }
+	  }), _c('div', {
+	    staticClass: ["content"]
+	  }, [_c('div', {
+	    staticClass: ["content-left"]
+	  }, [_c('text', {
+	    staticClass: ["star"]
+	  }, [_vm._v("*")]), _c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.title))])]), _c('div', {
+	    staticClass: ["content-right"]
+	  }, [(this.types === 'inputText') ? _c('div', {
+	    staticClass: ["content-right-input"]
+	  }, [_c('input', {
+	    staticClass: ["input"],
+	    attrs: {
+	      "type": "text",
+	      "placeholder": _vm.placeholder,
+	      "maxlength": _vm.maxLength
+	    },
+	    on: {
+	      "change": _vm.onChange
+	    }
+	  })]) : _vm._e(), (this.types === 'inputTel') ? _c('div', {
+	    staticClass: ["content-right-input"]
+	  }, [_c('input', {
+	    staticClass: ["input"],
+	    attrs: {
+	      "type": "tel",
+	      "placeholder": _vm.placeholder,
+	      "maxlength": _vm.maxLength
+	    },
+	    on: {
+	      "change": _vm.onChange
+	    }
+	  })]) : _vm._e(), (this.types === 'inputMoney') ? _c('div', {
+	    staticClass: ["content-right-inputMoney"]
+	  }, [_c('input', {
+	    staticClass: ["input"],
+	    attrs: {
+	      "type": "tel",
+	      "placeholder": _vm.placeholder,
+	      "maxlength": _vm.maxLength
+	    },
+	    on: {
+	      "change": _vm.onChange
+	    }
+	  }), _c('text', {
+	    staticClass: ["arrow"]
+	  }, [_vm._v("元")])]) : _vm._e(), (this.types === 'text') ? _c('div', {
+	    staticClass: ["content-right-text"]
+	  }, [_c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.textValue))])]) : _vm._e(), (this.types === 'btn') ? _c('div', {
+	    staticClass: ["content-right-btn"]
+	  }, [_c('div', {
+	    staticClass: ["btn"],
+	    on: {
+	      "click": _vm.onClick
+	    }
+	  }, [(_vm.selectValue !== '') ? _c('text', {
+	    staticClass: ["btn-text"]
+	  }, [_vm._v(_vm._s(_vm.selectValue))]) : _c('text', {
+	    staticClass: ["btn-text-placeholder"]
+	  }, [_vm._v(_vm._s(_vm.placeholder))])]), _c('ccImage', {
+	    staticClass: ["arrow"],
+	    attrs: {
+	      "src": 'local/arrow02'
+	    }
+	  })], 1) : _vm._e()])])], 1)
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(43)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(44)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(45)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/wallet/agreeBtn.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-aac277d2"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "flexDirection": "row"
+	  },
+	  "text-black": {
+	    "color": "#000000",
+	    "fontSize": 25,
+	    "paddingTop": 5
+	  },
+	  "text-blue": {
+	    "color": "#0000FF",
+	    "fontSize": 25,
+	    "paddingTop": 5
+	  },
+	  "image": {
+	    "marginRight": 10
+	  }
+	}
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _ccImage = __webpack_require__(25);
+
+	var _ccImage2 = _interopRequireDefault(_ccImage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    props: {
+	        title: {
+	            type: String,
+	            default: ''
+	        },
+	        isShow: {
+	            type: Boolean,
+	            default: false
+	        },
+	        isFinish: {
+	            type: Boolean,
+	            default: false
+	        },
+	        onClick: {
+	            type: Function
+	        }
+	    },
+	    components: { ccImage: _ccImage2.default },
+	    data: function data() {
+	        return {
+	            src: '',
+	            styleObject: {
+	                opacity: 0
+	            }
+	        };
+	    },
+
+	    methods: {},
+	    created: function created() {
+	        if (this.isShow) {
+	            this.styleObject.opacity = 1;
+	        } else {
+	            this.styleObject.opacity = 0;
+	        }
+	        if (this.isFinish) {
+	            this.src = 'local/pass01';
+	        } else {
+	            this.src = 'local/unpass01';
+	        }
+	    },
+
+	    watch: {
+	        isShow: function isShow(val, oldVal) {
+	            if (this.isShow) {
+	                this.styleObject.opacity = 1;
+	            } else {
+	                this.styleObject.opacity = 0;
+	            }
+	        },
+	        isFinish: function isFinish(val, oldVal) {
+	            if (this.isFinish) {
+	                this.src = 'local/pass01';
+	            } else {
+	                this.src = 'local/unpass01';
+	            }
+	        }
+
+	    }
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"],
+	    style: _vm.styleObject,
+	    on: {
+	      "click": _vm.onClick
+	    }
+	  }, [_c('ccImage', {
+	    staticClass: ["image"],
+	    attrs: {
+	      "src": _vm.src
+	    }
+	  }), _c('text', {
+	    staticClass: ["text-black"]
+	  }, [_vm._v("同意并签署")]), _c('text', {
+	    staticClass: ["text-blue"]
+	  }, [_vm._v("相关合同文件")])], 1)
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(47)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(48)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(49)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/common/ccButton.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-57d7da07"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "backgroundColor:active": "#8B0000"
+	  },
+	  "text": {
+	    "color": "#FFFFFF",
+	    "textAlign": "center",
+	    "fontSize": 40,
+	    "fontWeight": "bold",
+	    "marginTop": 30,
+	    "marginBottom": 30
+	  }
+	}
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    props: {
+	        title: {
+	            type: String,
+	            default: '我是按钮'
+	        },
+	        onClick: {
+	            type: Function
+	        },
+	        isClick: { // 是否可点击
+	            type: Boolean,
+	            default: true
+	        }
+	    },
+	    components: {},
+	    data: function data() {
+	        return {
+	            styleObject: {
+	                opacity: 1,
+	                backgroundColor: ''
+	            }
+	        };
+	    },
+	    created: function created() {
+	        if (this.isClick) {
+	            //                this.styleObject.opacity = 1
+	            this.styleObject.backgroundColor = '#BF0A12';
+	        } else {
+	            //                this.styleObject.opacity = 0.2
+	            this.styleObject.backgroundColor = '#B5B5B5';
+	        }
+	    },
+	    mounted: function mounted() {},
+
+	    computed: {},
+	    watch: {
+	        isClick: function isClick(val, oldVal) {
+	            if (this.isClick) {
+	                //                this.styleObject.opacity = 1
+	                this.styleObject.backgroundColor = '#BF0A12';
+	            } else {
+	                //                this.styleObject.opacity = 0.2
+	                this.styleObject.backgroundColor = '#B5B5B5';
+	            }
+	        }
+	    }
+	};
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    ref: "btn",
+	    staticClass: ["wrapper"],
+	    style: _vm.styleObject,
+	    on: {
+	      "click": _vm.onClick
+	    }
+	  }, [_c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.title))])])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('scroller', {
+	    staticClass: ["scroll"]
+	  }, [_c('div', {
+	    staticClass: ["header"]
+	  }, [_c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/identity01.png',
+	      "title": '身份认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/credit01.png',
+	      "title": '信息认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/bank_Au.png',
+	      "title": '银行卡认证'
+	    }
+	  })], 1), _c('hint', {
+	    attrs: {
+	      "title": '请填写真实信息, 有利于额度申请审批成功。'
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'inputText',
+	      "title": '真实姓名',
+	      "placeholder": '请输入真实姓名',
+	      "isLineShow": false,
+	      "onChange": _vm.inputName
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '教育程度',
+	      "placeholder": '请选择学历',
+	      "selectValue": _vm.selectEdu,
+	      "onClick": _vm.openEduCard
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '婚姻状况',
+	      "placeholder": '请选择婚姻状况',
+	      "selectValue": _vm.selectMarry,
+	      "onClick": _vm.openMarryCard
+	    }
+	  }), _c('agreeBtn', {
+	    staticClass: ["agree"],
+	    attrs: {
+	      "isShow": _vm.isShowAgreeBtn,
+	      "isFinish": _vm.isAgreeFinish,
+	      "onClick": _vm.pushAgreePage
+	    }
+	  }), _c('ccButton', {
+	    staticClass: ["btn-commit"],
+	    attrs: {
+	      "title": '提交',
+	      "onClick": _vm.clickCommit,
+	      "isClick": _vm.isClick
+	    }
+	  })], 1)])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(52)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(53)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(54)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/views/wallet/information.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-5c5346fe"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "flex": 1,
+	    "backgroundColor": "#eeeeee"
+	  },
+	  "header": {
+	    "flexDirection": "row",
+	    "justifyContent": "center",
+	    "alignItems": "center"
+	  },
+	  "btn-commit": {
+	    "margin": 50
+	  }
+	}
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _itView = __webpack_require__(22);
+
+	var _itView2 = _interopRequireDefault(_itView);
+
+	var _hint = __webpack_require__(30);
+
+	var _hint2 = _interopRequireDefault(_hint);
+
+	var _infoCell = __webpack_require__(34);
+
+	var _infoCell2 = _interopRequireDefault(_infoCell);
+
+	var _ccButton = __webpack_require__(46);
+
+	var _ccButton2 = _interopRequireDefault(_ccButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	var eventModule = weex.requireModule('event'); // 自定义模块, 要求event字段与原生一致
+
+	exports.default = {
+	    components: { itView: _itView2.default, hint: _hint2.default, infoCell: _infoCell2.default, ccButton: _ccButton2.default },
+	    data: function data() {
+	        return {
+	            isClick: true, // 按钮可点击状态
+
+	            selectTrade: '',
+	            selectJob: '',
+	            selectSocial: ''
+	        };
+	    },
+
+	    methods: {
+	        clickCommit: function clickCommit() {
+	            if (!this.isClick) {
+	                return;
+	            }
+	            //                this.$router.push('bankCard');
+	            Vue.NaviHelper.push('router_bankCard', '银行卡认证'
+
+	            //                this.$store.dispatch('HOME_PAGE')
+
+	            );
+	        },
+	        pushAuthPage: function pushAuthPage() {
+	            console.log('pushAuthPage:');
+	            eventModule.pushMobileAuthenPage(function (e) {
+	                console.log(e);
+	            });
+	        },
+	        openTradeCard: function openTradeCard() {
+	            var that = this;
+	            eventModule.openSelectView('请选择您的工作所属行业', this.selectTrade, function (e) {
+	                console.log('selectTrade:', e);
+	                that.selectTrade = e.result;
+	            });
+	        },
+	        openJobCard: function openJobCard() {
+	            var that = this;
+	            eventModule.openSelectView('请选择职业', this.selectJob, function (e) {
+	                console.log('selectJob:', e);
+	                that.selectJob = e.result;
+	            });
+	        },
+	        openSocialCard: function openSocialCard() {
+	            var that = this;
+	            eventModule.openSelectView('请选择是否缴纳公积金/社保', this.selectSocial, function (e) {
+	                console.log('selectSocial:', e);
+	                that.selectSocial = e.result;
+	            });
+	        },
+	        inputSalary: function inputSalary(e) {
+	            console.log('inputSalary:', e.value);
+	        },
+	        inputCash: function inputCash(e) {
+	            console.log('inputCash:', e.value);
+	        }
+	    },
+	    created: function created() {}
+	};
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('scroller', {
+	    staticClass: ["scroll"]
+	  }, [_c('div', {
+	    staticClass: ["header"]
+	  }, [_c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/identity01.png',
+	      "title": '身份认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/credit02.png',
+	      "title": '信息认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/bank_Au.png',
+	      "title": '银行卡认证'
+	    }
+	  })], 1), _c('hint', {
+	    attrs: {
+	      "title": '请填写真实信息, 有利于审核通过。'
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '手机认证',
+	      "placeholder": '未认证',
+	      "isLineShow": false,
+	      "onClick": _vm.pushAuthPage
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'inputMoney',
+	      "title": '月收入(打卡)',
+	      "placeholder": '请输入>=0的整数',
+	      "maxLength": 10,
+	      "onChange": _vm.inputSalary
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'inputMoney',
+	      "title": '月收入(现金)',
+	      "placeholder": '请输入>=0的整数',
+	      "maxLength": 10,
+	      "onChange": _vm.inputCash
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '所属行业',
+	      "placeholder": '请选择您的工作所属行业',
+	      "selectValue": _vm.selectTrade,
+	      "onClick": _vm.openTradeCard
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '职业',
+	      "placeholder": '请选择您的职业',
+	      "selectValue": _vm.selectJob,
+	      "onClick": _vm.openJobCard
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '缴纳公积金或社保',
+	      "placeholder": '请选择是否缴纳',
+	      "selectValue": _vm.selectSocial,
+	      "onClick": _vm.openSocialCard
+	    }
+	  }), _c('ccButton', {
+	    staticClass: ["btn-commit"],
+	    attrs: {
+	      "title": '提交',
+	      "onClick": _vm.clickCommit,
+	      "isClick": _vm.isClick
+	    }
+	  })], 1)])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(56)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(57)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(58)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/views/wallet/bankCard.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-59c9ab32"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "wrapper": {
+	    "flex": 1,
+	    "backgroundColor": "#eeeeee"
+	  },
+	  "header": {
+	    "flexDirection": "row",
+	    "justifyContent": "center",
+	    "alignItems": "center"
+	  },
+	  "changeBankCard": {
+	    "flex": 1,
+	    "alignItems": "flex-end",
+	    "padding": 30
+	  },
+	  "text": {
+	    "color": "#00BFFF",
+	    "fontSize": 30
+	  },
+	  "btn-commit": {
+	    "margin": 50
+	  }
+	}
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _itView = __webpack_require__(22);
+
+	var _itView2 = _interopRequireDefault(_itView);
+
+	var _hint = __webpack_require__(30);
+
+	var _hint2 = _interopRequireDefault(_hint);
+
+	var _infoCell = __webpack_require__(34);
+
+	var _infoCell2 = _interopRequireDefault(_infoCell);
+
+	var _ccButton = __webpack_require__(46);
+
+	var _ccButton2 = _interopRequireDefault(_ccButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    components: { itView: _itView2.default, hint: _hint2.default, infoCell: _infoCell2.default, ccButton: _ccButton2.default },
+	    data: function data() {
+	        return {
+	            isClick: true, // 按钮可点击状态
+	            isCreditCard: true
+	        };
+	    },
+
+	    methods: {
+	        clickCommit: function clickCommit() {
+	            if (!this.isClick) {
+	                return;
+	            }
+	            //                this.$router.push('identity')
+	            Vue.NaviHelper.push('root');
+	        },
+	        changeBankCard: function changeBankCard(isCreditCard) {
+	            console.log('changeBankCard:');
+	            this.isCreditCard = !this.isCreditCard;
+	        },
+	        pushBankListPage: function pushBankListPage() {
+	            console.log('pushBankListPage:');
+	        },
+	        inputCreditCardNumber: function inputCreditCardNumber(e) {
+	            console.log('inputCreditCardNumber:', e.value);
+	        },
+	        inputTelNumber: function inputTelNumber(e) {
+	            console.log('inputTelNumber:', e.value);
+	        }
+	    },
+	    created: function created() {}
+	};
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: ["wrapper"]
+	  }, [_c('scroller', {
+	    staticClass: ["scroll"]
+	  }, [_c('div', {
+	    staticClass: ["header"]
+	  }, [_c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/identity01.png',
+	      "title": '身份认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/credit02.png',
+	      "title": '信息认证'
+	    }
+	  }), _c('itView', {
+	    staticClass: ["item"],
+	    attrs: {
+	      "src": 'local/BankCard_aut.png',
+	      "title": '银行卡认证'
+	    }
+	  })], 1), _c('hint', {
+	    attrs: {
+	      "title": '银行卡身份验证是中国人民银行获取个人征信的必要授权步骤, 请您如实填写。'
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'text',
+	      "title": '姓名',
+	      "textValue": '*泉',
+	      "isLineShow": false
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'text',
+	      "title": '身份证号',
+	      "textValue": '210106********1234'
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'btn',
+	      "title": '银行名称',
+	      "placeholder": _vm.isCreditCard ? '请选择信用卡所在银行名称' : '请选择借记卡所在银行名称',
+	      "onClick": _vm.pushBankListPage
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'inputTel',
+	      "title": _vm.isCreditCard ? '信用卡卡号' : '借记卡卡号',
+	      "placeholder": _vm.isCreditCard ? '请输入本人信用卡卡号' : '请输入本人借记卡卡号',
+	      "maxLength": 16,
+	      "onChange": _vm.inputCreditCardNumber
+	    }
+	  }), _c('infoCell', {
+	    attrs: {
+	      "types": 'inputTel',
+	      "title": '手机号码',
+	      "placeholder": '请输入本人银行预留手机号码',
+	      "maxLength": 11,
+	      "onChange": _vm.inputTelNumber
+	    }
+	  }), _c('div', {
+	    staticClass: ["changeBankCard"],
+	    on: {
+	      "click": _vm.changeBankCard
+	    }
+	  }, [_c('text', {
+	    staticClass: ["text"]
+	  }, [_vm._v(_vm._s(_vm.isCreditCard ? '没有信用卡? ' : '返回信用卡界面, 请点击'))])]), _c('ccButton', {
+	    staticClass: ["btn-commit"],
+	    attrs: {
+	      "title": '提交',
+	      "onClick": _vm.clickCommit,
+	      "isClick": _vm.isClick
+	    }
+	  })], 1)])
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _vuex = __webpack_require__(60);
 
 	var _vuex2 = _interopRequireDefault(_vuex);
 
-	var _mutations = __webpack_require__(23);
+	var _mutations = __webpack_require__(61);
 
 	var mutations = _interopRequireWildcard(_mutations);
 
-	var _actions = __webpack_require__(24);
+	var _actions = __webpack_require__(62);
 
 	var actions = _interopRequireWildcard(_actions);
 
-	var _getters = __webpack_require__(25);
+	var _getters = __webpack_require__(63);
 
 	var getters = _interopRequireWildcard(_getters);
 
-	var _DemoModule = __webpack_require__(26);
+	var _LocalModule = __webpack_require__(64);
 
-	var _DemoModule2 = _interopRequireDefault(_DemoModule);
+	var _LocalModule2 = _interopRequireDefault(_LocalModule);
+
+	var _WalletModule = __webpack_require__(65);
+
+	var _WalletModule2 = _interopRequireDefault(_WalletModule);
+
+	var _IdentityModule = __webpack_require__(66);
+
+	var _IdentityModule2 = _interopRequireDefault(_IdentityModule);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -3440,20 +5275,23 @@
 	    actions: actions,
 	    getters: getters,
 	    modules: {
-	        todo: _DemoModule2.default
+	        local: _LocalModule2.default,
+	        wallet: _WalletModule2.default,
+	        identity: _IdentityModule2.default
 	    },
 
 	    // 初始化整个应用状态 this.$store.state.count
 	    state: {
 	        count: 0,
 	        banner_src: ''
+
 	    }
 	});
 
 	exports.default = store;
 
 /***/ }),
-/* 22 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -4268,28 +6106,53 @@
 
 
 /***/ }),
-/* 23 */
+/* 61 */
 /***/ (function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	exports.DEMO_MUTATION = DEMO_MUTATION;
+	exports.LOCAL_DATA = LOCAL_DATA;
 	/**
 	 * Created by x298017064010 on 17/6/12.
 	 *
 	 * 更改应用状态的唯一方法(同步事务), 调用: this.$store.commit('increment', otherProps)
 	 */
-	var storage = weex.requireModule('storage');
 
 	function DEMO_MUTATION(state, payload) {
-	  console.log(state.count, payload);
+	    console.log(state.count, payload);
+	}
+
+	// root
+	function LOCAL_DATA(state, payload) {
+	    // console.log('commit', payload)
+
+	    // 将iOS客户端数据存到自己的store中
+	    for (var i in payload) {
+	        if (payload.hasOwnProperty(i)) {
+
+	            for (var key in state.local) {
+
+	                if (payload.hasOwnProperty(key)) {
+	                    if (i === key) {
+	                        state.local[key] = payload[i];
+	                        Vue.StorageHelper.setItem(key, payload[i]);
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    console.log(state.local
+
+	    // Vue.StorageHelper.getAllKeys()
+	    );
 	}
 
 /***/ }),
-/* 24 */
+/* 62 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -4298,13 +6161,17 @@
 	    value: true
 	});
 	exports.DEMO_ACTION_ASYNC = DEMO_ACTION_ASYNC;
+	exports.LOCAL_DATA = LOCAL_DATA;
+	exports.HOME_PAGE = HOME_PAGE;
 	/**
 	 * Created by x298017064010 on 17/6/12.
 	 *
 	 * 这里是提交mutations, 而不是直接更改状态(异步事务), 调用: this.$store.dispatch('DEMO_ACTION_ASYNC')
 	 */
 
-	// root
+	var eventModule = weex.requireModule('event');
+
+	// demo
 	function DEMO_ACTION_ASYNC(_ref, payload) {
 	    var commit = _ref.commit;
 
@@ -4313,8 +6180,40 @@
 	    }, 1000);
 	}
 
+	// root
+	function LOCAL_DATA(_ref2, payload) {
+	    var commit = _ref2.commit,
+	        state = _ref2.state;
+
+	    // 从原生获取需要本地存储的数据
+	    eventModule.getLocalData(function (r) {
+	        commit('LOCAL_DATA', r.result);
+	    });
+	}
+
+	function HOME_PAGE(_ref3, payload) {
+	    var commit = _ref3.commit,
+	        state = _ref3.state;
+
+	    // console.log(commit, state, payload)
+
+
+	    Vue.TipHelper.show(0
+
+	    // 初始化请求
+	    );var prama = {
+	        mobile: state.local.mobile,
+	        "x-auth-token": state.local.token
+	    };
+	    Vue.HttpHelper.post('/home/index', prama, function (res) {
+	        Vue.TipHelper.dismis
+	        // commit('', res)
+	        ();
+	    });
+	}
+
 /***/ }),
-/* 25 */
+/* 63 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -4336,7 +6235,7 @@
 	}
 
 /***/ }),
-/* 26 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4345,53 +6244,49 @@
 	    value: true
 	});
 
-	var _vuex = __webpack_require__(22);
+	var _vuex = __webpack_require__(60);
 
 	var _vuex2 = _interopRequireDefault(_vuex);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// Vuex is auto installed on the web
 	if (WXEnvironment.platform !== 'Web') {
 	    Vue.use(_vuex2.default);
 	} /**
-	   * Created by x298017064010 on 17/6/12.
-	   *
-	   * // 通过 this.$store.state.moduleName 调用
+	   * Created by x298017064010 on 17/6/22.
 	   */
 
-	var demo = new _vuex2.default.Store({
+	var local = new _vuex2.default.Store({
+	    // 以下数据需要做本地存储
+	    state: {
+	        appId: '', //  appId
+	        token: '', //  登陆验证
+	        lastVersion: '', //  最新版本号
+	        imagePath: '', //  图片路径
 
-	    // 初始化整个应用状态
-	    state: {}
-
-	    // 更改应用状态的唯一方法(同步事务), 调用: this.$store.commit('increment', otherProps)
-	    // mutations: {
-	    //     ADD_TODO_MSG (state, payload) {
-	    //         // state 模块的局部状态
-	    //         state.todoList.push(payload.msg)
-	    //     }
-	    // },
-	    // 这里是提交mutations, 而不是直接更改状态(异步事务), 调用: this.$store.dispatch('increment')
-	    // actions: {
-	    //     ADD_TODO_MSG_ASYNC ({ state, commit, rootState }, payload) {
-	    //         // state 模块的局部状态
-	    //         commit('ADD_TODO_MSG', payload)
-	    //     }
-	    // },
-	    // 相当于store 的计算属性方便子组件在任意场合调用, 调用: this.$store.getters.getCurrentCount
-	    // getters: {
-	    //     getTodoList(state) {
-	    //         return state.todoList
-	    //     }
-	    // },
-
+	        customerId: '', // 客户号
+	        userId: '', // 用户ID
+	        page: '', // 钱包状态 page值
+	        identityNo: '', // 身份证号
+	        identityExpires: '', // 身份证有效期
+	        realName: '', // 真实姓名
+	        mobile: '', // 手机号
+	        educationDegree: '', // 学历
+	        marryStatus: '', // 婚姻状态
+	        identityPerson: '', // 是否上传过手持身份证
+	        address: '', // 身份证地址
+	        noReadCount: '', // 推送消息未读数
+	        availableAmount: '', // 可用额度
+	        creditChannel: '', // 网络版/机构版 征信区分标识
+	        mobileAuthStatus: '', // 手机认证状态
+	        activityPhoto: '' // 个人中心活动图片
+	    }
 	});
 
-	exports.default = demo;
+	exports.default = local;
 
 /***/ }),
-/* 27 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4400,11 +6295,128 @@
 	    value: true
 	});
 
-	var _RouterEvent = __webpack_require__(28);
+	var _vuex = __webpack_require__(60);
+
+	var _vuex2 = _interopRequireDefault(_vuex);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	if (WXEnvironment.platform !== 'Web') {
+	    Vue.use(_vuex2.default);
+	} /**
+	   * Created by x298017064010 on 17/6/22.
+	   */
+
+	var wallet = new _vuex2.default.Store({
+
+	    state: {
+	        // 首页状态
+	        // 1：无额度，锁单--显示锁单天数
+	        // 2：无额度，无锁单--显示申请额度
+	        // 3：有额度，未提现--显示立即提现
+	        // 4：有额度，已提现，提现中--显示提现的详情（提现时间，提现金额）
+	        // 5：有额度，已提现，提现成功--显示提现的详情（提现时间，提现金额）
+	        // 6：有额度，已提现，提现失败，锁单--显示锁单天数
+	        // 7：有额度，已提现，提现失败，无锁单--立即提现
+	        // 303: 有额度,待激活
+	        // 302:有额度,激活中
+	        // 301:额度激活--被拒后剩余锁单天数状态
+	        page: '',
+	        totalAmount: '', // 授信总额度
+	        availableAmount: '', // 可用额度
+	        expireDate: '', // 额度失效时间
+	        customerId: '', // 客户号
+	        identityNo: '', // 身份证号码
+	        identityExpires: '', // 身份证有效期
+	        realName: '', // 客户姓名
+	        mobile: '', // 账号 手机号
+	        supportAdvanceFlag: '', // 是否可以提升额度 ( 是否支持提额（false或true）)
+	        lockDays: '', // 申请额度锁单天数
+	        creditRejRemainDate: '', // 激活额度锁单天数
+	        loanDate: '', // 提现时间
+	        loanAmount: '', // 提现金额
+	        applyCreditDate: '', // 额度申请日期
+	        noReadCount: '', // 推送消息未读数
+	        customerStatus: '', // 用户状态信息
+	        ageCondition: '', // 用户的年龄是否符合提现（0为不符合，1为符合）
+	        customerFlag: '' // 新老客户标记 0:老客户，1：新客户
+	    }
+	});
+
+	exports.default = wallet;
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _state;
+
+	var _vuex = __webpack_require__(60);
+
+	var _vuex2 = _interopRequireDefault(_vuex);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+	                                                                                                                                                                                                                   * Created by x298017064010 on 17/6/22.
+	                                                                                                                                                                                                                   */
+
+
+	if (WXEnvironment.platform !== 'Web') {
+	    Vue.use(_vuex2.default);
+	}
+
+	var identity = new _vuex2.default.Store({
+
+	    state: (_state = {
+	        // 验证状态:
+	        // 00   - 身份验证,
+	        // 01   - 信息验证,
+	        // 0001 - 银行卡认证,
+	        // 02   -
+	        // 0201 -
+	        // 0101 - 信息验证
+	        // 0102 -
+	        // 04   -
+	        // 0501 -
+	        // 03   -
+	        // 05   -
+	        // 06   -
+	        status: '',
+	        mobileAuthStatus: '', // 手机认证状态 未认证：0, 认证中：1, 已认证：2
+	        mobileAuthFlag: '', // 手机认证标识: wait / fail / null (Reviewing) / noauth
+
+	        identityNo: '', // 身份证号
+	        identityExpires: '', // 身份证有效期
+	        realName: '', // 真实姓名
+	        educationDegree: '', // 学历
+	        marryStatus: '', // 婚姻状态
+	        identityPerson: '' }, _defineProperty(_state, 'mobileAuthStatus', ''), _defineProperty(_state, 'isFromEsp', ''), _defineProperty(_state, 'creditSignFailureNum', ''), _defineProperty(_state, 'signatureAuditStatus', ''), _state)
+	});
+
+	exports.default = identity;
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _RouterEvent = __webpack_require__(68);
 
 	var _RouterEvent2 = _interopRequireDefault(_RouterEvent);
 
-	var _ParamEvent = __webpack_require__(29);
+	var _ParamEvent = __webpack_require__(69);
 
 	var _ParamEvent2 = _interopRequireDefault(_ParamEvent);
 
@@ -4416,7 +6428,7 @@
 	};
 
 /***/ }),
-/* 28 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4439,13 +6451,28 @@
 	    console.log('push banner successed');
 	});
 
+	globalEvent.addEventListener("router_identity", function (e) {
+	    _index2.default.push('identity');
+	    console.log('push identity successed');
+	});
+
+	globalEvent.addEventListener("router_information", function (e) {
+	    _index2.default.push('information');
+	    console.log('push information successed');
+	});
+
+	globalEvent.addEventListener("router_bankCard", function (e) {
+	    _index2.default.push('bankCard');
+	    console.log('push bankCard successed');
+	});
+
 /***/ }),
-/* 29 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _index = __webpack_require__(21);
+	var _index = __webpack_require__(59);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -4463,6 +6490,294 @@
 
 	    _index2.default.state.banner_src = src;
 	});
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _UrlMacro = __webpack_require__(71);
+
+	var _UrlMacro2 = _interopRequireDefault(_UrlMacro);
+
+	var _HttpHelper = __webpack_require__(72);
+
+	var _HttpHelper2 = _interopRequireDefault(_HttpHelper);
+
+	var _NaviHelper = __webpack_require__(73);
+
+	var _NaviHelper2 = _interopRequireDefault(_NaviHelper);
+
+	var _LogHelper = __webpack_require__(74);
+
+	var _LogHelper2 = _interopRequireDefault(_LogHelper);
+
+	var _StorageHelper = __webpack_require__(75);
+
+	var _StorageHelper2 = _interopRequireDefault(_StorageHelper);
+
+	var _TipHelper = __webpack_require__(76);
+
+	var _TipHelper2 = _interopRequireDefault(_TipHelper);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Created by x298017064010 on 17/6/21.
+	 */
+	var Plugin = {
+	    install: function install(Vue) {
+
+	        // 1. 添加全局方法或属性(方法大写, 属性用下划线连接)
+	        Vue.UrlMacro = _UrlMacro2.default;
+
+	        Vue.HttpHelper = _HttpHelper2.default;
+
+	        Vue.LogHelper = _LogHelper2.default;
+
+	        Vue.NaviHelper = _NaviHelper2.default;
+
+	        Vue.StorageHelper = _StorageHelper2.default;
+
+	        Vue.TipHelper = _TipHelper2.default;
+
+	        // 2. 添加全局资源
+	        Vue.directive('my-directive', {
+	            // bind (el, binding, vnode, oldVnode) {
+	            //     // 逻辑...
+	            // }
+	        }
+
+	        // 3. 注入组件
+	        );Vue.mixin({
+	            // created: function () {
+	            //     // 逻辑...
+	            // }
+	        }
+
+	        // 4. 添加实例方法
+	        );Vue.prototype.$myMethod = function (options) {
+	            // 逻辑...
+	            console.log('myMethod');
+	        };
+	    }
+	};
+
+	exports.default = Plugin;
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	/**
+	 * Created by x298017064010 on 17/6/22.
+	 */
+
+	// 公钥
+	var PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWbO1tolCYTlcIT8QsdjF5AvgcPcVAQ735XIJmmaVU17j29BJbDEFeXkYGfiULr19RcfQi6fB0hn+9IF8ObWYXl8VjCbt1DfDc5R9RKnZqoWGVlU5glaPv5d3BV3rc6gDlxw7aWX1rdIjRi3BqfL5najYo+/RybGiTji0ONQsUKQIDAQAB";
+
+	var BASE_URL = 'http://gfbapp.vcash.cn/appweb/data/ws/rest';
+	var BASE_WEEX = 'http://espapp.sit.apass.cn/appweb/';
+
+	var HOME_CHECKVERSION = "/checkVersion/app";
+	var HOME_PAGE = "/home/index";
+	var IDENTITYINFO_DOWNLOAD = "/customer/initIdentityInfo";
+
+	exports.default = {
+	    PUBLIC_KEY: PUBLIC_KEY, // 公共Key
+	    BASE_URL: BASE_URL, // 服务器ip
+	    BASE_WEEX: BASE_WEEX, // weex下载链接 (不需要使用)
+
+	    HOME_CHECKVERSION: HOME_CHECKVERSION, // 强制升级check (不需要使用)
+	    HOME_PAGE: HOME_PAGE, // 首页数据
+	    IDENTITYINFO_DOWNLOAD: IDENTITYINFO_DOWNLOAD // 初始化身份认证基本数据
+	};
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	/**
+	 * Created by x298017064010 on 17/6/21.
+	 */
+
+	var stream = weex.requireModule('stream');
+	var eventModule = weex.requireModule('event');
+
+	var httpHelper = {
+	    // GET 请求不支持 body 方式传递参数，请使用 url 传参。
+	    get: function get(repo, callback) {
+	        console.log(Vue.UrlMacro);
+	        return stream.fetch({
+	            method: 'GET',
+	            type: 'json',
+	            url: Vue.UrlMacro.BASE_WEEX + repo
+	        }, function (res) {
+
+	            console.log('~~~~~~~~~~~ get: ' + repo + ' ~~~~~~~~~~', '\n出参: ', res);
+	            callback(res);
+	        }, function (progress) {});
+	    },
+
+	    // body 参数仅支持 string 类型的参数，请勿直接传递 JSON
+	    post: function post(repo, body, callback) {
+
+	        var jsonStr = ''; // 加密前
+	        var dataStr = ''; // 加密后
+	        if ((typeof body === 'undefined' ? 'undefined' : _typeof(body)) !== String) {
+	            jsonStr = JSON.stringify(body);
+	        } else {
+	            jsonStr = body;
+	        }
+
+	        eventModule.encryptJsonStr(jsonStr, Vue.UrlMacro.PUBLIC_KEY, function (r) {
+	            dataStr = r.result;
+
+	            return stream.fetch({
+	                method: 'POST',
+	                type: 'json',
+	                headers: { 'Content-Type': 'application/json' },
+	                url: Vue.UrlMacro.BASE_URL + repo,
+	                body: { data: dataStr }
+	            }, function (res) {
+	                console.log('~~~~~~~~~~~ post: ' + repo + ' ~~~~~~~~~~', '\n入参: ', body, '\n出参: ', res);
+	                if (res.status === 200 && res.ok === true) {
+	                    callback(res.data);
+	                } else {
+	                    // 请求失败
+
+	                }
+	            }, function (progress) {});
+	        });
+	    }
+	};
+
+	exports.default = httpHelper;
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	/**
+	 * Created by x298017064010 on 17/6/21.
+	 */
+
+	// const eventModule = weex.requireModule('event');
+	var navigator = weex.requireModule('navigator');
+
+	var naviHelper = {
+	    // GET 请求不支持 body 方式传递参数，请使用 url 传参。
+	    push: function push(url, title) {
+	        var params = {
+	            title: title,
+	            url: url,
+	            animated: 'true'
+	        };
+	        navigator.push(params, function (event) {});
+	    }
+	};
+
+	exports.default = naviHelper;
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = LogHelper;
+	var eventModule = weex.requireModule('event'); // 自定义模块, 要求event字段与原生一致
+
+	function LogHelper(msg) {
+	    console.log('To Native: ', msg);
+	    eventModule.nativeLog(msg, function (e) {});
+	}
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	/**
+	 * Created by x298017064010 on 17/6/22.
+	 */
+	var storage = weex.requireModule('storage');
+
+	var storageHelper = {
+
+	    setItem: function setItem(key, val) {
+	        storage.setItem(key, val);
+	    },
+
+	    getItem: function getItem(key, callback) {
+	        storage.getItem(key, function (e) {
+	            callback(e.data);
+	        });
+	    },
+
+	    getAllKeys: function getAllKeys() {
+	        storage.getAllKeys(function (e) {
+	            console.log(e.data);
+	        });
+	    }
+	};
+
+	exports.default = storageHelper;
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var eventModule = weex.requireModule('event'); // 自定义模块, 要求event字段与原生一致
+
+	var TipHelper = {
+
+	    show: function show(type, msg, imgName) {
+	        eventModule.showLoadingView(type, msg, imgName);
+	    },
+
+	    dismis: function dismis() {
+	        eventModule.dismissLoadingView();
+	    }
+
+	};
+
+	exports.default = TipHelper;
 
 /***/ })
 /******/ ]);
