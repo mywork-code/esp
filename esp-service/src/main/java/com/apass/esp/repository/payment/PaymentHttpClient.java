@@ -53,7 +53,8 @@ public class PaymentHttpClient {
 
     private static final String NEW_CUSTOMER_FLAG_URL = "/myCenter/search/customerFlag";
 
-
+    //  支付结果实时查询
+    private static final String ALIPAY_REFUND = "/xinlan/apassRefund/refundCash";
     /**
      * 调用GFB获取客户信息
      *
@@ -315,4 +316,37 @@ public class PaymentHttpClient {
         }
     }
 
+
+    /**
+     * 调用BSS alipay 退款
+     *
+     * @param mainOrderId
+     * @return
+     * @throws BusinessException
+     */
+    public Response refundAliPay(String mainOrderId)  {
+        String responseJson = null;
+        try {
+            String address = bbsReqUrl + ALIPAY_REFUND;
+            Map<String, Object> map = new HashMap<>();
+            map.put("mainOrderId", mainOrderId);
+            String requestJson = GsonUtils.toJson(map);
+
+            LOG.logstashRequest("", "调用BSS退款请求:", requestJson);
+            StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+            responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
+            LOG.logstashResponse("", "调用BSS退款返回内容", responseJson);
+            Response resp = GsonUtils.convertObj(responseJson, Response.class);
+            if (resp == null || !resp.statusResult()) {
+                return Response.fail("ALIPAY_REFUND接口调用异常");
+            }
+            return resp;
+        } catch (BusinessException e) {
+            LOGGER.error(e.getErrorDesc(), e);
+            return Response.fail("ALIPAY_REFUND接口调用异常");
+        } catch (Exception e) {
+            LOGGER.error("ALIPAY_REFUND接口调用异常:{}", e);
+            return Response.fail("ALIPAY_REFUND接口调用异常");
+        }
+    }
 }
