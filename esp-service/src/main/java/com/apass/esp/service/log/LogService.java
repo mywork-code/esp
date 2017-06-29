@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.log.LogInfoEntity;
 import com.apass.esp.repository.log.LogInfoRepository;
@@ -19,6 +20,7 @@ public class LogService {
     /**
      * 添加日志信息
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer saveLog(LogInfoEntity logInfoEntity){
         return logInfoRepository.insert(logInfoEntity);
     }
