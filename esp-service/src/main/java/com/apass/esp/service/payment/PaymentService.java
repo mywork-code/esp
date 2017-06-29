@@ -48,6 +48,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.service.refund.CashRefundTxnService;
@@ -93,6 +94,8 @@ public class PaymentService {
 	private CashRefundService cashRefundService;
 	@Autowired
 	public CashRefundTxnService cashRefundTxnService;
+	@Autowired
+	private CommonService commonService;
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 
@@ -439,6 +442,13 @@ public class PaymentService {
 			 */
 			List<OrderDetailInfoEntity> orderDetailList =  orderDetailDao.queryOrderDetailInfo(orderId);
 			for (OrderDetailInfoEntity detail : orderDetailList) {
+				//验证商品的价格是否发生改变，如何改变则将改订单设为无效
+	            BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
+	            if(!(detail.getGoodsPrice().compareTo(price)==0)){
+	    			orderDao.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
+	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
+	    			throw new BusinessException("商品价格已变动，请重新下单");
+	            }
 				//商品的购买数量
 				Long goodNum = detail.getGoodsNum();
 				//商品的当前库存
@@ -449,10 +459,9 @@ public class PaymentService {
 				}
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
+				//验证不配送区域
+				orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
 			}
-			
-			//验证不配送区域
-			orderService.validateUnSupportProvince(requestId, orderId);
 			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
 			orderInfoList.add(orderInfo);

@@ -49,7 +49,7 @@ public class MonitorService {
     /**
      * @return
      */
-
+    @Transactional(rollbackFor = Exception.class)
     public void addMonitorlog(MonitorDto monitorDto) {
         monitorDto.setFlag("0");
         if (monitorDto.getStatus() == 1) {
