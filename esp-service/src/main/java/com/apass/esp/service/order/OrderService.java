@@ -1003,6 +1003,7 @@ public class OrderService {
         	goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
         	goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
         	GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
+        	GoodsInfoEntity goods = goodsDao.select(orderDetailInfo.getGoodsId());
         	if (null != goodsStock) {
         		goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
         		goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
@@ -1010,6 +1011,9 @@ public class OrderService {
         	goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
         	goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
         	goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
+        	if(null != goods){
+        		goodsInfo.setUnSupportProvince(goods.getUnSupportProvince());
+        	}
         	goodsListInEachOrder.add(goodsInfo);
         }
         OrderDetailInfoDto orderDetailInfoDto = new OrderDetailInfoDto();
@@ -1165,6 +1169,7 @@ public class OrderService {
 			this.validateGoodsOffShelf(requestId, orderDetail.getGoodsId());
 			// 订单信息
 			GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
+			GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
 			// 判断库存
 			if (goodsStock.getStockCurrAmt() <= 0) {
 				throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
@@ -1187,6 +1192,9 @@ public class OrderService {
 			goodInfo.setMerchantCode(orderInfo.getMerchantCode());
 			//商品新地址
 			goodInfo.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(goodInfo.getGoodsLogoUrl())));
+			if(null != goods){
+				goodInfo.setUnSupportProvince(goods.getUnSupportProvince());
+			}
 			goodsList.add(goodInfo);
 			// 订单总金额
 			totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
