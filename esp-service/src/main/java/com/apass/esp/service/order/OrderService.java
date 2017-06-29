@@ -1503,4 +1503,43 @@ public class OrderService {
     	}
     }
     
+    /**
+     * 验证订单下面是否存在不支持配送区域的订单
+     * @param requestId
+     * @param orderId
+     * @throws BusinessException 
+     */
+    public void validateUnSupportProvince(String requestId,String orderId) throws BusinessException{
+    	
+    	if(StringUtils.isBlank(orderId)){
+    		LOG.info(requestId, "订单不存在", orderId+"订单不存在");
+    		throw new BusinessException("订单号不能为空!");
+    	}
+    	//根据订单的编号，查询订单的信息
+    	OrderInfoEntity order =  selectByOrderId(orderId);
+    	
+    	if(null == order){
+    		LOG.info(requestId, "订单不存在", orderId+"订单信息为空");
+    		throw new BusinessException("订单号为"+orderId+"的订单信息不存在!");
+    	}
+    	
+    	List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
+    	
+    	if(CollectionUtils.isEmpty(orderDetails)){
+    		LOG.info(requestId, "订单详情不存在", orderId+"订单详情不存在");
+    		throw new BusinessException("订单编号为"+orderId+"的订单，不存在订单详情!");
+    	}
+    	
+    	for (OrderDetailInfoEntity detail : orderDetails) {
+			
+    		GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+    		
+    		if(null != goods){
+    			if(goods.getUnSupportProvince().indexOf(order.getProvince())>-1){
+    				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
+    				throw new BusinessException("订单号为【"+orderId+"】的订单，商品名称为【"+goods.getGoodsName()+"】不支持配送您的区域!");
+    			}
+    		}
+		}
+    }
 }
