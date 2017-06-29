@@ -460,7 +460,11 @@ public class PaymentService {
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//验证不配送区域
-				orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+				Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+				Boolean s = (Boolean)resultMap.get("unSupportProvince");
+	    		if(s){
+	    			 return resultMap;
+	    		}
 			}
 			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
@@ -489,6 +493,10 @@ public class PaymentService {
 		String page = null;
 
 		Map<String, Object> validateMap = this.validateDefary(requestId,userId, orderList);
+		
+		if(!validateMap.containsKey("totalAmt")){
+			return validateMap;
+		}
 		// 待支付总金额
 		BigDecimal totalAmt = (BigDecimal) validateMap.get("totalAmt");
 
