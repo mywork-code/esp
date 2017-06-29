@@ -34,7 +34,7 @@ public enum BusinessErrorCode implements ErrorCode {
   GOODS_AMOUNT_ERROR(2017,"商品数量有误"),
   GOODS_ID_ERROR(2018,"商品ID有误"),
   GOODS_CHECKOPTION_ERROR(2019,"商品勾选标记字段有误"),
-  
+  GOODS_PRICE_CHANGE_ERROR(2020,"商品价格已变动，请重新下单"),
   
   
   //3xxx 订单问题

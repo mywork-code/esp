@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
@@ -445,9 +446,8 @@ public class PaymentService {
 				//验证商品的价格是否发生改变，如何改变则将改订单设为无效
 	            BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
 	            if(!(detail.getGoodsPrice().compareTo(price)==0)){
-	    			orderDao.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
 	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
-	    			throw new BusinessException("商品价格已变动，请重新下单");
+	    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
 	            }
 				//商品的购买数量
 				Long goodNum = detail.getGoodsNum();
