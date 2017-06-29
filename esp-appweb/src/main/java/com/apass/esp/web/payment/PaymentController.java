@@ -4,7 +4,9 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
+import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -45,7 +47,8 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
-
+	@Autowired
+	private OrderInfoRepository orderDao;
     /**
      * 支付方式初始化
      * 
@@ -78,8 +81,14 @@ public class PaymentController {
             }
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
         } catch (BusinessException e) {
-            LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+        	if(2020==e.getBusinessErrorCode().getCode()){//商品价格已变动，请重新下单
+    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+    			LOGGER.error(e.getErrorDesc(), e);
+    			return Response.fail("商品价格已变动，请重新下单");
+        	}else{
+    		   LOGGER.error(e.getErrorDesc(), e);
+               return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+        	}
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
