@@ -932,7 +932,9 @@ public class PaymentService {
 		}else{
 			for (CashRefundTxn cashReTxn : cashRefundTxns) {
 				if(TxnTypeCode.SF_CODE.getCode().equals(cashReTxn.getTypeCode()) 
-						|| TxnTypeCode.KQEZF_CODE.getCode().equals(cashReTxn.getTypeCode())){
+						|| TxnTypeCode.KQEZF_CODE.getCode().equals(cashReTxn.getTypeCode())
+						|| TxnTypeCode.ALIPAY_CODE.getCode().equals(cashReTxn.getTypeCode())
+						|| TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(cashReTxn.getTypeCode())){
 					cashReTxn.setOriTxnCode(oriTxnCode);
 					cashReTxn.setStatus(refundTxnStatus);
 					cashReTxn.setUpdateDate(new Date());
