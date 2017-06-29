@@ -81,7 +81,7 @@ public class PaymentController {
             }
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
         } catch (BusinessException e) {
-        	if(2020==e.getBusinessErrorCode().getCode()){//商品价格已变动，请重新下单
+        	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
     			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
