@@ -67,6 +67,7 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -1504,55 +1505,39 @@ public class OrderService {
     }
     
     /**
-     * 验证订单下面是否存在不支持配送区域的订单
-     * @param requestId
-     * @param orderId
-     * @throws BusinessException 
-     */
-    public void validateUnSupportProvince(String requestId,String orderId) throws BusinessException{
-    	
-    	if(StringUtils.isBlank(orderId)){
-    		LOG.info(requestId, "订单不存在", orderId+"订单不存在");
-    		throw new BusinessException("订单号不能为空!");
-    	}
-    	//根据订单的编号，查询订单的信息
-    	OrderInfoEntity order =  selectByOrderId(orderId);
-    	
-    	if(null == order){
-    		LOG.info(requestId, "订单不存在", orderId+"订单信息为空");
-    		throw new BusinessException("订单号为"+orderId+"的订单信息不存在!");
-    	}
-    	
-    	List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
-    	
-    	if(CollectionUtils.isEmpty(orderDetails)){
-    		LOG.info(requestId, "订单详情不存在", orderId+"订单详情不存在");
-    		throw new BusinessException("订单编号为"+orderId+"的订单，不存在订单详情!");
-    	}
-    	
-    	for (OrderDetailInfoEntity detail : orderDetails) {
-    		validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
-		}
-    }
-    
-    /**
      * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId
      * @param orderId
      * @param goodsId
      * @throws BusinessException
      */
-    public void validateGoodsUnSupportProvince(String requestId,String orderId,Long goodsId) throws BusinessException{
+    public Map<String,Object> validateGoodsUnSupportProvince(String requestId,String orderId,Long goodsId) throws BusinessException{
+    	Map<String,Object> resultMap = Maps.newHashMap();
     	
     	OrderInfoEntity order =  selectByOrderId(orderId);
     	
     	GoodsInfoEntity goods = goodsDao.select(goodsId);
 		
+    	boolean bl = false;
+    	String message = "";
 		if(null != goods){
 			if(StringUtils.isNotBlank(goods.getUnSupportProvince()) && goods.getUnSupportProvince().indexOf(order.getProvince()) > -1){
+				bl  = true;
 				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
-				throw new BusinessException("订单号为【"+orderId+"】的订单，商品名称为【"+goods.getGoodsName()+"】不支持配送您的区域!");
+				message = "抱歉，暂不支持该地区发货！";
+				//订单的状态置为无效
+				updateProperties(order.getId());
 			}
 		}
+		resultMap.put("unSupportProvince", bl);
+		resultMap.put("message",message);
+		return resultMap;
+    }
+    
+    public void updateProperties(Long id){
+    	OrderInfoEntity entity = new OrderInfoEntity();
+        entity.setId(id);
+        entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+        orderInfoRepository.update(entity);
     }
 }
