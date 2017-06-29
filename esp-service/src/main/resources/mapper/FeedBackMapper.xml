@@ -23,9 +23,9 @@
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_feedback (feedback_type, comments, mobile, 
-      create_date)
+      create_date,update_date)
     values (#{feedbackType,jdbcType=VARCHAR}, #{comments,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP})
+      #{createDate,jdbcType=TIMESTAMP},now())
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_feedback
@@ -56,6 +56,7 @@
       <if test="createDate != null" >
         #{createDate,jdbcType=TIMESTAMP},
       </if>
+      ,update_date = now()
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.FeedBack" >
