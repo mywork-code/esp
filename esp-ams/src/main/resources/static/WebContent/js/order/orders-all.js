@@ -489,6 +489,7 @@ $.refundDetails = function (orderId) {
         {
             title: '退款详情',
             fitColumns: true,
+            fit:true,
             rownumbers: true,
             striped: true,
             singleSelect: true,
