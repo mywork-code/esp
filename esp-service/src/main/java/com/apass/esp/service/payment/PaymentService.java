@@ -450,7 +450,11 @@ public class PaymentService {
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//验证不配送区域
-				orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+				Map<String,Object> resultMaps = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+				boolean s = (boolean) resultMaps.get("unSupportProvince");
+	    		if(s){
+	    			return resultMaps;
+	    		}
 			}
 			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
