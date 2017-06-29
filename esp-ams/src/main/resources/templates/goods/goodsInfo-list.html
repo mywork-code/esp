@@ -85,6 +85,9 @@
 						   <option label="企业" value="2">企业</option>
 						</select>
 				  	</td>
+				  	<td width="10%" align="right">商品类目：</td>
+				  	 <td><input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 200px;" />
+				  	</td>
 				</tr>
 				<tr>
 					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
@@ -220,6 +223,12 @@
 						<td align="right"><font color="red">*</font>下架日期:</td>
 						<td  align="left"><input id="adddelistTime" name="adddelistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
+					</tr>
+					<tr>
+						<td align="right">不配送区域:</td>
+						<td align="left">
+							<input id="addUnSupportProvince" name="addUnSupportProvince" class="easyui-combobox" style="width: 50%;" />
+						</td>
 					</tr>
 					<tr>
 						<td width="20%" align="right">保质期(多少个月):</td>
@@ -359,15 +368,15 @@
 		</div>
 		<!-- 选择商品分类  -->
 		<div class="easyui-layout" id="editSelectCategoryList" data-options="fit:true,border:false">  
-			<div data-options="region:'west',split:false,title:'一级类目',collapsible:false" style="width:33%;">  
+			<div data-options="region:'west',split:true,title:'一级类目',collapsible:false" style="width:35%;">  
 				<div id="editWestAttrDataGrid" data-options="fit:true,border:false">
 				</div>
 		    </div>  
-		    <div data-options="region:'center',split:false,title:'二级类目',collapsible:false" style="width:34%;">  
+		    <div data-options="region:'center',split:true,title:'二级类目',collapsible:false" style="width:34%;">  
 		    	<div id="editCenterAttrDataGrid" data-options="fit:true,border:false">
 		    	</div> 
 		    </div>  
-		    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:33%;;">  
+		    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:31%;;">  
 		        <div id="editEastAttrDataGrid" data-options="fit:true,border:false">
 		        </div> 
 		    </div> 
@@ -406,13 +415,13 @@
 							type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 50%;" /><span id="editgoodsTitleL"></span></td>
 					</tr>
 					<tr>
-					<td width="20%" align="right"><font color="red">*</font>商品最小单元分类:</td>
+					<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
 					<td align="left"><select class="easyui-combobox" editable="false"
 							data-options="required:true" style="width: 100%" id="editgoodsSkuType"
 							name="editgoodsSkuType">
 								<option value="">请选择</option>
 								<option value="颜色">颜色</option>
-								<option value="型号">型号</option>
+								<option value="尺寸">尺寸</option>
 						</select></td>
 					</tr>
 					<tr>
@@ -424,6 +433,13 @@
 						<td align="right"><font color="red">*</font>下架日期:</td>
 						<td align="left"><input id="editdelistTime" name="editdelistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
+					</tr>
+					
+					<tr>
+						<td align="right">不配送区域:</td>
+						<td align="left">
+							<input id="editUnSupportProvince" class="easyui-combobox" style="width: 180px;"/>
+						</td>
 					</tr>
 					<tr>
 						<td align="right">生产日期:</td>

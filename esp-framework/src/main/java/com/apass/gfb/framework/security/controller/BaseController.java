@@ -18,12 +18,12 @@ public class BaseController {
     /**
      * 合并导出报表的列数
      */
-    public static final int COMBINE_COL        = 20;
+    public static final int COMBINE_COL = 23;
 
     /**
      * 日志工具
      */
-    protected Logger  logger             = LoggerFactory.getLogger(BaseController.class);
+    protected Logger  logger = LoggerFactory.getLogger(BaseController.class);
 
     /**
      * Get Long Value

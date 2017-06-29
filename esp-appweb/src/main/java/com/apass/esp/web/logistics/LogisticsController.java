@@ -63,5 +63,4 @@ public class LogisticsController {
         }
         return Response.successResponse(returnMap);
     }
-
 }

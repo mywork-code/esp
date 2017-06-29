@@ -187,4 +187,25 @@
 			id=#{value}
 	]]>
 	</select>
+
+	<select id="queryOneAddressByAddressId" parameterType="java.lang.Long" resultType="AddressInfoEntity">
+		<![CDATA[
+		SELECT
+			id id,
+			id addressId,
+			user_id userId,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			is_default isDefault
+		FROM
+			t_esp_address_info
+		WHERE
+			id=#{addressId}
+	]]>
+	</select>
 </mapper>

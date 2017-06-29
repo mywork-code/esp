@@ -96,6 +96,24 @@ $(function(){
                 	align : 'center',
                 },
                 {
+                	title : '退货数量',
+                	field : 'returnGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '换货数量',
+                	field : 'swapGoodNum',
+                	width : 160,
+                	align : 'center',
+                },
+                {
+                	title : '退款金额',
+                	field : 'refundAmt',
+                	width : 160,
+                	align : 'center',
+                },
+                {
                 	title : '批复结果',
                 	field : 'isAgree',
                 	width : 70,
@@ -134,28 +152,24 @@ $(function(){
                 {
                     title : '商品名称',
                     field : 'goodsName',
-                    hidden: true,
                     width : 120,
                     align : 'center'
                 },
                 {
                     title : '商品型号',
                     field : 'goodsModel',
-                    hidden: true,
                     width : 80,
                     align : 'center'
                 },
                 {
                     title : '商品市场价格',
                     field : 'marketPrice',
-                    hidden: true,
                     width : 100,
                     align : 'center'
                 },
                 {
                     title : '商品成本价',
                     field : 'goodsCostPrice',
-                    hidden: true,
                     width : 70,
                     align : 'center'
                 },
@@ -163,14 +177,12 @@ $(function(){
                 {
                     title : '商品购买数量',
                     field : 'goodsNum',
-                    hidden: true,
                     width : 90,
                     align : 'center'
                 },
                 {
                     title : '商品当前库存数量',
                     field : 'stockCurrAmt',
-                    hidden: true,
                     width : 90,
                     align : 'center',
                 }
@@ -187,6 +199,7 @@ $(function(){
                 dataType : "json",
                 success : function (data)
                 {
+                	debugger;
 	                $.validateResponse (data, function ()
 	                {
 		                success (data);
@@ -252,7 +265,7 @@ $(function(){
 	
 	//导出
 	$(".export-btn").click(function(){
-		$.messager.confirm ('报表信息', '确定要导出吗？', function (r){
+		$.messager.confirm ("<font color='black'>报表信息</font>", '确定要导出吗？', function (r){
 			if(r){
 				var params = getParams();
 				exportStatement("statementListList","报表详情",params);

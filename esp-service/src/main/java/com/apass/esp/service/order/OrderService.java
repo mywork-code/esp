@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,9 @@ import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -103,7 +106,9 @@ public class OrderService {
 	private BillService billService;
 	@Autowired
 	private MerchantInforService merchantInforService;
-
+	@Autowired
+	private CashRefundMapper   cashRefundMapper;
+	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -159,10 +164,39 @@ public class OrderService {
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.querySubOrderDetailInfoByParam(map, page);
+			/**
+			 * add
+			 */
+			List<OrderSubInfoEntity> dataList = orderDetailInfoList.getDataList();
+			if(!CollectionUtils.isEmpty(dataList)){
+            	for (OrderSubInfoEntity order : dataList) {
+					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
+					}
+					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_N.getCode())){
+						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_N.getMessage());
+					}
+				}
+            }
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
 			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
+		}
+	}
+	
+	/**
+	 * 查询被二次拒绝的订单
+	 * @throws BusinessException 
+	 */
+	public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException{
+		try {
+			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+					.queryOrderInfoRejectAgain(page);
+			return orderDetailInfoList;
+		} catch (Exception e) {
+			LOGGER.error("查询被二次拒绝的订单===>", e);
+			throw new BusinessException("查询被二次拒绝的订单！", e);
 		}
 	}
 
@@ -211,16 +245,22 @@ public class OrderService {
 
 			logisticsService.subscribeSignleTracking(trackingNumber, carrierCode, orderId, "order");
 
+			/**
+			 * 首先判断一下订单的预发货的状态
+			 *  1.如果为Y，则不更新此字段  2.如果为空，要把值置成N
+			 */
+			OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
+			if(!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())){
+				entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
+				entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+				orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+			}
+			
 			orderSubInfoRepository.updateLogisticsInfoByOrderId(map);
 
 			// 更新订单状态为待收货 D03 : 代收货
 			map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
 
-			// 默认收货时间为15天
-			// String lastAcceptgoodsdate =
-			// DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),
-			// 15));
-			// map.put("lastAcceptgoodsdate", lastAcceptgoodsdate);
 			orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
 
 		} catch (Exception e) {
@@ -388,7 +428,7 @@ public class OrderService {
 			orderInfo.setPayStatus(PaymentStatus.NOPAY.getCode());
 			Long orderGoodsNum = this.countGoodsNumGroupByMerchantCode(merchantCode, purchaseList);
 			orderInfo.setGoodsNum(orderGoodsNum);
-
+			orderInfo.setPreDelivery("N");
 			Integer successStatus = orderInfoRepository.insert(orderInfo);
 			if (successStatus < 1) {
 				LOG.info(requestId, "生成订单", "订单表数据插入失败");
@@ -478,6 +518,14 @@ public class OrderService {
 	 */
 	public void validateCorrectInfo(String requestId, BigDecimal totalPayment, Long addressId, Long userId,
 			List<PurchaseRequestDto> purchaseList, String sourceFlag) throws BusinessException {
+		//校验商品的价格是否已经更改
+		for (PurchaseRequestDto purchase : purchaseList) {
+            BigDecimal price = commonService.calculateGoodsPrice(purchase.getGoodsId() ,purchase.getGoodsStockId());
+            if(!(purchase.getPrice().compareTo(price)==0)){
+            	LOG.info(requestId, "id为"+purchase.getGoodsId()+"的商品价格发生改变，请重新购买！",purchase.getGoodsStockId().toString());
+    			throw new BusinessException("商品价格已变动，请重新下单");
+            }
+		}
 		// 校验商品订单总金额
 		BigDecimal countTotalPrice = BigDecimal.ZERO;
 		for (PurchaseRequestDto purchase : purchaseList) {
@@ -495,11 +543,18 @@ public class OrderService {
 			this.validateGoodsOffShelf(requestId, purchase.getGoodsId());
 
 		}
+		// 校验地址
+		AddressInfoEntity address = addressInfoDao.select(addressId);
+		if (null == address || address.getUserId().longValue() != userId.longValue()) {
+			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
+			throw new BusinessException("该用户地址信息不存在");
+		}
+		
 		// 校验商品库存
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-
+			
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
@@ -519,12 +574,6 @@ public class OrderService {
 					throw new BusinessException("订单商品购物车中不存在");
 				}
 			}
-		}
-		// 校验地址
-		AddressInfoEntity address = addressInfoDao.select(addressId);
-		if (null == address || address.getUserId().longValue() != userId.longValue()) {
-			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
-			throw new BusinessException("该用户地址信息不存在");
 		}
 	}
 
@@ -666,6 +715,7 @@ public class OrderService {
 	 * @param orderId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void addGoodsStock(String requestId, String orderId) throws BusinessException {
 		Integer errorNum = errorNo;
 		List<OrderDetailInfoEntity> orderDetailList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
@@ -682,6 +732,11 @@ public class OrderService {
 					// 加库存
 					Long stockCurrAmt = goodsStock.getStockCurrAmt() + orderDetail.getGoodsNum();
 					goodsStock.setStockCurrAmt(stockCurrAmt);
+					if(stockCurrAmt > goodsStock.getStockTotalAmt()){
+						LOGGER.error("当前库存不能大于总库存");
+						throw new BusinessException("当前库存不能大于总库存",BusinessErrorCode.GOODSSTOCK_UPDATE_ERROR);
+					}
+					
 					Integer successFlag = goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
 					if (successFlag == 0) {
 						if (errorNum <= 0) {
@@ -696,13 +751,15 @@ public class OrderService {
 					} else if (successFlag == 1) {
 						break;
 					}
+					
 				}
+				
 			} catch (Exception e) {
 				LOG.info(requestId, "加库存操作失败", orderId);
 				LOGGER.error("加库存操作失败", e);
 				continue;
 			}
-
+			goodsStcokLogDao.deleteByOrderId(orderId);
 		}
 	}
 
@@ -771,6 +828,7 @@ public class OrderService {
 	 * @param orderId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void deleteOrderInfo(String requestId, Long userId, String orderId) throws BusinessException {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
@@ -814,7 +872,68 @@ public class OrderService {
 		}
 
 		for (OrderInfoEntity order : orderList) {
-			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, userIdVal, order);
+			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, order);
+
+			returnOrders.add(orderDetailInfoDto);
+
+			try {
+				if (OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
+					PayRequestDto req = new PayRequestDto();
+					req.setOrderId(order.getOrderId());
+					String payRealStatus ="";
+					Response response = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
+					if(!response.statusResult()){
+						payRealStatus = "1";
+					}else{
+						payRealStatus = (String)response.getData();
+					}
+					// 0:支付成功 非零:支付失败
+					if (!YesNo.NO.getCode().equals(payRealStatus)) {
+						GoodsStockLogEntity sotckLog = goodsStcokLogDao.loadByOrderId(order.getOrderId());
+						if (null == sotckLog) {
+							continue;
+						}
+						LOG.info(requestId, "库存记录日志", sotckLog.getOrderId());
+						// 存在回滚
+						addGoodsStock(requestId, order.getOrderId());
+					}
+				}
+
+			} catch (Exception e) {
+				LOGGER.error("订单查询未支付订单商品库存回滚异常", e);
+				LOG.info(requestId, "订单查询未支付订单商品库存回滚异常:orderId:" + order.getOrderId(), "");
+			}
+		}
+		return returnOrders;
+	}
+	
+	/**
+	 * 根据订单的Id和状态查询，订单的详情
+	 * @param requestId
+	 * @param orderId
+	 * @param orderStatus
+	 * @return
+	 * @throws BusinessException
+	 */
+	public List<OrderDetailInfoDto> getOrderDetailInfoByOrderId(String requestId, String orderId, String orderStatus)
+			throws BusinessException {
+
+		OrderInfoEntity orderInfo = new OrderInfoEntity();
+		orderInfo.setOrderId(orderId);
+		if (StringUtils.isNotBlank(orderStatus)) {
+			orderInfo.setStatus(orderStatus);
+		}
+
+		List<OrderDetailInfoDto> returnOrders = new ArrayList<OrderDetailInfoDto>();
+		// 查询客户的所有订单
+		List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
+
+		if (null == orderList || orderList.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		for (OrderInfoEntity order : orderList) {
+			OrderDetailInfoDto orderDetailInfoDto = getOrderDetailInfoDto(requestId, order);
 
 			returnOrders.add(orderDetailInfoDto);
 
@@ -858,7 +977,7 @@ public class OrderService {
 	    
         OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
 	    
-        OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity.getUserId(),entity);
+        OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId,entity);
 		List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
 		for (GoodsInfoInOrderDto goodsInfoInOrderDto :goodsInfoInOrderDtoList) {
 			goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
@@ -866,7 +985,7 @@ public class OrderService {
 		return dto;
 	}
 
-    private OrderDetailInfoDto getOrderDetailInfoDto(String requestId, Long userIdVal,
+    private OrderDetailInfoDto getOrderDetailInfoDto(String requestId,
                                                      OrderInfoEntity order) throws BusinessException {
         // 通过子订单号查询订单详情
         OrderDetailInfoEntity orderDetailParam = new OrderDetailInfoEntity();
@@ -925,15 +1044,15 @@ public class OrderService {
         orderDetailInfoDto.setDelayAcceptGoodFlag(order.getExtendAcceptGoodsNum() + "");
         // }
         //账单分期后改为删除按钮
-        boolean billOverDueFlag =  billService.queryStatement(userIdVal,order.getOrderId());
+        boolean billOverDueFlag =  billService.queryStatement(order.getUserId(),order.getOrderId());
         if(billOverDueFlag){
-        	LOGGER.info("userId={},账单分期已逾期",userIdVal);
+        	LOGGER.info("userId={},账单分期已逾期",order.getUserId());
         	orderDetailInfoDto.setRefundAllowedFlag("0");
         } else {
         	try {
         		orderDetailInfoDto.setRefundAllowedFlag("1");
         		// 交易完成的订单是否允许售后操作校验
-        		afterSaleService.orderRufundValidate(requestId, userIdVal, order.getOrderId(), order);
+        		afterSaleService.orderRufundValidate(requestId, order.getUserId(), order.getOrderId(), order);
         	} catch (Exception e) {
         		LOG.info(requestId, "这个捕获只是为了过滤掉订单售后校验逻辑抛出的异常", "");
         		LOGGER.error(e.getMessage(), e);
@@ -941,6 +1060,7 @@ public class OrderService {
         		orderDetailInfoDto.setRefundAllowedFlag("0");
         	}
         }
+        orderDetailInfoDto.setPreDelivery(order.getPreDelivery());
         return orderDetailInfoDto;
     }
 
@@ -995,6 +1115,7 @@ public class OrderService {
 	 * @param userId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void modifyShippingAddress(String requestId, Long addressId, String orderId, Long userId)
 			throws BusinessException {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
@@ -1210,6 +1331,7 @@ public class OrderService {
 	 * @param addressInfoDto
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void modifyOrderAddress(String requestId, String orderId, String userId, AddressInfoEntity addressInfoDto)
 			throws BusinessException {
 
@@ -1230,14 +1352,30 @@ public class OrderService {
 			LOG.info(requestId, "待付款订单不能修改省、市、区地址", "");
 			throw new BusinessException("待付款订单不能修改省、市、区地址",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
-
-		Long addressId = addressService.addAddressInfo(addressInfoDto);
+		Long addressId = orderInfo.getAddressId();
+		AddressInfoEntity addressInfoEntity = addressService.queryOneAddressByAddressId(orderInfo.getAddressId());
+		if (addressInfoEntity == null) {
+			addressId = addressService.addAddressInfo(addressInfoDto);
+		}else{
+			addressInfoEntity.setUserId(addressInfoDto.getUserId());
+			addressInfoEntity.setTelephone(addressInfoDto.getTelephone());
+			addressInfoEntity.setAddressId(addressId);
+			addressInfoEntity.setAddress(addressInfoDto.getAddress());
+			addressInfoEntity.setCity(addressInfoDto.getCity());
+			addressInfoEntity.setProvince(addressInfoDto.getProvince());
+			addressInfoEntity.setDistrict(addressInfoDto.getDistrict());
+			addressInfoEntity.setName(addressInfoDto.getName());
+			addressService.updateAddressInfo(addressInfoEntity);
+		}
 
 		OrderInfoEntity orderInfoDto = new OrderInfoEntity();
 		orderInfoDto.setId(orderInfo.getId());
 		orderInfoDto.setAddress(addressInfoDto.getAddress());
 		orderInfoDto.setName(addressInfoDto.getName());
 		orderInfoDto.setTelephone(addressInfoDto.getTelephone());
+		orderInfoDto.setCity(addressInfoDto.getCity());
+		orderInfoDto.setProvince(addressInfoDto.getProvince());
+		orderInfoDto.setDistrict(addressInfoDto.getDistrict());
 		orderInfoDto.setAddressId(addressId);
 		orderInfoRepository.update(orderInfoDto);
 
@@ -1317,4 +1455,44 @@ public class OrderService {
 		List<OrderInfoEntity> list = orderInfoRepository.selectByMainOrderId(mainOrderId);
 		return list;
 	}
+	
+	/**
+     * 查询待发货订单的信息，切订单的预发货状态为null
+     */
+    public List<OrderInfoEntity> toBeDeliver() {
+    	return orderInfoRepository.toBeDeliver();
+    }
+    
+    /**
+     * 更新订单的状态为D03待收货，更新predelivery为Y
+     * @param entity
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
+    	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+	public void updateOrderStatus(OrderInfoEntity entity){
+		orderInfoRepository.updateOrderStatus(entity);
+	}
+
+    /**
+     * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderStatusAndPreDelivery(){
+    	//获取数据库中所有的待发货状态的订单
+    	List<OrderInfoEntity> orderList = toBeDeliver();
+    	if(!CollectionUtils.isEmpty(orderList)){
+    		for (OrderInfoEntity order : orderList) {
+    			//修改订单状态和是否发货
+    			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+    			order.setStatus(OrderStatus.ORDER_SEND.getCode());
+    			order.setUpdateDate(new Date());
+    			updateOrderStatusAndPreDelivery(order);
+			}
+    	}
+    }
+    
 }

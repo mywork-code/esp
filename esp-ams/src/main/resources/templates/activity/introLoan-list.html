@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ESP管理平台</title> <#include "../common/component/library.html"/>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/activity/introLoan-list.js"></script>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+	<style type="text/css">
+		#statistics{font:12px arial,helvetica,sans-serif;border:1px solid #8DB2E3}
+		#statistics td{font:100% arial,helvetica,sans-serif;padding:5px;    border-color: #BFD3E6;
+    border-width: 0 1px 1px 0;    border-style: dotted;}
+	</style>
+</head>
+<body>
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+<div id="tb">
+    <div class="search">
+        <table style="min-width: 1040px;">
+            <tr>
+                <td width="4%" align="right" nowrap="nowrap">放款状态：</td>
+                <td width="8%" style="float: left;" align="left">
+                    <select  id="loanStatus" class="easyui-combobox" style="width:145px">
+                    	<option value="">请选择</option>   
+					    <option value="2">待放款</option>   
+					    <option value="0">已放款</option>   
+					    <option value="1">放款失败</option>   
+                    </select>
+                </td>
+                <td width="4%" align="right" nowrap="nowrap">姓名：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="realName" class="easyui-textbox">
+                </td>
+                <td width="4%" align="center" nowrap="nowrap">手机号：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="mobile" class="easyui-textbox">
+                </td>
+            </tr>
+            <tr>
+                <td width="4%" align="right" nowrap="nowrap">放款时间：</td>
+                <td width="310px" style="float: left;" align="left">
+                    <input id="releaseDate1" class="easyui-datetimebox"  style="width:145px"/>~
+                    <input id="releaseDate2" class="easyui-datetimebox"  style="width:145px"/>
+                </td>
+                <td width="4%" align="right" nowrap="nowrap">申请提现时间：</td>
+                <td width="310px" style="float: left;" align="left">
+                    <input id="applyDate1" class="easyui-datetimebox"  style="width:145px"/>~
+                    <input id="applyDate2" class="easyui-datetimebox"  style="width:145px"/>
+                </td>
+                <td colspan="2">
+                    <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td width="30%" colspan="6" align="right">
+                	<form id='ExcelFileForm' enctype='multipart/form-data' method="post" target="_self" style="    display: inline-block;">
+	            		<input type="file" id = "Excelfile" name="file">
+                	</form>
+                    <a href="javascript:void(0);" class="easyui-linkbutton"  id="import">导&nbsp;入&nbsp;</a> &nbsp;&nbsp;
+                    <a href="javascript:void(0);" class="easyui-linkbutton"  id="export">导&nbsp;出&nbsp;</a> &nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="list"></div>
+
+
+</body>
+</html>

@@ -90,6 +90,19 @@ public class GoodsBasicInfoEntity {
 	/**商品三级分类*/
 	private Long categoryId3;
 	
+	/**
+     * 不支持配送区域
+     */
+    private String unSupportProvince;
+
+    public String getUnSupportProvince() {
+		return unSupportProvince;
+	}
+
+	public void setUnSupportProvince(String unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
+	
     public Long getGoodsStockId() {
         return goodsStockId;
     }

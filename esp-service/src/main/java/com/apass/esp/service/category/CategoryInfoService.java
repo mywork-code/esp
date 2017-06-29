@@ -3,7 +3,6 @@ package com.apass.esp.service.category;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,20 +10,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
-import com.apass.esp.domain.enums.CategoryPicture;
 import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
-import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.GsonUtils;
 /**
  * 商品分类操作service
  */
@@ -124,6 +122,27 @@ public class CategoryInfoService {
 		return v;
 	}
 	/**
+	 * entity 转  CategoryDo
+	 * @param cate
+	 * @return
+	 */
+	public List<CategoryDo> categroyToCathgroyDo(List<Category> cateList){
+		List<CategoryDo> list=new ArrayList<CategoryDo>();
+		for(int i=0;i<cateList.size();i++){
+			CategoryDo cto=new CategoryDo();
+			cto.setId(cateList.get(i).getId().toString());
+			cto.setText(cateList.get(i).getCategoryName());
+			cto.setDisplay(cateList.get(i).getSortOrder().intValue());
+			cto.setLevel(cateList.get(i).getLevel().toString());
+			if(null!=cateList.get(i).getParentId()){
+				cto.setParentId(cateList.get(i).getParentId().toString());
+				cto.setState("open");
+			}
+			list.add(cto);
+		}
+		return list;
+	}
+	/**
 	 * 根据类目名称，查询改类目名称是否存在
 	 * @param categoryName
 	 * @return
@@ -158,7 +177,47 @@ public class CategoryInfoService {
 		}
 		return voList;
 	}
-	
+	/**
+	 * 后台查询商品类目列表
+	 * @return
+	 */
+	public List<CategoryDo> goodsCategoryList(){
+		List<Category> goodsCaListFirst=categoryMapper.goodsCategoryList(Long.parseLong("1"));
+		List<CategoryDo>  categoryDoListFirst=categroyToCathgroyDo(goodsCaListFirst);
+		for(int i=0;i<categoryDoListFirst.size();i++){
+			List<CategoryDo> categoryDoListSecond=goodsCategoryListByParentId(Long.parseLong(categoryDoListFirst.get(i).getId()));
+			if(categoryDoListSecond.size()!=0){
+				for(int j=0;j<categoryDoListSecond.size();j++){
+					List<CategoryDo> categoryDoListThird=goodsCategoryListByParentId(Long.parseLong(categoryDoListSecond.get(j).getId()));
+					if(categoryDoListThird.size()!=0){
+						categoryDoListSecond.get(j).setChildren(IdAndLevelTo(categoryDoListThird));
+						categoryDoListSecond.get(j).setState("closed");
+					}
+				}
+				categoryDoListFirst.get(i).setChildren(IdAndLevelTo(categoryDoListSecond));
+				categoryDoListFirst.get(i).setState("closed");
+			}
+			
+		}
+
+		return IdAndLevelTo(categoryDoListFirst);
+	}
+	public List<CategoryDo> goodsCategoryListByParentId(Long parentId){
+			List<Category> goodsCaList=categoryMapper.goodsCategoryListById(parentId);
+			List<CategoryDo>  categoryDoList=new ArrayList<CategoryDo>();
+			if(goodsCaList.size()!=0){
+				categoryDoList=categroyToCathgroyDo(goodsCaList);
+			}
+		return categoryDoList;
+	}
+	//将level和id合并成一个字符串
+	public List<CategoryDo> IdAndLevelTo(List<CategoryDo> list){
+		for(int i=0;i<list.size();i++){
+			String newId=list.get(i).getLevel()+"_"+list.get(i).getId();
+			list.get(i).setId(newId);
+		}
+	return list;
+}
 	/**
 	 * 根据类别id获取类别
 	 * @param id
@@ -203,6 +262,7 @@ public class CategoryInfoService {
 	 * @param id
 	 * @throws BusinessException 
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void deleteCategoryById(long id) throws BusinessException{
 		
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
@@ -234,6 +294,7 @@ public class CategoryInfoService {
 	 * 逻辑删除
 	 * @param id
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void deleCategory(long id){
 		Category cate = categoryMapper.selectByPrimaryKey(id);
 		cate.setStatus(CategoryStatus.CATEGORY_STATUS2.getCode());
@@ -244,6 +305,7 @@ public class CategoryInfoService {
 	 * 根据类别id修改类别排序
 	 * @param id
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void updateCateSortOrder(long id , long sortOrder,String userName){
 		Category cate = new Category();
 		cate.setId(id);
@@ -260,6 +322,7 @@ public class CategoryInfoService {
 	 * @return
 	 * @throws BusinessException 
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public Category addCategory(CategoryDto categoryDto) throws BusinessException{
 	        Integer sortOrder = categoryMapper.getMaxSortOrder(categoryDto.getLevel());
 	        if(sortOrder == null){
@@ -289,6 +352,7 @@ public class CategoryInfoService {
 	/**
 	 * 批量更新类目状态由不可见改为可见
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void updateStatus1To0(){
 		categoryMapper.updateStatus1To0();
 	}

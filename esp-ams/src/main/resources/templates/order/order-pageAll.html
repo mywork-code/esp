@@ -57,6 +57,9 @@
 							<option label="交易完成" value="D04">交易完成</option>
 							<option label="售后服务中" value="D05">售后服务中</option>
 							<option label="订单失效" value="D07">订单失效</option>
+							<!-- 业务要求  新添加  退款处理中  交易关闭 -->
+							<option label="退款处理中" value="D09">退款处理中</option>
+							<option label="交易关闭" value="D10">交易关闭</option>
 					</select></td>
 					<td width="5%" align="right" nowrap="nowrap">售后状态：</td>
 					<td width="5%"><select style="width:120px" id="refundType" name="refundType"
@@ -64,7 +67,8 @@
 							<option value="" selected="selected">请选择</option>
 							<option label="退货" value="0">退货</option>
 							<option label="换货" value="1">换货</option>
-					</select></td>
+<!-- 						<option label="退款" value="1">退款</option>-->
+ 					</select></td>
 				</tr>
 			</table>
 
@@ -328,5 +332,14 @@
 	</div>
 
 
+	<!-- 退款详情 -->
+	<div id="refundDetails" class="easyui-window" title="退款详情"
+		style="width: 600px; height: 280px;overflow:hidden"
+		data-options="modal:true,maximizable:true,minimizable:false,resizable:true,collapsible:false">
+		
+		<div id="refundDetail" style="width:100%;"data-options="resizable:true"></div>
+	</div>
+	
+	
 </body>
 </html>

@@ -226,18 +226,43 @@ $(function() {
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").combobox('getValue');
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+        	goodsCategoryCombo="";
+        }
+        params['goodsCategoryCombo']=goodsCategoryCombo;
+        
         $('#tablelist').datagrid('load', params);
     });
     // 查询列表
     $("#flush").click(function() {
-    	debugger;
     	$("#goodsNames").textbox('setValue','');
     	$("#goodsTypes").combobox('setValue','');
     	$("#merchantName").textbox('setValue','');
     	$("#merchantType").combobox('setValue','');
+    	$("#goodsCategoryCombo").combotree('setValue','');
+    	$("#goodsCategoryCombo").combotree('setValue', '请选择');
     	var params = {};
     	$('#tablelist').datagrid('load', params);
     });
+    
+    $("#goodsCategoryCombo").combotree({
+//        required : true,  
+        loader : function(param, success, error) {
+            $.ajax({
+                url : ctx + "/application/goods/management/categoryList",
+                data : param,
+                type : "get",
+                dataType : "json",
+                success : function(resp) {
+                    $.validateResponse(resp, function() {
+                        success(resp.data);
+                    });
+                }
+            })
+        }
+    });
+    $("#goodsCategoryCombo").combotree('setValue', '请选择');
 //==============================================-----新增商品 始----====================================================//-----------------------
     /** 
      * 新增商品
@@ -248,7 +273,7 @@ $(function() {
     	//关闭添加商品窗口--监听方法
 //	   ('#addGoodsInfo').window({
 //		   onBeforeClose:function(){ 
-//		     alert(111);
+//		     alert(111); 
 //		   }
 //		});
     	addGoodId = '';
@@ -525,9 +550,41 @@ $(function() {
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','none');
     	
+    	$("#addUnSupportProvince").combobox({
+    		url:ctx + "/application/nation/queryNations", //后台获取所有省  
+            method:'get',  
+            panelHeight:200,//设置为固定高度，combobox出现竖直滚动条  
+            valueField:'code',  
+            textField:'name',  
+            multiple:true,  
+            formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
+                var opts = $(this).combobox('options');  
+                return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  ;
+            },  
+            onSelect: function (row) { //选中一个选项时调用  
+                var opts = $(this).combobox('options');  
+                //获取选中的值的values  
+                var val = $(this).combobox('getValues');
+                if(!val[0]){
+                	val.shift();
+                }
+                $("#addUnSupportProvince").combobox('setValues',val);  
+                
+               //设置选中值所对应的复选框为选中状态  
+                var el = opts.finder.getEl(this, row[opts.valueField]);  
+                el.find('input.combobox-checkbox')._propAttr('checked', true);  
+            },  
+            onUnselect: function (row) {//不选中一个选项时调用  
+                var opts = $(this).combobox('options');  
+                //获取选中的值的values  
+                //$("#addUnSupportProvince").val($(this).combobox('getValues'));  
+                
+                var el = opts.finder.getEl(this, row[opts.valueField]);  
+                el.find('input.combobox-checkbox')._propAttr('checked', false);  
+            }  
+    	});
     	//填写商品信息初始化
-    	
-    	if(!ifSaveGoodsFlag){
+    	if(!ifSaveGoodsFlag){//如果是第一次进入商品信息页面清空页面内容
     		initGoodsInfo();
     	}
     	
@@ -805,6 +862,7 @@ $(function() {
     	$("#editWriteGoodsInfo").css('display','block');
     	$("#editUpLoadGoodsPicture").css('display','none');
     	$("#editGoodsStock").css('display','none');
+    	
 	});
 	
 	 //编辑 -- 保存商品信息
@@ -816,8 +874,9 @@ $(function() {
 		listTime=$("#editlistTime").datetimebox('getValue'),
 		proDate=$("#editproDate").datebox('getValue'),
 		delistTime=$("#editdelistTime").datetimebox('getValue'),
+		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
 		keepDate=$("#editkeepDate").textbox('getValue'),sordNo=$("#editsordNo").numberbox('getValue'),
-		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").textbox('getValue');
+		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
 		//字段效验
 		if (null == goodsModel || ("") == goodsModel) {
 			$.messager.alert("提示", "商品型号不能为空！", "info");
@@ -827,8 +886,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if (goodsName.length>15) {
-			$.messager.alert("提示", "商品名称最多15字！", "info");
+		if (goodsName.length>18) {
+			$.messager.alert("提示", "商品名称最多18字！", "info");
 			return;
 		}
 	
@@ -836,8 +895,8 @@ $(function() {
 			$.messager.alert("提示", "商品大标题不能为空！", "info");
 			return;
 		}
-		if (goodsTitle.length>22) {
-			$.messager.alert("提示", "商品小标题最多22字！", "info");
+		if (goodsTitle.length>25) {
+			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
 		if (null == goodsSkuType || ("") == goodsSkuType) {
@@ -868,6 +927,9 @@ $(function() {
 			$.messager.alert("提示", "商品排序不能为空！", "info");
 			return;
 		}
+		if (null == unSupportProvince || ("") == unSupportProvince) {
+			unSupportProvince = '';
+		}
 //		if (null == keepDate || ("") == keepDate) {
 //			$.messager.alert("提示", "商品保质期不能为空！", "info");
 //			return;
@@ -896,11 +958,11 @@ $(function() {
 		formObj.append("<input type='text' name='supNo' value='"+supNo+"'/>");
 		formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
 		formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
+		formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 		formObj.css('display','none').appendTo("body");
 		formObj.form("submit",{ 
 			url : ctx + '/application/goods/management/edit',
 			success : function(response) {
-				debugger;
 				var data = JSON.parse(response);
 				ifLogout(data);
 				if(data.status == '1'){
@@ -1627,10 +1689,9 @@ $(function() {
 	};
 	//预览商品
 	$.previewProduct = function(id,goodsId) {
-		debugger;
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
-        var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id;
+        var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
         if (parentTabs.tabs('exists', subtitle)) {
             parentTabs.tabs('select', subtitle);
             return;
@@ -1698,6 +1759,7 @@ String.prototype.splice = function(idx, rem, str) {
 
 //保存添加的商品信息
 function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
+	
 	var merchantCode=$("#addmerchantCode").textbox('getValue'), 
 	goodsModel=$("#addgoodsModel").textbox('getValue'),
 	goodsName=$("#addgoodsName").textbox('getValue'), 
@@ -1707,8 +1769,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	delistTime=$("#adddelistTime").datetimebox('getValue'),
 	keepDate=$("#addkeepDate").textbox('getValue'),
 	supNo=$("#addsupNo").textbox('getValue'),
-	goodsSkuType=$("#addgoodsSkuType").textbox('getValue');
+	goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
+	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
 	sordNo=$("#sordNo").textbox('getValue');
+	debugger;
 	//字段效验
 	if (null == categoryId1 || ("") == categoryId1) {
 		$.messager.alert("提示", "商品一级类目不能为空！", "info");
@@ -1786,7 +1850,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "排序不能为空！", "info");
 		return;
 	}
-	
+	debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
 	formObj.append("<input type='text' name='categoryId1' value='"+categoryId1+"'/>");
@@ -1798,6 +1862,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
  	formObj.append("<input type='text' name='goodsTitle' value='"+goodsTitle+"'/>");
  	formObj.append("<input type='text' name='listTime'  dataType='Require' value='"+listTime+"'/>");
 	formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
+	formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 	formObj.append("<input type='text' name='goodId' value='"+addGoodId+"'/>");
 	if(proDate!=""){
 		formObj.append("<input type='text' name='proDate' value='"+proDate+" 00:00:00'/>");
@@ -1976,29 +2041,89 @@ function initGoodsInfo(){
 	$("#addkeepDate").numberbox('setValue','');  
 	$("#addsupNo").textbox('clear');
 	$('#addgoodsSkuType').combobox('setValue','');
+	$('#addUnSupportProvince').combobox('setValue','');
 	$("#sordNo").numberbox('setValue','');  
 }
 
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
-	$("#editid").val(row.id);
-	$("#editLogogoodsId").val(row.id);
+	debugger;
+	var unSupportPrivinces = row.unSupportProvince;//省份汉字
+	var unSupportPrivincesCodes;//省份编码 
+	$.ajax({
+		url : ctx + '/application/nation/queryCode',
+		data : {unSupportPrivinces:unSupportPrivinces},
+		type : "get",
+		dataType : "text",
+		success : function(resp) {
+			unSupportPrivincesCodes = resp;
+			$("#editUnSupportProvince").combobox({
+				url:ctx + "/application/nation/queryNations", //后台获取所有省  
+				method:'get',  
+				panelHeight:200,//设置为固定高度，combobox出现竖直滚动条  
+				valueField:'code',  
+				textField:'name',  
+				multiple:true,  
+				formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
+					var opts = $(this).combobox('options');  
+					return '<input type="checkbox" class="combobox-checkbox">' + row[opts.textField]  ;
+				},
+				onLoadSuccess: function () {  //下拉框数据加载成功调用  
+					var opts = $(this).combobox('options');  
+					console.log(opts);
+					var target = this;  
+					var values = $(target).combobox('getValues');//获取选中的值的values
+					if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
+						$.each(unSupportPrivincesCodes.split(","),function(index,value){
+							console.log(index+"..."+value);
+							var el = opts.finder.getEl(target, value);  
+							el.find('input.combobox-checkbox')._propAttr('checked', true);   
+						});
+					}
+				},  
+				onSelect: function (row) { //选中一个选项时调用  
+					var opts = $(this).combobox('options');  
+					//获取选中的值的values  
+					var val = $(this).combobox('getValues');
+					if(!val[0]){
+						val.shift();
+					}
+					$("#editUnSupportProvince").combobox('setValues',val);  
+					
+					//设置选中值所对应的复选框为选中状态  
+					var el = opts.finder.getEl(this, row[opts.valueField]);  
+					el.find('input.combobox-checkbox')._propAttr('checked', true);  
+				}, 
+				onUnselect: function (row) {//不选中一个选项时调用  
+					var opts = $(this).combobox('options');  
+					var el = opts.finder.getEl(this, row[opts.valueField]);  
+					el.find('input.combobox-checkbox')._propAttr('checked', false);  
+				}  
+			});
+			$("#editid").val(row.id);
+			$("#editLogogoodsId").val(row.id);
+			
+			$("#editmerchantCode").textbox('setValue',row.merchantCode);
+			$("#editgoodsModel").textbox('setValue',row.goodsModel);
+			$("#editgoodsName").textbox('setValue',row.goodsName);
+			$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
+			$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
+			if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
+				$("#editUnSupportProvince").combobox('setValues',unSupportPrivincesCodes.split(","));
+			}
+			$("#editlistTime").datetimebox('setValue',new Date(row.listTime).Format("yyyy-MM-dd hh:mm:ss")); 
+			$("#editdelistTime").datetimebox('setValue',new Date(row.delistTime).Format("yyyy-MM-dd hh:mm:ss"));
+			if(null==row.proDate || ""==row.proDate){
+				$("#editproDate").datebox('setValue',"");
+			}else{
+				$("#editproDate").datebox('setValue',new Date(row.proDate).Format("yyyy-MM-dd")); 
+			}
+			$("#editsupNo").textbox('setValue',row.supNo);
+			$("#editkeepDate").textbox('setValue',row.keepDate);
+			$("#editsordNo").numberbox('setValue',row.sordNo);
+		}
+	});
 	
-	$("#editmerchantCode").textbox('setValue',row.merchantCode);
-	$("#editgoodsModel").textbox('setValue',row.goodsModel);
-	$("#editgoodsName").textbox('setValue',row.goodsName);
-	$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
-	$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
-	$("#editlistTime").datetimebox('setValue',new Date(row.listTime).Format("yyyy-MM-dd hh:mm:ss")); 
-	$("#editdelistTime").datetimebox('setValue',new Date(row.delistTime).Format("yyyy-MM-dd hh:mm:ss"));
-	if(null==row.proDate || ""==row.proDate){
-		$("#editproDate").datebox('setValue',"");
-	}else{
-		$("#editproDate").datebox('setValue',new Date(row.proDate).Format("yyyy-MM-dd")); 
-	}
-	$("#editsupNo").textbox('setValue',row.supNo);
-	$("#editkeepDate").textbox('setValue',row.keepDate);
-	$("#editsordNo").numberbox('setValue',row.sordNo);
 }
 
 /** 回显图片* */

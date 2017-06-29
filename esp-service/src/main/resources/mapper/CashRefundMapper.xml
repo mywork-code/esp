@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.CashRefundMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.CashRefund" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="amt" property="amt" jdbcType="DECIMAL" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="status_d" property="statusD" jdbcType="TIMESTAMP" />
+    <result column="reject_num" property="rejectNum" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="main_order_id" property="mainOrderId" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="agree_d" property="agreeD" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, create_date, update_date, amt, order_id, status, status_d, reject_num, user_id, 
+    main_order_id, reason, memo, agree_d
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_cash_refund
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_cash_refund
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_cash_refund (create_date, update_date, amt, 
+      order_id, status, status_d, 
+      reject_num, user_id, main_order_id, 
+      reason, memo, agree_d
+      )
+    values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{amt,jdbcType=DECIMAL}, 
+      #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, 
+      #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}, 
+      #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{agreeD,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_cash_refund
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="statusD != null" >
+        status_d,
+      </if>
+      <if test="rejectNum != null" >
+        reject_num,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="mainOrderId != null" >
+        main_order_id,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="agreeD != null" >
+        agree_d,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="statusD != null" >
+        #{statusD,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rejectNum != null" >
+        #{rejectNum,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="mainOrderId != null" >
+        #{mainOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="agreeD != null" >
+        #{agreeD,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.CashRefund" >
+    update t_esp_cash_refund
+    <set >
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="statusD != null" >
+        status_d = #{statusD,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rejectNum != null" >
+        reject_num = #{rejectNum,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="mainOrderId != null" >
+        main_order_id = #{mainOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="agreeD != null" >
+        agree_d = #{agreeD,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.CashRefund" >
+    update t_esp_cash_refund
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      amt = #{amt,jdbcType=DECIMAL},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      status_d = #{statusD,jdbcType=TIMESTAMP},
+      reject_num = #{rejectNum,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=BIGINT},
+      main_order_id = #{mainOrderId,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      agree_d = #{agreeD,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

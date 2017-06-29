@@ -7,7 +7,11 @@ public class AwardDetail {
     private Long id;
 
     private Long userId;
-
+    
+    private String realName;
+    
+    private String mobile;
+    
     private Long activityId;
 
     private BigDecimal taxAmount;
@@ -26,6 +30,8 @@ public class AwardDetail {
 
     private String cardBank;
 
+    private Date releaseDate;
+    
     private Date createDate;
 
     private Date updateDate;
@@ -133,4 +139,29 @@ public class AwardDetail {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Date getReleaseDate() {
+		return releaseDate;
+	}
+
+	public void setReleaseDate(Date releaseDate) {
+		this.releaseDate = releaseDate;
+	}
+    
 }

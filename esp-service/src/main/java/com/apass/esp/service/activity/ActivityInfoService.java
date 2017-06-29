@@ -21,7 +21,6 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
  *
  */
 @Service
-@Transactional
 public class ActivityInfoService {
 
     private static final Logger   LOGGER = LoggerFactory.getLogger(ActivityInfoService.class);
@@ -85,17 +84,20 @@ public class ActivityInfoService {
      * 插入
      * @param List
      */
+    @Transactional(rollbackFor = { Exception.class})
     public void insertList(List<ActivityInfoEntity> list) {
 
         for (ActivityInfoEntity activityInfoEntity : list) {
             activityInfoRepository.insert(activityInfoEntity);
         }
     }
-
+    
+    @Transactional(rollbackFor = { Exception.class})
     public void delete(Long id) {
         activityInfoRepository.delete(id);
     }
-
+    
+    @Transactional(rollbackFor = { Exception.class})
     public void update(ActivityInfoEntity domain) {
         activityInfoRepository.update(domain);
     }
@@ -105,6 +107,7 @@ public class ActivityInfoService {
      * 
      * @param str
      */
+    @Transactional(rollbackFor = { Exception.class})
     public void updateAll(String[] str, String status) {
         for (int i = 0; i < str.length; i++) {
             ActivityInfoEntity entity = new ActivityInfoEntity();
@@ -132,8 +135,17 @@ public class ActivityInfoService {
 	 * 
 	 * @return
 	 */
+    @Transactional(rollbackFor = { Exception.class})
 	public void updateActivityStatusByEndtime() {
 		activityInfoRepository.updateActivityStatusByEndtime();
 	}
 
+	/**
+	 * 根据id，查询对应的活动的信息
+	 * @param id
+	 * @return
+	 */
+	public ActivityInfoEntity selectActivityById(Long id){
+		return activityInfoRepository.selectActivityById(id);
+	}
 }

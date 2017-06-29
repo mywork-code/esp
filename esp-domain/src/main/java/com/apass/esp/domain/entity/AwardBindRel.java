@@ -9,11 +9,31 @@ public class AwardBindRel {
 
     private Long userId;
 
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private String mobile;
 
     private Byte isNew;
 
     private Long inviteUserId;
+
+    private String inviteName;
+
+    public String getInviteName() {
+        return inviteName;
+    }
+
+    public void setInviteName(String inviteName) {
+        this.inviteName = inviteName;
+    }
 
     private String inviteMobile;
 

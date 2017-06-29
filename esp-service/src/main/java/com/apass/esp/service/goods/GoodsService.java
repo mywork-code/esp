@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -61,6 +62,13 @@ public class GoodsService {
      */
     public List<GoodsBasicInfoEntity> loadRecommendGoods() {
         return goodsDao.loadRecommendGoods();
+    }
+    /**
+     * app 加载精品推荐商品列表
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
+        return goodsDao.loadRecommendGoodsList();
     }
 
     /**
@@ -260,6 +268,7 @@ public class GoodsService {
      * 
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
     	if(entity.getGoodId() != null ){
     		entity.setId(entity.getGoodId());
@@ -298,6 +307,7 @@ public class GoodsService {
      * 
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateService(GoodsInfoEntity entity) {
         return goodsDao.updateGoods(entity);
     }
@@ -348,6 +358,10 @@ public class GoodsService {
         List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
         if (!list.isEmpty()) {
             for (GoodsStockInfoEntity goodsStockInfoEntity : list) {
+                if(goodsStockInfoEntity.getMarketPrice() == null
+                    || goodsStockInfoEntity.getMarketPrice().compareTo(BigDecimal.ZERO) == 0) {
+                    continue;
+                }
                 BigDecimal flagtRate = goodsStockInfoEntity.getGoodsCostPrice()
                     .divide(goodsStockInfoEntity.getMarketPrice(), 6, RoundingMode.HALF_UP);
                 if (flagtRate.compareTo(merchantSettleRate) != -1) {
@@ -363,10 +377,12 @@ public class GoodsService {
 	 * 
 	 * @return
 	 */
+    @Transactional(rollbackFor = Exception.class)
 	public void updateGoodsStatusByDelisttime() {
 		goodsDao.updateGoodsStatusByDelisttime();
 	}
-
+    
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateServiceEdit(GoodsInfoEntity dto, String goodsContent) {
         if (StringUtils.isBlank(goodsContent)) {
             dto.setGoogsDetail(null);

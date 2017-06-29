@@ -27,7 +27,11 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     public List<GoodsBasicInfoEntity> loadRecommendGoods() {
         return this.getSqlSession().selectList("loadRecommendGoods");
     }
-
+    
+    public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
+        return this.getSqlSession().selectList("loadRecommendGoodsList");
+    }
+    
     public Pagination<GoodsInfoEntity> loadGoodsByPages(Page page, GoodsInfoEntity param) {
         return this.page(param, page);
     }

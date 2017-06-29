@@ -63,7 +63,9 @@ public enum BusinessErrorCode implements ErrorCode {
   AFTERSALES_PROCESSDATA_ERROR(3022, "售后流程状态错误"),
   ORDER_PAY_FAILED(3023,"订单支付失败!请重新支付"),
   ORDERSTATUS_NOTALLOW_CANCEL(3024,"对不起!当前订单状态不能取消该订单"),
-
+  ORDER_REQUEST_REFUND(3025,"退款申请失败！"),
+  ORDER_GET_REQUEST_REFUND(3026,"查询退款申请信息失败！"),
+  UPDATE_ORDER_FAILED(3027,"修改订单状态失败"),
 
   //4xxx 与依懒服务相互调用问题
   LOGISTICS_TRACKING_ERROR(4001, "物流跟踪失败"),
@@ -119,7 +121,8 @@ public enum BusinessErrorCode implements ErrorCode {
   BIND_CONTRACT_EXCEPTION(6032,"绑卡合同接口调用异常"),
   INIT_CONTRACT_EXCEPTION(6033,"初始化合同接口调用异常"),
   ADDRESS_NOT_EXIST(6034,"地址信息不存在"),
-  BUY_NOWINIT_FAILED(6035,"立即购买初始化失败!请稍后再试")
+  BUY_NOWINIT_FAILED(6035,"立即购买初始化失败!请稍后再试"),
+  CUSTOMER_UPDATE_AMOUNT_EXCEPTION(6036,"退还用户的额度服务异常"),
   ;
   private Integer code;
   private String msg;

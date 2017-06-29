@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.AwardDetailMapper">
+	
+	<sql id="query_where_clause">
+		<where>
+		    type = 1	
+			<if test="loanStatus !=null and loanStatus != ''"> and status = #{loanStatus}</if>
+	    	<if test="realName !=null and realName != ''">and real_name = #{realName}</if>
+	    	<if test="mobile !=null and mobile != ''">and mobile = #{mobile}</if>
+	    	<if test="arrivedDate1 !=null and arrivedDate1 != ''"><![CDATA[ and release_date > #{arrivedDate1}]]></if>
+	    	<if test="arrivedDate2 !=null and arrivedDate2 != ''"><![CDATA[and release_date <= #{arrivedDate2}]]></if>
+	    	<if test="applyDate1 !=null and applyDate1 != ''"><![CDATA[and create_date > #{applyDate1}]]></if>
+	    	<if test="applyDate2 !=null and applyDate2 != ''"><![CDATA[and create_date <= #{applyDate2}]]></if>
+	    	<if test="userId !=null and userId != ''">and user_Id = #{userId}</if>
+		</where>
+	</sql>
+	
+	
 	<select id="queryAwardDetail" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
       from t_esp_award_detail
@@ -22,5 +38,20 @@
     
     <select id="querySumAmountGroupByTypeStatus" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
        select type,status,sum(amount) as amount from t_esp_award_detail where  status='0' and create_date >= #{startCreateDate} group by type,status
+    </select>
+    
+    <select id="queryAwardIntroList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+	    from t_esp_award_detail	
+	    <include refid="query_where_clause" />
+        ORDER BY CREATE_DATE DESC
+	    <if test="startRecordIndex != null">
+           <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+    </select>
+    
+    <select id="countAwardIntroList" resultType="Integer">
+    	select count(1) from t_esp_award_detail
+    	<include refid="query_where_clause" />
     </select>
 </mapper>

@@ -1,6 +1,5 @@
 package com.apass.esp.service.logistics;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mockito.asm.tree.TryCatchBlockNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,16 +36,17 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.TrackingmoreStatus;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.LogisticsFirstDataVo;
 import com.apass.esp.repository.common.ConstantRepository;
 import com.apass.esp.repository.logistics.LogisticsHttpClient;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 @Service
@@ -66,6 +68,8 @@ public class LogisticsService {
     private OrderRefundRepository     orderRefundRepository;
     @Autowired
     private AfterSaleService          afterSaleService;
+    @Autowired
+    private ImageService imageService;
 
     /**
      * 快递鸟查询物流详情
@@ -237,7 +241,7 @@ public class LogisticsService {
         }
         if (null != orderDetailList && orderDetailList.size() > 0) {
             
-            resultMap.put("logoInfo", EncodeUtils.base64Encode(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
+            resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
         }
         resultMap.put("goodsNum", goodsNum);
         ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
@@ -247,6 +251,8 @@ public class LogisticsService {
         return resultMap;
     }
 
+    
+    
     /**
      * Trackingmore 获取物流轨迹
      * 
@@ -377,5 +383,45 @@ public class LogisticsService {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
         return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
     }
-
+    
+    /**
+     * 根据订单的Id,查询订单的快递信息，只查询最新的一条
+     * @param orderId
+     * @return
+     * @throws BusinessException
+     */
+    public LogisticsFirstDataVo loadFristLogisticInfo(String orderId) throws BusinessException{
+    	
+    	LogisticsFirstDataVo logisticInfo = new LogisticsFirstDataVo();
+    	//根据订单的id获取订单详情
+    	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
+    	if(orderInfo != null){
+    		//如果物流商编号和物流单号任何一项为空，则返回空
+    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsName()) ){
+    			return null;
+    		}
+    		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
+    		
+			List<Trace> traceList =  null;
+					
+			try{
+				//如果查询物流出现异常的时候，就默认轨迹不存在
+				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+			}catch(Exception e){
+				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+			}
+					
+        	if(!CollectionUtils.isEmpty(traceList)){
+        		logisticInfo.setTrace(traceList.get(0));
+        	}
+        	
+        	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
+                    orderInfo.getLogisticsName());
+        	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
+    	}
+    	
+    	return logisticInfo;
+    }
+    
+    
 }

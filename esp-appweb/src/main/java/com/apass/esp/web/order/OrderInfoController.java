@@ -1,41 +1,52 @@
 package com.apass.esp.web.order;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
-import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
-import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
-import com.apass.esp.domain.entity.address.AddressInfoEntity;
-import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
-import com.apass.esp.domain.enums.CityEnums;
-import com.apass.esp.domain.enums.DeviceType;
-import com.apass.esp.domain.enums.LogStashKey;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardBindRelService;
-import com.apass.esp.service.activity.AwardDetailService;
-import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.order.OrderService;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.aftersale.CashRefundDto;
+import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
+import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
+import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
+import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CityEnums;
+import com.apass.esp.domain.enums.DeviceType;
+import com.apass.esp.domain.enums.LogStashKey;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.vo.LogisticsFirstDataVo;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.logistics.LogisticsService;
+import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.refund.CashRefundService;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.logstash.LOG;
+import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -58,8 +69,12 @@ public class OrderInfoController {
 
     @Autowired
     private ImageService imageService;
-
-    //private static final String NO_USER = "";
+    
+    @Autowired
+    private CashRefundService cashRefundService;
+    
+    @Autowired
+    private LogisticsService    logisticsService;
 
     private static final String ORDER_ID = "orderId";
 
@@ -488,9 +503,31 @@ public class OrderInfoController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
-
+            
             List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
                     statusStr);
+            //如果订单的状态为待发货，应该把订单的状态为退款中的并到待发货中 
+            if(StringUtils.isNotBlank(statusStr)&& StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())){
+            	 List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,
+                        OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+            	 if(!CollectionUtils.isEmpty(dtoList)){
+            	     if(CollectionUtils.isEmpty(resultList)){
+                         resultList=dtoList;
+                     }else{
+                         resultList.addAll(dtoList);
+                     }
+
+            	 }
+            }
+            
+            for (OrderDetailInfoDto order : resultList) {
+            	if(StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())){
+            		order.setStatus(OrderStatus.ORDER_PAYED.getCode());
+            	}
+			}
+            
+            
+            
             //添加新的图片地址
             for (OrderDetailInfoDto list : resultList) {
                 String province = list.getProvince();
@@ -518,7 +555,99 @@ public class OrderInfoController {
             return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
     }
+    /**
+     * 查询订单的详情  （前天由之前的列表页面带入参数，改为向后台发出请求）
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/v1/queryOrderByOrderId")
+    public Response queryOrderInfoById(Map<String, Object> paramMap) {
 
+        String logStashSign = LogStashKey.ORDER_QUERY.getValue();
+        String methodDesc = LogStashKey.ORDER_QUERY.getName();
+
+        String orderId = CommonUtils.getValue(paramMap, "orderId");
+        String statusStr = CommonUtils.getValue(paramMap, "statusStr");
+
+        String requestId = logStashSign + "_" + orderId;
+        paramMap.remove("x-auth-token"); // 输出日志前删除会话token
+        LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
+
+        if (StringUtils.isBlank(orderId)) {
+            LOGGER.error("对不起!订单号不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        }
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        try {
+        	//根据订单的id和状态，获取订单的详细信息
+            List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfoByOrderId(requestId, orderId,
+                    statusStr);
+            //添加新的图片地址
+            for (OrderDetailInfoDto list : resultList) {
+                String province = list.getProvince();
+                if (StringUtils.isNotEmpty(province)) {
+                    if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+                        list.setProvince("");
+                    }
+                }
+                List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
+                for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
+                    if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
+                        l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
+                    }
+                }
+            }
+            
+            /**
+             * 如果订单的状态是D02(待发货的状态)
+             */
+            OrderDetailInfoDto dto = null;
+            
+            if(!CollectionUtils.isEmpty(resultList)){
+            	dto = resultList.get(0);
+            	dto.setOrderCreateDateStr(DateFormatUtil.dateToString(dto.getOrderCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM));
+            	//如果订单为退款中的状态，则把订单的状态手动改成待发货状态
+            	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode()) ){
+            		dto.setStatus(OrderStatus.ORDER_PAYED.getCode());
+            	}
+            	
+            	if(StringUtils.equals(dto.getStatus(), OrderStatus.ORDER_PAYED.getCode())){
+                	//根据订单的Id,查询退款的申请记录，如果无记录，则页面显示退款按钮
+                	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
+                	if(cash != null){
+                		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
+                			//if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+                                if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
+                    				//更新数据库字段  恢复额度
+                				cashRefundService.agreeRefund(cash.getUserId()+"", orderId);
+                    		}
+                		}
+                	}
+                	//根据返回结果，判断页面要显示的按钮
+                	dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
+                }
+            }
+            
+            //根据订单获取物流的信息
+            LogisticsFirstDataVo logisticInfo = logisticsService.loadFristLogisticInfo(orderId);
+            
+            resultMap.put("orderInfoList", dto);
+            resultMap.put("postage", "0");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517
+            resultMap.put("logisticInfo", logisticInfo);
+            return Response.success("操作成功", resultMap);
+        } catch (BusinessException e) {
+            LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+        } catch (Exception e) {
+            LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
+            LOGGER.error("订单查询失败,请稍后再试或联系客服!");
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+        }
+    }
+    
     /**
      * 查询订单收货地址及签收信息
      *
@@ -545,7 +674,6 @@ public class OrderInfoController {
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
         try {
-
             orderService.loadInfoByOrderId(requestId, resultMap, orderId);
             return Response.success("查询地址信息成功", resultMap);
         } catch (BusinessException e) {
@@ -659,9 +787,12 @@ public class OrderInfoController {
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
 
-        if (StringUtils.isAnyBlank(name, telephone, province, city, district, address)) {
+        if (StringUtils.isAnyBlank(name, telephone, city, district, address)) {
             LOGGER.error("地址信息字段不能为空!");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        }
+        if(StringUtils.isEmpty(province)){
+            province=city;
         }
 
         try {
@@ -726,5 +857,5 @@ public class OrderInfoController {
         }
         return Response.success("支付失败加入购物车成功");
     }
-
+   
 }

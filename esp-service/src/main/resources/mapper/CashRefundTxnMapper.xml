@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.CashRefundTxnMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.CashRefundTxn" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="type_code" property="typeCode" jdbcType="VARCHAR" />
+    <result column="cash_refund_id" property="cashRefundId" jdbcType="BIGINT" />
+    <result column="ori_txn_code" property="oriTxnCode" jdbcType="VARCHAR" />
+    <result column="txn_code" property="txnCode" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="resp_msg" property="respMsg" jdbcType="VARCHAR" />
+    <result column="amt" property="amt" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, create_date, update_date, type_code, cash_refund_id, ori_txn_code, txn_code, 
+    status, resp_msg, amt
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_refund_txn
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_refund_txn
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.CashRefundTxn" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_refund_txn (create_date, update_date, type_code, 
+      cash_refund_id, ori_txn_code, txn_code, 
+      status, resp_msg, amt
+      )
+    values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{typeCode,jdbcType=VARCHAR}, 
+      #{cashRefundId,jdbcType=BIGINT}, #{oriTxnCode,jdbcType=VARCHAR}, #{txnCode,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{respMsg,jdbcType=VARCHAR}, #{amt,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefundTxn" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_refund_txn
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="typeCode != null" >
+        type_code,
+      </if>
+      <if test="cashRefundId != null" >
+        cash_refund_id,
+      </if>
+      <if test="oriTxnCode != null" >
+        ori_txn_code,
+      </if>
+      <if test="txnCode != null" >
+        txn_code,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="respMsg != null" >
+        resp_msg,
+      </if>
+      <if test="amt != null" >
+        amt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="typeCode != null" >
+        #{typeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cashRefundId != null" >
+        #{cashRefundId,jdbcType=BIGINT},
+      </if>
+      <if test="oriTxnCode != null" >
+        #{oriTxnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="txnCode != null" >
+        #{txnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="respMsg != null" >
+        #{respMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        #{amt,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.CashRefundTxn" >
+    update t_esp_refund_txn
+    <set >
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="typeCode != null" >
+        type_code = #{typeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cashRefundId != null" >
+        cash_refund_id = #{cashRefundId,jdbcType=BIGINT},
+      </if>
+      <if test="oriTxnCode != null" >
+        ori_txn_code = #{oriTxnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="txnCode != null" >
+        txn_code = #{txnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="respMsg != null" >
+        resp_msg = #{respMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.CashRefundTxn" >
+    update t_esp_refund_txn
+    set create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      type_code = #{typeCode,jdbcType=VARCHAR},
+      cash_refund_id = #{cashRefundId,jdbcType=BIGINT},
+      ori_txn_code = #{oriTxnCode,jdbcType=VARCHAR},
+      txn_code = #{txnCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      resp_msg = #{respMsg,jdbcType=VARCHAR},
+      amt = #{amt,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,18 +1,24 @@
 package com.apass.esp.service.payment;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -25,6 +31,8 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.refund.CashRefundService;
+import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -46,6 +54,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +67,7 @@ import java.util.Map;
  * @version $Id: PaymentService.java, v 0.1 2017年3月3日 下午3:04:04 liuming Exp $
  */
 @Service
+@Transactional(rollbackFor=Exception.class)
 public class PaymentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
@@ -79,6 +89,10 @@ public class PaymentService {
 	private GoodsStockLogRepository goodsStockLogDao;
 	@Autowired
 	private OrderDetailInfoRepository orderDetailDao;
+	@Autowired
+	private CashRefundService cashRefundService;
+	@Autowired
+	public CashRefundTxnService cashRefundTxnService;
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 
@@ -785,7 +799,7 @@ public class PaymentService {
                 orderService.addGoodsStock(requestId, orderId);
             }
         }
-        goodsStockLogDao.deleteByOrderId(req.getOrderId());
+        
     }
     
     /**
@@ -815,5 +829,84 @@ public class PaymentService {
     private   BigDecimal scale2Decimal(BigDecimal origin){
 			return origin.setScale(2,BigDecimal.ROUND_HALF_UP);
 		}
+	/**
+	 * BSS退款成功 || 失败更新数据库
+	 * @param oriTxnCode 
+	 * @param requestId：日志标记
+	 * @param orderId：订单id
+	 * @param status:订单状态
+	 * @throws BusinessException 
+	 */
+	public void refundCallback(String requestId, String orderId, String status, String oriTxnCode) throws BusinessException {
+		CashRefund cashRefund = new CashRefund();
+		cashRefund.setOrderId(orderId);
+		cashRefund.setUpdateDate(new Date());
+		CashRefundDto cashDto = getCashRefundByOrderId(orderId);
+		
+		//退货成功：修改退货信息表和订单表的状态
+		if(YesNo.isYes(status)){
+			//修改退款信息表状态为退款成功
+			cashRefund.setId(cashDto.getId());
+			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
+			cashRefund.setStatusD(new Date());
+			cashRefundService.updateRefundCashStatusByOrderid(cashRefund);
+			
+			//修改退款流水表状态
+			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),cashDto.getId());
+			
+			//修改订单状态为交易关闭
+			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
+	        orderInfoEntity.setOrderId(orderId);
+	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+        	orderService.updateOrderStatus(orderInfoEntity);
+		}else{
+			//退货失败：修改退款流水表状态
+			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());
+		}
+	}
+	
+	/**
+	 * 根据orderId修改退款流水表
+	 * @param orderId
+	 * @param oriTxnCode 
+	 * @param cashRefundId 
+	 * @return
+	 * @throws BusinessException
+	 */
+	private void updateCashRefundTxnByOrderId(String oriTxnCode,String refundTxnStatus, Long cashRefundId)
+			throws BusinessException {
+		List<CashRefundTxn> cashRefundTxns = cashRefundTxnService.queryCashRefundTxnByCashRefundId(cashRefundId);
+		LOGGER.info("退款流水表数据：{}",GsonUtils.toJson(cashRefundTxns));
+		
+		if(cashRefundTxns == null){
+			LOGGER.error("退款流水表数据有误，退款详情id{}",cashRefundId);
+			throw new BusinessException("退款流水表数据有误");
+		}else{
+			for (CashRefundTxn cashReTxn : cashRefundTxns) {
+				if(TxnTypeCode.SF_CODE.getCode().equals(cashReTxn.getTypeCode()) 
+						|| TxnTypeCode.KQEZF_CODE.getCode().equals(cashReTxn.getTypeCode())){
+					cashReTxn.setOriTxnCode(oriTxnCode);
+					cashReTxn.setStatus(refundTxnStatus);
+					cashReTxn.setUpdateDate(new Date());
+					cashRefundTxnService.updateStatusByCashRefundId(cashReTxn);
+				}
+			}
+		}
+	}
+	/**
+	 * 根据orderId查询退款详情
+	 * @param orderId
+	 * @return
+	 * @throws BusinessException
+	 */
+	private CashRefundDto getCashRefundByOrderId(String orderId)
+			throws BusinessException {
+		CashRefundDto caDto = cashRefundService.getCashRefundByOrderId(orderId);
+		if(caDto == null){
+			LOGGER.error("退款详情表数据有误：{}",orderId);
+			throw new BusinessException("退款详情表数据有误");
+		}
+		return caDto;
+	}
 
 }

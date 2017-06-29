@@ -24,7 +24,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
-@Transactional(rollbackFor = { Exception.class })
 public class OrderRefundService {
     private static final Logger   LOGGER = LoggerFactory.getLogger(OrderRefundService.class);
     @Autowired
@@ -65,6 +64,7 @@ public class OrderRefundService {
      * @param orderId,refundId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void agreeRefundApplyByOrderId(Map<String, String> map) throws BusinessException {
         try {
             // 修改售后表
@@ -86,6 +86,7 @@ public class OrderRefundService {
      * @param orderId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void rejectRequestByOrderId(Map<String, String> map) throws BusinessException {
         try {
             //修改售后状态为RS06
@@ -120,6 +121,7 @@ public class OrderRefundService {
      * @param orderId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void confirmReceiptByOrderId(Map<String, String> map) throws BusinessException {
         try {
             map.put("status", RefundStatus.REFUND_STATUS03.getCode());
@@ -157,6 +159,7 @@ public class OrderRefundService {
      * @param orderId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void sendGoodsAgain(Map<String, String> map) throws BusinessException {
         try {
             
@@ -193,6 +196,7 @@ public class OrderRefundService {
      * @param orderId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void confirmRefundByOrderId(Map<String, String> map) throws BusinessException {
         try {
             //修改售后状态为售后完成
@@ -224,6 +228,7 @@ public class OrderRefundService {
     /**
      * 售后完成的订单,1天后订单状态改为交易完成
      */
+    @Transactional(rollbackFor = Exception.class)
     public void handleReturningOrders() {
         
         Date date = new Date();
@@ -280,6 +285,7 @@ public class OrderRefundService {
     /**
      * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateReturningOrderStatus(){
       /**
        * 首先查看订单的状态  此时状态应为D05,并且此时的售后服务表中的状态status应该为RS06 ,售后服务进程表中的nodename应该为RS06</br>

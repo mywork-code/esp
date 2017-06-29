@@ -76,6 +76,7 @@ public class AwardActivityInfoService {
      * 
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public AwardActivityInfo addActivity(AwardActivityInfoDto dto) {
         AwardActivityInfo entity = new AwardActivityInfo();
         entity.setActivityName(AwardActivity.ActivityName.INTRO.getValue());

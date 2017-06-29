@@ -27,8 +27,9 @@ public enum LogStashKey {
     ORDER_LOADADDR("查询订单收货地址","orderLoadAddr"),
     ORDER_QUERY_DETAIL("查询订单详情[根据订单号查询订单明细]","orderQueryDetail"),
     ORDER_NOPAY_MODIFYADDRESS("待付款订单收货地址修改","orderNopayModifyaddress"),
-    
-    
+    ORDER_REQUEST_REFUND("退款申请","orderRequestRefund"),
+    ORDER_GET_REQUEST_REFUND("获取退款申请信息","orderGetRequestRefund"),
+
     
     
     /***支付相关***/
@@ -38,7 +39,7 @@ public enum LogStashKey {
     PAY_QUERY_STATUS("支付状态查询","payDefary"),
     PAY_LEAVE_ROLLSTOCK("确认离开支付页未支付尝试回滚库存","leavePayRollStock"),
     PAY_CALLBACK("付款成功Bss回调","payCallBack"),
-    
+    REFUND_CALLBACK("退货成功bss回调","refundCallBack"),
     
     /***物流相关***/
     LOGISTICS_SHOW("查看物流","logisticShow"),

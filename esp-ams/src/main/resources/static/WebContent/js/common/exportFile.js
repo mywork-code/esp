@@ -62,3 +62,4 @@ function exportFile (id, fileName, params)
 	my_input4.click ();
 	form.remove();
 }
+

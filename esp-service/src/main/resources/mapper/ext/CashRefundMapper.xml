@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.CashRefundMapper" >
+    <select id="getCashRefundByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List" />
+        from t_esp_cash_refund where order_id = #{orderId,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="queryCashRefundByStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select <include refid="Base_Column_List" />
+        from t_esp_cash_refund where status = #{status,jdbcType=INTEGER}
+    </select>
+    
+   <update id="updateByOrderIdSelective" parameterType="com.apass.esp.domain.entity.CashRefund" >
+    update t_esp_cash_refund
+    <set >
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="amt != null" >
+        amt = #{amt,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="statusD != null" >
+        status_d = #{statusD,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rejectNum != null" >
+        reject_num = #{rejectNum,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="mainOrderId != null" >
+        main_order_id = #{mainOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="agreeD != null" >
+        agree_d = #{agreeD,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+</mapper>

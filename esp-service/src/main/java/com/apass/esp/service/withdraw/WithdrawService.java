@@ -33,7 +33,6 @@ import java.util.Map;
  * @version $Id: WithdrawService.java, v 0.1 2017年6月8日 上午9:29:43 xiaohai Exp $
  */
 @Service
-@Transactional
 public class WithdrawService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WithdrawService.class);
@@ -164,6 +163,8 @@ public class WithdrawService {
         awardDetail.setCardNo(cardNo);
         awardDetail.setCreateDate(new Date());
         awardDetail.setUpdateDate(new Date());
+        awardDetail.setMobile((String)resultBind.get("mobile"));
+        awardDetail.setRealName((String)resultBind.get("realName"));
         
         //获取扣税金额
         BigDecimal taxAmount = getTaxAmount(userId,amount);
@@ -174,6 +175,7 @@ public class WithdrawService {
             result.put("cardBank", cardBank);
             result.put("amount", BigDecimal.valueOf(Long.valueOf(amount)).subtract(taxAmount));
             result.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
+            result.put("customerId", resultBind.get("customerId"));
             LOGGER.info("提现成功，返回数据：{}",result);
          }else{
              LOGGER.info("提现失败，返回数据：{}",result);
