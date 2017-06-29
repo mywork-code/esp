@@ -277,7 +277,7 @@ public class CashRefundService {
                 txnAmt = txnInfoEntityList.get(0).getTxnAmt();
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
                 cashRefundTxn.setAmt(txnAmt);
-                cashRefundTxn.setTypeCode(TxnTypeCode.KQEZF_CODE.getCode());
+                cashRefundTxn.setTypeCode(txnInfoEntityList.get(0).getTxnType());
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
                 cashRefundTxn.setStatus("1");
                 cashRefundTxn.setCashRefundId(cashRefund.getId());
