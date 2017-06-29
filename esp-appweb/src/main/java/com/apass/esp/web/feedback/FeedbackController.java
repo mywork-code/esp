@@ -16,12 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.RegExpUtils;
 
 @Path("/v1/feedback")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -54,9 +52,9 @@ public class FeedbackController {
 //			return Response.fail("手机号不能为空！");
 //		}
 		
-		if(comments.length()>300){
-			LOGGER.error("输入是字数不得超过300字！");
-			return Response.fail("输入是字数不得超过300字！");
+		if(comments.length()>255){
+			LOGGER.error("反馈内容输入的字数过长！");
+			return Response.fail("反馈内容输入的字数过长！");
 		}
 //		String comments2=filterEmoji(comments,"");
 //		String comments3=  filter(comments2);

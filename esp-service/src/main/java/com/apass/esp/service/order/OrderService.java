@@ -715,6 +715,7 @@ public class OrderService {
 	 * @param orderId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void addGoodsStock(String requestId, String orderId) throws BusinessException {
 		Integer errorNum = errorNo;
 		List<OrderDetailInfoEntity> orderDetailList = orderDetailInfoRepository.queryOrderDetailInfo(orderId);
@@ -827,6 +828,7 @@ public class OrderService {
 	 * @param orderId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void deleteOrderInfo(String requestId, Long userId, String orderId) throws BusinessException {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
 		if (null == orderInfo) {
@@ -1113,6 +1115,7 @@ public class OrderService {
 	 * @param userId
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void modifyShippingAddress(String requestId, Long addressId, String orderId, Long userId)
 			throws BusinessException {
 		OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, userId);
@@ -1328,6 +1331,7 @@ public class OrderService {
 	 * @param addressInfoDto
 	 * @throws BusinessException
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void modifyOrderAddress(String requestId, String orderId, String userId, AddressInfoEntity addressInfoDto)
 			throws BusinessException {
 
@@ -1463,11 +1467,12 @@ public class OrderService {
      * 更新订单的状态为D03待收货，更新predelivery为Y
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrderStatusAndPreDelivery(OrderInfoEntity entity){
     	orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
 	public void updateOrderStatus(OrderInfoEntity entity){
 		orderInfoRepository.updateOrderStatus(entity);
 	}
@@ -1475,6 +1480,7 @@ public class OrderService {
     /**
      * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrderStatusAndPreDelivery(){
     	//获取数据库中所有的待发货状态的订单
     	List<OrderInfoEntity> orderList = toBeDeliver();
@@ -1483,6 +1489,7 @@ public class OrderService {
     			//修改订单状态和是否发货
     			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
     			order.setStatus(OrderStatus.ORDER_SEND.getCode());
+    			order.setUpdateDate(new Date());
     			updateOrderStatusAndPreDelivery(order);
 			}
     	}

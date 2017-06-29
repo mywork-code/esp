@@ -71,7 +71,7 @@ public class PaymentController {
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
-            List<String> orderList = new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -123,7 +123,7 @@ public class PaymentController {
             	LOGGER.error("请选择正确支付方式!");
             	return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
-            List<String> orderList =  new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList =  GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -179,7 +179,7 @@ public class PaymentController {
                     return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
                 }
             }
-            List<String> orderList = new ArrayList<String>();orderList.add(orderListStr);//GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
+            List<String> orderList = GsonUtils.convertList(orderListStr,  new TypeToken<List<String>>(){});
             if (orderList.isEmpty()) {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);

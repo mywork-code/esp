@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
@@ -42,6 +41,10 @@ public class OrderModifyStatusScheduleTask{
 	
 	@PostConstruct
 	public void init() {
+		threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(10);
+		threadPoolTaskScheduler.initialize();
+
 		List<Kvattr> attrs = kvattrService.getTypeName(new ShipmentTimeConfigAttr());
 		if(!CollectionUtils.isEmpty(attrs)){
 			for (Kvattr kvattr : attrs) {
@@ -59,13 +62,7 @@ public class OrderModifyStatusScheduleTask{
 	}
 
 
-	@Autowired
-    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-	
-	@Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler(){
-        return new ThreadPoolTaskScheduler();
-    }
+	private ThreadPoolTaskScheduler threadPoolTaskScheduler;
 	
 	private ScheduledFuture<?> future1;
 	private ScheduledFuture<?> future2;
@@ -74,6 +71,7 @@ public class OrderModifyStatusScheduleTask{
 	@Scheduled(cron = "59 59 23 * * ?")
 	public void updateOrderStatusAndPreDelivery(){
         try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron:{59 59 23 * * ?} execute:" + new Date());
         	orderService.updateOrderStatusAndPreDelivery();
         } catch (Exception e) {
         	logger.error("修改订单状态任务出错",e);
@@ -90,6 +88,7 @@ public class OrderModifyStatusScheduleTask{
 		future1 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron1:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
@@ -113,6 +112,7 @@ public class OrderModifyStatusScheduleTask{
 		future2 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron2:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
@@ -136,6 +136,7 @@ public class OrderModifyStatusScheduleTask{
 		future3 = threadPoolTaskScheduler.schedule(new Runnable() {
 			public void run() {
 				try {
+					logger.info("【OrderModifyStatusScheduleTask】--------> cron3:{"+cron+"} execute:" + new Date());
 					orderService.updateOrderStatusAndPreDelivery();
 				} catch (Exception e) {
 					logger.error("修改订单状态任务出错",e);
