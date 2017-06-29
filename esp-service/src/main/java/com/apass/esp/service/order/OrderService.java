@@ -1526,7 +1526,7 @@ public class OrderService {
 				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
 				message = "抱歉，暂不支持该地区发货！";
 				//订单的状态置为无效
-				updateProperties(orderId);
+				updateProperties(order.getId());
 			}
 		}
 		resultMap.put("unSupportProvince", bl);
@@ -1534,9 +1534,9 @@ public class OrderService {
 		return resultMap;
     }
     
-    public void updateProperties(String orderId){
+    public void updateProperties(Long id){
     	OrderInfoEntity entity = new OrderInfoEntity();
-        entity.setId(Long.parseLong(orderId));
+        entity.setId(id);
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
         orderInfoRepository.update(entity);
     }

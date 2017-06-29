@@ -606,7 +606,6 @@ public class PaymentService {
 			}
 
 		resultMap.put("page", page);
-		resultMap.putAll(validateMap);
 		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
 		return resultMap;
 	}
