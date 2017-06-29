@@ -1167,6 +1167,7 @@ public class OrderService {
 		for (OrderDetailInfoEntity orderDetail : orderDetails) {
 			// 判断下架
 			this.validateGoodsOffShelf(requestId, orderDetail.getGoodsId());
+			this.validateGoodsUnSupportProvince(requestId, orderId, orderDetail.getGoodsId());
 			// 订单信息
 			GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
 			GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
