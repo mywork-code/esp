@@ -451,6 +451,8 @@ public class PaymentService {
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 			}
 			
+			//验证不配送区域
+			orderService.validateUnSupportProvince(requestId, orderId);
 			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
 			orderInfoList.add(orderInfo);
