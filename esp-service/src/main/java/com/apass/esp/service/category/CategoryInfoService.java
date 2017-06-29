@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.Category;
@@ -261,6 +262,7 @@ public class CategoryInfoService {
 	 * @param id
 	 * @throws BusinessException 
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void deleteCategoryById(long id) throws BusinessException{
 		
 	   List<CategoryVo> cateList = getCategoryVoListByParentId(id);
@@ -292,6 +294,7 @@ public class CategoryInfoService {
 	 * 逻辑删除
 	 * @param id
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void deleCategory(long id){
 		Category cate = categoryMapper.selectByPrimaryKey(id);
 		cate.setStatus(CategoryStatus.CATEGORY_STATUS2.getCode());
@@ -302,6 +305,7 @@ public class CategoryInfoService {
 	 * 根据类别id修改类别排序
 	 * @param id
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void updateCateSortOrder(long id , long sortOrder,String userName){
 		Category cate = new Category();
 		cate.setId(id);
@@ -318,6 +322,7 @@ public class CategoryInfoService {
 	 * @return
 	 * @throws BusinessException 
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public Category addCategory(CategoryDto categoryDto) throws BusinessException{
 	        Integer sortOrder = categoryMapper.getMaxSortOrder(categoryDto.getLevel());
 	        if(sortOrder == null){
@@ -347,6 +352,7 @@ public class CategoryInfoService {
 	/**
 	 * 批量更新类目状态由不可见改为可见
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void updateStatus1To0(){
 		categoryMapper.updateStatus1To0();
 	}

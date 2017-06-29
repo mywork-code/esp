@@ -33,7 +33,6 @@ import java.util.Map;
  * @version $Id: WithdrawService.java, v 0.1 2017年6月8日 上午9:29:43 xiaohai Exp $
  */
 @Service
-@Transactional
 public class WithdrawService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WithdrawService.class);

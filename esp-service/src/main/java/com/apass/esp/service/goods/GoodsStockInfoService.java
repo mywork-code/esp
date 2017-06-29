@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -46,6 +47,7 @@ public class GoodsStockInfoService {
      * 新增
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer insert(GoodsStockInfoEntity entity) {
         return goodsStockDao.insert(entity);
     }
@@ -54,6 +56,7 @@ public class GoodsStockInfoService {
      * 修改
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public void update(GoodsStockInfoEntity entity) {
         goodsStockDao.update(entity);
     }
@@ -62,6 +65,7 @@ public class GoodsStockInfoService {
      * 新增
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateService(GoodsStockInfoEntity entity) {
         goodsStockDao.updateService(entity);
     }

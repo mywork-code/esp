@@ -14,7 +14,6 @@ import com.apass.esp.repository.common.SystemParamRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 
 @Service
-@Transactional
 public class SystemParamService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemParamService.class);
 	@Autowired
@@ -43,6 +42,7 @@ public class SystemParamService {
 	 * @param customerInfo
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public void updateSystemParamInfo(Map<String, String> map) throws BusinessException {
 		try {
 			systemParamRepository.updateSystemParamInfo(map);

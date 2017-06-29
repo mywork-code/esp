@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -267,6 +268,7 @@ public class GoodsService {
      * 
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
     	if(entity.getGoodId() != null ){
     		entity.setId(entity.getGoodId());
@@ -305,6 +307,7 @@ public class GoodsService {
      * 
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateService(GoodsInfoEntity entity) {
         return goodsDao.updateGoods(entity);
     }
@@ -374,10 +377,12 @@ public class GoodsService {
 	 * 
 	 * @return
 	 */
+    @Transactional(rollbackFor = Exception.class)
 	public void updateGoodsStatusByDelisttime() {
 		goodsDao.updateGoodsStatusByDelisttime();
 	}
-
+    
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateServiceEdit(GoodsInfoEntity dto, String goodsContent) {
         if (StringUtils.isBlank(goodsContent)) {
             dto.setGoogsDetail(null);

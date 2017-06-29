@@ -43,7 +43,6 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Component
-@Transactional
 public class AfterSaleService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AfterSaleService.class);
@@ -84,7 +83,7 @@ public class AfterSaleService {
     @Autowired
     private MerchantInforRepository memChantRepository;
 
-    @Transactional(rollbackFor = { Exception.class, RuntimeException.class })
+    @Transactional(rollbackFor = { Exception.class})
     public void returnGoods(String requestId, String userId, String orderId, BigDecimal returnPriceVal, String operate, String reason,
                             String content, List<GoodsStockIdNumDto> returngoodsList, int imageNum) throws BusinessException {
 
@@ -256,6 +255,7 @@ public class AfterSaleService {
      * @param nodeName
      * @throws BusinessException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void insertServiceProcessInfo(Long refundId, String nodeName) throws BusinessException {
         ServiceProcessEntity Dto = new ServiceProcessEntity();
         Dto.setRefundId(refundId);
@@ -274,6 +274,7 @@ public class AfterSaleService {
 	 * @param approvalComments
 	 * @throws BusinessException
 	 */
+    @Transactional(rollbackFor = Exception.class)
 	public void insertServiceProcessAllInfo(Long refundId, String nodeName, String approvalComments)
 			throws BusinessException {
 		ServiceProcessEntity Dto = new ServiceProcessEntity();
@@ -306,7 +307,7 @@ public class AfterSaleService {
      * @param logisticsNo
      * @throws BusinessException 
      */
-    @Transactional(rollbackFor = { Exception.class, RuntimeException.class })
+    @Transactional(rollbackFor = { Exception.class})
     public void submitLogisticsInfo(String requestId, String userId, String refundId, String orderId, String logisticsName, String logisticsNo) throws BusinessException {
 
         Long userIdVal = Long.valueOf(userId);
@@ -523,6 +524,7 @@ public class AfterSaleService {
      * @param returnImage
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = Exception.class)
     public void uploadReturnImage(String requestId, String userId, String orderId, String returnImage) throws BusinessException {
         String[] imagelist = returnImage.split(",");
         if(imagelist.length > 3){
@@ -552,6 +554,7 @@ public class AfterSaleService {
      * @param returnImage
      * @throws BusinessException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void uploadReturnImageAsend(String requestId, String userId, String orderId, List<String> returnImage) throws BusinessException {
         
         String dir = userId + "/" + orderId;
@@ -574,6 +577,7 @@ public class AfterSaleService {
      * 用户申请换货，商家重新发货的物流单号显示已签收，标记该售后信息为售后完成
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateRefundToCompleted(String rlogisticsId) throws BusinessException{
         List<RefundInfoEntity> refundList = null;
         Map<String, Object> map = new HashMap<String, Object>();

@@ -19,7 +19,6 @@ import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 
 @Service
-@Transactional
 public class AddressService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AddressService.class);
 	@Autowired
@@ -48,6 +47,7 @@ public class AddressService {
 	 * @param customerInfo
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public Long addAddressInfo(AddressInfoEntity addAddressInfo)
 			throws BusinessException {
 		try {
@@ -70,6 +70,7 @@ public class AddressService {
 	 * @param customerInfo
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public List<AddressInfoEntity> updateAddressInfo(AddressInfoEntity addInfo)
 			throws BusinessException {
 		String isDefault = addInfo.getIsDefault();//是否是默认地址
@@ -99,6 +100,7 @@ public class AddressService {
 	 * @param customerInfo
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public List<AddressInfoEntity> deleteAddressInfo(Long userId,String[] idStr)
 			throws BusinessException {
 		try {
