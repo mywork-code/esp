@@ -14,7 +14,6 @@ import com.apass.esp.repository.refund.ServiceProcessRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 
 @Service
-@Transactional
 public class ServiceProcessService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProcessService.class);
 	@Autowired
@@ -63,6 +62,7 @@ public class ServiceProcessService {
 	 * @param orderId
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public List<ServiceProcessEntity> updateProcessDetailByOrderId(Map<String, String> map)
 			throws BusinessException {
 		List<ServiceProcessEntity> serviceProcessList = null;

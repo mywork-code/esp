@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.repository.banner.BannerInfoRepository;
@@ -49,6 +50,7 @@ public class BannerInfoService {
      * 后台新增banner信息
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer addBannerInfor(BannerInfoEntity entity) {
         return bannerDao.addBannerInfor(entity);
     }
@@ -57,6 +59,7 @@ public class BannerInfoService {
      * 删除
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public Integer deleteBannerInfor(Long id) {
         return bannerDao.deleteBannerInfor(id);
     }
@@ -65,6 +68,7 @@ public class BannerInfoService {
      * 新增
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public void insert(BannerInfoEntity entity) {
         bannerDao.insert(entity);
     }
@@ -73,6 +77,7 @@ public class BannerInfoService {
      * 删除
      * @param entity
      */
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         bannerDao.delete(id);
     }

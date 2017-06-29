@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
@@ -38,6 +39,7 @@ public class MerchantInforService {
     }
 
     // 添加商户信息
+    @Transactional(rollbackFor = Exception.class)
     public Integer addMerchantInfor(MerchantInfoEntity mity) throws BusinessException {
         Integer result = merchantInforRepository.addMerchantInfor(mity);
         if (result == 1) {
@@ -49,11 +51,13 @@ public class MerchantInforService {
     }
 
     // 添加商户信息 临时表t_esp_merchant_temp_info
+    @Transactional(rollbackFor = Exception.class)
     public Integer addMerchantInforTemp(MerchantInfoEntity mity) throws BusinessException {
         return merchantInforRepository.addMerchantInforTemp(mity);
     }
 
     // 编辑商户信息 主表t_esp_merchant_info
+    @Transactional(rollbackFor = Exception.class)
     public Integer editMerchantInfor(MerchantInfoEntity mity) throws BusinessException {
         Integer result = merchantInforRepository.editMerchantInfor(mity);
         if (result == 1) {
@@ -66,11 +70,13 @@ public class MerchantInforService {
     }
 
     // 编辑商户信息 临时表t_esp_merchant_temp_info
+    @Transactional(rollbackFor = Exception.class)
     public Integer editMerchantInforTemp(MerchantInfoEntity mity) throws BusinessException {
         return merchantInforRepository.editMerchantInforTemp(mity);
     }
 
     // 编辑商户状态 主表t_esp_merchant_info
+    @Transactional(rollbackFor = Exception.class)
     public Integer editMerchantStatus(MerchantInfoEntity mity) throws BusinessException {
         Integer result = merchantInforRepository.editMerchantStatus(mity);
         if (result == 1) {
@@ -82,16 +88,19 @@ public class MerchantInforService {
     }
 
     // 编辑商户状态 临时表t_esp_merchant_temp_info
+    @Transactional(rollbackFor = Exception.class)
     public Integer editMerchantStatusTemp(MerchantInfoEntity mity) throws BusinessException {
         return merchantInforRepository.editMerchantStatusTemp(mity);
     }
 
     // 根据商户编码查询去查商户信息（主表）
+    @Transactional(rollbackFor = Exception.class)
     public MerchantInfoEntity queryByMerchantCode(String merchantCode) {
         return merchantInforRepository.queryByMerchantCode(merchantCode);
     }
 
     // 根据商户编码查询去查商户信息（临时表）
+    @Transactional(rollbackFor = Exception.class)
     public MerchantInfoEntity queryTempMByMerchantCode(String merchantCode) {
         return merchantInforRepository.queryTempMByMerchantCode(merchantCode);
     }
@@ -101,6 +110,7 @@ public class MerchantInforService {
     }
 
     // 把临时表数据同步到主表中 审核通过
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateMerchantService(MerchantInfoEntity mityNew) {
         Integer result = 0;
         // 根据id查询临时表数据
@@ -119,6 +129,7 @@ public class MerchantInforService {
     }
 
     // 根据id查询数据库内容 审核驳回
+    @Transactional(rollbackFor = Exception.class)
     public Integer updateMerchantTempService(MerchantInfoEntity mityNew) {
         // 根据id查询主表数据
         MerchantInfoEntity mityOld = this.queryByMerchantCode(mityNew.getMerchantCode());

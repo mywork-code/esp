@@ -38,7 +38,6 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 @Component
-@Transactional
 public class ShoppingCartService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartService.class);
@@ -66,6 +65,7 @@ public class ShoppingCartService {
      * @param count
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = Exception.class)
     public void addGoodsToCart(String requestId, String userId, String goodsStockId, String count) throws BusinessException {
         
         Long userIdVal = Long.valueOf(userId);
@@ -184,6 +184,7 @@ public class ShoppingCartService {
      * @throws BusinessException
      */
     @Deprecated
+    @Transactional(rollbackFor = Exception.class)
     public void setGoodsAmount(String userId, String goodsStockId, String count) throws BusinessException {
 
         Long userIdVal = Long.valueOf(userId);
@@ -235,6 +236,7 @@ public class ShoppingCartService {
      * @param goodsStockIdArr
      * @throws BusinessException
      */
+    @Transactional(rollbackFor = Exception.class)
     public void deleteGoodsInCart(String requestId, Long userId, String[] goodsStockIdArr) throws BusinessException {
         
         if(null == goodsStockIdArr || goodsStockIdArr.length == 0){
@@ -400,7 +402,7 @@ public class ShoppingCartService {
      * @throws BusinessException 
      */
     @Deprecated
-    @Transactional(rollbackFor = { Exception.class, RuntimeException.class })
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> synchronizeCartInfo(String userId, List<GoodsStockIdNumDto> goodsInfoList) throws BusinessException {
         
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -489,6 +491,7 @@ public class ShoppingCartService {
      * @param goodsInfoList
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> updateGoodsNumInCart(String requestId, String userId, List<GoodsStockIdNumDto> goodsInfoList) throws BusinessException {
         
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -618,7 +621,7 @@ public class ShoppingCartService {
      * @param num2 
      * @throws BusinessException 
      */
-    @Transactional(rollbackFor = { Exception.class, RuntimeException.class })
+    @Transactional(rollbackFor = Exception.class)
     public GoodsInfoInCartEntity reelectSku(String requestId, String userId, String goodsId, String preGoodsStockId, String secGoodsStockId, String num) throws BusinessException {
         
         Long userIdVal = Long.valueOf(userId);

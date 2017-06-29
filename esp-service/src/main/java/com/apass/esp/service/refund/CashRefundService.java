@@ -38,7 +38,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 
 @Service
-@Transactional(rollbackFor = {Exception.class})
 public class CashRefundService {
 
     private static final Logger logger = LoggerFactory.getLogger(CashRefundService.class);
@@ -75,13 +74,15 @@ public class CashRefundService {
         }
         return cashRefundDto;
     }
-
+    
+    @Transactional(rollbackFor = Exception.class)
     public void update(CashRefundDto cashRefundDto) {
         CashRefund cashRefund = new CashRefund();
         BeanUtils.copyProperties(cashRefund, cashRefundDto);
         cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
     }
-
+    
+    @Transactional(rollbackFor = Exception.class)
     public void updateCashRefundDto(CashRefundDto cashRefundDto) {
         update(cashRefundDto);
         OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
@@ -138,6 +139,7 @@ public class CashRefundService {
      * @param memo
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public void requestRefund(String requestId, String orderId, String userId, String reason, String memo)
             throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
@@ -255,6 +257,7 @@ public class CashRefundService {
      * @param orderId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
 
@@ -340,6 +343,7 @@ public class CashRefundService {
 	 * 根据订单id修改退款状态
 	 * @param cashRefund
 	 */
+    @Transactional(rollbackFor = Exception.class)
 	public Integer updateRefundCashStatusByOrderid(CashRefund cashRefund) {
 		return cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
 	}

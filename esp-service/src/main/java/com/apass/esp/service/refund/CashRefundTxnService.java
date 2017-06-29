@@ -39,7 +39,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 
 @Service
-@Transactional(rollbackFor = {Exception.class})
 public class CashRefundTxnService {
 
     private static final Logger logger = LoggerFactory.getLogger(CashRefundTxnService.class);
@@ -62,6 +61,7 @@ public class CashRefundTxnService {
 	 * @param cashRefundTxn
 	 * @return
 	 */
+	 @Transactional(rollbackFor = Exception.class)
 	public Integer updateStatusByCashRefundId(CashRefundTxn cashRefundTxn) {
 		return cashRefundTxnMapper.updateByPrimaryKeySelective(cashRefundTxn);	
 	}
