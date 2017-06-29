@@ -75,9 +75,9 @@ public class CashRefundController {
         }
         if (cashRefundDto.getStatus() == 1) {
             long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
-            //if (24 * 60 * 60 * 1000L - surplus > 0) {
-            if ( 2* 60  * 1000L - surplus > 0) {
-                cashRefundDto.setRefundSurplusTime(new Date(2* 60  * 1000L  - surplus));
+           if (24 * 60 * 60 * 1000L - surplus > 0) {
+            //if ( 2* 60  * 1000L - surplus > 0) {
+                cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L  - surplus));
             } else {
                 cashRefundDto.setRefundSurplusTime(null);
             }

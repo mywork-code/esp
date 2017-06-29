@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class RefundScheduleTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RefundScheduleTask.class);
@@ -73,8 +74,8 @@ public class RefundScheduleTask {
   /**
    * 退款：每隔72小时获取所有退款中的订单 向银联发起退款
    */
-  //@Scheduled(cron = "0 0 0 /3 * ? *")//每三天执行一次
-  @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
+  @Scheduled(cron = "0 0 0 */3 * ? *")//每三天执行一次
+//  @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
   public void cashRefundTask() {
     LOGGER.info("退款job开始执行,当前时间{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     //1，查询所有退款中的订单
@@ -102,8 +103,8 @@ public class RefundScheduleTask {
   /**
    * 退款：每隔24小时获取所有退款中的订单 向银联发起退款
    */
-  //@Scheduled(cron = "0 0 1 * * ?")//每天执行一次
-  @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
+  @Scheduled(cron = "0 0 1 * * ?")//每天执行一次
+//  @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
   public void cashRefundTaskAdd() {
     LOGGER.info("退款补偿job开始执行,当前时间{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     //1，查询所有退款失败的订单
