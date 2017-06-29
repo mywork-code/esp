@@ -11,7 +11,9 @@ public enum PaymentType {
 
     CREDIT_PAYMENT("T02", "额度支付"),//退了信用支付
 
-    CARD_PAYMENT("T05", "银行卡支付");
+    CARD_PAYMENT("T05", "银行卡支付"),
+	
+	ALIPAY_PAYMENT("T10","支付宝支付");
 
     private String code;
 
