@@ -32,7 +32,7 @@ public class PayRequestDto {
 	private BigDecimal payAmt;
 
 	/**
-	 * 支付方式 T02：信用支付、T05：卡全额支付
+	 * 支付方式 T02：信用支付、T05：卡全额支付、T10：支付宝全额
 	 * <p>
 	 * 必填
 	 */
@@ -53,6 +53,16 @@ public class PayRequestDto {
 	 * 银行卡号
 	 */
 	private String accNo;
+	
+	/**
+	 * 客户端操作系统
+	 */
+	private String systemType;
+	
+	/**
+	 * 如果payType是额度支付(首付的方式 银行卡或者支付宝)
+	 */
+	private String downPayType;
 
 	public String getAccNo() {
         return accNo;
@@ -108,6 +118,22 @@ public class PayRequestDto {
 
 	public void setDownPayAmt(BigDecimal downPayAmt) {
 		this.downPayAmt = downPayAmt;
+	}
+
+	public String getSystemType() {
+		return systemType;
+	}
+
+	public void setSystemType(String systemType) {
+		this.systemType = systemType;
+	}
+
+	public String getDownPayType() {
+		return downPayType;
+	}
+
+	public void setDownPayType(String downPayType) {
+		this.downPayType = downPayType;
 	}
 
 }

@@ -28,7 +28,7 @@ public class PayInfoEntity {
      */
     private boolean supportCreditPay;
     /**
-     * 支付方式  T02:信用支付  T05:银行卡支付
+     * 支付方式  T02:信用支付  T05:银行卡支付  T10:支付宝
      */
     private String paymentType;
     
@@ -49,6 +49,11 @@ public class PayInfoEntity {
      * 银行Code
      */
     private String bankCode;
+    
+    /**
+     * 首付，支付方式
+     */
+    private String downPayType;
     
     public String getCardType() {
         return cardType;
@@ -110,4 +115,11 @@ public class PayInfoEntity {
     public void setCardPayAmt(BigDecimal cardPayAmt) {
         this.cardPayAmt = cardPayAmt;
     }
+	public String getDownPayType() {
+		return downPayType;
+	}
+	public void setDownPayType(String downPayType) {
+		this.downPayType = downPayType;
+	}
+    
 }

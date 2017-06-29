@@ -35,8 +35,7 @@ public class MonitorController {
     
     @Autowired
     private CacheManager cacheManager; 
-
-
+    
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
     public  Response addMonitorLog(@RequestBody MonitorDto monitorDto) {
@@ -144,7 +143,6 @@ public class MonitorController {
   @RequestMapping(value = "/monitorlist", method = RequestMethod.GET)
   @ResponseBody
   public ResponsePageBody<MonitorVo> listFlag1(MonitorQuery query){
-	  
 	  return  monitorService.pageListMonitor(query);
   }
 }
