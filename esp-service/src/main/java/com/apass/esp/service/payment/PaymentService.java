@@ -460,10 +460,10 @@ public class PaymentService {
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//验证不配送区域
-				Map<String,Object> resultMaps = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
-				boolean s = (boolean) resultMaps.get("unSupportProvince");
+				Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+				Boolean s = (Boolean)resultMap.get("unSupportProvince");
 	    		if(s){
-	    			return resultMaps;
+	    			 return resultMap;
 	    		}
 			}
 			
@@ -493,6 +493,10 @@ public class PaymentService {
 		String page = null;
 
 		Map<String, Object> validateMap = this.validateDefary(requestId,userId, orderList);
+		
+		if(!validateMap.containsKey("totalAmt")){
+			return validateMap;
+		}
 		// 待支付总金额
 		BigDecimal totalAmt = (BigDecimal) validateMap.get("totalAmt");
 
@@ -602,6 +606,7 @@ public class PaymentService {
 			}
 
 		resultMap.put("page", page);
+		resultMap.putAll(validateMap);
 		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
 		return resultMap;
 	}

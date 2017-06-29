@@ -1524,13 +1524,20 @@ public class OrderService {
 			if(StringUtils.isNotBlank(goods.getUnSupportProvince()) && goods.getUnSupportProvince().indexOf(order.getProvince()) > -1){
 				bl  = true;
 				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
-				message = "订单号为【"+orderId+"】的订单，商品名称为【"+goods.getGoodsName()+"】不支持配送您的区域!";
+				message = "抱歉，暂不支持该地区发货！";
 				//订单的状态置为无效
+				updateProperties(orderId);
 			}
 		}
-		
 		resultMap.put("unSupportProvince", bl);
 		resultMap.put("message",message);
 		return resultMap;
+    }
+    
+    public void updateProperties(String orderId){
+    	OrderInfoEntity entity = new OrderInfoEntity();
+        entity.setId(Long.parseLong(orderId));
+        entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+        orderInfoRepository.update(entity);
     }
 }
