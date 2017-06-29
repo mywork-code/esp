@@ -276,12 +276,14 @@ public class CashRefundService {
             txnAmt = txnInfoEntityList.get(0).getTxnAmt();
             CashRefundTxn cashRefundTxn = new CashRefundTxn();
             cashRefundTxn.setAmt(txnAmt);
-            cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
             cashRefundTxn.setStatus("1");
             cashRefundTxn.setCashRefundId(cashRefund.getId());
             cashRefundTxn.setCreateDate(date);
             cashRefundTxn.setUpdateDate(date);
             if (TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnType)||TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+                if(TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnType)){
+                    cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
+                }
                 cashRefundTxn.setTypeCode(txnType);
                 cashRefundTxnMapper.insert(cashRefundTxn);
                 cashRefund.setUpdateDate(date);
