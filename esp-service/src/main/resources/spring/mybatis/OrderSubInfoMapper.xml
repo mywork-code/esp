@@ -154,8 +154,7 @@
 		<include refid="QueryConditionSqlList" />
 	    <![CDATA[
 			ORDER BY orderInfo.create_date DESC,
-			orderinfo.order_id DESC,
-			orderdetailandgoodtemp.orderdetailUpdateDateTemp DESC
+			orderinfo.order_id DESC
 		]]>
 	</select>
 
