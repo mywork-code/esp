@@ -619,8 +619,8 @@ public class OrderInfoController {
                 	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
                 	if(cash != null){
                 		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
-                			//if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-                                if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
+                			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+                               // if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
                     				//更新数据库字段  恢复额度
                 				cashRefundService.agreeRefund(cash.getUserId()+"", orderId);
                     		}
