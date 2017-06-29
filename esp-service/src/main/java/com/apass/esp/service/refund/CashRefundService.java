@@ -271,6 +271,7 @@ public class CashRefundService {
         }
         BigDecimal txnAmt = new BigDecimal(0);
         if (txnInfoEntityList.size() == 1) {
+            Date date = new Date();
             if (!TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnInfoEntityList.get(0).getTxnType())) {
                 return Response.fail(BusinessErrorCode.NO);
             } else {//银行卡支付  处理中
@@ -281,13 +282,13 @@ public class CashRefundService {
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
                 cashRefundTxn.setStatus("1");
                 cashRefundTxn.setCashRefundId(cashRefund.getId());
-                cashRefundTxn.setCreateDate(new Date());
-                cashRefundTxn.setUpdateDate(new Date());
+                cashRefundTxn.setCreateDate(date);
+                cashRefundTxn.setUpdateDate(date);
                 cashRefundTxnMapper.insert(cashRefundTxn);
-                cashRefund.setUpdateDate(new Date());
+                cashRefund.setUpdateDate(date);
                 cashRefund.setStatus(2);
-                cashRefund.setStatusD(new Date());
-                cashRefund.setAgreeD(new Date());
+                cashRefund.setStatusD(date);
+                cashRefund.setAgreeD(date);
                 cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
 
                 try {
