@@ -1531,15 +1531,28 @@ public class OrderService {
     	}
     	
     	for (OrderDetailInfoEntity detail : orderDetails) {
-			
-    		GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
-    		
-    		if(null != goods){
-    			if(goods.getUnSupportProvince().indexOf(order.getProvince())>-1){
-    				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
-    				throw new BusinessException("订单号为【"+orderId+"】的订单，商品名称为【"+goods.getGoodsName()+"】不支持配送您的区域!");
-    			}
-    		}
+    		validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+		}
+    }
+    
+    /**
+     * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
+     * @param requestId
+     * @param orderId
+     * @param goodsId
+     * @throws BusinessException
+     */
+    public void validateGoodsUnSupportProvince(String requestId,String orderId,Long goodsId) throws BusinessException{
+    	
+    	OrderInfoEntity order =  selectByOrderId(orderId);
+    	
+    	GoodsInfoEntity goods = goodsDao.select(goodsId);
+		
+		if(null != goods){
+			if(StringUtils.isNotBlank(goods.getUnSupportProvince()) && goods.getUnSupportProvince().indexOf(order.getProvince()) > -1){
+				LOG.info(requestId, "订单中商品不支持配送区域", "订单号为"+orderId+"中，商品名称为"+goods.getGoodsName()+"不支持配送");
+				throw new BusinessException("订单号为【"+orderId+"】的订单，商品名称为【"+goods.getGoodsName()+"】不支持配送您的区域!");
+			}
 		}
     }
 }
