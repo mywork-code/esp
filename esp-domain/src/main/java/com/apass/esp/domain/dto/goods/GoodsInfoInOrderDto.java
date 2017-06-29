@@ -63,6 +63,11 @@ public class GoodsInfoInOrderDto {
      */
     private String merchantCode;
     
+    /**
+     * 不支持配送区域
+     */
+    private String unSupportProvince;
+    
     public String getMerchantCode() {
         return merchantCode;
     }
@@ -123,4 +128,13 @@ public class GoodsInfoInOrderDto {
     public void setBuyNum(Long buyNum) {
         this.buyNum = buyNum;
     }
+
+	public String getUnSupportProvince() {
+		return unSupportProvince;
+	}
+
+	public void setUnSupportProvince(String unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
+    
 }
