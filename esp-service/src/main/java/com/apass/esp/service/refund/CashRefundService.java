@@ -1,13 +1,11 @@
 package com.apass.esp.service.refund;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.apass.esp.repository.payment.PaymentHttpClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -173,6 +172,18 @@ public class CashRefundService {
                     throw new BusinessException("退款申请失败！", BusinessErrorCode.ORDER_REQUEST_REFUND);
                 }
                 orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+                
+                //如果是支付宝全额支付或支付宝首付 直接调用同意退款接口
+        	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderId);
+                for(TxnInfoEntity txnInfo:txnlinfoList){
+                	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
+                		Response res=agreeRefund(userId,orderId);
+                		if(!res.statusResult()){
+        	    			throw new BusinessException("退款申请失败，请重新申请！");
+                		}
+                		break;
+                	}
+                }
             }
         }
 
@@ -210,7 +221,7 @@ public class CashRefundService {
         Date txnDate = null;//交易时间
         try {
             OrderInfoEntity oity = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
-            if (null != oity && "T05".equals(oity.getPayType())) {
+            if (TxnTypeCode.KQEZF_CODE.getCode().equals(oity.getPayType()) || TxnTypeCode.ALIPAY_CODE.getCode().equals(oity.getPayType())) {
                 falge = true;
             } else {
                 Response responseCredit = commonHttpClient.getCustomerCreditInfo(requestId, Long.parseLong(userId));
