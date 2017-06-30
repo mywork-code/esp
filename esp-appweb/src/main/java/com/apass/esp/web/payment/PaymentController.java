@@ -197,8 +197,14 @@ public class PaymentController {
             payPage = paymentService.defary(requestId,userId, orderList, paymentType,cardNo,systemType,downPayType);
             
         } catch (BusinessException e) {
-            LOGGER.error(e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+        	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
+    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+    			LOGGER.error(e.getErrorDesc(), e);
+    			return Response.fail("商品价格已变动，请重新下单");
+        	}else{
+    		   LOGGER.error(e.getErrorDesc(), e);
+               return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+        	}
         } catch (Exception e) {
             LOGGER.error("订单支付失败", e);
             return Response.fail(BusinessErrorCode.ORDER_PAY_FAILED);
