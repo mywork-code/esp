@@ -161,7 +161,7 @@ public class OrderInfoController {
             for (PurchaseRequestDto purchase : purchaseList) {
     			// 校验商品的不可发送区域
             	Map<String,Object> resultMaps = orderService.validateGoodsUnSupportProvince(requestId, addressId, purchase.getGoodsId());
-            	Boolean s = (Boolean)resultMap.get("unSupportProvince");
+            	Boolean s = (Boolean)resultMaps.get("unSupportProvince");
         		if(s){
         			results.putAll(resultMaps);
         			break;
