@@ -32,7 +32,6 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
-import com.apass.esp.domain.enums.DownPaymentType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PayFailCode;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -642,47 +641,12 @@ public class PaymentService {
 				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
 				downPayAmt = scale2Decimal(orderAmt.multiply(BigDecimal.valueOf(0.1)));
 				creditPayAmt = orderAmt.subtract(downPayAmt);
-				//判断信用支付金额是否含百位以下数字
-				String bwAmtStr = getDigitNum(creditPayAmt,100d);
-				BigDecimal bwAmt = new BigDecimal(bwAmtStr);
-				if(BigDecimal.ZERO.compareTo(bwAmt) == -1){
-					downPayAmt = downPayAmt.add(bwAmt);
-					creditPayAmt = orderAmt.subtract(downPayAmt);
-				}
 			} else if (creditAvailAmt.compareTo(halfOrderAmt) >= 0
 					&& creditAvailAmt.compareTo(orderAmt90) == -1) {
 				supportCredit = true;
 				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
 				downPayAmt = scale2Decimal(orderAmt.subtract(creditAvailAmt));
 				creditPayAmt = orderAmt.subtract(downPayAmt);
-				String bwAmtStr = getDigitNum(creditPayAmt,100d);
-				BigDecimal bwAmt = new BigDecimal(bwAmtStr);
-				if(BigDecimal.ZERO.compareTo(bwAmt) == -1){
-					downPayAmt = downPayAmt.add(bwAmt);
-					creditPayAmt = orderAmt.subtract(downPayAmt);
-				}
-			}
-			
-			if(supportCredit){
-				if(creditPayAmt.compareTo(new BigDecimal(1000)) == -1) {
-					//信用支付额度< 1000 时 不支持信用分期
-					supportCredit = false;
-					cardPayAmt = orderAmt;
-					downPayAmt = BigDecimal.ZERO;
-					creditPayAmt = BigDecimal.ZERO;
-					
-					if(StringUtils.isBlank(paymentType1)){
-						paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
-					}
-					
-					if(StringUtils.equals(PaymentType.CREDIT_PAYMENT.getCode(), paymentType)){
-						if(StringUtils.equals(DownPaymentType.ALIPAY_PAYMENT.getCode(), downPayType)){
-							paymentType = PaymentType.ALIPAY_PAYMENT.getCode();
-						}else if(StringUtils.equals(DownPaymentType.CARD_PAYMENT.getCode(), downPayType)){
-							paymentType = PaymentType.CARD_PAYMENT.getCode();
-						}
-					}
-				}
 			}
 		}
 		payInfo.setCreditPayAmt(creditPayAmt);
@@ -698,6 +662,7 @@ public class PaymentService {
   /**
    * 获取指定位以下的数字
    */
+  @SuppressWarnings("unused")
   private String getDigitNum(BigDecimal creditAvailAmt , Double digit){
     double d = creditAvailAmt.doubleValue() % digit;
     return decimalFormat.format(d);
@@ -722,7 +687,6 @@ public class PaymentService {
 		payInfo.setUserId(userId);
 		// 设置支付方式
 		payInfo.setPaymentType(paymentType);
-		payInfo.setDownPayType(downPayType);
 
 		Map<String, Object> validateMap = validateDefary(requestId,userId, orderList);
 		BigDecimal totalAmt = (BigDecimal) validateMap.get("totalAmt");
@@ -755,12 +719,13 @@ public class PaymentService {
 			throw new BusinessException("额度信息查询失败");
 		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,downPayType);
+		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,"");
 		payInfo.setCardPayAmt(totalAmt);
 		payInfo.setBankCode(customerBasicInfo.getBankCode());
 		payInfo.setCardNo(customerBasicInfo.getCardNo());
 		payInfo.setCardType(customerBasicInfo.getCardType());
 		payInfo.setCardBank(customerBasicInfo.getCardBank());
+		payInfo.setDownPayType(downPayType);
 		return payInfo;
 	}
 

@@ -21,6 +21,7 @@ import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -182,7 +183,7 @@ public class PaymentController {
             	LOGGER.error("请选择支付方式!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            if(PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)){
+            if(PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType) && StringUtils.equals(TxnTypeCode.SF_CODE.getCode(), downPayType) ){
                 if (StringUtils.isEmpty(cardNo)) {
                 	LOGGER.error("请填写银行卡号!");
                     return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
