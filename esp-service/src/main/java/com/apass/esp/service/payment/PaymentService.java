@@ -113,6 +113,9 @@ public class PaymentService {
 	public String defary(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
 		// 校验订单状态
 		Map<String, Object> data = validateDefary(requestId,userId, orderList);
+		if(!data.containsKey("totalAmt")){
+			throw new BusinessException("抱歉，暂不支持该地区发货！");
+		}
 		BigDecimal totalAmt = (BigDecimal) data.get("totalAmt");
 		
 		@SuppressWarnings("unchecked")
