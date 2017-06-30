@@ -114,6 +114,7 @@ public class PaymentService {
 		// 校验订单状态
 		Map<String, Object> data = validateDefary(requestId,userId, orderList);
 		BigDecimal totalAmt = (BigDecimal) data.get("totalAmt");
+		
 		@SuppressWarnings("unchecked")
 		//订单列表
 		List<OrderInfoEntity> orderInfoList = (List<OrderInfoEntity>) data.get("orderInfoList");
@@ -689,6 +690,10 @@ public class PaymentService {
 		payInfo.setPaymentType(paymentType);
 
 		Map<String, Object> validateMap = validateDefary(requestId,userId, orderList);
+		if(!validateMap.containsKey("totalAmt")){
+			throw new BusinessException("抱歉，暂不支持该地区发货！");
+		}
+		
 		BigDecimal totalAmt = (BigDecimal) validateMap.get("totalAmt");
 		@SuppressWarnings("unchecked")
 		List<OrderInfoEntity> orderInfoList = (List<OrderInfoEntity>) validateMap.get("orderInfoList");
