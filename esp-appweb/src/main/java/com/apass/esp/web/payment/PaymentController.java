@@ -1,11 +1,27 @@
 package com.apass.esp.web.payment;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -15,21 +31,6 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *  支付
@@ -182,7 +183,7 @@ public class PaymentController {
             	LOGGER.error("请选择支付方式!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            if(PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType)){
+            if(PaymentType.CREDIT_PAYMENT.getCode().equals(paymentType) && StringUtils.equals(TxnTypeCode.SF_CODE.getCode(), downPayType) ){
                 if (StringUtils.isEmpty(cardNo)) {
                 	LOGGER.error("请填写银行卡号!");
                     return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);

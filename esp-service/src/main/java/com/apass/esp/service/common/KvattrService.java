@@ -78,8 +78,7 @@ public class KvattrService {
             // String type = kvattr.getKey().split("_")[0];
             String fieldName = kvattr.getKey();//.split("_")[1];
             Field[] fields = clazz.getDeclaredFields();
-            for (Field field : fields
-                    ) {
+            for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getName().equalsIgnoreCase(fieldName)) {
                     try {
