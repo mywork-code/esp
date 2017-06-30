@@ -7,20 +7,24 @@ import javax.mail.PasswordAuthentication;
  * Created by xianzhi.wang on 2017/5/18.
  */
 public class MyAuthenticator extends Authenticator {
-    String userName = null;
-    String password = null;
+    private static volatile MyAuthenticator myAuthenticator;
 
-    public MyAuthenticator() {
-
+    private MyAuthenticator() {
     }
 
-    public MyAuthenticator(String username, String password) {
-        this.userName = username;
-        this.password = password;
+    public static MyAuthenticator getInstance() {
+        if (myAuthenticator == null) {
+            synchronized (MyAuthenticator.class) {
+                if (myAuthenticator == null) {
+                    myAuthenticator = new MyAuthenticator();
+                }
+            }
+        }
+        return myAuthenticator;
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(userName, password);
+        return new PasswordAuthentication("itsupport@apass.cn", "support0511");
     }
 
 }

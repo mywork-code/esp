@@ -1,5 +1,7 @@
 package com.apass.esp.utils.mailUtils;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -40,7 +42,7 @@ public class MailSenderInfo {
     private String content;
 
     // 邮件附件的文件名
-    private String[] attachFileNames;
+    private HashMap<String,File> fileHashMap;
 
     /**
      * 获得邮件会话属性
@@ -54,6 +56,13 @@ public class MailSenderInfo {
         return p;
     }
 
+    public HashMap<String, File> getFileHashMap() {
+        return fileHashMap;
+    }
+
+    public void setFileHashMap(HashMap<String, File> fileHashMap) {
+        this.fileHashMap = fileHashMap;
+    }
     public String getMailServerHost() {
         return mailServerHost;
     }
@@ -76,14 +85,6 @@ public class MailSenderInfo {
 
     public void setValidate(boolean validate) {
         this.validate = validate;
-    }
-
-    public String[] getAttachFileNames() {
-        return attachFileNames;
-    }
-
-    public void setAttachFileNames(String[] fileNames) {
-        this.attachFileNames = fileNames;
     }
 
     public String getFromAddress() {
