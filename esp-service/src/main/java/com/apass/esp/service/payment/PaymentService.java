@@ -558,52 +558,48 @@ public class PaymentService {
 			LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));
 			return resultMap;
 		}
-			//1、用户可用额度为0
-			BigDecimal availableAmt = customerCreditInfo.getAvailableAmount();
-			if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
-				if("06".equals(customerBasicInfo.getStatus())
-						|| "03".equals(customerBasicInfo.getStatus())){
-					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-				} else {
-					if(totalAmt.compareTo(new BigDecimal(1000)) >= 0 ){
-						//跳到授信页
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE;
-					} else {
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-					}
-				}
+		//1、用户可用额度为0
+		BigDecimal availableAmt = customerCreditInfo.getAvailableAmount();
+		if(availableAmt == null|| availableAmt.compareTo(BigDecimal.ZERO) == 0){
+			if("06".equals(customerBasicInfo.getStatus())
+					|| "03".equals(customerBasicInfo.getStatus())){
+				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
 			} else {
-				//2、用户可用额度>0
-				// 计算额度支付金额
-				PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"","");
-				Response overDue = paymentHttpClient.hasOverDueBill(userId);
-				boolean overDue1 = false;
-				if(!overDue.statusResult()){
-					overDue1=true;
-				}else{
-					overDue1 = (boolean)overDue.getData();
-				}
-				if(overDue1){
-					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-				} else {
-					Map<String, Object> param = Maps.newHashMap();
-					param.put("userId", userId);
-					param.put("customerId", customerCreditInfo.getCustomerId());
-					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
-					Response response1 = paymentHttpClient.creditPaymentAuth(param);
-					if(!response1.statusResult()){
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
-					}else{
-						// 支持额度支付
-						if ("1".equals(response1.getData())) {
-							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
-						} else {
-							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
-						}
-					}
-
-				}
+				//跳到授信页
+				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE;
 			}
+		} else {
+			//2、用户可用额度>0
+			// 计算额度支付金额
+			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"","");
+			Response overDue = paymentHttpClient.hasOverDueBill(userId);
+			boolean overDue1 = false;
+			if(!overDue.statusResult()){
+				overDue1=true;
+			}else{
+				overDue1 = (boolean)overDue.getData();
+			}
+			if(overDue1){
+				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+			} else {
+				Map<String, Object> param = Maps.newHashMap();
+				param.put("userId", userId);
+				param.put("customerId", customerCreditInfo.getCustomerId());
+				param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
+				Response response1 = paymentHttpClient.creditPaymentAuth(param);
+				if(!response1.statusResult()){
+					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
+				}else{
+					// 支持额度支付
+					if ("1".equals(response1.getData())) {
+						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
+					} else {
+						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
+					}
+				}
+
+			}
+		}
 
 		resultMap.put("page", page);
 		LOG.logstashResponse(requestId, "初始化支付方式返回", GsonUtils.toJson(resultMap));

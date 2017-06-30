@@ -2,6 +2,7 @@ package com.apass.esp.web.aotoship;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
+import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
 import com.apass.esp.service.common.KvattrService;
@@ -85,6 +86,40 @@ public class AutoShipController {
         orderModifyStatusScheduleTask.startCron2(CronTools.getCron(shipmentTimeConfigAttr.getTime2()));
         orderModifyStatusScheduleTask.startCron3(CronTools.getCron(shipmentTimeConfigAttr.getTime3()));
 
+        return Response.successResponse();
+    }
+    
+    @RequestMapping("/queryRatio")
+    @ResponseBody
+    public ResponsePageBody<DownPayRatio> queryRadio() {
+    	DownPayRatio downPayRatio = kvattrService.get(new DownPayRatio());
+        List<DownPayRatio> list = new ArrayList<DownPayRatio>();
+        list.add(downPayRatio);
+        ResponsePageBody<DownPayRatio> responsePageBody = new ResponsePageBody();
+        responsePageBody.setMsg("返回成功");
+        responsePageBody.setStatus("1");
+        responsePageBody.setRows(list);
+        return responsePageBody;
+    }
+    
+    @RequestMapping(value = "/updateRatio", method = RequestMethod.POST)
+    @ResponseBody
+    public Response updateRadio(@RequestBody DownPayRatio downPayRatio) {
+    	
+    	DownPayRatio downPayRatio1 = kvattrService.get(new DownPayRatio());
+        if (downPayRatio1 == null) {
+            kvattrService.add(downPayRatio);
+        } else {
+            List<Kvattr> list = kvattrService.getTypeName(downPayRatio1);
+            List<Kvattr> list2= new ArrayList<>();
+            for (Kvattr kvattr:list) {
+                if(kvattr.getKey().equalsIgnoreCase("ratio")){
+                    kvattr.setValue(downPayRatio.getRatio());
+                }
+                list2.add(kvattr);
+            }
+            kvattrService.update(list2);
+        }
         return Response.successResponse();
     }
 }
