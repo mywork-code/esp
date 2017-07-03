@@ -167,7 +167,7 @@ public class OrderInfoController {
         		}
     		}
             
-            if(null != results){
+            if(!results.isEmpty()){
             	resultMap.putAll(results);
             }else{
 	            List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
