@@ -1534,6 +1534,39 @@ public class OrderService {
 		return resultMap;
     }
     
+    /**
+     * 根据地址id 和 商品Id，验证订单下，是否存在不支持配送的商品
+     * @param requestId
+     * @param orderId
+     * @param goodsId
+     * @throws BusinessException
+     */
+    public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addressId,Long goodsId) throws BusinessException{
+    	Map<String,Object> resultMap = Maps.newHashMap();
+    	
+    	// 校验地址
+		AddressInfoEntity address = addressInfoDao.select(addressId);
+		if (null == address) {
+			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
+			throw new BusinessException("该用户地址信息不存在");
+		}
+    	
+    	GoodsInfoEntity goods = goodsDao.select(goodsId);
+		
+    	boolean bl = false;
+    	String message = "";
+		if(null != goods){
+			if(StringUtils.isNotBlank(goods.getUnSupportProvince()) && goods.getUnSupportProvince().indexOf(address.getProvince()) > -1){
+				bl  = true;
+				LOG.info(requestId,"订单中商品不支持配送区域", "抱歉，暂不支持该地区发货！");
+				message = "抱歉，暂不支持该地区发货！";
+			}
+		}
+		resultMap.put("unSupportProvince", bl);
+		resultMap.put("message",message);
+		return resultMap;
+    }
+    
     public void updateProperties(Long id){
     	OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(id);
