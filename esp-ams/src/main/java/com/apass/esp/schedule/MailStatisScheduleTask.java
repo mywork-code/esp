@@ -12,6 +12,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class MailStatisScheduleTask {
 
     @Value("${monitor.receive.emails}")
@@ -62,9 +63,7 @@ public class MailStatisScheduleTask {
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
-        if(!env.equals("prod")){
-            return;
-        }
+
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");
         Date date = DateFormatUtil.addDays(new Date(), -1);
         String date2 = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
@@ -128,8 +127,9 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("安家趣花电商订单统计");
         mailSenderInfo.setContent("请查收最新统计报表..");
-        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
-        mailSenderInfo.setCcAddress("maoyanping@apass.cn,zhangyuanlin@apass.cn,yangxiaoqing@apass.cn");
+        mailSenderInfo.setToAddress("xujie@apass.cn");
+        //mailSenderInfo.setToAddress("huangbeifang@apass.cn");
+        //mailSenderInfo.setCcAddress("maoyanping@apass.cn,zhangyuanlin@apass.cn,yangxiaoqing@apass.cn");
         Multipart msgPart = new MimeMultipart();
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件
