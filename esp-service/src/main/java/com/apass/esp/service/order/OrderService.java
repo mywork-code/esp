@@ -1576,4 +1576,25 @@ public class OrderService {
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
         orderInfoRepository.update(entity);
     }
+
+	/**
+	 *
+	 * @param orderStatus
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @return
+	 */
+	public Integer selectOrderCountByStatus(String orderStatus,String dateBegin,String dateEnd){
+    	return orderInfoRepository.selectOrderCountByStatus(orderStatus,dateBegin,dateEnd);
+	}
+
+
+	public Integer selectSumAmt(String dateBegin,String dateEnd){
+		return orderInfoRepository.selectSumAmt(dateBegin,dateEnd);
+	}
+
+
+	public Integer selectCreAmt(String dateBegin,String dateEnd){
+		return orderInfoRepository.selectCreAmt(dateBegin,dateEnd);
+	}
 }

@@ -569,4 +569,20 @@
 	<update id="updateOrderStatus" parameterType="OrderInfoEntity">
 		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR},update_date = NOW() WHERE order_id =  #{orderId, jdbcType=VARCHAR}
 	</update>
+
+	<select id="selectOrderCountByStatus" resultType="java.lang.Integer">
+		SELECT count(1) from t_esp_order_info
+		where  orderstatus =#{orderStatus}
+		and create_date &gt;= #{dateBegin}
+        and create_date &lt; #{dateEnd}
+	</select>
+	
+	<select id="selectSumAmt" resultType="java.lang.Integer">
+		select sum(txn_amt) from t_apass_txn_info where txn_type in ('T01','T05') and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
+	</select>
+
+	<select id="selectCreAmt" resultType="java.lang.Integer">
+		select sum(txn_amt) from t_apass_txn_info where txn_type = 'T02' and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
+	</select>
+	
 </mapper>
