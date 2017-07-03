@@ -346,6 +346,9 @@
 	        <![CDATA[
 	            UPDATE_DATE = CURRENT_TIMESTAMP,
 	        ]]>
+	        <if test="preDelivery != null and preDelivery != ''">
+	            pre_delivery = #{preDelivery, jdbcType=VARCHAR},
+	        </if>
             <if test="status != null and status != ''">
                 orderstatus = #{status, jdbcType=VARCHAR},
             </if>
