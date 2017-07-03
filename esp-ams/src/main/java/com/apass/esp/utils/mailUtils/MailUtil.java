@@ -15,24 +15,6 @@ import java.util.Properties;
 public class MailUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(MailUtil.class);
 
-
-//    public static void main(String[] args) {
-//        MailUtil mailUtil = new MailUtil();
-//        MailSenderInfo mailSenderInfo = new MailSenderInfo();
-//        mailSenderInfo.setMailServerHost("SMTP.263.net");
-//        mailSenderInfo.setMailServerPort("25");
-//        mailSenderInfo.setValidate(true);
-//        mailSenderInfo.setUserName("itsupport@apass.cn");
-//        mailSenderInfo.setPassword("support0511");// 您的邮箱密码
-//        mailSenderInfo.setFromAddress("itsupport@apass.cn");
-//        mailSenderInfo.setSubject("次");//邮箱标题
-//        mailSenderInfo.setContent("1111");
-//        mailSenderInfo.setToAddress("wangxianzhi1211@163.com");
-//        mailSenderInfo.setCcAddress("529230345@qq.com");
-//       // mailSenderInfo.setAttachFileNames("111");
-//        mailUtil.sendTextMail(mailSenderInfo);
-//    }
-
     public boolean sendTextMail(MailSenderInfo mailInfo) {
         Properties pro = mailInfo.getProperties();
         Session sendMailSession = Session.getDefaultInstance(pro, MyAuthenticator.getInstance());
@@ -48,8 +30,12 @@ public class MailUtil {
             }
             mailMessage.setSubject(mailInfo.getSubject());
             mailMessage.setSentDate(new Date());
-            String mailContent = mailInfo.getContent();
-            mailMessage.setText(mailContent);
+            if(mailInfo.getMultipart()!=null){
+                mailMessage.setContent(mailInfo.getMultipart());
+            }else{
+                String mailContent = mailInfo.getContent();
+                mailMessage.setText(mailContent);
+            }
             // 发送邮件
             Transport.send(mailMessage);
             return true;

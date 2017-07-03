@@ -1,5 +1,6 @@
 package com.apass.esp.utils.mailUtils;
 
+import javax.mail.Multipart;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Properties;
@@ -43,6 +44,16 @@ public class MailSenderInfo {
 
     // 邮件附件的文件名
     private HashMap<String,File> fileHashMap;
+
+    private Multipart multipart;
+
+    public Multipart getMultipart() {
+        return multipart;
+    }
+
+    public void setMultipart(Multipart multipart) {
+        this.multipart = multipart;
+    }
 
     /**
      * 获得邮件会话属性
