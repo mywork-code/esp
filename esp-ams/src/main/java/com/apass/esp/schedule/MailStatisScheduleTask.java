@@ -60,7 +60,7 @@ public class MailStatisScheduleTask {
     @Autowired
     private OrderService orderService;
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
         if(!env.equals("prod")){
             return;
