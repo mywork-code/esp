@@ -399,11 +399,15 @@ public class JdProductApiClient extends JdApiClient {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("pageIndex", searchCondition.getPageIndex());
         jsonObject.put("catId", searchCondition.getCatId());
-        jsonObject.put("keyword", UrlUtils.encode(searchCondition.getKeyword()));
+        if (searchCondition.getKeyword() != null) {
+            jsonObject.put("keyword", UrlUtils.encode(searchCondition.getKeyword()));
+        }
         jsonObject.put("pageSize", searchCondition.getPageSize());
         jsonObject.put("min", searchCondition.getMin());
         jsonObject.put("max", searchCondition.getMax());
-        jsonObject.put("brands", UrlUtils.encode(searchCondition.getBrands()));
-        return request("jd.biz.search.search", jsonObject, "biz_response", JSONArray.class);
+        if (searchCondition.getBrands() != null) {
+            jsonObject.put("brands", UrlUtils.encode(searchCondition.getBrands()));
+        }
+        return request("jd.biz.search.search", jsonObject, "jd_biz_search_search_response", JSONArray.class);
     }
 }

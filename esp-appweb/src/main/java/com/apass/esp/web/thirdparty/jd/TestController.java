@@ -13,6 +13,7 @@ import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.person.AddressInfo;
+import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.cache.CacheManager;
 import net.sf.json.JsonConfig;
@@ -156,11 +157,19 @@ public class TestController {
         return Response.success("1", jdApiResponse);
     }
 
-    
+    @RequestMapping(value = "/test1111", method = RequestMethod.POST)
+    @ResponseBody
+    public Response test1111(@RequestBody Map<String, Object> paramMap) {
+        SearchCondition  searchCondition = new SearchCondition();
+        searchCondition.setKeyword("1");
+        JdApiResponse<JSONArray> jsonArrayJdApiResponse =  jdProductApiClient.search(searchCondition);
+        return Response.success("1", jsonArrayJdApiResponse);
+
+    }
 
 
 
-    @RequestMapping(value = "/test111", method = RequestMethod.POST)
+        @RequestMapping(value = "/test111", method = RequestMethod.POST)
     @ResponseBody
     public Response test111(@RequestBody Map<String, Object> paramMap) {
         JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.productPageNumQuery();
