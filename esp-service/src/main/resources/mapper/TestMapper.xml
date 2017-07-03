@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.TestMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.Test" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="skuId" property="skuid" jdbcType="BIGINT" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="jdPrice" property="jdprice" jdbcType="DECIMAL" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, skuId, price, jdPrice, name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_jd_product
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_esp_jd_product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.Test" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_jd_product (skuId, price, jdPrice, 
+      name)
+    values (#{skuid,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{jdprice,jdbcType=DECIMAL}, 
+      #{name,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.Test" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_jd_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="skuid != null" >
+        skuId,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="jdprice != null" >
+        jdPrice,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="skuid != null" >
+        #{skuid,jdbcType=BIGINT},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="jdprice != null" >
+        #{jdprice,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.Test" >
+    update t_esp_jd_product
+    <set >
+      <if test="skuid != null" >
+        skuId = #{skuid,jdbcType=BIGINT},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="jdprice != null" >
+        jdPrice = #{jdprice,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.Test" >
+    update t_esp_jd_product
+    set skuId = #{skuid,jdbcType=BIGINT},
+      price = #{price,jdbcType=DECIMAL},
+      jdPrice = #{jdprice,jdbcType=DECIMAL},
+      name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
