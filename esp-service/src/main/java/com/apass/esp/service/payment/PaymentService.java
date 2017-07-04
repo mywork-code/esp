@@ -746,7 +746,7 @@ public class PaymentService {
 	 */
 	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
     public void callback(String requestId ,String mainOrderId, String status) {
-        
+		LOGGER.info("------------------------------PaymentService callback already come in------------------------");
         OrderInfoEntity param = new OrderInfoEntity();
         param.setMainOrderId(mainOrderId);
         List<OrderInfoEntity> payingOrders = orderDao.filter(param);
@@ -755,7 +755,7 @@ public class PaymentService {
             return ;
         }
         LOG.info(requestId, "正在支付中的订单,payingOrders:", GsonUtils.toJson(payingOrders));
-        
+        LOGGER.info("-------------status{}--------------",YesNo.isNo(status));
         //付款失败,商品库存回滚
         if (YesNo.isNo(status)) {
             GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(mainOrderId);
@@ -782,6 +782,7 @@ public class PaymentService {
         }
         //删除库存记录
         for (OrderInfoEntity order : payingOrders) {
+        	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
 		}
 	}
