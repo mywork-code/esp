@@ -781,7 +781,9 @@ public class PaymentService {
 
         }
         //删除库存记录
-        goodsStockLogDao.deleteByOrderId(mainOrderId);
+        for (OrderInfoEntity order : payingOrders) {
+        	goodsStockLogDao.deleteByOrderId(order.getOrderId());
+		}
 	}
 	
 	/**
