@@ -17,7 +17,7 @@ public class JdGoods {
 
     private String imagePath;
 
-    private Long weight;
+    private BigDecimal weight;
 
     private String upc;
 
@@ -93,11 +93,11 @@ public class JdGoods {
         this.imagePath = imagePath;
     }
 
-    public Long getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 
-    public void setWeight(Long weight) {
+    public void setWeight(BigDecimal weight) {
         this.weight = weight;
     }
 

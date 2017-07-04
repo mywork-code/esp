@@ -410,4 +410,15 @@ public class JdProductApiClient extends JdApiClient {
         }
         return request("jd.biz.search.search", jsonObject, "jd_biz_search_search_response", JSONArray.class);
     }
+
+    /**
+     * 查询分类列表信息接口
+     * @param cid
+     * @return
+     */
+    public JdApiResponse<JSONObject> getcategory(Long cid ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cid", cid );
+        return request("jd.biz.product.getcategory", jsonObject, "jd_biz_product_getcategory_response", JSONObject.class);
+    }
 }
