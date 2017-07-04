@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.dto.goods.CategoryPicDto;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
@@ -137,40 +139,57 @@ public class CategoryController {
     }
 
     /**
-     * 上传一个三级类目的小图标
+     * 上传一个一，三级类目的小图标
      * 
      * @return
      * @throws IOException
      */
     @ResponseBody
     @RequestMapping(value = "/addpic", method = RequestMethod.POST)
-    public Response uploadPicFile(MultipartFile file) {
+    public Response uploadPicFile(@ModelAttribute("categoryPicDto")CategoryPicDto categoryPicDto) {
+    	MultipartFile file = categoryPicDto.getFile();
+    	String categoryLevel = categoryPicDto.getCategoryLevel();
         try {
-            if (file.isEmpty()) {
+            if (file == null || file.isEmpty()) {
                 throw new BusinessException("上传图片不能为空!");
+            }
+            if(StringUtils.isBlank(categoryLevel)){
+            	throw new BusinessException("图片所属类目级别不能为空!");
             }
             String imgType = ImageTools.getImgType(file);
             String url = categoryPath + "cate_" + System.currentTimeMillis() + "." + imgType;
             /**
              * 图片校验
              */
-            boolean checkGoodBannerImgSize = ImageTools.checkCategoryLevel3ImgSize(file);// 尺寸
             boolean checkImgType = ImageTools.checkImgType(file);// 类型
-            int size = file.getInputStream().available();
-            if (!(checkGoodBannerImgSize && checkImgType)) {
-                file.getInputStream().close();// 100*100;大小：≤20kb;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：100px,高：100px,格式：.jpg,.png", url);
-            } else if (size > 1024 * 20) {
-                file.getInputStream().close();
-                return Response.fail("文件不能大于20kb!", url);
+            if("3".equals(categoryLevel)){
+            	boolean checkGoodBannerImgSize = ImageTools.checkCategoryLevel3ImgSize(file);// 尺寸
+                int size = file.getInputStream().available();
+                if (!(checkGoodBannerImgSize && checkImgType)) {
+                    file.getInputStream().close();// 100*100;大小：≤20kb;.jpg .png
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：100px,高：100px,格式：.jpg,.png", url);
+                } else if (size > 1024 * 20) {
+                    file.getInputStream().close();
+                    return Response.fail("文件不能大于20kb!", url);
+                }
+            }else if("1".equals(categoryLevel)){
+            	boolean checkGoodBannerImgSize = ImageTools.checkCategoryLevel1ImgSize(file);// 尺寸
+                int size = file.getInputStream().available();
+                if (!(checkGoodBannerImgSize && checkImgType)) {
+                    file.getInputStream().close();// 100*100;大小：≤300kb;.jpg .png
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：100px,高：100px,格式：.jpg,.png", url);
+                } else if (size > 1024 * 300) {
+                    file.getInputStream().close();
+                    return Response.fail("文件不能大于300kb!", url);
+                }
             }
             
             FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
             
             return Response.success("上传图片成功!", url);
         } catch (Exception e) {
-            LOGGER.error("三级分类上传图片失败", e);
-            return Response.fail("三级分类上传图片失败");
+            LOGGER.error(categoryLevel+"级分类上传图片失败", e);
+            return Response.fail(categoryLevel+"级分类上传图片失败");
         }
     }
 

@@ -193,7 +193,7 @@ public class JdProductApiClient extends  JdApiClient {
     /**
      * 商品可售验证接口(支持批量，以【，】分割，最高100个)
      *
-     * @param skuIds
+     * @param skuIds：商品id列表
      * @return
      */
     public JdApiResponse<JSONArray> productSkuCheck(List<Long> skuIds) {
@@ -203,6 +203,11 @@ public class JdProductApiClient extends  JdApiClient {
         return request("biz.product.sku.check", jsonObject, "biz_product_sku_check_response", JSONArray.class);
     }
 
+    /**
+     * 商品可售验证
+     * @param skuNumList：商品对象列表
+     * @return
+     */
     public JdApiResponse<JSONArray> productSkuCheckWithSkuNum(List<SkuNum> skuNumList) {
         List<Long> skuIds = new ArrayList<>(skuNumList.size());
         for (SkuNum skuNum : skuNumList) {

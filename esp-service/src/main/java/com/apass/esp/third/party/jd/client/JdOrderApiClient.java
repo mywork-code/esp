@@ -32,7 +32,7 @@ public class JdOrderApiClient extends JdApiClient {
         }
         if (StringUtils.isEmpty(orderReq.getOrderNo())) {
             //orderReq.setOrderNo(NoGenerator.ORDER.make());
-            orderReq.setOrderNo("1111");
+            orderReq.setOrderNo("111312001");
         }
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("thirdOrder", orderReq.getOrderNo());
