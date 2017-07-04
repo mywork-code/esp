@@ -421,4 +421,12 @@ public class JdProductApiClient extends JdApiClient {
         jsonObject.put("cid", cid );
         return request("jd.biz.product.getcategory", jsonObject, "jd_biz_product_getcategory_response", JSONObject.class);
     }
+
+
+    public JdApiResponse<JSONObject> getSimilarSku(Long skuId ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("skuId", skuId );
+        return request("jd.biz.product.getSimilarSku", jsonObject, "jd_biz_product_getSimilarSku_response", JSONObject.class);
+    }
+
 }

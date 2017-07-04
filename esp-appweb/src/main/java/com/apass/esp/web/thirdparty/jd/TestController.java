@@ -259,11 +259,15 @@ public class TestController {
                 jdGoods.setJdPrice(jdPrice);
                 jdGoods.setPrice(price);
                 jdGoods.setSaleUnit(saleUnit);
-                jdGoods.setWareQd(wareQD);
+                //jdGoods.setWareQd(wareQD);
                 jdGoods.setWeight(new BigDecimal(weight));
                 jdGoods.setUpc(upc);
-                jdGoods.setState(state==1?true:false);
-                jdGoodsMapper.insertSelective(jdGoods);
+                jdGoods.setState(state == 1 ? true : false);
+                try {
+                    jdGoodsMapper.insertSelective(jdGoods);
+                } catch (Exception e) {
+                    LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+                }
             }
         }
 
@@ -273,14 +277,14 @@ public class TestController {
     private void addCategory(String category, int level) {
         if (concurrentHashMap.get(category) == null) {
             JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.getcategory(Long.valueOf(category));
-            if (jdApiResponse == null||jdApiResponse.getResult()==null) {
+            if (jdApiResponse == null || jdApiResponse.getResult() == null) {
                 return;
             }
             if (!jdApiResponse.isSuccess()) {
                 return;
             }
 
-            JSONObject jsonObject =  jdApiResponse.getResult();
+            JSONObject jsonObject = jdApiResponse.getResult();
             Integer parentId = jsonObject.getInteger("parentId");
             Integer catClass = jsonObject.getInteger("catClass");
             String name = jsonObject.getString("name");
@@ -293,11 +297,17 @@ public class TestController {
             jdGategory.setCatClass(catClass);
             jdGategory.setFlag(false);
             jdGategory.setCatId(Long.valueOf(catId));
-            jdGategory.setStatus(state==1?true:false);
+            jdGategory.setStatus(state == 1 ? true : false);
             jdGategory.setCategoryId1(0l);
             jdGategory.setCategoryId2(0l);
             jdGategory.setCategoryId3(0l);
-            jdGategoryMapper.insertSelective(jdGategory);
+            try {
+                jdGategoryMapper.insertSelective(jdGategory);
+
+            } catch (Exception e) {
+
+                LOGGER.error("insert jdGategoryMapper sql catId {}", catId);
+            }
             concurrentHashMap.putIfAbsent(category, jdGategory);
         }
     }
