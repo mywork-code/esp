@@ -2,8 +2,10 @@ package com.apass.esp.third.party.jd.client;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.common.utils.UrlUtils;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -26,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @since JDK 1.8
  */
 @Service
-public class JdProductApiClient extends  JdApiClient {
+public class JdProductApiClient extends JdApiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdProductApiClient.class);
 
 
@@ -238,16 +240,16 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressAllProvincesQuery() {
-      //  try {
-      //      return addressCache.get("addressAllProvincesQuery", new Callable<JdApiResponse<JSONObject>>() {
+        //  try {
+        //      return addressCache.get("addressAllProvincesQuery", new Callable<JdApiResponse<JSONObject>>() {
         //        @Override
-       //         public JdApiResponse<JSONObject> call() throws Exception {
-                    return request("biz.address.allProvinces.query", null, "biz_address_allProvinces_query_response", JSONObject.class);
-      //          }
-       //     });
-     //   } catch (Exception e) {
-    //        throw new RuntimeException();
-    //    }
+        //         public JdApiResponse<JSONObject> call() throws Exception {
+        return request("biz.address.allProvinces.query", null, "biz_address_allProvinces_query_response", JSONObject.class);
+        //          }
+        //     });
+        //   } catch (Exception e) {
+        //        throw new RuntimeException();
+        //    }
     }
 
     /**
@@ -257,18 +259,18 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     public JdApiResponse<JSONObject> addressCitysByProvinceIdQuery(final int id) {
-      //  try {
+        //  try {
         //    return addressCache.get("addressCitysByProvinceIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
-       //         @Override
+        //         @Override
         //        public JdApiResponse<JSONObject> call() throws Exception {
-                    final JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", id);
-                    return request("biz.address.citysByProvinceId.query", jsonObject, "biz_address_citysByProvinceId_query_response", JSONObject.class);
-          //      }
-      //      });
-     //   } catch (Exception e) {
-     //       throw new RuntimeException();
-   //     }
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        return request("biz.address.citysByProvinceId.query", jsonObject, "biz_address_citysByProvinceId_query_response", JSONObject.class);
+        //      }
+        //      });
+        //   } catch (Exception e) {
+        //       throw new RuntimeException();
+        //     }
 
     }
 
@@ -283,9 +285,9 @@ public class JdProductApiClient extends  JdApiClient {
 //            return addressCache.get("addressTownsByCountyIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
 //                @Override
 //                public JdApiResponse<JSONObject> call() throws Exception {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", id);
-                    return request("biz.address.townsByCountyId.query", jsonObject, "biz_address_townsByCountyId_query_response", JSONObject.class);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        return request("biz.address.townsByCountyId.query", jsonObject, "biz_address_townsByCountyId_query_response", JSONObject.class);
 //                }
 //            });
 //        } catch (Exception e) {
@@ -304,9 +306,9 @@ public class JdProductApiClient extends  JdApiClient {
 //            return addressCache.get("addressCountysByCityIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
 //                @Override
 //                public JdApiResponse<JSONObject> call() throws Exception {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("id", id);
-                    return request("biz.address.countysByCityId.query", jsonObject, "biz_address_countysByCityId_query_response", JSONObject.class);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        return request("biz.address.countysByCityId.query", jsonObject, "biz_address_countysByCityId_query_response", JSONObject.class);
 //                }
 //            });
 //        } catch (Exception e) {
@@ -331,18 +333,18 @@ public class JdProductApiClient extends  JdApiClient {
 //            return stockCache.get(hashcode, new Callable<List<Stock>>() {
 //                @Override
 //                public List<Stock> call() throws Exception {
-                    JdApiResponse<JSONArray> response = stockFororderBatget(skuNums, region);
-                    List<Stock> result = new ArrayList<>();
-                    if (response.isSuccess()) {
-                        for (Object o : response.getResult()) {
-                            result.add(JSONObject.toJavaObject((JSONObject) o, Stock.class));
-                        }
-                        return result;
+        JdApiResponse<JSONArray> response = stockFororderBatget(skuNums, region);
+        List<Stock> result = new ArrayList<>();
+        if (response.isSuccess()) {
+            for (Object o : response.getResult()) {
+                result.add(JSONObject.toJavaObject((JSONObject) o, Stock.class));
+            }
+            return result;
 
-                    } else {
-                        LOGGER.warn("getstockerror: {}", response.toString());
-                       // throw new Exception();
-                    }
+        } else {
+            LOGGER.warn("getstockerror: {}", response.toString());
+            // throw new Exception();
+        }
 //                }
 //            });
 //        } catch (Exception e) {
@@ -359,7 +361,7 @@ public class JdProductApiClient extends  JdApiClient {
      * @return
      */
     private JdApiResponse<JSONArray> stockFororderBatget(List<SkuNum> skuNums, final Region region) {
-        if(skuNums.size() == 0){
+        if (skuNums.size() == 0) {
             throw new IllegalArgumentException("skuNumList is empty");
         }
         String area = region.getProvinceId() + "_" + region.getCityId() + "_" + region.getCountyId() + "_" + region.getTownId();
@@ -393,4 +395,43 @@ public class JdProductApiClient extends  JdApiClient {
         jsonObject.put("id", id);
         return request("biz.message.del", jsonObject, "biz_message_del_response", Boolean.class);
     }
+
+    /**
+     * @param searchCondition
+     * @return
+     */
+    public JdApiResponse<JSONArray> search(SearchCondition searchCondition) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("pageIndex", searchCondition.getPageIndex());
+        jsonObject.put("catId", searchCondition.getCatId());
+        if (searchCondition.getKeyword() != null) {
+            jsonObject.put("keyword", UrlUtils.encode(searchCondition.getKeyword()));
+        }
+        jsonObject.put("pageSize", searchCondition.getPageSize());
+        jsonObject.put("min", searchCondition.getMin());
+        jsonObject.put("max", searchCondition.getMax());
+        if (searchCondition.getBrands() != null) {
+            jsonObject.put("brands", UrlUtils.encode(searchCondition.getBrands()));
+        }
+        return request("jd.biz.search.search", jsonObject, "jd_biz_search_search_response", JSONArray.class);
+    }
+
+    /**
+     * 查询分类列表信息接口
+     * @param cid
+     * @return
+     */
+    public JdApiResponse<JSONObject> getcategory(Long cid ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cid", cid );
+        return request("jd.biz.product.getcategory", jsonObject, "jd_biz_product_getcategory_response", JSONObject.class);
+    }
+
+
+    public JdApiResponse<JSONObject> getSimilarSku(Long skuId ) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("skuId", skuId );
+        return request("jd.biz.product.getSimilarSku", jsonObject, "jd_biz_product_getSimilarSku_response", JSONObject.class);
+    }
+
 }

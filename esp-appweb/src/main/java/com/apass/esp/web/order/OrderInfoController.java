@@ -1,7 +1,6 @@
 package com.apass.esp.web.order;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,7 +167,7 @@ public class OrderInfoController {
         		}
     		}
             
-            if(null != results){
+            if(!results.isEmpty()){
             	resultMap.putAll(results);
             }else{
 	            List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,

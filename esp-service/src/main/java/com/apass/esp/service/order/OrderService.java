@@ -815,7 +815,10 @@ public class OrderService {
 			LOG.info(requestId, "当前订单状态不能确认收货", orderId);
 			throw new BusinessException("当前订单状态不能确认收货",BusinessErrorCode.ORDER_CONFIRM_ERROR);
 		}
-
+		//判断如果订单的是否发货状态不为Y(发货)，则置为Y
+		if(!StringUtils.equals(PreDeliveryType.PRE_DELIVERY_Y.getCode(), orderInfo.getPreDelivery())){
+			orderInfo.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
+		}
 		orderInfo.setAcceptGoodsDate(new Date());
 		orderInfo.setAcceptGoodsType(AcceptGoodsType.USERCONFIRM.getCode());
 		orderInfo.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
@@ -1573,4 +1576,25 @@ public class OrderService {
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
         orderInfoRepository.update(entity);
     }
+
+	/**
+	 *
+	 * @param orderStatus
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @return
+	 */
+	public Integer selectOrderCountByStatus(String orderStatus,String dateBegin,String dateEnd){
+    	return orderInfoRepository.selectOrderCountByStatus(orderStatus,dateBegin,dateEnd);
+	}
+
+
+	public Integer selectSumAmt(String dateBegin,String dateEnd){
+		return orderInfoRepository.selectSumAmt(dateBegin,dateEnd);
+	}
+
+
+	public Integer selectCreAmt(String dateBegin,String dateEnd){
+		return orderInfoRepository.selectCreAmt(dateBegin,dateEnd);
+	}
 }

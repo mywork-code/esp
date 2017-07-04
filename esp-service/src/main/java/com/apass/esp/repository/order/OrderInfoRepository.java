@@ -155,4 +155,33 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         this.getSqlSession().update("updateOrderStatus",entity);
     }
 
+    /**
+     * 根据日期和状态查询订单条数
+     * @param orderStatus
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
+    public  Integer selectOrderCountByStatus(String orderStatus,String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("orderStatus", orderStatus);
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectOne("selectOrderCountByStatus", param);
+    }
+
+    public  Integer  selectSumAmt(String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectOne("selectOrderCountByStatus", param);
+    }
+
+    public  Integer selectCreAmt(String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectOne("selectOrderCountByStatus", param);
+    }
+
 }
