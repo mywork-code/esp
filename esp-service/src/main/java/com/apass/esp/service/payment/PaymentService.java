@@ -869,13 +869,15 @@ public class PaymentService {
 	 * @throws BusinessException 
 	 */
 	public void refundCallback(String requestId, String orderId, String status, String oriTxnCode) throws BusinessException {
+		LOGGER.info("-------------------PaymentService refundCallback-----------------");
 		CashRefund cashRefund = new CashRefund();
 		cashRefund.setOrderId(orderId);
 		cashRefund.setUpdateDate(new Date());
 		CashRefundDto cashDto = getCashRefundByOrderId(orderId);
-		
+		LOGGER.info("-------------------PaymentService refundCallback parameter status--:"+status+"--->orderId--:"+orderId+"---->oriTxnCode---:"+oriTxnCode);
 		//退货成功：修改退货信息表和订单表的状态
 		if(YesNo.isYes(status)){
+			LOGGER.info("--------hahah come in surprise--------------");
 			//修改退款信息表状态为退款成功
 			cashRefund.setId(cashDto.getId());
 			cashRefund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
