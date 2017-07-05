@@ -329,7 +329,7 @@ public class PaymentHttpClient {
         try {
             String address = bbsReqUrl + ALIPAY_REFUND;
             Map<String, Object> map = new HashMap<>();
-            map.put("mainOrderId", mainOrderId);
+            map.put("merOrderId", mainOrderId);
             String requestJson = GsonUtils.toJson(map);
 
             LOG.logstashRequest("", "调用BSS退款请求:", requestJson);
