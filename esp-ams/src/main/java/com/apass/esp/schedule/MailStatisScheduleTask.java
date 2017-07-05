@@ -43,7 +43,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class MailStatisScheduleTask {
 
     @Value("${monitor.receive.emails}")
