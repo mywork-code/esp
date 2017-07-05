@@ -1,6 +1,6 @@
 package com.apass.esp.third.party.jd.entity.base;
 
-public class JdGategory {
+public class JdCategory {
     private Long id;
 
     private Long catId;

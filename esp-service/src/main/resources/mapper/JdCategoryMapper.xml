@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.apass.esp.mapper.JdGategoryMapper" >
-  <resultMap id="BaseResultMap" type="com.apass.esp.third.party.jd.entity.base.JdGategory" >
+<mapper namespace="com.apass.esp.mapper.JdCategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.third.party.jd.entity.base.JdCategory" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="cat_id" property="catId" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
@@ -27,7 +27,7 @@
     delete from t_esp_jd_category
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.apass.esp.third.party.jd.entity.base.JdGategory" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_jd_category (cat_id, name, parent_id, 
       cat_class, category_id1, category_id2, 
       category_id3, flag, status)
@@ -35,7 +35,7 @@
       #{catClass,jdbcType=INTEGER}, #{categoryId1,jdbcType=BIGINT}, #{categoryId2,jdbcType=BIGINT}, 
       #{categoryId3,jdbcType=BIGINT}, #{flag,jdbcType=BIT}, #{status,jdbcType=BIT})
   </insert>
-  <insert id="insertSelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdGategory" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_jd_category
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="catId != null" >
@@ -96,7 +96,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdGategory" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" >
     update t_esp_jd_category
     <set >
       <if test="catId != null" >
@@ -129,7 +129,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.apass.esp.third.party.jd.entity.base.JdGategory" >
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" >
     update t_esp_jd_category
     set cat_id = #{catId,jdbcType=BIGINT},
       name = #{name,jdbcType=VARCHAR},
