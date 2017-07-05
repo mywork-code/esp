@@ -378,26 +378,25 @@ public class CashRefundService {
                     } catch (BusinessException e) {
                         e.printStackTrace();
                     }
-
-                  if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                }
+                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
                     Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
                     if (!response.statusResult()) {
-                      //退款失败
-                      try {
-                        paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
-                      }catch (Exception e){
+                        //退款失败
+                        try {
+                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
+                        }catch (Exception e){
 
-                      }
-                      return Response.fail(BusinessErrorCode.NO);
+                        }
+                        return Response.fail(BusinessErrorCode.NO);
                     }else{
-                      //退款成功
-                      try {
-                        paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
-                      }catch (Exception e){
+                        //退款成功
+                        try {
+                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
+                        }catch (Exception e){
 
-                      }
+                        }
                     }
-                  }
                 }
             }
             return Response.successResponse();
