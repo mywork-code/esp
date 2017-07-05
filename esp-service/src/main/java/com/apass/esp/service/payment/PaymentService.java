@@ -38,6 +38,7 @@ import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -49,6 +50,7 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.service.refund.CashRefundTxnService;
@@ -96,6 +98,9 @@ public class PaymentService {
 	public CashRefundTxnService cashRefundTxnService;
 	@Autowired
 	private CommonService commonService;
+	@Autowired
+	private KvattrService kvattrService ;
+
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 
@@ -386,7 +391,7 @@ public class PaymentService {
 		if (customerBasicInfo == null) {
 			throw new BusinessException("额度信息查询失败");
 		}
-		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,downPayType);
+		PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 		payReq.setDownPayAmt(payInfo.getCreditPayDownPayAmt());
 		if(StringUtils.isNotEmpty(cardNo)){
 			if (!cardNo.equals(customerBasicInfo.getCardNo())) {
@@ -574,7 +579,7 @@ public class PaymentService {
 		} else {
 			//2、用户可用额度>0
 			// 计算额度支付金额
-			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,"","");
+			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 			Response overDue = paymentHttpClient.hasOverDueBill(userId);
 			boolean overDue1 = false;
 			if(!overDue.statusResult()){
@@ -618,7 +623,7 @@ public class PaymentService {
 	 *            订单总金额
 	 * @return
 	 */
-	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt,String paymentType1,String downPayType) {
+	public PayInfoEntity calculateCreditPayRatio(BigDecimal creditAvailAmt, BigDecimal orderAmt) {
 
 		PayInfoEntity payInfo = new PayInfoEntity();
 		boolean supportCredit = false;
@@ -643,7 +648,7 @@ public class PaymentService {
 				//首付比例固定10%
 				supportCredit = true;
 				paymentType = PaymentType.CREDIT_PAYMENT.getCode();
-				downPayAmt = scale2Decimal(orderAmt.multiply(BigDecimal.valueOf(0.1)));
+				downPayAmt = scale2Decimal(orderAmt.multiply(new BigDecimal(getDownRatio())));
 				creditPayAmt = orderAmt.subtract(downPayAmt);
 			} else if (creditAvailAmt.compareTo(halfOrderAmt) >= 0
 					&& creditAvailAmt.compareTo(orderAmt90) == -1) {
@@ -659,7 +664,6 @@ public class PaymentService {
 		payInfo.setPaymentType(paymentType);
 		// 若使用银行卡支付需要金额
 		payInfo.setCardPayAmt(cardPayAmt);
-		payInfo.setDownPayType(downPayType);
 		return payInfo;
 	}
 
@@ -671,7 +675,15 @@ public class PaymentService {
     double d = creditAvailAmt.doubleValue() % digit;
     return decimalFormat.format(d);
   }
-
+  
+  /**
+   * 设置首付比例
+   * @return
+   */
+  public String getDownRatio(){
+	  DownPayRatio ratio = kvattrService.get(new DownPayRatio());
+	  return ratio.getRatio();
+  }
 
 	/**
 	 * 支付方式选择确认
@@ -686,7 +698,7 @@ public class PaymentService {
 	 * @throws BusinessException
 	 */
 	@Monitor(methodDesc="支付方式选择确认")
-	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType,String downPayType) throws BusinessException {
+	public PayInfoEntity confirmPayMethod(String requestId, Long userId, List<String> orderList, String paymentType) throws BusinessException {
 		PayInfoEntity payInfo = new PayInfoEntity();
 		payInfo.setUserId(userId);
 		// 设置支付方式
@@ -727,13 +739,12 @@ public class PaymentService {
 			throw new BusinessException("额度信息查询失败");
 		}
 		// 设置不同支付方式支付金额
-		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt,paymentType,"");
+		payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
 		payInfo.setCardPayAmt(totalAmt);
 		payInfo.setBankCode(customerBasicInfo.getBankCode());
 		payInfo.setCardNo(customerBasicInfo.getCardNo());
 		payInfo.setCardType(customerBasicInfo.getCardType());
 		payInfo.setCardBank(customerBasicInfo.getCardBank());
-		payInfo.setDownPayType(downPayType);
 		return payInfo;
 	}
 
