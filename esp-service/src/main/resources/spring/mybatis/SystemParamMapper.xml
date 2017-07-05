@@ -15,7 +15,8 @@
 		create_user createUser,
 		create_date createDate,
 		update_user updateUser,
-		update_date updateDate
+		update_date updateDate,
+		price_cost_date	priceCostDate
 		FROM
 		t_esp_system_param_info 
 		order by update_date desc
@@ -27,7 +28,7 @@
 	<update id="updateSystemParamInfo">
 		update t_esp_system_param_info set
 		merchant_Settle_rate=#{merchantSettleRate},goods_price_rate=#{goodsPriceRate},
-		update_user=#{userName},update_date=#{systemtime}
+		update_user=#{userName},update_date=#{systemtime},price_cost_date=#{priceCostDate}
 		where id=#{id}
 	</update>
 </mapper>
