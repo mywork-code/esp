@@ -35,11 +35,22 @@ $ (function ()
 		                align : 'center'
 		            },
 		            
+//		            {
+//		                title : '商品价格折扣率(市场价*折扣率=当前售价)',
+//		                field : 'goodsPriceRate',
+//		                width : 250,
+//		                align : 'center'
+//		            },
 		            {
-		                title : '商品价格折扣率(市场价*折扣率=当前售价)',
-		                field : 'goodsPriceRate',
-		                width : 250,
-		                align : 'center'
+		            	title : '保本率(售价/成本价*100%=保本率)',//保留两位小数，四舍五入
+		            	field : 'priceCostDate',
+		            	width : 250,
+		            	align : 'center',
+		            	formatter:function(value, row, index){
+		            		if(value != null && value !=''){
+		            			return value+"%";
+		            		}
+		            	}
 		            },
 		            
 		            {
@@ -99,7 +110,8 @@ $ (function ()
 		id_o = data.id;
 		$ ("#editSystemParamInfo").dialog ("open");
 		$ ("#merchantSettleRate").val (data.merchantSettleRate);
-		$ ("#goodsPriceRate").val (data.goodsPriceRate);
+//		$ ("#goodsPriceRate").val (data.goodsPriceRate);
+		$ ("#priceCostDate").val (data.priceCostDate);
 	}
 
 	$.querySystemParamInfo = function (data)
@@ -118,7 +130,8 @@ function confirmBtn ()
 		if (r)
 		{
 			var merchantSettleRate = $ ("#merchantSettleRate").val ();
-			var goodsPriceRate = $ ("#goodsPriceRate").val ();
+//			var goodsPriceRate = $ ("#goodsPriceRate").val ();
+			var priceCostDate = $ ("#priceCostDate").val ();
 			
 			// 验证参数
 			if (merchantSettleRate < 0 || merchantSettleRate > 1)
@@ -127,9 +140,14 @@ function confirmBtn ()
 				return false;
 			}
 			
-			if (goodsPriceRate < 0 || goodsPriceRate > 1)
+//			if (goodsPriceRate < 0 || goodsPriceRate > 1)
+//			{
+//				$.messager.alert ('消息', "商品价格折扣率字段不合法，必须在0到1之间");
+//				return false;
+//			}
+			if (priceCostDate < 0)
 			{
-				$.messager.alert ('消息', "商品价格折扣率字段不合法，必须在0到1之间");
+				$.messager.alert ('消息', "保本率字段不合法，必须大于0");
 				return false;
 			}
 			
@@ -141,7 +159,8 @@ function confirmBtn ()
 			    {
 			        "id" : id,
 			        "merchantSettleRate" : merchantSettleRate,
-			        "goodsPriceRate" : goodsPriceRate,
+//			        "goodsPriceRate" : goodsPriceRate,
+			        "priceCostDate" : priceCostDate,
 			    },
 			    type : "post",
 			    dataType : "json",

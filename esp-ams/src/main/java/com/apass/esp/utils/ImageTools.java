@@ -171,6 +171,27 @@ public class ImageTools {
 		}
 		return false;
 	}
+	
+	/**
+	 * 文件宽度高度验证:一级类目图标
+	 * 
+	 * @param file
+	 *            图片文件
+	 * @return boolean
+	 */
+	public static boolean checkCategoryLevel1ImgSize(MultipartFile file) {
+		try {
+			int width = getImgWidth(file.getInputStream());
+			int height = getImgHeight(file.getInputStream());
+			
+			if (width == 100 && height == 100) {// 100*100
+				return true;
+			}
+		} catch (IOException e) {
+			LOGGER.info("图片宽度高度校验失败！", e);
+		}
+		return false;
+	}
 
 	/**
 	 * 文件宽度高度验证:logo图

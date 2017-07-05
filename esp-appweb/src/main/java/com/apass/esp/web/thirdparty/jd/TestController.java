@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -29,11 +30,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Test;
-import com.apass.esp.mapper.TestMapper;
+import com.apass.esp.mapper.JdGategoryMapper;
+import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
+import com.apass.esp.third.party.jd.entity.base.JdGategory;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -61,6 +65,8 @@ public class TestController {
 
     private static final String JD_TOKEN_REDIS_KEY = "JD_TOKEN_REDIS_KEY";
 
+    private ConcurrentHashMap<String, JdGategory> concurrentHashMap = new ConcurrentHashMap<>();
+
     @Autowired
     private CacheManager cacheManager;
 
@@ -75,7 +81,10 @@ public class TestController {
 
 
     @Autowired
-    private TestMapper testMapper;
+    private JdGoodsMapper jdGoodsMapper;
+
+    @Autowired
+    private JdGategoryMapper jdGategoryMapper;
 
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
@@ -204,16 +213,15 @@ public class TestController {
     @RequestMapping(value = "/test1111", method = RequestMethod.POST)
     @ResponseBody
     public Response test1111(@RequestBody Map<String, Object> paramMap) {
-        SearchCondition  searchCondition = new SearchCondition();
+        SearchCondition searchCondition = new SearchCondition();
         searchCondition.setKeyword("1");
-        JdApiResponse<JSONArray> jsonArrayJdApiResponse =  jdProductApiClient.search(searchCondition);
+        JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.search(searchCondition);
         return Response.success("1", jsonArrayJdApiResponse);
 
     }
 
 
-
-        @RequestMapping(value = "/test111", method = RequestMethod.POST)
+    @RequestMapping(value = "/test111", method = RequestMethod.POST)
     @ResponseBody
     public Response test111(@RequestBody Map<String, Object> paramMap) {
         JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.productPageNumQuery();
@@ -263,26 +271,89 @@ public class TestController {
                     continue;
                 }
                 String name = (String) jsonObject1.get("name");//商品名称
+                String brandName = (String) jsonObject1.get("brandName");//
+                Integer state = (Integer) jsonObject1.get("state");//
+                String imagePath = (String) jsonObject1.get("imagePath");//
+                String weight = (String) jsonObject1.get("weight");//
+                String productArea = (String) jsonObject1.get("productArea");//
+                String upc = (String) jsonObject1.get("upc");//
+                String saleUnit = (String) jsonObject1.get("saleUnit");//
+                String category = (String) jsonObject1.get("category");//
+                String wareQD = (String) jsonObject1.get("wareQD");//
+
                 long skuId = Long.valueOf(s);
                 BigDecimal price = (BigDecimal) jsonObject12.get("price");
                 BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
-                Test test = new Test();
                 LOGGER.info("jdPrice {},price {},skuId {},name {}", jdPrice, price, skuId, name);
-                test.setSkuid(skuId);
-                test.setName(name);
-                test.setJdprice(jdPrice);
-                test.setPrice(price);
-                //list.add(test);
-                testMapper.insert(test);
-                LOGGER.info("list.size() {}", list.size());
+                String[] categorys = category.split(";");
+
+                for (int i = 0; i < 3; i++) {
+                    addCategory(categorys[i], i + 1);
+                }
+
+                JdGoods jdGoods = new JdGoods();
+                jdGoods.setFirstCategory(Integer.valueOf(categorys[0]));
+                jdGoods.setSecondCategory(Integer.valueOf(categorys[1]));
+                jdGoods.setThirdCategory(Integer.valueOf(categorys[2]));
+                jdGoods.setSkuId(skuId);
+                jdGoods.setBrandName(brandName);
+                jdGoods.setImagePath(imagePath);
+                jdGoods.setName(name);
+                jdGoods.setProductArea(productArea);
+                jdGoods.setJdPrice(jdPrice);
+                jdGoods.setPrice(price);
+                jdGoods.setSaleUnit(saleUnit);
+                //jdGoods.setWareQd(wareQD);
+                jdGoods.setWeight(new BigDecimal(weight));
+                jdGoods.setUpc(upc);
+                jdGoods.setState(state == 1 ? true : false);
+                try {
+                    jdGoodsMapper.insertSelective(jdGoods);
+                } catch (Exception e) {
+                    LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+                }
             }
         }
-        try {
-            generateFile("E://a.csv", list);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return Response.success("1", jdApiResponse);
+    }
+
+    private void addCategory(String category, int level) {
+        if (concurrentHashMap.get(category) == null) {
+            JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.getcategory(Long.valueOf(category));
+            if (jdApiResponse == null || jdApiResponse.getResult() == null) {
+                return;
+            }
+            if (!jdApiResponse.isSuccess()) {
+                return;
+            }
+
+            JSONObject jsonObject = jdApiResponse.getResult();
+            Integer parentId = jsonObject.getInteger("parentId");
+            Integer catClass = jsonObject.getInteger("catClass");
+            String name = jsonObject.getString("name");
+            Integer catId = jsonObject.getInteger("catId");
+            Integer state = jsonObject.getInteger("state");
+
+            JdGategory jdGategory = new JdGategory();
+            jdGategory.setName(name);
+            jdGategory.setParentId(Long.valueOf(parentId));
+            jdGategory.setCatClass(catClass);
+            jdGategory.setFlag(false);
+            jdGategory.setCatId(Long.valueOf(catId));
+            jdGategory.setStatus(state == 1 ? true : false);
+            jdGategory.setCategoryId1(0l);
+            jdGategory.setCategoryId2(0l);
+            jdGategory.setCategoryId3(0l);
+            try {
+                jdGategoryMapper.insertSelective(jdGategory);
+
+            } catch (Exception e) {
+
+                LOGGER.error("insert jdGategoryMapper sql catId {}", catId);
+            }
+            concurrentHashMap.putIfAbsent(category, jdGategory);
+        }
     }
 
 
@@ -483,10 +554,10 @@ public class TestController {
     public Response createOrder(@RequestBody Map<String, Object> paramMap) {
         List<SkuNum> skuNumList = new ArrayList<>();
         List<PriceSnap> priceSnaps = new ArrayList<>();
-        String a = "2505469,4296760,2960722,1306690,3322264,2151223,2279081,4090096,2707747,1461789,1251168,3924990,1520604,1013934,1142542,2505451,850480,1236501,1289269,1527062,3244294,927450,1445505,1198563,1039954,1013945,1598118,1135325,850527,1982334,240619,1063869,1520994,1079753,1112057,3437709,2505487,735579,2648232,2648234,938978,1723381,1080379,3398826,3398818,1214100,850554,2383574,2792533,2315164,1622773,521627,2201917,2201398,998208,2290828,678049,3530722,1112406,856040,1165598,1135309,1103805,2289256,3101907,677994,3814057,1622534,733368,566677,1982364,266642,2009346,1045107,688952,850912,2505316,2230814,1124813,1331616,1013923,944927,2151226,2905507,2214447,589876,2761381,3780923,1201214,3646148,536144,897821,864568,1124811,2291709,1123437,276156,2290217,1782399,2492652,3864733,4258124,2967575,919698,2167411,1013925,2290357,214619,945791,2315218,1132537,2505406,1982367,2948486,566685,2270049,2844038,3544926,1293300,1013917,3748117,3748105,4191916,2783367,2111135,1065702,2918632,1142568,2230820,2379388,853346";
+        String a = "1260415";
         String aa[] = a.split(",");
         List<Long> skulist = new ArrayList<Long>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             SkuNum skuNum = new SkuNum();
             skuNum.setNum(1);
             skuNum.setSkuId(Long.valueOf(aa[i]));

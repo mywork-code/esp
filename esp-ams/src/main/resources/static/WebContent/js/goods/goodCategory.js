@@ -110,7 +110,8 @@ $(function() {
 	    onClick:function(item){   
 	    	if(item.text == '编辑'){
 	    		$("#editCategoryDetail").window('open');
-	    		if(categoryLevel == 3){
+	    		$("#editCategoryLevel").val(categoryLevel);
+	    		if(categoryLevel == 3 || categoryLevel == 1){
 	    			loadPic("editShowCategoryPicId",picUrl);
 	    		}
 	    		$("#editCategoryName").textbox('setValue',categoryName);
@@ -344,7 +345,6 @@ $(function() {
 		thisform.form("submit",{
 			url : ctx + '/categoryinfo/category/addpic',
 			success : function(data) {
-				debugger;
 				var response = JSON.parse(data);
 				ifLogout(response);
 				if(response.status=="1"){
@@ -588,18 +588,26 @@ function ifLogout(data){
 }
 //显示类目名称方法
 function showCategroyName(level){
+	debugger;
+	$("#addCategoryLevel").val(level);
 	if(level=='1'){
 		$(".oneCategory").css("display","inline");
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","none");
+		$(".threeCategoryAndOneCategoryShow").css("display","inline");
+		$(".spanRemind").css("display","block");
 	}else if(level=='2'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","inline");
 		$(".threeCategory").css("display","none");
+		$(".threeCategoryAndOneCategoryShow").css("display","none");
+		$(".spanRemind").css("display","none");
 	}else if(level=='3'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","inline");
+		$(".threeCategoryAndOneCategoryShow").css("display","inline");
+		$(".spanRemind").css("display","none");
 	}
 }
 //上移下移方法
