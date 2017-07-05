@@ -55,4 +55,4 @@ CREATE TABLE `t_esp_jd_goods` (
 
 
 ALTER TABLE `t_esp_system_param_info`
-ADD COLUMN `price_cost_date` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/成本价*100%=保本率)';
+ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/成本价*100%=保本率)';
