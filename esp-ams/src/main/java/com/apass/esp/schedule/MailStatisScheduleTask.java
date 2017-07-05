@@ -43,7 +43,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class MailStatisScheduleTask {
 
     @Value("${monitor.receive.emails}")
@@ -64,38 +64,62 @@ public class MailStatisScheduleTask {
     @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
 
-        String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");
-        Date date = DateFormatUtil.addDays(new Date(), -1);
+        String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
+
+        Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
         String date2 = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
+        Date datev = DateFormatUtil.addDays(new Date(), -2);//前一天
+        String date3 = DateFormatUtil.dateToString(datev, "YYYY-MM-dd");
+        String subCurrentDate2 = currentDate.substring(0, 8);
+        
         String subCurrentDate = currentDate.substring(0, 8);
         String subCurrentDate1 = currentDate.substring(8, 10);
-        if ("01".equalsIgnoreCase(subCurrentDate1)) {
-            date2 = currentDate;
+        //当天是1号  发上个月的
+
+        int count1= 0,count2= 0,count3= 0,count4= 0,count5= 0,count6= 0,count7= 0,count11 = 0,count22= 0,count33= 0,count44= 0,count55= 0,count66= 0,count77 =0;
+        if ("01".equalsIgnoreCase(subCurrentDate1)||"02".equalsIgnoreCase(subCurrentDate1)) {
+            String last =date2;//最后一天
+            String first =subCurrentDate2+"01";
+            //待付款
+             count1 = orderService.selectOrderCountByStatus("D00", first, last);
+            //待发货
+             count2 = orderService.selectOrderCountByStatus("D02", first, last);
+            //待收货
+             count3 = orderService.selectOrderCountByStatus("D03", first, last);
+            //订单失效
+             count4 = orderService.selectOrderCountByStatus("D07", first, last);
+            //银行卡总额
+             count5 = orderService.selectCreAmt(first, last);
+            //额度支付
+             count6 = orderService.selectSumAmt(first, last);
+             count7 = count1 + count2 + count3 + count4;
+        }else{
+            String beginDate = subCurrentDate + "01";
+            //待付款
+             count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
+             count11 = orderService.selectOrderCountByStatus("D00", beginDate, date2);
+            //待发货
+             count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
+             count22 = orderService.selectOrderCountByStatus("D02", beginDate, date2);
+            //待收货
+             count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
+             count33 = orderService.selectOrderCountByStatus("D03", beginDate, date2);
+            //订单失效
+             count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
+             count44 = orderService.selectOrderCountByStatus("D07", beginDate, date2);
+            //银行卡总额
+             count5 = orderService.selectCreAmt(beginDate, currentDate);
+             count55 = orderService.selectCreAmt(beginDate, date2);
+            //额度支付
+             count6 = orderService.selectSumAmt(beginDate, currentDate);
+             count66 = orderService.selectSumAmt(beginDate, date2);
+             count7 = count1 + count2 + count3 + count4;
+             count77 = count11 + count22 + count33 + count44;
         }
-        String beginDate = subCurrentDate + "01";
-        //待付款
-        int count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
-        int count11 = orderService.selectOrderCountByStatus("D00", beginDate, date2);
-        //待发货
-        int count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
-        int count22 = orderService.selectOrderCountByStatus("D02", beginDate, date2);
-        //待收货
-        int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
-        int count33 = orderService.selectOrderCountByStatus("D03", beginDate, date2);
-        //订单失效
-        int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
-        int count44 = orderService.selectOrderCountByStatus("D07", beginDate, date2);
-        //银行卡总额
-        int count5 = orderService.selectCreAmt(beginDate, currentDate);
-        int count55 = orderService.selectCreAmt(beginDate, date2);
-        //额度支付
-        int count6 = orderService.selectSumAmt(beginDate, currentDate);
-        int count66 = orderService.selectSumAmt(beginDate, date2);
-        int count7 = count1 + count2 + count3 + count4;
-        int count77 = count11 + count22 + count33 + count44;
+       
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
-        exportDomain.setDate(subCurrentDate + "01"+"-"+currentDate);
+        exportDomain.setDate(subCurrentDate + "01"+"-"+date2);
         exportDomain.setCount1(count1);
         exportDomain.setCount2(count2);
         exportDomain.setCount3(count3);
@@ -103,15 +127,18 @@ public class MailStatisScheduleTask {
         exportDomain.setCount5(count5);
         exportDomain.setCount6(count6);
         exportDomain.setCount7(count7);
-        ExportDomain exportDomain1 = new ExportDomain();
-        exportDomain1.setDate(subCurrentDate + "01"+"-"+date2);
-        exportDomain1.setCount1(count11);
-        exportDomain1.setCount2(count22);
-        exportDomain1.setCount3(count33);
-        exportDomain1.setCount4(count44);
-        exportDomain1.setCount5(count55);
-        exportDomain1.setCount6(count66);
-        exportDomain1.setCount7(count77);
+        if (!"01".equalsIgnoreCase(subCurrentDate1)&&!"02".equalsIgnoreCase(subCurrentDate1)) {
+            ExportDomain exportDomain1 = new ExportDomain();
+            exportDomain1.setDate(subCurrentDate + "01"+"-"+date3);
+            exportDomain1.setCount1(count11);
+            exportDomain1.setCount2(count22);
+            exportDomain1.setCount3(count33);
+            exportDomain1.setCount4(count44);
+            exportDomain1.setCount5(count55);
+            exportDomain1.setCount6(count66);
+            exportDomain1.setCount7(count77);
+            list.add(exportDomain1);
+        }
         list.add(exportDomain);
         try {
             generateFile(list);
