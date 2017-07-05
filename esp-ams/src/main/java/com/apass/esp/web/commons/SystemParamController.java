@@ -88,9 +88,9 @@ public class SystemParamController {
             String id = HttpWebUtils.getValue(request, "id");
             String merchantSettleRate = HttpWebUtils.getValue(request, "merchantSettleRate");
 //            String goodsPriceRate = HttpWebUtils.getValue(request, "goodsPriceRate");
-            String priceCostDate = HttpWebUtils.getValue(request, "priceCostDate");
-            if(StringUtils.isNotBlank(priceCostDate)){
-            	priceCostDate = new BigDecimal(priceCostDate).divide(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP).toString();
+            String priceCostRate = HttpWebUtils.getValue(request, "priceCostRate");
+            if(StringUtils.isNotBlank(priceCostRate)){
+            	priceCostRate = new BigDecimal(priceCostRate).divide(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP).toString();
             }
 
             // 获取商户号
@@ -103,7 +103,7 @@ public class SystemParamController {
             map.put("id", id);
             map.put("merchantSettleRate", merchantSettleRate);
 //            map.put("goodsPriceRate", goodsPriceRate);
-            map.put("priceCostDate", priceCostDate);
+            map.put("priceCostRate", priceCostRate);
             map.put("userName", userName);
             map.put("systemtime", DateFormatUtil.getCurrentDate());
 
@@ -136,7 +136,7 @@ public class SystemParamController {
 //        if (StringUtils.isAnyBlank(map.get("goodsPriceRate"))) {
 //            throw new BusinessException("商品价格折扣率不能为空!");
 //        }
-        if (StringUtils.isAnyBlank(map.get("priceCostDate"))) {
+        if (StringUtils.isAnyBlank(map.get("priceCostRate"))) {
         	throw new BusinessException("保本率不能为空!");
         }
 
@@ -144,7 +144,7 @@ public class SystemParamController {
 //            || Double.parseDouble(map.get("goodsPriceRate").toString()) > 1) {
 //            throw new BusinessException("商品价格折扣率字段不合法，必须在0到1之间!");
 //        }
-        if (Double.parseDouble(map.get("priceCostDate").toString()) < 0) {
+        if (Double.parseDouble(map.get("priceCostRate").toString()) < 0) {
         	throw new BusinessException("保本率字段不合法，必须大于0");
         }
     }

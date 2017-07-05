@@ -131,7 +131,8 @@ public class GoodsBaseInfoController {
                 map.put("merchantStatus", merchantStatus);
             }
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
             
             if(SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
@@ -155,7 +156,8 @@ public class GoodsBaseInfoController {
         Map<String, Object> map = Maps.newHashMap();
         try {
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
        
             if(SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {

@@ -43,7 +43,7 @@ $ (function ()
 //		            },
 		            {
 		            	title : '保本率(售价/成本价*100%=保本率)',//保留两位小数，四舍五入
-		            	field : 'priceCostDate',
+		            	field : 'priceCostRate',
 		            	width : 250,
 		            	align : 'center',
 		            	formatter:function(value, row, index){
@@ -111,7 +111,7 @@ $ (function ()
 		$ ("#editSystemParamInfo").dialog ("open");
 		$ ("#merchantSettleRate").val (data.merchantSettleRate);
 //		$ ("#goodsPriceRate").val (data.goodsPriceRate);
-		$ ("#priceCostDate").val (data.priceCostDate);
+		$ ("#priceCostRate").val (data.priceCostRate);
 	}
 
 	$.querySystemParamInfo = function (data)
@@ -131,7 +131,7 @@ function confirmBtn ()
 		{
 			var merchantSettleRate = $ ("#merchantSettleRate").val ();
 //			var goodsPriceRate = $ ("#goodsPriceRate").val ();
-			var priceCostDate = $ ("#priceCostDate").val ();
+			var priceCostRate = $ ("#priceCostRate").val ();
 			
 			// 验证参数
 			if (merchantSettleRate < 0 || merchantSettleRate > 1)
@@ -145,7 +145,7 @@ function confirmBtn ()
 //				$.messager.alert ('消息', "商品价格折扣率字段不合法，必须在0到1之间");
 //				return false;
 //			}
-			if (priceCostDate < 0)
+			if (priceCostRate < 0)
 			{
 				$.messager.alert ('消息', "保本率字段不合法，必须大于0");
 				return false;
@@ -160,7 +160,7 @@ function confirmBtn ()
 			        "id" : id,
 			        "merchantSettleRate" : merchantSettleRate,
 //			        "goodsPriceRate" : goodsPriceRate,
-			        "priceCostDate" : priceCostDate,
+			        "priceCostRate" : priceCostRate,
 			    },
 			    type : "post",
 			    dataType : "json",

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.utils.RandomUtils;

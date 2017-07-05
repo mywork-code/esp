@@ -128,7 +128,8 @@
 
 	<!-- 系统参数-->
 	<input type="hidden" id="merchantStatus" name="merchantStatus" value="${merchantStatus!}" />
-	<input type="hidden" id="goodsPriceRate" name="goodsPriceRate" value="${goodsPriceRate!}" />
+<!-- 	<input type="hidden" id="goodsPriceRate" name="goodsPriceRate" value="${goodsPriceRate!}" /> -->
+	<input type="hidden" id="priceCostRate" name="priceCostRate" value="${priceCostRate!}" />
 	<input type="hidden" id="merchantSettleRate" name="merchantSettleRate" value="${merchantSettleRate!}">
 <!-- ====================================================--------添加商品 始-------------================================================= -->
 	<!-- 添加商品 -->
@@ -590,8 +591,7 @@
 					<td align="right"><font color="red">*</font>商品价格:</td>
 					<td><input class="easyui-numberspinner" type="text"
 						data-options="min:1,max:100000,precision:2" id="goodsPrice" name="goodsPrice"
-						required="true" missingMessage="1~100000之间的正整数"
-						style="width: 100%;" readonly="readonly"/></td>
+						required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/></td>
 				</tr>
 				<tr>
 					<td align="right"><font color="red">*</font>库存量:</td>
@@ -668,8 +668,7 @@
 					<td align="right"><font color="red">*</font>商品价格:</td>
 					<td><input class="easyui-numberspinner" type="text"
 						data-options="min:1,max:100000,precision:2" id="editgoodsPrice" name="editgoodsPrice"
-						required="true" missingMessage="1~100000之间的正整数"
-						style="width: 100%;"  readonly="readonly"/></td>
+						required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" /></td>
 				</tr>
 				<tr>
 					<td align="right"><font color="red">*</font>库存量:</td>

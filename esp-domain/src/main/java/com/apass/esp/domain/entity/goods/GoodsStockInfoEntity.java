@@ -33,7 +33,7 @@ public class GoodsStockInfoEntity {
     /** 商品id **/
     private Long       goodsId;
 
-    /** 商品价格 **/
+    /** 商品价格 --售价**/
     private BigDecimal goodsPrice;
 
     private String     goodsName;
