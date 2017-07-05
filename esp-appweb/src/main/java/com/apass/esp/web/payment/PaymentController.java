@@ -114,7 +114,6 @@ public class PaymentController {
             String userIdStr = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);      //  用户号
             String orderListStr = CommonUtils.getValue(paramMap, "orderList");      //  订单订单列表
             String paymentType = CommonUtils.getValue(paramMap, "paymentType");         //  选择支付方式
-            String downPayType = CommonUtils.getValue(paramMap, "downPayType");  //  选择首付支付方式
             
             String requestId = logStashSign + "_" + userIdStr;
             LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -138,7 +137,7 @@ public class PaymentController {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            PayInfoEntity payInfo = paymentService.confirmPayMethod(requestId , userId, orderList,paymentType,downPayType);
+            PayInfoEntity payInfo = paymentService.confirmPayMethod(requestId , userId, orderList,paymentType);
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
