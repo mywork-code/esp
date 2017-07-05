@@ -44,6 +44,11 @@ public class SystemParamEntity {
      * 修改日期
      */
     private Date       updateDate;
+    
+    /**
+     * 保本率(售价/成本价*100%=保本率)
+     */
+    private BigDecimal priceCostDate;
 
     public Long getId() {
         return id;
@@ -108,5 +113,15 @@ public class SystemParamEntity {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public BigDecimal getPriceCostDate() {
+		return priceCostDate;
+	}
+
+	public void setPriceCostDate(BigDecimal priceCostDate) {
+		this.priceCostDate = priceCostDate.multiply(new BigDecimal(100));
+	}
+    
+    
 
 }
