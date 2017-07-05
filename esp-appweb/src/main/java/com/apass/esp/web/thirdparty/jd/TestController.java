@@ -30,13 +30,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Test;
-import com.apass.esp.mapper.JdGategoryMapper;
+import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
-import com.apass.esp.third.party.jd.entity.base.JdGategory;
+import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
@@ -65,7 +65,7 @@ public class TestController {
 
     private static final String JD_TOKEN_REDIS_KEY = "JD_TOKEN_REDIS_KEY";
 
-    private ConcurrentHashMap<String, JdGategory> concurrentHashMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, JdCategory> concurrentHashMap = new ConcurrentHashMap<>();
 
     @Autowired
     private CacheManager cacheManager;
@@ -84,7 +84,7 @@ public class TestController {
     private JdGoodsMapper jdGoodsMapper;
 
     @Autowired
-    private JdGategoryMapper jdGategoryMapper;
+    private JdCategoryMapper jdCategoryMapper;
 
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
@@ -335,24 +335,24 @@ public class TestController {
             Integer catId = jsonObject.getInteger("catId");
             Integer state = jsonObject.getInteger("state");
 
-            JdGategory jdGategory = new JdGategory();
-            jdGategory.setName(name);
-            jdGategory.setParentId(Long.valueOf(parentId));
-            jdGategory.setCatClass(catClass);
-            jdGategory.setFlag(false);
-            jdGategory.setCatId(Long.valueOf(catId));
-            jdGategory.setStatus(state == 1 ? true : false);
-            jdGategory.setCategoryId1(0l);
-            jdGategory.setCategoryId2(0l);
-            jdGategory.setCategoryId3(0l);
+            JdCategory jdCategory = new JdCategory();
+            jdCategory.setName(name);
+            jdCategory.setParentId(Long.valueOf(parentId));
+            jdCategory.setCatClass(catClass);
+            jdCategory.setFlag(false);
+            jdCategory.setCatId(Long.valueOf(catId));
+            jdCategory.setStatus(state == 1 ? true : false);
+            jdCategory.setCategoryId1(0l);
+            jdCategory.setCategoryId2(0l);
+            jdCategory.setCategoryId3(0l);
             try {
-                jdGategoryMapper.insertSelective(jdGategory);
+                jdCategoryMapper.insertSelective(jdCategory);
 
             } catch (Exception e) {
 
-                LOGGER.error("insert jdGategoryMapper sql catId {}", catId);
+                LOGGER.error("insert jdCategoryMapper sql catId {}", catId);
             }
-            concurrentHashMap.putIfAbsent(category, jdGategory);
+            concurrentHashMap.putIfAbsent(category, jdCategory);
         }
     }
 
