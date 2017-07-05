@@ -1,5 +1,30 @@
 package com.apass.esp.web.thirdparty.jd;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
@@ -16,24 +41,9 @@ import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.cache.CacheManager;
+
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
-import org.apache.poi.hssf.usermodel.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * type: class
@@ -127,33 +137,67 @@ public class TestController {
         JdApiResponse<String> jdApiResponse = jdOrderApiClient.priceBalanceGet(4);
         return Response.success("1", jdApiResponse);
     }
-
+    /**
+     * 查询京东四级地址并插入数据库
+     * @param paramMap
+     * @return
+     */
+    @RequestMapping(value = "/queryAddress", method = RequestMethod.POST)
+    @ResponseBody
+    public Response queryAddress(@RequestBody Map<String, Object> paramMap) {
+    	try {
+//    		jdProductApiClient.queryAddress();
+    		return Response.success("成功查询京东一二级地址并保存数据库");
+		}catch (Exception e) {
+			return Response.fail("失败");
+		}
+    }
+    @RequestMapping(value = "/queryDistrict", method = RequestMethod.POST)
+    @ResponseBody
+    public Response queryDistrict(@RequestBody Map<String, Object> paramMap) {
+    	try {
+//    		jdProductApiClient.queryDistrict();
+    		return Response.success("成功查询二级类目插入三级类目");
+		} catch (Exception e) {
+			return Response.fail("失败");
+		}
+    }
+    @RequestMapping(value = "/queryTowns", method = RequestMethod.POST)
+    @ResponseBody
+    public Response queryTowns(@RequestBody Map<String, Object> paramMap) {
+    	try {
+//    		jdProductApiClient.queryTowns();
+    		return Response.success("成功查询三级类目插入四级类目");
+		} catch (Exception e) {
+			return Response.fail("失败");
+		}
+    }
     @RequestMapping(value = "/pctt", method = RequestMethod.POST)
     @ResponseBody
-    public Response pctt(@RequestBody Map<String, Object> paramMap) {
+    public Response pctt(@RequestBody Map<String, Object> paramMap) throws InterruptedException {
         JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressAllProvincesQuery();
         return Response.success("1", jdApiResponse);
     }
 
     @RequestMapping(value = "/addressCitysByProvinceIdQuery", method = RequestMethod.POST)
     @ResponseBody
-    public Response addressCitysByProvinceIdQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressCitysByProvinceIdQuery(2);
+    public Response addressCitysByProvinceIdQuery(@RequestBody Map<String, Object> paramMap) throws InterruptedException {
+        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressCitysByProvinceIdQuery(1);
         return Response.success("1", jdApiResponse);
     }
 
 
     @RequestMapping(value = "/addressCountysByCityIdQuery", method = RequestMethod.POST)
     @ResponseBody
-    public Response addressCountysByCityIdQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressCountysByCityIdQuery(2813);
+    public Response addressCountysByCityIdQuery(@RequestBody Map<String, Object> paramMap) throws InterruptedException {
+        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressCountysByCityIdQuery(1090);
         return Response.success("1", jdApiResponse);
     }
 
     @RequestMapping(value = "/addressTownsByCountyIdQuery", method = RequestMethod.POST)
     @ResponseBody
-    public Response addressTownsByCountyIdQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressTownsByCountyIdQuery(51931);
+    public Response addressTownsByCountyIdQuery(@RequestBody Map<String, Object> paramMap) throws InterruptedException {
+        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressTownsByCountyIdQuery(48299);
         return Response.success("1", jdApiResponse);
     }
 

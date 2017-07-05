@@ -1,24 +1,28 @@
 package com.apass.esp.third.party.jd.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.utils.UrlUtils;
+import com.apass.esp.domain.entity.WorkCityJd;
+import com.apass.esp.mapper.WorkCityJdMapper;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * type: class
@@ -31,7 +35,8 @@ import java.util.concurrent.TimeUnit;
 public class JdProductApiClient extends JdApiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdProductApiClient.class);
 
-
+    @Autowired
+    private WorkCityJdMapper workCityJdMapper;
     /**
      * 查询用户对应的商品池编号
      *
@@ -229,12 +234,117 @@ public class JdProductApiClient extends JdApiClient {
     private Cache<String, JdApiResponse<JSONObject>> addressCache = CacheBuilder.newBuilder().maximumSize(10240)
             .expireAfterWrite(1, TimeUnit.HOURS).build();
 
+	/**
+	 * 查询京东一二级地址并保存数据库
+	 * 
+	 * @throws InterruptedException
+	 * @throws NumberFormatException
+	 */
+	public void queryAddress(){
+		WorkCityJd wcjd0 = new WorkCityJd();
+		wcjd0.setCode("000000");
+		wcjd0.setProvince("中华人民共和国");
+		wcjd0.setParent(Long.parseLong("0"));
+		wcjd0.setLevel("0");
+		workCityJdMapper.insertSelective(wcjd0);
+		JdApiResponse<JSONObject> resultProvin = request("biz.address.allProvinces.query", null,
+				"biz_address_allProvinces_query_response", JSONObject.class);
+		if (resultProvin.isSuccess()) {
+			Map<String, Object> mapProvin = resultProvin.getResult();
+			for (Map.Entry<String, Object> entryProvin : mapProvin.entrySet()) {
+				WorkCityJd wcjd = new WorkCityJd();
+				wcjd.setCode(entryProvin.getValue().toString());
+				wcjd.setProvince(entryProvin.getKey());
+				wcjd.setParent(Long.parseLong("1"));
+				wcjd.setLevel("1");
+				workCityJdMapper.insertSelective(wcjd);
+			}
+			for (Map.Entry<String, Object> entryProvin : mapProvin.entrySet()) {
+				JdApiResponse<JSONObject> resultCity = addressCitysByProvinceIdQuery(
+						Integer.parseInt(entryProvin.getValue().toString()));
+				if (resultCity.isSuccess()) {
+					Map<String, Object> mapCity = resultCity.getResult();
+					for (Map.Entry<String, Object> entryCity : mapCity.entrySet()) {
+						WorkCityJd wcjdCity = new WorkCityJd();
+						wcjdCity.setCode(entryCity.getValue().toString());
+						wcjdCity.setCity(entryCity.getKey());
+						wcjdCity.setParent(Long.parseLong(entryProvin.getValue().toString()));
+						wcjdCity.setLevel("2");
+						workCityJdMapper.insertSelective(wcjdCity);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 查询二级类目插入三级类目
+	 * 
+	 * @throws InterruptedException
+	 * @throws NumberFormatException
+	 */
+	public void queryDistrict() throws NumberFormatException, InterruptedException {
+		List<String> cityIdList = workCityJdMapper.selectAllCity();
+		for (int i = 0; i < cityIdList.size(); i++) {
+			JdApiResponse<JSONObject> resultDistrict = addressCountysByCityIdQuery(Integer.parseInt(cityIdList.get(i)));
+			if (null == resultDistrict) {
+				System.out.println("cityIdListid---------->" + cityIdList.get(i));
+				continue;
+			}
+			if (null == resultDistrict.getResult()) {
+				continue;
+			}
+			if (resultDistrict.isSuccess()) {
+				Map<String, Object> mapDistrict = resultDistrict.getResult();
+				for (Map.Entry<String, Object> entryDistrict : mapDistrict.entrySet()) {
+					WorkCityJd wcjdDistrict = new WorkCityJd();
+					wcjdDistrict.setCode(entryDistrict.getValue().toString());
+					wcjdDistrict.setDistrict(entryDistrict.getKey());
+					wcjdDistrict.setParent(Long.parseLong(cityIdList.get(i)));
+					wcjdDistrict.setLevel("3");
+					workCityJdMapper.insertSelective(wcjdDistrict);
+				}
+			}
+			Thread.sleep(1000);
+		}
+	}
+	/**
+	 * 查询三级类目插入四级类目
+	 * @throws InterruptedException 
+	 * @throws NumberFormatException 
+	 */
+	public void queryTowns() throws NumberFormatException, InterruptedException {
+		List<String> DistrictIdList = workCityJdMapper.selectDistrict();
+		for (int i = 0; i < DistrictIdList.size(); i++) {
+			JdApiResponse<JSONObject> resultTowns = addressTownsByCountyIdQuery(
+					Integer.parseInt(DistrictIdList.get(i)));
+			if (null == resultTowns) {
+				System.out.println("resultTownsId---------->" + DistrictIdList.get(i));
+				continue;
+			}
+			if (null == resultTowns.getResult()) {
+				continue;
+			}
+			if (resultTowns.isSuccess()) {
+				Map<String, Object> mapTowns = resultTowns.getResult();
+				for (Map.Entry<String, Object> entryTowns : mapTowns.entrySet()) {
+					WorkCityJd wcjdTowns = new WorkCityJd();
+					wcjdTowns.setCode(entryTowns.getValue().toString());
+					wcjdTowns.setTowns(entryTowns.getKey());
+					wcjdTowns.setParent(Long.parseLong(DistrictIdList.get(i)));
+					wcjdTowns.setLevel("4");
+					workCityJdMapper.insertSelective(wcjdTowns);
+				}
+			}
+		}
+	}
     /**
      * 获取京东一级地址
      *
      * @return
+     * @throws InterruptedException 
      */
-    public JdApiResponse<JSONObject> addressAllProvincesQuery() {
+    public JdApiResponse<JSONObject> addressAllProvincesQuery()  {
         //  try {
         //      return addressCache.get("addressAllProvincesQuery", new Callable<JdApiResponse<JSONObject>>() {
         //        @Override
@@ -252,8 +362,9 @@ public class JdProductApiClient extends JdApiClient {
      *
      * @param id
      * @return
+     * @throws InterruptedException 
      */
-    public JdApiResponse<JSONObject> addressCitysByProvinceIdQuery(final int id) {
+    public JdApiResponse<JSONObject> addressCitysByProvinceIdQuery(final int id){
         //  try {
         //    return addressCache.get("addressCitysByProvinceIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
         //         @Override
@@ -270,12 +381,13 @@ public class JdProductApiClient extends JdApiClient {
     }
 
     /**
-     * 根据城市获取区县信息
+     * 根据区县获取乡镇信息
      *
      * @param id
      * @return
+     * @throws InterruptedException 
      */
-    public JdApiResponse<JSONObject> addressTownsByCountyIdQuery(final int id) {
+    public JdApiResponse<JSONObject> addressTownsByCountyIdQuery(final int id){
 //        try {
 //            return addressCache.get("addressTownsByCountyIdQuery" + id, new Callable<JdApiResponse<JSONObject>>() {
 //                @Override
@@ -291,10 +403,11 @@ public class JdProductApiClient extends JdApiClient {
     }
 
     /**
-     * 根据区县获取乡镇信息
+     * 根据城市获取区县信息
      *
      * @param id
      * @return
+     * @throws InterruptedException 
      */
     public JdApiResponse<JSONObject> addressCountysByCityIdQuery(final int id) {
 //        try {
