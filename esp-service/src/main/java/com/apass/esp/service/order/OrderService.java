@@ -1597,4 +1597,17 @@ public class OrderService {
 	public Integer selectCreAmt(String dateBegin,String dateEnd){
 		return orderInfoRepository.selectCreAmt(dateBegin,dateEnd);
 	}
+	
+	/**
+	 * 发邮件专用
+	 * @param dateBegin
+	 * @param dateEnd
+	 * @return
+	 */
+	public List<OrderSubInfoEntity> queryOrderSubInfoByTime(String dateBegin,String dateEnd){
+	    HashMap<String, String> param = Maps.newHashMap();
+	    param.put("dateBegin", dateBegin);
+	    param.put("dateEnd", dateEnd);
+		return orderSubInfoRepository.queryOrderSubInfoByTime(param);
+	}
 }

@@ -223,4 +223,51 @@
         ]]>
 		<include refid="QueryConditionSqlList" />
 	</select>
+	
+	
+	
+	<!-- 邮件导出 -->
+	<select id="queryOrderSubInfoByTime" parameterType="Map"
+		resultType="OrderSubInfoEntity">
+		SELECT
+		orderInfo.order_id orderId,
+		orderInfo.orderstatus orderStatus,
+		orderInfo.orderstatus orderStatusDsc,
+		orderInfo.merchant_code merchantCode,
+	    orderInfo.create_date createDate,
+		orderInfo.payType payType,
+		orderInfo.pay_time payDate,
+		orderInfo.province province,
+		orderInfo.name name,
+		orderInfo.telephone telephone,
+		orderInfo.pre_delivery preDelivery,
+		orderInfo.pre_delivery preDeliveryMsg,
+		merchant.merchant_name merchantName,
+		detailInfo.goods_id goodsId,
+		detailInfo.goods_name goodsName,
+		detailInfo.goods_price goodsPrice,
+		detailInfo.goods_num goodsNum,
+		baseInfo.goods_type goodsType,
+		baseInfo.goods_type goodsTypeDesc,
+		baseInfo.goods_model goodsModel,
+		baseInfo.goods_sku_type goodsSkuAttr
+		FROM
+			t_esp_order_info orderInfo 
+			left join t_esp_merchant_info merchant on orderInfo.merchant_code=merchant.merchant_code
+	        left join t_esp_order_detail_info detailInfo on orderInfo.order_id=detailInfo.order_id
+			left join t_esp_goods_base_info baseInfo on baseInfo.id = detailInfo.goods_id
+		<where>
+			<if test="dateBegin != null ">
+			  <![CDATA[ 
+			    and orderInfo.create_date >= #{dateBegin} 
+			    ]]> 
+			</if>
+			<if test="dateEnd != null ">
+			  <![CDATA[ 
+			    and orderInfo.create_date <  #{dateEnd} 
+			    ]]> 
+			</if>
+		</where>
+		ORDER BY orderInfo.orderstatus, orderInfo.create_date DESC
+	</select>
 </mapper>

@@ -1,7 +1,11 @@
 package com.apass.esp.repository.order;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -90,5 +94,13 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
         } catch (Exception e) {
             throw new BusinessException("通过商户号查询订单列表失败", e);
         }
+    }
+    
+    /**
+     * 邮件发送 专用
+     * @return
+     */
+    public List<OrderSubInfoEntity> queryOrderSubInfoByTime(Map<String,String> param) {
+        return getSqlSession().selectList(getSQL("queryOrderSubInfoByTime"), param);
     }
 }

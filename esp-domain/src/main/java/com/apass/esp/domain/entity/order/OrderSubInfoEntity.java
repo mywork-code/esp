@@ -6,6 +6,7 @@ import java.util.Date;
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
@@ -220,7 +221,7 @@ public class OrderSubInfoEntity {
      */
     private String merchantCode;
 
-    //商品编号，商品名称，商品类型，商品型号，商品规格，购买量
+    //商品编号，商品名称，商品类型，商品型号，商品规格，购买量，价格
     private String goodsId;
     private String goodsName;
     private String goodsType;
@@ -229,6 +230,7 @@ public class OrderSubInfoEntity {
     private String goodsSkuType;
     private String goodsNum;
     private String goodsSkuAttr;
+    private String goodsPrice;
     
     public String getGoodsSkuAttr() {
         return goodsSkuAttr;
@@ -294,7 +296,15 @@ public class OrderSubInfoEntity {
         this.goodsNum = goodsNum;
     }
 
-    /**
+    public String getGoodsPrice() {
+		return goodsPrice;
+	}
+
+	public void setGoodsPrice(String goodsPrice) {
+		this.goodsPrice = goodsPrice;
+	}
+
+	/**
      * 创建日期
      */
     private String createDate;
@@ -534,6 +544,14 @@ public class OrderSubInfoEntity {
 	}
 
 	public void setPreDeliveryMsg(String preDeliveryMsg) {
-		this.preDeliveryMsg = preDeliveryMsg;
+		 // 对订单状态进行翻译 ，前段展示统一显示中文
+        String content = "";
+        PreDeliveryType[] preDeliveryArray = PreDeliveryType.values();
+        for (PreDeliveryType preDeliveryEnum : preDeliveryArray) {
+            if (preDeliveryEnum.getCode().equals(preDeliveryMsg)) {
+                content = preDeliveryEnum.getMessage();
+            }
+        }
+        this.preDeliveryMsg = content;
 	}
 }
