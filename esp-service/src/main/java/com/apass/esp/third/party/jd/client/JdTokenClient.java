@@ -45,7 +45,7 @@ public class JdTokenClient extends JdApiClient{
     }
 
 
-    private JSONObject refreshToken() {
+    public  JSONObject refreshToken() {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("grant_type", "refresh_token");
         params.put("app_key", JdConstants.APP_KEY);

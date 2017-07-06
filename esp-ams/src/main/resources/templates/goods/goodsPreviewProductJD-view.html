@@ -258,10 +258,44 @@
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
             </div>
-            <p class="title">测试京东</p>
-<!--             <p class="sub">${goodsStockNumber!}种${goodsSkuType!}可选</p> -->
-            <p class="sub">测试京东123</p>
-            	 <p class="price">¥ 234</p>
+            <p class="title">${previewGoodsName!}</p>
+            <p class="price">¥ ${previewGoodsPrice!}</p>
+               <#if (goodsStockList?size > 0)>
+             <div class="chose">选择规格数量
+                <div class="SIZE">
+                    <img src="${rc.contextPath}/WebContent/images/icon-fail.png" alt="" class="close"/>
+                    <img id='goodsLogoUrl' src="data:image/gif;base64,${goodsStockList[0].stockLogo!}" alt="" class="pro_img"/>
+                    <p class="SIZE_price">¥${(goodsStockList[0].goodsPrice)!}</p><!-- ¥${(goodsStockList[0].goodsPrice)!} -->
+                    <p class="SIZE_costPrice" style="color: black;font-weight:bold">¥${(goodsStockList[0].goodsCostPrice)!}</p><!-- ¥${(goodsStockList[0].goodsCostPrice)!} -->
+                    <p class="SIZE_color">已选择： ${(goodsStockList[0].goodsSkuAttr)!}</p><!--已选择： ${(goodsStockList[0].goodsSkuAttr)!} -->
+                    <div class="SIZE_title">${goodsSizeOrColorTitle!}</div>
+	                <div class="SIZE_Chcolor" id="SIZE_Chcolor">
+	                <#if goodsStockList??>	
+					<#list goodsStockList as GoodsStockInfoEntity>	
+							<span 
+							data-compareurl="${(GoodsStockInfoEntity.goodsCompareUrl)!}"
+							data-compareurl2="${(GoodsStockInfoEntity.goodsCompareUrl2)!}"
+							data-logourl="${(GoodsStockInfoEntity.stockLogo)!}" 
+							data-price="${(GoodsStockInfoEntity.goodsPrice)!}" 
+							data-costPrice="${(GoodsStockInfoEntity.goodsCostPrice)!}" 
+							data-amount="${(GoodsStockInfoEntity.stockCurrAmt)!}">
+								<#if GoodsStockInfoEntity_index == 0>
+									<font color="#D60000" id="goodsSkuTempColor">${(GoodsStockInfoEntity.goodsSkuAttr)!}</font>
+								</#if>
+								<#if GoodsStockInfoEntity_index != 0>
+									${(GoodsStockInfoEntity.goodsSkuAttr)!}
+								</#if>
+							</span>					
+	                </#list>
+					</#if>
+	                </div>
+	                <div class="supply">商品库存：${(goodsStockList[0].stockCurrAmt)!}件</div><!-- 商品库存：${(goodsStockList[0].stockCurrAmt)!}件 -->
+	                
+	                <div class="compare_url" id="compareurl1"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接1</a></div>
+	                <div class="compare_url" id="compareurl2"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接2</a></div>
+                </div>
+            </div>
+            </#if>
         </div>
         <!-- 商品详情 -->
         <div class="page details" style="display: none;">

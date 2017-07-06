@@ -544,10 +544,10 @@ public class JdProductApiClient extends JdApiClient {
      * @param skuId
      * @return
      */
-    public JdApiResponse<JSONObject> getSimilarSku(Long skuId ) {
+    public JdApiResponse<JSONArray> getSimilarSku(Long skuId ) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("skuId", skuId );
-        return request("jd.biz.product.getSimilarSku", jsonObject, "jd_biz_product_getSimilarSku_response", JSONObject.class);
+        return request("jd.biz.product.getSimilarSku", jsonObject, "jd_biz_product_getSimilarSku_response", JSONArray.class);
     }
 
 }

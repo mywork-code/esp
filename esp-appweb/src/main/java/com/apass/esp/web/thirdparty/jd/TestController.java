@@ -34,6 +34,8 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Test;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -49,8 +51,10 @@ import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
@@ -96,8 +100,10 @@ public class TestController {
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     @ResponseBody
     public Response test(@RequestBody Map<String, Object> paramMap) {
-        // JSONObject jsonObject = jdTokenClient.getToken();
-        //cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
+         JSONObject jsonObject = jdTokenClient.getToken();
+//    	JSONObject jsonObject = jdTokenClient.refreshToken();
+    	System.out.println(jsonObject);
+        cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
         return Response.success("1", "");
     }
 
@@ -166,7 +172,24 @@ public class TestController {
     @RequestMapping(value = "/getSimilarSku", method = RequestMethod.POST)
     @ResponseBody
     public Response getSimilarSku(@RequestBody Map<String, Object> paramMap){
-    	JdApiResponse<JSONObject> jdApiResponse =jdProductApiClient.getSimilarSku((long)2403211l);
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+    	JdApiResponse<JSONArray> jdApiResponse =jdProductApiClient.getSimilarSku(Long.valueOf(sku).longValue());
+//    	JdApiResponse<JSONArray> jdApiResponse =jdProductApiClient.getSimilarSku((long)2403211);
+    	jdApiResponse.getResult();
+    	Gson gson = new Gson();
+    	for(int i=0;i<jdApiResponse.getResult().size();i++){
+    		JdSimilarSku jp=gson.fromJson(jdApiResponse.getResult().getString(i), JdSimilarSku.class);
+    		jp.getDim();
+    		jp.getSaleName();
+    		jp.getSaleAttrList();
+    		String ll="";
+    		for(int j=0;j<jp.getSaleAttrList().size();j++){
+    			ll+=jp.getSaleAttrList().get(j).getSaleValue()+"--";
+    		}
+    		System.out.println(ll);
+    		
+    	}
+
         return Response.success("1", jdApiResponse);
     }
     

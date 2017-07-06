@@ -41,6 +41,8 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -798,23 +800,18 @@ public class GoodsBaseInfoController {
 	 	skuPrice.add(Long.valueOf(externalId).longValue());
     	JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(skuPrice);
 		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
-			Map<String, String> jsonResultSellPrice = gson.fromJson(jdSellPrice.getResult().toString(), new TypeToken<Map<String, String>>() {}.getType());
-			String jdPrice=jsonResultSellPrice.get("jdPrice");
-		}else{
-			
+			for(int i=0;i<jdSellPrice.getResult().size();i++){
+				JdSellPrice jp=gson.fromJson(jdSellPrice.getResult().getString(i), JdSellPrice.class);
+				map.put("previewGoodsPrice", new DecimalFormat("0.00").format(jp.getJdPrice()));// 商品价格
+			}
 		}
-
-        
-        
-        
-        
 		// 查询商品图片
 		List<Long> skusImage = new ArrayList<>();
 		skusImage.add( Long.valueOf(externalId).longValue());
-		JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productSkuImageQuery(skusImage);
-		if(null !=jdApiResponse && null!=jdApiResponse.getResult() && jdApiResponse.isSuccess()){		
-			Map<String, List<JdImage>> jsonResult = gson.fromJson(jdApiResponse.getResult().toString(), new TypeToken<Map<String, List<JdImage>>>() {}.getType());
-			List<JdImage> jdList = jsonResult.get(externalId);
+		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
+		if(null !=jdImageResponse && null!=jdImageResponse.getResult() && jdImageResponse.isSuccess()){		
+			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(), new TypeToken<Map<String, List<JdImage>>>() {}.getType());
+			List<JdImage> jdList = jsonImageResult.get(externalId);
 			List<String> JdImagePathList=new ArrayList<>();
 			for(int i=0;i<jdList.size();i++){
 				String path=jdList.get(i).getPath();
@@ -822,9 +819,24 @@ public class GoodsBaseInfoController {
 				String pathJd="http://img13.360buyimg.com/n0/"+path;
 				JdImagePathList.add(pathJd);
 			}
-			map.put("JdImagePathList", JdImagePathList);
+			map.put("previewJdImagePathList", JdImagePathList);
 		}
-		
+		// 查询商品规格
+    	JdApiResponse<JSONArray> jdSimilarResponse =jdProductApiClient.getSimilarSku(Long.valueOf(externalId).longValue());
+    	List<JdSimilarSku> JdSimilarSkuList=new ArrayList<>(); 
+    	for(int i=0;i<jdSimilarResponse.getResult().size();i++){
+    		JdSimilarSku jp=gson.fromJson(jdSimilarResponse.getResult().getString(i), JdSimilarSku.class);
+    		jp.getDim();
+    		jp.getSaleName();
+    		jp.getSaleAttrList();
+    		String ll="";
+    		for(int j=0;j<jp.getSaleAttrList().size();j++){
+    			ll+=jp.getSaleAttrList().get(j).getSaleValue()+"--";
+    		}
+    		System.out.println(ll);
+    		JdSimilarSkuList.add(jp);
+    		
+    	}
 		
 		
 		
