@@ -18,6 +18,8 @@ public enum TxnTypeCode {
 	XFFQ_CODE("T04", "消费分期"),
 	
 	KQEZF_CODE("T05", "卡全额支付"),
+
+	CASH_REFUND_CODE("T07","退款流水"),
 	
 	ALIPAY_CODE("T10","支付宝全额支付"),
 	
