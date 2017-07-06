@@ -2,6 +2,7 @@ package com.apass.esp.service.refund;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.CashRefundAmtDto;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
@@ -46,9 +47,6 @@ public class CashRefundService {
     private CashRefundMapper cashRefundMapper;
 
     @Autowired
-    private TxnInfoMapper txnInfoMapper;
-
-    @Autowired
     private OrderInfoRepository orderInfoRepository;
 
     @Autowired
@@ -65,6 +63,9 @@ public class CashRefundService {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private TxnInfoMapper txnInfoMapper;
 
     /**
      * @param orderId
@@ -96,6 +97,8 @@ public class CashRefundService {
         orderInfoEntity.setStatus(OrderStatus.ORDER_PAYED.getCode());
         orderService.updateOrderStatus(orderInfoEntity);
         txnInfoMapper.updateTime(cashRefundDto.getMainOrderId(), new Date());
+        txnInfoMapper.updateStatus("F","CR"+cashRefundDto.getId(),TxnTypeCode.CASH_REFUND_CODE.getCode());
+
     }
 
 
@@ -180,9 +183,23 @@ public class CashRefundService {
         	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderId);
                 if(txnlinfoList.size() > 1){
                     //是信用支付，txninfo 表插入信用额度那部分退款流水记录(T07)
+                    CashRefundAmtDto crAmt = getCreditCashRefundAmt(txnlinfoList,cr.getAmt());
+                    TxnInfoEntity txnInfoEntity = new TxnInfoEntity();
+                    txnInfoEntity.setOrderId("CR"+cr.getId());
+                    txnInfoEntity.setTxnType(TxnTypeCode.CASH_REFUND_CODE.getCode());
+                    txnInfoEntity.setTxnAmt(crAmt.getCreditAmt());
+                    txnInfoEntity.setCreateDate(new Date());
+                    txnInfoEntity.setUpdateDate(new Date());
+                    txnInfoEntity.setTxnDate(new Date());
+                    txnInfoEntity.setPostDate(new Date());
+                    txnInfoEntity.setUserId(cr.getUserId());
+                    txnInfoEntity.setUpdateUser(cr.getUserId() + "");
+                    txnInfoEntity.setCreateUser(cr.getUserId() + "");
+                    txnInfoEntity.setStatus("S");
+                    txnInfoEntity.setTxnDesc(TxnTypeCode.CASH_REFUND_CODE.getMessage());
+                    txnInfoMapper.insert(txnInfoEntity);
+
                 }
-
-
                 for(TxnInfoEntity txnInfo:txnlinfoList){
                 	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
                 		Response res=agreeRefund(userId,orderId);
@@ -348,23 +365,13 @@ public class CashRefundService {
                 return Response.fail(BusinessErrorCode.NO);
             }
         } else {
-            BigDecimal txtAmount = new BigDecimal(0);
-            BigDecimal firstAmount = new BigDecimal(0);
+            CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
-                txtAmount = txtAmount.add(txnInfoEntity.getTxnAmt());
-                if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
-                    firstAmount = txnInfoEntity.getTxnAmt();
-                }
-            }
-            BigDecimal scale = firstAmount.divide(txtAmount);
-            for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
-                BigDecimal refundTxn = cashRefund.getAmt().multiply(scale);
-                refundTxn.setScale(2,BigDecimal.ROUND_HALF_UP);
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
                 if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
-                    cashRefundTxn.setAmt(cashRefund.getAmt().subtract(refundTxn));
+                    cashRefundTxn.setAmt(refundAmt.getCreditAmt());
                 }else{
-                    cashRefundTxn.setAmt(refundTxn);
+                    cashRefundTxn.setAmt(refundAmt.getSfAmt());
                 }
                 cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
@@ -375,7 +382,7 @@ public class CashRefundService {
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
                 if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundTxn));
+                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundAmt.getCreditAmt()));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
                         // cashRefund.setStatus(5);
@@ -424,6 +431,31 @@ public class CashRefundService {
     }
 
     /**
+     * 信用支付时 才能调用
+     * @param txnInfoEntityList
+     * @param orderAmt
+     * @return
+     */
+    public CashRefundAmtDto getCreditCashRefundAmt(List<TxnInfoEntity> txnInfoEntityList,BigDecimal orderAmt) {
+
+        CashRefundAmtDto dto = new CashRefundAmtDto();
+        BigDecimal txtAmount = new BigDecimal(0);
+        BigDecimal firstAmount = new BigDecimal(0);
+        for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+            txtAmount = txtAmount.add(txnInfoEntity.getTxnAmt());
+            if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
+                firstAmount = txnInfoEntity.getTxnAmt();
+            }
+        }
+        BigDecimal scale = firstAmount.divide(txtAmount);
+        dto.setSfScale(scale);
+        dto.setSfAmt(orderAmt.multiply(scale).setScale(2,BigDecimal.ROUND_HALF_UP));
+        dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
+        return dto;
+
+    }
+
+    /**
      * 根据订单id修改退款状态
      *
      * @param cashRefund
@@ -436,7 +468,6 @@ public class CashRefundService {
     /**
      * 查询所有退款中 的订单
      *
-     * @param code
      * @return
      */
     public List<CashRefund> getCashRefundByStatus(String status) {

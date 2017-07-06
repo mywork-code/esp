@@ -74,4 +74,10 @@
         #{createDate},#{updateDate})
     </insert>
 
+    <update id="updateStatus">
+       update t_apass_txn_info
+       set status = #{status},update_date = now()
+       WHERE
+			order_id = #{orderId} and txn_type = #{typeCode}
+    </update>
 </mapper>
