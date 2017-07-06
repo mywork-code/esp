@@ -343,9 +343,20 @@ public class CashRefundService {
                 return Response.fail(BusinessErrorCode.NO);
             }
         } else {
+            BigDecimal txtAmount = new BigDecimal(0);
+            BigDecimal firstAmount = new BigDecimal(0);
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+                txtAmount.add(txnInfoEntity.getTxnAmt());
+                if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
+                    firstAmount = txnInfoEntity.getTxnAmt();
+                }
+            }
+            BigDecimal scale = firstAmount.divide(txtAmount);
+            for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+                BigDecimal refundTxn = cashRefund.getAmt().multiply(scale);
+                refundTxn.setScale(2,BigDecimal.ROUND_HALF_UP);
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
-                cashRefundTxn.setAmt(txnInfoEntity.getTxnAmt());
+                cashRefundTxn.setAmt(refundTxn);
                 cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
                 cashRefundTxn.setStatus("1");
@@ -355,7 +366,7 @@ public class CashRefundService {
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
                 if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnInfoEntity.getTxnAmt()));
+                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundTxn));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
                         // cashRefund.setStatus(5);
