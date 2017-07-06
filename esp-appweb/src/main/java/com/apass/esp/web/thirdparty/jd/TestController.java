@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Test;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.jd.JdImage;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -45,6 +49,8 @@ import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.SearchCondition;
 import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.google.common.collect.Maps;
 
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
@@ -120,7 +126,6 @@ public class TestController {
         JdApiResponse<String> jdApiResponse = jdProductApiClient.productSkuQuery(106);
         return Response.success("1", jdApiResponse);
     }
-
     /**
      * 商品详情
      *
@@ -133,7 +138,38 @@ public class TestController {
         JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(2403211l);
         return Response.success("1", jdApiResponse);
     }
-
+    /**
+     *查询商品的价格
+     */
+    @RequestMapping(value = "/priceSellPriceGet", method = RequestMethod.POST)
+    @ResponseBody
+    public Response priceSellPriceGet(@RequestBody Map<String, Object> paramMap){
+    	Collection<Long> sku=new ArrayList<Long>();
+    	sku.add((long)2403211l);
+    	JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.priceSellPriceGet(sku);
+    	  return Response.success("1", jdApiResponse);
+    }
+    /**
+     * 根据商品编号，获取图片信息
+     */
+    @RequestMapping(value = "/productSkuImageQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Response productSkuImageQuery(@RequestBody Map<String, Object> paramMap){
+    	 List<Long> skus=new ArrayList<>();
+    	 skus.add((long)2403211l);
+    	 JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productSkuImageQuery(skus);
+         return Response.success("1", jdApiResponse);
+    }
+    /**
+     * 查询规格
+     */
+    @RequestMapping(value = "/getSimilarSku", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getSimilarSku(@RequestBody Map<String, Object> paramMap){
+    	JdApiResponse<JSONObject> jdApiResponse =jdProductApiClient.getSimilarSku((long)2403211l);
+        return Response.success("1", jdApiResponse);
+    }
+    
     /**
      * 查询预付款余额
      *

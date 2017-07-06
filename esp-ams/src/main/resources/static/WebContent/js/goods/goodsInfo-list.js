@@ -198,7 +198,7 @@ $(function() {
                          }
                     }
                          content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
-                             + row.id + "');\">预览</a>&nbsp;&nbsp;";
+                             + row.id +"','"+ row.source+ "');\">预览</a>&nbsp;&nbsp;";
                     	 return content;
                     }
                 }]],
@@ -1687,10 +1687,17 @@ $(function() {
 //		});
 	};
 	//预览商品
-	$.previewProduct = function(id,goodsId) {
+	$.previewProduct = function(id,source) {
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
-        var destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
+        var destAddress="";
+//        if("jd"==source){
+//        	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
+//        }else{
+//        	destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
+//        }
+    	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
+
         if (parentTabs.tabs('exists', subtitle)) {
             parentTabs.tabs('select', subtitle);
             return;
