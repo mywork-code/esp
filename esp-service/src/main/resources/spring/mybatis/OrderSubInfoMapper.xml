@@ -88,7 +88,8 @@
 		merchant.merchant_name merchantName,
 		refundInfo.id refundId,
 		refundInfo.refund_type refundType,
-		orderInfo.pre_delivery preDelivery
+		orderInfo.pre_delivery preDelivery,
+		orderInfo.pre_delivery preDeliveryMsg
 		FROM
 		t_esp_order_info orderInfo 
         left join t_esp_merchant_info merchant on 
@@ -135,6 +136,7 @@
 			orderInfo.paystatus payStatus,
 			orderInfo.update_date updateDate,
 			orderInfo.pre_delivery preDelivery,
+			orderInfo.pre_delivery preDeliveryMsg,
 			concat(
 				orderInfo.province,
 				orderInfo.city,

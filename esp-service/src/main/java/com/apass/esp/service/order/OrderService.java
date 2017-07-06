@@ -165,20 +165,6 @@ public class OrderService {
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.querySubOrderDetailInfoByParam(map, page);
-			/**
-			 * add
-			 */
-			List<OrderSubInfoEntity> dataList = orderDetailInfoList.getDataList();
-			if(!CollectionUtils.isEmpty(dataList)){
-            	for (OrderSubInfoEntity order : dataList) {
-					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_Y.getCode())){
-						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_Y.getMessage());
-					}
-					if(StringUtils.equals(order.getPreDelivery(),PreDeliveryType.PRE_DELIVERY_N.getCode())){
-						order.setPreDeliveryMsg(PreDeliveryType.PRE_DELIVERY_N.getMessage());
-					}
-				}
-            }
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);

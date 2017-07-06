@@ -3,6 +3,8 @@ package com.apass.esp.domain.entity.order;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
@@ -548,7 +550,7 @@ public class OrderSubInfoEntity {
         String content = "";
         PreDeliveryType[] preDeliveryArray = PreDeliveryType.values();
         for (PreDeliveryType preDeliveryEnum : preDeliveryArray) {
-            if (preDeliveryEnum.getCode().equals(preDeliveryMsg)) {
+            if (StringUtils.equals(preDeliveryMsg, preDeliveryEnum.getCode())) {
                 content = preDeliveryEnum.getMessage();
             }
         }
