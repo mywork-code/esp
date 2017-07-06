@@ -64,5 +64,14 @@
         WHERE
         order_id =#{orderId}
     </update>
-    
+
+    <insert id="insert" parameterType="com.apass.esp.domain.entity.bill.TxnInfoEntity" useGeneratedKeys="true" keyProperty="id" >
+        insert into t_apass_txn_info (txn_id, order_id, user_id,txn_type,txn_date,txn_amt,post_date,
+        txn_desc,orig_txn_id,orig_trans_date,orig_txn_code,orig_txn_amt,stmt_date,loan_id,open_bank_id,open_bank,
+        create_date,update_date)
+        values (#{txnId}, #{orderId}, #{userId},#{txnType},#{txnDate},#{txnAmt},#{postDate},#{txnDesc},
+        #{origTxnId},#{origTransDate},#{origTxnCode},#{origTxnAmt},#{stmtDate}，#{loanId}，#{openBankId}，#{openBank},
+        #{createDate},#{updateDate})
+    </insert>
+
 </mapper>

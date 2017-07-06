@@ -178,6 +178,11 @@ public class CashRefundService {
                 
                 //如果是支付宝全额支付或支付宝首付 直接调用同意退款接口
         	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderId);
+                if(txnlinfoList.size() > 1){
+                    //是信用支付，txninfo 表插入信用额度那部分退款流水记录(T07)
+                }
+
+
                 for(TxnInfoEntity txnInfo:txnlinfoList){
                 	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
                 		Response res=agreeRefund(userId,orderId);

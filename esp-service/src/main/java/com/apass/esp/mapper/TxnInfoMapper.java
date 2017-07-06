@@ -35,5 +35,4 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
 	 */
   TxnInfoEntity queryOrigTxnIdByOrderidAndstatus(@Param("orderId")String orderId, @Param("typeCode")String typeCode);
 
-
 }
