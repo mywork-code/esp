@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/goodsInfoBben-list.js"></script>
+
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+<!-- 	<input type="hidden" id="goodsPriceRate" name="goodsPriceRate" value="${goodsPriceRate!}"/> -->
+	<input type="hidden" id="priceCostRate" name="priceCostRate" value="${priceCostRate!}"/>
+	<input type="hidden" id="merchantSettleRate" name="merchantSettleRate" value="${merchantSettleRate!}">
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 700px;">
+				<tr>
+					<td width="10%" align="right">商户名称：</td>
+			    	<td width="20%"><input id="merchantName"  class="easyui-textbox" 
+			    		style="width: 200px;"  ></td>
+				    <td width="10%" align="right">商户类型：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 150px;" id="merchantType">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="个人" value="1">个人</option>
+						   <option label="企业" value="2">企业</option>
+						</select>
+				  	</td>
+				</tr>
+				<tr>
+					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
+					<td width="20%"><input id="goodsNames" class="easyui-textbox"
+						style="width: 200px;" /></td>
+					<td width="10%" align="right" nowrap="nowrap">商品类型：</td>
+					<td width="10%" align="right" nowrap="nowrap">
+						<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;">   
+						  <option value="" selected="selected">请选择</option>   
+						  <option label="正常" value="1">正常</option>   
+						  <option label="精选" value="2">精选</option>   
+						</select>
+					</td>
+					<td width="5%" />
+					<td>
+					<a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
+						<a href="javascript:void(0);" class="easyui-linkbutton"  id="flush">刷&nbsp;新&nbsp;</a>&nbsp;&nbsp;
+				      <@apass.role value="GOODS_CHECK_BATCH">
+						<a href="javascript:void(0);" 
+						class="easyui-linkbutton checkAll" data-options="iconCls:'icon-add'">复&nbsp;核&nbsp;</a></td>
+				      </@apass.role>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 商品查询列表 -->
+	<div id="tablelist"></div>
+	<!-- 审核 -->
+	<div id="reviewGoods">
+		<h1 style="text-align: center;">商品上架复核</h1>
+		<form id="reviewGoodsForm" method="POST">
+			<table style="width: 400px;">
+				<tr>
+					<td width="30%" align="right">审核意见：</td>
+					<td><input id="reviewOpinion" style="width:200px;height:30px"></td>
+				</tr>
+				<tr id="datafile">
+					<td align="right">备注<span style="color:red">*</span>:</td>
+					<td><input class="easyui-textbox" id="message"
+						style="width: 100%; height: 60px" data-options="multiline:true">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+</body>
+</html>
