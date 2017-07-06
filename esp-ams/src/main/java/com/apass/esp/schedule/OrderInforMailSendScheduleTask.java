@@ -31,9 +31,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.service.order.OrderService;
@@ -57,6 +54,12 @@ public class OrderInforMailSendScheduleTask {
 
     @Value("${monitor.send.password}")
     public String sendPassword;
+    
+    @Value("${order.daily.sendto}")
+    public String sendToAddress;
+    
+    @Value("${order.daily.copyto}")
+    public String copyToAddress;
 
     @Autowired
     private OrderService orderService;
@@ -69,7 +72,7 @@ public class OrderInforMailSendScheduleTask {
     	common(dateBegin,dateEnd);
     }
     
-    @Scheduled(cron = "0 0 9 1 * ?")
+    @Scheduled(cron = "0 0 9 7 * ?")
     public void sendOrderMailOn1stMonth(){
     	logger.info("-----------sendOrderMailOn1stMonth now time:{}------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.firstDayLastMonth(), "YYYY-MM-dd");
@@ -95,8 +98,8 @@ public class OrderInforMailSendScheduleTask {
          mailSenderInfo.setFromAddress(sendAddress);
          mailSenderInfo.setSubject("安家趣花电商订单");
          mailSenderInfo.setContent("请查收最新订单..");
-         mailSenderInfo.setToAddress("xujie@apass.cn,pengyingchao@apass.cn");
-         mailSenderInfo.setCcAddress("zengqingshan@apass.cn");
+         mailSenderInfo.setToAddress(sendToAddress);
+         mailSenderInfo.setCcAddress(copyToAddress);
     	
          
          Multipart msgPart = new MimeMultipart();
