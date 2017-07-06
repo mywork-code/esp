@@ -1,20 +1,8 @@
 package com.apass.esp.service.refund;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.CashRefundAmtDto;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
@@ -33,9 +21,22 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.payment.PaymentService;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CashRefundService {
@@ -44,9 +45,6 @@ public class CashRefundService {
 
     @Autowired
     private CashRefundMapper cashRefundMapper;
-
-    @Autowired
-    private TxnInfoMapper txnInfoMapper;
 
     @Autowired
     private OrderInfoRepository orderInfoRepository;
@@ -62,6 +60,12 @@ public class CashRefundService {
 
     @Autowired
     private PaymentHttpClient paymentHttpClient;
+
+    @Autowired
+    private PaymentService paymentService;
+
+    @Autowired
+    private TxnInfoMapper txnInfoMapper;
 
     /**
      * @param orderId
@@ -93,6 +97,8 @@ public class CashRefundService {
         orderInfoEntity.setStatus(OrderStatus.ORDER_PAYED.getCode());
         orderService.updateOrderStatus(orderInfoEntity);
         txnInfoMapper.updateTime(cashRefundDto.getMainOrderId(), new Date());
+        txnInfoMapper.updateStatus("F","CR"+cashRefundDto.getId(),TxnTypeCode.CASH_REFUND_CODE.getCode());
+
     }
 
 
@@ -175,6 +181,25 @@ public class CashRefundService {
                 
                 //如果是支付宝全额支付或支付宝首付 直接调用同意退款接口
         	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderId);
+                if(txnlinfoList.size() > 1){
+                    //是信用支付，txninfo 表插入信用额度那部分退款流水记录(T07)
+                    CashRefundAmtDto crAmt = getCreditCashRefundAmt(txnlinfoList,cr.getAmt());
+                    TxnInfoEntity txnInfoEntity = new TxnInfoEntity();
+                    txnInfoEntity.setOrderId("CR"+cr.getId());
+                    txnInfoEntity.setTxnType(TxnTypeCode.CASH_REFUND_CODE.getCode());
+                    txnInfoEntity.setTxnAmt(crAmt.getCreditAmt());
+                    txnInfoEntity.setCreateDate(new Date());
+                    txnInfoEntity.setUpdateDate(new Date());
+                    txnInfoEntity.setTxnDate(new Date());
+                    txnInfoEntity.setPostDate(new Date());
+                    txnInfoEntity.setUserId(cr.getUserId());
+                    txnInfoEntity.setUpdateUser(cr.getUserId() + "");
+                    txnInfoEntity.setCreateUser(cr.getUserId() + "");
+                    txnInfoEntity.setStatus("S");
+                    txnInfoEntity.setTxnDesc(TxnTypeCode.CASH_REFUND_CODE.getMessage());
+                    txnInfoMapper.insert(txnInfoEntity);
+
+                }
                 for(TxnInfoEntity txnInfo:txnlinfoList){
                 	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
                 		Response res=agreeRefund(userId,orderId);
@@ -299,13 +324,6 @@ public class CashRefundService {
             cashRefundTxn.setCreateDate(date);
             cashRefundTxn.setUpdateDate(date);
             if (TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnType) || TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
-                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
-                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
-                    if (!response.statusResult()) {
-                        return Response.fail(BusinessErrorCode.NO);
-                    }
-                }
-
                 if (TxnTypeCode.KQEZF_CODE.getCode().equalsIgnoreCase(txnType)) {
                     cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
                 }
@@ -321,14 +339,40 @@ public class CashRefundService {
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
+
+                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
+                    if (!response.statusResult()) {
+                      //退款成功
+                      try {
+                        paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
+                      }catch (Exception e){
+
+                      }
+                        return Response.fail(BusinessErrorCode.NO);
+                    }else{
+                        //退款成功
+                        try {
+                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
+                        }catch (Exception e){
+
+                        }
+                    }
+                }
+
                 return Response.successResponse();
             } else {
                 return Response.fail(BusinessErrorCode.NO);
             }
         } else {
+            CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
-                cashRefundTxn.setAmt(txnInfoEntity.getTxnAmt());
+                if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
+                    cashRefundTxn.setAmt(refundAmt.getCreditAmt());
+                }else{
+                    cashRefundTxn.setAmt(refundAmt.getSfAmt());
+                }
                 cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
                 cashRefundTxn.setStatus("1");
@@ -336,12 +380,9 @@ public class CashRefundService {
                 cashRefundTxn.setCreateDate(date);
                 cashRefundTxn.setUpdateDate(date);
                 cashRefundTxnMapper.insert(cashRefundTxn);
-                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
-                }
 
                 if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
-                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(txnInfoEntity.getTxnAmt()));
+                    Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundAmt.getCreditAmt()));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
                         // cashRefund.setStatus(5);
@@ -365,9 +406,53 @@ public class CashRefundService {
                         e.printStackTrace();
                     }
                 }
+                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
+                    if (!response.statusResult()) {
+                        //退款失败
+                        try {
+                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
+                        }catch (Exception e){
+
+                        }
+                        return Response.fail(BusinessErrorCode.NO);
+                    }else{
+                        //退款成功
+                        try {
+                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
+                        }catch (Exception e){
+
+                        }
+                    }
+                }
             }
             return Response.successResponse();
         }
+    }
+
+    /**
+     * 信用支付时 才能调用
+     * @param txnInfoEntityList
+     * @param orderAmt
+     * @return
+     */
+    public CashRefundAmtDto getCreditCashRefundAmt(List<TxnInfoEntity> txnInfoEntityList,BigDecimal orderAmt) {
+
+        CashRefundAmtDto dto = new CashRefundAmtDto();
+        BigDecimal txtAmount = new BigDecimal(0);
+        BigDecimal firstAmount = new BigDecimal(0);
+        for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
+            txtAmount = txtAmount.add(txnInfoEntity.getTxnAmt());
+            if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
+                firstAmount = txnInfoEntity.getTxnAmt();
+            }
+        }
+        BigDecimal scale = firstAmount.divide(txtAmount);
+        dto.setSfScale(scale);
+        dto.setSfAmt(orderAmt.multiply(scale).setScale(2,BigDecimal.ROUND_HALF_UP));
+        dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
+        return dto;
+
     }
 
     /**
@@ -383,7 +468,6 @@ public class CashRefundService {
     /**
      * 查询所有退款中 的订单
      *
-     * @param code
      * @return
      */
     public List<CashRefund> getCashRefundByStatus(String status) {

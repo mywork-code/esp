@@ -180,6 +180,19 @@ public class GoodsBaseInfoController {
         LOGGER.info("商品审核初始化成功...");
         return new ModelAndView("goods/goodsInfoCheck-list", map);
     }
+
+    /**
+     * 商品管理页面加载
+     */
+    @RequestMapping("/bBenPage")
+    public ModelAndView bBenPage() {
+        Map<String, Object> map = Maps.newHashMap();
+        if(SpringSecurityUtils.hasPermission("GOODS_BBEN_CHECK_BATCH")) {
+            map.put("grantedAuthority", "permission");
+        }
+        return new ModelAndView("goods/goodsInfoBben-list", map);
+    }
+
     /**
      * 商品类目列表
      */
@@ -585,6 +598,33 @@ public class GoodsBaseInfoController {
         }
         return SUCCESS;
     }
+
+
+    @ResponseBody
+    @RequestMapping("/bBencheckview")
+    public String bBencheckview(HttpServletRequest request) {
+        String ids = HttpWebUtils.getValue(request, "ids");
+        String flag = HttpWebUtils.getValue(request, "flag");
+        if (!StringUtils.isBlank(ids)) {
+            ids = ids.substring(1, ids.length() - 1);
+            String[] strArr = ids.split(",");
+            if (null != strArr && strArr.length >= 0) {
+                for (int i = 0; i < strArr.length; i++) {
+                    GoodsInfoEntity entity = new GoodsInfoEntity();
+                    entity.setId(Long.valueOf(strArr[i]));
+                    if (!"reject".equals(flag)) {
+                        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                    } else {
+                        entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                    }
+                    entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                    goodsService.updateService(entity);
+                }
+            }
+        }
+        return SUCCESS;
+    }
+
 
     /**
      * loadLogo

@@ -179,6 +179,7 @@ public class CashRefundController {
             	return Response.success("抱歉，商户已发货暂不支持退款",false);
             }else if(falge){
             	cashRefundService.requestRefund(requestId,orderId,userId, reason,csom);
+                return Response.success("退款申请成功",true);
             }else{
             	return Response.fail("该订单已经出账无法申请退款！");
             }
@@ -190,7 +191,6 @@ public class CashRefundController {
             LOGGER.error("退款申请失败", e);
             return Response.fail("退款申请失败");
         }
-        return Response.success("退款申请成功",true);
     }
     /**
      * 获取退款申请信息
