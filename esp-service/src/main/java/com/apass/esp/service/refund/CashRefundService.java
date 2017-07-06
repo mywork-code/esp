@@ -356,7 +356,11 @@ public class CashRefundService {
                 BigDecimal refundTxn = cashRefund.getAmt().multiply(scale);
                 refundTxn.setScale(2,BigDecimal.ROUND_HALF_UP);
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
-                cashRefundTxn.setAmt(refundTxn);
+                if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
+                    cashRefundTxn.setAmt(cashRefund.getAmt().subtract(refundTxn));
+                }else{
+                    cashRefundTxn.setAmt(refundTxn);
+                }
                 cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
                 cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
                 cashRefundTxn.setStatus("1");
