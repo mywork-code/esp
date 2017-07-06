@@ -1,7 +1,6 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,11 +36,9 @@ import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.service.RolesService;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -491,29 +488,32 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelves")
     public String shelves(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
-        List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
-        if (bannerList.isEmpty()) {
-            return "商品大图为空，请上传！";
-        }
-        GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
-        goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
-        List<GoodsStockInfoEntity> stockList = list.getDataList();
-        if (stockList.isEmpty()) {
-            return "商品库存为空,请添加！";
-        }
+        String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
-        if (null == goodsEntity) {
-            return "商品不存在！";
-        }
-        if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
-            return "商品墙图片为空，请上传！";
-        }
-        if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
-            return "商品详情不能为空,请添加！";
-        }
-        if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
-        	return "商品类目不能为空，请先选择类目！";
+    	if (null == goodsEntity) {
+    		return "商品不存在！";
+    	}
+        if(!"jd".equals(source)){
+        	List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
+        	if (bannerList.isEmpty()) {
+        		return "商品大图为空，请上传！";
+        	}
+        	GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
+        	goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
+        	PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
+        	List<GoodsStockInfoEntity> stockList = list.getDataList();
+        	if (stockList.isEmpty()) {
+        		return "商品库存为空,请添加！";
+        	}
+        	if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
+        		return "商品墙图片为空，请上传！";
+        	}
+        	if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
+        		return "商品详情不能为空,请添加！";
+        	}
+        	if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
+        		return "商品类目不能为空，请先选择类目！";
+        	}
         }
 
         GoodsInfoEntity entity = new GoodsInfoEntity();

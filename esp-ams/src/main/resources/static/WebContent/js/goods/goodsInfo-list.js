@@ -169,6 +169,13 @@ $(function() {
                     }
                 },
                 {
+                	title : '商品来源标识',
+                	field : 'source',
+                	width : 140,
+                	align : 'center',
+                	hidden: 'hidden'
+                },
+                {
                     title : '操作',
                     field : 'opt',
                     width : 150,
@@ -178,25 +185,33 @@ $(function() {
                 	 // 授权标示,
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
-                	 if((row.status =='G01'|| row.status =='G02')&& merchantStatus=="1"){
-                		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
-                             + index +"');\">库存</a>&nbsp;&nbsp;";
+                	 if(row.source =='jd'){
+                		 if(merchantStatus=="1"){
+                			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
+                				 + index +"');\">库存</a>&nbsp;&nbsp;"; 
+                		 }
+                	 }else{
+                		 if((row.status =='G01'|| row.status =='G02')&& merchantStatus=="1"){
+                			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
+                				 + index +"');\">库存</a>&nbsp;&nbsp;";
+                		 }
                 	 }
-                    if(grantedAuthority=='permission'){
-                    	 if(row.status !='G01'&&row.status !='G02'&& merchantStatus=="1"){//待审核状态不允许修改,已上架不允许
-                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoods('"
-                             + index + "');\">修改</a>&nbsp;&nbsp;"
+                	 
+                     if(grantedAuthority=='permission'){
+	                     if(row.status !='G01'&&row.status !='G02'&& merchantStatus=="1"&& row.source!='jd'){//待审核状态不允许修改,已上架不允许
+                    		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoods('"
+                              + index + "');\">修改</a>&nbsp;&nbsp;"
                     	 }
                     	 
                          if((row.status =='G03'||row.status =='G00')&& merchantStatus=="1"){//待上架或下架才能上架
 	                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelves('"
-	                             +  row.id + "');\">上架</a>&nbsp;&nbsp;" 
+	                    		 +  row.id + "','" +  row.source + "');\">上架</a>&nbsp;&nbsp;" 
                          }
                          if(row.status =='G02'){//上架商品才能下架
                         	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"
                                  + row.id + "');\">下架</a>&nbsp;&nbsp;"
                          }
-                    }
+                     }
                          content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
                              + row.id + "');\">预览</a>&nbsp;&nbsp;";
                     	 return content;
@@ -1181,11 +1196,12 @@ $(function() {
 		var goodsId=dataRow.id
 		finalGoodId = goodsId;
 		var status=dataRow.status;
+		var source = dataRow.source;
 		$('#goodsId').val(goodsId);
 		$('#goodsStockInfo').window({modal: true});
 		$('#goodsStockInfo').window('open');
 		
-		loadStockGoods('goodsStockList',goodsId);
+		loadStockGoods('goodsStockList',goodsId,source);
 	}
 	
 	//商品规格长度校验
@@ -1287,9 +1303,9 @@ $(function() {
 				var response = JSON.parse(data);
 				if(response.msg=="success"){
 					$.messager.alert("提示","缩略图上传成功！", "info");
-			        loadStockGoods('addGoodsStockList',finalGoodId);
-			        loadStockGoods('editGoodsStockList',finalGoodId);
-			        loadStockGoods('goodsStockList',finalGoodId);
+			        loadStockGoods('addGoodsStockList',finalGoodId,null);
+			        loadStockGoods('editGoodsStockList',finalGoodId,null);
+			        loadStockGoods('goodsStockList',finalGoodId,null);
 			        //loadStockGoods('editGoodsStockList',goodsId);
 			        
 //			        var params = {};
@@ -1358,9 +1374,9 @@ $(function() {
 		        params['goodsId'] = goodsId;
 //		        $('#addGoodsStockList').datagrid('load', params);
 //		        $('#editGoodsStockList').datagrid('load', params);
-		        loadStockGoods('addGoodsStockList',goodsId);
-		        loadStockGoods('editGoodsStockList',goodsId);
-		        loadStockGoods('goodsStockList',goodsId);
+		        loadStockGoods('addGoodsStockList',goodsId,null);
+		        loadStockGoods('editGoodsStockList',goodsId,null);
+		        loadStockGoods('goodsStockList',goodsId,null);
 		        $('#addAmtGoodsStockInfoWin').window('close');
 			}
 		});
@@ -1465,9 +1481,9 @@ $(function() {
 					var params = {};
 			        params['goodsId'] = goodsId;
 			        
-			        loadStockGoods('addGoodsStockList',goodsId);
-			        loadStockGoods('editGoodsStockList',goodsId);
-			        loadStockGoods('goodsStockList',goodsId);
+			        loadStockGoods('addGoodsStockList',goodsId,null);
+			        loadStockGoods('editGoodsStockList',goodsId,null);
+			        loadStockGoods('goodsStockList',goodsId,null);
 			        $('#editGoodsStockInfoWin').window('close');
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1500,12 +1516,13 @@ $(function() {
 	 
 	};	
 	//上架
-	$.shelves = function(id) {
+	$.shelves = function(id,source) {
 		$.messager.confirm('提示框', '你确定要上架吗?',function(r){
 			if(r){
 				debugger;
 				var params = {};
 				params['id']=id;
+				params['source']=source;
 //				var editorGoodsDetail  = UE.getEditor('editor').getContent();
 //				params['editorGoodsDetail']=editorGoodsDetail;
 //				if (null == editorGoodsDetail || ("") == editorGoodsDetail) {
@@ -1967,7 +1984,12 @@ function loadBanner(datagridId,goodsId){
     });
 }
 //加载库存列表
-function loadStockGoods(datagridId,goodsId){
+function loadStockGoods(datagridId,goodsId,source){
+	if(source=='jd'){
+		$("#addGoodsStockInfo").css('visibility','hidden');
+	}else{
+		$("#addGoodsStockInfo").css('visibility','visible');
+	}
 	$('#'+datagridId).datagrid({
         height:220,
         width:"100%",
@@ -2010,8 +2032,10 @@ function loadStockGoods(datagridId,goodsId){
                      	var grantedAuthority=$('#grantedAuthority').val();
                     	var content = "";
                     	if(grantedAuthority=='permission'){
-                    		content +="<a href='javascript:void(0);' class='easyui-linkedbutton' " +
-                    	 		"onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">加库存</a>&nbsp;&nbsp;";
+                    		if(source == null){
+                    			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' " +
+                    			"onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">加库存</a>&nbsp;&nbsp;";
+                    		}
                     		if(status!='G02'){//上架后不能修改
                     			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editStockinfo('"+index+"','"+datagridId+"');\">修改</a>&nbsp;&nbsp;";
                     		}

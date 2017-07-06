@@ -18,6 +18,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
  */
+/**
+ * @author xiaohai
+ *
+ */
 @MyBatisEntity
 public class GoodsInfoEntity {
 
@@ -149,8 +153,47 @@ public class GoodsInfoEntity {
      * 不支持配送区域
      */
     private String unSupportProvince;
+    
+    /**
+     *  商品来源标识(如：jd)
+     */
+    private String source;
+    
+    /**
+     * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
+     */
+    private String externalId;
+    
+    /**
+     * 外部商品是否关联标识(0：未关联，1：已关联)
+     */
+    private byte externalStatus;
 
-    public String getUnSupportProvince() {
+    public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public byte getExternalStatus() {
+		return externalStatus;
+	}
+
+	public void setExternalStatus(byte externalStatus) {
+		this.externalStatus = externalStatus;
+	}
+
+	public String getUnSupportProvince() {
 		return unSupportProvince;
 	}
 

@@ -84,7 +84,10 @@
 				t.goods_Model goodsModel,
 				t.goods_sift_url goodsSiftUrl,
 				t.sord_no sordNo,
-				un_support_province unSupportProvince
+				t.un_support_province unSupportProvince,
+				t.source source,
+				t.external_id externalId,
+				t.external_status externalStatus
 			FROM
 				t_esp_goods_base_info t
 			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
