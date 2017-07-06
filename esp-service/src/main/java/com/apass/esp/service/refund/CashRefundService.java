@@ -346,7 +346,7 @@ public class CashRefundService {
             BigDecimal txtAmount = new BigDecimal(0);
             BigDecimal firstAmount = new BigDecimal(0);
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
-                txtAmount.add(txnInfoEntity.getTxnAmt());
+                txtAmount = txtAmount.add(txnInfoEntity.getTxnAmt());
                 if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
                     firstAmount = txnInfoEntity.getTxnAmt();
                 }
