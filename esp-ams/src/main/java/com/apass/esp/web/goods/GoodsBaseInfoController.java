@@ -53,6 +53,7 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -100,6 +101,8 @@ public class GoodsBaseInfoController {
     private CategoryInfoService   categoryInfoService;
     @Autowired
     private JdProductApiClient jdProductApiClient;
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
     /**
      * 图片服务器地址
      */
@@ -828,7 +831,7 @@ public class GoodsBaseInfoController {
      * @return
      * @throws Exception
      */
-	@RequestMapping("/loadAllBannerPicJD")
+    @RequestMapping("/loadAllBannerPicJD")
 	public ModelAndView loadAllBannerPicJD(HttpServletRequest request) throws Exception {
 		Map<String, Object> map = Maps.newHashMap();
 		String id = HttpWebUtils.getValue(request, "id");
@@ -837,68 +840,7 @@ public class GoodsBaseInfoController {
 		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
 		String externalId = goodsInfo.getExternalId();// 外部商品id
 		externalId = "2403211";
-		//判断商品是书或非书（sku不为8位时为非图书音像类目商品）
-		String skuType="notBook";
-		if(externalId.length()==8){
-			skuType="book";
-		}
-		Gson gson = new Gson();
-		//查询商品名称
-		JdApiResponse<JSONObject> jdGoodsDetail = jdProductApiClient.productDetailQuery(Long.valueOf(externalId).longValue());
-		if (null != jdGoodsDetail && null != jdGoodsDetail.getResult() && jdGoodsDetail.isSuccess()) {
-			if ("book".equals(skuType)) {
-				JdGoodsBooks jdGoodsBooks = gson.fromJson(jdGoodsDetail.getResult().toString(), JdGoodsBooks.class);
-			} else {
-				JdGoods jdGoods = gson.fromJson(jdGoodsDetail.getResult().toString(), JdGoods.class);
-				map.put("previewGoodsName", jdGoods.getName());// 商品名称
-			}
-		}	
-		//查询商品价格
-	 	Collection<Long> skuPrice=new ArrayList<Long>();
-	 	skuPrice.add(Long.valueOf(externalId).longValue());
-    	JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(skuPrice);
-		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
-			for(int i=0;i<jdSellPrice.getResult().size();i++){
-				JdSellPrice jp=gson.fromJson(jdSellPrice.getResult().getString(i), JdSellPrice.class);
-				map.put("previewGoodsPrice", new DecimalFormat("0.00").format(jp.getJdPrice()));// 商品价格
-			}
-		}
-		// 查询商品图片
-		List<Long> skusImage = new ArrayList<>();
-		skusImage.add( Long.valueOf(externalId).longValue());
-		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
-		if(null !=jdImageResponse && null!=jdImageResponse.getResult() && jdImageResponse.isSuccess()){		
-			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(), new TypeToken<Map<String, List<JdImage>>>() {}.getType());
-			List<JdImage> jdList = jsonImageResult.get(externalId);
-			List<String> JdImagePathList=new ArrayList<>();
-			for(int i=0;i<jdList.size();i++){
-				String path=jdList.get(i).getPath();
-				//其中n0(最大图)、n1(350*350px)、n2(160*160px)、n3(130*130px)、n4(100*100px) 为图片大小
-				String pathJd="http://img13.360buyimg.com/n0/"+path;
-				JdImagePathList.add(pathJd);
-			}
-			map.put("previewJdImagePathList", JdImagePathList);
-		}
-		// 查询商品规格
-    	JdApiResponse<JSONArray> jdSimilarResponse =jdProductApiClient.getSimilarSku(Long.valueOf(externalId).longValue());
-    	List<JdSimilarSku> JdSimilarSkuList=new ArrayList<>(); 
-    	for(int i=0;i<jdSimilarResponse.getResult().size();i++){
-    		JdSimilarSku jp=gson.fromJson(jdSimilarResponse.getResult().getString(i), JdSimilarSku.class);
-    		jp.getDim();
-    		jp.getSaleName();
-    		jp.getSaleAttrList();
-    		String ll="";
-    		for(int j=0;j<jp.getSaleAttrList().size();j++){
-    			ll+=jp.getSaleAttrList().get(j).getSaleValue()+"--";
-    		}
-    		System.out.println(ll);
-    		JdSimilarSkuList.add(jp);
-    		
-    	}
-		
-		
-		
-		
+		map=jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
 		return new ModelAndView("goods/goodsPreviewProductJD-view", map);
 	}
     
