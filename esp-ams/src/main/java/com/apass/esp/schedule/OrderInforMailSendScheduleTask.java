@@ -64,7 +64,7 @@ public class OrderInforMailSendScheduleTask {
     @Autowired
     private OrderService orderService;
     
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "0 25 9 * * ?")
     public void sendOrderMailEveryDay(){
     	logger.info("-----------sendOrderMailEveryDay now time:{}-------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1), "YYYY-MM-dd");
@@ -106,8 +106,8 @@ public class OrderInforMailSendScheduleTask {
          MimeBodyPart body = new MimeBodyPart(); //正文
          MimeBodyPart attach = new MimeBodyPart(); //附件
          try {
-             attach.setDataHandler(new DataHandler(new FileDataSource("/全部订单信息.csv")));
-             attach.setFileName(MimeUtility.encodeText("全部订单信息.csv"));
+             attach.setDataHandler(new DataHandler(new FileDataSource("/全部订单信息.xlxs")));
+             attach.setFileName(MimeUtility.encodeText("全部订单信息.xlxs"));
              msgPart.addBodyPart(attach);
              body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
              msgPart.addBodyPart(body);
@@ -167,7 +167,7 @@ public class OrderInforMailSendScheduleTask {
                 cellContent.setCellValue(value);
             }
         }
-        FileOutputStream fileOutputStream = new FileOutputStream("/全部订单信息.csv");
+        FileOutputStream fileOutputStream = new FileOutputStream("/全部订单信息.xlxs");
         wb.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
