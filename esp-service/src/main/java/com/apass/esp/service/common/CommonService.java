@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -82,12 +81,14 @@ public class CommonService {
     public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
         Date now = new Date();
         //  系统折扣率
-        List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
+//        List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
         BigDecimal discount = BigDecimal.ZERO;
-        if (null != systemParams && systemParams.size() > 0) {
-            SystemParamEntity systemParam = systemParams.get(0);
-            discount = systemParam.getGoodsPriceRate();
-        }
+        BigDecimal price = BigDecimal.ZERO;
+//        if (null != systemParams && systemParams.size() > 0) {
+//            SystemParamEntity systemParam = systemParams.get(0);
+//            discount = systemParam.getGoodsPriceRate();
+//        }
+        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
         ActivityInfoEntity param = new ActivityInfoEntity();
         param.setGoodsId(goodsId);
         param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
@@ -95,20 +96,22 @@ public class CommonService {
 
         if (null != activitys && activitys.size() > 0 && discount.compareTo(BigDecimal.ZERO) == 0) {
             discount = activitys.get(0).getpDiscountRate();
-        }
-        //  最优折扣率
-        for (ActivityInfoEntity activity : activitys) {
-            if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
-                if (discount.compareTo(activity.getpDiscountRate()) > 0) {
-                    discount = activity.getpDiscountRate();
-                }
+            //  最优折扣率
+            for (ActivityInfoEntity activity : activitys) {
+            	if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
+            		if (discount.compareTo(activity.getpDiscountRate()) > 0) {
+            			discount = activity.getpDiscountRate();
+            		}
+            	}
             }
+            price = goodsStock.getMarketPrice().multiply(discount);
+            return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
+        }else{
+        	price = goodsStock.getGoodsPrice();	
+            return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
         }
-        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
-        BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);
-          return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
     }
 
     /**

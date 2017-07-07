@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.JdCategoryMapper">
+    <select id="getCateGoryByCatId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    SELECT <include refid="Base_Column_List" /> from t_esp_jd_category
+    where cat_id =#{catId}
+  </select>
+
+    <select id="selectByParentId" resultMap="BaseResultMap">
+       SELECT <include refid="Base_Column_List" /> from t_esp_jd_category
+        where  parent_id = #{parentId} and cat_class = #{catClass}
+    </select>
+
+</mapper>

@@ -30,7 +30,7 @@ public class ActivityWithDrawController {
 
 	/**
 	 * 银行卡列表
-	 * 
+	 *
 	 * @param paramMap
 	 * @return
 	 */
@@ -47,7 +47,7 @@ public class ActivityWithDrawController {
 
 	/**
 	 * 查询是否绑定银行卡及卡片信息及身份信息
-	 * 
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/getBindCardImformation", method = RequestMethod.POST)
@@ -132,7 +132,7 @@ public class ActivityWithDrawController {
 
 	/**
 	 * 身份证上传识别<正面or反面>
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -178,7 +178,7 @@ public class ActivityWithDrawController {
 
 	/**
 	 * 合同
-	 * 
+	 *
 	 * @param paramMap
 	 * @return
 	 */
@@ -201,7 +201,7 @@ public class ActivityWithDrawController {
 
 	/**
 	 * 合同初始化
-	 * 
+	 *
 	 * @return
 	 */
 

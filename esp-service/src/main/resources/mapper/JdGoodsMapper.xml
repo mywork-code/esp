@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.JdGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.third.party.jd.entity.base.JdGoods" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="jd_price" property="jdPrice" jdbcType="DECIMAL" />
+    <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="image_path" property="imagePath" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="DECIMAL" />
+    <result column="upc" property="upc" jdbcType="VARCHAR" />
+    <result column="product_area" property="productArea" jdbcType="VARCHAR" />
+    <result column="sale_unit" property="saleUnit" jdbcType="VARCHAR" />
+    <result column="ware_qd" property="wareQd" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="BIT" />
+    <result column="first_category" property="firstCategory" jdbcType="INTEGER" />
+    <result column="second_category" property="secondCategory" jdbcType="INTEGER" />
+    <result column="third_category" property="thirdCategory" jdbcType="INTEGER" />
+    <result column="similar_skus" property="similarSkus" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sku_id, price, jd_price, brand_name, name, image_path, weight, upc, product_area, 
+    sale_unit, ware_qd, state, first_category, second_category, third_category, similar_skus
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_jd_goods
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_esp_jd_goods
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.third.party.jd.entity.base.JdGoods" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_jd_goods (sku_id, price, jd_price, 
+      brand_name, name, image_path, 
+      weight, upc, product_area, 
+      sale_unit, ware_qd, state, 
+      first_category, second_category, third_category, 
+      similar_skus)
+    values (#{skuId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{jdPrice,jdbcType=DECIMAL}, 
+      #{brandName,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{imagePath,jdbcType=VARCHAR}, 
+      #{weight,jdbcType=DECIMAL}, #{upc,jdbcType=VARCHAR}, #{productArea,jdbcType=VARCHAR}, 
+      #{saleUnit,jdbcType=VARCHAR}, #{wareQd,jdbcType=VARCHAR}, #{state,jdbcType=BIT}, 
+      #{firstCategory,jdbcType=INTEGER}, #{secondCategory,jdbcType=INTEGER}, #{thirdCategory,jdbcType=INTEGER}, 
+      #{similarSkus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdGoods" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_jd_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="jdPrice != null" >
+        jd_price,
+      </if>
+      <if test="brandName != null" >
+        brand_name,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="imagePath != null" >
+        image_path,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="upc != null" >
+        upc,
+      </if>
+      <if test="productArea != null" >
+        product_area,
+      </if>
+      <if test="saleUnit != null" >
+        sale_unit,
+      </if>
+      <if test="wareQd != null" >
+        ware_qd,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="firstCategory != null" >
+        first_category,
+      </if>
+      <if test="secondCategory != null" >
+        second_category,
+      </if>
+      <if test="thirdCategory != null" >
+        third_category,
+      </if>
+      <if test="similarSkus != null" >
+        similar_skus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="skuId != null" >
+        #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="jdPrice != null" >
+        #{jdPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="brandName != null" >
+        #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="imagePath != null" >
+        #{imagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="upc != null" >
+        #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="productArea != null" >
+        #{productArea,jdbcType=VARCHAR},
+      </if>
+      <if test="saleUnit != null" >
+        #{saleUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="wareQd != null" >
+        #{wareQd,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=BIT},
+      </if>
+      <if test="firstCategory != null" >
+        #{firstCategory,jdbcType=INTEGER},
+      </if>
+      <if test="secondCategory != null" >
+        #{secondCategory,jdbcType=INTEGER},
+      </if>
+      <if test="thirdCategory != null" >
+        #{thirdCategory,jdbcType=INTEGER},
+      </if>
+      <if test="similarSkus != null" >
+        #{similarSkus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdGoods" >
+    update t_esp_jd_goods
+    <set >
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="jdPrice != null" >
+        jd_price = #{jdPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="brandName != null" >
+        brand_name = #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="imagePath != null" >
+        image_path = #{imagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=DECIMAL},
+      </if>
+      <if test="upc != null" >
+        upc = #{upc,jdbcType=VARCHAR},
+      </if>
+      <if test="productArea != null" >
+        product_area = #{productArea,jdbcType=VARCHAR},
+      </if>
+      <if test="saleUnit != null" >
+        sale_unit = #{saleUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="wareQd != null" >
+        ware_qd = #{wareQd,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=BIT},
+      </if>
+      <if test="firstCategory != null" >
+        first_category = #{firstCategory,jdbcType=INTEGER},
+      </if>
+      <if test="secondCategory != null" >
+        second_category = #{secondCategory,jdbcType=INTEGER},
+      </if>
+      <if test="thirdCategory != null" >
+        third_category = #{thirdCategory,jdbcType=INTEGER},
+      </if>
+      <if test="similarSkus != null" >
+        similar_skus = #{similarSkus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.third.party.jd.entity.base.JdGoods" >
+    update t_esp_jd_goods
+    set sku_id = #{skuId,jdbcType=BIGINT},
+      price = #{price,jdbcType=DECIMAL},
+      jd_price = #{jdPrice,jdbcType=DECIMAL},
+      brand_name = #{brandName,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      image_path = #{imagePath,jdbcType=VARCHAR},
+      weight = #{weight,jdbcType=DECIMAL},
+      upc = #{upc,jdbcType=VARCHAR},
+      product_area = #{productArea,jdbcType=VARCHAR},
+      sale_unit = #{saleUnit,jdbcType=VARCHAR},
+      ware_qd = #{wareQd,jdbcType=VARCHAR},
+      state = #{state,jdbcType=BIT},
+      first_category = #{firstCategory,jdbcType=INTEGER},
+      second_category = #{secondCategory,jdbcType=INTEGER},
+      third_category = #{thirdCategory,jdbcType=INTEGER},
+      similar_skus = #{similarSkus,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

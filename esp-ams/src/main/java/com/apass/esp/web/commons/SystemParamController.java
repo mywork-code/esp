@@ -1,5 +1,6 @@
 package com.apass.esp.web.commons;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +87,11 @@ public class SystemParamController {
             // 获取请求的参数
             String id = HttpWebUtils.getValue(request, "id");
             String merchantSettleRate = HttpWebUtils.getValue(request, "merchantSettleRate");
-            String goodsPriceRate = HttpWebUtils.getValue(request, "goodsPriceRate");
+//            String goodsPriceRate = HttpWebUtils.getValue(request, "goodsPriceRate");
+            String priceCostRate = HttpWebUtils.getValue(request, "priceCostRate");
+            if(StringUtils.isNotBlank(priceCostRate)){
+            	priceCostRate = new BigDecimal(priceCostRate).divide(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP).toString();
+            }
 
             // 获取商户号
             ListeningCustomSecurityUserDetails listeningCustomSecurityUserDetails = SpringSecurityUtils
@@ -97,7 +102,8 @@ public class SystemParamController {
             Map<String, String> map = new HashMap<String, String>();
             map.put("id", id);
             map.put("merchantSettleRate", merchantSettleRate);
-            map.put("goodsPriceRate", goodsPriceRate);
+//            map.put("goodsPriceRate", goodsPriceRate);
+            map.put("priceCostRate", priceCostRate);
             map.put("userName", userName);
             map.put("systemtime", DateFormatUtil.getCurrentDate());
 
@@ -127,13 +133,19 @@ public class SystemParamController {
             throw new BusinessException("商户结算折扣率字段不合法，必须在0到1之间!");
         }
 
-        if (StringUtils.isAnyBlank(map.get("goodsPriceRate"))) {
-            throw new BusinessException("商品价格折扣率不能为空!");
+//        if (StringUtils.isAnyBlank(map.get("goodsPriceRate"))) {
+//            throw new BusinessException("商品价格折扣率不能为空!");
+//        }
+        if (StringUtils.isAnyBlank(map.get("priceCostRate"))) {
+        	throw new BusinessException("保本率不能为空!");
         }
 
-        if (Double.parseDouble(map.get("goodsPriceRate").toString()) < 0
-            || Double.parseDouble(map.get("goodsPriceRate").toString()) > 1) {
-            throw new BusinessException("商品价格折扣率字段不合法，必须在0到1之间!");
+//        if (Double.parseDouble(map.get("goodsPriceRate").toString()) < 0
+//            || Double.parseDouble(map.get("goodsPriceRate").toString()) > 1) {
+//            throw new BusinessException("商品价格折扣率字段不合法，必须在0到1之间!");
+//        }
+        if (Double.parseDouble(map.get("priceCostRate").toString()) < 0) {
+        	throw new BusinessException("保本率字段不合法，必须大于0");
         }
     }
 }

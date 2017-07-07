@@ -1,9 +1,10 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
@@ -36,12 +38,15 @@ import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdGoods;
+import com.apass.esp.domain.entity.jd.JdGoodsBooks;
+import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.service.RolesService;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -49,6 +54,8 @@ import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
@@ -60,6 +67,8 @@ import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 /**
  * 商品管理
@@ -89,6 +98,8 @@ public class GoodsBaseInfoController {
     private MerchantInforService  merchantInforService;
     @Autowired
     private CategoryInfoService   categoryInfoService;
+    @Autowired
+    private JdProductApiClient jdProductApiClient;
     /**
      * 图片服务器地址
      */
@@ -131,7 +142,8 @@ public class GoodsBaseInfoController {
                 map.put("merchantStatus", merchantStatus);
             }
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
             
             if(SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
@@ -155,7 +167,8 @@ public class GoodsBaseInfoController {
         Map<String, Object> map = Maps.newHashMap();
         try {
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
        
             if(SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
@@ -167,6 +180,19 @@ public class GoodsBaseInfoController {
         LOGGER.info("商品审核初始化成功...");
         return new ModelAndView("goods/goodsInfoCheck-list", map);
     }
+
+    /**
+     * 商品管理页面加载
+     */
+    @RequestMapping("/bBenPage")
+    public ModelAndView bBenPage() {
+        Map<String, Object> map = Maps.newHashMap();
+        if(SpringSecurityUtils.hasPermission("GOODS_BBEN_CHECK_BATCH")) {
+            map.put("grantedAuthority", "permission");
+        }
+        return new ModelAndView("goods/goodsInfoBben-list", map);
+    }
+
     /**
      * 商品类目列表
      */
@@ -500,10 +526,23 @@ public class GoodsBaseInfoController {
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
         }
+
+        for(GoodsStockInfoEntity goodsStockInfoEntity1:stockList){
+            if(goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice())==-1){
+                GoodsInfoEntity entity = new GoodsInfoEntity();
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return "商品售价大于成本价";
+            }
+        }
+
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
         if (null == goodsEntity) {
             return "商品不存在！";
         }
+
         if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
             return "商品墙图片为空，请上传！";
         }
@@ -572,6 +611,33 @@ public class GoodsBaseInfoController {
         }
         return SUCCESS;
     }
+
+
+    @ResponseBody
+    @RequestMapping("/bBencheckview")
+    public String bBencheckview(HttpServletRequest request) {
+        String ids = HttpWebUtils.getValue(request, "ids");
+        String flag = HttpWebUtils.getValue(request, "flag");
+        if (!StringUtils.isBlank(ids)) {
+            ids = ids.substring(1, ids.length() - 1);
+            String[] strArr = ids.split(",");
+            if (null != strArr && strArr.length >= 0) {
+                for (int i = 0; i < strArr.length; i++) {
+                    GoodsInfoEntity entity = new GoodsInfoEntity();
+                    entity.setId(Long.valueOf(strArr[i]));
+                    if (!"reject".equals(flag)) {
+                        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                    } else {
+                        entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                    }
+                    entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                    goodsService.updateService(entity);
+                }
+            }
+        }
+        return SUCCESS;
+    }
+
 
     /**
      * loadLogo
@@ -750,5 +816,86 @@ public class GoodsBaseInfoController {
 
         return new ModelAndView("goods/goodsPreviewProduct-view", map);
     }
+    
+    /**
+     * 商品预览
+     * 
+     * @return
+     * @throws Exception
+     */
+	@RequestMapping("/loadAllBannerPicJD")
+	public ModelAndView loadAllBannerPicJD(HttpServletRequest request) throws Exception {
+		Map<String, Object> map = Maps.newHashMap();
+		String id = HttpWebUtils.getValue(request, "id");
+		String view = HttpWebUtils.getValue(request, "view");
 
+		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
+		String externalId = goodsInfo.getExternalId();// 外部商品id
+		externalId = "2403211";
+		//判断商品是书或非书（sku不为8位时为非图书音像类目商品）
+		String skuType="notBook";
+		if(externalId.length()==8){
+			skuType="book";
+		}
+		Gson gson = new Gson();
+		//查询商品名称
+		JdApiResponse<JSONObject> jdGoodsDetail = jdProductApiClient.productDetailQuery(Long.valueOf(externalId).longValue());
+		if (null != jdGoodsDetail && null != jdGoodsDetail.getResult() && jdGoodsDetail.isSuccess()) {
+			if ("book".equals(skuType)) {
+				JdGoodsBooks jdGoodsBooks = gson.fromJson(jdGoodsDetail.getResult().toString(), JdGoodsBooks.class);
+			} else {
+				JdGoods jdGoods = gson.fromJson(jdGoodsDetail.getResult().toString(), JdGoods.class);
+				map.put("previewGoodsName", jdGoods.getName());// 商品名称
+			}
+		}	
+		//查询商品价格
+	 	Collection<Long> skuPrice=new ArrayList<Long>();
+	 	skuPrice.add(Long.valueOf(externalId).longValue());
+    	JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(skuPrice);
+		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
+			for(int i=0;i<jdSellPrice.getResult().size();i++){
+				JdSellPrice jp=gson.fromJson(jdSellPrice.getResult().getString(i), JdSellPrice.class);
+				map.put("previewGoodsPrice", new DecimalFormat("0.00").format(jp.getJdPrice()));// 商品价格
+			}
+		}
+		// 查询商品图片
+		List<Long> skusImage = new ArrayList<>();
+		skusImage.add( Long.valueOf(externalId).longValue());
+		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
+		if(null !=jdImageResponse && null!=jdImageResponse.getResult() && jdImageResponse.isSuccess()){		
+			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(), new TypeToken<Map<String, List<JdImage>>>() {}.getType());
+			List<JdImage> jdList = jsonImageResult.get(externalId);
+			List<String> JdImagePathList=new ArrayList<>();
+			for(int i=0;i<jdList.size();i++){
+				String path=jdList.get(i).getPath();
+				//其中n0(最大图)、n1(350*350px)、n2(160*160px)、n3(130*130px)、n4(100*100px) 为图片大小
+				String pathJd="http://img13.360buyimg.com/n0/"+path;
+				JdImagePathList.add(pathJd);
+			}
+			map.put("previewJdImagePathList", JdImagePathList);
+		}
+		// 查询商品规格
+    	JdApiResponse<JSONArray> jdSimilarResponse =jdProductApiClient.getSimilarSku(Long.valueOf(externalId).longValue());
+    	List<JdSimilarSku> JdSimilarSkuList=new ArrayList<>(); 
+    	for(int i=0;i<jdSimilarResponse.getResult().size();i++){
+    		JdSimilarSku jp=gson.fromJson(jdSimilarResponse.getResult().getString(i), JdSimilarSku.class);
+    		jp.getDim();
+    		jp.getSaleName();
+    		jp.getSaleAttrList();
+    		String ll="";
+    		for(int j=0;j<jp.getSaleAttrList().size();j++){
+    			ll+=jp.getSaleAttrList().get(j).getSaleValue()+"--";
+    		}
+    		System.out.println(ll);
+    		JdSimilarSkuList.add(jp);
+    		
+    	}
+		
+		
+		
+		
+		return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+	}
+    
+    
 }

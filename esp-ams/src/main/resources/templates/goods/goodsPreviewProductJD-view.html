@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/swiper.min.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/goodsPreviewProduct-view.js"></script>
+
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;}
+#Product_detailsWrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        #Product_details {
+            width: 375px;
+            height: 600px;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            -webkit-transform: translate(-50%, 0);
+            -moz-transform: translate(-50%, 0);
+            -ms-transform: translate(-50%,0);
+            -o-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+            background-color: #fff;
+        }
+
+        #Product_details > .nav {
+            width: 100%;
+            height: 40px;
+            text-align: center;
+            background-color: #969696;
+            line-height: 40px;
+        }
+
+        #Product_details > .nav a {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 100%;
+            line-height: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #Product_details > .nav a.active:after {
+            content: '';
+            position: absolute;
+            bottom: 13px;
+            left: 50%;
+            display: block;
+            width: 0;
+            height: 0;
+            border: 3px #fff solid;
+            -webkit-transform: rotate(45deg) translateX(-50%);
+            -moz-transform: rotate(45deg) translateX(-50%);
+            -ms-transform: rotate(45deg) translateX(-50%);
+            -o-transform: rotate(45deg) translateX(-50%);
+            transform: rotate(45deg) translateX(-50%);
+        }
+
+        #Product_details .swiper-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        #Product_details .swiper-container .swiper-slide {
+            height: 300px;
+        }
+
+        #Product_details .swiper-container .swiper-pagination-fraction {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            left:auto;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.6);
+            color:#fff;
+            font-weight: bolder;
+        }
+        #Product_details .product .title{
+            text-align: center;
+            padding:10px 0 4px;
+            font-size: 20px;
+            color:#000;
+        }
+        #Product_details  .product .sub {
+            text-align: center;
+            color:#666;
+            font-size: 12px;
+        }
+        #Product_details  .product .price {
+            text-align: center;
+            padding:4px 0 10px;
+            color:#D60000;
+        }
+        #Product_details .product .chose {
+            position: relative;
+            margin:0 16px;
+            height:40px;
+            line-height: 40px;
+            border-top: 1px #e6e6e6 solid;
+            font-size: 14px;
+            background: url("${rc.contextPath}/WebContent/images/arrow-right.png") no-repeat right center;
+            -webkit-background-size: 10px 20px;
+            background-size: 10px 20px;
+        }
+        #Product_details .product .SIZE {
+            display: none;
+            position: absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            width:100%;
+            background-color: #fff;
+            height:260px;
+            z-index: 99;
+            font-size: 14px;
+        }
+        #Product_details .product .SIZE .close {
+            position: absolute;
+            top:12px;
+            right:12px;
+            width:40px;
+        }
+        #Product_details .product .SIZE  .pro_img{
+            position: absolute;
+            top:12px;
+            left:12px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            width:56px;
+            height:56px;
+        }
+        #Product_details .product .SIZE  .SIZE_price{
+            padding-top: 20px;
+            color:#333;
+            text-indent: 90px;
+            line-height: 20px;
+        }
+        #Product_details .product .SIZE  .SIZE_costPrice{
+             color: black;
+		   	 padding-left: 100px;
+		     line-height: 20px;
+        }
+        #Product_details .product .SIZE  .SIZE_color{
+            padding-top: 10px;
+            text-indent: 90px;
+            color:#666;
+            line-height: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        #Product_details .product .SIZE  .SIZE_title{
+            padding:14px 12px 0px;
+            color:#000;
+        }
+        #Product_details .product .SIZE  .SIZE_Chcolor{
+            padding:0 12px;
+            line-height: 20px;
+            color:#444;
+            font-size: 14px;
+        }
+        #Product_details .product .SIZE  .SIZE_Chcolor span {
+            margin-right: 12px;
+        }
+        #Product_details .product .SIZE  .SIZE_Chcolor span.active {
+            color:#D60000;
+        }
+        #Product_details .product .SIZE  .supply{
+            padding:0 12px;
+            color:#666;
+            font-size: 14px;
+        }
+        #Product_details .details {
+            display: none;
+            width:375px;
+            background-color: #cecece;
+        }
+        #Product_details .details .top{
+            background: #fff;
+            padding: 4px 0 4px 12px;
+            margin-bottom: 8px;
+        }
+        #Product_details .details .top>p{
+            border-bottom: 1px #e4e4e4 solid;
+            height:36px;
+            line-height: 36px;
+            color:#666;
+            font-size: 14px;
+        }
+        #Product_details .details .top>p span{
+            margin-right: 10px;
+        }
+        #Product_details .details .img_content{
+            background: #ffffff;
+            padding:10px;
+        }
+        #Product_details .details .img_content img{
+            width:100%;
+            margin-bottom: 4px;
+        }
+        .product .swiper-slide img {
+        	width:100%;height:100%;
+        }
+        
+         .compare_url{
+            padding: 0 12px;
+    		font-size: 14px;
+    		line-height: 26px;
+    		}
+        .compare_url a {
+        	color:#b70000;
+        }
+</style>
+</head>
+<body>
+	<div class="easyui-tabs" id="tabs" style="width: 98%;">
+				
+<div id="Product_detailsWrap">
+	<input id="viewName" type="hidden" value="${view!}">
+    <div id="Product_details">
+        <p class="nav">
+            <a class="active">商品</a>
+            <a>详情</a>
+        </p>
+        <div class="page product" >
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                	<#if JdImagePathList??>	
+					<#list JdImagePathList as JdImagePath>	
+						  <div class="swiper-slide"><img src="${(JdImagePath)!}"/></div>
+	                </#list>
+					</#if>              
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Arrows -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <p class="title">${previewGoodsName!}</p>
+            <p class="price">¥ ${previewGoodsPrice!}</p>
+               <#if (goodsStockList?size > 0)>
+             <div class="chose">选择规格数量
+                <div class="SIZE">
+                    <img src="${rc.contextPath}/WebContent/images/icon-fail.png" alt="" class="close"/>
+                    <img id='goodsLogoUrl' src="data:image/gif;base64,${goodsStockList[0].stockLogo!}" alt="" class="pro_img"/>
+                    <p class="SIZE_price">¥${(goodsStockList[0].goodsPrice)!}</p><!-- ¥${(goodsStockList[0].goodsPrice)!} -->
+                    <p class="SIZE_costPrice" style="color: black;font-weight:bold">¥${(goodsStockList[0].goodsCostPrice)!}</p><!-- ¥${(goodsStockList[0].goodsCostPrice)!} -->
+                    <p class="SIZE_color">已选择： ${(goodsStockList[0].goodsSkuAttr)!}</p><!--已选择： ${(goodsStockList[0].goodsSkuAttr)!} -->
+                    <div class="SIZE_title">${goodsSizeOrColorTitle!}</div>
+	                <div class="SIZE_Chcolor" id="SIZE_Chcolor">
+	                <#if goodsStockList??>	
+					<#list goodsStockList as GoodsStockInfoEntity>	
+							<span 
+							data-compareurl="${(GoodsStockInfoEntity.goodsCompareUrl)!}"
+							data-compareurl2="${(GoodsStockInfoEntity.goodsCompareUrl2)!}"
+							data-logourl="${(GoodsStockInfoEntity.stockLogo)!}" 
+							data-price="${(GoodsStockInfoEntity.goodsPrice)!}" 
+							data-costPrice="${(GoodsStockInfoEntity.goodsCostPrice)!}" 
+							data-amount="${(GoodsStockInfoEntity.stockCurrAmt)!}">
+								<#if GoodsStockInfoEntity_index == 0>
+									<font color="#D60000" id="goodsSkuTempColor">${(GoodsStockInfoEntity.goodsSkuAttr)!}</font>
+								</#if>
+								<#if GoodsStockInfoEntity_index != 0>
+									${(GoodsStockInfoEntity.goodsSkuAttr)!}
+								</#if>
+							</span>					
+	                </#list>
+					</#if>
+	                </div>
+	                <div class="supply">商品库存：${(goodsStockList[0].stockCurrAmt)!}件</div><!-- 商品库存：${(goodsStockList[0].stockCurrAmt)!}件 -->
+	                
+	                <div class="compare_url" id="compareurl1"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接1</a></div>
+	                <div class="compare_url" id="compareurl2"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接2</a></div>
+                </div>
+            </div>
+            </#if>
+        </div>
+        <!-- 商品详情 -->
+        <div class="page details" style="display: none;">
+            ${(googsDetail)!}
+        </div>
+
+    </div>
+</div>
+</div>
+	
+<script>
+	$(function(){
+		debugger;
+		var view = $("#viewName").val();
+		if(view == "list"){
+			$(".SIZE_costPrice").hide();
+		}
+	});
+	var swiper = new Swiper('.swiper-container', {
+		nextButton : '.swiper-button-next',
+		prevButton : '.swiper-button-prev',
+		pagination : '.swiper-pagination',
+		paginationType : 'fraction'
+	});
+
+	var $prod = $("#Product_details");
+	var $prodPage = $prod.children(".page");
+	var $prodChose = $("#Product_details .chose");
+	var $prodChoseClose = $("#Product_details .close");
+	$prod.on('click', 'a', function() {
+		$(this).addClass('active').siblings().removeClass();
+		var ind = $(this).index();
+		$prodPage.hide();
+		$prodPage.eq(ind).show();
+	});
+	$prodChose.click(function() {
+		$(this).children(".SIZE").show();
+	});
+	$prodChoseClose.on('click', function() {
+		$(this).parent().hide();
+		event.stopPropagation();
+	});
+	
+</script>
+
+
+
+
+</body>
+</html>
