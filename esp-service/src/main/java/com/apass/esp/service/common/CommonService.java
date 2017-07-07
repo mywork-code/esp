@@ -1,27 +1,25 @@
 package com.apass.esp.service.common;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.enums.DeviceType;
-import com.apass.esp.repository.payment.PaymentHttpClient;
-import com.apass.gfb.framework.utils.RandomUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.common.SequenceEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
+import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.common.SequenceRepository;
 import com.apass.esp.repository.common.SystemParamRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class CommonService {
@@ -105,6 +103,9 @@ public class CommonService {
             }
         }
         GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
+        if(goodsStock.getMarketPrice() == null){
+            return BigDecimal.ZERO;
+        }
         BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);
