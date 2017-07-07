@@ -56,3 +56,7 @@ CREATE TABLE `t_esp_jd_goods` (
 
 ALTER TABLE `t_esp_system_param_info`
 ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/成本价*100%=保本率)';
+
+ALTER TABLE `t_esp_order_info`
+ADD COLUMN `source`  varchar(12) DEFAULT '' COMMENT '商品来源标识(如：jd)',
+ADD COLUMN `ext_order_id` varchar(32) DEFAULT '' COMMENT '外部订单id(例如京东订单id)';
