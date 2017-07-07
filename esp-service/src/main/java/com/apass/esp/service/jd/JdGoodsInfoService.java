@@ -131,7 +131,7 @@ public class JdGoodsInfoService {
 			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
 					new TypeToken<Map<String, List<JdImage>>>() {
 					}.getType());
-			List<JdImage> jdList = jsonImageResult.get(sku);
+			List<JdImage> jdList = jsonImageResult.get(sku.toString());
 			for (int i = 0; i < jdList.size(); i++) {
 				String path = jdList.get(i).getPath();
 				String pathJd = "http://img13.360buyimg.com/" + type + "/" + path;
