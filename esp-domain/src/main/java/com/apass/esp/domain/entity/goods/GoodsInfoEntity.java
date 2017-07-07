@@ -153,6 +153,7 @@ public class GoodsInfoEntity {
      * 不支持配送区域
      */
     private String unSupportProvince;
+<<<<<<< HEAD
     
     /**
      *  商品来源标识(如：jd)
@@ -194,6 +195,20 @@ public class GoodsInfoEntity {
 	}
 
 	public String getUnSupportProvince() {
+=======
+    /**
+     * 商品来源标识(如：jd)
+     * @return
+     */
+    private String source;
+    /**
+     * 外部商品id,唯一标识
+     */
+    private String externalId;
+    
+    
+    public String getUnSupportProvince() {
+>>>>>>> f395f92d044c9a4fc0abe048627eaff351da09e8
 		return unSupportProvince;
 	}
 
@@ -511,4 +526,21 @@ public class GoodsInfoEntity {
 	public void setCategoryName3(String categoryName3) {
 		this.categoryName3 = categoryName3;
 	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+	
 }

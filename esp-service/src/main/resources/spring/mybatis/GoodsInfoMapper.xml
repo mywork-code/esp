@@ -211,7 +211,10 @@
              goods_detail,
              goods_Sku_Type,
              sord_no,
-             un_support_province)
+             un_support_province,
+             source,
+             external_id,
+             external_status)
 			values (#{goodsModel, jdbcType=VARCHAR},
 		        #{goodsName, jdbcType=VARCHAR},
 	        #{categoryId1, jdbcType=BIGINT},
@@ -236,7 +239,10 @@
 	        #{googsDetail, jdbcType=VARCHAR},
 	        #{goodsSkuType, jdbcType=VARCHAR},
 	        #{sordNo, jdbcType=INTEGER},
-	        #{unSupportProvince, jdbcType=VARCHAR})
+	        #{unSupportProvince, jdbcType=VARCHAR},
+	        #{source, jdbcType=VARCHAR},
+	        #{externalId, jdbcType=VARCHAR},
+	        #{externalStatus, jdbcType=TINYINT})
 	]]>
 	</insert>
 	<!-- 更新 -->

@@ -1,6 +1,3 @@
-/**
- * GOODSCHECK - info
- */
 $(function() {
 	//初始化
     $('#tablelist').datagrid({
@@ -204,8 +201,9 @@ $(function() {
 			for (var i = 0; i < selRow.length; i++) {
 				var id=selRow[i].id;     
 				ids.push(id); 
-		      }  
-			checkGoods(ids,"商品批量复核");
+		      }
+			checkGoods(ids,"商品批量保本率审核");
+
 		}
     });
     
@@ -213,11 +211,12 @@ $(function() {
 		debugger;
 		var arr = new Array();
 		arr[0]=id;
-    	checkGoods(arr,"商品单个复核");
+    	checkGoods(arr,"商品单个保本率审核");
     }
 	 $("#reviewOpinion").switchbutton({
-	        onText : '复核驳回',
-	        offText : '复核通过'
+	        onText : '保本率审核驳回',
+	        offText : '保本率审核通过'
+
     });
 	 
 
@@ -239,11 +238,10 @@ $(function() {
 		        var reject = $("#reviewOpinion").switchbutton("options").checked;
 		        $.ajax({
 					type : "POST",
-					url : ctx + "/application/goods/management/checkview",
+					url : ctx + "/application/goods/management/bBencheckview",
 					data : {
 			                "ids" : JSON.stringify(ids),
-			                "flag" : reject ? "reject" : "pass",
-			                "message" : $("#reviewGoods #message").val()
+			                "flag" : reject ? "reject" : "pass"
 			            },
 					success : function(data) {
 		            	$("#reviewGoods").dialog("close");
@@ -262,20 +260,6 @@ $(function() {
                         handler : function() {
                         	var reject = $("#reviewOpinion").switchbutton("options").checked;
                         	var flagts=reject ? "reject" : "pass";
-                        	if(flagts=='reject'){
-                        		if($("#reviewGoods #message").val()==''){
-                            		$.messager.alert("提示", "请填写驳回理由！", "info");  
-                            		return;
-                            	} 	
-                        	}
-                        	if($("#reviewGoods #message").val().length==0){
-                        		$.messager.alert("提示", "复核理由不能为空！", "info");  
-                        		return;
-                    		}
-                        	if($("#reviewGoods #message").val().length>100){
-                        		$.messager.alert("提示", "复核理由不允许超过100字！", "info");  
-                        		return;
-                    		}
                         	handlesubmit();
                         }
                     }, {

@@ -41,7 +41,7 @@ public abstract class JdApiClient {
         params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
         //JSONObject token = jdTokenManager.getToken();
         params.put("access_token",
-                "5a590fba845f42d5ad7f32baf794f1e58");
+                "2d65f8b1551645df96abd5dd7cb28a308");
                // UrlUtils.encode(token.getString("access_token")));
         params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         params.put("format", UrlUtils.encode("json"));

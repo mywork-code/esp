@@ -8,7 +8,12 @@ import com.apass.esp.web.commons.JsonDateValueProcessor;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +28,10 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -89,7 +90,7 @@ public class MailStatisScheduleTask {
 
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
-        exportDomain.setDate(beginDate + "01" + " - " + dateBefore);
+        exportDomain.setDate(beginDate  + " ~ " + dateBefore);
         exportDomain.setCount1(count1);
         exportDomain.setCount2(count2);
         exportDomain.setCount3(count3);
@@ -110,11 +111,11 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setUserName(sendAddress);
         mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
         mailSenderInfo.setFromAddress(sendAddress);
-        mailSenderInfo.setSubject("安家趣花电商订单统计");
+        mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
-        mailSenderInfo.setToAddress("xujie@apass.cn");
-        //mailSenderInfo.setToAddress("huangbeifang@apass.cn");
-        //mailSenderInfo.setCcAddress("maoyanping@apass.cn,zhangyuanlin@apass.cn,yangxiaoqing@apass.cn");
+//        mailSenderInfo.setToAddress("xujie@apass.cn");
+        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
+        mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
         Multipart msgPart = new MimeMultipart();
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件

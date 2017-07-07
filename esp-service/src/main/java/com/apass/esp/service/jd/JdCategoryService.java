@@ -30,7 +30,7 @@ public class JdCategoryService {
       JdCategoryTreeVo vo = new JdCategoryTreeVo();
       vo.setCateId(cate.getCatId());
       vo.setId(cate.getId());
-      vo.setName(cate.getName());
+      vo.setText(cate.getName());
       vo.setCatClass(cate.getCatClass());
       vo.setChildren(getByParentId(cate.getCatId(), cate.getCatClass() + 1));
       result.add(vo);

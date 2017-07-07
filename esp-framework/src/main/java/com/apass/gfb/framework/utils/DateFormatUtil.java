@@ -308,7 +308,20 @@ public class DateFormatUtil {
         c.add(Calendar.MONTH, num);
         return c.getTime();
     }
-
+    
+    /**
+     * 取上个月的第一天
+     * @return
+     */
+    public static Date firstDayLastMonth(){
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.add(Calendar.MONTH, -1);
+    	calendar.set(Calendar.DAY_OF_MONTH, 1);
+    	
+    	return calendar.getTime();
+    }
+    
     public static int getBetweenTwoDays(Date start, Date end) {
         if (start == null) {
             return 0;

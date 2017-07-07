@@ -21,7 +21,7 @@ CREATE TABLE `t_esp_jd_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `cat_id` bigint(20) NOT NULL COMMENT '京东类目id',
   `name` varchar(20) NOT NULL COMMENT '类目名称',
-  `parent_id` bigint(20) DEFAULT NULL COMMENT '父级id',
+  `parent_id` bigint(20) NOT NULL COMMENT '父级id',
   `cat_class` int NOT NULL COMMENT '级别',
   `category_id1` bigint(20) NOT NULL COMMENT 'apass类目1',
   `category_id2` bigint(20) NOT NULL COMMENT 'apass类目2',
@@ -39,7 +39,7 @@ CREATE TABLE `t_esp_jd_goods` (
   `jd_price` decimal(10,2) NOT NULL COMMENT '京东价',
   `brand_name` varchar(255) NOT NULL COMMENT '品牌',
   `name` varchar(255) NOT NULL COMMENT '商品名称',
-  `image_path` varchar(255) DEFAULT NULL COMMENT '主图地址',
+  `image_path` varchar(255) DEFAULT '' COMMENT '主图地址',
   `weight` decimal(10,0) DEFAULT '0' COMMENT '重量',
   `upc` varchar(20) DEFAULT '' COMMENT '条形码',
   `product_area` varchar(20) DEFAULT '' COMMENT '产地',
@@ -56,3 +56,7 @@ CREATE TABLE `t_esp_jd_goods` (
 
 ALTER TABLE `t_esp_system_param_info`
 ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/成本价*100%=保本率)';
+
+ALTER TABLE `t_esp_order_info`
+ADD COLUMN `source`  varchar(12) DEFAULT '' COMMENT '商品来源标识(如：jd)',
+ADD COLUMN `ext_order_id` varchar(32) DEFAULT '' COMMENT '外部订单id(例如京东订单id)';

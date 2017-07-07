@@ -9,7 +9,7 @@ public class JdCategoryTreeVo {
 
   private Long id;
   private Long cateId;//京东类目id
-  private String name;
+  private String text;
   private Integer catClass;
   private List<JdCategoryTreeVo> children;
 
@@ -29,15 +29,16 @@ public class JdCategoryTreeVo {
     this.cateId = cateId;
   }
 
-  public String getName() {
-    return name;
-  }
+  
+  public String getText() {
+	return text;
+}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+public void setText(String text) {
+	this.text = text;
+}
 
-  public List<JdCategoryTreeVo> getChildren() {
+public List<JdCategoryTreeVo> getChildren() {
     return children;
   }
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+.window>.panel-header>.panel-title {
+	color:#000;
+}
+.new-btn {
+	display: inline-block;
+    padding: 2px 4px 2px 30px;
+    background: #FFFFFF url("/ams/WebContent/images/icon_upload.png") no-repeat 4px center;
+    font-size: 16px;
+    color: #000000;
+    background-size: 18px;
+    border: 1px #000 solid;
+    border-radius: 4px;
+}
+#roleName,#roleCode {
+	border: 1px solid #B4CFFF;
+   text-indent:5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+textarea {
+	border: 1px solid #B4CFFF;
+    padding: 5px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+.messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/goods/jdGoodsCategory.js"></script>
+</head>
+<body>
+	<div class="easyui-layout" data-options="fit:true,border:false" style="min-width:800px;">  
+	    <div data-options="region:'north'" style="height:0px">  
+	    </div>  
+	    <div data-options="region:'west',split:false,title:'一级类目',collapsible:false" style="width:33%;min-width:200px;">  
+			<div id="westAttrDataGrid" data-options="fit:true,border:false">
+			</div>
+	    </div>  
+	    <div data-options="region:'center',split:false,title:'二级类目'" style="width:34%;min-width:200px;">  
+	    	<div id="centerAttrDataGrid" data-options="fit:true,border:false">
+	    	</div> 	
+	    </div>  
+	    <div data-options="region:'east',split:false,title:'三级类目',collapsible:false" style="width:33%;;">  
+	        <div id="eastAttrDataGrid" data-options="fit:true,border:false">
+	        </div> 
+	    </div>  
+	</div>  
+	
+	<!-- 京东商品类目查询 -->
+	<div id="jdCategoryTreeWindow" class="easyui-window"
+		title="<font color='black'>关联京东类目</font>" hidden="hidden"
+		style="width: 400px; height: 400px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:true, resizable:true,modal:true">
+		<input class="easyui-switchbutton" checked> 
+		
+    	<div id="jdCategoryTree"></div>
+	</div>
+	
+</body>
+</html>   

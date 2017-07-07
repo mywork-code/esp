@@ -216,7 +216,7 @@ $(function() {
 		arr[0]=id;
     	checkGoods(arr,"商品单个复核");
     }
-	 $("#reviewOpinion").switchbutton({
+	$("#reviewOpinion").switchbutton({
 	        onText : '复核驳回',
 	        offText : '复核通过'
     });
