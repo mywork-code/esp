@@ -114,13 +114,12 @@ public class SystemParamEntity {
         this.updateDate = updateDate;
     }
 
-	public BigDecimal getPriceCostRate() {
+    public BigDecimal getPriceCostRate() {
 		return priceCostRate;
 	}
 
 	public void setPriceCostRate(BigDecimal priceCostRate) {
-		this.priceCostRate = priceCostRate;
+		this.priceCostRate = priceCostRate.multiply(new BigDecimal(100));
 	}
-
 
 }
