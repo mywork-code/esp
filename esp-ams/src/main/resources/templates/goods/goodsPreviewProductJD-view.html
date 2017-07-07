@@ -7,7 +7,7 @@
 	src="${rc.contextPath}/WebContent/js/common/swiper.min.js"></script>
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/goods/goodsPreviewProduct-view.js"></script>
-<link rel="stylesheet" type="text/css"
+ <link rel="stylesheet" type="text/css"
    href="${rc.contextPath}/WebContent/css/jd.css">
 <meta charset="UTF-8">
 <style>
@@ -229,6 +229,9 @@
             background: #ffffff;
             padding:10px;
         }
+         #Product_details .details img{
+            width:100%;
+        }
         #Product_details .details .img_content img{
             width:100%;
             margin-bottom: 4px;
@@ -277,7 +280,7 @@
         </div>
          <!-- 商品详情 -->
         <div class="page details" style="display: none;">
-            ${(googsDetail)!}
+             ${(googsDetail)!} 
         </div>
     </div>
 </div>

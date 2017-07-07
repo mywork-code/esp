@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,8 @@ public class JdGoodsInfoService {
 			// 查询商品名称
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
-			map.put("googsDetail", jdGoods.getIntroduction());// 商品详情
+			//java字符串转义,把&lt;&gt;转换成<>等字符
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(jdGoods.getIntroduction()));// 商品详情
 		}
 		// 查询商品价格
 		Collection<Long> skuPrice = new ArrayList<Long>();
