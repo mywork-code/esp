@@ -7,7 +7,7 @@ var refundIdAll = "";
 
 $(function () {
 
-    $('#orderDetailListWin,#logisticsDetail,#serviceDetail,#serviceDetailList,#refundDetails').window('close');
+    $('#orderDetailListWin,#logisticsDetail,#jdlogisticsDetail,#serviceDetail,#serviceDetailList,#refundDetails').window('close');
 
     // Grid 列表
     $('#tablelist').datagrid(
@@ -163,6 +163,8 @@ $(function () {
                             var grantedAuthority = $('#grantedAuthority').val();
                             // 订单状态
                             var orderStatus = row.orderStatus;
+                            var preDelivery = row.preDelivery;
+                            var source = row.source;
                             var content = "";
                             content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
                             content += " onclick='$.queryOrderDetail(\"" + row.orderId + "\",\"" + row.userId
@@ -179,6 +181,17 @@ $(function () {
                                     content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
                                     content += " onclick='$.refundDetails(\"" + row.orderId + "\");'>退款详情</a>";
                                 }
+                            }
+                            //查询物流信息
+                            if (orderStatus == 'D03' && preDelivery == 'Y' && source == '')
+	                        {
+		                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+		                        content += " onclick='$.logisticsInfo(\"" + row.orderId + "\",\""
+		                                + row.logisticsName + "\",\"" + row.logisticsNo + "\");'>物流信息</a>";
+	                        }
+                            if(orderStatus == 'D03' && preDelivery == 'Y' && source == 'jd'){
+                            	content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+		                        content += " onclick='$.jdlogisticsInfo(\"" + row.orderId + "\");'>物流信息</a>";
                             }
                             return content;
                         }
@@ -474,6 +487,156 @@ $(function () {
         }
     })
 
+    
+    
+    
+    // 物流详情
+	$.logisticsInfo = function (orderId, logisticsName, logisticsNo)
+	{
+		$ ('#logisticsDetails').datagrid (
+		{
+		    method : 'POST',
+		    idField : '物流详细信息',
+		    pagination : true,
+		    rownumbers : true,
+		    striped : true,
+		    singleSelect : false,
+		    pagination : false,
+		    nowrap : false,
+		    showFooter : true,
+		    columns : [
+			    [
+			            {
+			                title : 'ID',
+			                hidden : true,
+			                field : 'id',
+			                width : 70,
+			                align : 'center'
+			            },
+			            {
+			                title : '物流单号',
+			                field : 'logisticsNo',
+			                width : 100,
+			                align : 'center'
+			            },
+			            {
+			                title : '物流公司',
+			                field : 'logisticsNameDes',
+			                width : 100,
+			                align : 'center'
+			            },
+			            {
+			                title : '物流公司联系电话',
+			                field : 'logisticsTel',
+			                width : 100,
+			                align : 'center',
+			            },
+			            {
+			                title : '物流状态',
+			                field : 'logisticsStatus',
+			                width : 100,
+			                align : 'center'
+			            }
+			    ]
+		    ],
+		    onBeforeLoad : function (param)
+		    {
+			    param.orderId = orderId;
+			    param.logisticsName = logisticsName;
+			    param.logisticsNo = logisticsNo;
+		    },
+		    
+		    loader : function (param, success, error)
+            {
+	            $.ajax (
+	            {
+	                url : ctx + '/application/business/order/pagelistLogistics',
+	                data : param,
+	                type : "post",
+	                dataType : "json",
+	                success : function (data){
+	                	debugger;
+	                	if (data.result == false && data.message == 'timeout') {
+	                        window.top.location = ctx + "/logout";
+	                        return;
+	                    }
+	                	if(data.status == "1"){
+	                		//$.messager.alert("提示",data.msg);
+	                		$ ('#logisticsDetail').window ('open');
+	                		success(data);
+	                	}else{
+	                		$.messager.alert("提示",data.msg);
+	                	}
+	                }
+	            })
+            }
+		});
+	}
+    
+  //京东物流详情
+	$.jdlogisticsInfo = function (orderId)
+	{
+		$ ('#jdlogisticsDetails').datagrid (
+		{
+		    method : 'POST',
+		    idField : '物流详细信息',
+		    pagination : true,
+		    rownumbers : true,
+		    striped : true,
+		    singleSelect : false,
+		    pagination : false,
+		    nowrap : false,
+		    showFooter : true,
+		    columns : [
+			    [
+			            {
+			                title : '内容信息',
+			                field : 'content',
+			                width : 100,
+			                align : 'center'
+			            },
+			            {
+			                title : '日期',
+			                field : 'msgTime',
+			                width : 100,
+			                align : 'center'
+			            }
+			    ]
+		    ],
+		    onBeforeLoad : function (param)
+		    {
+			    param.orderId = orderId;
+		    },
+		    
+		    loader : function (param, success, error)
+            {
+	            $.ajax (
+	            {
+	                url : ctx + '/application/business/order/v1/jd/pagelistLogistics',
+	                data : param,
+	                type : "post",
+	                dataType : "json",
+	                success : function (data){
+	                	debugger;
+	                	if (data.result == false && data.message == 'timeout') {
+	                        window.top.location = ctx + "/logout";
+	                        return;
+	                    }
+	                	if(data.status == "1"){
+	                		$ ('#jdlogisticsDetail').window ('open');
+	                		success(data);
+	                	}else{
+	                		$.messager.alert("提示",data.msg);
+	                	}
+	                }
+	            })
+            }
+		});
+	}
+    
+    
+    
+    
 });
 
 /**

@@ -1596,4 +1596,13 @@ public class OrderService {
 	    param.put("dateEnd", dateEnd);
 		return orderSubInfoRepository.queryOrderSubInfoByTime(param);
 	}
+	
+	/**
+	 * 根据订单号，获取订单信息
+	 * @param orderId
+	 * @return
+	 */
+	public OrderInfoEntity getOrderInfoEntityByOrderId(String orderId){
+		return orderInfoRepository.selectByOrderId(orderId);
+	}
 }
