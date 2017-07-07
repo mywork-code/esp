@@ -515,24 +515,26 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelves")
     public String shelves(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
-<<<<<<< HEAD
         String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
     	if (null == goodsEntity) {
     		return "商品不存在！";
     	}
+    	
+    	GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
+    	goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
+    	PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
+    	List<GoodsStockInfoEntity> stockList = list.getDataList();
+    	if (stockList.isEmpty()) {
+    		return "商品库存为空,请添加！";
+    	}
+    	
         if(!"jd".equals(source)){
         	List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
         	if (bannerList.isEmpty()) {
         		return "商品大图为空，请上传！";
         	}
-        	GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
-        	goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        	PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
-        	List<GoodsStockInfoEntity> stockList = list.getDataList();
-        	if (stockList.isEmpty()) {
-        		return "商品库存为空,请添加！";
-        	}
+        	
         	if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
         		return "商品墙图片为空，请上传！";
         	}
@@ -542,45 +544,19 @@ public class GoodsBaseInfoController {
         	if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
         		return "商品类目不能为空，请先选择类目！";
         	}
-=======
-        List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
-        if (bannerList.isEmpty()) {
-            return "商品大图为空，请上传！";
-        }
-        GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
-        goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
-        List<GoodsStockInfoEntity> stockList = list.getDataList();
-        if (stockList.isEmpty()) {
-            return "商品库存为空,请添加！";
         }
 
         for(GoodsStockInfoEntity goodsStockInfoEntity1:stockList){
-            if(goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice())==-1){
-                GoodsInfoEntity entity = new GoodsInfoEntity();
-                entity.setId(Long.valueOf(id));
-                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
-                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-                goodsService.updateService(entity);
-                return "商品售价大于成本价";
-            }
+        	if(goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice())==-1){
+        		GoodsInfoEntity entity = new GoodsInfoEntity();
+        		entity.setId(Long.valueOf(id));
+        		entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+        		entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+        		goodsService.updateService(entity);
+        		return "商品售价大于成本价";
+        	}
         }
 
-        GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
-        if (null == goodsEntity) {
-            return "商品不存在！";
-        }
-
-        if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
-            return "商品墙图片为空，请上传！";
-        }
-        if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
-            return "商品详情不能为空,请添加！";
-        }
-        if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
-        	return "商品类目不能为空，请先选择类目！";
->>>>>>> f395f92d044c9a4fc0abe048627eaff351da09e8
-        }
 
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));
