@@ -64,7 +64,7 @@ public class OrderInforMailSendScheduleTask {
     @Autowired
     private OrderService orderService;
     
-    @Scheduled(cron = "0 25 9 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void sendOrderMailEveryDay(){
     	logger.info("-----------sendOrderMailEveryDay now time:{}-------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1), "YYYY-MM-dd");
@@ -72,7 +72,7 @@ public class OrderInforMailSendScheduleTask {
     	common(dateBegin,dateEnd);
     }
     
-    @Scheduled(cron = "0 0 9 7 * ?")
+    @Scheduled(cron = "0 0 9 1 * ?")
     public void sendOrderMailOn1stMonth(){
     	logger.info("-----------sendOrderMailOn1stMonth now time:{}------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.firstDayLastMonth(), "YYYY-MM-dd");
