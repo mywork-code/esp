@@ -526,10 +526,23 @@ public class GoodsBaseInfoController {
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
         }
+
+        for(GoodsStockInfoEntity goodsStockInfoEntity1:stockList){
+            if(goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice())==-1){
+                GoodsInfoEntity entity = new GoodsInfoEntity();
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return "商品售价大于成本价";
+            }
+        }
+
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
         if (null == goodsEntity) {
             return "商品不存在！";
         }
+
         if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
             return "商品墙图片为空，请上传！";
         }
