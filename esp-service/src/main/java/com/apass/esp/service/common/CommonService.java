@@ -15,12 +15,21 @@ import com.apass.esp.domain.entity.common.SequenceEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
+import com.apass.esp.domain.enums.DeviceType;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.common.SequenceRepository;
 import com.apass.esp.repository.common.SystemParamRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class CommonService {
@@ -93,21 +102,20 @@ public class CommonService {
         param.setGoodsId(goodsId);
         param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
         List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-
         if (null != activitys && activitys.size() > 0 && discount.compareTo(BigDecimal.ZERO) == 0) {
             discount = activitys.get(0).getpDiscountRate();
             //  最优折扣率
             for (ActivityInfoEntity activity : activitys) {
-            	if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
-            		if (discount.compareTo(activity.getpDiscountRate()) > 0) {
-            			discount = activity.getpDiscountRate();
-            		}
-            	}
+                if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
+                    if (discount.compareTo(activity.getpDiscountRate()) > 0) {
+                        discount = activity.getpDiscountRate();
+                    }
+                }
             }
             price = goodsStock.getMarketPrice().multiply(discount);
             return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
         }else{
-        	price = goodsStock.getGoodsPrice();	
+            price = goodsStock.getGoodsPrice();
             return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
         }
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
