@@ -38,6 +38,7 @@ import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -95,7 +96,8 @@ public class TestController {
 
     @Autowired
     private JdCategoryMapper jdCategoryMapper;
-
+    @Autowired
+    private JdGoodsInfoService  jdGoodsInfoService;
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     @ResponseBody
@@ -192,7 +194,16 @@ public class TestController {
 
         return Response.success("1", jdApiResponse);
     }
-    
+    /**
+     * 查询商品本身的规格
+     */
+    @RequestMapping(value = "/getSpecificationsBySku", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getSpecificationsBySku(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		Map<String,String> map=jdGoodsInfoService.getJdGoodsSpecification(Long.valueOf(sku).longValue());
+        return Response.success("1", map);
+    }
     /**
      * 查询预付款余额
      *
