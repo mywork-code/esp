@@ -78,7 +78,14 @@ public class CommonService {
      * @throws BusinessException
      */
     public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
+
+        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
+        if(goodsStock.getMarketPrice() == null){
+            return BigDecimal.ZERO;
+        }
+        
         Date now = new Date();
+
         //  系统折扣率
         List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
         BigDecimal discount = BigDecimal.ZERO;
@@ -102,10 +109,7 @@ public class CommonService {
                 }
             }
         }
-        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
-        if(goodsStock.getMarketPrice() == null){
-            return BigDecimal.ZERO;
-        }
+
         BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);
