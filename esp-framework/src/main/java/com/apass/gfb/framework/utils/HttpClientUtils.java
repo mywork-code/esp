@@ -86,7 +86,7 @@ public class HttpClientUtils {
 	}
 
 	public static final RequestConfig getDefaultTimeOutConfig() {
-		return getTimeOutConfig(60000, 15000);
+		return getTimeOutConfig(30000, 15000);
 	}
 
 	private static final RequestConfig getTimeOutConfig(int socketTimeout,
