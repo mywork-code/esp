@@ -82,7 +82,7 @@ public class MailStatisScheduleTask {
         int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
         //订单失效
         int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
-        //订单失效
+        //订单删除
         int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
         //银行卡总额
         int count5 = orderService.selectCreAmt(beginDate, currentDate);
@@ -116,9 +116,9 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
-        mailSenderInfo.setToAddress("xujie@apass.cn");
-//        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
-//        mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
+//        mailSenderInfo.setToAddress("xujie@apass.cn");
+        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
+        mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
         Multipart msgPart = new MimeMultipart();
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件
