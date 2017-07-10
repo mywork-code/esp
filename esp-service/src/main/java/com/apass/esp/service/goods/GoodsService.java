@@ -436,8 +436,9 @@ public class GoodsService {
      * 根据external_id查询商品 
 	 * @param string
 	 * @return
+ * @throws BusinessException 
 	 */
-   public String selectGoodsByExternalId(String externalId) {
+   public String selectGoodsByExternalId(String externalId) throws BusinessException {
 	 return goodsDao.selectGoodsByExternalId(externalId);
    }
     

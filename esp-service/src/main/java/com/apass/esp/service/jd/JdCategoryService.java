@@ -33,6 +33,8 @@ public class JdCategoryService {
       vo.setText(cate.getName());
       vo.setCatClass(cate.getCatClass());
       vo.setChildren(getByParentId(cate.getCatId(), cate.getCatClass() + 1));
+      vo.setFlag(cate.getFlag());
+      vo.setCategoryId3(cate.getCategoryId3());
       result.add(vo);
     }
     return result;

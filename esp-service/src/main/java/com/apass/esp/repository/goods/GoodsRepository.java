@@ -11,6 +11,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
@@ -170,12 +171,13 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 		this.getSqlSession().delete("deleteJDGoodsBatch", ids);
 	}
 
-	public String selectGoodsByExternalId(@Param("externalId")String externalId) {
-		GoodsInfoEntity goodsInfoEntity = this.getSqlSession().selectOne("selectGoodsByExternalId", externalId);
-		if(goodsInfoEntity != null){
-			return goodsInfoEntity.getId().toString();
+	public String selectGoodsByExternalId(@Param("externalId")String externalId) throws BusinessException {
+		List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
+		
+		if(goodsInfoEnties != null && goodsInfoEnties.size() == 1){
+			return goodsInfoEnties.get(0).getId().toString();
 		}else{
-			return null;
+			throw new BusinessException("数据库数据有误");
 		}
 	}
 }

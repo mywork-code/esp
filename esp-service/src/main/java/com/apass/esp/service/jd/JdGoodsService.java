@@ -42,10 +42,10 @@ public class JdGoodsService {
 	 * @param paramMap
 	 * @throws BusinessException 
 	 */
-	public void relevanceJdCategory(Map<String, Object> paramMap) throws BusinessException {
+	public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
 		//往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据 
-		String cateId = (String)paramMap.get("cateId");//京东类目id
-		String username = (String)paramMap.get("username");//当前用户
+		String cateId = paramMap.get("cateId");//京东类目id
+		String username = paramMap.get("username");//当前用户
 
 		//根据第三级类目 id查询京东三级类目下所有商品
 		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
@@ -56,9 +56,9 @@ public class JdGoodsService {
 		for (JdGoods jdGoods : JdGoodsList) {
 			//封闭数据,往t_esp_goods_base_info表插入数据 
 			GoodsInfoEntity entity = new GoodsInfoEntity();
-			entity.setCategoryId1(Long.valueOf((String) paramMap.get("categoryId1")));
-			entity.setCategoryId2(Long.valueOf((String) paramMap.get("categoryId2")));
-			entity.setCategoryId3(Long.valueOf((String) paramMap.get("categoryId3")));
+			entity.setCategoryId1(Long.valueOf(paramMap.get("categoryId1")));
+			entity.setCategoryId2(Long.valueOf(paramMap.get("categoryId2")));
+			entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
 			entity.setGoodsName(jdGoods.getName());
 			entity.setGoodsTitle("");
 			entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
@@ -90,11 +90,11 @@ public class JdGoodsService {
 		
 		//更新t_esp_jd_category表数据
 		JdCategory jdCategory = new JdCategory();
-		jdCategory.setId(Long.valueOf((String)paramMap.get("jdCategoryId")));
-		jdCategory.setCategoryId1(Long.valueOf((String) paramMap.get("categoryId1")));
-		jdCategory.setCategoryId2(Long.valueOf((String) paramMap.get("categoryId2")));
-		jdCategory.setCategoryId3(Long.valueOf((String) paramMap.get("categoryId3")));
-		jdCategory.setStatus(true);
+		jdCategory.setId(Long.valueOf(paramMap.get("jdCategoryId")));
+		jdCategory.setCategoryId1(Long.valueOf(paramMap.get("categoryId1")));
+		jdCategory.setCategoryId2(Long.valueOf(paramMap.get("categoryId2")));
+		jdCategory.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
+		jdCategory.setFlag(true);
 		jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
 	}
 
@@ -103,8 +103,8 @@ public class JdGoodsService {
 	 * @param paramMap
 	 * @throws BusinessException 
 	 */
-	public void disRelevanceJdCategory(Map<String, Object> paramMap) throws BusinessException {
-		String cateId = (String)paramMap.get("cateId");//京东类目id
+	public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
+		String cateId = paramMap.get("cateId");//京东类目id
 		//根据第三级类目 id查询京东三级类目下所有商品
 		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
 		if(JdGoodsList == null){
@@ -165,8 +165,8 @@ public class JdGoodsService {
 		
 		//修改t_esp_jd_category表中的状态
 		JdCategory jdCategory = new JdCategory();
-		jdCategory.setId(Long.valueOf((String)paramMap.get("jdCategoryId")));
-		jdCategory.setStatus(false);
+		jdCategory.setId(Long.valueOf(paramMap.get("jdCategoryId")));
+		jdCategory.setFlag(false);
 		jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
 	}
 	

@@ -35,9 +35,42 @@ textarea {
     -webkit-box-sizing: border-box;
 }
 .messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
+
+.border-circle {
+	width: 80px;
+    height: 25px;
+    bordr: 2px solid #867f7f;
+    border-radious: 20px;
+    border: 2px solid red;
+    border-radius: 20px;
+    position: relative;
+    background:#8a8282;
+}
+.switch-circle {
+    border: 1px solid #867f7f;
+    width: 25px;
+    height: 25px;
+    border-radious: 50%;
+    display: block;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #ffffff;
+}
+.relation-text {
+   position:absolute;
+   font-size:12px;
+   left:27px;
+   top:3px;
+   color:white;
+   
+}
+
 </style>
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/goods/jdGoodsCategory.js"></script>
+
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit:true,border:false" style="min-width:800px;">  
@@ -62,7 +95,7 @@ textarea {
 		title="<font color='black'>关联京东类目</font>" hidden="hidden"
 		style="width: 400px; height: 400px; display: none; text-align: center;"
 		data-options="collapsible:false, minimizable:false, maximizable:true, resizable:true,modal:true">
-		<input class="easyui-switchbutton" checked> 
+<!-- 		<input class="easyui-switchbutton" checked>  -->
 		
     	<div id="jdCategoryTree"></div>
 	</div>

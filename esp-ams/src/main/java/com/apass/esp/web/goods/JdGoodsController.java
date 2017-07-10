@@ -5,19 +5,24 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.google.common.collect.Maps;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -47,15 +52,14 @@ public class JdGoodsController {
   
   @ResponseBody
   @RequestMapping("/relevance")
-  public Response relevanceJdCategory(@RequestBody Map<String,Object> paramMap) {
+  public Response relevanceJdCategory(@RequestParam("param")String param) {
 	  try{
-		  String s = (String)paramMap.get("cateId");
-//		  Map<String,Object> paramMap = new HashMap<String,Object>();
-		  //接收参数
-//		  String cateId = HttpWebUtils.getValue(request, "cateId");//京东类目id
-//		  String catClass = HttpWebUtils.getValue(request, "catClass");//类目级别
+		  if(StringUtils.isBlank(param)){
+			  LOGGER.error("参数为空");
+			  return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		  }
 		  //参数验证
-		  validateParam(paramMap);
+		  Map<String,String> paramMap = validateParam(param);
 		  String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
 		  paramMap.put("username", username);
 		  
@@ -75,12 +79,17 @@ public class JdGoodsController {
    * @param paramMap
    * @return
    */
-@ResponseBody
+  @ResponseBody
   @RequestMapping("/disrelevance")
-  public Response disRelevanceJdCategory(@RequestBody Map<String,Object> paramMap) {
+  public Response disRelevanceJdCategory(@RequestParam("param")String param) {
 	  try{
-		  //参数验证
-		  validateParam(paramMap);
+		  if(StringUtils.isBlank(param)){
+			  LOGGER.error("参数为空");
+			  return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		  }
+		  
+		  //参数验 证
+		  Map<String,String> paramMap = validateParam(param);
 		  String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
 		  paramMap.put("username", username);
 		  
@@ -100,8 +109,22 @@ public class JdGoodsController {
   * @param cateId
   * @param catClass
  * @return 
+ * @throws BusinessException 
   */
-  private void validateParam(Map<String,Object> paramMap) {
+  private Map<String, String> validateParam(String param) throws BusinessException {
+	  Map<String, String> paramMap = GsonUtils.convertMap(param);
+	  String jdCategoryId = paramMap.get("jdCategoryId");
+	  String cateId = paramMap.get("cateId");
+	  String catClass = paramMap.get("catClass");
+	  String categoryId1 = paramMap.get("categoryId1");
+	  String categoryId2 = paramMap.get("categoryId2");
+	  String categoryId3 = paramMap.get("categoryId3");
+	  if(StringUtils.isAnyBlank(jdCategoryId,cateId,catClass,categoryId1,categoryId2,categoryId3) || !catClass.equals("2")){
+		  LOGGER.info("参数异常:{}",paramMap);
+		  throw new BusinessException("参数异常！");
+	  }
+	  
+	  return paramMap;
   }
 
 }
