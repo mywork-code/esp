@@ -60,3 +60,13 @@ ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/�
 ALTER TABLE `t_esp_order_info`
 ADD COLUMN `source`  varchar(12) DEFAULT '' COMMENT '商品来源标识(如：jd)',
 ADD COLUMN `ext_order_id` varchar(32) DEFAULT '' COMMENT '外部订单id(例如京东订单id)';
+
+DROP TABLE  IF EXISTS esp.`t_esp_goods_sales_volume`;
+CREATE TABLE `t_esp_goods_sales_volume` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `goods_id` bigint(11) NOT NULL COMMENT '商品ID',
+  `sales_num` int(11) NOT NULL DEFAULT '0' COMMENT '销量',
+  `create_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品销量表';
