@@ -17,7 +17,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -44,7 +43,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class MailStatisScheduleTask {
 
     @Value("${monitor.receive.emails}")
@@ -69,12 +68,9 @@ public class MailStatisScheduleTask {
         Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
         String dateBefore = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
         String dateBeforeDate = dateBefore.substring(0, 8);
-        String subCurrentDay = currentDate.substring(8, 10);
         //当天是1号  发上个月的
         String  beginDate = dateBeforeDate + "01";
-        if ("01".equalsIgnoreCase(subCurrentDay)) {
-            currentDate = dateBefore;//最后一天
-        }
+
         int count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
         //待发货
         int count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
@@ -216,5 +212,9 @@ public class MailStatisScheduleTask {
         styleList.add(contentStyle);
 
         return styleList;
+    }
+
+    public static void main(String[] args) {
+        System.out.println( "2017-07-09".substring(0,8));
     }
 }
