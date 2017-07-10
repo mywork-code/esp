@@ -70,7 +70,7 @@ import com.google.common.collect.Maps;
 
 /**
  * 商品管理
- * 
+ *
  * @author zwd
  * @version 1.0
  * @date 2016年12月21日
@@ -79,23 +79,23 @@ import com.google.common.collect.Maps;
 @RequestMapping("/application/goods/management")
 public class GoodsBaseInfoController {
 
-    private static final Logger   LOGGER  = LoggerFactory.getLogger(GoodsBaseInfoController.class);
-    private static final String   SUCCESS = "SUCCESS";
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBaseInfoController.class);
+    private static final String SUCCESS = "SUCCESS";
 
     @Autowired
-    private GoodsService          goodsService;
+    private GoodsService goodsService;
     @Autowired
-    private BannerInfoService     bannerInfoService;
+    private BannerInfoService bannerInfoService;
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
-    private UsersService          usersService;
+    private UsersService usersService;
     @Autowired
-    private SystemParamService    systemParamService;
+    private SystemParamService systemParamService;
     @Autowired
-    private MerchantInforService  merchantInforService;
+    private MerchantInforService merchantInforService;
     @Autowired
-    private CategoryInfoService   categoryInfoService;
+    private CategoryInfoService categoryInfoService;
     @Autowired
     private JdProductApiClient jdProductApiClient;
     @Autowired
@@ -104,17 +104,17 @@ public class GoodsBaseInfoController {
      * 图片服务器地址
      */
     @Value("${nfs.rootPath}")
-    private String                rootPath;
+    private String rootPath;
 
     @Value("${nfs.banner}")
-    private String                nfsBanner;
+    private String nfsBanner;
 
     @Value("${nfs.goods}")
-    private String                nfsGoods;
+    private String nfsGoods;
 
     /**
      * form表单提交 Date类型数据绑定 <功能详细描述>
-     * 
+     *
      * @param binder
      * @see [类、类#方法、类#成员]
      */
@@ -145,13 +145,13 @@ public class GoodsBaseInfoController {
             map.put("goodsPriceRate", 1);
             map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
-            
-            if(SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
-            	map.put("grantedAuthority", "permission");
-    		}
-            if(SpringSecurityUtils.hasPermission("GOODS_COSTPRICE_IF")) {
-            	map.put("goodCostpriceIf", "permission");
-    		}
+
+            if (SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
+                map.put("grantedAuthority", "permission");
+            }
+            if (SpringSecurityUtils.hasPermission("GOODS_COSTPRICE_IF")) {
+                map.put("goodCostpriceIf", "permission");
+            }
         } catch (BusinessException e) {
             LOGGER.error("查询系统参数异常", e);
         }
@@ -170,10 +170,10 @@ public class GoodsBaseInfoController {
             map.put("goodsPriceRate", 1);
             map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
-       
-            if(SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
-            	map.put("grantedAuthority", "permission");
-    		}
+
+            if (SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
+                map.put("grantedAuthority", "permission");
+            }
         } catch (BusinessException e) {
             LOGGER.error("查询系统参数异常", e);
         }
@@ -187,7 +187,7 @@ public class GoodsBaseInfoController {
     @RequestMapping("/bBenPage")
     public ModelAndView bBenPage() {
         Map<String, Object> map = Maps.newHashMap();
-        if(SpringSecurityUtils.hasPermission("GOODS_BBEN_CHECK_BATCH")) {
+        if (SpringSecurityUtils.hasPermission("GOODS_BBEN_CHECK_BATCH")) {
             map.put("grantedAuthority", "permission");
         }
         return new ModelAndView("goods/goodsInfoBben-list", map);
@@ -203,10 +203,11 @@ public class GoodsBaseInfoController {
             List<CategoryDo> categoryList = categoryInfoService.goodsCategoryList();
             return Response.success("success", categoryList);
         } catch (Exception e) {
-        	  LOGGER.error("商品类目列表加载失败！", e);
+            LOGGER.error("商品类目列表加载失败！", e);
             return Response.fail("商品类目列表加载失败！");
         }
     }
+
     /**
      * 商品管理分页json
      */
@@ -226,40 +227,40 @@ public class GoodsBaseInfoController {
             String goodsType = HttpWebUtils.getValue(request, "goodsType");
             String merchantName = HttpWebUtils.getValue(request, "merchantName");
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
-            String goodsCategoryCombo=HttpWebUtils.getValue(request, "goodsCategoryCombo");
+            String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "status");
             String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
-            
+
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
             goodsInfoEntity.setGoodsType(goodsType);
             goodsInfoEntity.setMerchantName(merchantName);
             goodsInfoEntity.setMerchantType(merchantType);
-            if(StringUtils.isNotBlank(goodsCategoryCombo)){
-            	String[] aArray =goodsCategoryCombo.split("_");
-            	String level=aArray[0];
-            	String id=aArray[1];
-            	if("1".equals(level)){
-            		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
-            	}else if("2".equals(level)){
-            		goodsInfoEntity.setCategoryId2(Long.valueOf(id));
-            	}else if("3".equals(level)){
-            		 goodsInfoEntity.setCategoryId3(Long.valueOf(id));
-            	}
+            if (StringUtils.isNotBlank(goodsCategoryCombo)) {
+                String[] aArray = goodsCategoryCombo.split("_");
+                String level = aArray[0];
+                String id = aArray[1];
+                if ("1".equals(level)) {
+                    goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+                } else if ("2".equals(level)) {
+                    goodsInfoEntity.setCategoryId2(Long.valueOf(id));
+                } else if ("3".equals(level)) {
+                    goodsInfoEntity.setCategoryId3(Long.valueOf(id));
+                }
             }
-            
-            
-            if(!StringUtils.isAnyBlank(categoryId1,categoryId2,categoryId3)){
+
+
+            if (!StringUtils.isAnyBlank(categoryId1, categoryId2, categoryId3)) {
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
                 goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
             }
-            
-            
+
+
             if (StringUtils.isBlank(isAll)) {
                 goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
             }
@@ -272,13 +273,13 @@ public class GoodsBaseInfoController {
             }
             for (int i = 0; i < pagination.getDataList().size(); i++) {
                 pagination.getDataList().get(i)
-                    .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
-                        systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
-                
-                Long categoryId=pagination.getDataList().get(i).getCategoryId3();
-                Category category=categoryInfoService.selectNameById(categoryId);
-                if(null !=category){
-                	pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
+                        .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
+                                systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+
+                Long categoryId = pagination.getDataList().get(i).getCategoryId3();
+                Category category = categoryInfoService.selectNameById(categoryId);
+                if (null != category) {
+                    pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
                 }
             }
             respBody.setTotal(pagination.getTotalCount());
@@ -293,7 +294,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品基本信息录入
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -304,11 +305,11 @@ public class GoodsBaseInfoController {
     public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
-        
+
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(), pageModel.getGoodsName(),
-            pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
-            || pageModel.getDelistTime().equals("")||pageModel.getCategoryId1().equals("")||pageModel.getCategoryId2().equals("")
-            ||pageModel.getCategoryId3().equals("")) {
+                pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
+                || pageModel.getDelistTime().equals("") || pageModel.getCategoryId1().equals("") || pageModel.getCategoryId2().equals("")
+                || pageModel.getCategoryId3().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -327,7 +328,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品基本信息修改
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -336,11 +337,11 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-                       HttpServletRequest request) {
+                         HttpServletRequest request) {
         String message = SUCCESS;
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsModel(), pageModelEdit.getGoodsName(),
-            pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
-            || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
+                pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
+                || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -353,11 +354,11 @@ public class GoodsBaseInfoController {
         }
         return Response.success(message);
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-            HttpServletRequest request) {
+                                 HttpServletRequest request) {
         String message = SUCCESS;
         try {
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
@@ -382,7 +383,7 @@ public class GoodsBaseInfoController {
 
     /**
      * editor商品描述html
-     * 
+     *
      * @param request
      * @return
      */
@@ -424,7 +425,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传banner图
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -448,7 +449,7 @@ public class GoodsBaseInfoController {
             MultipartFile file = bannerDto.getBannerPicFile();
             String imgType = ImageTools.getImgType(file);
             String fileName = "banner_" + bannerDto.getBannerGoodsId() + "_" + System.currentTimeMillis() + "_"
-                              + bannerDto.getBannerPicOrder() + "." + imgType;
+                    + bannerDto.getBannerPicOrder() + "." + imgType;
             String url = nfsBanner + bannerDto.getBannerGoodsId() + "/" + fileName;
 
             /**
@@ -493,7 +494,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 删除banner图
-     * 
+     *
      * @param request
      * @return
      */
@@ -507,7 +508,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上架
-     * 
+     *
      * @param request
      * @return
      */
@@ -517,44 +518,44 @@ public class GoodsBaseInfoController {
         String id = HttpWebUtils.getValue(request, "id");
         String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
-    	if (null == goodsEntity) {
-    		return "商品不存在！";
-    	}
-    	
-    	GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
-    	goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-    	PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
-    	List<GoodsStockInfoEntity> stockList = list.getDataList();
-    	if (stockList.isEmpty()) {
-    		return "商品库存为空,请添加！";
-    	}
-    	
-        if(!"jd".equals(source)){
-        	List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
-        	if (bannerList.isEmpty()) {
-        		return "商品大图为空，请上传！";
-        	}
-        	
-        	if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
-        		return "商品墙图片为空，请上传！";
-        	}
-        	if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
-        		return "商品详情不能为空,请添加！";
-        	}
-        	if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
-        		return "商品类目不能为空，请先选择类目！";
-        	}
+        if (null == goodsEntity) {
+            return "商品不存在！";
         }
 
-        for(GoodsStockInfoEntity goodsStockInfoEntity1:stockList){
-        	if(goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice())==-1){
-        		GoodsInfoEntity entity = new GoodsInfoEntity();
-        		entity.setId(Long.valueOf(id));
-        		entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
-        		entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-        		goodsService.updateService(entity);
-        		return "商品售价大于成本价";
-        	}
+        GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
+        goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
+        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
+        List<GoodsStockInfoEntity> stockList = list.getDataList();
+        if (stockList.isEmpty()) {
+            return "商品库存为空,请添加！";
+        }
+
+        if (!"jd".equals(source)) {
+            List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
+            if (bannerList.isEmpty()) {
+                return "商品大图为空，请上传！";
+            }
+
+            if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
+                return "商品墙图片为空，请上传！";
+            }
+            if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
+                return "商品详情不能为空,请添加！";
+            }
+            if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
+                return "商品类目不能为空，请先选择类目！";
+            }
+        }
+
+        for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
+            if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
+                GoodsInfoEntity entity = new GoodsInfoEntity();
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return "商品售价大于成本价";
+            }
         }
 
 
@@ -568,7 +569,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 下架
-     * 
+     *
      * @param request
      * @return
      */
@@ -586,6 +587,7 @@ public class GoodsBaseInfoController {
 
     /**
      * check复核
+     *
      * @param request
      * @return
      */
@@ -646,7 +648,7 @@ public class GoodsBaseInfoController {
 
     /**
      * loadLogo
-     * 
+     *
      * @param request
      * @return
      * @throws Exception
@@ -660,17 +662,17 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传logo
-     * 
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/uplogoFile", method = RequestMethod.POST)
     public Response uplogoFile(@ModelAttribute("logoFileModel") LogoFileModel logoFileModel) {
         try {
-            Integer random = (int) (Math.random()*9000+1000);//生成4位随机数
+            Integer random = (int) (Math.random() * 9000 + 1000);//生成4位随机数
             MultipartFile file = logoFileModel.getEditGoodsLogoFile();
             String imgType = ImageTools.getImgType(file);
-            String fileName = "logo_" +random+ logoFileModel.getEditLogogoodsId() + "." + imgType;
+            String fileName = "logo_" + random + logoFileModel.getEditLogogoodsId() + "." + imgType;
             String url = nfsGoods + logoFileModel.getEditLogogoodsId() + "/" + fileName;
 
             // 图片验证
@@ -708,7 +710,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传库存logo
-     * 
+     *
      * @return
      */
     @ResponseBody
@@ -720,9 +722,9 @@ public class GoodsBaseInfoController {
             Long stockinfoIdInForm = logoFileModel.getEditStockinfoIdInForm();
             String imgType = ImageTools.getImgType(file);
             String fileDiName = RandomUtils.getRandom(10);
-            String fileName = "stocklogo_"+ fileDiName + "." + imgType;
+            String fileName = "stocklogo_" + fileDiName + "." + imgType;
             String url = nfsGoods + goodsId + "/" + fileName;
-            
+
             // 图片验证
             boolean checkLogoImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
             boolean checkImgType = ImageTools.checkImgType(file);// 类型
@@ -740,7 +742,7 @@ public class GoodsBaseInfoController {
              * 上传文件
              */
             FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
-            
+
             //保存url到数据库
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             entity.setStockLogo(url);
@@ -748,7 +750,7 @@ public class GoodsBaseInfoController {
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
-            
+
             return Response.success("上传成功", url);
 
         } catch (Exception e) {
@@ -759,7 +761,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品预览
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -821,25 +823,29 @@ public class GoodsBaseInfoController {
 
         return new ModelAndView("goods/goodsPreviewProduct-view", map);
     }
-    
+
     /**
      * 商品预览
-     * 
+     *
      * @return
      * @throws Exception
      */
     @RequestMapping("/loadAllBannerPicJD")
-	public ModelAndView loadAllBannerPicJD(HttpServletRequest request) throws Exception {
-		Map<String, Object> map = Maps.newHashMap();
-		String id = HttpWebUtils.getValue(request, "id");
-		String view = HttpWebUtils.getValue(request, "view");
+    public ModelAndView loadAllBannerPicJD(HttpServletRequest request) throws Exception {
+        Map<String, Object> map = Maps.newHashMap();
+        String id = HttpWebUtils.getValue(request, "id");
+        String view = HttpWebUtils.getValue(request, "view");
+        String skuId = HttpWebUtils.getValue(request, "skuId");
+        if(StringUtils.isNotEmpty(skuId)){
+            map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
+            return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+        }
+        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
+        String externalId = goodsInfo.getExternalId();// 外部商品id
+        externalId = "1659193";
+        map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+        return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+    }
 
-		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
-		String externalId = goodsInfo.getExternalId();// 外部商品id
-		externalId = "2967927";
-		map=jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
-		return new ModelAndView("goods/goodsPreviewProductJD-view", map);
-	}
-    
-    
+
 }

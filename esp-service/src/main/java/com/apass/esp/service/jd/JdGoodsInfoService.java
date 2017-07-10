@@ -35,7 +35,7 @@ public class JdGoodsInfoService {
 	@Autowired
     private JdProductApiClient jdProductApiClient;
 
-	
+
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -50,7 +50,8 @@ public class JdGoodsInfoService {
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
 			//java字符串转义,把&lt;&gt;转换成<>等字符
-			map.put("googsDetail", StringEscapeUtils.unescapeXml(jdGoods.getIntroduction()));// 商品详情
+            String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
 		}
 		// 查询商品价格
 		Collection<Long> skuPrice = new ArrayList<Long>();
@@ -64,7 +65,9 @@ public class JdGoodsInfoService {
 		map.put("jdImagePathList", JdImagePathList);
 		// 查询商品规格
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		map.put("skuId",String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
+		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 		return map;
 	}
 	/**
@@ -102,7 +105,7 @@ public class JdGoodsInfoService {
 
 	/**
 	 * 根据商品编号，获取商品价格
-	 * 
+	 *
 	 * @param sku
 	 * @return
 	 */
@@ -181,7 +184,7 @@ public class JdGoodsInfoService {
 
 	/**
 	 * 同类商品查询(根据商品编号sku)
-	 * 
+	 *
 	 * @return
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
@@ -220,8 +223,8 @@ public class JdGoodsInfoService {
 		}
 		return map;
 	}
-	
-	
-	
-	
+
+
+
+
 }
