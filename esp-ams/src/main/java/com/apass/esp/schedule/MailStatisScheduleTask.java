@@ -69,12 +69,9 @@ public class MailStatisScheduleTask {
         Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
         String dateBefore = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
         String dateBeforeDate = dateBefore.substring(0, 8);
-        String subCurrentDay = currentDate.substring(8, 10);
         //当天是1号  发上个月的
         String  beginDate = dateBeforeDate + "01";
-        if ("01".equalsIgnoreCase(subCurrentDay)) {
-            currentDate = dateBefore;//最后一天
-        }
+
         int count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
         //待发货
         int count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
@@ -82,7 +79,7 @@ public class MailStatisScheduleTask {
         int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
         //订单失效
         int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
-        //订单失效
+        //订单删除
         int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
         //银行卡总额
         int count5 = orderService.selectCreAmt(beginDate, currentDate);
