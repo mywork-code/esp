@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -156,5 +158,24 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 	 */
 	public void updateGoodsCategoryStatus(long id){
 		 this.getSqlSession().update("updateGoodsCategoryStatus", id);
+	}
+
+	public void insertJdGoods(List<GoodsInfoEntity> entityList) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("entityList", entityList);
+		this.getSqlSession().insert("insertJdGoods", entityList);
+	}
+
+	public void deleteJDGoodsBatch(List<String> ids) {
+		this.getSqlSession().delete("deleteJDGoodsBatch", ids);
+	}
+
+	public String selectGoodsByExternalId(@Param("externalId")String externalId) {
+		GoodsInfoEntity goodsInfoEntity = this.getSqlSession().selectOne("selectGoodsByExternalId", externalId);
+		if(goodsInfoEntity != null){
+			return goodsInfoEntity.getId().toString();
+		}else{
+			return null;
+		}
 	}
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.logistics.JdTrack;
 import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
 import com.apass.esp.domain.entity.datadic.DataDicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
@@ -26,7 +27,9 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.service.datadic.DataDicService;
+import com.apass.esp.service.jd.JdLogisticsService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -60,6 +63,8 @@ public class OrderQueryController {
     private LogisticsService    logisticsService;
     @Autowired
     private DataDicService      dataDicService;
+    @Autowired
+    private JdLogisticsService jdLogisticsService;
 
     /**
      * 订单信息页面
@@ -154,7 +159,48 @@ public class OrderQueryController {
         return respBody;
     }
     
-    
+    /**
+     *物流信息查询
+     */
+    @ResponseBody
+    @RequestMapping("/v1/jd/pagelistLogistics")
+    public ResponsePageBody<JdTrack> Logistics(HttpServletRequest request) {
+    	ResponsePageBody<JdTrack> respBody = new ResponsePageBody<JdTrack>();
+    	try {
+	    	String orderId = HttpWebUtils.getValue(request, "orderId");
+	        if(StringUtils.isBlank(orderId)){
+	        	throw new BusinessException("订单号不能为空!");
+	        }
+	        OrderInfoEntity entity = orderService.getOrderInfoEntityByOrderId(orderId);
+	        entity.setExtOrderId("58436485868");
+	        entity.setSource(SourceType.JD.getCode());
+	        if(null == entity){
+	        	throw new BusinessException("订单号为【"+orderId+"】的订单不存在!");
+	        }
+	        if(!StringUtils.equals(entity.getSource(), SourceType.JD.getCode())){
+	        	throw new BusinessException("订单来源不明确!");
+	        }
+        	//调用  京东的接口
+	        if(StringUtils.isBlank(entity.getExtOrderId())){
+	        	throw new BusinessException("订单中京东订单号为空!");
+	        }
+	        try {
+	        	List<JdTrack> trackList = jdLogisticsService.getSignleTrackingsByOrderId(entity.getExtOrderId());
+	        	respBody.setMsg("物流信息查询成功！");
+                respBody.setRows(trackList);
+                respBody.setStatus(CommonCode.SUCCESS_CODE);
+			} catch (Exception e) {
+				 LOG.error("物流信息查询失败", e);
+				 LOG.error("handlePageList->logisticsNo:{}物流信息查询失败");
+				 respBody.setMsg("物流信息查询失败！");
+			}
+    	} catch (Exception e) {
+    		LOG.error("物流信息查询失败！", e);
+            respBody.setMsg("物流信息查询失败！");
+		}
+    	
+    	return respBody;
+    }
     /**
      *物流信息查询
      */

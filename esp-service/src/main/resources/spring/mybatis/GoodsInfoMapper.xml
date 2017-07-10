@@ -245,6 +245,72 @@
 	        #{externalStatus, jdbcType=TINYINT})
 	]]>
 	</insert>
+	
+	<!-- 插入京东商品 -->
+	<insert id="insertJdGoods" parameterType="java.util.List" useGeneratedKeys="true" >
+		insert into t_esp_goods_base_info
+            (goods_model,
+             goods_name,
+             category_id1,
+             category_id2,
+             category_id3,
+             goods_title,
+             goods_type,
+             goods_code,
+             goods_logo_url,
+             list_time,
+             delist_time,
+             pro_date,
+             keep_date,
+             sup_no,
+             create_user,
+             update_user,
+             create_date,
+             update_date,
+             merchant_code,
+             `status`,
+             is_delete,
+             goods_detail,
+             goods_sku_type,
+             sord_no,
+             un_support_province,
+             source,
+             external_id,
+             external_status)
+			values 
+		<foreach collection="list" item="item" index="index" separator="," >  
+	        (
+	         #{item.goodsModel},
+	         #{item.goodsName},
+	         #{item.categoryId1},
+	         #{item.categoryId2},
+	         #{item.categoryId3},
+	         #{item.goodsTitle},
+	         #{item.goodsType},
+	         #{item.goodsCode},
+	         #{item.goodsLogoUrl},
+	         #{item.listTime},
+	         #{item.delistTime},
+	         #{item.proDate},
+	         #{item.keepDate},
+	         #{item.supNo},
+	         #{item.createUser},
+	         #{item.updateUser},
+	         CURRENT_TIMESTAMP,
+	         CURRENT_TIMESTAMP,
+	         #{item.merchantCode},
+	         #{item.status},
+	         #{item.isDelete},
+	         #{item.googsDetail},
+	         #{item.goodsSkuType},
+	         #{item.sordNo},
+	         #{item.unSupportProvince},
+	         #{item.source},
+	         #{item.externalId},
+	         #{item.externalStatus}
+	         )  
+	    </foreach>  
+	</insert>
 	<!-- 更新 -->
 	<update id="update" parameterType="GoodsInfoEntity">
 		<![CDATA[
@@ -743,4 +809,50 @@
 				   category_id3 = null
 		   WHERE   ID =  #{id}
 	</update>
+	
+	<!-- 批量删除商品 -->
+	<delete id="deleteJDGoodsBatch">
+		delete from t_esp_goods_base_info where external_id in (
+        <foreach collection="list" item="externalId" separator=",">
+            #{externalId}
+        </foreach>
+        )  
+	</delete>
+	
+	<select id="selectGoodsByExternalId" parameterType="java.lang.String" resultType="GoodsInfoEntity">
+		 SELECT
+		 	 	t.category_id1 categoryId1,
+		 	 	t.category_id2 categoryId2,
+		 	 	t.category_id3 categoryId3,
+				t.ID id,
+				t.category_code categoryCode,
+				t.goods_name goodsName,
+				t.goods_title goodsTitle,
+				t.goods_sell_pt goodsSellPt,
+				t.goods_type goodsType,
+				t.goods_type goodsTypeDesc,
+				t.goods_logo_url goodsLogoUrl,
+				t.list_time listTime,
+				t.delist_time delistTime,
+				t.pro_date proDate,
+				t.keep_date keepDate,
+				t.sup_no supNo,
+				t.create_user createUser,
+				t.update_user updateUser,
+				t.create_date createDate,
+				t.update_date updateDate,
+				t.merchant_code merchantCode,
+				t.status status,
+				t.status statusDesc,
+				t.goods_Sku_Type goodsSkuType,
+				t.goods_Model goodsModel,
+				t.goods_sift_url goodsSiftUrl,
+				t.sord_no sordNo,
+				t.un_support_province unSupportProvince,
+				t.source source,
+				t.external_id externalId,
+				t.external_status externalStatus
+			from t_esp_goods_base_info t
+			where external_id = #{externalId}
+	</select>
 </mapper> 

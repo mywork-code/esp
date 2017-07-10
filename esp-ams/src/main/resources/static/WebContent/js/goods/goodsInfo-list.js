@@ -1708,12 +1708,12 @@ $(function() {
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress="";
-//        if("jd"==source){
-//        	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
-//        }else{
-//        	destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
-//        }
-    	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
+        if("jd"==source){
+        	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
+        }else{
+        	destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
+        }
+//    	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
 
         if (parentTabs.tabs('exists', subtitle)) {
             parentTabs.tabs('select', subtitle);

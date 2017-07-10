@@ -152,6 +152,17 @@ public class OrderInfoEntity {
      */
     private String preDelivery;
     
+    /**
+     * 订单来源(如：京东（jd）)
+     */
+    private String source;
+    
+    /**
+     * 订单的外部Id（如：京东 订单Id）
+     */
+    private String extOrderId;
+    
+    
     public String getDeviceType() {
         return deviceType;
     }
@@ -352,6 +363,18 @@ public class OrderInfoEntity {
 	}
 	public void setPreDelivery(String preDelivery) {
 		this.preDelivery = preDelivery;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	public String getExtOrderId() {
+		return extOrderId;
+	}
+	public void setExtOrderId(String extOrderId) {
+		this.extOrderId = extOrderId;
 	}
     
 }

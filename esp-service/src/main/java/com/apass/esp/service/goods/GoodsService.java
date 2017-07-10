@@ -276,6 +276,7 @@ public class GoodsService {
     		return entity;
     	}
         int count  = goodsDao.insert(entity);
+        entity.setGoodId(entity.getId());
         
         if(count == 1){
         	LOGGER.info("保存商品成功,保存内容：{}",GsonUtils.toJson(entity));
@@ -294,7 +295,6 @@ public class GoodsService {
                 String random = RandomUtils.getRandomNum(6);
                 sb.append(random);
                 entity.setGoodsCode(sb.toString());
-                entity.setGoodId(entity.getId());
                 goodsDao.updateGoods(entity);
             }
         }
@@ -412,6 +412,33 @@ public class GoodsService {
     */
    public void updateGoodsCategoryStatus(Long id){
    	goodsDao.updateGoodsCategoryStatus(id);
+   }
+   
+   /**
+     * 京东商品
+	 * @param entityList
+	 * @return
+	 */
+   public GoodsInfoEntity insertJdGoods(GoodsInfoEntity entity) {
+	   goodsDao.insert(entity);
+	   entity.setGoodId(entity.getId());
+	   return entity;
+   }
+   
+   /**
+	 * @param ids
+	 */
+   public void deleteJDGoodsBatch(List<String> ids) {
+	   goodsDao.deleteJDGoodsBatch(ids);
+   }
+   
+   /**
+     * 根据external_id查询商品 
+	 * @param string
+	 * @return
+	 */
+   public String selectGoodsByExternalId(String externalId) {
+	 return goodsDao.selectGoodsByExternalId(externalId);
    }
     
 }

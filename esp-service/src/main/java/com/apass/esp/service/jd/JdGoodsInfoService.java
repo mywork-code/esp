@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
@@ -194,5 +195,33 @@ public class JdGoodsInfoService {
 		}
 		return JdSimilarSkuList;
 	}
+
+	/**
+	 * 查询商品的规格(根据商品sku查询商品本身的规格)
+	 * 例如：("颜色":"金色","版本":"全网通")
+	 */
+	public Map<String,String> getJdGoodsSpecification(Long sku) {
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		Map<String, String> map = new HashMap<>();
+		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+			String saleName = jdSimilarSku.getSaleName();
+			String saleValue = "";
+			List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+			for (JdSaleAttr jdSaleAttr : saleAttrList) {
+				List<String> skuIds = jdSaleAttr.getSkuIds();
+				for (String skuid : skuIds) {
+					if (sku.toString().equals(skuid)) {
+						saleValue = jdSaleAttr.getSaleValue();
+						break;
+					}
+				}
+			}
+			map.put(saleName, saleValue);
+		}
+		return map;
+	}
+	
+	
+	
 	
 }
