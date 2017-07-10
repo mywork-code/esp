@@ -714,7 +714,10 @@
 			goods_detail googsDetail,
 			goods_sift_url goodsSiftUrl,
 			goods_model goodsModel,
-			un_support_province unSupportProvince
+			un_support_province unSupportProvince,
+			source     source,
+			external_id   externalId,
+			external_status   externalStatus
 		FROM
 			t_esp_goods_base_info
 		WHERE
