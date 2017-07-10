@@ -1,5 +1,8 @@
 package com.apass.esp.domain.entity.jd;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 public class JdSimilarSku {
@@ -15,6 +18,15 @@ public class JdSimilarSku {
 	 * 商品销售标签
 	 */
 	private List<JdSaleAttr> saleAttrList;
+
+	public void update( List<JdSaleAttr>  saleAttrList){
+		for (JdSaleAttr jdSaleAttr:saleAttrList
+			 ) {
+			if(CollectionUtils.isNotEmpty(jdSaleAttr.getSkuIds())){
+				jdSaleAttr.setSkuIdStr(StringUtils.join(jdSaleAttr.getSkuIds().toArray(), ","));
+			}
+		}
+	}
 	
 	public Integer getDim() {
 		return dim;

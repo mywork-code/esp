@@ -189,6 +189,7 @@ public class JdGoodsInfoService {
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
 		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
 			JdSimilarSku jp = gson.fromJson(jdSimilarResponse.getResult().getString(i), JdSimilarSku.class);
+			jp.update(jp.getSaleAttrList());
 			JdSimilarSkuList.add(jp);
 		}
 		return JdSimilarSkuList;

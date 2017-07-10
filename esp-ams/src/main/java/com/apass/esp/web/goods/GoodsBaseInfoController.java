@@ -839,7 +839,7 @@ public class GoodsBaseInfoController {
 
 		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
 		String externalId = goodsInfo.getExternalId();// 外部商品id
-		externalId = "2403211";
+		externalId = "2967927";
 		map=jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
 		return new ModelAndView("goods/goodsPreviewProductJD-view", map);
 	}
