@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
@@ -47,7 +49,8 @@ public class JdGoodsInfoService {
 			// 查询商品名称
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
-			map.put("googsDetail", jdGoods.getIntroduction());// 商品详情
+			//java字符串转义,把&lt;&gt;转换成<>等字符
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(jdGoods.getIntroduction()));// 商品详情
 		}
 		// 查询商品价格
 		Collection<Long> skuPrice = new ArrayList<Long>();
@@ -131,7 +134,7 @@ public class JdGoodsInfoService {
 			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
 					new TypeToken<Map<String, List<JdImage>>>() {
 					}.getType());
-			List<JdImage> jdList = jsonImageResult.get(sku);
+			List<JdImage> jdList = jsonImageResult.get(sku.toString());
 			for (int i = 0; i < jdList.size(); i++) {
 				String path = jdList.get(i).getPath();
 				String pathJd = "http://img13.360buyimg.com/" + type + "/" + path;
@@ -191,5 +194,33 @@ public class JdGoodsInfoService {
 		}
 		return JdSimilarSkuList;
 	}
+
+	/**
+	 * 查询商品的规格(根据商品sku查询商品本身的规格)
+	 * 例如：("颜色":"金色","版本":"全网通")
+	 */
+	public Map<String,String> getJdGoodsSpecification(Long sku) {
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		Map<String, String> map = new HashMap<>();
+		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+			String saleName = jdSimilarSku.getSaleName();
+			String saleValue = "";
+			List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+			for (JdSaleAttr jdSaleAttr : saleAttrList) {
+				List<String> skuIds = jdSaleAttr.getSkuIds();
+				for (String skuid : skuIds) {
+					if (sku.toString().equals(skuid)) {
+						saleValue = jdSaleAttr.getSaleValue();
+						break;
+					}
+				}
+			}
+			map.put(saleName, saleValue);
+		}
+		return map;
+	}
+	
+	
+	
 	
 }

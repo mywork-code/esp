@@ -98,6 +98,16 @@ public class OrderSubInfoEntity {
      * 售后类型
      */
     private String refundType;
+    
+    /**
+     * 订单来源(如：京东（jd）)
+     */
+    private String source;
+    
+    /**
+     * 订单的外部Id（如：京东 订单Id）
+     */
+    private String extOrderId;
 
     public String getRefundType() {
         return refundType;
@@ -556,4 +566,21 @@ public class OrderSubInfoEntity {
         }
         this.preDeliveryMsg = content;
 	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getExtOrderId() {
+		return extOrderId;
+	}
+
+	public void setExtOrderId(String extOrderId) {
+		this.extOrderId = extOrderId;
+	}
+	
 }

@@ -234,7 +234,9 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
 		FROM
 			t_esp_order_info
 			WHERE 1=1

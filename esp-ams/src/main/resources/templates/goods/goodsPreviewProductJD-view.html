@@ -7,7 +7,8 @@
 	src="${rc.contextPath}/WebContent/js/common/swiper.min.js"></script>
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/goods/goodsPreviewProduct-view.js"></script>
-
+ <link rel="stylesheet" type="text/css"
+   href="${rc.contextPath}/WebContent/css/jd.css">
 <meta charset="UTF-8">
 <style>
 *{margin:0;padding:0;}
@@ -34,7 +35,20 @@
             transform: translate(-50%, 0);
             background-color: #fff;
         }
-
+ #Product_details::-webkit-scrollbar {/*滚动条整体样式*/
+            width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
+            height: 4px;
+        }
+        #Product_details::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.2);
+        }
+        #Product_details::-webkit-scrollbar-track {/*滚动条里面轨道*/
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 0;
+            background: rgba(0,0,0,0.1);
+        }
         #Product_details > .nav {
             width: 100%;
             height: 40px;
@@ -215,6 +229,9 @@
             background: #ffffff;
             padding:10px;
         }
+         #Product_details .details img{
+            width:100%;
+        }
         #Product_details .details .img_content img{
             width:100%;
             margin-bottom: 4px;
@@ -246,11 +263,11 @@
         <div class="page product" >
             <div class="swiper-container">
                 <div class="swiper-wrapper">
-                	<#if JdImagePathList??>	
-					<#list JdImagePathList as JdImagePath>	
-						  <div class="swiper-slide"><img src="${(JdImagePath)!}"/></div>
+                    <#if jdImagePathList??>	
+					<#list jdImagePathList as jdImagePath>	
+					 <div class="swiper-slide"><img id='goodsBanner_2' src="${jdImagePath!}"/></div>			
 	                </#list>
-					</#if>              
+					</#if>
                 </div>
                 <!-- Add Pagination -->
                 <div class="swiper-pagination"></div>
@@ -258,50 +275,13 @@
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
             </div>
-            <p class="title">${previewGoodsName!}</p>
-            <p class="price">¥ ${previewGoodsPrice!}</p>
-               <#if (goodsStockList?size > 0)>
-             <div class="chose">选择规格数量
-                <div class="SIZE">
-                    <img src="${rc.contextPath}/WebContent/images/icon-fail.png" alt="" class="close"/>
-                    <img id='goodsLogoUrl' src="data:image/gif;base64,${goodsStockList[0].stockLogo!}" alt="" class="pro_img"/>
-                    <p class="SIZE_price">¥${(goodsStockList[0].goodsPrice)!}</p><!-- ¥${(goodsStockList[0].goodsPrice)!} -->
-                    <p class="SIZE_costPrice" style="color: black;font-weight:bold">¥${(goodsStockList[0].goodsCostPrice)!}</p><!-- ¥${(goodsStockList[0].goodsCostPrice)!} -->
-                    <p class="SIZE_color">已选择： ${(goodsStockList[0].goodsSkuAttr)!}</p><!--已选择： ${(goodsStockList[0].goodsSkuAttr)!} -->
-                    <div class="SIZE_title">${goodsSizeOrColorTitle!}</div>
-	                <div class="SIZE_Chcolor" id="SIZE_Chcolor">
-	                <#if goodsStockList??>	
-					<#list goodsStockList as GoodsStockInfoEntity>	
-							<span 
-							data-compareurl="${(GoodsStockInfoEntity.goodsCompareUrl)!}"
-							data-compareurl2="${(GoodsStockInfoEntity.goodsCompareUrl2)!}"
-							data-logourl="${(GoodsStockInfoEntity.stockLogo)!}" 
-							data-price="${(GoodsStockInfoEntity.goodsPrice)!}" 
-							data-costPrice="${(GoodsStockInfoEntity.goodsCostPrice)!}" 
-							data-amount="${(GoodsStockInfoEntity.stockCurrAmt)!}">
-								<#if GoodsStockInfoEntity_index == 0>
-									<font color="#D60000" id="goodsSkuTempColor">${(GoodsStockInfoEntity.goodsSkuAttr)!}</font>
-								</#if>
-								<#if GoodsStockInfoEntity_index != 0>
-									${(GoodsStockInfoEntity.goodsSkuAttr)!}
-								</#if>
-							</span>					
-	                </#list>
-					</#if>
-	                </div>
-	                <div class="supply">商品库存：${(goodsStockList[0].stockCurrAmt)!}件</div><!-- 商品库存：${(goodsStockList[0].stockCurrAmt)!}件 -->
-	                
-	                <div class="compare_url" id="compareurl1"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接1</a></div>
-	                <div class="compare_url" id="compareurl2"><a href="${(goodsStockList[0].goodsCompareUrl)!}">比价链接2</a></div>
-                </div>
-            </div>
-            </#if>
+	        <p class="title">${goodsName!}</p>
+            <p class="price">¥ ${goodsPrice!}</p>
         </div>
-        <!-- 商品详情 -->
+         <!-- 商品详情 -->
         <div class="page details" style="display: none;">
-            ${(googsDetail)!}
+             ${(googsDetail)!} 
         </div>
-
     </div>
 </div>
 </div>

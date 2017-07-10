@@ -126,7 +126,8 @@
 			orderdetailinfo.goods_num goodsNum,
 			goodsstockinfo.stock_curr_amt stockCurrAmt,
 			refundDetail.goods_num goodsNumR,
-			refundInfo.refund_amt refundAmt
+			refundInfo.refund_amt refundAmt,
+			refundDetail.goods_price goodsPrice
 		FROM
 			t_esp_order_info orderinfo
 		LEFT JOIN t_esp_order_detail_info orderdetailinfo ON orderdetailinfo.order_id = orderInfo.order_id

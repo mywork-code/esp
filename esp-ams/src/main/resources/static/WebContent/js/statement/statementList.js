@@ -173,7 +173,12 @@ $(function(){
                     width : 70,
                     align : 'center'
                 },
-                
+                {
+                    title : '商品价格',
+                    field : 'goodsPrice',
+                    width : 100,
+                    align : 'center'
+                },
                 {
                     title : '商品购买数量',
                     field : 'goodsNum',
