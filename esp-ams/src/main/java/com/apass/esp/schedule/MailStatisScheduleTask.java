@@ -82,6 +82,8 @@ public class MailStatisScheduleTask {
         int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
         //订单失效
         int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
+        //订单失效
+        int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
         //银行卡总额
         int count5 = orderService.selectCreAmt(beginDate, currentDate);
         //额度支付
@@ -98,6 +100,7 @@ public class MailStatisScheduleTask {
         exportDomain.setCount5(count5);
         exportDomain.setCount6(count6);
         exportDomain.setCount7(count7);
+        exportDomain.setCountd(countd);
         list.add(exportDomain);
         try {
             generateFile(list);
@@ -113,7 +116,7 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
-       mailSenderInfo.setToAddress("xujie@apass.cn");
+        mailSenderInfo.setToAddress("xujie@apass.cn");
 //        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
 //        mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
         Multipart msgPart = new MimeMultipart();
@@ -143,8 +146,8 @@ public class MailStatisScheduleTask {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
-        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效", "银行卡支付总额", "额度支付总额", "总计"};
-        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "count5", "count6", "count7"};
+        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效","删除订单", "银行卡支付总额", "额度支付总额", "总计"};
+        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd","count5", "count6", "count7"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
