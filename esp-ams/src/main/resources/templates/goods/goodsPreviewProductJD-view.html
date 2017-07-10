@@ -467,7 +467,7 @@
         if(sufSkuId.indexOf(skuId) >= 0){
             $(this).addClass("select");
             shuIDArr[index] = sufSkuId;
-            console.log(shuIDArr)
+
         }
     })
     selectWrapList.on("click", ".items", function () {
@@ -483,13 +483,14 @@
         shuIDArr[index] = curSku;
 
         selectWrapList.each(function (i, e) {
-            if (i != index) {
+            console.log(i,index);
+            if (index==0||i != index) {
                 $.each($(e).children(".items"), function (ind, ele) {
                     var sku = $(ele).attr("data-sku");
                     var comSku = isHasSameSku(sku.split(","), offUndefined(shuIDArr));
                     if (comSku.length) {
                         shuID = comSku;
-                        console.log(shuID)
+                        console.log(shuID);
                         $(ele).removeClass("disabled");
                     } else {
                         $(ele).addClass("disabled");
@@ -521,7 +522,7 @@
                     },
                     closable: true
                 });
-                return;
+
             }
         });
     });
