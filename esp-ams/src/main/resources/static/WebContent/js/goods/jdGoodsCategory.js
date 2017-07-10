@@ -305,7 +305,15 @@ $(function() {
 	                    $.validateResponse(resp, function() {
 	                        success(resp.data);
 	                    });
+	                    
+	                    
+	                    stime = window.setInterval("start()", 5000);
+	                    
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
+	                		if($(".border-circle").hasClass('disabled')){
+	                			return;
+	                		}
+	                		$(".border-circle").addClass('disabled');
 	                		var $that = $(this).find('.switch-circle');
 	                		var rowData = JSON.parse(decodeURI($that.attr('data-sku')));
 	                		var param = {
@@ -407,5 +415,11 @@ function loadPic (id,pictureUrl)
 function regExp_pattern(str, pattern) {
     return pattern.test(str);
     
+}
+
+var stime;
+function start() {
+   $(".border-circle").removeClass("disabled");
+   window.clearInterval(stime);
 }
 

@@ -439,7 +439,7 @@ public class GoodsService {
  * @throws BusinessException 
 	 */
    public String selectGoodsByExternalId(String externalId) throws BusinessException {
-	 return goodsDao.selectGoodsByExternalId(externalId);
+ 	 return goodsDao.selectGoodsByExternalId(externalId);
    }
     
 }
