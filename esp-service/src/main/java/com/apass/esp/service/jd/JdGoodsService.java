@@ -1,5 +1,6 @@
 package com.apass.esp.service.jd;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsIsDelete;
 import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.service.goods.GoodsService;
@@ -19,7 +19,6 @@ import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -46,13 +45,14 @@ public class JdGoodsService {
 	public void relevanceJdCategory(Map<String, Object> paramMap) throws BusinessException {
 		//往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据 
 		String cateId = (String)paramMap.get("cateId");//京东类目id
-		
-		
+		String username = (String)paramMap.get("username");//当前用户
+
 		//根据第三级类目 id查询京东三级类目下所有商品
 		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
 		if(JdGoodsList == null){
 			throw new BusinessException("京东此类目下无商品");
 		}
+		
 		for (JdGoods jdGoods : JdGoodsList) {
 			//封闭数据,往t_esp_goods_base_info表插入数据 
 			GoodsInfoEntity entity = new GoodsInfoEntity();
@@ -67,35 +67,110 @@ public class JdGoodsService {
 			entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
 			entity.setListTime(null);
 			entity.setDelistTime(null);
-			//entity.setGoodId(jdGoods.getSkuId());
-			entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-			entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+			entity.setCreateUser(username);
+			entity.setUpdateUser(username);
 			entity.setSource("jd");
 			entity.setExternalId(jdGoods.getSkuId().toString());
 			entity.setExternalStatus((byte)1);
-			entity = goodsService.insert(entity);
+			GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 			
 			//往t_esp_goods_stock_info表插数据
 			GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
 			stockEntity.setStockTotalAmt(-1l);
 			stockEntity.setStockCurrAmt(-1l);
-			stockEntity.setGoodsId(entity.getGoodId());
+			stockEntity.setGoodsId(insertJdGoods.getGoodId());
 			stockEntity.setGoodsPrice(jdGoods.getJdPrice());
 			stockEntity.setMarketPrice(jdGoods.getJdPrice());
 			stockEntity.setGoodsCostPrice(jdGoods.getPrice());
-			stockEntity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-			stockEntity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+			stockEntity.setCreateUser(username);
+			stockEntity.setUpdateUser(username);
 			goodsStockInfoService.insert(stockEntity);
 		}
 		
+		
 		//更新t_esp_jd_category表数据
 		JdCategory jdCategory = new JdCategory();
-		jdCategory.setId((Long)paramMap.get("jdCategoryId"));
+		jdCategory.setId(Long.valueOf((String)paramMap.get("jdCategoryId")));
 		jdCategory.setCategoryId1(Long.valueOf((String) paramMap.get("categoryId1")));
 		jdCategory.setCategoryId2(Long.valueOf((String) paramMap.get("categoryId2")));
-		jdCategory.setCategoryId3(Long.valueOf((String) paramMap.get("categoryId2")));
+		jdCategory.setCategoryId3(Long.valueOf((String) paramMap.get("categoryId3")));
 		jdCategory.setStatus(true);
-		jdCategoryMapper.updateByPrimaryKey(jdCategory);
-		
+		jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
 	}
+
+	/**
+	 * 取消京东类目关联
+	 * @param paramMap
+	 * @throws BusinessException 
+	 */
+	public void disRelevanceJdCategory(Map<String, Object> paramMap) throws BusinessException {
+		String cateId = (String)paramMap.get("cateId");//京东类目id
+		//根据第三级类目 id查询京东三级类目下所有商品
+		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
+		if(JdGoodsList == null){
+			throw new BusinessException("京东此类目下无商品");
+		}
+		
+		List<String> idsGoods = new ArrayList<String>();
+		List<Long> idsStock = new ArrayList<Long>();
+		//删除t_esp_goods_base_info和t_esp_goods_stock_info表中对应京东数据
+		if(JdGoodsList.size()>100){
+			for(int i=0; i<JdGoodsList.size(); i++){
+				int num = JdGoodsList.size()/100;
+				
+				if(i<100*num){
+					String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+					if(goodsId != null){
+						idsStock.add(Long.valueOf(goodsId));
+					}
+					idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
+					
+					if((i+1)/100 == 0){
+						if(idsStock != null && idsStock.size() !=0){
+							goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
+						}
+						goodsService.deleteJDGoodsBatch(idsGoods);
+						idsStock.clear();
+						idsGoods.clear();
+					}
+				}else{
+					while(i<JdGoodsList.size()){
+						String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+						if(goodsId != null){
+							idsStock.add(Long.valueOf(goodsId));
+						}
+						idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
+						i++;
+					}
+					if(idsStock != null && idsStock.size() !=0){
+						goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
+					}
+					goodsService.deleteJDGoodsBatch(idsGoods);
+				}
+				
+			}
+		}else{
+			for(int i=0; i<JdGoodsList.size(); i++){
+				String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+				if(goodsId != null){
+					idsStock.add(Long.valueOf(goodsId));
+				}
+				idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
+			}
+			if(idsStock != null && idsStock.size() !=0){
+				goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
+			}
+			goodsService.deleteJDGoodsBatch(idsGoods);
+		}
+		
+		//修改t_esp_jd_category表中的状态
+		JdCategory jdCategory = new JdCategory();
+		jdCategory.setId(Long.valueOf((String)paramMap.get("jdCategoryId")));
+		jdCategory.setStatus(false);
+		jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
+	}
+	
+	
+	
+	
 }

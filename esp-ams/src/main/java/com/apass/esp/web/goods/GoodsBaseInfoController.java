@@ -55,7 +55,6 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -68,8 +67,6 @@ import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 
 /**
  * 商品管理

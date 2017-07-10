@@ -9,6 +9,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
 import org.slf4j.Logger;
@@ -55,6 +56,8 @@ public class JdGoodsController {
 //		  String catClass = HttpWebUtils.getValue(request, "catClass");//类目级别
 		  //参数验证
 		  validateParam(paramMap);
+		  String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+		  paramMap.put("username", username);
 		  
 		  //关联京东类目
 		  jdGoodsService.relevanceJdCategory(paramMap);
@@ -64,11 +67,32 @@ public class JdGoodsController {
 		  return Response.fail("关联京东类目失败！");
 	  }
 	  
-	  
-	  
 	  return Response.success("关联京东类目成功！");
+  }
+  
+  /**
+   * 取消关联商品
+   * @param paramMap
+   * @return
+   */
+@ResponseBody
+  @RequestMapping("/disrelevance")
+  public Response disRelevanceJdCategory(@RequestBody Map<String,Object> paramMap) {
+	  try{
+		  //参数验证
+		  validateParam(paramMap);
+		  String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+		  paramMap.put("username", username);
+		  
+		  //关联京东类目
+		  jdGoodsService.disRelevanceJdCategory(paramMap);
+		  
+	  }catch(BusinessException e){
+		  LOGGER.error("取消关联京东类目失败！", e.getErrorCode());
+		  return Response.fail("取消关联京东类目失败！");
+	  }
 	  
-	  
+	  return Response.success("取消关联京东类目成功！");
   }
  
   /**

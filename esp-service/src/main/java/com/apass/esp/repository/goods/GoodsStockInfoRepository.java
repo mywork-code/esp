@@ -67,7 +67,16 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
     }
 
 
-    public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
+	public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
         return this.getSqlSession().selectList("getSkuInfo", goodsId);
     }
+
+	/**
+	 * 批量删除商品库存表商品
+	 * @param idsStock
+	 * @return 
+	 */
+	public void deleteJDGoodsStockBatch(List<Long> idsStock) {
+		this.getSqlSession().delete("deleteJDGoodsStockBatch", idsStock);
+	}
 }
