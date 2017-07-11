@@ -70,3 +70,8 @@ CREATE TABLE `t_esp_goods_sales_volume` (
   `update_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品销量表';
+
+
+ALTER TABLE `t_esp_work_city_jd`
+ADD COLUMN `PREFIX`  varchar(10)  DEFAULT '' COMMENT '首字母',
+ADD COLUMN `SPELL`  varchar(50)  DEFAULT '' COMMENT '城市中文拼音' ;
