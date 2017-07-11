@@ -27,14 +27,14 @@
   </select>
 
   <select id="jdGoodSalesVolumeByPage" resultType="java.lang.String">
-    SELECT order_id
+    SELECT goods_id
     from t_esp_goods_sales_volume
     order by sales_num ,create_date
     limit #{pageIndex},#{pageSize}
   </select>
 
   <select id="jdGoodSalesVolume" resultType="java.lang.String">
-    SELECT order_id
+    SELECT goods_id
     from t_esp_goods_sales_volume
   </select>
 </mapper>
