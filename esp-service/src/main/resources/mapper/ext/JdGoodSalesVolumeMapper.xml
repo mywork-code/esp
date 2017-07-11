@@ -21,4 +21,20 @@
     from t_esp_goods_sales_volume
     where goods_id =  #{goodsId,jdbcType=BIGINT}
   </select>
+
+  <select id="jdGoodSalesVolumeCount" resultType="java.lang.Integer">
+    select count(1) from t_esp_goods_sales_volume
+  </select>
+
+  <select id="jdGoodSalesVolumeByPage" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from t_esp_goods_sales_volume
+    order by sales_num ,create_date
+    limit #{pageIndex},#{pageSize}
+  </select>
+
+  <select id="jdGoodSalesVolume" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from t_esp_goods_sales_volume
+  </select>
 </mapper>

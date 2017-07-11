@@ -592,4 +592,9 @@
 		where orderstatus in ('D02' , 'D03','D04','D05')
 	</select>
 	
+	<select id="getRemainderGoods" parameterType="java.lang.Integer">
+		select order_id from t_esp_order_info
+		order by list_time
+	</select>
+	
 </mapper>
