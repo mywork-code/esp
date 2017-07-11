@@ -82,9 +82,9 @@ public class MailStatisScheduleTask {
         //订单删除
         int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
         //银行卡总额
-        int count5 = orderService.selectCreAmt(beginDate, currentDate);
+        int count5 = orderService.selectSumAmt(beginDate, currentDate);
         //额度支付
-        int count6 = orderService.selectSumAmt(beginDate, currentDate);
+        int count6 = orderService.selectCreAmt(beginDate, currentDate);
         int count7 = count1 + count2 + count3 + count4;
 
         List<ExportDomain> list = new ArrayList<>();
