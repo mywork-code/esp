@@ -212,6 +212,7 @@ public class GoodsService {
         //接入京东商品修改  //计算首付价
         BigDecimal minPriceFistPayment = new BigDecimal("0.1").multiply(minPrice);
         returnMap.put("minPriceFirstPayment", minPriceFistPayment);
+        returnMap.put("source","notJd");
     }
 
     /**

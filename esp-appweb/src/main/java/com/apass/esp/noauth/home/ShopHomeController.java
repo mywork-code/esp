@@ -272,15 +272,17 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             //判断是否是京东商品
-            if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus())){//来源于京东且已关联
+            if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus()+"")){//来源于京东且已关联
+            	String externalId = goodsInfo.getExternalId();// 外部商品id
+            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+            	
             	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
             		returnMap.put("goodsPrice",price);//商品价格
             		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
             	}
-            	String externalId = goodsInfo.getExternalId();// 外部商品id
-            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+            	returnMap.put("source", "jd");
             }else{
                 goodService.loadGoodsBasicInfoById(goodsId,returnMap);
             }
