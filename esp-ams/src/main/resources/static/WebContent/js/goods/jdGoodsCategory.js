@@ -284,7 +284,6 @@ $(function() {
 	                	align : 'center',
 	                	formatter : function(value, row, index) {
 	                		if(row.catClass == '2'){
-	                			debugger;
 	                			if(row.flag && row.categoryId3 == categoryId3){
 	                				var checkboxflag = '<div class="border-circle"><span class="switch-circle"  style="left:54px" data-sku="'+encodeURI(JSON.stringify(row))+'"></span><span class="relation-text" style="left:14px;">已关联</span></div>';
 		                		}else{
@@ -306,9 +305,7 @@ $(function() {
 	                        success(resp.data);
 	                    });
 	                    
-	                    
 	                    stime = window.setInterval("start()", 5000);
-	                    
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;

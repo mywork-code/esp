@@ -244,7 +244,14 @@ public class GoodsService {
         PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
 
         Pagination<GoodsInfoEntity> entity = goodsDao.pageList(goodsInfoEntity, page);
-
+        List<GoodsInfoEntity> dataList = entity.getDataList();
+        for (GoodsInfoEntity goodsInfo : dataList) {
+			if("jd".equals(goodsInfo.getSource())){
+				goodsInfo.setMerchantName("京东");
+			}
+		}
+        
+        
         result.setDataList(entity.getDataList());
         result.setPageInfo(page.getPageNo(), page.getPageSize());
         result.setTotalCount(entity.getTotalCount());

@@ -224,6 +224,7 @@ $(function() {
                 type : "post",
                 dataType : "json",
                 success : function(data) {
+                	console.log(data.rows);
                     $.validateResponse(data, function() {
                         success(data);
                     });
