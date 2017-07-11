@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -109,7 +111,9 @@ public class OrderService {
 	private MerchantInforService merchantInforService;
 	@Autowired
 	private CashRefundMapper   cashRefundMapper;
-	
+	@Autowired
+    private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
+
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -1479,20 +1483,57 @@ public class OrderService {
      * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateOrderStatusAndPreDelivery(){
-    	//获取数据库中所有的待发货状态的订单
-    	List<OrderInfoEntity> orderList = toBeDeliver();
-    	if(!CollectionUtils.isEmpty(orderList)){
-    		for (OrderInfoEntity order : orderList) {
-    			//修改订单状态和是否发货
-    			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
-    			order.setStatus(OrderStatus.ORDER_SEND.getCode());
-    			order.setUpdateDate(new Date());
-    			updateOrderStatusAndPreDelivery(order);
-			}
-    	}
+    public void updateOrderStatusAndPreDelivery() {
+        //获取数据库中所有的待发货状态的订单
+        List<OrderInfoEntity> orderList = toBeDeliver();
+        List<String> orderIdList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(orderList)) {
+            for (OrderInfoEntity order : orderList) {
+                //修改订单状态和是否发货
+                order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+                order.setStatus(OrderStatus.ORDER_SEND.getCode());
+                order.setUpdateDate(new Date());
+                updateOrderStatusAndPreDelivery(order);
+                orderIdList.add(order.getOrderId());
+            }
+			updateJdGoodsSaleVolume(orderIdList);
+        }
     }
-    
+
+	/**
+	 * 更新销量
+	 * @param orderIdList
+	 */
+
+	public void updateJdGoodsSaleVolume( List<String> orderIdList ) {
+		//更新销量
+		List<OrderDetailInfoEntity> orderDetailInfoEntityList = new ArrayList<>();
+		try {
+			orderDetailInfoEntityList = orderDetailInfoRepository.queryOrderDetailListByOrderList(orderIdList);
+		} catch (BusinessException e) {
+			LOGGER.error("orderDetailInfoRepository.queryOrderDetailListByOrderList error...");
+		}
+		if (!CollectionUtils.isEmpty(orderDetailInfoEntityList)) {
+			for (OrderDetailInfoEntity orderDetailInfoEntity : orderDetailInfoEntityList) {
+				JdGoodSalesVolume jdGoodSalesVolume = new JdGoodSalesVolume();
+				long goodsId = orderDetailInfoEntity.getGoodsId();
+				int saleNum = orderDetailInfoEntity.getGoodsNum().intValue();
+				Date date = new Date();
+				jdGoodSalesVolume.setGoodsId(goodsId);
+				jdGoodSalesVolume.setSalesNum(saleNum);
+				jdGoodSalesVolume.setCreateDate(date);
+				jdGoodSalesVolume.setUpdateDate(date);
+				try {
+					int insertValue = jdGoodSalesVolumeMapper.insert(jdGoodSalesVolume);
+				}catch (Exception e ){
+					JdGoodSalesVolume jdGoodSalesVolume1 = jdGoodSalesVolumeMapper.getJdGoodSalesVolumeByGoodsId(goodsId);
+					jdGoodSalesVolumeMapper.updateJdGoodSalesVolumeByGoodsId(goodsId, jdGoodSalesVolume1.getSalesNum() + saleNum, date, jdGoodSalesVolume1.getSalesNum());
+				}
+
+			}
+		}
+	}
+
     /**
      * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId

@@ -184,4 +184,7 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("selectOrderCountByStatus", param);
     }
 
+    public List<String> initGoodsSaleVolume(){
+        return this.getSqlSession().selectList("initGoodsSaleVolume");
+    }
 }
