@@ -2111,7 +2111,6 @@ function initEditGoodsInfo(row){
 					var values = $(target).combobox('getValues');//获取选中的值的values
 					if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
 						$.each(unSupportPrivincesCodes.split(","),function(index,value){
-							console.log(index+"..."+value);
 							var el = opts.finder.getEl(target, value);  
 							el.find('input.combobox-checkbox')._propAttr('checked', true);   
 						});
