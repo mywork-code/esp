@@ -595,6 +595,7 @@
 	<select id="getRemainderGoods" resultType="java.lang.String">
 		select order_id from t_esp_goods_base_info
 		where status='G02'
+		AND is_delete = '01'
 		order by list_time limit #{pageIndex},#{pageSize}
 	</select>
 	

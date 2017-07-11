@@ -2,6 +2,7 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -454,10 +455,6 @@ public class GoodsService {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
 
-   public int jdGoodSalesVolumeCount(){
-       return jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
-   }
-
    public Pagination<JdGoodSalesVolume> jdGoodSalesVolumeByPage(int pageIndex,int pageSize){
        //int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
        if(pageIndex==3){
@@ -470,5 +467,14 @@ public class GoodsService {
        pagination.setTotalCount(50);
        return pagination;
    }
+
+
+    public Pagination<JdGoodSalesVolume> jdGoodSalesVolume(){
+        List<JdGoodSalesVolume> list = new ArrayList<>();
+        Pagination pagination = new Pagination();
+        pagination.setDataList(list);
+        pagination.setTotalCount(50);
+        return pagination;
+    }
 }
 

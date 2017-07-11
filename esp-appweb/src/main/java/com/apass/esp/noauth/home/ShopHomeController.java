@@ -311,9 +311,8 @@ public class ShopHomeController {
             goodsList.add(goodsInfoEntity);
         }
         resultMap.put("goodsList",goodsList);
+        resultMap.put("pageIndex",pageIndex);
         resultMap.put("totalCount",jdGoodSalesVolumePagination.getTotalCount());
-        resultMap.put("goodsList",goodsList);
-
         return Response.successResponse(goodsList);
     }
 
@@ -323,8 +322,9 @@ public class ShopHomeController {
      * @return
      */
     @POST
-    @Path("/ crazeProducts")
-    public Response popularProducts1(Map<String, Object> paramMap){
+    @Path("/crazeProducts")
+    public Response crazeProducts(Map<String, Object> paramMap){
+
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
     }
 }
