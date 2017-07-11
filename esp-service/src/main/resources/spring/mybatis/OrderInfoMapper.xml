@@ -587,4 +587,9 @@
 		select sum(txn_amt) from t_apass_txn_info where txn_type = 'T02' and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
 	</select>
 	
+	<select id="initGoodsSaleVolume" resultType="java.lang.String">
+		select order_id from t_esp_order_info
+		where orderstatus in ('D02' , 'D03','D04','D05')
+	</select>
+	
 </mapper>
