@@ -37,6 +37,6 @@ public class NationRepository extends BaseMybatisRepository<NationEntity, Long> 
 		return getSqlSession().selectOne("selectByCode",code);
 	}
 	public List<NationEntity> selectList(NationEntity  nety) {
-		return getSqlSession().selectOne("selectListByCode",nety);
+		return getSqlSession().selectList("selectListByCode",nety);
 	}
 }
