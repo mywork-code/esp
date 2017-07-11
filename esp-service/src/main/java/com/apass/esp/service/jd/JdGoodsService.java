@@ -117,7 +117,6 @@ public class JdGoodsService {
 		if(JdGoodsList.size()>100){
 			for(int i=0; i<JdGoodsList.size(); i++){
 				int num = JdGoodsList.size()/100;
-				
 				if(i<100*num){
 					String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
 					if(goodsId != null){
@@ -141,7 +140,7 @@ public class JdGoodsService {
 						}
 						idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 						i++;
-					}
+					 }
 					if(idsStock != null && idsStock.size() !=0){
 						goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
 					}

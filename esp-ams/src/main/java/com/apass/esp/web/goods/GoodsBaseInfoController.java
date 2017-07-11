@@ -229,7 +229,7 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "status");
-            String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
+//            String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
@@ -261,9 +261,13 @@ public class GoodsBaseInfoController {
             }
 
 
-            if (StringUtils.isBlank(isAll)) {
-                goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
+            if("京东".equals(merchantName)){
+            	goodsInfoEntity.setSource("jd");
+            	goodsInfoEntity.setMerchantName(null);
+            }else{
+            	goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
             }
+            
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo, pageSize);
 
             if (pagination == null) {

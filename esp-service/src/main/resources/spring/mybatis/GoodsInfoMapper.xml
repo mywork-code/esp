@@ -49,6 +49,9 @@
 		<if test="merchantType != null and merchantType != ''">
 			AND t2.merchant_type = #{merchantType}
 		</if>
+		<if test="source != null and source != ''">
+			AND t.source = #{source}
+		</if>
 		</where>
 	</sql>
 	<!-- 商品管理分页查询 -->
