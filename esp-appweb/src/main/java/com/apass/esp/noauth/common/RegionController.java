@@ -72,7 +72,7 @@ public class RegionController {
         try {
             String code = CommonUtils.getValue(paramMap, "code");
             if (StringUtils.isBlank(code)) {
-                code = "000000";
+                code = "0";
             }
             List<DictDTO> dictList = nationService.queryDistrictJd(code);
             return Response.success("success", dictList);
