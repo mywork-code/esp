@@ -2,11 +2,14 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -55,6 +58,9 @@ public class GoodsService {
 
     @Autowired
     private GoodsBasicRepository     goodsBasicRepository;
+
+    @Autowired
+    private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
     /**
      * app 首页加载精品推荐商品
      * 
@@ -448,6 +454,27 @@ public class GoodsService {
    public String selectGoodsByExternalId(String externalId) throws BusinessException {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
-    
+
+   public Pagination<JdGoodSalesVolume> jdGoodSalesVolumeByPage(int pageIndex,int pageSize){
+       //int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
+       if(pageIndex==3){
+           pageSize=10;
+       }
+       int pageBegin = pageSize * (pageIndex-1);
+       List<JdGoodSalesVolume> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
+       Pagination pagination = new Pagination();
+       pagination.setDataList(list);
+       pagination.setTotalCount(50);
+       return pagination;
+   }
+
+
+    public Pagination<JdGoodSalesVolume> jdGoodSalesVolume(){
+        List<JdGoodSalesVolume> list = new ArrayList<>();
+        Pagination pagination = new Pagination();
+        pagination.setDataList(list);
+        pagination.setTotalCount(50);
+        return pagination;
+    }
 }
 

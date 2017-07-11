@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -283,7 +284,47 @@ public class ShopHomeController {
             LOGGER.error("获取商品库存信息失败");
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
-    } 
-    
-    
+    }
+
+    /**
+     * 人气单品
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/popularProducts")
+    public Response popularProducts(Map<String, Object> paramMap){
+        Map<String, Object> resultMap = new HashMap<>();
+        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
+        //Long pageSize = CommonUtils.getLong(paramMap,"pageSize");
+        int pageSize = 20;
+        if( pageIndex==null){
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        if(pageIndex.intValue()>3){
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        Pagination<JdGoodSalesVolume> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
+        List<GoodsInfoEntity> goodsList=new ArrayList<>();
+        for (JdGoodSalesVolume jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(jdGoodSalesVolume.getGoodsId());
+            goodsList.add(goodsInfoEntity);
+        }
+        resultMap.put("goodsList",goodsList);
+        resultMap.put("pageIndex",pageIndex);
+        resultMap.put("totalCount",jdGoodSalesVolumePagination.getTotalCount());
+        return Response.successResponse(goodsList);
+    }
+
+    /**
+     * 热销商品
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/crazeProducts")
+    public Response crazeProducts(Map<String, Object> paramMap){
+
+        return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+    }
 }

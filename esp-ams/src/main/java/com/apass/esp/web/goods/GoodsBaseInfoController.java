@@ -261,13 +261,13 @@ public class GoodsBaseInfoController {
             }
 
 
-            if("京东".equals(merchantName)){
-            	goodsInfoEntity.setSource("jd");
-            	goodsInfoEntity.setMerchantName(null);
-            }else{
-            	goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
+            if ("京东".equals(merchantName)) {
+                goodsInfoEntity.setSource("jd");
+                goodsInfoEntity.setMerchantName(null);
+            } else {
+                goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
             }
-            
+
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo, pageSize);
 
             if (pagination == null) {
@@ -839,7 +839,12 @@ public class GoodsBaseInfoController {
         Map<String, Object> map = Maps.newHashMap();
         String id = HttpWebUtils.getValue(request, "id");
         String view = HttpWebUtils.getValue(request, "view");
- 
+        String skuId = HttpWebUtils.getValue(request, "skuId");
+        if (StringUtils.isNotEmpty(skuId)) {
+            map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
+            map.put("view", view);
+            return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+        }
         GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
         String externalId = goodsInfo.getExternalId();// 外部商品id
         map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());

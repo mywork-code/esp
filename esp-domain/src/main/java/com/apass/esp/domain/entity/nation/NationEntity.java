@@ -33,6 +33,10 @@ public class NationEntity {
      */
     private String district;
     /**
+     * 城镇
+     */
+    private String  towns;
+    /**
      * 父节点
      */
     private Long   parent;
@@ -40,6 +44,11 @@ public class NationEntity {
      * 首字母
      */
     private String prefix;
+    /**
+     * 第几级
+     */
+    private String level;
+    
     public Long getId() {
         return id;
     }
@@ -82,5 +91,17 @@ public class NationEntity {
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
+	public String getTowns() {
+		return towns;
+	}
+	public void setTowns(String towns) {
+		this.towns = towns;
+	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
     
 }

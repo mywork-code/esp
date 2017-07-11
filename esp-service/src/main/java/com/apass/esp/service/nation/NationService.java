@@ -41,7 +41,6 @@ public class NationService {
      */
     private static final List<String> FORBIDDEN_PROVINCE = Arrays.asList(
             new String[]{"650000", "540000", "620000", "640000", "150000", "630000", "810000", "820000", "710000"});
-
     @Autowired
     private NationRepository nationRepository;
 
@@ -213,7 +212,45 @@ public class NationService {
 
         return result;
     }
+    /**
+     * 查询城市公共方法（京东）
+     * 
+     */
+    public List<DictDTO> queryDistrictJd(String code) throws BusinessException {
+        List<DictDTO> result = new ArrayList<DictDTO>();
+        List<NationEntity> dataList = null;
+        try {
+        	NationEntity nety=nationRepository.selectByCode(code);  
+        	int level=Integer.parseInt(nety.getLevel());
+        	if(4==level){
+        		return result;
+        	}
+        	nety.setLevel((level+1)+"");
+            dataList = nationRepository.selectList(nety);
+        } catch (Exception e) {
+            throw new BusinessException("城市列表查询失败", e);
+        }
+        if (CollectionUtils.isEmpty(dataList)) {
+            return result;
+        }
+        for (NationEntity nation : dataList) {
+            DictDTO dict = new DictDTO();
+            dict.setCode(nation.getCode());
+            if("1".equals(nation.getLevel())){
+            	 dict.setPrefix(nation.getPrefix());
+            	 dict.setName(nation.getProvince());
+            }else if("2".equals(nation.getLevel())){
+           	     dict.setName(nation.getCity());
+            }else if("3".equals(nation.getLevel())){
+            	 dict.setName(nation.getDistrict());
+            }else if("4".equals(nation.getLevel())){
+            	 dict.setName(nation.getTowns());
+            }
+            result.add(dict);
+        }
 
+        return result;
+    }
 
 	/**
 	 * 根据省的名称查询对应code
