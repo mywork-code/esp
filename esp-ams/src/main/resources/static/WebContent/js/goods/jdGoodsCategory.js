@@ -305,8 +305,9 @@ $(function() {
 	                        success(resp.data);
 	                    });
 	                    
-	                    stime = window.setInterval("start()", 5000);
+	                    stime = window.setInterval("start()", 10000);
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
+	                		debugger;
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
