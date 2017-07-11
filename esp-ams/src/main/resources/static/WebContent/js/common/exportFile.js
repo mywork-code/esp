@@ -6,6 +6,7 @@
 function exportFile (id, fileName, params)
 {
 	debugger;
+	var busCode = params.busCode;
 	params = JSON.stringify (params);
 	
 	// 字段标题集合 {"orderId":"订单id"，"orderAmt":"订单金额"}
@@ -20,10 +21,17 @@ function exportFile (id, fileName, params)
 	// 填充字段标题集合
 	$.each (fields, function (i, n)
 	{
-		// 去除不需要的字段
-		if (n != "opt"&&n != "id")
-		{
-			attrs[n] = columns[i].title;
+		debugger;
+		if(busCode == 'E002'){
+			// 去除不需要的字段
+			if (n != "opt"&&n != "id" && n != "source"){
+				attrs[n] = columns[i].title;
+			}
+		}else{
+			// 去除不需要的字段
+			if (n != "opt"&&n != "id"){
+				attrs[n] = columns[i].title;
+			}
 		}
 	});
 	
