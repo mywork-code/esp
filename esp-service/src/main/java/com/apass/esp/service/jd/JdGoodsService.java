@@ -62,7 +62,7 @@ public class JdGoodsService {
 			entity.setGoodsName(jdGoods.getName());
 			entity.setGoodsTitle("");
 			entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-			entity.setMerchantCode("jd");
+			entity.setMerchantCode("0000103");
 			entity.setStatus(GoodStatus.GOOD_NEW.getCode());
 			entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
 			entity.setListTime(null);
@@ -70,6 +70,8 @@ public class JdGoodsService {
 			entity.setCreateUser(username);
 			entity.setUpdateUser(username);
 			entity.setSource("jd");
+			entity.setGoodsLogoUrl(jdGoods.getImagePath());
+			entity.setGoodsSiftUrl(jdGoods.getImagePath());
 			entity.setExternalId(jdGoods.getSkuId().toString());
 			entity.setExternalStatus((byte)1);
 			GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);

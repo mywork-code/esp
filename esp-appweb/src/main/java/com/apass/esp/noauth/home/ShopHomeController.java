@@ -323,7 +323,7 @@ public class ShopHomeController {
      * @return
      */
     @POST
-    @Path("/ crazeProducts")
+    @Path("/crazeProducts")
     public Response popularProducts1(Map<String, Object> paramMap){
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
     }

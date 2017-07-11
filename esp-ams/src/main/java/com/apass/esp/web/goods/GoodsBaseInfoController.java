@@ -261,12 +261,7 @@ public class GoodsBaseInfoController {
             }
 
 
-            if ("京东".equals(merchantName)) {
-                goodsInfoEntity.setSource("jd");
-                goodsInfoEntity.setMerchantName(null);
-            } else {
-                goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
-            }
+            goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
 
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo, pageSize);
 
