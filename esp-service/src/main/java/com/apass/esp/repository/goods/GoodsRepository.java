@@ -180,4 +180,6 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 			throw new BusinessException("数据库数据有误");
 		}
 	}
+
+
 }

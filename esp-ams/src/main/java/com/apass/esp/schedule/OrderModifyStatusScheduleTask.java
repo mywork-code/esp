@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class OrderModifyStatusScheduleTask{
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderModifyStatusScheduleTask.class);

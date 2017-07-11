@@ -222,6 +222,9 @@ public class NationService {
         try {
         	NationEntity nety=nationRepository.selectByCode(code);  
         	int level=Integer.parseInt(nety.getLevel());
+        	if(4==level){
+        		return result;
+        	}
         	nety.setLevel((level+1)+"");
             dataList = nationRepository.selectList(nety);
         } catch (Exception e) {

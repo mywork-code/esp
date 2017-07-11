@@ -592,10 +592,4 @@
 		where orderstatus in ('D02' , 'D03','D04','D05')
 	</select>
 
-	<select id="getRemainderGoods" resultType="java.lang.String">
-		select order_id from t_esp_goods_base_info
-		where status='G02'
-		order by list_time limit #{pageIndex},#{pageSize}
-	</select>
-	
 </mapper>

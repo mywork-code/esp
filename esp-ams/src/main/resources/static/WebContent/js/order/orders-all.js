@@ -591,14 +591,14 @@ $(function () {
 			    [
 			            {
 			                title : '内容信息',
-			                field : 'content',
-			                width : 100,
+			                field : 'details',
+			                width : 350,
 			                align : 'center'
 			            },
 			            {
 			                title : '日期',
-			                field : 'msgTime',
-			                width : 100,
+			                field : 'date',
+			                width : 150,
 			                align : 'center'
 			            }
 			    ]

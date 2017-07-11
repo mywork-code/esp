@@ -14,9 +14,9 @@ public interface JdGoodSalesVolumeMapper extends GenericMapper<JdGoodSalesVolume
 
     JdGoodSalesVolume getJdGoodSalesVolumeByGoodsId(@Param("goodsId") Long goodsId);
 
-    List<JdGoodSalesVolume> jdGoodSalesVolumeByPage(@Param("pageIndex")int pageIndex,@Param("pageSize")int pageSize);
+    List<String> jdGoodSalesVolumeByPage(@Param("pageIndex")int pageIndex,@Param("pageSize")int pageSize);
 
-    List<JdGoodSalesVolume> jdGoodSalesVolume();
+    List<String> jdGoodSalesVolume();
 
     int jdGoodSalesVolumeCount();
 

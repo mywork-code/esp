@@ -71,6 +71,40 @@ public class JdGoodsInfoService {
 		return map;
 	}
 	/**
+	 * 根据商品编号获取商品需要展示App信息
+	 */
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku) {
+		Map<String, Object> map = Maps.newHashMap();
+		if (sku.toString().length() == 8) {
+			// 查询商品名称（图书音像类目）
+			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
+			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
+		} else {
+			// 查询商品名称
+			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+			map.put("goodsName", jdGoods.getName());// 商品名称
+			//java字符串转义,把&lt;&gt;转换成<>等字符
+            String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
+		}
+		// 查询商品价格
+//		Collection<Long> skuPrice = new ArrayList<Long>();
+//		skuPrice.add(sku);
+//		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+//		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
+//			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
+//		}
+		// 查询商品图片
+		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
+		map.put("jdImagePathList", JdImagePathList);
+		// 查询商品规格
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		map.put("skuId",String.valueOf(sku));
+		map.put("jdSimilarSkuList", jdSimilarSkuList);
+		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		return map;
+	}
+	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
 	public JdGoodsBooks getJdGoodsBooksInfoBySku(Long sku) {

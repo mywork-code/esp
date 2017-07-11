@@ -48,7 +48,7 @@ public class StaticFileController {
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
     public Response getMd5ByFile() {
-        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/app.weex.js");
+        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/app.weexv2.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         Map<String, Object> map = new HashMap<>();
         map.put("flag",true);

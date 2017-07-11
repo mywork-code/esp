@@ -2,7 +2,7 @@ package com.apass.esp.domain.dto.logistics;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JdTrack {
+public class JdTrack{
 
     @SerializedName("operator")
     private String statusDescription;

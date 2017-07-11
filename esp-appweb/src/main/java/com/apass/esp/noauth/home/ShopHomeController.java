@@ -35,6 +35,7 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -73,7 +74,8 @@ public class ShopHomeController {
     private GoodsStockInfoRepository goodsStockInfoRepository;
     @Autowired
     private GoodsService goodsService;
-	 
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
 	 @Value("${esp.image.uri}")
 	 private String              espImageUrl;
     /**
@@ -248,7 +250,53 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
     }
-
+    /**
+     * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
+     * 
+     * @return
+     */
+    @POST
+    @Path("/loadDetailInfoByIdJD")
+    public Response loadGoodsBasicInfoJD(Map<String, Object> paramMap){
+        try{
+            Map<String,Object> returnMap = new HashMap<>();
+            Long goodsId = CommonUtils.getLong(paramMap,"goodsId");
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            if(null==goodsId){
+            	LOGGER.error("商品号不能为空!");
+                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+            }
+            if (!StringUtils.isEmpty(userId)) {
+                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+                returnMap.put("amountInCart", amountInCart);
+            }
+            GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+            //判断是否是京东商品
+            if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus()+"")){//来源于京东且已关联
+            	String externalId = goodsInfo.getExternalId();// 外部商品id
+            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+            	
+            	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
+            	if(jdGoodsStockInfoList.size()==1){
+                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+            		returnMap.put("goodsPrice",price);//商品价格
+            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
+            	}
+            	returnMap.put("source", "jd");
+            }else{
+                goodService.loadGoodsBasicInfoById(goodsId,returnMap);
+            }
+            return Response.success("加载成功", returnMap);
+        } catch (BusinessException e) {
+            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+        }
+        catch (Exception e) {
+            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+            LOGGER.error("获取商品基本信息失败");
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+        }
+    }
     /**
      * 根据商品id获取商品规格详情信息(商品库存表)
      * 
@@ -304,16 +352,15 @@ public class ShopHomeController {
         if(pageIndex.intValue()>3){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
-        Pagination<JdGoodSalesVolume> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
+        Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
         List<GoodsInfoEntity> goodsList=new ArrayList<>();
-        for (JdGoodSalesVolume jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
-            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(jdGoodSalesVolume.getGoodsId());
+        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
             goodsList.add(goodsInfoEntity);
         }
         resultMap.put("goodsList",goodsList);
+        resultMap.put("pageIndex",pageIndex);
         resultMap.put("totalCount",jdGoodSalesVolumePagination.getTotalCount());
-        resultMap.put("goodsList",goodsList);
-
         return Response.successResponse(goodsList);
     }
 
@@ -324,7 +371,22 @@ public class ShopHomeController {
      */
     @POST
     @Path("/crazeProducts")
-    public Response popularProducts1(Map<String, Object> paramMap){
-        return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+    public Response crazeProducts(Map<String, Object> paramMap){
+        Map<String, Object> resultMap = new HashMap<>();
+        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
+        int pageSize = 20;
+        if( pageIndex==null||pageIndex.intValue()>6){
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
+        List<GoodsInfoEntity> goodsList=new ArrayList<>();
+        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
+            goodsList.add(goodsInfoEntity);
+        }
+        resultMap.put("goodsList",goodsList);
+        resultMap.put("pageIndex",pageIndex);
+        resultMap.put("totalCount",120);
+        return Response.successResponse(goodsList);
     }
 }

@@ -2,11 +2,13 @@ package com.apass.esp.service.jd;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,6 @@ import com.apass.esp.domain.dto.logistics.TrackingInfo;
 import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.TrackingmoreStatus;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.repository.common.ConstantRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
@@ -46,64 +47,44 @@ public class JdLogisticsService {
     @Autowired
     private OrderDetailInfoRepository orderDetailDao;
     @Autowired
-    private ConstantRepository        constantDao;
-    @Autowired
     private ImageService imageService;
 
+    
     /**
      * 查询物流信息
      * 
-     * @param carrierCode   物流厂商编码
-     * @param trackingNumber    物流单号
+     * @param orderId   订单号
      * @return
      * @throws BusinessException 
      */
-    public Map<String, Object> getSignleTrackings(String carrierCode, String trackingNumber,
-                                                  String orderId) throws BusinessException {
-        if (StringUtils.isAnyEmpty(carrierCode, trackingNumber, orderId)) {
-            throw new BusinessException("物流单号或物流厂商不能为空");
+    public Map<String, Object> getSignleTrackings(String orderId) throws BusinessException {
+        
+    	if (StringUtils.isBlank(orderId)) {
+            throw new BusinessException("订单号不能为空!");
         }
+        
+    	OrderInfoEntity entity = orderInfoDao.selectByOrderId(orderId);
+    	
         Map<String, Object> resultMap = new HashMap<>();
         LogisticsResponseDto logisticInfo = new LogisticsResponseDto();
-        // get请求参数拼接  append("/cn")设置语言为中文
-        StringBuilder sb = new StringBuilder(carrierCode);
-        sb.append("/").append(trackingNumber).append("/cn");
-
         try {
-            logisticInfo.setShipperCode(carrierCode);
-            logisticInfo.setLogisticCode(trackingNumber);
-            TrackingData trackData = null;//logisticsHttpClient.getSignleTrackings(sb.toString());
-            if (null != trackData) {
-
-                //logisticInfo.setState(convertTransportStatus(trackData.getStatus()));
-                TrackingInfo originInfo = trackData.getOriginInfo();
-
-                List<Track> trackList = originInfo.getTrackinfo();
-                List<Trace> traces = new ArrayList<Trace>();
-                for (Track track : trackList) {
-                    Trace trace = new Trace();
-                    trace.setAcceptTime(track.getDate());
-                    trace.setAcceptStation(track.getStatusDescription());
-                    trace.setRemark(track.getDetails());
-                    traces.add(trace);
-                }
-                logisticInfo.setTraces(traces);
-                resultMap.put("logisticInfo", logisticInfo);
-                resultMap.put("logisticTel", originInfo.getPhone());
-                resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
-            }
+            logisticInfo.setShipperCode(entity.getLogisticsName());
+            logisticInfo.setLogisticCode(entity.getLogisticsNo());
+            List<Trace> traces = getSignleTracksByOrderId(entity.getExtOrderId());
+            logisticInfo.setTraces(traces);
+            resultMap.put("logisticInfo", logisticInfo);
+            resultMap.put("logisticTel", "400-603-3600");
+            resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
             logisticInfo.setSuccess(true);
         } catch (Exception e) {
             resultMap.put("logisticInfo", logisticInfo);
-            ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
-                carrierCode);
-            resultMap.put("logisticTel", constant.getRemark());
+            resultMap.put("logisticTel", "400-603-3600");
             logisticInfo.setSuccess(false);
             LOGGER.error("查询物流信息失败", e);
-            LOGGER.error("getSignleTrackings->物流单号:{}查询物流信息失败!", trackingNumber);
+            LOGGER.error("getSignleTrackings->物流单号:{}查询物流信息失败!",entity.getExtOrderId());
         }
 
-        OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
+        OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
         if (null == orderInfo) {
             LOGGER.error("loadLogistics orderInfo is null");
             throw new BusinessException("您的订单信息缺失!稍后再试");
@@ -114,14 +95,11 @@ public class JdLogisticsService {
             goodsNum += orderDetail.getGoodsNum();
         }
         if (null != orderDetailList && orderDetailList.size() > 0) {
-            
             resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
         }
         resultMap.put("goodsNum", goodsNum);
-        ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
-            orderInfo.getLogisticsName());
-        resultMap.put("logisticMerchant", constant.getDataName()); //物流商户
-        resultMap.put("logisticTel", constant.getRemark());
+        resultMap.put("logisticMerchant", "京东物流"); //物流商户
+        resultMap.put("logisticTel", "400-603-3600");
         return resultMap;
     }
 
@@ -134,17 +112,36 @@ public class JdLogisticsService {
      * @return
      * @throws BusinessException
      */
-    public List<JdTrack> getSignleTrackingsByOrderId(String orderId) throws BusinessException {
+    public List<JdTrack> getSignleTrackingsByOrderId(String jdOrderId) throws BusinessException {
         
-    	JdApiResponse<JSONObject> str = logisticsHttpClient.orderOrderTrackQuery(Long.parseLong(orderId));
+    	JdApiResponse<JSONObject> str = logisticsHttpClient.orderOrderTrackQuery(Long.parseLong(jdOrderId));
         
-    	List<JdTrack> trackList = GsonUtils.convertList(str.getResult().toString(), JdTrack.class);
+    	List<JdTrack> trackList = GsonUtils.convertList(str.getResult().getString("orderTrack"), JdTrack.class);
     	
+    	Collections.reverse(trackList);  
     	return trackList;
     }
     
-    
-   
+    /**
+     * 根据京东id，获取物流的轨迹
+     * @param jdorderId
+     * @return
+     * @throws BusinessException
+     */
+    public List<Trace> getSignleTracksByOrderId(String jdorderId) throws BusinessException {
+    	 List<JdTrack> tracks =  getSignleTrackingsByOrderId(jdorderId);
+         List<Trace> traces = new ArrayList<Trace>();
+         if (!CollectionUtils.isEmpty(tracks)) {
+             for (JdTrack track : tracks) {
+             	Trace jdTrace = new Trace();
+             	jdTrace.setAcceptStation(track.getStatusDescription());
+             	jdTrace.setAcceptTime(track.getDate());
+             	jdTrace.setRemark(track.getDetails());
+             	traces.add(jdTrace);
+			}
+         }
+         return traces;
+    }
 
    
     /**
@@ -168,5 +165,7 @@ public class JdLogisticsService {
         }
         return signDate;
     }
+    
+    
     
 }
