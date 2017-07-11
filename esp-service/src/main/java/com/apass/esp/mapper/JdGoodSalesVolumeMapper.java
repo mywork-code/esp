@@ -6,9 +6,18 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface JdGoodSalesVolumeMapper extends GenericMapper<JdGoodSalesVolume, Long> {
+
     int updateJdGoodSalesVolumeByGoodsId(@Param("goodsId") Long goodsId, @Param("salesNum") Integer salesNum, @Param("updateDate") Date updateDate, @Param("oriSalesNum") Integer oriSalesNum);
 
     JdGoodSalesVolume getJdGoodSalesVolumeByGoodsId(@Param("goodsId") Long goodsId);
+
+    List<JdGoodSalesVolume> jdGoodSalesVolumeByPage(@Param("pageIndex")int pageIndex,@Param("pageSize")int pageSize);
+
+    List<JdGoodSalesVolume> jdGoodSalesVolume();
+
+    int jdGoodSalesVolumeCount();
+
 }

@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -55,6 +57,9 @@ public class GoodsService {
 
     @Autowired
     private GoodsBasicRepository     goodsBasicRepository;
+
+    @Autowired
+    private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
     /**
      * app 首页加载精品推荐商品
      * 
@@ -448,6 +453,22 @@ public class GoodsService {
    public String selectGoodsByExternalId(String externalId) throws BusinessException {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
-    
+
+   public int jdGoodSalesVolumeCount(){
+       return jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
+   }
+
+   public Pagination<JdGoodSalesVolume> jdGoodSalesVolumeByPage(int pageIndex,int pageSize){
+       //int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
+       if(pageIndex==3){
+           pageSize=10;
+       }
+       int pageBegin = pageSize * (pageIndex-1);
+       List<JdGoodSalesVolume> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
+       Pagination pagination = new Pagination();
+       pagination.setDataList(list);
+       pagination.setTotalCount(50);
+       return pagination;
+   }
 }
 
