@@ -52,6 +52,9 @@ public class GoodsStockInfoEntity {
 
     /** 当前库存量 **/
     private Long       stockCurrAmt;
+    
+    /** 当前库存量描述 **/
+    private String     stockCurrAmtDesc;
 
     /** 库存量 **/
     private Long       stockAmt;
@@ -222,6 +225,14 @@ public class GoodsStockInfoEntity {
     public void setGoodsCompareUrl2(String goodsCompareUrl2) {
         this.goodsCompareUrl2 = goodsCompareUrl2;
     }
+
+	public String getStockCurrAmtDesc() {
+		return stockCurrAmtDesc;
+	}
+
+	public void setStockCurrAmtDesc(String stockCurrAmtDesc) {
+		this.stockCurrAmtDesc = stockCurrAmtDesc;
+	}
     
     
 }

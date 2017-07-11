@@ -137,6 +137,7 @@ public class GoodsService {
     public void loadGoodsBasicInfoById(Long goodsId, Map<String, Object> returnMap) throws BusinessException {
         GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
         Long totalCurrentAmt=0L;
+        Long CurrentAmtDesc=10L;
         if (null == goodsBasicInfo) {
             LOGGER.error("商品信息不存在:{}", goodsId);
             throw new BusinessException("商品信息不存在");
@@ -174,6 +175,12 @@ public class GoodsService {
 
             goodsStock.setStockLogoNew(imageService.getImageUrl(goodsStock.getStockLogo()));
             goodsStock.setStockLogo(EncodeUtils.base64Encode(goodsStock.getStockLogo()));
+            //接入京东商品修改
+            if(CurrentAmtDesc-goodsStock.getStockCurrAmt()>0){
+            	goodsStock.setStockCurrAmtDesc("库存紧张");
+            }else{
+            	goodsStock.setStockCurrAmtDesc("库存充足");
+            }
         }
         returnMap.put("totalCurrentAmt", totalCurrentAmt);
         returnMap.put("goodsStockList", goodsStockList);
@@ -202,6 +209,9 @@ public class GoodsService {
             returnMap.put("minPrice", minPrice);
             returnMap.put("maxPrice", maxPrice);
         }
+        //接入京东商品修改  //计算首付价
+        BigDecimal minPriceFistPayment = new BigDecimal("0.1").multiply(minPrice);
+        returnMap.put("minPriceFirstPayment", minPriceFistPayment);
     }
 
     /**

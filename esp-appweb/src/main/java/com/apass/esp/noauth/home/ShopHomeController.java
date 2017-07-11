@@ -276,8 +276,8 @@ public class ShopHomeController {
             	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-            		returnMap.put("goodsPrice",price);
-            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));
+            		returnMap.put("goodsPrice",price);//商品价格
+            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
             	}
             	String externalId = goodsInfo.getExternalId();// 外部商品id
             	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
