@@ -177,8 +177,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 		if(goodsInfoEnties != null && goodsInfoEnties.size() == 1){
 			return goodsInfoEnties.get(0).getId().toString();
 		}else{
-			return goodsInfoEnties.get(0).getId().toString();
-			//throw new BusinessException("数据库数据有误");
+			throw new BusinessException("数据库数据有误");
 		}
 	}
 }
