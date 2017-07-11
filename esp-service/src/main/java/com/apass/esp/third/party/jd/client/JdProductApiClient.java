@@ -247,9 +247,9 @@ public class JdProductApiClient extends JdApiClient {
 	 */
 	public void queryAddress(){
 		WorkCityJd wcjd0 = new WorkCityJd();
-		wcjd0.setCode("000000");
+		wcjd0.setCode("0");
 		wcjd0.setProvince("中华人民共和国");
-		wcjd0.setParent(Long.parseLong("0"));
+		wcjd0.setParent(Long.parseLong("-1"));
 		wcjd0.setLevel("0");
 		workCityJdMapper.insertSelective(wcjd0);
 		JdApiResponse<JSONObject> resultProvin = request("biz.address.allProvinces.query", null,
@@ -260,7 +260,7 @@ public class JdProductApiClient extends JdApiClient {
 				WorkCityJd wcjd = new WorkCityJd();
 				wcjd.setCode(entryProvin.getValue().toString());
 				wcjd.setProvince(entryProvin.getKey());
-				wcjd.setParent(Long.parseLong("1"));
+				wcjd.setParent(Long.parseLong("0"));
 				wcjd.setLevel("1");
 				workCityJdMapper.insertSelective(wcjd);
 			}
