@@ -2,6 +2,7 @@ package com.apass.esp.service.jd;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +118,7 @@ public class JdLogisticsService {
         
     	List<JdTrack> trackList = GsonUtils.convertList(str.getResult().getString("orderTrack"), JdTrack.class);
     	
+    	Collections.reverse(trackList);  
     	return trackList;
     }
     

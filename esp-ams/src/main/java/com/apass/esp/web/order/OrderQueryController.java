@@ -172,8 +172,6 @@ public class OrderQueryController {
 	        	throw new BusinessException("订单号不能为空!");
 	        }
 	        OrderInfoEntity entity = orderService.getOrderInfoEntityByOrderId(orderId);
-	        entity.setExtOrderId("58436485868");
-	        entity.setSource(SourceType.JD.getCode());
 	        if(null == entity){
 	        	throw new BusinessException("订单号为【"+orderId+"】的订单不存在!");
 	        }
