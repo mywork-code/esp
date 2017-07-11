@@ -26,15 +26,15 @@
     select count(1) from t_esp_goods_sales_volume
   </select>
 
-  <select id="jdGoodSalesVolumeByPage" resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
+  <select id="jdGoodSalesVolumeByPage" resultType="java.lang.String">
+    SELECT order_id
     from t_esp_goods_sales_volume
     order by sales_num ,create_date
     limit #{pageIndex},#{pageSize}
   </select>
 
-  <select id="jdGoodSalesVolume" resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
+  <select id="jdGoodSalesVolume" resultType="java.lang.String">
+    SELECT order_id
     from t_esp_goods_sales_volume
   </select>
 </mapper>

@@ -304,10 +304,10 @@ public class ShopHomeController {
         if(pageIndex.intValue()>3){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
-        Pagination<JdGoodSalesVolume> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
+        Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
         List<GoodsInfoEntity> goodsList=new ArrayList<>();
-        for (JdGoodSalesVolume jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
-            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(jdGoodSalesVolume.getGoodsId());
+        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
             goodsList.add(goodsInfoEntity);
         }
         resultMap.put("goodsList",goodsList);
@@ -324,7 +324,21 @@ public class ShopHomeController {
     @POST
     @Path("/crazeProducts")
     public Response crazeProducts(Map<String, Object> paramMap){
-
-        return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        Map<String, Object> resultMap = new HashMap<>();
+        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
+        int pageSize = 20;
+        if( pageIndex==null||pageIndex.intValue()>6){
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
+        List<GoodsInfoEntity> goodsList=new ArrayList<>();
+        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
+            goodsList.add(goodsInfoEntity);
+        }
+        resultMap.put("goodsList",goodsList);
+        resultMap.put("pageIndex",pageIndex);
+        resultMap.put("totalCount",120);
+        return Response.successResponse(goodsList);
     }
 }

@@ -15,6 +15,7 @@ import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class GoodsService {
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
     /**
      * app 首页加载精品推荐商品
-     * 
+     *
      * @return
      */
     public List<GoodsBasicInfoEntity> loadRecommendGoods() {
@@ -78,9 +79,9 @@ public class GoodsService {
     }
 
     /**
-     * 
+     *
      * 加载商品列表[分页]
-     * 
+     *
      * @param page
      * @param limit
      * @return
@@ -98,7 +99,7 @@ public class GoodsService {
         Page pageParam = new Page(pageInteger, limitInteger);
         return goodsDao.loadGoodsByPages(pageParam, param);
     }
-    
+
     /**
      * 通过类目id查询商品[客户端分页]
      */
@@ -115,9 +116,9 @@ public class GoodsService {
         return goodsBasicRepository.loadGoodsPages(pageParam, param);
     }
     /**
-     * 
+     *
      * 加载商品列表
-     * 
+     *
      * @param page
      * @param limit
      * @return
@@ -128,7 +129,7 @@ public class GoodsService {
 
     /**
      * 获取商品基本信息
-     * 
+     *
      * @param goodsId
      * @return
      * @throws BusinessException
@@ -184,7 +185,7 @@ public class GoodsService {
             banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
             banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
         }
-        
+
         returnMap.put("goodsBannerList", goodsBannerList);
         BigDecimal maxPrice = BigDecimal.ZERO;
         BigDecimal minPrice = BigDecimal.ZERO;
@@ -205,7 +206,7 @@ public class GoodsService {
 
     /**
      * 获取商品详细信息(尺寸规格价格大小等)
-     * 
+     *
      * @param goodsId
      * @return
      */
@@ -215,7 +216,7 @@ public class GoodsService {
 
     /**
      * 商品基本信息+商户信息+库存信息
-     * 
+     *
      * @param goodsId
      * @param goodsStockId
      * @return
@@ -226,7 +227,7 @@ public class GoodsService {
 
     /**
      * 获取商品当前库存量
-     * 
+     *
      * @param goodsStockId
      * @return
      */
@@ -236,7 +237,7 @@ public class GoodsService {
 
     /**
      * 商品分页(查询)
-     * 
+     *
      * @param goodsInfoEntity
      * @param pageNo
      * @param pageSize
@@ -256,8 +257,8 @@ public class GoodsService {
 				goodsInfo.setMerchantName("京东");
 			}
 		}
-        
-        
+
+
         result.setDataList(entity.getDataList());
         result.setPageInfo(page.getPageNo(), page.getPageSize());
         result.setTotalCount(entity.getTotalCount());
@@ -266,7 +267,7 @@ public class GoodsService {
 
     /**
      * 商品(查询)
-     * 
+     *
      * @param goodsInfoEntity
      * @param pageNo
      * @param pageSize
@@ -278,7 +279,7 @@ public class GoodsService {
 
     /**
      * 新增
-     * 
+     *
      * @param entity
      */
     @Transactional(rollbackFor = Exception.class)
@@ -290,7 +291,7 @@ public class GoodsService {
     	}
         int count  = goodsDao.insert(entity);
         entity.setGoodId(entity.getId());
-        
+
         if(count == 1){
         	LOGGER.info("保存商品成功,保存内容：{}",GsonUtils.toJson(entity));
             //商品编号
@@ -311,13 +312,13 @@ public class GoodsService {
                 goodsDao.updateGoods(entity);
             }
         }
-        
+
         return entity;
     }
 
     /**
      * 修改
-     * 
+     *
      * @param entity
      */
     @Transactional(rollbackFor = Exception.class)
@@ -327,7 +328,7 @@ public class GoodsService {
 
     /**
      * 主键查询
-     * 
+     *
      * @param goodsId商品表id
      * @return
      */
@@ -356,7 +357,7 @@ public class GoodsService {
 
     /**
      * 说明：查询商品精选数量
-     * 
+     *
      * @return
      * @author xiaohai
      * @param goodsType
@@ -387,14 +388,14 @@ public class GoodsService {
 
 	/**
 	 * 校验商品下架时间，更新商品状态
-	 * 
+	 *
 	 * @return
 	 */
     @Transactional(rollbackFor = Exception.class)
 	public void updateGoodsStatusByDelisttime() {
 		goodsDao.updateGoodsStatusByDelisttime();
 	}
-    
+
     @Transactional(rollbackFor = Exception.class)
     public Integer updateServiceEdit(GoodsInfoEntity dto, String goodsContent) {
         if (StringUtils.isBlank(goodsContent)) {
@@ -403,7 +404,7 @@ public class GoodsService {
 
         return goodsDao.updateGoodsEdit(dto);
     }
-    
+
     /**
 	 * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
 	 * @return
@@ -426,7 +427,7 @@ public class GoodsService {
    public void updateGoodsCategoryStatus(Long id){
    	goodsDao.updateGoodsCategoryStatus(id);
    }
-   
+
    /**
      * 京东商品
 	 * @param entityList
@@ -437,31 +438,31 @@ public class GoodsService {
 	   entity.setGoodId(entity.getId());
 	   return entity;
    }
-   
+
    /**
 	 * @param ids
 	 */
    public void deleteJDGoodsBatch(List<String> ids) {
 	   goodsDao.deleteJDGoodsBatch(ids);
    }
-   
+
    /**
-     * 根据external_id查询商品 
+     * 根据external_id查询商品
 	 * @param string
 	 * @return
- * @throws BusinessException 
+ * @throws BusinessException
 	 */
    public String selectGoodsByExternalId(String externalId) throws BusinessException {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
 
-   public Pagination<JdGoodSalesVolume> jdGoodSalesVolumeByPage(int pageIndex,int pageSize){
+   public Pagination<String> jdGoodSalesVolumeByPage(int pageIndex,int pageSize){
        //int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
        if(pageIndex==3){
            pageSize=10;
        }
        int pageBegin = pageSize * (pageIndex-1);
-       List<JdGoodSalesVolume> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
+       List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
        Pagination pagination = new Pagination();
        pagination.setDataList(list);
        pagination.setTotalCount(50);
@@ -469,11 +470,26 @@ public class GoodsService {
    }
 
 
-    public Pagination<JdGoodSalesVolume> jdGoodSalesVolume(){
-        List<JdGoodSalesVolume> list = new ArrayList<>();
+    public Pagination<String> jdGoodSalesVolume(int pageIndex ,int pageSize){
+        int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
+        int pageBegin = pageSize * (pageIndex-1)+50;
+        if (totalConut >= 170) {
+            List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
+            Pagination pagination = new Pagination();
+            pagination.setDataList(list);
+            pagination.setTotalCount(120);
+            return pagination;
+        }
+
+        List<String> jdGoodSalesVolumeList =  jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
+        if(CollectionUtils.isEmpty(jdGoodSalesVolumeList)||jdGoodSalesVolumeList.size()<20){
+            int size = jdGoodSalesVolumeList.size();
+            List<String> goodsIdList =  goodsBasicRepository.getRemainderGoods((6-pageIndex)*20,20-size);
+            jdGoodSalesVolumeList.addAll(goodsIdList);
+        }
         Pagination pagination = new Pagination();
-        pagination.setDataList(list);
-        pagination.setTotalCount(50);
+        pagination.setDataList(jdGoodSalesVolumeList);
+        pagination.setTotalCount(120);
         return pagination;
     }
 }
