@@ -414,7 +414,11 @@ public class LogisticsService {
 					
 			try{
 				//如果查询物流出现异常的时候，就默认轨迹不存在
-				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
+				}else{
+					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+				}
 			}catch(Exception e){
 				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
 			}

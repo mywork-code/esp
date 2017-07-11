@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.logistics.Track;
 import com.apass.esp.domain.dto.logistics.TrackingData;
+import com.apass.esp.domain.dto.logistics.TrackingInfo;
 import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -67,21 +69,11 @@ public class JdLogisticsService {
         try {
             logisticInfo.setShipperCode(entity.getLogisticsName());
             logisticInfo.setLogisticCode(entity.getLogisticsNo());
-            List<JdTrack> tracks =  getSignleTrackingsByOrderId(entity.getExtOrderId());
-            List<Trace> traces = new ArrayList<Trace>();
-            if (null != tracks) {
-                for (JdTrack track : tracks) {
-                	Trace jdTrace = new Trace();
-                	jdTrace.setAcceptStation(track.getStatusDescription());
-                	jdTrace.setAcceptTime(track.getDate());
-                	jdTrace.setRemark(track.getDetails());
-                	traces.add(jdTrace);
-				}
-                logisticInfo.setTraces(traces);
-                resultMap.put("logisticInfo", logisticInfo);
-                resultMap.put("logisticTel", "400-603-3600");
-                resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
-            }
+            List<Trace> traces = getSignleTracksByOrderId(entity.getExtOrderId());
+            logisticInfo.setTraces(traces);
+            resultMap.put("logisticInfo", logisticInfo);
+            resultMap.put("logisticTel", "400-603-3600");
+            resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
             logisticInfo.setSuccess(true);
         } catch (Exception e) {
             resultMap.put("logisticInfo", logisticInfo);
@@ -128,8 +120,26 @@ public class JdLogisticsService {
     	return trackList;
     }
     
-    
-   
+    /**
+     * 根据京东id，获取物流的轨迹
+     * @param jdorderId
+     * @return
+     * @throws BusinessException
+     */
+    public List<Trace> getSignleTracksByOrderId(String jdorderId) throws BusinessException {
+    	 List<JdTrack> tracks =  getSignleTrackingsByOrderId(jdorderId);
+         List<Trace> traces = new ArrayList<Trace>();
+         if (!CollectionUtils.isEmpty(tracks)) {
+             for (JdTrack track : tracks) {
+             	Trace jdTrace = new Trace();
+             	jdTrace.setAcceptStation(track.getStatusDescription());
+             	jdTrace.setAcceptTime(track.getDate());
+             	jdTrace.setRemark(track.getDetails());
+             	traces.add(jdTrace);
+			}
+         }
+         return traces;
+    }
 
    
     /**
@@ -153,5 +163,7 @@ public class JdLogisticsService {
         }
         return signDate;
     }
+    
+    
     
 }
