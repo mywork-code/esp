@@ -63,4 +63,22 @@ public class RegionController {
             return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
         }
     }
+    /**
+     * 查询省份、城市、区 列表(京东)
+     */
+    @POST
+    @Path("/listJd")
+    public Response selectProvinceListJd(Map<String, Object> paramMap) {
+        try {
+            String code = CommonUtils.getValue(paramMap, "code");
+            if (StringUtils.isBlank(code)) {
+                code = "000000";
+            }
+            List<DictDTO> dictList = nationService.queryDistrictJd(code);
+            return Response.success("success", dictList);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+        }
+    }
 }

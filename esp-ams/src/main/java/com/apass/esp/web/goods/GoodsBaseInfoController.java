@@ -839,7 +839,11 @@ public class GoodsBaseInfoController {
         Map<String, Object> map = Maps.newHashMap();
         String id = HttpWebUtils.getValue(request, "id");
         String view = HttpWebUtils.getValue(request, "view");
- 
+        String skuId = HttpWebUtils.getValue(request, "skuId");
+        if(StringUtils.isNotEmpty(skuId)){
+            map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
+            return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+        }
         GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
         String externalId = goodsInfo.getExternalId();// 外部商品id
         map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
