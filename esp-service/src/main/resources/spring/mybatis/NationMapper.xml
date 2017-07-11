@@ -14,7 +14,7 @@
 					CITY                  CITY,
 					DISTRICT              DISTRICT,
 					PARENT                PARENT,
-					PREFIX                PREFI	X
+					PREFIX                PREFIX
 			FROM T_ESP_WORK_CITY WHERE PARENT IN 
 				(SELECT ID FROM T_ESP_WORK_CITY WHERE CODE=#{value})
 		]]>
