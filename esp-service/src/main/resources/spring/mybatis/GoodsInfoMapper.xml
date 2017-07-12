@@ -199,6 +199,7 @@
              goods_type,
              goods_code,
              goods_logo_url,
+             goods_sift_url,
              list_time,
              delist_time,
              pro_date,
@@ -227,6 +228,7 @@
 	        #{goodsType, jdbcType=VARCHAR},
 	        #{goodsCode, jdbcType=VARCHAR},
 	        #{goodsLogoUrl, jdbcType=VARCHAR},
+	        #{goodsSiftUrl, jdbcType=VARCHAR},
 	        #{listTime, jdbcType=VARCHAR},
 	        #{delistTime, jdbcType=VARCHAR},
 	        #{proDate, jdbcType=VARCHAR},
@@ -384,7 +386,11 @@
 		UPDATE t_esp_goods_base_info 
 		]]>
 		<set>
-			update_date = CURRENT_TIMESTAMP,
+			
+			update_date = CURRENT_TIMESTAMP,		
+			<if test="updateDate != null and categoryId1 != ''">
+				update_date=#{updateDate, jdbcType=TIMESTAMP},
+			</if>
 			<if test="categoryId1 != null and categoryId1 != ''">
 				category_id1 = #{categoryId1, jdbcType=VARCHAR},
 			</if>

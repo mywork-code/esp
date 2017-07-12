@@ -151,14 +151,15 @@ public class GoodsBaseInfoSiftController {
 			if (StringUtils.isBlank(goodsType)) {
 				return Response.fail("要修改的商品类型不能为空");
 			}
-
+			
+			// 根据id查询商品
+			GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+			
 			// 设为精选
 			if (goodsType.equals(GoodsType.GOOD_SIFT.getCode())) {
 				if (countSift >= 10) {
 					return Response.fail("精选商品的数量不能超过10件");
 				}
-				// 根据id查询商品
-				GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
 				String goodsSiftUrl = goodsInfoEntity.getGoodsSiftUrl();// 精选图片的url
 				if (StringUtils.isBlank(goodsSiftUrl)) {
 					return Response.fail("请先请先上传文件！");
@@ -172,6 +173,10 @@ public class GoodsBaseInfoSiftController {
 			GoodsInfoEntity entity = new GoodsInfoEntity();
 			entity.setId(Long.valueOf(goodsId));
 			entity.setGoodsType(goodsType);
+			//当商品由精选商品变为普通商品时 更新时间变为商品创建时间
+			if(goodsType.equals(GoodsType.GOOD_NORMAL.getCode())){
+				entity.setUpdateDate(goodsInfoEntity.getCreateDate());
+			}
 			Integer count = goodsService.updateService(entity);
 			if (count != 1) {
 				return Response.fail("商品状态修改失败");

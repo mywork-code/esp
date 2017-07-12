@@ -30,6 +30,7 @@ $(function() {
 	$('#bannerPicUpWin').window('close');
 	$('#previewBannerWin').window('close');
 	$('#previewProductWin').window('close');
+	$('#editJDStockWin').window('close');
 	
     $('#tablelist').datagrid({
         title : '商品列表',
@@ -1345,7 +1346,6 @@ $(function() {
 	});
 	// 确定
 	$("#addAmtGoodsStockInfoWinSumbit").click(function() {
-		debugger;
 		var goodsId=finalGoodId;
 		var stockinfoId=$('#stockinfoId').val();
 		var stockTotalAmtTemp=$('#stockTotalAmtTemp').val();
@@ -1356,7 +1356,6 @@ $(function() {
 			return;
 		}
 		//判断商品总量是否超过999
-		debugger;
 //		var stockinfoAmtAll=parseInt(addstockinfoAmt)+parseInt(stockTotalAmtTemp);//库存商品总量
 		var stockinfoAmtAll=parseInt(addstockinfoAmt)+parseInt(stockCurrAmtTemp);//当前库存量
 		if (stockinfoAmtAll > 999)
@@ -1389,31 +1388,46 @@ $(function() {
 	
 	//修改库存
 	$.editStockinfo = function(index,datagridId) {
-		debugger;
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
 		
-		$("#editstockinfoId").val(row.id);
-		$("#editStockinfoIdInForm").val(row.id);
-		$("#editgoodsSkuAttr").textbox('setValue',row.goodsSkuAttr);
-		$("#editgoodsPrice").textbox('setValue',FormatAfterDotNumber(row.goodsPrice,2));
-		$("#editmarketPrice").textbox('setValue',FormatAfterDotNumber(row.marketPrice,2));
-		$("#editstockTotalAmt").textbox('setValue',row.stockTotalAmt);
-		$("#editgoodsCostPrice").textbox('setValue',FormatAfterDotNumber(row.goodsCostPrice,2));
-		
-		$("#editStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + row.stockLogo);
-		$("#editStockLogoUrl").val(row.stockLogo);
-		
-		$("#editgoodsCompareUrlone").textbox('setValue',row.goodsCompareUrl);
-		$("#editgoodsCompareUrltwo").textbox('setValue',row.goodsCompareUrl2);
-		
-		$('#editGoodsStockInfoWin').window({modal: true});
-		$('#editGoodsStockInfoWin').window('open');
+		if(row.goodsSkuAttr != null){
+			$("#editstockinfoId").val(row.id);
+			$("#editStockinfoIdInForm").val(row.id);
+			$("#editgoodsSkuAttr").textbox('setValue',row.goodsSkuAttr);
+			$("#editgoodsPrice").textbox('setValue',FormatAfterDotNumber(row.goodsPrice,2));
+			$("#editmarketPrice").textbox('setValue',FormatAfterDotNumber(row.marketPrice,2));
+			$("#editstockTotalAmt").textbox('setValue',row.stockTotalAmt);
+			$("#editgoodsCostPrice").textbox('setValue',FormatAfterDotNumber(row.goodsCostPrice,2));
+			
+			$("#editStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + row.stockLogo);
+			$("#editStockLogoUrl").val(row.stockLogo);
+			
+			$("#editgoodsCompareUrlone").textbox('setValue',row.goodsCompareUrl);
+			$("#editgoodsCompareUrltwo").textbox('setValue',row.goodsCompareUrl2);
+			
+			$('#editGoodsStockInfoWin').window({modal: true});
+			$('#editGoodsStockInfoWin').window('open');
+			
+		}else{
+			$("#editJDgoodsPrice").textbox('setValue',FormatAfterDotNumber(row.goodsPrice,2));
+			$("#editJDmarketPrice").textbox('setValue',FormatAfterDotNumber(row.marketPrice,2));
+			$("#editJDgoodsCostPrice").textbox('setValue',FormatAfterDotNumber(row.goodsCostPrice,2));
+			$("#editJDstockinfoId").val(row.id);
+			
+			$('#editJDStockWin').window({modal: true});
+			$('#editJDStockWin').window('open');
+		}
 	};
 	
 	// 取消
 	$("#editGoodsStockInfoDisy").click(function() {
 		$('#editGoodsStockInfoWin').window('close');
 	});
+	$("#editJDGoodsStockInfoDisy").click(function() {
+		$('#editJDStockWin').window('close');
+	});
+	
+	
 	//确定
 	$("#editGoodsStockInfoSumbit").click(function() {
 		var goodsId=finalGoodId;
@@ -1499,6 +1513,54 @@ $(function() {
 		});
 		
 	});
+	$("#editJDGoodsStockInfoSumbit").click(function() {
+		var goodsId=finalGoodId;
+		var stockId = $("#editJDstockinfoId").val()
+		var goodsPrice=$("#editJDgoodsPrice").textbox('getValue');
+		var marketPrice=$("#editJDmarketPrice").textbox('getValue');
+		var goodsCostPrice=$("#editJDgoodsCostPrice").textbox('getValue');
+		if (null == goodsPrice || ("") == goodsPrice) {
+			$.messager.alert("提示", "商品价格不能为空！", "info");
+			return;
+		}
+		if (null == marketPrice || ("") == marketPrice) {
+			$.messager.alert("提示", "市场价不能为空！", "info");
+			return;
+		}
+		if (null == goodsCostPrice || ("") == goodsCostPrice) {
+			$.messager.alert("提示", "成本价不能为空！", "info");
+			return;
+		}
+		var param = {
+			"id":stockId,
+			"goodsPrice":goodsPrice,
+			"marketPrice":marketPrice,
+			"goodsCostPrice":goodsCostPrice
+		};
+		
+		$.ajax({
+			type : "POST",
+			url : ctx + '/application/goods/stockinfo/editStockinfo',
+			data : param,
+			success : function(data) {
+//				var response = JSON.parse(data);
+				if(data.msg=="success"){
+					$.messager.alert("提示", "修改库存信息成功！", "info");
+					var params = {};
+			        params['goodsId'] = goodsId;
+			        
+			        loadStockGoods('addGoodsStockList',goodsId,null);
+			        loadStockGoods('editGoodsStockList',goodsId,null);
+			        loadStockGoods('goodsStockList',goodsId,null);
+			        $('#editJDStockWin').window('close');
+				}else{
+					$.messager.alert("提示", data.msg, "info");
+				}
+			}
+		});
+		
+	})
+	
 	
 	
 	//删除banner图
@@ -2017,10 +2079,13 @@ function loadStockGoods(datagridId,goodsId,source){
         columns: [[
                 {field: 'stockLogo', title: 'logo', width: 350,align : 'center',
                 	formatter : function(value, row, index) {
-                		 var content = "";
-                		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
-                	         + row.stockLogo + "');\">"+row.stockLogo+"</a>&nbsp;&nbsp;";
-                		 return content;
+                		if(value !=null){
+                			var content = "";
+                			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
+                				+ row.stockLogo + "');\">"+row.stockLogo+"</a>&nbsp;&nbsp;";
+                			return content;
+                		}
+                		
                 	}
                 },
                 {field: 'id', title: '库存id', width: 80,align : 'center',hidden:'hidden'},
