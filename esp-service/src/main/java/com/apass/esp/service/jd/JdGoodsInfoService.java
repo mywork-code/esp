@@ -102,6 +102,10 @@ public class JdGoodsInfoService {
 		map.put("skuId",String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		//查询商品邮费（需要地址，待定）
+		
+		
+		//商品库存（需要地址，待定）
 		return map;
 	}
 	/**
