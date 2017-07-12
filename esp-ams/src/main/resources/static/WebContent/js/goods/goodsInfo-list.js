@@ -2079,10 +2079,13 @@ function loadStockGoods(datagridId,goodsId,source){
         columns: [[
                 {field: 'stockLogo', title: 'logo', width: 350,align : 'center',
                 	formatter : function(value, row, index) {
-                		 var content = "";
-                		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
-                	         + row.stockLogo + "');\">"+row.stockLogo+"</a>&nbsp;&nbsp;";
-                		 return content;
+                		if(value !=null){
+                			var content = "";
+                			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
+                				+ row.stockLogo + "');\">"+row.stockLogo+"</a>&nbsp;&nbsp;";
+                			return content;
+                		}
+                		
                 	}
                 },
                 {field: 'id', title: '库存id', width: 80,align : 'center',hidden:'hidden'},
