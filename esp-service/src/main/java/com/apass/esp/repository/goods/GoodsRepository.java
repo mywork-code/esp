@@ -180,6 +180,9 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 			throw new BusinessException("数据库数据有误");
 		}
 	}
-
+	//根据京东skuid查询数据库中是否已经插入数据
+	public GoodsInfoEntity  selectGoodsBySkuId(String skuId){
+    	return this.getSqlSession().selectOne("selectGoodsByExternalId",skuId);
+	}
 
 }
