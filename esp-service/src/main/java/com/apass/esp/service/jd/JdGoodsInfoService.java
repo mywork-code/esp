@@ -166,7 +166,6 @@ public class JdGoodsInfoService {
 	 * @return
 	 */
 	public List<String> getJdImagePathListBySku(Long sku, String type) {
-		//Gson gson = new Gson();
 		List<Long> skusImage = new ArrayList<>();
 		skusImage.add(sku);
 		List<String> JdImagePathList = new ArrayList<>();
@@ -174,10 +173,7 @@ public class JdGoodsInfoService {
 		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
 			Map<String, List<JdImage>> jsonImageResult = JSONObject.parseObject(jdImageResponse.getResult().toString(),
 					new TypeReference<Map<String, List<JdImage>>>(){});
-//
-//			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
-//					new TypeToken<Map<String, List<JdImage>>>() {
-//					}.getType());
+
 			List<JdImage> jdList = jsonImageResult.get(sku.toString());
 			for (int i = 0; i < jdList.size(); i++) {
 				String path = jdList.get(i).getPath();
