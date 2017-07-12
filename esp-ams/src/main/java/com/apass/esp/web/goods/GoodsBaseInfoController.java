@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.domain.entity.common.SystemParamEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -545,15 +546,22 @@ public class GoodsBaseInfoController {
                 return "商品类目不能为空，请先选择类目！";
             }
         }
-
+        SystemParamEntity systemParamEntity = null;
+        try {
+            systemParamEntity = systemParamService.querySystemParamInfo().get(0);
+        } catch (Exception e) {
+            return "查询系统参数错误";
+        }
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
-            if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
+            BigDecimal dividePoint = goodsStockInfoEntity1.getGoodsPrice().divide(goodsStockInfoEntity1.getGoodsCostPrice());
+            //商品售价除以成本价小于保本率
+            if (dividePoint.compareTo(systemParamEntity.getPriceCostRate()) == -1) {
                 GoodsInfoEntity entity = new GoodsInfoEntity();
                 entity.setId(Long.valueOf(id));
                 entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 goodsService.updateService(entity);
-                return "商品售价大于成本价";
+                return "保本率审核";
             }
         }
 
