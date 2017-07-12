@@ -190,7 +190,7 @@ $(function() {
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
                 	 if(row.source =='jd'){
-                		 if(merchantStatus=="1"){
+                		 if(merchantStatus=="1" && row.status=='G00' && row.status!='G03'){
                 			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
                 				 + index +"');\">库存</a>&nbsp;&nbsp;"; 
                 		 }
@@ -1389,7 +1389,9 @@ $(function() {
 	
 	//修改库存
 	$.editStockinfo = function(index,datagridId) {
+		debugger;
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
+		
 		$("#editstockinfoId").val(row.id);
 		$("#editStockinfoIdInForm").val(row.id);
 		$("#editgoodsSkuAttr").textbox('setValue',row.goodsSkuAttr);
