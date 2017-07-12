@@ -285,13 +285,12 @@ $(function() {
 	                	formatter : function(value, row, index) {
 	                		if(row.catClass == '2'){
 	                			if(row.flag && row.categoryId3 == categoryId3){
-	                				var checkboxflag = '<div class="border-circle"><span class="switch-circle"  style="left:54px" data-sku="'+encodeURI(JSON.stringify(row))+'"></span><span class="relation-text" style="left:14px;">已关联</span></div>';
+	                				var checkboxflag = '<div class="border-circle" style="cursor:pointer"><span class="switch-circle"  style="left:54px" data-sku="'+encodeURI(JSON.stringify(row))+'"></span><span class="relation-text" style="left:14px;">已关联</span></div>';
 		                		}else{
-		                			var checkboxflag = '<div class="border-circle"><span class="switch-circle" style="left:0px"  data-sku="'+encodeURI(JSON.stringify(row))+'"></span><span class="relation-text" style="left:27PX;">未关联</span></div>';
+		                			var checkboxflag = '<div class="border-circle" style="cursor:pointer"><span class="switch-circle" style="left:0px"  data-sku="'+encodeURI(JSON.stringify(row))+'"></span><span class="relation-text" style="left:27PX;">未关联</span></div>';
 		                		}
 	                			return checkboxflag;
 	                		}
-	                		
 	                	}
 	                } ]],
 	        loader : function(param, success, error) {
@@ -304,10 +303,8 @@ $(function() {
 	                    $.validateResponse(resp, function() {
 	                        success(resp.data);
 	                    });
-	                    
-	                    stime = window.setInterval("start()", 10000);
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
-	                		debugger;
+	                		stime = window.setInterval("start()", 5000);
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
@@ -332,7 +329,6 @@ $(function() {
 	        	        			success : function(data) {
 	        	        				ifLogout(data);
 	        	        				if(data.status=="1"){
-	        	        					debugger;
 	        	                    		$.messager.alert("提示",data.msg,'info');  
 	        	                    		$that.animate({left:"54px"},50)
 	        	                			$that.parent().find('.relation-text').css('left','0px');
@@ -354,7 +350,6 @@ $(function() {
 	    	        	        			success : function(data) {
 	    	        	        				ifLogout(data);
 	    	        	        				if(data.status=="1"){
-	    	        	        					debugger;
 	    	        	                    		$.messager.alert("提示",data.msg,'info');  
 	    	        	                    		$that.animate({left:"0px"},50)
 	    	        	                			$that.parent().find('.relation-text').css('left','27px');
@@ -417,6 +412,7 @@ function regExp_pattern(str, pattern) {
 
 var stime;
 function start() {
+	debugger;
    $(".border-circle").removeClass("disabled");
    window.clearInterval(stime);
 }

@@ -43,7 +43,7 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 
 /**
  * 首页
- * @description 
+ * @description
  *
  * @author liuming
  * @version $Id: ShopHomeController.java, v 0.1 2016年12月19日 下午3:33:14 liuming Exp $
@@ -54,7 +54,7 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 public class ShopHomeController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShopHomeController.class);
-    
+
     @Autowired
     private GoodsService goodService;
 
@@ -69,7 +69,7 @@ public class ShopHomeController {
     private ImageService imageService;
     @Autowired
     private CategoryInfoService categoryInfoService;
-    
+
     @Autowired
     private GoodsStockInfoRepository goodsStockInfoRepository;
     @Autowired
@@ -79,7 +79,7 @@ public class ShopHomeController {
 	 @Value("${esp.image.uri}")
 	 private String              espImageUrl;
     /**
-     *  首页初始化 加载banner和精品商品 
+     *  首页初始化 加载banner和精品商品
      * @return
      */
     @POST
@@ -95,18 +95,18 @@ public class ShopHomeController {
 
                 banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
             }
-            
+
             List<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods();
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods);
-            
+
             for (GoodsBasicInfoEntity goods : recommendGoods) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
                 //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
                 Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
                 goods.setMarketPrice(new BigDecimal(marketPrice));
-                
+
                 goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
                 goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                 goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
@@ -119,10 +119,10 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
-    
+
     /**
-     * 加载商品列表 
-     * 
+     * 加载商品列表
+     *
      * @return
      */
 	@POST
@@ -148,7 +148,7 @@ public class ShopHomeController {
       		     //设置类目张的banner
       		     List<BannerInfoEntity> banners=new ArrayList<BannerInfoEntity>();
       		     BannerInfoEntity  bity=new BannerInfoEntity();
-      		     
+
                  Category category=categoryInfoService.selectNameById(Long.parseLong(categoryId));
                  if("1".equals(String.valueOf(category.getSortOrder()))){//家用电器banner图
                 	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryElectricBanner.png");
@@ -156,7 +156,7 @@ public class ShopHomeController {
                  }else if("2".equals(String.valueOf(category.getSortOrder()))){//家居百货banner图
                 	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryDepotBanner.png");
            	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryDepotBanner.png");
-                	
+
                  }else if("3".equals(String.valueOf(category.getSortOrder()))){//美妆生活banner图
                	  bity.setBannerImgUrlNew(espImageUrl+"/static/eshop/other/categoryBeautyBanner.png");
        	          bity.setBannerImgUrl(espImageUrl+"/static/eshop/other/categoryBeautyBanner.png");
@@ -166,7 +166,7 @@ public class ShopHomeController {
               }else if(null !=flage && flage.equals("recommend")){
 //            	  goodsList = goodService.loadRecommendGoods();//加载精选商品
             	  goodsList = goodService.loadRecommendGoodsList();//加载精选商品列表
-            	  
+
           	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
                   for(BannerInfoEntity banner : banners){
                       banner.setActivityUrl(banner.getActivityUrl());
@@ -178,7 +178,7 @@ public class ShopHomeController {
                   returnMap.put("banners", banners);
               }else{
             	  goodsList = goodService.loadGoodsList();//加载所以商品
-            	  
+
             	    List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT.getIdentify());
                     for(BannerInfoEntity banner : banners){
 //                        banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
@@ -190,7 +190,7 @@ public class ShopHomeController {
                     }
                     returnMap.put("banners", banners);
               }
-              
+
                for (GoodsBasicInfoEntity goodsInfo : goodsList) {
                 if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
                     BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
@@ -198,10 +198,10 @@ public class ShopHomeController {
                     //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
                     Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
                     goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-                    
+
                     String logoUrl = goodsInfo.getGoodsLogoUrl();
                     String siftUrl = goodsInfo.getGoodsSiftUrl();
-                   
+
                     goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
                     goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
                     goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
@@ -216,11 +216,11 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
-    
-	
+
+
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
-     * 
+     *
      * @return
      */
     @POST
@@ -252,7 +252,7 @@ public class ShopHomeController {
     }
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
-     * 
+     *
      * @return
      */
     @POST
@@ -275,7 +275,7 @@ public class ShopHomeController {
             if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus()+"")){//来源于京东且已关联
             	String externalId = goodsInfo.getExternalId();// 外部商品id
             	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
-            	
+
             	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
@@ -299,7 +299,7 @@ public class ShopHomeController {
     }
     /**
      * 根据商品id获取商品规格详情信息(商品库存表)
-     * 
+     *
      * @return
      */
     @POST
@@ -320,7 +320,7 @@ public class ShopHomeController {
                 goodsStock.setStockLogoNew(imageService.getImageUrl(stockLogoUrl));
                 goodsStock.setStockLogo(EncodeUtils.base64Encode(stockLogoUrl));
             }
-            
+
             GoodsInfoEntity goodsInfo = goodService.selectByGoodsId(goodsId);
             if (null!=goodsInfo) {
                 returnMap.put("skyType", goodsInfo.getGoodsSkuType());
@@ -354,9 +354,20 @@ public class ShopHomeController {
         }
         Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
         List<GoodsInfoEntity> goodsList=new ArrayList<>();
+        try{
         for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
             GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
+            if(goodsInfoEntity.getSource()==null){
+                goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
+                goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
+            }else{
+                goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
+                goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
+            }
             goodsList.add(goodsInfoEntity);
+        }
+        }catch (Exception e ){
+            return Response.fail(BusinessErrorCode.NO);
         }
         resultMap.put("goodsList",goodsList);
         resultMap.put("pageIndex",pageIndex);
@@ -380,13 +391,26 @@ public class ShopHomeController {
         }
         Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
         List<GoodsInfoEntity> goodsList=new ArrayList<>();
-        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
-            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
-            goodsList.add(goodsInfoEntity);
+        try{
+            for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
+                GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
+                String goodsLogoUrl = goodsInfoEntity.getGoodsLogoUrl();
+                String goodsSiftUrl = goodsInfoEntity.getGoodsSiftUrl();
+                if(goodsInfoEntity.getSource()==null){
+                    goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrl));//非京东
+                    goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl(goodsSiftUrl));
+                }else{
+                    goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsLogoUrl);
+                    goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+goodsSiftUrl);
+                }
+                goodsList.add(goodsInfoEntity);
+            }
+            resultMap.put("goodsList",goodsList);
+            resultMap.put("pageIndex",pageIndex);
+            resultMap.put("totalCount",120);
+        }catch (Exception e ){
+            return Response.fail(BusinessErrorCode.NO);
         }
-        resultMap.put("goodsList",goodsList);
-        resultMap.put("pageIndex",pageIndex);
-        resultMap.put("totalCount",120);
         return Response.successResponse(goodsList);
     }
 }
