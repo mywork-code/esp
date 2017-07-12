@@ -17,7 +17,7 @@ public enum GoodStatus {
     
     GOOD_DOWN("G03","已下架"),
 
-    GOOD_BBEN("G04","保本率审核中");
+    GOOD_BBEN("G04","待审核");//保本率审核中
     
     private String code;
     
