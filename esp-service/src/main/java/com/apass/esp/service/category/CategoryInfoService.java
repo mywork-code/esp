@@ -388,12 +388,13 @@ public class CategoryInfoService {
 			if(goodsEntities != null){
 				for (GoodsInfoEntity goodsInfoEntity : goodsEntities) {
 					GoodsCategoryDto goodsCategoryDto = convertToGoodsCategoryDto(goodsInfoEntity);
+					goodsCategoryDtos.add(goodsCategoryDto);
 				}
+				categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
 			}
-			
 		}
     	
-		return null;
+		return list;
 	}
 
 	/**
@@ -421,10 +422,10 @@ public class CategoryInfoService {
 		goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
 		goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
 		goodsCategoryDto.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
-		
+		goodsCategoryDto.setGoodsPrice(goodsPrice);
 		goodsCategoryDto.setFirstPrice(goodsPrice.multiply(new BigDecimal(0.1)));
 		
-		return null;
+		return goodsCategoryDto;
 	}
 
 	/**
