@@ -12,7 +12,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -40,6 +40,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
+import com.google.common.collect.Lists;
 
 /**
  * 首页
@@ -412,5 +413,29 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.NO);
         }
         return Response.successResponse(goodsList);
+    }
+    
+    /**
+     * 其它分类页面
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/otherCategoryGoods")
+    public Response otherCategoryGoods(Map<String, Object> paramMap){
+    	List<OtherCategoryGoodsVo> list = Lists.newArrayList();
+    	//参数验证
+    	Long categoryId = CommonUtils.getLong(paramMap,"categoryId");
+    	if(categoryId == null){
+    		return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+    	}
+    	try{
+    		list = categoryInfoService.otherCategoryGoods(categoryId);
+    	}catch (Exception e ){
+    		LOGGER.error("根据一级类目查询所有二级类目下商品失败,一级类目id:{}",categoryId,e);
+            return Response.fail(BusinessErrorCode.NO);
+        }
+    	
+    	return Response.successResponse(list);
     }
 }

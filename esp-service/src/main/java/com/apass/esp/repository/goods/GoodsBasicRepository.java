@@ -1,6 +1,7 @@
 package com.apass.esp.repository.goods;
 
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -22,5 +23,4 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		param.put("count", count);
 		return this.getSqlSession().selectList("getRemainderGoods",param);
 	}
-
 }
