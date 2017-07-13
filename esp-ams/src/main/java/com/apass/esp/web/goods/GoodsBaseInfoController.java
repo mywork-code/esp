@@ -528,7 +528,7 @@ public class GoodsBaseInfoController {
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
         }
-
+        GoodsInfoEntity entity = new GoodsInfoEntity();
         if (!"jd".equals(source)) {
             List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
             if (bannerList.isEmpty()) {
@@ -544,11 +544,12 @@ public class GoodsBaseInfoController {
             if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
                 return "商品类目不能为空，请先选择类目！";
             }
+        }else{
+        	entity.setListTime(new Date());
         }
 
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
             if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
-                GoodsInfoEntity entity = new GoodsInfoEntity();
                 entity.setId(Long.valueOf(id));
                 entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -557,8 +558,6 @@ public class GoodsBaseInfoController {
             }
         }
 
-
-        GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -576,7 +575,11 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelf")
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
+        String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity entity = new GoodsInfoEntity();
+        if("jd".equals(source)){
+        	entity.setDelistTime(new Date());
+        }
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());

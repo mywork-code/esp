@@ -214,7 +214,7 @@ $(function() {
                          }
                          if(row.status =='G02'){//上架商品才能下架
                         	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"
-                                 + row.id + "');\">下架</a>&nbsp;&nbsp;"
+                                 + row.id + "','" +  row.source + "');\">下架</a>&nbsp;&nbsp;"
                          }
                      }
                          content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
@@ -1616,11 +1616,12 @@ $(function() {
 	 
 	};
 	//下架
-	$.shelf = function(id) {
+	$.shelf = function(id,source) {
 		$.messager.confirm('提示框', '你确定要下架吗?',function(r){
 			if(r){
 				var params = {};
 				params['id']=id;
+				params['source']=source;
 				$.ajax({
 					type : "POST",
 					url : ctx + '/application/goods/management/shelf',
