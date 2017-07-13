@@ -39,6 +39,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.EncodeUtils;
+import com.google.common.collect.Maps;
 
 @Service
 public class GoodsService {
@@ -115,6 +116,80 @@ public class GoodsService {
         Page pageParam = new Page(pageInteger, limitInteger);
         return goodsBasicRepository.loadGoodsPages(pageParam, param);
     }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品销量排列)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndAmount(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndAmount(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品销量排列)(数量)
+     */
+    public Integer loadGoodsByAmountCount (GoodsBasicInfoEntity gbinfoty){
+    	return goodsBasicRepository.loadGoodsByAmountCount(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品创建时间)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndNew(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdDefault(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdDefault(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndPrice(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndPrice(gbinfoty);
+    }
+	public Integer loadGoodsCount(GoodsBasicInfoEntity param){
+        return goodsBasicRepository.loadGoodsCount(param);
+	}
+
     /**
      *
      * 加载商品列表
@@ -463,7 +538,7 @@ public class GoodsService {
 	 * @return
  * @throws BusinessException
 	 */
-   public String selectGoodsByExternalId(String externalId) throws BusinessException {
+   public GoodsInfoEntity selectGoodsByExternalId(String externalId) throws BusinessException {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
 
@@ -503,5 +578,23 @@ public class GoodsService {
         pagination.setTotalCount(120);
         return pagination;
     }
+    
+    
+	/**
+	 * 根据二级类目id查询所有商品
+	 * @param categoryId
+	 * @return
+	 */
+	public List<GoodsInfoEntity> selectByCategoryId2(Long categoryId) {
+		return goodsDao.selectByCategoryId2(categoryId);
+	}
+	/**
+	 * 判断该类目下是否存在已上架待审核状态商品
+	 * @param cateId:京东的三级类目，状态在sql语句中写死(G01,G02,G04)
+	 * @return
+	 */
+	public List<GoodsInfoEntity> selectByCategoryId3(String cateId) {
+		return goodsDao.selectByCategoryId3(Long.valueOf(cateId));
+	}
 }
 

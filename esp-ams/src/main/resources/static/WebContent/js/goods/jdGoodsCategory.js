@@ -310,6 +310,7 @@ $(function() {
 	                		}
 	                		$(".border-circle").addClass('disabled');
 	                		var $that = $(this).find('.switch-circle');
+	                		
 	                		var rowData = JSON.parse(decodeURI($that.attr('data-sku')));
 	                		var param = {
 	                				"jdCategoryId":rowData.id,
@@ -321,24 +322,47 @@ $(function() {
 	                		};
 	                		
 	                		if($that.css('left')=='0px') {
-	                			$.ajax({
-	        	        			url : ctx + '/application/jd/category/relevance',
-	        	        			data : {'param':JSON.stringify(param)},
-	        	        			type : "post",
-	        	        			dateType:"json",
-	        	        			success : function(data) {
-	        	        				ifLogout(data);
-	        	        				if(data.status=="1"){
-	        	                    		$.messager.alert("提示",data.msg,'info');  
-	        	                    		$that.animate({left:"54px"},50)
-	        	                			$that.parent().find('.relation-text').css('left','0px');
-	        	                    		$that.parent().find('.relation-text').html('已关联');
-	        	                    	}else{
-	        	                    		$.messager.alert("错误",data.msg,'error');  
-	        	                    	}
-	        	        			}
-	        	        		});
-	                			
+	                			if(rowData.flag){
+		                			$.messager.confirm('确认','该类目已关联其它类目,你确定要重新关联吗？',function(r){    
+		                			    if (r){    
+		                			    	$.ajax({
+		    	        	        			url : ctx + '/application/jd/category/relevance',
+		    	        	        			data : {'param':JSON.stringify(param)},
+		    	        	        			type : "post",
+		    	        	        			dateType:"json",
+		    	        	        			success : function(data) {
+		    	        	        				ifLogout(data);
+		    	        	        				if(data.status=="1"){
+		    	        	                    		$.messager.alert("提示",data.msg,'info');  
+		    	        	                    		$that.animate({left:"54px"},50)
+		    	        	                			$that.parent().find('.relation-text').css('left','0px');
+		    	        	                    		$that.parent().find('.relation-text').html('已关联');
+		    	        	                    	}else{
+		    	        	                    		$.messager.alert("错误",data.msg,'error');  
+		    	        	                    	}
+		    	        	        			}
+		    	        	        		});    
+		                			    }    
+		                			});  
+		                		}else{
+		                			$.ajax({
+		                				url : ctx + '/application/jd/category/relevance',
+		                				data : {'param':JSON.stringify(param)},
+		                				type : "post",
+		                				dateType:"json",
+		                				success : function(data) {
+		                					ifLogout(data);
+		                					if(data.status=="1"){
+		                						$.messager.alert("提示",data.msg,'info');  
+		                						$that.animate({left:"54px"},50)
+		                						$that.parent().find('.relation-text').css('left','0px');
+		                						$that.parent().find('.relation-text').html('已关联');
+		                					}else{
+		                						$.messager.alert("错误",data.msg,'error');  
+		                					}
+		                				}
+		                			});
+		                		}
 	                		} else if($that.css('left')=='54px'){
 	                			$.messager.confirm('确认','您确认想要取消关联吗？',function(r){    
 	                			    if (r){  
@@ -412,7 +436,6 @@ function regExp_pattern(str, pattern) {
 
 var stime;
 function start() {
-	debugger;
    $(".border-circle").removeClass("disabled");
    window.clearInterval(stime);
 }

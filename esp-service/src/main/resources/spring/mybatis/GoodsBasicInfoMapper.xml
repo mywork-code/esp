@@ -112,12 +112,362 @@
 			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
 		  </if>
 	</select>
-
+    <!--  商品列表展示（分页）(按商品销量排列)-->
+	<select id="loadGoodsByAmount" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c,
+		 t_esp_goods_sales_volume d
+		WHERE
+			a.id = c.goodsId
+		AND c.goodsId = d.goods_id
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	  <!-- 添加商品类目查询条件 -->
+	  <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	  </if>
+	  <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		</if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		</if>
+	<![CDATA[
+		ORDER BY d.sales_num DESC  limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+	]]>
+	</select>
+	 <!--  商品列表展示（分页）(按商品销量排列)商品数量-->
+	<select id="loadGoodsByAmountCount" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			count(1)
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c,
+		 t_esp_goods_sales_volume d
+		WHERE
+			a.id = c.goodsId
+		AND c.goodsId = d.goods_id
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	  <!-- 添加商品类目查询条件 -->
+	  <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	  </if>
+	  <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		</if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		</if>
+	<![CDATA[
+		ORDER BY d.sales_num DESC  limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+	]]>
+	</select>
+	<!--  商品列表展示（分页）通过类目id查询商品[客户端分页](按商品创建时间)-->
+	<select id="loadGoodsByNew" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c
+		WHERE
+			a.id = c.goodsId
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	  <!-- 添加商品类目查询条件 -->
+	<if test="categoryId1 != null and categoryId1 != ''">
+		AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	</if>
+	<if test="categoryId2 != null and categoryId2 != ''">
+		AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+	</if>
+	<if test="categoryId3 != null and categoryId3 != ''">
+		AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+	</if>
+	<if test="order != null and order != '' and order=='DESC'">
+		ORDER BY a.create_date DESC
+	</if>
+	<if test="order != null and order != '' and order=='ASC'">
+		ORDER BY a.create_date ASC
+	</if>
+	<if test="page != null and page != '' and rows != null and rows != ''">
+		limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+	</if>
+	</select>
+	
+	<!--  商品列表展示（分页）通过类目id查询商品[客户端分页](按商品上架降序时间)-->
+	<select id="loadGoodsByDefault" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c
+		WHERE
+			a.id = c.goodsId
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	  <!-- 添加商品类目查询条件 -->
+	  <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	  </if>
+	  <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		</if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		</if>
+	<![CDATA[
+		ORDER BY a.list_time DESC  limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+	]]>
+	</select>
+	<!--  商品列表展示（分页）通过类目id查询商品[客户端分页](按商品价格)-->
+	<select id="loadGoodsByPrice" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+	<![CDATA[
+		SELECT
+			a.ID goodId,
+			c.goodsStockId goodsStockId,
+			a.goods_name goodsName,
+			a.goods_title goodsTitle,
+			a.goods_sell_pt goodsSellPt,
+			a.goods_logo_url goodsLogoUrl,
+			c.minPrice marketPrice
+		FROM
+			t_esp_goods_base_info a,
+			(
+				SELECT
+					a.goods_id goodsId,
+					a.id goodsStockId,
+					b.minprice minPrice,
+					a.goods_price   goodsPrice
+				FROM
+					t_esp_goods_stock_info a,
+					(
+						SELECT
+							goods_id goodsId,
+							MIN(market_price) minprice
+						FROM
+							t_esp_goods_stock_info
+						WHERE
+							stock_curr_amt > 0
+						GROUP BY
+							goods_id
+					) b
+				WHERE
+					a.goods_id = b.goodsId
+				AND a.market_price = b.minprice
+				GROUP BY
+					a.goods_id
+			) c
+		WHERE
+			a.id = c.goodsId
+		AND CURRENT_TIMESTAMP > a.list_time
+		AND CURRENT_TIMESTAMP < a.delist_time
+		AND STATUS = 'G02'
+		AND is_delete = '01'
+	]]>
+	<!-- 添加商品类目查询条件 -->
+	<if test="categoryId1 != null and categoryId1 != ''">
+		AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	</if>
+	<if test="categoryId2 != null and categoryId2 != ''">
+		AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+	</if>
+	<if test="categoryId3 != null and categoryId3 != ''">
+		AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+	</if>
+	<if test="order != null and order != '' and order=='DESC'">
+		ORDER BY c.goodsPrice DESC
+	</if>
+	<if test="order != null and order != '' and order=='ASC'">
+		ORDER BY c.goodsPrice ASC
+	</if>
+	<if test="page != null and page != '' and rows != null and rows != ''">
+		limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+	</if>
+	</select>
+		<!-- 商品列表查询（分页） -->
+	<select id="loadGoodsByCount" parameterType="GoodsBasicInfoEntity" resultType="Integer">
+		<![CDATA[
+			SELECT  COUNT(1) 
+			FROM
+					t_esp_goods_base_info a,
+					(
+						SELECT
+							a.goods_id goodsId,
+							a.id goodsStockId,
+							b.minprice minPrice
+						FROM
+							t_esp_goods_stock_info a,
+							(
+								SELECT
+									goods_id goodsId,
+									MIN(market_price) minprice
+								FROM
+									t_esp_goods_stock_info
+								WHERE
+									stock_curr_amt > 0
+								GROUP BY
+									goods_id
+							) b
+						WHERE
+							a.goods_id = b.goodsId
+						AND a.market_price = b.minprice
+						GROUP BY
+							a.goods_id
+					) c
+				WHERE
+					a.id = c.goodsId
+				AND CURRENT_TIMESTAMP > a.list_time
+				AND CURRENT_TIMESTAMP < a.delist_time
+				AND STATUS = 'G02'
+				AND is_delete = '01'
+		]]>
+		  <!-- 添加商品类目查询条件 -->
+	     <if test="categoryId1 != null and categoryId1 != ''">
+			AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
+	     </if>
+	     <if test="categoryId2 != null and categoryId2 != ''">
+			AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
+		 </if>
+		   <if test="categoryId3 != null and categoryId3 != ''">
+			AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
+		  </if>
+	</select>
+	
 	<select id="getRemainderGoods" resultType="java.lang.String">
 		select id from t_esp_goods_base_info
 		where status='G02'
 		AND is_delete = '01'
 		order by list_time limit #{pageBegin},#{count}
 	</select>
-
+	
 </mapper>

@@ -79,6 +79,15 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
     }
 
     /**
+     * 更新订单的是否预占库存状态
+     * 
+     * @throws BusinessException
+     */
+    public void updatePreStockStatusByOrderId(Map<String, Object> map) throws BusinessException {
+        updateBymap(map, getSQL("updatePreStockStatusByOrderId"));
+    }
+    
+    /**
      * 订单查询导出查询
      * @param map
      * @param page

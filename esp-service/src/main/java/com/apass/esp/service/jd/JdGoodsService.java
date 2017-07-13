@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,14 @@ import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * Created by jie.xu on 17/7/5.
  */
 @Service
 public class JdGoodsService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdGoodsService.class);
 	@Autowired
 	private JdGoodsMapper jdGoodsMapper;
 	
@@ -107,6 +111,12 @@ public class JdGoodsService {
 	 */
 	public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
 		String cateId = paramMap.get("cateId");//京东类目id
+		List<GoodsInfoEntity> goodsInfos = goodsService.selectByCategoryId3(cateId);
+		LOGGER.info("存在已上架或待审核商品，分别是：{}",GsonUtils.toJson(goodsInfos));
+		if(goodsInfos != null){
+			throw new BusinessException("该分类下有上架或待审核商品，请先将商品下架或驳回。");
+		}
+		
 		//根据第三级类目 id查询京东三级类目下所有商品
 		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
 		if(JdGoodsList == null){
@@ -120,10 +130,13 @@ public class JdGoodsService {
 			for(int i=0; i<JdGoodsList.size(); i++){
 				int num = JdGoodsList.size()/100;
 				if(i<100*num){
-					String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
-					if(goodsId != null){
-						idsStock.add(Long.valueOf(goodsId));
+					GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+					if(goodsInfoEntity == null){
+						LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+						throw new BusinessException("数据库数据有误");
 					}
+					
+					idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 					idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 					
 					if((i+1)/100 == 0){
@@ -136,10 +149,13 @@ public class JdGoodsService {
 					}
 				}else{
 					while(i<JdGoodsList.size()){
-						String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
-						if(goodsId != null){
-							idsStock.add(Long.valueOf(goodsId));
+						GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+						if(goodsInfoEntity == null){
+							LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+							throw new BusinessException("数据库数据有误");
 						}
+						
+						idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 						idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 						i++;
 					 }
@@ -152,10 +168,13 @@ public class JdGoodsService {
 			}
 		}else{
 			for(int i=0; i<JdGoodsList.size(); i++){
-				String goodsId = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
-				if(goodsId != null){
-					idsStock.add(Long.valueOf(goodsId));
+				GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
+				if(goodsInfoEntity == null){
+					LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+					throw new BusinessException("数据库数据有误");
 				}
+				
+				idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 				idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 			}
 			if(idsStock != null && idsStock.size() !=0){

@@ -49,6 +49,7 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
@@ -275,7 +276,7 @@ public class OrderService {
 			map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
 
 			orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
-
+			
 		} catch (Exception e) {
 			LOGGER.error("物流单号重复或输入错误", e);
 			throw new BusinessException("物流单号重复或输入错误", e);
@@ -322,22 +323,22 @@ public class OrderService {
 		// 4 生成订单
 		List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,deviceType);
 		
-		
-		String jdOrderId = preStockStatus(orders, addressId);
+		/**
+		 * 设置预占库存和修改订单的信息
+		 */
+	    preStockStatus(orders, addressId);
 		
 		
 		return orders;
 	}
 
 	/**
-	 * 设置京东商品预占库存
+	 * 验证传入订单列表，是否存在京东订单
+	 * @param orderIdList
 	 * @return
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
-	public String preStockStatus(List<String> orderIdList,Long addressId) throws BusinessException{
-		/**
-		 * 首先根据订单的id，获取订单的detail信息，拿到detail信息，获取goodId,根据goodId获取good信息，然后获取京东商品skuId
-		 */
+	public List<String>  getJdOrder(List<String> orderIdList) throws BusinessException{
 		List<String> orders = new ArrayList<String>();
 		for (String orderId : orderIdList) {
 			OrderInfoEntity entity = selectByOrderId(orderId);
@@ -346,14 +347,29 @@ public class OrderService {
 				orders.add(orderId);
 			}
 		}
+		return orders;
+	}
+	/**
+	 * 设置京东商品预占库存
+	 * @return
+	 * @throws BusinessException 
+	 */
+	public String preStockStatus(List<String> orderIdList,Long addressId) throws BusinessException{
 		/**
-		 * 如果不存在京东订单,就不需要往下一步走
+		 * 根据传入订单号，检测是京东的订单
+		 */
+		List<String> orders = getJdOrder(orderIdList);
+		/**
+		 * 如果集合为空，就不需要往下一步走
 		 */
 		if(CollectionUtils.isEmpty(orders)){
 			return null;
 		}
 		/**
-		 * 根据订单的Id,查询，所属的订单详情信息
+		 *
+		 * 首先根据订单的id，获取订单的detail信息，拿到detail信息，
+		 * 获取goodId,根据goodId获取good信息，然后获取京东商品skuId
+		 *
 		 */
 		List<SkuNum> skuNumList = new ArrayList<>();
 		List<PriceSnap> priceSnaps = new ArrayList<>();
@@ -426,6 +442,19 @@ public class OrderService {
             LOGGER.warn("submit order error, {}", orderResponse.toString());
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
+        
+        /**
+         * 在京东那边占完库存后，要修改order表中的信息 
+         */
+        Map<String,Object> params = Maps.newHashMap();
+        params.put("preStockStatus",PreStockStatus.PRE_STOCK.getCode());
+        params.put("updateTime",new Date());
+        params.put("extOrderId",jdOrderId);
+        for (String orderId : orders) {
+        	params.put("orderId", orderId);
+        	orderSubInfoRepository.updatePreStockStatusByOrderId(params);
+		}
+        
 		return jdOrderId;
 	}
 	

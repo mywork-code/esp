@@ -29,7 +29,7 @@ public class GoodsDetailInfoEntity {
 	/** 商品大标题 **/
 	private String goodsTitle;
 
-	/** 商品小标题 **/
+	/** 商品卖点 **/
 	private String goodsSellPt;
 
 	/** 商品logo地址 **/

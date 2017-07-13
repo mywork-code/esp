@@ -98,7 +98,7 @@ public class JdGoodsController {
 		  
 	  }catch(BusinessException e){
 		  LOGGER.error("取消关联京东类目失败！", e.getErrorCode());
-		  return Response.fail("取消关联京东类目失败！");
+		  return Response.fail("取消关联京东类目失败！,{}",e.getErrorDesc());
 	  }
 	  
 	  return Response.success("取消关联京东类目成功！");
