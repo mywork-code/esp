@@ -2,6 +2,7 @@ package com.apass.esp.schedule;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
@@ -45,6 +46,9 @@ public class JdConfirmPreInventoryTask {
 
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private OrderService orderService;
 
     @Scheduled(cron = "0 0/5 * * * *")
     public void handleJdConfirmPreInventoryTask() {
@@ -91,15 +95,22 @@ public class JdConfirmPreInventoryTask {
                         Integer sumNum = 0;
                         for (int j = 0; j < cOrderSkuList.size(); j++) {
                             long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
-                            goodsService.selectGoodsByExternalId(String.valueOf(skuId));
-                            
+                            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                            if (goodsInfoEntity == null) {
+                                LOGGER.info("pOrder {}, jdOrderId {} goodsInfoEntity {}", cOrderJsonObject.getLongValue("pOrder"), jdOrderId, goodsInfoEntity);
+                                continue;
+                            }
+                            long goodId = goodsInfoEntity.getId();
                             BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
                             int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
                             String name = cOrderSkuList.getJSONObject(j).getString("name");
                             jdPrice = jdPrice.add(price.multiply(new BigDecimal(num)));
                             sumNum = sumNum + num;
+                            //orderDetail插入对应记录
 
                         }
+                        //创建订单
+
 
                     }
 
