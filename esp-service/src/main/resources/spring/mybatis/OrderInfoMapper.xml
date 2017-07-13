@@ -592,8 +592,29 @@
 		where orderstatus in ('D02' , 'D03','D04','D05')
 	</select>
 
+
+    <!-- 获取失效和删除的预占库存的京东订单 -->
+	<select id="getInvalidAndDeleteJdOrder" resultType="OrderInfoEntity">
+	<![CDATA[
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			create_date createDate,
+			update_date updateDate,
+			source source,
+			pre_stock_status preStockStatus,
+			ext_order_id extOrderId
+			FROM
+			t_esp_order_info
+		WHERE
+			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
+		]]>
+	</select>
 	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
-		<![CDATA[
+	<![CDATA[
 		SELECT
 			id id,
 			order_id orderId,
@@ -610,6 +631,20 @@
 		WHERE
 			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
 		]]>
-
 	</select>
+	<!-- 根据订单的编号，修改字段 -->
+	<update id="updatePreStockStatusByOrderId" parameterType="Map">
+		update
+		t_esp_order_info 
+		<set>
+		  update_date = #{updateTime},
+		 <if test="preStockStatus != null and preStockStatus != ''">
+		 	pre_stock_status = #{preStockStatus},
+		 </if>
+		 <if test="extOrderId != null and extOrderId != ''">
+		 	ext_order_id = #{extOrderId}
+		 </if>
+		</set>
+		where order_id = #{orderId}
+	</update>
 </mapper>

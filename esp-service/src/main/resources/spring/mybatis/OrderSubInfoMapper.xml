@@ -186,16 +186,6 @@
 		send_outgoodsdate = CURRENT_TIMESTAMP
 		where order_id = #{orderId}
 	</update>
-	
-	<update id="updatePreStockStatusByOrderId" parameterType="Map">
-		update
-		t_esp_order_info set
-		pre_stock_status = #{preStockStatus},
-		update_date = #{updateTime},
-		ext_order_id = #{extOrderId}
-		where order_id = #{orderId}
-	</update>
-
 	<!-- 记录总数 -->
 	<select id="querySubOrderDetailInfoByParamCount" parameterType="Map"
 		resultType="Integer">

@@ -1,10 +1,10 @@
 package com.apass.esp.domain.dto.order;
 
+import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
-import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 
 /**
  * 商品订单信息实体
@@ -30,6 +30,10 @@ public class OrderDetailInfoDto {
     private Date orderCreateDate;
 
     private String orderCreateDateStr;
+
+    private Long userId;
+
+    private String mainOrderId;
 
     public String getOrderCreateDateStr() {
         return orderCreateDateStr;
@@ -234,5 +238,20 @@ public class OrderDetailInfoDto {
 	public void setCashRefundStatus(String cashRefundStatus) {
 		this.cashRefundStatus = cashRefundStatus;
 	}
-    
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getMainOrderId() {
+        return mainOrderId;
+    }
+
+    public void setMainOrderId(String mainOrderId) {
+        this.mainOrderId = mainOrderId;
+    }
 }
