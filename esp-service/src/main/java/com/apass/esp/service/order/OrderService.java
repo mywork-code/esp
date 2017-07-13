@@ -626,6 +626,10 @@ public class OrderService {
 				if (goods.getMerchantCode().equals(merchantCode)) {
 					GoodsStockInfoEntity goodsStock = goodsStockDao.select(purchase.getGoodsStockId());
 					OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
+					if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
+						orderDetail.setSource(SourceType.JD.getCode());
+						orderDetail.setSkuId(goods.getExternalId());
+					}
 					orderDetail.setOrderId(orderInfo.getOrderId());
 					orderDetail.setGoodsId(goods.getId());
 					orderDetail.setGoodsStockId(purchase.getGoodsStockId());

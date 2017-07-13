@@ -277,7 +277,9 @@
              device_type,
              create_date,
              update_date,
-             pre_delivery
+             pre_delivery,
+             source,
+             ext_parent_id
             )
 			values (
 			#{userId, jdbcType=BIGINT},
@@ -303,7 +305,9 @@
 	        #{deviceType, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
 	        CURRENT_TIMESTAMP,
-	        #{preDelivery,jdbcType=VARCHAR});
+	        #{preDelivery,jdbcType=VARCHAR},
+	        #{source,jdbcType=VARCHAR},
+	        #{extParentId,jdbcType=VARCHAR});
 	</insert>
 	
 	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
