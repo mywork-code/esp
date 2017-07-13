@@ -1055,6 +1055,8 @@ public class OrderService {
         	}
         }
         orderDetailInfoDto.setPreDelivery(order.getPreDelivery());
+			  orderDetailInfoDto.setUserId(order.getUserId());
+			  orderDetailInfoDto.setMainOrderId(order.getMainOrderId());
         return orderDetailInfoDto;
     }
 

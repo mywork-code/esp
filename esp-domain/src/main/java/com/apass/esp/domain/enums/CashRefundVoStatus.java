@@ -10,7 +10,10 @@ public enum CashRefundVoStatus {
 	
 	CASHREFUND_STATUS4("4", "退款成功"),
 	
-	CASHREFUND_STATUS3("3", "取消退款");
+	CASHREFUND_STATUS3("3", "取消退款"),
+
+	CASHREFUND_OTHER("5","其他"),
+	;
 
 	private String code;
 
