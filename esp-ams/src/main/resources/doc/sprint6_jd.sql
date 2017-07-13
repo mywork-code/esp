@@ -77,3 +77,5 @@ ADD COLUMN `PREFIX`  varchar(10)  DEFAULT '' COMMENT '首字母',
 ADD COLUMN `SPELL`  varchar(50)  DEFAULT '' COMMENT '城市中文拼音' ;
 
 ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `pre_stock_status` varchar(1) DEFAULT '' COMMENT '预占库存状态(1.预占 2.确认)';
+
+ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `ext_parent_id`  varchar(32) DEFAULT '' COMMENT '0：京东父订单';

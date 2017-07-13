@@ -844,7 +844,8 @@ public class PaymentService {
         if (null == orders || orders.size() == 0) {
             throw new BusinessException("订单传入非法");
         }
-        BigInteger mainOrderId = new BigInteger(orders.get(0));
+		String mainOrderIdStr = orders.get(0);
+		BigInteger mainOrderId = new BigInteger(mainOrderIdStr);
         for (String orderId : orders) {
             if (!StringUtils.isNumeric(orderId)) {
                 throw new BusinessException("传入订单号:{}不合法", orderId);
@@ -852,9 +853,10 @@ public class PaymentService {
             BigInteger orderIdInt = new BigInteger(orderId);
             if (mainOrderId.compareTo(orderIdInt) > 0) {
                 mainOrderId = orderIdInt;
+							  mainOrderIdStr = orderId;
             }
         }
-        return mainOrderId.toString();
+        return mainOrderIdStr;
     }
 
     private   BigDecimal scale2Decimal(BigDecimal origin){
