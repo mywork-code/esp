@@ -114,8 +114,11 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
         mailSenderInfo.setToAddress("xujie@apass.cn");
-//        mailSenderInfo.setToAddress("huangbeifang@apass.cn");
-//        mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
+        if("prod".equals(env)){
+            mailSenderInfo.setToAddress("huangbeifang@apass.cn");
+            mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
+        }
+
         Multipart msgPart = new MimeMultipart();
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件
