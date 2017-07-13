@@ -132,6 +132,12 @@ public class GoodsService {
         return goodsBasicRepository.loadGoodsByCategoryIdAndAmount(gbinfoty);
     }
     /**
+     * 通过类目id查询商品[客户端分页](按商品销量排列)(数量)
+     */
+    public Integer loadGoodsByAmountCount (GoodsBasicInfoEntity gbinfoty){
+    	return goodsBasicRepository.loadGoodsByAmountCount(gbinfoty);
+    }
+    /**
      * 通过类目id查询商品[客户端分页](按商品创建时间)
      */
     public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity gbinfoty,String page, String limit) {

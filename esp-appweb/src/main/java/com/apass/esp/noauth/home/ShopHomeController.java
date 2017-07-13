@@ -226,7 +226,6 @@ public class ShopHomeController {
     public Response loadGoodsListByCategoryId(Map<String, Object> paramMap){
         try {
               Map<String, Object> returnMap = new HashMap<String, Object>();
-              List<GoodsBasicInfoEntity> goodsList=null;
               
         	  String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
         	  String sort=CommonUtils.getValue(paramMap, "sort");//排序字段
@@ -252,20 +251,23 @@ public class ShopHomeController {
     		  }
     		  
     		  List<GoodsBasicInfoEntity> goodsBasicInfoList=null;
-    		  
+    		  Integer    totalCount=0;
     		  if(CategorySort.CATEGORY_SortA.getCode().equals(sort)){//销量
     			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndAmount(goodsInfoEntity,page, rows);
+    			  totalCount  =goodsService.loadGoodsByAmountCount(goodsInfoEntity);
     		  }else if(CategorySort.CATEGORY_SortN.getCode().equals(sort)){//新品
     			  goodsInfoEntity.setOrder(order);//升序或降序
     			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndNew(goodsInfoEntity,page, rows);
+    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
     		  }else if(CategorySort.CATEGORY_SortP.getCode().equals(sort)){//价格
     			  goodsInfoEntity.setOrder(order);//升序或降序
     			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndPrice(goodsInfoEntity,page, rows);
+    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
     		  }else{//默认（商品上架时间降序）
     			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdDefault(goodsInfoEntity,page, rows);
+    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
     		  }
-    		  
-   			  Integer    totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
+   			     
   		      returnMap.put("totalCount", totalCount);  
   		     
                for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
@@ -273,6 +275,7 @@ public class ShopHomeController {
                     BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
                     goodsInfo.setGoodsPrice(price);
                     goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));//商品首付价
+                    
                     Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
                     goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
 

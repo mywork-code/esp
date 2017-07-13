@@ -27,7 +27,10 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndAmount(GoodsBasicInfoEntity param) {
 		return getSqlSession().selectList("loadGoodsByAmount", param);
 	}
-
+	// 通过类目id查询商品[客户端分页](按商品销量排列)(商品数量)
+	public Integer loadGoodsByAmountCount(GoodsBasicInfoEntity param) {
+		return getSqlSession().selectOne("loadGoodsByAmountCount", param);
+	}
 	// 通过类目id查询商品[客户端分页](按商品创建时间)
 	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity param) {
 		return getSqlSession().selectList("loadGoodsByNew", param);
