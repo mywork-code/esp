@@ -1816,4 +1816,12 @@ public class OrderService {
 	public OrderInfoEntity getOrderInfoEntityByOrderId(String orderId){
 		return orderInfoRepository.selectByOrderId(orderId);
 	}
+
+	/**
+	 * 查询预占库存 代发货的订单
+	 * @return
+	 */
+	public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
+		return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
+	}
 }

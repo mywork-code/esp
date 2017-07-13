@@ -592,4 +592,24 @@
 		where orderstatus in ('D02' , 'D03','D04','D05')
 	</select>
 
+	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
+		<![CDATA[
+		SELECT
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			source source,
+			ext_order_id extOrderId,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
+		]]>
+
+	</select>
 </mapper>

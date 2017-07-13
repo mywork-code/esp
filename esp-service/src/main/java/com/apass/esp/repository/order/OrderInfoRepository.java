@@ -187,4 +187,12 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<String> initGoodsSaleVolume(){
         return this.getSqlSession().selectList("initGoodsSaleVolume");
     }
+
+    /**
+     * 查询预占库存 代发货的订单
+     * @return
+     */
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
+        return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus");
+    }
 }

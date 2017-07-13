@@ -624,10 +624,10 @@ public class TestController {
     public Response createOrder(@RequestBody Map<String, Object> paramMap) {
         List<SkuNum> skuNumList = new ArrayList<>();
         List<PriceSnap> priceSnaps = new ArrayList<>();
-        String a = "1260415";
+        String a = "1248889,2206628,3750556,3220081,2174577,1012927,1236412";
         String aa[] = a.split(",");
         List<Long> skulist = new ArrayList<Long>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 7; i++) {
             SkuNum skuNum = new SkuNum();
             skuNum.setNum(1);
             skuNum.setSkuId(Long.valueOf(aa[i]));
@@ -648,13 +648,18 @@ public class TestController {
         JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skulist).getResult();
         BigDecimal price = null;
         BigDecimal jdPrice = null;
-        if (productPriceList != null && productPriceList.get(0) != null) {
-            Object productPrice = productPriceList.get(0);
-            JSONObject jsonObject = (JSONObject) productPrice;
-            price = jsonObject.getBigDecimal("price");
-            jdPrice = jsonObject.getBigDecimal("jdPrice");
-            priceSnaps.add(new PriceSnap(skulist.get(0), price, jdPrice));
+        for (int i = 0; i < skulist.size(); i++) {
+            for (Object jsonArray : productPriceList) {
+                Object productPrice = jsonArray;
+                JSONObject jsonObject = (JSONObject) productPrice;
+                if(skulist.get(i)==jsonObject.getIntValue("skuId")){
+                    price = jsonObject.getBigDecimal("price");
+                    jdPrice = jsonObject.getBigDecimal("jdPrice");
+                    priceSnaps.add(new PriceSnap(skulist.get(i), price, jdPrice));
+                }
+            }
         }
+
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
@@ -706,7 +711,7 @@ public class TestController {
     @RequestMapping(value = "/orderOccupyStockConfirm", method = RequestMethod.POST)
     @ResponseBody
     public Response orderOccupyStockConfirm(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(58683527927l);
+        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(59461122154l);
         LOGGER.info("confirm order error, {}", confirmResponse.toString());
         int confirmStatus = 0;
         if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
@@ -715,8 +720,11 @@ public class TestController {
             //orderStateSyncer.addOrder(orderNo);
             confirmStatus = 1;
 //			return true;
+
+            JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59461122154l);
+            return Response.success("1", jdApiResponse);
         }
-        return Response.success("1", 58683527927l);
+        return Response.success("1", 59461122154l);
     }
 
     /**
@@ -741,7 +749,15 @@ public class TestController {
     @RequestMapping(value = "/orderJdOrderQuery", method = RequestMethod.POST)
     @ResponseBody
     public Response orderJdOrderQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(58683527927l);
+        JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59461122154l);
+
+        JSONObject jsonObject = jdApiResponse.getResult();
+        Object pOrderV = jsonObject.get("pOrder");
+        if (pOrderV instanceof Number) {//未拆单
+           // long pOrderId = ((Number) pOrderV).longValue();
+        }else{
+
+        }
         return Response.success("1", jdApiResponse);
     }
 

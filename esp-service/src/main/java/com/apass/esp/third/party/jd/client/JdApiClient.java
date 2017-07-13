@@ -56,7 +56,7 @@ public abstract class JdApiClient {
             response = HttpClientUtils.getMethodGetContent(url, headerparams);
         } catch (Exception e) {
             LOGGER.error("response {} return is not 200, param_json {}", response,UrlUtils.encode(param_json));
-            return null;
+            return  new JdApiResponse(key, "");
         }
         JdApiResponse res = new JdApiResponse(key, response, clazz);
         if (!res.isSuccess()) {

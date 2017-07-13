@@ -41,6 +41,12 @@ public class JdApiResponse<T> {
         }
     }
 
+    public JdApiResponse(String key, String response) {
+        this.response = response;
+        success = false;
+    }
+
+
     private Object convert2Result(Class<?> resultClass, Object value) {
         if (JSONObject.class.equals(resultClass)) {
             return (JSONObject) value;
