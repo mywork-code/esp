@@ -1,8 +1,10 @@
 package com.apass.esp.service.category;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,16 +15,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 /**
  * 商品分类操作service
  */
@@ -353,5 +361,89 @@ public class CategoryInfoService {
 	 */
 	public Category selectNameById(Long id){
 		return categoryMapper.selectByPrimaryKey(id);
+	}
+
+	/**
+	 * 根据一级类目id查询二级类目下所有商品
+	 * @param categoryId
+	 * @return
+	 */
+	public List<OtherCategoryGoodsVo> otherCategoryGoods(
+			Long categoryId) {
+    	//查询一级类目下的所有二级类目
+		List<OtherCategoryGoodsVo> list = Lists.newArrayList();
+		List<Category> categories = categoryMapper.selectByParentId(categoryId);//查询所有父级id为categoryId可见的所有类目
+		LOGGER.info("一级类目id:{}对应的二级类目有：{}",categoryId.toString(),GsonUtils.toJson(categories));
+		if(categories == null){
+			return list;
+		}
+		for (Category category : categories) {
+			list.add(convertToOtherCategoryGoodsVo(category));
+		}
+    	//查询每个二级类目下的前10条商品（按上架时间降序排列）
+		Map<String,Object> paramMap = Maps.newHashMap();
+		for (OtherCategoryGoodsVo categoryVo : list) {
+			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryId());
+			List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
+			if(goodsEntities != null){
+				for (GoodsInfoEntity goodsInfoEntity : goodsEntities) {
+					GoodsCategoryDto goodsCategoryDto = convertToGoodsCategoryDto(goodsInfoEntity);
+					goodsCategoryDtos.add(goodsCategoryDto);
+				}
+				categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
+			}
+		}
+    	
+		return list;
+	}
+
+	/**
+	 * GoodsInfoEntity 转 GoodsCategoryDto
+	 * @param goodsInfoEntity
+	 * @return
+	 */
+	private GoodsCategoryDto convertToGoodsCategoryDto(
+			GoodsInfoEntity goodsInfoEntity) {
+		//根据goodsid查询库存，找出最低售价显示前端 
+		List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getId());
+		BigDecimal goodsPrice = null;
+		if(goodsStocks != null){
+			goodsPrice = goodsStocks.get(0).getGoodsPrice();
+			for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
+				if(goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0 ){
+					goodsPrice = goodsStockInfoEntity.getGoodsPrice();
+				}
+			}
+		}
+		
+		
+		GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
+		goodsCategoryDto.setGoodsId(goodsInfoEntity.getId());
+		goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
+		goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
+		goodsCategoryDto.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
+		goodsCategoryDto.setGoodsPrice(goodsPrice);
+		goodsCategoryDto.setFirstPrice(goodsPrice.multiply(new BigDecimal(0.1)));
+		
+		return goodsCategoryDto;
+	}
+
+	/**
+	 * Category转OtherCategoryGoodsVo
+	 * @param category
+	 * @return
+	 */
+	private OtherCategoryGoodsVo convertToOtherCategoryGoodsVo(Category category) {
+		OtherCategoryGoodsVo vo = new OtherCategoryGoodsVo();
+		vo.setCategoryId(category.getId());
+		vo.setCategoryName(category.getCategoryName());
+		vo.setCreateDate(DateFormatUtil.dateToString(category.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+		vo.setCreateUser(category.getCreateUser());
+		vo.setLevel(category.getLevel());
+		vo.setPictureUrl(category.getPictureUrl());
+		vo.setUpdateDate(DateFormatUtil.dateToString(category.getUpdateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+		vo.setUpdateUser(category.getUpdateUser());
+		
+		return vo;
 	}
 }

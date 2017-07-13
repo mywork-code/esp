@@ -1,22 +1,5 @@
 package com.apass.esp.web.aftersale;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
@@ -34,6 +17,21 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -76,7 +74,8 @@ public class CashRefundController {
         if (cashRefundDto.getStatus() == 1) {
             long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
            if (24 * 60 * 60 * 1000L - surplus > 0) {
-            //if ( 2* 60  * 1000L - surplus > 0) {
+//            if ( 2* 60  * 1000L - surplus > 0) {
+//               cashRefundDto.setRefundSurplusTime(new Date(2 * 60 * 60 * 1000L  - surplus));
                 cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L  - surplus));
             } else {
                 cashRefundDto.setRefundSurplusTime(null);

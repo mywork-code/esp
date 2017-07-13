@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
@@ -26,7 +28,8 @@ import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
  */
 @MyBatisRepository
 public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long> {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(GoodsRepository.class);
+	
     public List<GoodsBasicInfoEntity> loadRecommendGoods() {
         return this.getSqlSession().selectList("loadRecommendGoods");
     }
@@ -171,15 +174,21 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 		this.getSqlSession().delete("deleteJDGoodsBatch", ids);
 	}
 
-	public String selectGoodsByExternalId(@Param("externalId")String externalId) throws BusinessException {
+	public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId")String externalId)  {
 		List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
 		
-		if(goodsInfoEnties != null && goodsInfoEnties.size() == 1){
-			return goodsInfoEnties.get(0).getId().toString();
-		}else{
-			throw new BusinessException("数据库数据有误");
-		}
+		return goodsInfoEnties.get(0);
+		
 	}
+
+	public List<GoodsInfoEntity> selectByCategoryId2(Long categoryId) {
+		return this.getSqlSession().selectList("selectByCategoryId2",categoryId);
+	}
+
+	public List<GoodsInfoEntity> selectByCategoryId3(Long categoryId) {
+		return this.getSqlSession().selectList("selectByCategoryId3",categoryId);
+	}
+	
 	//根据京东skuid查询数据库中是否已经插入数据
 	public GoodsInfoEntity  selectGoodsBySkuId(String skuId){
     	return this.getSqlSession().selectOne("selectGoodsByExternalId",skuId);

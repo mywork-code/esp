@@ -204,4 +204,12 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public void updatePreStockStatusByOrderId(Map<String, Object> map) throws BusinessException {
         updateBymap(map, getSQL("updatePreStockStatusByOrderId"));
     }
+
+    /**
+     * 查询预占库存 代发货的订单
+     * @return
+     */
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
+        return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus");
+    }
 }

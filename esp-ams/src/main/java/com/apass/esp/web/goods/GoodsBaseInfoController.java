@@ -529,7 +529,7 @@ public class GoodsBaseInfoController {
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
         }
-
+        GoodsInfoEntity entity = new GoodsInfoEntity();
         if (!"jd".equals(source)) {
             List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
             if (bannerList.isEmpty()) {
@@ -545,6 +545,8 @@ public class GoodsBaseInfoController {
             if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
                 return "商品类目不能为空，请先选择类目！";
             }
+        }else{
+        	entity.setListTime(new Date());
         }
         SystemParamEntity systemParamEntity = null;
         try {
@@ -553,27 +555,28 @@ public class GoodsBaseInfoController {
             return "查询系统参数错误";
         }
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
-            BigDecimal goodsPrice =  goodsStockInfoEntity1.getGoodsPrice();
-            BigDecimal goodsCostPrice =  goodsStockInfoEntity1.getGoodsCostPrice();
-            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice,4, BigDecimal.ROUND_HALF_UP);
-            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4,BigDecimal.ROUND_HALF_UP);;
-            //商品售价除以成本价小于保本率
-            if (dividePoint.compareTo(dividePoint1) == -1) {
-                GoodsInfoEntity entity = new GoodsInfoEntity();
-                entity.setId(Long.valueOf(id));
-                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
-                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-                goodsService.updateService(entity);
-                return "该商品已进入保本率审核页面";
+            if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
+	            BigDecimal goodsPrice =  goodsStockInfoEntity1.getGoodsPrice();
+	            BigDecimal goodsCostPrice =  goodsStockInfoEntity1.getGoodsCostPrice();
+	            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice,4, BigDecimal.ROUND_HALF_UP);
+	            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4,BigDecimal.ROUND_HALF_UP);;
+	            //商品售价除以成本价小于保本率
+	            if (dividePoint.compareTo(dividePoint1) == -1) {
+	                entity.setId(Long.valueOf(id));
+	                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+	                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+	                goodsService.updateService(entity);
+	                return "该商品已进入保本率审核页面";
+	            }
             }
+
+	        entity.setId(Long.valueOf(id));
+	        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+	        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+	        goodsService.updateService(entity);
+        
         }
-
-
-        GoodsInfoEntity entity = new GoodsInfoEntity();
-        entity.setId(Long.valueOf(id));
-        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
-        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-        goodsService.updateService(entity);
+        
         return SUCCESS;
     }
 
@@ -587,7 +590,11 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelf")
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
+        String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity entity = new GoodsInfoEntity();
+        if("jd".equals(source)){
+        	entity.setDelistTime(new Date());
+        }
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());

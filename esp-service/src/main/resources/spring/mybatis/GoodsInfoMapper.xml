@@ -867,4 +867,90 @@
 			from t_esp_goods_base_info t
 			where external_id = #{externalId}
 	</select>
+	
+	<!-- 根据二级类目id查询其下所有商品 -->
+	<select id="selectByCategoryId2" resultType="GoodsInfoEntity">
+		SELECT
+		 	 	t.category_id1 categoryId1,
+		 	 	t.category_id2 categoryId2,
+		 	 	t.category_id3 categoryId3,
+				t.ID id,
+				t.category_code categoryCode,
+				t.goods_name goodsName,
+				t.goods_title goodsTitle,
+				t.goods_sell_pt goodsSellPt,
+				t.goods_type goodsType,
+				t.goods_type goodsTypeDesc,
+				t.goods_logo_url goodsLogoUrl,
+				t.list_time listTime,
+				t.delist_time delistTime,
+				t.pro_date proDate,
+				t.keep_date keepDate,
+				t.sup_no supNo,
+				t.create_user createUser,
+				t.update_user updateUser,
+				t.create_date createDate,
+				t.update_date updateDate,
+				t.merchant_code merchantCode,
+				t.status status,
+				t.status statusDesc,
+				t.goods_Sku_Type goodsSkuType,
+				t.goods_Model goodsModel,
+				t.goods_sift_url goodsSiftUrl,
+				t.sord_no sordNo,
+				t.un_support_province unSupportProvince,
+				t.source source,
+				t.external_id externalId,
+				t.external_status externalStatus
+			FROM
+				t_esp_goods_base_info t
+			WHERE
+				t.status = 'G02' and
+				t.category_id2 = #{categoryId}
+			ORDER BY
+				list_time
+			LIMIT 0,10
+	</select>
+	
+	<!-- 根据三级类目id查询其下已下架或待上架商品 -->
+	<select id="selectByCategoryId3" resultType="GoodsInfoEntity">
+		SELECT
+		 	 	t.category_id1 categoryId1,
+		 	 	t.category_id2 categoryId2,
+		 	 	t.category_id3 categoryId3,
+				t.ID id,
+				t.category_code categoryCode,
+				t.goods_name goodsName,
+				t.goods_title goodsTitle,
+				t.goods_sell_pt goodsSellPt,
+				t.goods_type goodsType,
+				t.goods_type goodsTypeDesc,
+				t.goods_logo_url goodsLogoUrl,
+				t.list_time listTime,
+				t.delist_time delistTime,
+				t.pro_date proDate,
+				t.keep_date keepDate,
+				t.sup_no supNo,
+				t.create_user createUser,
+				t.update_user updateUser,
+				t.create_date createDate,
+				t.update_date updateDate,
+				t.merchant_code merchantCode,
+				t.status status,
+				t.status statusDesc,
+				t.goods_Sku_Type goodsSkuType,
+				t.goods_Model goodsModel,
+				t.goods_sift_url goodsSiftUrl,
+				t.sord_no sordNo,
+				t.un_support_province unSupportProvince,
+				t.source source,
+				t.external_id externalId,
+				t.external_status externalStatus
+			FROM
+				t_esp_goods_base_info t
+			WHERE
+				t.status in('G01','G02','G04') and
+				t.category_id3 = #{categoryId}
+	</select>
+	
 </mapper> 

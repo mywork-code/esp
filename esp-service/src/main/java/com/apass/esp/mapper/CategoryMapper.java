@@ -25,5 +25,7 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     
     List<Category> goodsCategoryList(Long levelId);
     List<Category> goodsCategoryListById(Long parentId);
+
+	List<Category> selectByParentId(Long categoryId);
 }
 

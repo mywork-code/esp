@@ -1,25 +1,20 @@
 package com.apass.esp.domain.enums;
 
-public enum CashRefundVoStatus {
+public enum CategorySort {
 
-	CASHREFUND_STATUS0("0", "退款"),
-	
-	CASHREFUND_STATUS1("1", "处理中"),
+	CATEGORY_SortD("default", "默认"),
 
-	CASHREFUND_STATUS2("2", "退款中"),
-	
-	CASHREFUND_STATUS4("4", "退款成功"),
-	
-	CASHREFUND_STATUS3("3", "取消退款"),
+	CATEGORY_SortA("amount", "销量"),
 
-	CASHREFUND_OTHER("5","其他"),
-	;
+	CATEGORY_SortN("new", "新品"),
+	
+	CATEGORY_SortP("price", "价格");
 
 	private String code;
 
 	private String message;
 
-	private CashRefundVoStatus(String code, String message) {
+	private CategorySort(String code, String message) {
 		this.code = code;
 		this.message = message;
 	}
@@ -39,5 +34,7 @@ public enum CashRefundVoStatus {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+
 
 }

@@ -1254,6 +1254,8 @@ public class OrderService {
         	}
         }
         orderDetailInfoDto.setPreDelivery(order.getPreDelivery());
+			  orderDetailInfoDto.setUserId(order.getUserId());
+			  orderDetailInfoDto.setMainOrderId(order.getMainOrderId());
         return orderDetailInfoDto;
     }
 
@@ -1841,7 +1843,6 @@ public class OrderService {
 	public OrderInfoEntity getOrderInfoEntityByOrderId(String orderId){
 		return orderInfoRepository.selectByOrderId(orderId);
 	}
-	
 	/**
 	 * 释放预占库存
 	 * @throws BusinessException
@@ -1864,7 +1865,7 @@ public class OrderService {
 		}
 		
 		/**
-		 * 修改订单暂用库存字段为取消占用，更新时间
+		 * 修改订单占用库存字段为取消占用，更新时间
 		 */
 		Map<String,Object> params = Maps.newHashMap();
         params.put("preStockStatus",PreStockStatus.CANCLE_PRE_STOCK.getCode());
@@ -1873,5 +1874,12 @@ public class OrderService {
         	params.put("orderId", order.getOrderId());
         	orderInfoRepository.updatePreStockStatusByOrderId(params);
 		}
+	}
+	/**
+	 * 查询预占库存 代发货的订单
+	 * @return
+	 */
+	public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
+		return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
 	}
 }

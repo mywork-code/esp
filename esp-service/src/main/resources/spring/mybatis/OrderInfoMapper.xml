@@ -592,10 +592,10 @@
 		where orderstatus in ('D02' , 'D03','D04','D05')
 	</select>
 
+
     <!-- 获取失效和删除的预占库存的京东订单 -->
 	<select id="getInvalidAndDeleteJdOrder" resultType="OrderInfoEntity">
 	<![CDATA[
-		SELECT
 			id id,
 			order_id orderId,
 			user_id userId,
@@ -607,10 +607,29 @@
 			source source,
 			pre_stock_status preStockStatus,
 			ext_order_id extOrderId
-		FROM
+			FROM
 			t_esp_order_info
 		WHERE
 			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
+		]]>
+	</select>
+	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			source source,
+			ext_order_id extOrderId,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
 		]]>
 	</select>
 	<!-- 根据订单的编号，修改字段 -->
