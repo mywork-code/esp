@@ -3,6 +3,7 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
@@ -22,6 +23,7 @@ import java.util.List;
 /**
  * type: class
  * 确认预占库存，拆单情况处理
+ *
  * @author xianzhi.wang
  * @see
  * @since JDK 1.8
@@ -41,7 +43,8 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private JdOrderApiClient jdOrderApiClient;
 
-
+    @Autowired
+    private GoodsService goodsService;
 
     @Scheduled(cron = "0 0/5 * * * *")
     public void handleJdConfirmPreInventoryTask() {
@@ -53,22 +56,22 @@ public class JdConfirmPreInventoryTask {
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList
                 ) {
             String jdOrderIdp = orderInfoEntity.getExtOrderId();
-            LOGGER.info(" JdConfirmPreInventoryTask  jdOrderIdp {}  begin....",jdOrderIdp);
+            LOGGER.info(" JdConfirmPreInventoryTask  jdOrderIdp {}  begin....", jdOrderIdp);
             long jdOrderId = Long.valueOf(jdOrderIdp);
             JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(jdOrderId);
-            LOGGER.info("confirm order jdOrderIdp {} confirmResponse {}", jdOrderIdp,confirmResponse.toString());
+            LOGGER.info("confirm order jdOrderIdp {} confirmResponse {}", jdOrderIdp, confirmResponse.toString());
             int confirmStatus = 0;
             if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
                 JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
                 if (!jdApiResponse.isSuccess()) {
-                    LOGGER.info("confirm order jdOrderIdp {} confirmResponse {} orderJdOrderQuery result {}", jdOrderIdp,confirmResponse.toString(),jdApiResponse);
+                    LOGGER.info("confirm order jdOrderIdp {} confirmResponse {} orderJdOrderQuery result {}", jdOrderIdp, confirmResponse.toString(), jdApiResponse);
                 }
                 JSONObject jsonObject = jdApiResponse.getResult();
                 Object pOrderV = jsonObject.get("pOrder");
                 if (pOrderV instanceof Number) {
                     //未拆单
                     long pOrderId = ((Number) pOrderV).longValue();
-                }else{
+                } else {
                     //拆单
                     JSONObject pOrderJsonObject = (JSONObject) pOrderV;
                     //父订单状态
@@ -80,7 +83,7 @@ public class JdConfirmPreInventoryTask {
                     for (int i = 0; i < cOrderArray.size(); i++) {
                         JSONObject cOrderJsonObject = cOrderArray.getJSONObject(i);
                         if (cOrderJsonObject.getLongValue("pOrder") != jdOrderId) {
-                            LOGGER.info("cOrderJsonObject.getLongValue(\"pOrder\") {}, jdOrderId",cOrderJsonObject.getLongValue("pOrder"),jdOrderId);
+                            LOGGER.info("cOrderJsonObject.getLongValue(\"pOrder\") {}, jdOrderId", cOrderJsonObject.getLongValue("pOrder"), jdOrderId);
                         }
                         long cOrderId = cOrderJsonObject.getLongValue("jdOrderId");//京东子订单ID
                         JSONArray cOrderSkuList = cOrderJsonObject.getJSONArray("sku");
@@ -88,11 +91,13 @@ public class JdConfirmPreInventoryTask {
                         Integer sumNum = 0;
                         for (int j = 0; j < cOrderSkuList.size(); j++) {
                             long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
+                            goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                            
                             BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
                             int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
                             String name = cOrderSkuList.getJSONObject(j).getString("name");
                             jdPrice = jdPrice.add(price.multiply(new BigDecimal(num)));
-                            sumNum=sumNum+num;
+                            sumNum = sumNum + num;
 
                         }
 
@@ -100,8 +105,8 @@ public class JdConfirmPreInventoryTask {
 
                 }
 
-            }else{
-                LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp,confirmResponse);
+            } else {
+                LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
             }
         }
     }

@@ -174,7 +174,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 		this.getSqlSession().delete("deleteJDGoodsBatch", ids);
 	}
 
-	public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId")String externalId) throws BusinessException {
+	public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId")String externalId)  {
 		List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
 		
 		return goodsInfoEnties.get(0);

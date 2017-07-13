@@ -538,7 +538,7 @@ public class GoodsService {
 	 * @return
  * @throws BusinessException
 	 */
-   public GoodsInfoEntity selectGoodsByExternalId(String externalId) throws BusinessException {
+   public GoodsInfoEntity selectGoodsByExternalId(String externalId) {
  	 return goodsDao.selectGoodsByExternalId(externalId);
    }
 
