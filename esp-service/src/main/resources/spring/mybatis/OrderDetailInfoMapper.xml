@@ -109,7 +109,10 @@
              keep_date,
              sup_no,
              create_date,
-             update_date)
+             update_date,
+             source,
+             sku_id
+             )
 			values (
 			#{orderId, jdbcType=VARCHAR},
 	        #{goodsStockId, jdbcType=VARCHAR},
@@ -129,7 +132,9 @@
 	        #{keepDate, jdbcType=VARCHAR},
 	        #{supNo, jdbcType=VARCHAR},
 	      	CURRENT_TIMESTAMP,
-	        CURRENT_TIMESTAMP);
+	        CURRENT_TIMESTAMP,
+	        #{source, jdbcType=VARCHAR},
+	        #{skuId, jdbcType=VARCHAR});
 	]]>
 	</insert>
 

@@ -111,6 +111,18 @@ public class OrderDetailInfoEntity {
      * 商品的当前库存
      */
     private Long stockCurrAmt;
+    
+    /**
+     * 来源（比如：京东（jd））
+     */
+    private String source;
+    
+    /**
+     * 京东商品的编号
+     */
+    private String skuId;
+    
+    
 
     public String getGoodsModel() {
         return goodsModel;
@@ -294,6 +306,22 @@ public class OrderDetailInfoEntity {
 
 	public void setStockCurrAmt(Long stockCurrAmt) {
 		this.stockCurrAmt = stockCurrAmt;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
 	}
 
 }
