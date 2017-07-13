@@ -2,12 +2,14 @@ package com.apass.esp.schedule;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -16,6 +18,7 @@ import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -69,7 +72,10 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     public OrderDetailInfoRepository orderDetailInfoRepository;
 
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Autowired
+    public GoodsRepository goodsDao;
+
+    @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
         List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
@@ -83,7 +89,7 @@ public class JdConfirmPreInventoryTask {
             long jdOrderId = Long.valueOf(jdOrderIdp);
             JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(jdOrderId);
             LOGGER.info("confirm order jdOrderIdp {} confirmResponse {}", jdOrderIdp, confirmResponse.toString());
-            int confirmStatus = 0;
+            //int confirmStatus = 0;
             if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
                 JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
                 if (!jdApiResponse.isSuccess()) {
@@ -93,7 +99,7 @@ public class JdConfirmPreInventoryTask {
                 Object pOrderV = jsonObject.get("pOrder");
                 if (pOrderV instanceof Number) {
                     //未拆单
-                    long pOrderId = ((Number) pOrderV).longValue();
+                    //long pOrderId = ((Number) pOrderV).longValue();
                 } else {
                     String merchantCode = orderInfoEntity.getMerchantCode();
                     String deviceType = orderInfoEntity.getDeviceType();
@@ -163,16 +169,32 @@ public class JdConfirmPreInventoryTask {
                             BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
                             int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
                             String name = cOrderSkuList.getJSONObject(j).getString("name");
-
+                            GoodsInfoEntity goods = goodsDao.select(goodsId);
                             //orderDetail插入对应记录
                             OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
                             orderDetail.setOrderId(cOrderQh);
                             orderDetail.setGoodsId(goodsId);
+                            orderDetail.setSkuId(String.valueOf(skuId));
+                            orderDetail.setSource(SourceType.JD.getCode());
                             orderDetail.setGoodsPrice(price);
                             orderDetail.setGoodsNum(Long.valueOf(num));
                             orderDetail.setMerchantCode(merchantCode);
+                            orderDetail.setGoodsTitle(goods.getGoodsTitle());
+                            orderDetail.setCategoryCode(goods.getCategoryCode());
+                            orderDetail.setGoodsName(goods.getGoodsName());
+                            orderDetail.setGoodsSellPt(goods.getGoodsSellPt());
+                            orderDetail.setGoodsType(goods.getGoodsType());
+                            orderDetail.setListTime(goods.getListTime());
+                            orderDetail.setDelistTime(goods.getDelistTime());
+                            orderDetail.setProDate(goods.getProDate());
+                            orderDetail.setKeepDate(goods.getKeepDate());
+                            orderDetail.setSupNo(goods.getSupNo());
                             orderDetail.setCreateDate(new Date());
                             Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
+                            if (orderDetailSuccess < 1) {
+                                LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order detail error  ", jdOrderId, cOrderId, cOrderQh);
+                                continue;
+                            }
                         }
                     }
 
