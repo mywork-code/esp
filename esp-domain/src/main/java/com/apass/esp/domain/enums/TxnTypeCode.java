@@ -13,11 +13,13 @@ public enum TxnTypeCode {
 
 	XYZF_CODE("T02", "信用支付"),
 
-	XJTX_CODE("T03", "现金提现"),
+	XJTX_CODE("T03", "额度取现分期"),
 
 	XFFQ_CODE("T04", "消费分期"),
 	
 	KQEZF_CODE("T05", "卡全额支付"),
+
+	REPAY_CODE("T06", "未出账还款交易流水"),
 
 	CASH_REFUND_CODE("T07","信用支付交易退款流水"),
 	

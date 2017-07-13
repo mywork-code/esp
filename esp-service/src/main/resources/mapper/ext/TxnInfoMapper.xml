@@ -80,4 +80,15 @@
        WHERE
 			order_id = #{orderId} and txn_type = #{typeCode}
     </update>
+
+    <select id="selectLatestTxnByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_apass_txn_info
+        WHERE
+        user_id = #{userId} and txn_type = #{txnType}
+        order by txn_id desc limit 1
+    </select>
+
 </mapper>
