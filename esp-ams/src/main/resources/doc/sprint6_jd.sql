@@ -64,3 +64,5 @@ ADD COLUMN `ext_order_id` varchar(32) DEFAULT '' COMMENT '外部订单id(例如�
 ALTER TABLE `t_esp_work_city_jd`
 ADD COLUMN `PREFIX`  varchar(10)  DEFAULT '' COMMENT '首字母',
 ADD COLUMN `SPELL`  varchar(50)  DEFAULT '' COMMENT '城市中文拼音' ;
+
+ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `ext_parent_id`  tinyint(1) DEFAULT -1 COMMENT '是否为京东父订单号，默认 -1 ；0：京东父订单' ;
