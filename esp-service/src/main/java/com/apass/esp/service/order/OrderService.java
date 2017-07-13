@@ -8,13 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.WorkCityJd;
-import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
-import com.apass.esp.mapper.WorkCityJdMapper;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +27,8 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -53,7 +49,8 @@ import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
-import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
+import com.apass.esp.mapper.WorkCityJdMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -74,7 +71,6 @@ import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
-import com.apass.esp.third.party.jd.entity.base.Province;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -452,7 +448,7 @@ public class OrderService {
         params.put("extOrderId",jdOrderId);
         for (String orderId : orders) {
         	params.put("orderId", orderId);
-        	orderSubInfoRepository.updatePreStockStatusByOrderId(params);
+        	orderInfoRepository.updatePreStockStatusByOrderId(params);
 		}
         
 		return jdOrderId;
@@ -492,7 +488,7 @@ public class OrderService {
         addressInfo.setTownId(Integer.valueOf(towns.getCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
-        addressInfo.setEmail("wangxianzhi1211@163.com");//TODO
+        addressInfo.setEmail("xujie@apass.cn");
         addressInfo.setMobile(address.getTelephone());
 		return addressInfo;
 	}
@@ -598,9 +594,9 @@ public class OrderService {
 			
 			if(StringUtils.equals(merchantInfoEntity.getMerchantName(),ConstantsUtils.MERCHANTNAME)){
 				orderInfo.setSource(SourceType.JD.getCode());
+				orderInfo.setExtParentId(0);
 			}
-			String orderId =//commonService.createOrderId(userId);
-					commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
+			String orderId = commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
 			orderList.add(orderId);
 			orderInfo.setDeviceType(deviceType);
 			orderInfo.setOrderId(orderId);
@@ -1844,5 +1840,38 @@ public class OrderService {
 	 */
 	public OrderInfoEntity getOrderInfoEntityByOrderId(String orderId){
 		return orderInfoRepository.selectByOrderId(orderId);
+	}
+	
+	/**
+	 * 释放预占库存
+	 * @throws BusinessException
+	 */
+	public void freedJdStock() throws BusinessException{
+		/**
+		 * 1.首先查询 失效和删除的京东订单
+		 * 2.循环，拿到订单信息中的京东订单的id
+		 * 3.调用释放占用库存的接口，传入京东订单的id
+		 * 4.释放完库存后，修改订单的pre_stock_status状态为3
+		 */
+		List<OrderInfoEntity> orderList = orderInfoRepository.getInvalidAndDeleteJdOrder();
+		if(!CollectionUtils.isEmpty(orderList)){
+			for (OrderInfoEntity order : orderList) {
+				JdApiResponse<Boolean> jd = jdOrderApiClient.orderCancelorder(Long.valueOf(order.getExtOrderId()));
+				if(!jd.isSuccess() || !jd.getResult()){
+					throw new BusinessException("取消未确认的订单失败!");
+				}
+			}
+		}
+		
+		/**
+		 * 修改订单暂用库存字段为取消占用，更新时间
+		 */
+		Map<String,Object> params = Maps.newHashMap();
+        params.put("preStockStatus",PreStockStatus.CANCLE_PRE_STOCK.getCode());
+        params.put("updateTime",new Date());
+        for (OrderInfoEntity order : orderList) {
+        	params.put("orderId", order.getOrderId());
+        	orderInfoRepository.updatePreStockStatusByOrderId(params);
+		}
 	}
 }

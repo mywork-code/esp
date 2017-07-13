@@ -4,7 +4,8 @@ public enum PreStockStatus {
 
 
 	PRE_STOCK("1", "预占"),
-	SURE_STOCK("2","确认");
+	SURE_STOCK("2","确认"),
+	CANCLE_PRE_STOCK("3","取消预占");
 
 	private String code;
 

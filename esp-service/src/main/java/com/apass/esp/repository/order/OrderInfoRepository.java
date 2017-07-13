@@ -187,4 +187,21 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<String> initGoodsSaleVolume(){
         return this.getSqlSession().selectList("initGoodsSaleVolume");
     }
+    
+    /**
+     * 获取失效和删除的预占库存的京东订单
+     * @return
+     */
+    public List<OrderInfoEntity> getInvalidAndDeleteJdOrder() {
+    	return this.getSqlSession().selectList("getInvalidAndDeleteJdOrder");
+    }
+    
+    /**
+     * 更新订单的是否预占库存状态
+     * 
+     * @throws BusinessException
+     */
+    public void updatePreStockStatusByOrderId(Map<String, Object> map) throws BusinessException {
+        updateBymap(map, getSQL("updatePreStockStatusByOrderId"));
+    }
 }

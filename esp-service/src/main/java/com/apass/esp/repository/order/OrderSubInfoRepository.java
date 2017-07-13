@@ -1,11 +1,8 @@
 package com.apass.esp.repository.order;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -78,15 +75,6 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
         updateBymap(map, getSQL("updateOrderStatusAndLastRtimeByOrderId"));
     }
 
-    /**
-     * 更新订单的是否预占库存状态
-     * 
-     * @throws BusinessException
-     */
-    public void updatePreStockStatusByOrderId(Map<String, Object> map) throws BusinessException {
-        updateBymap(map, getSQL("updatePreStockStatusByOrderId"));
-    }
-    
     /**
      * 订单查询导出查询
      * @param map
