@@ -24,6 +24,8 @@ public class AddressInfoEntity {
     
     private String district;
     
+    private String towns;
+    
     private String address;
     
     private String postcode;
@@ -33,7 +35,7 @@ public class AddressInfoEntity {
     private String telephone;
     
     private String isDefault;
-
+    
     public Long getId() {
         return id;
     }
@@ -121,6 +123,14 @@ public class AddressInfoEntity {
     public void setIsDefault(String isDefault) {
         this.isDefault = isDefault;
     }
+
+	public String getTowns() {
+		return towns;
+	}
+
+	public void setTowns(String towns) {
+		this.towns = towns;
+	}
     
     
 }

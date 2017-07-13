@@ -29,4 +29,6 @@ public class ConstantsUtils {
     }
     //银行卡支付比例
     public static final BigDecimal CASHRATIO=BigDecimal.valueOf(0.1);
+    
+    public static final String MERCHANTNAME = "京东";
 }

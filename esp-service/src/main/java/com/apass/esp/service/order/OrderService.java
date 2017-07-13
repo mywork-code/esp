@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
+import com.apass.esp.mapper.WorkCityJdMapper;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
@@ -43,7 +49,9 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
@@ -62,6 +70,15 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.client.JdOrderApiClient;
+import com.apass.esp.third.party.jd.client.JdProductApiClient;
+import com.apass.esp.third.party.jd.entity.base.Province;
+import com.apass.esp.third.party.jd.entity.order.OrderReq;
+import com.apass.esp.third.party.jd.entity.order.PriceSnap;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.jd.entity.person.AddressInfo;
+import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -110,9 +127,14 @@ public class OrderService {
 	@Autowired
 	private MerchantInforService merchantInforService;
 	@Autowired
-	private CashRefundMapper   cashRefundMapper;
-	@Autowired
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
+	@Autowired
+    private JdProductApiClient jdProductApiClient;
+	@Autowired
+	private WorkCityJdMapper cityJdMapper;
+	@Autowired
+    private JdOrderApiClient jdOrderApiClient;
+	
 
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -298,9 +320,153 @@ public class OrderService {
 			}
 		}
 		// 4 生成订单
-		return generateOrder(requestId, userId, totalPayment, purchaseList, addressId,deviceType);
+		List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,deviceType);
+		
+		
+		String jdOrderId = preStockStatus(orders, addressId);
+		
+		
+		return orders;
 	}
 
+	/**
+	 * 设置京东商品预占库存
+	 * @return
+	 * @throws BusinessException 
+	 */
+	public String preStockStatus(List<String> orderIdList,Long addressId) throws BusinessException{
+		/**
+		 * 首先根据订单的id，获取订单的detail信息，拿到detail信息，获取goodId,根据goodId获取good信息，然后获取京东商品skuId
+		 */
+		List<String> orders = new ArrayList<String>();
+		for (String orderId : orderIdList) {
+			OrderInfoEntity entity = selectByOrderId(orderId);
+			//验证订单是否为京东订单
+			if(StringUtils.equals(entity.getSource(), SourceType.JD.getCode())){
+				orders.add(orderId);
+			}
+		}
+		/**
+		 * 如果不存在京东订单,就不需要往下一步走
+		 */
+		if(CollectionUtils.isEmpty(orders)){
+			return null;
+		}
+		/**
+		 * 根据订单的Id,查询，所属的订单详情信息
+		 */
+		List<SkuNum> skuNumList = new ArrayList<>();
+		List<PriceSnap> priceSnaps = new ArrayList<>();
+		 List<Long> skulist = new ArrayList<Long>();
+		List<OrderDetailInfoEntity> details =  orderDetailInfoRepository.queryOrderDetailListByOrderList(orders);
+		for (OrderDetailInfoEntity detail : details) {
+			GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+			SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()),detail.getGoodsNum().intValue());
+			skuNumList.add(num);
+			skulist.add(Long.valueOf(goods.getExternalId()));
+		}
+		
+		/**
+		 * 获取用户的地址信息
+		 */
+		AddressInfo addressInfo = getAddressByOrderId(addressId);
+        
+		/**
+		 * 批量查询京东价格
+		 */
+		JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skulist).getResult();
+        BigDecimal price = null;
+        BigDecimal jdPrice = null;
+        if (productPriceList != null && productPriceList.get(0) != null) {
+            Object productPrice = productPriceList.get(0);
+            JSONObject jsonObject = (JSONObject) productPrice;
+            price = jsonObject.getBigDecimal("price");
+            jdPrice = jsonObject.getBigDecimal("jdPrice");
+            priceSnaps.add(new PriceSnap(skulist.get(0), price, jdPrice));
+        }
+        OrderReq orderReq = new OrderReq();
+        orderReq.setSkuNumList(skuNumList);
+        orderReq.setAddressInfo(addressInfo);
+        orderReq.setOrderPriceSnap(priceSnaps);
+        orderReq.setRemark("test");
+		/**
+		 * 验证商品是否可售
+		 */
+        JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(orderReq.getSkuNumList());
+        if (!skuCheckResult.isSuccess()) {
+            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
+        }
+        for (Object o : skuCheckResult.getResult()) {
+            JSONObject jsonObject = (JSONObject) o;
+            int saleState = jsonObject.getIntValue("saleState");
+            if (saleState != 1) {
+                LOGGER.info("sku[{}] could not sell,detail:", jsonObject.getLongValue("skuId"), jsonObject.toJSONString());
+                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
+            }
+        }
+		/**
+		 * 批量获取库存接口
+		 */
+        List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo().toRegion());
+        for (Stock stock : stocks) {
+            if (!"有货".equals(stock.getStockStateDesc())) {
+                LOGGER.info("sku[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
+                LOGGER.info(stock.getSkuId() + "_");
+            }
+        }
+		/**
+		 * 统一下单接口
+		 */
+        JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
+        LOGGER.info(orderResponse.toString());
+        if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode())) && !"3004".equals(orderResponse.getResultCode())) {
+            LOGGER.warn("submit order error, {}", orderResponse.toString());
+
+        } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
+            LOGGER.warn("submit order error, {}", orderResponse.toString());
+        }
+        String jdOrderId = orderResponse.getResult().getString("jdOrderId");
+		return jdOrderId;
+	}
+	
+	public AddressInfo getAddressByOrderId(Long addressId) throws BusinessException{
+		
+		AddressInfo addressInfo = new AddressInfo();
+		
+		if(null == addressId){
+			throw new BusinessException("地址编号不能为空");
+		}
+		
+		AddressInfoEntity address = addressInfoDao.select(Long.valueOf(addressId));
+		
+		//根据省、市、区获取对应的编码
+		Map<String,Object> params = Maps.newHashMap();
+		params.put("value", address.getProvince());
+		params.put("parent", 0);
+		WorkCityJd provice = cityJdMapper.selectByNameAndParent(params);
+		
+		params.put("value", address.getCity());
+		params.put("parent", provice.getCode());
+		WorkCityJd city = cityJdMapper.selectByNameAndParent(params);
+		
+		params.put("value", address.getProvince());
+		params.put("parent", city.getCode());
+		WorkCityJd district = cityJdMapper.selectByNameAndParent(params);
+		
+		params.put("value", address.getProvince());
+		params.put("parent", district.getCode());
+		WorkCityJd towns = cityJdMapper.selectByNameAndParent(params);
+		
+		addressInfo.setProvinceId(Integer.valueOf(provice.getCode()));
+        addressInfo.setCityId(Integer.valueOf(city.getCode()));
+        addressInfo.setCountyId(Integer.valueOf(district.getCode()));
+        addressInfo.setTownId(Integer.valueOf(towns.getCode()));
+        addressInfo.setAddress(address.getAddress());
+        addressInfo.setReceiver(address.getName());
+        addressInfo.setEmail("wangxianzhi1211@163.com");//TODO
+        addressInfo.setMobile(address.getTelephone());
+		return addressInfo;
+	}
 	/**
 	 * 修改商品数目 不可循环调用该方法否则无法回滚
 	 * 
@@ -400,6 +566,10 @@ public class OrderService {
 			orderInfo.setUserId(userId);
 			orderInfo.setOrderAmt(orderAmt);
 			MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+			
+			if(StringUtils.equals(merchantInfoEntity.getMerchantName(),ConstantsUtils.MERCHANTNAME)){
+				orderInfo.setSource(SourceType.JD.getCode());
+			}
 			String orderId =//commonService.createOrderId(userId);
 					commonService.createOrderIdNew(deviceType,merchantInfoEntity.getId());
 			orderList.add(orderId);
