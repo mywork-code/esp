@@ -116,6 +116,74 @@ public class GoodsService {
         return goodsBasicRepository.loadGoodsPages(pageParam, param);
     }
     /**
+     * 通过类目id查询商品[客户端分页](按商品销量排列)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndAmount(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndAmount(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品创建时间)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndNew(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdDefault(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdDefault(gbinfoty);
+    }
+    /**
+     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
+     */
+    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndPrice(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+        Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        gbinfoty.setPage((pageInteger - 1) * limitInteger);
+        gbinfoty.setRows(limitInteger);
+        return goodsBasicRepository.loadGoodsByCategoryIdAndPrice(gbinfoty);
+    }
+	public Integer loadGoodsCount(GoodsBasicInfoEntity param){
+        return goodsBasicRepository.loadGoodsCount(param);
+	}
+
+    /**
      *
      * 加载商品列表
      *

@@ -76,6 +76,10 @@ public class GoodsBasicInfoEntity {
 	 */
 	private BigDecimal goodsPrice;
 	/**
+	 * 商品首付价
+	 */
+	private BigDecimal goodsPriceFirst;
+	/**
 	 * 市场价
 	 */
 	private BigDecimal marketPrice;
@@ -94,7 +98,12 @@ public class GoodsBasicInfoEntity {
      * 不支持配送区域
      */
     private String unSupportProvince;
-
+    private Integer page;
+    private Integer rows;
+    /**
+     * 顺序(desc（降序），asc（升序）)
+     */
+    private String order;
     public String getUnSupportProvince() {
 		return unSupportProvince;
 	}
@@ -193,4 +202,37 @@ public class GoodsBasicInfoEntity {
 	public void setCategoryId3(Long categoryId3) {
 		this.categoryId3 = categoryId3;
 	}
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	public Integer getRows() {
+		return rows;
+	}
+
+	public void setRows(Integer rows) {
+		this.rows = rows;
+	}
+
+	public String getOrder() {
+		return order;
+	}
+
+	public void setOrder(String order) {
+		this.order = order;
+	}
+
+	public BigDecimal getGoodsPriceFirst() {
+		return goodsPriceFirst;
+	}
+
+	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
+		this.goodsPriceFirst = goodsPriceFirst;
+	}
+	
 }
