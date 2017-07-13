@@ -16,6 +16,7 @@ import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
+import com.apass.gfb.framework.logstash.LOG;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,25 +115,22 @@ public class JdConfirmPreInventoryTask {
                         JSONArray cOrderSkuList = cOrderJsonObject.getJSONArray("sku");
                         BigDecimal jdPrice = BigDecimal.ZERO;//订单金额
                         Integer sumNum = 0;
-
-                        //创建订单
-                        String cOrderQh = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
-
                         for (int j = 0; j < cOrderSkuList.size(); j++) {
                             BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
                             int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
                             jdPrice = jdPrice.add(price.multiply(new BigDecimal(num)));
                             sumNum = sumNum + num;
                         }
-
+                        //创建新的订单号
+                        String cOrderQh = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
+                        //拆单创建新的订单
                         OrderInfoEntity orderInfo = new OrderInfoEntity();
                         orderInfo.setUserId(orderInfoEntity.getUserId());
                         orderInfo.setOrderAmt(jdPrice);
                         orderInfo.setSource(SourceType.JD.getCode());
+                        orderInfo.setExtParentId(-1);//为子订单
                         orderInfo.setDeviceType(deviceType);
                         orderInfo.setOrderId(cOrderQh);
-                        orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
-                        orderInfo.setUpdateDate(new Date());
                         orderInfo.setGoodsNum(Long.valueOf(sumNum));
                         orderInfo.setPayStatus(PaymentStatus.PAYSUCCESS.getCode());
                         orderInfo.setProvince(orderInfoEntity.getProvince());
@@ -142,12 +140,18 @@ public class JdConfirmPreInventoryTask {
                         orderInfo.setPostcode(orderInfoEntity.getPostcode());
                         orderInfo.setName(orderInfoEntity.getName());
                         orderInfo.setTelephone(orderInfoEntity.getTelephone());
-
-
-
+                        orderInfo.setMerchantCode(merchantCode);
+                        orderInfo.setExtendAcceptGoodsNum(orderInfoEntity.getExtendAcceptGoodsNum());
+                        orderInfo.setAddressId(orderInfoEntity.getAddressId());
+                        orderInfo.setPreDelivery(orderInfoEntity.getPreDelivery());
+                        orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
+                        orderInfo.setUpdateDate(new Date());
                         orderInfo.setExtOrderId(String.valueOf(cOrderId));
                         Integer successStatus = orderInfoRepository.insert(orderInfo);
-
+                        if (successStatus < 1) {
+                            LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
+                            continue;
+                        }
                         for (int j = 0; j < cOrderSkuList.size(); j++) {
                             long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
                             GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
