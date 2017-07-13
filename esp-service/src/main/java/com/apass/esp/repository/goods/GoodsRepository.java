@@ -188,5 +188,10 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 	public List<GoodsInfoEntity> selectByCategoryId3(Long categoryId) {
 		return this.getSqlSession().selectList("selectByCategoryId3",categoryId);
 	}
+	
+	//根据京东skuid查询数据库中是否已经插入数据
+	public GoodsInfoEntity  selectGoodsBySkuId(String skuId){
+    	return this.getSqlSession().selectOne("selectGoodsByExternalId",skuId);
+	}
 
 }

@@ -39,12 +39,12 @@
      SELECT 
 		       id              id,
 		       category_name   categoryName,
-		       sort_order      sortOrder
+		       sort_order      sortOrder,
+		       picture_url     pictureUrl
       FROM     t_esp_category 
       WHERE    level=#{value}
       AND      `status`='0'
       ORDER    BY sort_order ASC 
-      LIMIT    3
   </select>
   
    <!--查询商品类目列表信息 -->

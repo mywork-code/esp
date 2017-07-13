@@ -86,27 +86,17 @@ public class CategoryInfoService {
 		}
 		return null;
 	}
-	//查询客户端首页的前3个类目信息
+	//查询客户端首页的前1级类目信息
 	public List<CategoryVo> selectCategoryVoList(Long levelId){
 		List<Category> categories = categoryMapper.selectCategoryList(levelId);
 		List<CategoryVo> voList = new ArrayList<CategoryVo>();
+		for (Category c : categories) {
+			String pictureUrl=espImageUrl+"/static"+ c.getPictureUrl();
+			c.setPictureUrl(pictureUrl);
+		}
 		for (Category v : categories) {
 			voList.add(categroyToCathgroyEntiy(v));
-		}
-		//在此添加客户端首页3个类目小标题和图片
-		for(int i=0;i<voList.size();i++){
-			CategoryVo v = voList.get(i);
-			if("1".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 v.setCategoryTitle("大小家电 尽在掌握");
-				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryElectric.png");
-			}else if("2".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 v.setCategoryTitle("日常生活 必备良品");
-				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryDepot.png");
-			}else if("3".equals(Long.toString(voList.get(i).getSortOrder()))){
-				 v.setCategoryTitle("生活就该 如此精致");
-				 v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryBeauty.png");
-			}
-		}
+		}	
 		return voList;
 	}
 	

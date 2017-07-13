@@ -180,7 +180,7 @@ public class CashRefundService {
                 orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_REFUNDPROCESSING.getCode());
                 
                 //如果是支付宝全额支付或支付宝首付 直接调用同意退款接口
-        	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderId);
+        	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderInfo.getMainOrderId());
                 if(txnlinfoList.size() > 1){
                     //是信用支付，txninfo 表插入信用额度那部分退款流水记录(T07)
                     CashRefundAmtDto crAmt = getCreditCashRefundAmt(txnlinfoList,cr.getAmt());

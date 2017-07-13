@@ -1,18 +1,9 @@
 package com.apass.esp.service.jd;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
@@ -20,11 +11,22 @@ import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.enums.JdGoodsImageType;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 获取京东商品基础信息（前端展示信息）
@@ -34,7 +36,8 @@ import com.google.gson.Gson;
 public class JdGoodsInfoService {
 	@Autowired
     private JdProductApiClient jdProductApiClient;
-
+	@Autowired
+	private GoodsRepository goodsRepository;
 
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
@@ -99,6 +102,21 @@ public class JdGoodsInfoService {
 		map.put("jdImagePathList", JdImagePathList);
 		// 查询商品规格
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		for(JdSimilarSku jdsk:jdSimilarSkuList){
+			List<JdSaleAttr> saleAttrList=jdsk.getSaleAttrList();
+			for(JdSaleAttr jdsa:saleAttrList){
+				List<String> skuIds=jdsa.getSkuIds();
+				for(int i=0;i<skuIds.size();i++){
+					String skuId=skuIds.get(i);
+					GoodsInfoEntity gty=goodsRepository.selectGoodsBySkuId(skuId);
+					if(null !=gty && 1==gty.getExternalStatus()){
+						continue;
+					}else{
+						skuIds.remove(i);
+					}
+				}
+			}
+		}
 		map.put("skuId",String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
@@ -166,15 +184,14 @@ public class JdGoodsInfoService {
 	 * @return
 	 */
 	public List<String> getJdImagePathListBySku(Long sku, String type) {
-		Gson gson = new Gson();
 		List<Long> skusImage = new ArrayList<>();
 		skusImage.add(sku);
 		List<String> JdImagePathList = new ArrayList<>();
 		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
 		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
-			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
-					new TypeToken<Map<String, List<JdImage>>>() {
-					}.getType());
+			Map<String, List<JdImage>> jsonImageResult = JSONObject.parseObject(jdImageResponse.getResult().toString(),
+					new TypeReference<Map<String, List<JdImage>>>(){});
+
 			List<JdImage> jdList = jsonImageResult.get(sku.toString());
 			for (int i = 0; i < jdList.size(); i++) {
 				String path = jdList.get(i).getPath();

@@ -162,6 +162,15 @@ public class OrderInfoEntity {
      */
     private String extOrderId;
     
+    /**
+     * 预占库存状态
+     */
+    private String preStockStatus;
+    
+    /**
+     * 是否为京东父Id
+     */
+    private Integer extParentId;
     
     public String getDeviceType() {
         return deviceType;
@@ -375,6 +384,18 @@ public class OrderInfoEntity {
 	}
 	public void setExtOrderId(String extOrderId) {
 		this.extOrderId = extOrderId;
+	}
+	public String getPreStockStatus() {
+		return preStockStatus;
+	}
+	public void setPreStockStatus(String preStockStatus) {
+		this.preStockStatus = preStockStatus;
+	}
+	public Integer getExtParentId() {
+		return extParentId;
+	}
+	public void setExtParentId(Integer extParentId) {
+		this.extParentId = extParentId;
 	}
     
 }
