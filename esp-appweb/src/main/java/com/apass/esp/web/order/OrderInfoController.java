@@ -1,23 +1,5 @@
 package com.apass.esp.web.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
@@ -47,6 +29,21 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -636,8 +633,8 @@ public class OrderInfoController {
                 	CashRefundDto cash = cashRefundService.getCashRefundByOrderId(orderId);
                 	if(cash != null){
                 		if(cash.getStatus() == Integer.parseInt(CashRefundStatus.CASHREFUND_STATUS1.getCode())){
-//                			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
-                                if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
+                			if(DateFormatUtil.isExpired(cash.getCreateDate(), 1)){
+//                                if(DateFormatUtil.addDMinutes(cash.getCreateDate(),2).before(new Date())){
                     				//更新数据库字段  恢复额度
                 				cashRefundService.agreeRefund(cash.getUserId()+"", orderId);
                     		}
