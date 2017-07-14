@@ -107,7 +107,6 @@ public class OrderInfoController {
     LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
 
     Map<String, Object> resultMap = Maps.newHashMap();
-
     try {
 
       BigDecimal totalPayment = null;
@@ -153,30 +152,19 @@ public class OrderInfoController {
       }
       List<PurchaseRequestDto> purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
       if (purchaseList.isEmpty()) {
-//                return Response.fail("请选择所购买的商品");
         LOGGER.error("请选择所购买的商品");
         return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
       }
-
-      //验证提交信息中，是否存在不知配送区域的商品
-      Map<String, Object> results = Maps.newHashMap();
-      for (PurchaseRequestDto purchase : purchaseList) {
-        // 校验商品的不可发送区域
-        Map<String, Object> resultMaps = orderService.validateGoodsUnSupportProvince(requestId, addressId, purchase.getGoodsId());
-        Boolean s = (Boolean) resultMaps.get("unSupportProvince");
-        if (s) {
-          results.putAll(resultMaps);
-          break;
-        }
-      }
-
-      if (!results.isEmpty()) {
-        resultMap.putAll(results);
-      } else {
-        List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
-            purchaseList, sourceFlag, deviceType);
-        resultMap.put("orderList", orders);
-      }
+     /**
+      * 查询商品是否存在不支持配送区域
+      */
+     resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
+     //如果map为空，则说明订单下，不存在不支持配送的区域
+     if(resultMap.isEmpty()){
+    		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
+    			        purchaseList, sourceFlag, deviceType);
+    			     resultMap.put("orderList", orders);
+     }
     } catch (BusinessException e) {
       LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
       return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
