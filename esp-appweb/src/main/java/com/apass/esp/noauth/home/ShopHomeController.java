@@ -287,8 +287,8 @@ public class ShopHomeController {
 
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
-						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3"+logoUrl);
-						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3"+logoUrl);
+						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+logoUrl);
+						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+logoUrl);
 					}else{
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						String siftUrl = goodsInfo.getGoodsSiftUrl();
