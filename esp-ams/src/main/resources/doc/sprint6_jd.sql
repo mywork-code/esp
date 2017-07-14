@@ -83,3 +83,11 @@ ALTER TABLE esp.`t_esp_order_info` ADD COLUMN `ext_parent_id`  varchar(32) DEFAU
 ALTER TABLE `t_esp_order_detail_info`
 ADD COLUMN `source`  varchar(12)  DEFAULT '' COMMENT '商品来源标识(如：jd)',
 ADD COLUMN `sku_id`  varchar(32)  DEFAULT '' COMMENT 'sku_id';
+
+
+ALTER TABLE `t_esp_address_info`
+ADD COLUMN `province_code`  varchar(20) DEFAULT '' COMMENT '省份编码',
+ADD COLUMN `city_code`  varchar(20) DEFAULT '' COMMENT '城市编码',
+ADD COLUMN `district_code`  varchar(20) DEFAULT '' COMMENT '县城编码',
+ADD COLUMN `towns_code`  varchar(20) DEFAULT '' COMMENT '乡镇编码',
+ADD COLUMN `towns`  varchar(20)  DEFAULT '' COMMENT '乡镇';
