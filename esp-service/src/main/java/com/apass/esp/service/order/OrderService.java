@@ -382,7 +382,6 @@ public class OrderService {
 		 * 获取用户的地址信息
 		 */
 		AddressInfo addressInfo = getAddressByOrderId(addressId);
-        
 		/**
 		 * 批量查询京东价格
 		 */
@@ -401,6 +400,7 @@ public class OrderService {
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
         orderReq.setRemark("test");
+        orderReq.setOrderNo(orders.get(0));
 		/**
 		 * 验证商品是否可售
 		 */
