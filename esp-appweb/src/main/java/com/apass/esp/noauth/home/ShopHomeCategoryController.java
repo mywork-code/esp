@@ -41,7 +41,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 //@Controller
 //@RequestMapping("/v1/home/category")
-@Path("/v1/home/category")
+@Path("")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ShopHomeCategoryController {
@@ -64,11 +64,25 @@ public class ShopHomeCategoryController {
 //    @ResponseBody
 //    @RequestMapping(value="/init",method=RequestMethod.POST)
     @POST
-    @Path("/init")
+    @Path("/v1/home/category/init")
    	public Response indexCategoryInit() {
    		try {
              Map<String, Object> returnMap = new HashMap<String, Object>();
              List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoList(Long.parseLong(CategoryLevel.CATEGORY_LEVEL1.getCode()));
+             returnMap.put("categorys", CategoryVos);
+   		     return Response.successResponse(returnMap);
+		} catch (Exception e) {
+			logger.error("indexCategoryInit fail", e);
+			logger.error("首页类目信息加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+		}
+   	}
+    @POST
+    @Path("/v2/home/category/init")
+   	public Response indexCategoryInitJd() {
+   		try {
+             Map<String, Object> returnMap = new HashMap<String, Object>();
+             List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoListJd(Long.parseLong(CategoryLevel.CATEGORY_LEVEL1.getCode()));
              returnMap.put("categorys", CategoryVos);
    		     return Response.successResponse(returnMap);
 		} catch (Exception e) {
@@ -83,7 +97,7 @@ public class ShopHomeCategoryController {
 //   	@ResponseBody
 //   	@RequestMapping(value = "/loanGoodsList",method = RequestMethod.POST)
     @POST
-    @Path("/loanGoodsList")
+    @Path("/v1/home/category/loanGoodsList")
    	public Response loanGoodsListByCategoryId(@RequestBody Map<String, Object> paramMap) {
    		try {
    			 String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
