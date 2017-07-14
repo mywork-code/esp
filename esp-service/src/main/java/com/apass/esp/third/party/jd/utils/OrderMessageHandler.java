@@ -12,6 +12,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderMessageHandler extends AbstractMessageHandler {
+    @Override
+    protected String getName() {
+        return null;
+    }
 
+    @Override
+    protected int getIntervalSeconds() {
+        return 0;
+    }
 
+    @Override
+    public void run() {
+
+    }
 }
