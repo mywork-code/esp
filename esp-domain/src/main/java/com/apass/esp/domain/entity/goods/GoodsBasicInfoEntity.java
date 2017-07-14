@@ -104,6 +104,13 @@ public class GoodsBasicInfoEntity {
      * 顺序(desc（降序），asc（升序）)
      */
     private String order;
+    private String sort;
+    /**
+     * 来源（京东或非京东）
+     * @return
+     */
+    private String source;
+    
     public String getUnSupportProvince() {
 		return unSupportProvince;
 	}
@@ -233,6 +240,22 @@ public class GoodsBasicInfoEntity {
 
 	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
 		this.goodsPriceFirst = goodsPriceFirst;
+	}
+
+	public String getSort() {
+		return sort;
+	}
+
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 }

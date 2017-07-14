@@ -218,87 +218,120 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
+
 	/**
-     * 加载商品列表(根据类目id查询商品)
-     *
-     * @return
-     */
+	 * 加载商品列表(根据类目id查询商品)
+	 *
+	 * @return
+	 */
 	@POST
-    @Path("/loadGoodsListByCategoryId")
-    public Response loadGoodsListByCategoryId(Map<String, Object> paramMap){
-        try {
-              Map<String, Object> returnMap = new HashMap<String, Object>();
-              
-        	  String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id
-        	  String sort=CommonUtils.getValue(paramMap, "sort");//排序字段
-        	  String order=CommonUtils.getValue(paramMap, "order");//顺序(desc（降序），asc（升序）)
-    		  String page = CommonUtils.getValue(paramMap, "page");
-    		  String rows = CommonUtils.getValue(paramMap, "rows");
-    		  if(StringUtils.isEmpty(categoryId)){
-    			  LOGGER.error("类目id不能空！");
-       			  return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-       		  }
-    		  if(StringUtils.isEmpty(order)){
-    			  order="DESC";//降序
-    		  }
-    		  Category cy=categoryInfoService.selectNameById(Long.parseLong(categoryId));
-    		  Long level=cy.getLevel();
-    		  GoodsBasicInfoEntity  goodsInfoEntity=new GoodsBasicInfoEntity();
-    		  if("1".equals(level.toString())){
-    	   		goodsInfoEntity.setCategoryId1(Long.parseLong(categoryId));
-    		  }else if("2".equals(level.toString())){
-      	   		goodsInfoEntity.setCategoryId2(Long.parseLong(categoryId));
-    		  }else if("3".equals(level.toString())){
-      	   		goodsInfoEntity.setCategoryId3(Long.parseLong(categoryId));
-    		  }
-    		  
-    		  List<GoodsBasicInfoEntity> goodsBasicInfoList=null;
-    		  Integer    totalCount=0;
-    		  if(CategorySort.CATEGORY_SortA.getCode().equals(sort)){//销量
-    			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndAmount(goodsInfoEntity,page, rows);
-    			  totalCount  =goodsService.loadGoodsByAmountCount(goodsInfoEntity);
-    		  }else if(CategorySort.CATEGORY_SortN.getCode().equals(sort)){//新品
-    			  goodsInfoEntity.setOrder(order);//升序或降序
-    			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndNew(goodsInfoEntity,page, rows);
-    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
-    		  }else if(CategorySort.CATEGORY_SortP.getCode().equals(sort)){//价格
-    			  goodsInfoEntity.setOrder(order);//升序或降序
-    			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdAndPrice(goodsInfoEntity,page, rows);
-    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
-    		  }else{//默认（商品上架时间降序）
-    			  goodsBasicInfoList= goodsService.loadGoodsByCategoryIdDefault(goodsInfoEntity,page, rows);
-    			  totalCount=goodsService.loadGoodsCount(goodsInfoEntity);
-    		  }
-   			     
-  		      returnMap.put("totalCount", totalCount);  
-  		     
-               for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
-                if (null!=goodsInfo.getGoodId() && null!=goodsInfo.getGoodsStockId()) {
-                    BigDecimal price = commonService.calculateGoodsPrice( goodsInfo.getGoodId(),goodsInfo.getGoodsStockId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));//商品首付价
-                    
-                    Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
-                    goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+	@Path("/loadGoodsListByCategoryId")
+	public Response loadGoodsListByCategoryId(Map<String, Object> paramMap) {
+		try {
+			Map<String, Object> returnMap = new HashMap<String, Object>();
 
-                    String logoUrl = goodsInfo.getGoodsLogoUrl();
-                    String siftUrl = goodsInfo.getGoodsSiftUrl();
+			String categoryId = CommonUtils.getValue(paramMap, "categoryId");// 类目Id
+			String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段
+			String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
+			String page = CommonUtils.getValue(paramMap, "page");
+			String rows = CommonUtils.getValue(paramMap, "rows");
+			if (StringUtils.isEmpty(categoryId)) {
+				LOGGER.error("类目id不能空！");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
+			if (StringUtils.isEmpty(order)) {
+				order = "DESC";// 降序
+			}
+			Category cy = categoryInfoService.selectNameById(Long.parseLong(categoryId));
+			Long level = cy.getLevel();
+			GoodsBasicInfoEntity goodsInfoEntity = new GoodsBasicInfoEntity();
+			if ("1".equals(level.toString())) {
+				goodsInfoEntity.setCategoryId1(Long.parseLong(categoryId));
+			} else if ("2".equals(level.toString())) {
+				goodsInfoEntity.setCategoryId2(Long.parseLong(categoryId));
+			} else if ("3".equals(level.toString())) {
+				goodsInfoEntity.setCategoryId3(Long.parseLong(categoryId));
+			}
 
-                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
-                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
-                    goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
-                }
-            }
-            returnMap.put("goodsList", goodsBasicInfoList);
-            return Response.successResponse(returnMap);
-        } catch (Exception e) {
-            LOGGER.error("ShopHomeController loadGoodsList fail", e);
-            LOGGER.error("加载商品列表失败！");
-            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
-        }
+			List<GoodsBasicInfoEntity> goodsBasicInfoList = null;
+			Boolean falgePrice=false;
+			if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {// 销量
+				goodsInfoEntity.setSort("amount");
+				goodsBasicInfoList = goodsService.loadGoodsByParam(goodsInfoEntity, page, rows);
+			} else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
+				goodsInfoEntity.setSort("new");
+				goodsInfoEntity.setOrder(order);// 升序或降序
+				goodsBasicInfoList = goodsService.loadGoodsByParam(goodsInfoEntity, page, rows);
+			} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
+				falgePrice=true;
+				goodsInfoEntity.setSort("price");
+				goodsInfoEntity.setOrder(order);// 升序或降序
+				goodsBasicInfoList = goodsService.loadGoodsByParam(goodsInfoEntity, page, rows);
+			} else {// 默认（商品上架时间降序）
+				goodsInfoEntity.setSort("default");
+				goodsBasicInfoList = goodsService.loadGoodsByParam(goodsInfoEntity, page, rows);
+			}
+			
+			Integer totalCount = goodsService.loadGoodsByParamCount(goodsInfoEntity);
+			returnMap.put("totalCount", totalCount);
+
+			for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
+				if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
+					BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+							goodsInfo.getGoodsStockId());
+					goodsInfo.setGoodsPrice(price);
+					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
+
+					Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+					goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+
+					if("jd".equals(goodsInfo.getSource())){//京东图片
+						String logoUrl = goodsInfo.getGoodsLogoUrl();
+						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3"+logoUrl);
+						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3"+logoUrl);
+					}else{
+						String logoUrl = goodsInfo.getGoodsLogoUrl();
+						String siftUrl = goodsInfo.getGoodsSiftUrl();
+
+						goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+						goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+						goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+						goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
+					}
+			
+				}
+			}
+			if(falgePrice && "DESC".equals(order)){//按售价排序(降序)
+				GoodsBasicInfoEntity temp=new GoodsBasicInfoEntity() ;
+				for (int i=0;i<goodsBasicInfoList.size()-1;i++) {
+					 for(int j=i+1;j<goodsBasicInfoList.size();j++){
+						 if(goodsBasicInfoList.get(i).getGoodsPrice().compareTo(goodsBasicInfoList.get(j).getGoodsPrice())<0){
+							 temp=goodsBasicInfoList.get(i);
+							 goodsBasicInfoList.set(i, goodsBasicInfoList.get(j));
+							 goodsBasicInfoList.set(j, temp);
+						 }
+					 }
+				}
+			}else if(falgePrice){
+				GoodsBasicInfoEntity temp=new GoodsBasicInfoEntity() ;
+				for (int i=0;i<goodsBasicInfoList.size()-1;i++) {
+					 for(int j=i+1;j<goodsBasicInfoList.size();j++){
+						 if(goodsBasicInfoList.get(j).getGoodsPrice().compareTo(goodsBasicInfoList.get(i).getGoodsPrice())<0){
+							 temp=goodsBasicInfoList.get(i);
+							 goodsBasicInfoList.set(i, goodsBasicInfoList.get(j));
+							 goodsBasicInfoList.set(j, temp);
+						 }
+					 }
+				}
+			}
+			returnMap.put("goodsList", goodsBasicInfoList);
+			return Response.successResponse(returnMap);
+		} catch (Exception e) {
+			LOGGER.error("ShopHomeController loadGoodsList fail", e);
+			LOGGER.error("加载商品列表失败！");
+			return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+		}
 	}
-
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
      *

@@ -23,31 +23,12 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		param.put("count", count);
 		return this.getSqlSession().selectList("getRemainderGoods", param);
 	}
-
-	// 通过类目id查询商品[客户端分页](按商品销量排列)
-	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndAmount(GoodsBasicInfoEntity param) {
-		return getSqlSession().selectList("loadGoodsByAmount", param);
-	}
-	// 通过类目id查询商品[客户端分页](按商品销量排列)(商品数量)
-	public Integer loadGoodsByAmountCount(GoodsBasicInfoEntity param) {
-		return getSqlSession().selectOne("loadGoodsByAmountCount", param);
-	}
-	// 通过类目id查询商品[客户端分页](按商品创建时间)
-	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity param) {
-		return getSqlSession().selectList("loadGoodsByNew", param);
-	}
-
-	// 通过类目id查询商品[客户端分页](按商品上架时间降序)
-	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdDefault(GoodsBasicInfoEntity param) {
-		return getSqlSession().selectList("loadGoodsByDefault", param);
-	}
-	
-	// 通过类目id查询商品[客户端分页](按商品价格)
-	public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndPrice(GoodsBasicInfoEntity param) {
-		return getSqlSession().selectList("loadGoodsByPrice", param);
-	}
+	// 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)
+	public List<GoodsBasicInfoEntity> loadGoodsByParam(GoodsBasicInfoEntity param) {
+		return getSqlSession().selectList("loadGoodsByParam", param);
+	}	
 	// 通过类目id查询商品[客户端分页](共多少商品)
-	public Integer loadGoodsCount(GoodsBasicInfoEntity param){
-		return getSqlSession().selectOne("loadGoodsByCount", param);
+	public Integer loadGoodsByParamCount(GoodsBasicInfoEntity param){
+		return getSqlSession().selectOne("loadGoodsByParamCount", param);
 	}
 }

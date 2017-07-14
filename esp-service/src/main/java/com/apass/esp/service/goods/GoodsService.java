@@ -2,18 +2,9 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
-import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.merchant.MerchantInforService;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.RandomUtils;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,18 +19,23 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.EncodeUtils;
-import com.google.common.collect.Maps;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.RandomUtils;
 
 @Service
 public class GoodsService {
@@ -117,9 +113,9 @@ public class GoodsService {
         return goodsBasicRepository.loadGoodsPages(pageParam, param);
     }
     /**
-     * 通过类目id查询商品[客户端分页](按商品销量排列)
+     * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)
      */
-    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndAmount(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
+    public List<GoodsBasicInfoEntity> loadGoodsByParam(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
         Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
@@ -130,66 +126,14 @@ public class GoodsService {
         pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
         gbinfoty.setPage((pageInteger - 1) * limitInteger);
         gbinfoty.setRows(limitInteger);
-        return goodsBasicRepository.loadGoodsByCategoryIdAndAmount(gbinfoty);
+        return goodsBasicRepository.loadGoodsByParam(gbinfoty);
     }
     /**
-     * 通过类目id查询商品[客户端分页](按商品销量排列)(数量)
+     * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)(数量)
      */
-    public Integer loadGoodsByAmountCount (GoodsBasicInfoEntity gbinfoty){
-    	return goodsBasicRepository.loadGoodsByAmountCount(gbinfoty);
+    public Integer loadGoodsByParamCount (GoodsBasicInfoEntity gbinfoty){
+    	return goodsBasicRepository.loadGoodsByParamCount(gbinfoty);
     }
-    /**
-     * 通过类目id查询商品[客户端分页](按商品创建时间)
-     */
-    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndNew(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
-        Integer limitInteger = null;
-        Integer pageInteger = null;
-        if (StringUtils.isNotEmpty(limit)) {
-            limitInteger = Integer.valueOf(limit);
-        } else {
-            limitInteger = 20;
-        }
-        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
-        gbinfoty.setPage((pageInteger - 1) * limitInteger);
-        gbinfoty.setRows(limitInteger);
-        return goodsBasicRepository.loadGoodsByCategoryIdAndNew(gbinfoty);
-    }
-    /**
-     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
-     */
-    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdDefault(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
-        Integer limitInteger = null;
-        Integer pageInteger = null;
-        if (StringUtils.isNotEmpty(limit)) {
-            limitInteger = Integer.valueOf(limit);
-        } else {
-            limitInteger = 20;
-        }
-        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
-        gbinfoty.setPage((pageInteger - 1) * limitInteger);
-        gbinfoty.setRows(limitInteger);
-        return goodsBasicRepository.loadGoodsByCategoryIdDefault(gbinfoty);
-    }
-    /**
-     * 通过类目id查询商品[客户端分页](按商品上架时间降序)
-     */
-    public List<GoodsBasicInfoEntity> loadGoodsByCategoryIdAndPrice(GoodsBasicInfoEntity gbinfoty,String page, String limit) {
-        Integer limitInteger = null;
-        Integer pageInteger = null;
-        if (StringUtils.isNotEmpty(limit)) {
-            limitInteger = Integer.valueOf(limit);
-        } else {
-            limitInteger = 20;
-        }
-        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
-        gbinfoty.setPage((pageInteger - 1) * limitInteger);
-        gbinfoty.setRows(limitInteger);
-        return goodsBasicRepository.loadGoodsByCategoryIdAndPrice(gbinfoty);
-    }
-	public Integer loadGoodsCount(GoodsBasicInfoEntity param){
-        return goodsBasicRepository.loadGoodsCount(param);
-	}
-
     /**
      *
      * 加载商品列表
