@@ -1,6 +1,6 @@
 package com.apass.esp.third.party.jd.utils;
 
-import com.apass.esp.third.party.jd.client.Messager;
+import com.apass.esp.third.party.jd.client.JdMessager;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public abstract class AbstractMessageHandler implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMessageHandler.class);
 
     @Autowired
-    protected Messager messager;
+    protected JdMessager jdMessager;
 
     protected abstract String getName();
 
@@ -46,7 +46,7 @@ public abstract class AbstractMessageHandler implements Runnable {
             public void run() {
                 Threads.sleepSeconds(60);
                 while (true) {
-                    List<JdApiMessage> jdApiMessages = messager.getJdApiMessages(messageHandler.getMessageTypes());
+                    List<JdApiMessage> jdApiMessages = jdMessager.getJdApiMessages(messageHandler.getMessageTypes());
 
 
                 }

@@ -18,7 +18,7 @@ import java.util.List;
  * @since JDK 1.8
  */
 @Service
-public class Messager {
+public class JdMessager {
 
     @Autowired
     private JdProductApiClient jdProductApiClient;

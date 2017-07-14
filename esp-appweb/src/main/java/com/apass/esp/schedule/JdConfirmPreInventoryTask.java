@@ -94,11 +94,13 @@ public class JdConfirmPreInventoryTask {
                 JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
                 if (!jdApiResponse.isSuccess()) {
                     LOGGER.info("confirm order jdOrderIdp {} confirmResponse {} orderJdOrderQuery result {}", jdOrderIdp, confirmResponse.toString(), jdApiResponse);
+                    continue;
                 }
                 JSONObject jsonObject = jdApiResponse.getResult();
                 Object pOrderV = jsonObject.get("pOrder");
                 if (pOrderV instanceof Number) {
-                    //未拆单
+                    //拆单消息mq接收
+
                     //long pOrderId = ((Number) pOrderV).longValue();
                 } else {
                     String merchantCode = orderInfoEntity.getMerchantCode();
