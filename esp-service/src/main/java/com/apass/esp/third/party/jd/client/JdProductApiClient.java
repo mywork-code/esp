@@ -235,6 +235,24 @@ public class JdProductApiClient extends JdApiClient {
         jsonObject.put("sku", join);
         return request("biz.price.sellPrice.get", jsonObject, "biz_price_sellPrice_get_response", JSONArray.class);
     }
+    
+    /**
+     * 批量查询价格(支持批量，以【，】分割，最高100个)
+     *
+     * @param sku
+     * @return
+     */
+    public JdApiResponse<JSONArray> priceSellPriceGet(List<SkuNum> skuNumList) {
+    	
+    	List<Long> skuIds = new ArrayList<>(skuNumList.size());
+        for (SkuNum skuNum : skuNumList) {
+            skuIds.add(skuNum.getSkuId());
+        }
+        String join = StringUtils.join(skuIds, ",");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("sku", join);
+        return request("biz.price.sellPrice.get", jsonObject, "biz_price_sellPrice_get_response", JSONArray.class);
+    }
 
     private Cache<String, JdApiResponse<JSONObject>> addressCache = CacheBuilder.newBuilder().maximumSize(10240)
             .expireAfterWrite(1, TimeUnit.HOURS).build();
@@ -441,11 +459,6 @@ public class JdProductApiClient extends JdApiClient {
      * @return
      */
     public List<Stock> getStock(final List<SkuNum> skuNums, final Region region) {
-        String hashcode = skuNums.hashCode() + "_" + region.hashCode();
-//        try {
-//            return stockCache.get(hashcode, new Callable<List<Stock>>() {
-//                @Override
-//                public List<Stock> call() throws Exception {
         JdApiResponse<JSONArray> response = stockFororderBatget(skuNums, region);
         List<Stock> result = new ArrayList<>();
         if (response.isSuccess()) {
@@ -456,13 +469,7 @@ public class JdProductApiClient extends JdApiClient {
 
         } else {
             LOGGER.warn("getstockerror: {}", response.toString());
-            // throw new Exception();
         }
-//                }
-//            });
-//        } catch (Exception e) {
-//            LOGGER.error("error", e);
-//        }
         return new ArrayList<>();
     }
 

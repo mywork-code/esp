@@ -11,14 +11,8 @@
 <select id="selectByCode" resultType="Integer" parameterType="java.lang.String">
 	SELECT COUNT(1) FROM t_esp_work_city_jd WHERE `CODE`= #{value}
 </select>
-<select id="selectByProvinceName" resultMap="WorkCityJd" parameterMap="java.lang.String">
-    select 
-    <include refid="Base_Column_List" />
-    from t_esp_work_city_jd
-    where province = #{province}
-</select>
 
-<select id="selectByNameAndParent" resultMap="WorkCityJd" parameterType="Map">
+<select id="selectByNameAndParent" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.dto.WorkCityJdDto">
     select 
     <include refid="Base_Column_List" />
     from t_esp_work_city_jd

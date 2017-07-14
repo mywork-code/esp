@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.WorkCityJdDto;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
@@ -369,13 +370,11 @@ public class OrderService {
 		 */
 		List<SkuNum> skuNumList = new ArrayList<>();
 		List<PriceSnap> priceSnaps = new ArrayList<>();
-		 List<Long> skulist = new ArrayList<Long>();
 		List<OrderDetailInfoEntity> details =  orderDetailInfoRepository.queryOrderDetailListByOrderList(orders);
 		for (OrderDetailInfoEntity detail : details) {
 			GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
 			SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()),detail.getGoodsNum().intValue());
 			skuNumList.add(num);
-			skulist.add(Long.valueOf(goods.getExternalId()));
 		}
 		
 		/**
@@ -385,16 +384,12 @@ public class OrderService {
 		/**
 		 * 批量查询京东价格
 		 */
-		JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skulist).getResult();
-        BigDecimal price = null;
-        BigDecimal jdPrice = null;
-        if (productPriceList != null && productPriceList.get(0) != null) {
-            Object productPrice = productPriceList.get(0);
-            JSONObject jsonObject = (JSONObject) productPrice;
-            price = jsonObject.getBigDecimal("price");
-            jdPrice = jsonObject.getBigDecimal("jdPrice");
-            priceSnaps.add(new PriceSnap(skulist.get(0), price, jdPrice));
+		JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skuNumList).getResult();
+        for (Object jsonArray : productPriceList) {
+            JSONObject jsonObject = (JSONObject) jsonArray;
+            priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"), jsonObject.getBigDecimal("jdPrice")));
         }
+		
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
@@ -465,27 +460,22 @@ public class OrderService {
 		AddressInfoEntity address = addressInfoDao.select(Long.valueOf(addressId));
 		
 		//根据省、市、区获取对应的编码
-		Map<String,Object> params = Maps.newHashMap();
-		params.put("value", address.getProvince());
-		params.put("parent", 0);
-		WorkCityJd provice = cityJdMapper.selectByNameAndParent(params);
+		WorkCityJdDto dto1 = new WorkCityJdDto(address.getProvince(),"0");
+		WorkCityJd provice = cityJdMapper.selectByNameAndParent(dto1);
 		
-		params.put("value", address.getCity());
-		params.put("parent", provice.getCode());
-		WorkCityJd city = cityJdMapper.selectByNameAndParent(params);
+		WorkCityJdDto dto2 = new WorkCityJdDto(address.getCity(),provice.getCode());
+		WorkCityJd city = cityJdMapper.selectByNameAndParent(dto2);
 		
-		params.put("value", address.getProvince());
-		params.put("parent", city.getCode());
-		WorkCityJd district = cityJdMapper.selectByNameAndParent(params);
+		WorkCityJdDto dto3 = new WorkCityJdDto(address.getDistrict(),city.getCode());
+		WorkCityJd district = cityJdMapper.selectByNameAndParent(dto3);
 		
-		params.put("value", address.getProvince());
-		params.put("parent", district.getCode());
-		WorkCityJd towns = cityJdMapper.selectByNameAndParent(params);
+		WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(),district.getCode());
+		WorkCityJd towns = cityJdMapper.selectByNameAndParent(dto4);
 		
 		addressInfo.setProvinceId(Integer.valueOf(provice.getCode()));
         addressInfo.setCityId(Integer.valueOf(city.getCode()));
         addressInfo.setCountyId(Integer.valueOf(district.getCode()));
-        addressInfo.setTownId(Integer.valueOf(towns.getCode()));
+        addressInfo.setTownId((null == towns)?0:Integer.valueOf(towns.getCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
         addressInfo.setEmail("xujie@apass.cn");

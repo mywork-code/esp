@@ -30,10 +30,6 @@ public class JdOrderApiClient extends JdApiClient {
         if (orderReq.getSkuNumList().size() > 50) {
             throw new RuntimeException("最大数量为50，当前:" + orderReq.getSkuNumList().size());
         }
-        if (StringUtils.isEmpty(orderReq.getOrderNo())) {
-            //orderReq.setOrderNo(NoGenerator.ORDER.make());
-            orderReq.setOrderNo("111312001");
-        }
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("thirdOrder", orderReq.getOrderNo());
         List<Map<String, Object>> skuNums = new ArrayList<>();
@@ -41,8 +37,8 @@ public class JdOrderApiClient extends JdApiClient {
             Map<String, Object> skuNumMap = new HashMap<>(2);
             skuNumMap.put("skuId", skuNum.getSkuId());
             skuNumMap.put("num", skuNum.getNum());
-            skuNumMap.put("bNeedAnnex", true);
-            skuNumMap.put("bNeedGift", false);
+            skuNumMap.put("bNeedAnnex", true);//表示是否需要附件，默认每个订单都给附件，如果为false,不会给客户发附件 TODO
+            skuNumMap.put("bNeedGift", false);//表示是否需要赠品 TODO
             skuNums.add(skuNumMap);
         }
         jsonObject.put("sku", skuNums);
@@ -58,6 +54,7 @@ public class JdOrderApiClient extends JdApiClient {
         jsonObject.put("mobile", addressInfo.getMobile());
         jsonObject.put("email", addressInfo.getEmail());
         jsonObject.put("remark", orderReq.getRemark());
+        //TODO
         jsonObject.put("invoiceState", 2);//开票方式(1为随货开票，0为订单预借，2为集中开票 )
         jsonObject.put("invoiceType", 2);//1普通发票2增值税发票
         jsonObject.put("selectedInvoiceTitle", 5);//4个人，5单位
@@ -74,15 +71,13 @@ public class JdOrderApiClient extends JdApiClient {
         jsonObject.put("invoiceCounty", "");
         jsonObject.put("invoiceAddress", "");
         /*
-        下单价格模式
-0: 客户端订单价格快照不做验证对比，还是以京东端价格正常下单;
-1:必需验证客户端订单价格快照，如果快照与京东端价格不一致返回下单失败，需要更新商品价格后，重新下单;
+		        下单价格模式
+			0:客户端订单价格快照不做验证对比，还是以京东端价格正常下单;
+			1:必需验证客户端订单价格快照，如果快照与京东端价格不一致返回下单失败，需要更新商品价格后，重新下单;
          */
         jsonObject.put("doOrderPriceMode", 1);
         jsonObject.put("orderPriceSnap", JSON.toJSONString(orderReq.getOrderPriceSnap()));
 
-//        jsonObject.put("doOrderPriceMode", 0);
-//        jsonObject.put("orderPriceSnap", "");
         jsonObject.put("extContent", "");
         JdApiResponse<JSONObject> response = request("biz.order.unite.submit", jsonObject, "biz_order_unite_submit_response", JSONObject.class);
         return response;
