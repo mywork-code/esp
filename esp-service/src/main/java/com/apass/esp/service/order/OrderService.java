@@ -1756,6 +1756,26 @@ public class OrderService {
     }
     
     /**
+     * 下单时，要验证商品的可配送区域
+     * @throws BusinessException 
+     */
+    public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException{
+    	//验证提交信息中，是否存在不知配送区域的商品
+        Map<String, Object> results = Maps.newHashMap();
+        for (PurchaseRequestDto purchase : purchaseList) {
+          // 校验商品的不可发送区域
+          Map<String, Object> resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
+          Boolean s = (Boolean) resultMaps.get("unSupportProvince");
+          if (s) {
+            results.putAll(resultMaps);
+            break;
+          }
+        }
+    	return results;
+    }
+    
+    
+    /**
      * 根据地址id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId
      * @param orderId
