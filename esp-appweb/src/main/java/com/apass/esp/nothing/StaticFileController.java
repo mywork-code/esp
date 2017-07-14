@@ -1,15 +1,12 @@
 package com.apass.esp.nothing;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
+import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.order.OrderService;
-import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.MD5Utils;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -44,6 +43,7 @@ public class StaticFileController {
     private OrderService orderService;
 
     @Autowired
+    private JDTaskAmqpAccess jdTaskAmqpAccess;
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
@@ -85,6 +85,13 @@ public class StaticFileController {
         List<String> orderIdList = orderInfoRepository.initGoodsSaleVolume();
         orderService.updateJdGoodsSaleVolume(orderIdList);
         return Response.successResponse();
+    }
+
+    @RequestMapping("/test/mq/sendmsg")
+    @ResponseBody
+    public String testSendMsgToMq(){
+        jdTaskAmqpAccess.directSend("test");
+        return "success";
     }
 
 
