@@ -115,7 +115,6 @@ public class OrderInfoController {
         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
       }
       if (!StringUtils.isNumeric(userIdStr)) {
-//                return Response.fail("用户名传入非法!");
         LOGGER.error("用户名传入非法!");
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
       }
