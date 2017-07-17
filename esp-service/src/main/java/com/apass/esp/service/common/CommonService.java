@@ -80,8 +80,9 @@ public class CommonService {
     }
 
     /**
-     * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格
-     *
+     * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格(过时)
+     * 根据是否有活动折扣率计算商品价格
+     * 
      * @param goodsStockId
      * @param goodsId
      * @return

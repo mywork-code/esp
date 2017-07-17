@@ -59,4 +59,5 @@ public class ValidateUtils {
 			throw new BusinessException(message,code);
 		}
 	}
+	
 }

@@ -390,6 +390,7 @@ public class ShopHomeController {
             }
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
+            //查询京东地址
             List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
             	addty.setProvinceCode("provinceCode");
@@ -400,13 +401,18 @@ public class ShopHomeController {
             	addty.setDistrict("district");
             	addty.setTownsCode("townsCode");
             	addty.setTowns("towns");
+            	addty.setIsDefault("1");
             	addressInfoList.add(addty);
+            }else{
+              if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
+            	  addressInfoList.get(0).setIsDefault("1");
+              }
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             //判断是否是京东商品
-            if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus()+"")){//来源于京东且已关联
+            if("jd".equals(goodsInfo.getSource())){//来源于京东
             	String externalId = goodsInfo.getExternalId();// 外部商品id
-            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),addressInfoList);
 
             	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
             	if(jdGoodsStockInfoList.size()==1){
@@ -468,7 +474,7 @@ public class ShopHomeController {
     }
 
     /**
-     * 人气单品
+     * 热买单品列表
      * @param paramMap
      * @return
      */
@@ -484,19 +490,11 @@ public class ShopHomeController {
         }
         Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
         List<GoodsInfoEntity> goodsList=new ArrayList<>();
+        List<String> goodsIds = jdGoodSalesVolumePagination.getDataList();
         try{
-        for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
-            GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
-            if(goodsInfoEntity.getSource()==null){
-                goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
-                goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
-            }else{
-                goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
-                goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
-            }
-            goodsList.add(goodsInfoEntity);
-        }
+        	goodsList = getSaleVolumeGoods(goodsIds);
         }catch (Exception e ){
+        	LOGGER.error("查询热买单品列表失败",e);
             return Response.fail(BusinessErrorCode.NO);
         }
         resultMap.put("goodsList",goodsList);
@@ -505,8 +503,31 @@ public class ShopHomeController {
         return Response.successResponse(goodsList);
     }
 
+	private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
+		List<GoodsInfoEntity> goodsList=new ArrayList<>();
+		for (String goodsId:goodsIds){
+		    GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		    if(goodsInfoEntity.getSource()==null){
+		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
+		        goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
+		    }else{
+		        goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
+		        goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
+		        goodsInfoEntity.setSource("jd");
+		    }
+		    goodsInfoEntity.setGoogsDetail("");
+		    BigDecimal goodsPrice = getGoodsPrice(goodsInfoEntity.getId());
+            goodsInfoEntity.setGoodsPrice(goodsPrice);
+            goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+            
+		    goodsList.add(goodsInfoEntity);
+		}
+		
+		return goodsList;
+	}
+
     /**
-     * 热销商品
+     * 必买清单
      * @param paramMap
      * @return
      */
@@ -519,30 +540,28 @@ public class ShopHomeController {
         if( pageIndex==null||pageIndex.intValue()>6||pageIndex<1){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
-        Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
-        List<GoodsInfoEntity> goodsList=new ArrayList<>();
         try{
-            for (String jdGoodSalesVolume:jdGoodSalesVolumePagination.getDataList()){
-                GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(jdGoodSalesVolume));
-                String goodsLogoUrl = goodsInfoEntity.getGoodsLogoUrl();
-                String goodsSiftUrl = goodsInfoEntity.getGoodsSiftUrl();
-                if(goodsInfoEntity.getSource()==null){
-                    goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrl));//非京东
-                    goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl(goodsSiftUrl));
-                }else{
-                    goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsLogoUrl);
-                    goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+goodsSiftUrl);
-                }
-                goodsList.add(goodsInfoEntity);
-            }
-            resultMap.put("goodsList",goodsList);
-            resultMap.put("pageIndex",pageIndex);
-            resultMap.put("totalCount",120);
+        	//热买单品
+        	Pagination<String> pageGoodsIds = goodsService.jdGoodSalesVolumeByPage(1,4);
+        	List<GoodsInfoEntity> goodsPopuLists =new ArrayList<>();
+        	List<String> goodsPopuIds = pageGoodsIds.getDataList();
+        	goodsPopuLists = getSaleVolumeGoods(goodsPopuIds);
+        	resultMap.put("goodsPopuLists", goodsPopuLists);
+        	
+        	//必买清单
+        	Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
+        	List<GoodsInfoEntity> goodsNecessaryList=new ArrayList<>();
+        	List<String> goodsNcessids = jdGoodSalesVolumePagination.getDataList();
+        	goodsNecessaryList = getSaleVolumeGoods(goodsNcessids);
+           
+            resultMap.put("goodsNecessaryList", goodsNecessaryList);
         }catch (Exception e ){
+        	LOGGER.error("查询首页推荐列表失败",e);
             return Response.fail(BusinessErrorCode.NO);
         }
-        return Response.successResponse(goodsList);
+        return Response.successResponse(resultMap);
     }
+
 
     /**
      * 精选推荐 大于10个时 分页展示
@@ -581,8 +600,24 @@ public class ShopHomeController {
 
     }
 
+    private BigDecimal getGoodsPrice(Long goodsId) throws BusinessException {
+    	//根据goodsid查询库存，找出最低售价显示前端 
+		List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsId);
+		if(goodsStocks == null || goodsStocks.size() == 0){
+			LOGGER.error("数据异常，商品id为:{}无对应库存",goodsId.toString());
+			throw new BusinessException("数据异常");
+		}
+		BigDecimal goodsPrice = goodsStocks.get(0).getGoodsPrice();
+		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
+			if(goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0 ){
+				goodsPrice = goodsStockInfoEntity.getGoodsPrice();
+			}
+		}
+		
+		return goodsPrice;
+	}
 
-    /**
+	/**
      * 其它分类页面
      * @param paramMap
      * @return
@@ -594,7 +629,7 @@ public class ShopHomeController {
     	//参数验证
     	Long categoryId = CommonUtils.getLong(paramMap,"categoryId");
     	if(categoryId == null){
-    		return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+    		return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY.getMsg());
     	}
     	try{
     		list = categoryInfoService.otherCategoryGoods(categoryId);

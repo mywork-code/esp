@@ -15,8 +15,8 @@
     <result column="status" property="status" jdbcType="VARCHAR"  />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, category_name, parent_id, sort_order, level, picture_url, create_user, update_user, 
-    create_date, update_date, status
+    id, category_name, parent_id, sort_order, `level`, picture_url, create_user, update_user, 
+    create_date, update_date, `status`
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 

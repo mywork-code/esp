@@ -25,6 +25,7 @@ import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -44,8 +45,11 @@ public class CategoryInfoService {
 	@Autowired
 	private GoodsService goodsService;
 	 
-	 @Value("${esp.image.uri}")
-	 private String              espImageUrl;
+	@Value("${esp.image.uri}")
+	private String espImageUrl;
+	
+	@Autowired
+    private ImageService imageService;
 	 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
@@ -116,6 +120,10 @@ public class CategoryInfoService {
 		for (Category c : categories) {
 			String pictureUrl=espImageUrl+"/static"+ c.getPictureUrl();
 			c.setPictureUrl(pictureUrl);
+			//限制一级类目的名字为2个字
+			if(c.getCategoryName().length()>2){
+				c.setCategoryName(c.getCategoryName().substring(0,2));
+			}
 		}
 		for (Category v : categories) {
 			voList.add(categroyToCathgroyEntiy(v));
@@ -389,9 +397,10 @@ public class CategoryInfoService {
 	 * 根据一级类目id查询二级类目下所有商品
 	 * @param categoryId
 	 * @return
+	 * @throws BusinessException 
 	 */
 	public List<OtherCategoryGoodsVo> otherCategoryGoods(
-			Long categoryId) {
+			Long categoryId) throws BusinessException {
     	//查询一级类目下的所有二级类目
 		List<OtherCategoryGoodsVo> list = Lists.newArrayList();
 		List<Category> categories = categoryMapper.selectByParentId(categoryId);//查询所有父级id为categoryId可见的所有类目
@@ -403,7 +412,6 @@ public class CategoryInfoService {
 			list.add(convertToOtherCategoryGoodsVo(category));
 		}
     	//查询每个二级类目下的前10条商品（按上架时间降序排列）
-		Map<String,Object> paramMap = Maps.newHashMap();
 		for (OtherCategoryGoodsVo categoryVo : list) {
 			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryId());
 			List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
@@ -423,9 +431,10 @@ public class CategoryInfoService {
 	 * GoodsInfoEntity 转 GoodsCategoryDto
 	 * @param goodsInfoEntity
 	 * @return
+	 * @throws BusinessException 
 	 */
 	private GoodsCategoryDto convertToGoodsCategoryDto(
-			GoodsInfoEntity goodsInfoEntity) {
+			GoodsInfoEntity goodsInfoEntity) throws BusinessException {
 		//根据goodsid查询库存，找出最低售价显示前端 
 		List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getId());
 		BigDecimal goodsPrice = null;
@@ -437,15 +446,19 @@ public class CategoryInfoService {
 				}
 			}
 		}
-		
-		
 		GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
+		if("jd".equals(goodsInfoEntity.getSource())){
+			goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
+		}else{
+			goodsCategoryDto.setGoodsLogoUrl(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));
+		}
+		
 		goodsCategoryDto.setGoodsId(goodsInfoEntity.getId());
 		goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
 		goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
-		goodsCategoryDto.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
 		goodsCategoryDto.setGoodsPrice(goodsPrice);
-		goodsCategoryDto.setFirstPrice(goodsPrice.multiply(new BigDecimal(0.1)));
+		goodsCategoryDto.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+		goodsCategoryDto.setSource(goodsInfoEntity.getSource());
 		
 		return goodsCategoryDto;
 	}

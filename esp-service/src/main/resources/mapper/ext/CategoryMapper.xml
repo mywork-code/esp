@@ -23,8 +23,8 @@
     <include refid="Base_Column_List" />
     from t_esp_category
     where status = '0'
-    and parent_id = #{parentId}
-	order by sort_order asc
+    and parent_id = #{value}
+	
   </select>
   
   <select id="selectByCategoryName" resultMap="BaseResultMap">
