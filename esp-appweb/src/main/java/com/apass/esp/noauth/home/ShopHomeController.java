@@ -102,11 +102,11 @@ public class ShopHomeController {
                 banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
             }
 
-            List<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods();
+            Pagination<GoodsBasicInfoEntity>  recommendGoods = goodService.loadRecommendGoods(0,10);
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods);
 
-            for (GoodsBasicInfoEntity goods : recommendGoods) {
+            for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
                 //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
@@ -479,10 +479,7 @@ public class ShopHomeController {
         Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
         //Long pageSize = CommonUtils.getLong(paramMap,"pageSize");
         int pageSize = 20;
-        if( pageIndex==null){
-            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
-        }
-        if(pageIndex.intValue()>3){
+        if( pageIndex==null||pageIndex.intValue()>3||pageIndex.intValue()<1){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
@@ -519,7 +516,7 @@ public class ShopHomeController {
         Map<String, Object> resultMap = new HashMap<>();
         Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
         int pageSize = 20;
-        if( pageIndex==null||pageIndex.intValue()>6){
+        if( pageIndex==null||pageIndex.intValue()>6||pageIndex<1){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
@@ -546,7 +543,45 @@ public class ShopHomeController {
         }
         return Response.successResponse(goodsList);
     }
-    
+
+    /**
+     * 精选推荐 大于10个时 分页展示
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/loadRecommendGoodsByPage")
+    public Response loadRecommendGoods(Map<String, Object> paramMap){
+        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
+        int pageSize = 20;
+        if( pageIndex==null||pageIndex.intValue()>3||pageIndex<1){
+            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        int pageBegin = pageSize * (pageIndex.intValue()-1);
+        try {
+            Pagination<GoodsBasicInfoEntity>  recommendGoods = goodService.loadRecommendGoods(pageBegin,pageSize);
+            for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
+                BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
+                goods.setGoodsPrice(price);
+                Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
+                goods.setMarketPrice(new BigDecimal(marketPrice));
+                goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+                goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
+                goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+            }
+            resultMap.put("recommendGoods", recommendGoods);
+            return Response.successResponse(resultMap);
+        }catch (BusinessException e){
+            LOGGER.error("indexInit fail", e);
+            LOGGER.error("首页加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+        }
+
+    }
+
+
     /**
      * 其它分类页面
      * @param paramMap

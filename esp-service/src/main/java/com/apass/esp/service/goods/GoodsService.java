@@ -64,8 +64,8 @@ public class GoodsService {
      *
      * @return
      */
-    public List<GoodsBasicInfoEntity> loadRecommendGoods() {
-        return goodsDao.loadRecommendGoods();
+    public Pagination<GoodsBasicInfoEntity>  loadRecommendGoods(int pageIndex,int pageSize) {
+        return goodsDao.loadRecommendGoods(pageIndex,pageSize);
     }
     /**
      * app 加载精品推荐商品列表
