@@ -59,4 +59,33 @@ public class ValidateUtils {
 			throw new BusinessException(message,code);
 		}
 	}
+	/**
+	 * 验证字符串的长度，是否在某一限定的区间
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @param message
+	 * @throws BusinessException 
+	 */
+	public static void checkLength(String value,int min,int max,String message,BusinessErrorCode code) throws BusinessException{
+		
+		if((StringUtils.length(value) < min) || (StringUtils.length(value) > max)){
+			throw new BusinessException(message,code);
+		}
+	}
+	
+	/**
+	 * 验证字符串的长度，是否在某一限定的区间
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @param message
+	 * @throws BusinessException 
+	 */
+	public static void checkLength(String value,int min,int max,String message) throws BusinessException{
+		
+		if((StringUtils.length(value) < min) || (StringUtils.length(value) > max)){
+			throw new BusinessException(message);
+		}
+	}
 }
