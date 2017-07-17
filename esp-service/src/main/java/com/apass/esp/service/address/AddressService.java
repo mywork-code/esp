@@ -40,7 +40,22 @@ public class AddressService {
 			throw new BusinessException("查询地址信息失败！", BusinessErrorCode.QUREY_INFO_FAILED);
 		}		
 	}
-	
+	/**
+	 * 查询地址信息(当是京东地址时，如果没有乡镇（towns），则towns为0)
+	 * 
+	 * @param customerInfo
+	 * @return
+	 */
+	public List<AddressInfoEntity> queryAddressInfoJd(Long userId)
+			throws BusinessException {
+		try {
+			List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoListJd(userId);
+			return addressInfoList;
+		} catch (Exception e) {
+			LOGGER.error("查询地址信息失败===>", e);
+			throw new BusinessException("查询地址信息失败！", BusinessErrorCode.QUREY_INFO_FAILED);
+		}		
+	}
 	/**
 	 * 新增地址信息
 	 * 
