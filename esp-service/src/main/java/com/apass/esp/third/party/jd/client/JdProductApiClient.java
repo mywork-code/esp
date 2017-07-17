@@ -480,7 +480,7 @@ public class JdProductApiClient extends JdApiClient {
      * @param region
      * @return
      */
-    private JdApiResponse<JSONArray> stockFororderBatget(List<SkuNum> skuNums, final Region region) {
+    public JdApiResponse<JSONArray> stockFororderBatget(List<SkuNum> skuNums, final Region region) {
         if (skuNums.size() == 0) {
             throw new IllegalArgumentException("skuNumList is empty");
         }
@@ -490,7 +490,23 @@ public class JdProductApiClient extends JdApiClient {
         jsonObject.put("area", area);
         return request("biz.stock.fororder.batget", jsonObject, "biz_stock_fororder_batget_response", JSONArray.class);
     }
-
+    /**
+     * 获取商品库存接口（建议商品列表页使用）
+     *biz.stock.forList.batget
+     * @param skuNums
+     * @param region
+     * @return
+     */
+    public JdApiResponse<JSONArray> stockForListBatget(String sku, final Region region) {
+        if (StringUtils.isEmpty(sku)) {
+            throw new IllegalArgumentException("skuNums is empty");
+        }
+        String area = region.getProvinceId() + "_" + region.getCityId() + "_" + region.getCountyId();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("sku", sku);
+        jsonObject.put("area", area);
+        return request("biz.stock.forList.batget", jsonObject, "biz_stock_forList_batget_response", JSONArray.class);
+    }
     /**
      * 消息推送，一次返回100条信息
      *

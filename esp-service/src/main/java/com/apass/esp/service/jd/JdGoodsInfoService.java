@@ -1,32 +1,42 @@
 package com.apass.esp.service.jd;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
 import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
+import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 获取京东商品基础信息（前端展示信息）
@@ -38,6 +48,8 @@ public class JdGoodsInfoService {
     private JdProductApiClient jdProductApiClient;
 	@Autowired
 	private GoodsRepository goodsRepository;
+	@Autowired
+	private  GoodsService  goodsService;
 
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
@@ -75,8 +87,9 @@ public class JdGoodsInfoService {
 	}
 	/**
 	 * 根据商品编号获取商品需要展示App信息
+	 * @throws BusinessException 
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku) {
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
@@ -86,44 +99,69 @@ public class JdGoodsInfoService {
 			// 查询商品名称
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
-			//java字符串转义,把&lt;&gt;转换成<>等字符
-            String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+			// java字符串转义,把&lt;&gt;转换成<>等字符
+			String introduction = jdGoods.getIntroduction().replaceAll("width", "width");
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
 		}
-		// 查询商品价格
-//		Collection<Long> skuPrice = new ArrayList<Long>();
-//		skuPrice.add(sku);
-//		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
-//		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
-//			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
-//		}
+		// 查看商品的邮费
+		List<Long> goodsIds=new ArrayList<>();
+		goodsIds.add(sku);
+		BigDecimal postage=goodsService.getPostage(goodsIds);
+        map.put("postage", postage);
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
+
 		// 查询商品规格
+		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
-		for(JdSimilarSku jdsk:jdSimilarSkuList){
-			List<JdSaleAttr> saleAttrList=jdsk.getSaleAttrList();
-			for(JdSaleAttr jdsa:saleAttrList){
-				List<String> skuIds=jdsa.getSkuIds();
-				for(int i=0;i<skuIds.size();i++){
-					String skuId=skuIds.get(i);
-					GoodsInfoEntity gty=goodsRepository.selectGoodsBySkuId(skuId);
-					if(null !=gty && 1==gty.getExternalStatus()){
-						continue;
-					}else{
+		for (JdSimilarSku jdsk : jdSimilarSkuList) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+			for (JdSaleAttr jdsa : saleAttrList) {
+				jdsa.setImagePath("http://img13.360buyimg.com/n4/" + jdsa.getImagePath());
+				List<String> skuIds = jdsa.getSkuIds();
+				for (int i = 0; i < skuIds.size(); i++) {
+					String skuId = skuIds.get(i);
+					GoodsInfoEntity gty = goodsRepository.selectGoodsBySkuId(skuId);
+					if (null == gty) {// 当改商品的规格中的商品没有关联时移除
 						skuIds.remove(i);
+					} else {
+						skusSet.add(skuId);
 					}
 				}
 			}
 		}
-		map.put("skuId",String.valueOf(sku));
+		// 获取地址信息
+		Region region = new Region();
+		for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
+			if ("1".equals(addressInfoEntity.getIsDefault())) {
+				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
+				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+			}
+		}
+		// 查询商品规格中的商品的价格和库存
+		List<JdSimilarSkuVo> JdSimilarSkuVoList = new ArrayList<>();
+		Iterator<String> iterator = skusSet.iterator();
+		while (iterator.hasNext()) {
+			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+			String skuId = iterator.next();
+			// 查询商品价格
+			Collection<Long> skuPrice = new ArrayList<Long>();
+			skuPrice.add(Long.parseLong(skuId));
+			List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
+			jdSimilarSkuVo.setSkuId(skuId);
+			jdSimilarSkuVo.setPrice(jdSellPriceList.get(0).getPrice());
+			if ("33".equals(jdGoodStock.getState())) {
+				jdSimilarSkuVo.setStockDesc(jdGoodStock.getDesc());
+			}
+			JdSimilarSkuVoList.add(jdSimilarSkuVo);
+		}
+		map.put("JdSimilarSkuVoList", JdSimilarSkuVoList);
+		map.put("skuId", String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
-		//查询商品邮费（需要地址，待定）
-		
-		
-		//商品库存（需要地址，待定）
 		return map;
 	}
 	/**
@@ -278,8 +316,18 @@ public class JdGoodsInfoService {
 		}
 		return map;
 	}
-
-
+	/**
+	 * 获取商品库存接口
+	 */
+	public JdGoodStock stockForListBatget(String sku, Region region) {
+		Gson gson = new Gson();
+		JdGoodStock jdGoodStock = new JdGoodStock();
+		JdApiResponse<JSONArray> stockForListBatgetResponse = jdProductApiClient.stockForListBatget(sku, region);
+		if (null != stockForListBatgetResponse && null != stockForListBatgetResponse.getResult() && stockForListBatgetResponse.isSuccess()) {
+			jdGoodStock = gson.fromJson(stockForListBatgetResponse.getResult().toString(), JdGoodStock.class);
+		}
+		return jdGoodStock;
+	}
 
 
 }

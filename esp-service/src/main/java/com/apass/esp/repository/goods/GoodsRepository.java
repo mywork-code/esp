@@ -30,9 +30,16 @@ import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
 public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GoodsRepository.class);
 	
-    public List<GoodsBasicInfoEntity> loadRecommendGoods() {
-        return this.getSqlSession().selectList("loadRecommendGoods");
-    }
+    public Pagination<GoodsBasicInfoEntity> loadRecommendGoods(int pageIndex,int pageSize) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("pageIndex", pageIndex);
+		param.put("pageSize", pageSize);
+		List<GoodsBasicInfoEntity> goodsBasicInfoEntityList = this.getSqlSession().selectList("loadRecommendGoods",param);
+		Pagination<GoodsBasicInfoEntity> pagination = new Pagination<>();
+		pagination.setDataList(goodsBasicInfoEntityList);
+		pagination.setTotalCount(this.getSqlSession().selectOne("loadRecommendGoodsCount"));
+		return pagination;
+	}
     
     public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
         return this.getSqlSession().selectList("loadRecommendGoodsList");

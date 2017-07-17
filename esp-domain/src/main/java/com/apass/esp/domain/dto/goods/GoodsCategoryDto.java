@@ -39,6 +39,11 @@ public class GoodsCategoryDto {
      * 首付价
      */
     private BigDecimal firstPrice;
+    
+    /**
+     * 来源
+     */
+    private String source;
 
 	public Long getGoodsId() {
 		return goodsId;
@@ -92,9 +97,16 @@ public class GoodsCategoryDto {
 		return firstPrice;
 	}
 
-	public void setFirstPrice(BigDecimal goodsPrice) {
-		this.firstPrice = goodsPrice.multiply(new BigDecimal(0.1));
+	public void setFirstPrice(BigDecimal firstPrice) {
+		this.firstPrice = firstPrice;
 	}
-    
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
     
 }

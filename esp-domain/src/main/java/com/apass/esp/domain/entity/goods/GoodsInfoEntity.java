@@ -3,6 +3,7 @@
  */
 package com.apass.esp.domain.entity.goods;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.apass.esp.domain.enums.GoodStatus;
@@ -169,6 +170,16 @@ public class GoodsInfoEntity {
      */
     private byte externalStatus;
 
+    /**
+     * 商品价格
+     */
+    private BigDecimal goodsPrice;
+    
+    /**
+     * 首付价
+     */
+    private BigDecimal firstPrice;
+    
     public String getSource() {
 		return source;
 	}
@@ -512,4 +523,21 @@ public class GoodsInfoEntity {
 	public void setCategoryName3(String categoryName3) {
 		this.categoryName3 = categoryName3;
 	}
+
+	public BigDecimal getGoodsPrice() {
+		return goodsPrice;
+	}
+
+	public void setGoodsPrice(BigDecimal goodsPrice) {
+		this.goodsPrice = goodsPrice;
+	}
+
+	public BigDecimal getFirstPrice() {
+		return firstPrice;
+	}
+
+	public void setFirstPrice(BigDecimal firstPrice) {
+		this.firstPrice = firstPrice;
+	}
+	
 }

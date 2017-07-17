@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -30,6 +31,7 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.utils.PaginationManage;
+import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -64,8 +66,8 @@ public class GoodsService {
      *
      * @return
      */
-    public List<GoodsBasicInfoEntity> loadRecommendGoods() {
-        return goodsDao.loadRecommendGoods();
+    public Pagination<GoodsBasicInfoEntity>  loadRecommendGoods(int pageIndex,int pageSize) {
+        return goodsDao.loadRecommendGoods(pageIndex,pageSize);
     }
     /**
      * app 加载精品推荐商品列表
@@ -493,7 +495,7 @@ public class GoodsService {
        }
        int pageBegin = pageSize * (pageIndex-1);
        List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-       Pagination pagination = new Pagination();
+       Pagination<String> pagination = new Pagination<String>();
        pagination.setDataList(list);
        pagination.setTotalCount(50);
        return pagination;
@@ -502,10 +504,10 @@ public class GoodsService {
 
     public Pagination<String> jdGoodSalesVolume(int pageIndex ,int pageSize){
         int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
-        int pageBegin = pageSize * (pageIndex-1)+50;
+        int pageBegin = pageSize * (pageIndex-1);
         if (totalConut >= 170) {
             List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-            Pagination pagination = new Pagination();
+            Pagination<String> pagination = new Pagination<String>();
             pagination.setDataList(list);
             pagination.setTotalCount(120);
             return pagination;
@@ -517,12 +519,11 @@ public class GoodsService {
             List<String> goodsIdList =  goodsBasicRepository.getRemainderGoods((6-pageIndex)*20,20-size);
             jdGoodSalesVolumeList.addAll(goodsIdList);
         }
-        Pagination pagination = new Pagination();
+        Pagination<String> pagination = new Pagination<String>();
         pagination.setDataList(jdGoodSalesVolumeList);
         pagination.setTotalCount(120);
         return pagination;
     }
-    
     
 	/**
 	 * 根据二级类目id查询所有商品
@@ -539,6 +540,38 @@ public class GoodsService {
 	 */
 	public List<GoodsInfoEntity> selectByCategoryId3(String cateId) {
 		return goodsDao.selectByCategoryId3(Long.valueOf(cateId));
+	}
+	
+	
+
+	/**
+	 * 获取单个商品或订单的邮费
+	 * @param goodsIds 商品id列表
+	 * @return postage为0时免运费
+	 * @throws BusinessException 
+	 */
+	public BigDecimal getPostage(List<Long> goodsIds) throws BusinessException{
+		ValidateUtils.isNullObject(goodsIds, "商品id不能为空");
+		
+		BigDecimal goodsPrices = new BigDecimal(0);
+		BigDecimal postage = new BigDecimal(0);
+		for (Long goodsId : goodsIds) {
+			List<GoodsStockSkuDto> goodsStockSkuInfo = goodsStockDao.getGoodsStockSkuInfo(goodsId);
+			if(goodsStockSkuInfo != null){
+				for (GoodsStockSkuDto goodsStockSkuDto : goodsStockSkuInfo) {
+					if(goodsStockSkuDto.getGoodsPrice() == null){
+						throw new BusinessException("数据有误，goodsId:{}",goodsId.toString());
+					}
+					goodsPrices = goodsPrices.add(goodsStockSkuDto.getGoodsPrice());
+				}
+			}
+		}
+		
+		if(goodsPrices.compareTo(new BigDecimal(99))>0){
+			postage = new BigDecimal(6);
+		}
+		
+		return postage;
 	}
 }
 

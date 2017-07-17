@@ -45,6 +45,7 @@ import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -166,6 +167,20 @@ public class TestController {
     	 List<Long> skus=new ArrayList<>();
     	 skus.add((long)2403211l);
     	 JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productSkuImageQuery(skus);
+         return Response.success("1", jdApiResponse);
+    }
+    /**
+     * 获取商品库存接口（建议商品列表页使用）
+     */
+    @RequestMapping(value = "/stockForListBatget", method = RequestMethod.POST)
+    @ResponseBody
+    public Response stockForListBatget(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+    	 Region region=new Region();
+    	 region.setProvinceId(1);
+    	 region.setCityId(0);
+    	 region.setCountyId(0);
+    	 JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.stockForListBatget(sku,region);
          return Response.success("1", jdApiResponse);
     }
     /**
