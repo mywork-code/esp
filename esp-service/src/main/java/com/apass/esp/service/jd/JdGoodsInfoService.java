@@ -1,5 +1,19 @@
 package com.apass.esp.service.jd;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -15,24 +29,14 @@ import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * 获取京东商品基础信息（前端展示信息）
@@ -44,6 +48,8 @@ public class JdGoodsInfoService {
     private JdProductApiClient jdProductApiClient;
 	@Autowired
 	private GoodsRepository goodsRepository;
+	@Autowired
+	private  GoodsService  goodsService;
 
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
@@ -81,8 +87,9 @@ public class JdGoodsInfoService {
 	}
 	/**
 	 * 根据商品编号获取商品需要展示App信息
+	 * @throws BusinessException 
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList) {
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
@@ -97,8 +104,10 @@ public class JdGoodsInfoService {
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
 		}
 		// 查看商品的邮费
-		// ToDO
-
+		List<Long> goodsIds=new ArrayList<>();
+		goodsIds.add(sku);
+		BigDecimal postage=goodsService.getPostage(goodsIds);
+        map.put("postage", postage);
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);

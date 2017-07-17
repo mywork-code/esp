@@ -401,7 +401,7 @@ public class ShopHomeController {
             	addty.setDistrict("district");
             	addty.setTownsCode("townsCode");
             	addty.setTowns("towns");
-            	addty.setIsDefault("default");
+            	addty.setIsDefault("1");
             	addressInfoList.add(addty);
             }else{
               if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
