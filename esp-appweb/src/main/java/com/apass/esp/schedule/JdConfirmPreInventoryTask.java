@@ -97,111 +97,14 @@ public class JdConfirmPreInventoryTask {
                     continue;
                 }
                 JSONObject jsonObject = jdApiResponse.getResult();
-                Object pOrderV = jsonObject.get("pOrder");
-                if (pOrderV instanceof Number) {
-                    //没有拆单
+                try {
+                    orderService.jdSplitOrderMessageHandle(jsonObject,orderInfoEntity);
+                } catch (BusinessException e) {
+                    LOGGER.info("jdSplitOrderMessageHandle do not have split ",jdOrderIdp);
                     continue;
-                    //long pOrderId = ((Number) pOrderV).longValue();
-                } else {
-                    String merchantCode = orderInfoEntity.getMerchantCode();
-                    String deviceType = orderInfoEntity.getDeviceType();
-                    MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-                    //拆单
-                    JSONObject pOrderJsonObject = (JSONObject) pOrderV;
-                    //父订单状态
-                    pOrderJsonObject.getIntValue("type");
-                    pOrderJsonObject.getIntValue("submitState");
-                    pOrderJsonObject.getIntValue("orderState");
-
-                    JSONArray cOrderArray = jsonObject.getJSONArray("cOrder");
-                    for (int i = 0; i < cOrderArray.size(); i++) {
-                        JSONObject cOrderJsonObject = cOrderArray.getJSONObject(i);
-                        if (cOrderJsonObject.getLongValue("pOrder") != jdOrderId) {
-                            LOGGER.info("cOrderJsonObject.getLongValue(\"pOrder\") {}, jdOrderId", cOrderJsonObject.getLongValue("pOrder"), jdOrderId);
-                        }
-                        long cOrderId = cOrderJsonObject.getLongValue("jdOrderId");//京东子订单ID
-                        JSONArray cOrderSkuList = cOrderJsonObject.getJSONArray("sku");
-                        BigDecimal jdPrice = BigDecimal.ZERO;//订单金额
-                        Integer sumNum = 0;
-                        for (int j = 0; j < cOrderSkuList.size(); j++) {
-                            BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
-                            int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
-                            jdPrice = jdPrice.add(price.multiply(new BigDecimal(num)));
-                            sumNum = sumNum + num;
-                        }
-                        //创建新的订单号
-                        String cOrderQh = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
-                        //拆单创建新的订单
-                        OrderInfoEntity orderInfo = new OrderInfoEntity();
-                        orderInfo.setUserId(orderInfoEntity.getUserId());
-                        orderInfo.setOrderAmt(jdPrice);
-                        orderInfo.setSource(SourceType.JD.getCode());
-                        orderInfo.setExtParentId(-1);//为子订单
-                        orderInfo.setDeviceType(deviceType);
-                        orderInfo.setOrderId(cOrderQh);
-                        orderInfo.setGoodsNum(Long.valueOf(sumNum));
-                        orderInfo.setPayStatus(PaymentStatus.PAYSUCCESS.getCode());
-                        orderInfo.setProvince(orderInfoEntity.getProvince());
-                        orderInfo.setCity(orderInfoEntity.getCity());
-                        orderInfo.setDistrict(orderInfoEntity.getDistrict());
-                        orderInfo.setAddress(orderInfoEntity.getAddress());
-                        orderInfo.setPostcode(orderInfoEntity.getPostcode());
-                        orderInfo.setName(orderInfoEntity.getName());
-                        orderInfo.setTelephone(orderInfoEntity.getTelephone());
-                        orderInfo.setMerchantCode(merchantCode);
-                        orderInfo.setExtendAcceptGoodsNum(orderInfoEntity.getExtendAcceptGoodsNum());
-                        orderInfo.setAddressId(orderInfoEntity.getAddressId());
-                        orderInfo.setPreDelivery(orderInfoEntity.getPreDelivery());
-                        orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
-                        orderInfo.setUpdateDate(new Date());
-                        orderInfo.setExtOrderId(String.valueOf(cOrderId));
-                        Integer successStatus = orderInfoRepository.insert(orderInfo);
-                        if (successStatus < 1) {
-                            LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
-                            continue;
-                        }
-                        for (int j = 0; j < cOrderSkuList.size(); j++) {
-                            long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
-                            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
-                            if (goodsInfoEntity == null) {
-                                LOGGER.info("pOrder {}, jdOrderId {} goodsInfoEntity {}", cOrderJsonObject.getLongValue("pOrder"), jdOrderId, goodsInfoEntity);
-                                continue;
-                            }
-                            long goodsId = goodsInfoEntity.getId();
-                            BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
-                            int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
-                            String name = cOrderSkuList.getJSONObject(j).getString("name");
-                            GoodsInfoEntity goods = goodsDao.select(goodsId);
-                            //orderDetail插入对应记录
-                            OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
-                            orderDetail.setOrderId(cOrderQh);
-                            orderDetail.setGoodsId(goodsId);
-                            orderDetail.setSkuId(String.valueOf(skuId));
-                            orderDetail.setSource(SourceType.JD.getCode());
-                            orderDetail.setGoodsPrice(price);
-                            orderDetail.setGoodsNum(Long.valueOf(num));
-                            orderDetail.setMerchantCode(merchantCode);
-                            orderDetail.setGoodsTitle(goods.getGoodsTitle());
-                            orderDetail.setCategoryCode(goods.getCategoryCode());
-                            orderDetail.setGoodsName(goods.getGoodsName());
-                            orderDetail.setGoodsSellPt(goods.getGoodsSellPt());
-                            orderDetail.setGoodsType(goods.getGoodsType());
-                            orderDetail.setListTime(goods.getListTime());
-                            orderDetail.setDelistTime(goods.getDelistTime());
-                            orderDetail.setProDate(goods.getProDate());
-                            orderDetail.setKeepDate(goods.getKeepDate());
-                            orderDetail.setSupNo(goods.getSupNo());
-                            orderDetail.setCreateDate(new Date());
-                            Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
-                            if (orderDetailSuccess < 1) {
-                                LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order detail error  ", jdOrderId, cOrderId, cOrderQh);
-                                continue;
-                            }
-                        }
-                    }
-
+                }catch (Exception e ){
+                    continue;
                 }
-
             } else {
                 LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
             }
