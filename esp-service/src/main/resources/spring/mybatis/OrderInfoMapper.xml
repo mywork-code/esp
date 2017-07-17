@@ -54,7 +54,8 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			main_order_id mainOrderId
 		FROM
 			t_esp_order_info
 		]]>
