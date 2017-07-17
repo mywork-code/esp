@@ -57,24 +57,6 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private JdOrderApiClient jdOrderApiClient;
 
-    @Autowired
-    private GoodsService goodsService;
-
-    @Autowired
-    private MerchantInforService merchantInforService;
-
-    @Autowired
-    private CommonService commonService;
-
-    @Autowired
-    public OrderInfoRepository orderInfoRepository;
-
-    @Autowired
-    public OrderDetailInfoRepository orderDetailInfoRepository;
-
-    @Autowired
-    public GoodsRepository goodsDao;
-
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
