@@ -11,6 +11,11 @@
 			province,
 			city,
 			district,
+			towns,
+			province_code,
+			city_code,
+			district_code,
+			towns_code,
 			address,
 			postcode,
 			name,
@@ -23,6 +28,11 @@
 			#{province, jdbcType=VARCHAR}, 
 			#{city, jdbcType=VARCHAR}, 
 			#{district, jdbcType=VARCHAR}, 
+			#{towns, jdbcType=VARCHAR}, 
+			#{provinceCode, jdbcType=VARCHAR}, 
+			#{cityCode, jdbcType=VARCHAR}, 
+			#{districtCode, jdbcType=VARCHAR}, 
+			#{townsCode, jdbcType=VARCHAR}, 
 			#{address, jdbcType=VARCHAR},
 			#{postcode, jdbcType=VARCHAR},
 			#{name, jdbcType=VARCHAR},
@@ -43,6 +53,11 @@
 			province province,
 			city city,
 			district district,
+			towns towns,
+			province_code provinceCode,
+			city_code cityCode,
+			district_code districtCode,
+			towns_code townsCode,
 			address address,
 			postcode postcode,
 			name name,
@@ -108,6 +123,21 @@
 			<if test="district != null and district != ''">
 				district = #{district},
 			</if>
+			<if test="towns != null and towns != ''">
+				towns = #{towns},
+			</if>
+			<if test="provinceCode != null and provinceCode != ''">
+			    province_code = #{provinceCode},
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				city_code = #{cityCode},
+			</if>
+			<if test="districtCode != null and districtCode != ''">
+				district_code = #{districtCode},
+			</if>
+			<if test="townsCode != null and townsCode != ''">
+				towns_code = #{townsCode},
+			</if>
 			<if test="address != null and address != ''">
 				address = #{address},
 			</if>
@@ -147,6 +177,11 @@
 			province province,
 			city city,
 			district district,
+			towns towns,
+			province_code provinceCode,
+			city_code cityCode,
+			district_code districtCode,
+			towns_code townsCode,
 			address address,
 			postcode postcode,
 			name name,
@@ -182,6 +217,11 @@
 			    province province,
 			    city city,
 			    district district,
+			    towns towns,
+				province_code provinceCode,
+				city_code cityCode,
+				district_code districtCode,
+				towns_code townsCode,
 			    address address,
 			    postcode postcode,
 			    name name,
@@ -206,6 +246,11 @@
 			province province,
 			city city,
 			district district,
+			towns towns,
+			province_code provinceCode,
+			city_code cityCode,
+			district_code districtCode,
+			towns_code townsCode,
 			address address,
 			postcode postcode,
 			name name,
@@ -227,6 +272,11 @@
 			province province,
 			city city,
 			district district,
+			towns towns,
+			province_code provinceCode,
+			city_code cityCode,
+			district_code districtCode,
+			towns_code townsCode,
 			address address,
 			postcode postcode,
 			name name,
