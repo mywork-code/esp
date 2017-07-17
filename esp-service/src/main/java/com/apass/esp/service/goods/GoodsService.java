@@ -493,7 +493,7 @@ public class GoodsService {
        }
        int pageBegin = pageSize * (pageIndex-1);
        List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-       Pagination pagination = new Pagination();
+       Pagination<String> pagination = new Pagination<String>();
        pagination.setDataList(list);
        pagination.setTotalCount(50);
        return pagination;
@@ -502,10 +502,10 @@ public class GoodsService {
 
     public Pagination<String> jdGoodSalesVolume(int pageIndex ,int pageSize){
         int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
-        int pageBegin = pageSize * (pageIndex-1)+50;
+        int pageBegin = pageSize * (pageIndex-1);
         if (totalConut >= 170) {
             List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-            Pagination pagination = new Pagination();
+            Pagination<String> pagination = new Pagination<String>();
             pagination.setDataList(list);
             pagination.setTotalCount(120);
             return pagination;
@@ -517,12 +517,11 @@ public class GoodsService {
             List<String> goodsIdList =  goodsBasicRepository.getRemainderGoods((6-pageIndex)*20,20-size);
             jdGoodSalesVolumeList.addAll(goodsIdList);
         }
-        Pagination pagination = new Pagination();
+        Pagination<String> pagination = new Pagination<String>();
         pagination.setDataList(jdGoodSalesVolumeList);
         pagination.setTotalCount(120);
         return pagination;
     }
-    
     
 	/**
 	 * 根据二级类目id查询所有商品
