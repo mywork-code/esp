@@ -120,6 +120,10 @@ public class CategoryInfoService {
 		for (Category c : categories) {
 			String pictureUrl=espImageUrl+"/static"+ c.getPictureUrl();
 			c.setPictureUrl(pictureUrl);
+			//限制一级类目的名字为2个字
+			if(c.getCategoryName().length()>2){
+				c.setCategoryName(c.getCategoryName().substring(0,2));
+			}
 		}
 		for (Category v : categories) {
 			voList.add(categroyToCathgroyEntiy(v));

@@ -390,6 +390,7 @@ public class ShopHomeController {
             }
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
+            //查询京东地址
             List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
             	addty.setProvinceCode("provinceCode");
@@ -400,13 +401,18 @@ public class ShopHomeController {
             	addty.setDistrict("district");
             	addty.setTownsCode("townsCode");
             	addty.setTowns("towns");
+            	addty.setIsDefault("default");
             	addressInfoList.add(addty);
+            }else{
+              if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
+            	  addressInfoList.get(0).setIsDefault("1");
+              }
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             //判断是否是京东商品
-            if("jd".equals(goodsInfo.getSource()) && "1".equals(goodsInfo.getExternalStatus()+"")){//来源于京东且已关联
+            if("jd".equals(goodsInfo.getSource())){//来源于京东
             	String externalId = goodsInfo.getExternalId();// 外部商品id
-            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),addressInfoList);
 
             	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
             	if(jdGoodsStockInfoList.size()==1){
