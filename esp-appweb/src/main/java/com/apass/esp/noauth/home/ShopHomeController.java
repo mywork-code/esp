@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -30,6 +31,7 @@ import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -78,6 +80,8 @@ public class ShopHomeController {
     private GoodsService goodsService;
 	@Autowired
 	private JdGoodsInfoService jdGoodsInfoService;
+	@Autowired
+	private AddressService addressService;
 	 @Value("${esp.image.uri}")
 	 private String              espImageUrl;
     /**
@@ -370,7 +374,7 @@ public class ShopHomeController {
      * @return
      */
     @POST
-    @Path("/loadDetailInfoByIdJD")
+    @Path("/v2/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD(Map<String, Object> paramMap){
         try{
             Map<String,Object> returnMap = new HashMap<>();
@@ -383,6 +387,20 @@ public class ShopHomeController {
             if (!StringUtils.isEmpty(userId)) {
                 int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
                 returnMap.put("amountInCart", amountInCart);
+            }
+            //查看地址信息
+            AddressInfoEntity  addty=new AddressInfoEntity();
+            List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
+            if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
+            	addty.setProvinceCode("provinceCode");
+            	addty.setProvince("province");
+            	addty.setCityCode("cityCode");
+            	addty.setCity("city");
+            	addty.setDistrictCode("districtCode");
+            	addty.setDistrict("district");
+            	addty.setTownsCode("townsCode");
+            	addty.setTowns("towns");
+            	addressInfoList.add(addty);
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             //判断是否是京东商品
@@ -400,6 +418,7 @@ public class ShopHomeController {
             }else{
                 goodService.loadGoodsBasicInfoById(goodsId,returnMap);
             }
+            returnMap.put("address", addressInfoList);
             return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);

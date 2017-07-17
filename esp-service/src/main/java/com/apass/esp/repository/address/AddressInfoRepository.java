@@ -23,7 +23,19 @@ public class AddressInfoRepository extends BaseMybatisRepository<AddressInfoEnti
 			throw new BusinessException("查询用户消息列表失败", e);
 		}
 	}
-	
+	/**
+	 * 查询用户消息列表
+	 * 
+	 * @throws BusinessException
+	 */
+	public List<AddressInfoEntity> queryAddressInfoListJd(Long userId) throws BusinessException {
+		try {
+			List<AddressInfoEntity> jmList = getSqlSession().selectList(getSQL("queryAddressInfoListJd"), userId);
+			return jmList;
+		} catch (Exception e) {
+			throw new BusinessException("查询用户消息列表失败", e);
+		}
+	}
 	/**
 	 * 将原来默认地址修改为非默认地址
 	 * 

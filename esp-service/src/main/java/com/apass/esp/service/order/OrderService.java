@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.service.goods.GoodsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -132,7 +133,9 @@ public class OrderService {
 	private WorkCityJdMapper cityJdMapper;
 	@Autowired
     private JdOrderApiClient jdOrderApiClient;
-	
+	@Autowired
+    private GoodsService goodsService;
+
 
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -140,7 +143,7 @@ public class OrderService {
 
 	/**
 	 * 查询订单概要信息
-	 * 
+	 *
 	 * @param customerInfo
 	 * @return
 	 */
@@ -160,7 +163,7 @@ public class OrderService {
 
 	/**
 	 * 查询订单详细信息
-	 * 
+	 *
 	 * @param customerInfo
 	 * @return
 	 */
@@ -180,7 +183,7 @@ public class OrderService {
 
 	/**
 	 * 通过商户号查询订单详细信息
-	 * 
+	 *
 	 * @param merchantCode
 	 * @return
 	 */
@@ -195,10 +198,10 @@ public class OrderService {
 			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
 		}
 	}
-	
+
 	/**
 	 * 查询被二次拒绝的订单
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException{
 		try {
@@ -213,7 +216,7 @@ public class OrderService {
 
 	/**
 	 * 通过订单号更新物流信息
-	 * 
+	 *
 	 * @param merchantCode
 	 * @return
 	 */
@@ -229,7 +232,7 @@ public class OrderService {
 
 	/**
 	 * 通过订单号更新物流信息、订单状态
-	 * 
+	 *
 	 * @param merchantCode
 	 * @return
 	 */
@@ -266,14 +269,14 @@ public class OrderService {
 				entity.setStatus(OrderStatus.ORDER_SEND.getCode());
 				orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
 			}
-			
+
 			orderSubInfoRepository.updateLogisticsInfoByOrderId(map);
 
 			// 更新订单状态为待收货 D03 : 代收货
 			map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
 
 			orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
-			
+
 		} catch (Exception e) {
 			LOGGER.error("物流单号重复或输入错误", e);
 			throw new BusinessException("物流单号重复或输入错误", e);
@@ -282,7 +285,7 @@ public class OrderService {
 
 	/**
 	 * 生成商品订单
-	 * 
+	 *
 	 * @param userId
 	 *            用户Id
 	 * @param totalPayment
@@ -319,13 +322,13 @@ public class OrderService {
 		}
 		// 4 生成订单
 		List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,deviceType);
-		
+
 		/**
 		 * 设置预占库存和修改订单的信息
 		 */
 	    preStockStatus(orders, addressId);
-		
-		
+
+
 		return orders;
 	}
 
@@ -349,7 +352,7 @@ public class OrderService {
 	/**
 	 * 设置京东商品预占库存
 	 * @return
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public String preStockStatus(List<String> orderIdList,Long addressId) throws BusinessException{
 		/**
@@ -376,7 +379,7 @@ public class OrderService {
 			SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()),detail.getGoodsNum().intValue());
 			skuNumList.add(num);
 		}
-		
+
 		/**
 		 * 获取用户的地址信息
 		 */
@@ -389,7 +392,7 @@ public class OrderService {
             JSONObject jsonObject = (JSONObject) jsonArray;
             priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"), jsonObject.getBigDecimal("jdPrice")));
         }
-		
+
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
@@ -433,7 +436,7 @@ public class OrderService {
             LOGGER.warn("submit order error, {}", orderResponse.toString());
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
-        
+
         /**
          * 在京东那边占完库存后，要修改order表中的信息 
          */
@@ -445,33 +448,33 @@ public class OrderService {
         	params.put("orderId", orderId);
         	orderInfoRepository.updatePreStockStatusByOrderId(params);
 		}
-        
+
 		return jdOrderId;
 	}
-	
+
 	public AddressInfo getAddressByOrderId(Long addressId) throws BusinessException{
-		
+
 		AddressInfo addressInfo = new AddressInfo();
-		
+
 		if(null == addressId){
 			throw new BusinessException("地址编号不能为空");
 		}
-		
+
 		AddressInfoEntity address = addressInfoDao.select(Long.valueOf(addressId));
-		
+
 		//根据省、市、区获取对应的编码
 		WorkCityJdDto dto1 = new WorkCityJdDto(address.getProvince(),"0");
 		WorkCityJd provice = cityJdMapper.selectByNameAndParent(dto1);
-		
+
 		WorkCityJdDto dto2 = new WorkCityJdDto(address.getCity(),provice.getCode());
 		WorkCityJd city = cityJdMapper.selectByNameAndParent(dto2);
-		
+
 		WorkCityJdDto dto3 = new WorkCityJdDto(address.getDistrict(),city.getCode());
 		WorkCityJd district = cityJdMapper.selectByNameAndParent(dto3);
-		
+
 		WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(),district.getCode());
 		WorkCityJd towns = cityJdMapper.selectByNameAndParent(dto4);
-		
+
 		addressInfo.setProvinceId(Integer.valueOf(provice.getCode()));
         addressInfo.setCityId(Integer.valueOf(city.getCode()));
         addressInfo.setCountyId(Integer.valueOf(district.getCode()));
@@ -484,7 +487,7 @@ public class OrderService {
 	}
 	/**
 	 * 修改商品数目 不可循环调用该方法否则无法回滚
-	 * 
+	 *
 	 * @param goodsId
 	 *            商品Id
 	 * @param goodsStockId
@@ -559,9 +562,9 @@ public class OrderService {
 	}
 
 	/**
-	 * 
+	 *
 	 * 生成订单 商品价格使用页面传递
-	 * 
+	 *
 	 * @param userId
 	 * @param totalPayment
 	 * @param purchaseList
@@ -581,7 +584,7 @@ public class OrderService {
 			orderInfo.setUserId(userId);
 			orderInfo.setOrderAmt(orderAmt);
 			MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-			
+
 			if(StringUtils.equals(merchantInfoEntity.getMerchantName(),ConstantsUtils.MERCHANTNAME)){
 				orderInfo.setSource(SourceType.JD.getCode());
 				orderInfo.setExtParentId(0);
@@ -664,7 +667,7 @@ public class OrderService {
 
 	/**
 	 * 统计每个商户订单总金额
-	 * 
+	 *
 	 * @param purchaseList
 	 * @return
 	 */
@@ -690,7 +693,7 @@ public class OrderService {
 
 	/**
 	 * 生成订单前校验
-	 * 
+	 *
 	 * @param totalPayment
 	 * @param addressId
 	 * @param purchaseList
@@ -729,12 +732,12 @@ public class OrderService {
 			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
 			throw new BusinessException("该用户地址信息不存在");
 		}
-		
+
 		// 校验商品库存
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-			
+
 			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
 				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
@@ -759,7 +762,7 @@ public class OrderService {
 
 	/**
 	 * 校验商品下架
-	 * 
+	 *
 	 * @param goodsId
 	 *            商品id
 	 * @throws BusinessException
@@ -792,7 +795,7 @@ public class OrderService {
 
 	/**
 	 * 校验商品下架和库存不足[支付校验使用]
-	 * 
+	 *
 	 * @param goodsId
 	 *            商品Id
 	 * @param goodsStockId
@@ -847,7 +850,7 @@ public class OrderService {
 
 	/**
 	 * 取消订单
-	 * 
+	 *
 	 * @param userId
 	 * @param orderId
 	 * @throws BusinessException
@@ -868,7 +871,7 @@ public class OrderService {
 
 	/**
 	 * 处理取消订单
-	 * 
+	 *
 	 * @param orderId
 	 * @throws BusinessException
 	 */
@@ -891,7 +894,7 @@ public class OrderService {
 
 	/**
 	 * 加库存
-	 * 
+	 *
 	 * @param orderId
 	 * @throws BusinessException
 	 */
@@ -916,7 +919,7 @@ public class OrderService {
 						LOGGER.error("当前库存不能大于总库存");
 						throw new BusinessException("当前库存不能大于总库存",BusinessErrorCode.GOODSSTOCK_UPDATE_ERROR);
 					}
-					
+
 					Integer successFlag = goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
 					if (successFlag == 0) {
 						if (errorNum <= 0) {
@@ -931,9 +934,9 @@ public class OrderService {
 					} else if (successFlag == 1) {
 						break;
 					}
-					
+
 				}
-				
+
 			} catch (Exception e) {
 				LOG.info(requestId, "加库存操作失败", orderId);
 				LOGGER.error("加库存操作失败", e);
@@ -945,7 +948,7 @@ public class OrderService {
 
 	/**
 	 * 延迟收货
-	 * 
+	 *
 	 * @param userId
 	 * @param orderId
 	 * @param returnMap
@@ -978,7 +981,7 @@ public class OrderService {
 
 	/**
 	 * 确认收货
-	 * 
+	 *
 	 * @param userId
 	 * @param orderId
 	 * @throws BusinessException
@@ -1006,7 +1009,7 @@ public class OrderService {
 
 	/**
 	 * 删除订单
-	 * 
+	 *
 	 * @param userId
 	 * @param orderId
 	 * @throws BusinessException
@@ -1028,7 +1031,7 @@ public class OrderService {
 
 	/**
 	 * 根据 userId、订单状态(可选) 查询订单信息
-	 * 
+	 *
 	 * @param userId
 	 *            用户id
 	 * @param statusStr
@@ -1089,7 +1092,7 @@ public class OrderService {
 		}
 		return returnOrders;
 	}
-	
+
 	/**
 	 * 根据订单的Id和状态查询，订单的详情
 	 * @param requestId
@@ -1151,15 +1154,15 @@ public class OrderService {
 		}
 		return returnOrders;
 	}
-	
+
 	public OrderDetailInfoDto getOrderDetailInfoDto(String requestId,String orderId) throws BusinessException{
-	    
+
 	    if(StringUtils.isBlank(orderId)){
 	        throw new BusinessException("订单Id不能为空!",BusinessErrorCode.PARAM_IS_EMPTY);
 	    }
-	    
+
         OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
-	    
+
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId,entity);
 		List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
 		for (GoodsInfoInOrderDto goodsInfoInOrderDto :goodsInfoInOrderDtoList) {
@@ -1255,7 +1258,7 @@ public class OrderService {
 
 	/**
 	 * 获取用户 待付款、待发货、待收货 订单数量
-	 * 
+	 *
 	 * @param userId
 	 * @return
 	 */
@@ -1274,7 +1277,7 @@ public class OrderService {
 
 	/**
 	 * 查询订单收货地址
-	 * 
+	 *
 	 * @param resultMap
 	 * @param orderId
 	 * @throws Exception
@@ -1298,7 +1301,7 @@ public class OrderService {
 
 	/**
 	 * 修改订单收货地址
-	 * 
+	 *
 	 * @param addressId
 	 * @param orderId
 	 * @param userId
@@ -1333,7 +1336,7 @@ public class OrderService {
 
 	/**
 	 * 重新下单[初始化]
-	 * 
+	 *
 	 * @param userId
 	 * @param orderId
 	 * @throws BusinessException
@@ -1400,7 +1403,7 @@ public class OrderService {
 
 	/**
 	 * 订单查询导出查询
-	 * 
+	 *
 	 * @param map
 	 * @param page
 	 * @return
@@ -1420,7 +1423,7 @@ public class OrderService {
 
 	/**
 	 * 重新下单异常[库存为零或商品下架]添加至购物车
-	 * 
+	 *
 	 * @param orderId
 	 * @throws BusinessException
 	 */
@@ -1518,7 +1521,7 @@ public class OrderService {
 
 	/**
 	 * 修改待付款订单收货地址
-	 * 
+	 *
 	 * @param orderId
 	 * @param userId
 	 * @param addressInfoDto
@@ -1576,7 +1579,7 @@ public class OrderService {
 
 	/**
 	 * 根据订单列表获取订单详情列表
-	 * 
+	 *
 	 * @param orderList
 	 * @return
 	 * @throws BusinessException
@@ -1595,7 +1598,7 @@ public class OrderService {
 
 	/**
 	 * 根据订单号和用户id查询订单信息
-	 * 
+	 *
 	 * @param orderId
 	 * @param userId
 	 * @return
@@ -1608,7 +1611,7 @@ public class OrderService {
 
 	/**
 	 * 待付款页付款库存不足或商品下架时 删除订单加入购物车
-	 * 
+	 *
 	 * @param orderId
 	 * @param userId
 	 * @throws BusinessException
@@ -1643,19 +1646,19 @@ public class OrderService {
 		OrderInfoEntity orderInfoEntity = orderInfoRepository.queryLatestSuccessOrderInfo(userId);
 		return orderInfoEntity == null ? "" : DateFormatUtil.datetime2String(orderInfoEntity.getCreateDate());
 	}
-	
+
 	public List<OrderInfoEntity> selectByMainOrderId(String mainOrderId) throws BusinessException{
 		List<OrderInfoEntity> list = orderInfoRepository.selectByMainOrderId(mainOrderId);
 		return list;
 	}
-	
+
 	/**
      * 查询待发货订单的信息，切订单的预发货状态为null
      */
     public List<OrderInfoEntity> toBeDeliver() {
     	return orderInfoRepository.toBeDeliver();
     }
-    
+
     /**
      * 更新订单的状态为D03待收货，更新predelivery为Y
      * @param entity
@@ -1734,11 +1737,11 @@ public class OrderService {
      */
     public Map<String,Object> validateGoodsUnSupportProvince(String requestId,String orderId,Long goodsId) throws BusinessException{
     	Map<String,Object> resultMap = Maps.newHashMap();
-    	
+
     	OrderInfoEntity order =  selectByOrderId(orderId);
-    	
+
     	GoodsInfoEntity goods = goodsDao.select(goodsId);
-		
+
     	boolean bl = false;
     	String message = "";
 		if(null != goods){
@@ -1754,10 +1757,10 @@ public class OrderService {
 		resultMap.put("message",message);
 		return resultMap;
     }
-    
+
     /**
      * 下单时，要验证商品的可配送区域
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException{
     	//验证提交信息中，是否存在不知配送区域的商品
@@ -1773,8 +1776,8 @@ public class OrderService {
         }
     	return results;
     }
-    
-    
+
+
     /**
      * 根据地址id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId
@@ -1784,16 +1787,16 @@ public class OrderService {
      */
     public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addressId,Long goodsId) throws BusinessException{
     	Map<String,Object> resultMap = Maps.newHashMap();
-    	
+
     	// 校验地址
 		AddressInfoEntity address = addressInfoDao.select(addressId);
 		if (null == address) {
 			LOG.info(requestId, "生成订单前校验,校验地址,该用户地址信息不存在", addressId.toString());
 			throw new BusinessException("该用户地址信息不存在");
 		}
-    	
+
     	GoodsInfoEntity goods = goodsDao.select(goodsId);
-		
+
     	boolean bl = false;
     	String message = "";
 		if(null != goods){
@@ -1807,7 +1810,7 @@ public class OrderService {
 		resultMap.put("message",message);
 		return resultMap;
     }
-    
+
     public void updateProperties(Long id){
     	OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(id);
@@ -1835,7 +1838,7 @@ public class OrderService {
 	public Integer selectCreAmt(String dateBegin,String dateEnd){
 		return orderInfoRepository.selectCreAmt(dateBegin,dateEnd);
 	}
-	
+
 	/**
 	 * 发邮件专用
 	 * @param dateBegin
@@ -1848,7 +1851,7 @@ public class OrderService {
 	    param.put("dateEnd", dateEnd);
 		return orderSubInfoRepository.queryOrderSubInfoByTime(param);
 	}
-	
+
 	/**
 	 * 根据订单号，获取订单信息
 	 * @param orderId
@@ -1877,7 +1880,7 @@ public class OrderService {
 				}
 			}
 		}
-		
+
 		/**
 		 * 修改订单占用库存字段为取消占用，更新时间
 		 */
@@ -1896,4 +1899,120 @@ public class OrderService {
 	public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
 		return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
 	}
+
+	/**
+	 * 京东拆单消息处理
+	 * @param pOrderV
+	 * @param orderInfoEntity
+	 */
+    public void jdSplitOrderMessageHandle(JSONObject jsonObject, OrderInfoEntity orderInfoEntity) throws BusinessException {
+        String jdOrderIdp = orderInfoEntity.getExtOrderId();
+        long jdOrderId = Long.valueOf(jdOrderIdp);
+        Object pOrderV = jsonObject.get("pOrder");
+
+        if (pOrderV instanceof Number) {
+            throw new BusinessException();
+        } else {
+            String merchantCode = orderInfoEntity.getMerchantCode();
+            String deviceType = orderInfoEntity.getDeviceType();
+            MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+            JSONObject pOrderJsonObject = (JSONObject) pOrderV;
+            //父订单状态
+            pOrderJsonObject.getIntValue("type");
+            pOrderJsonObject.getIntValue("submitState");
+            pOrderJsonObject.getIntValue("orderState");
+            JSONArray cOrderArray = jsonObject.getJSONArray("cOrder");
+
+            for (int i = 0; i < cOrderArray.size(); i++) {
+                JSONObject cOrderJsonObject = cOrderArray.getJSONObject(i);
+                if (cOrderJsonObject.getLongValue("pOrder") != jdOrderId) {
+                    LOGGER.info("cOrderJsonObject.getLongValue(\"pOrder\") {}, jdOrderId", cOrderJsonObject.getLongValue("pOrder"), jdOrderId);
+                }
+                long cOrderId = cOrderJsonObject.getLongValue("jdOrderId");//京东子订单ID
+                OrderInfoEntity cOrderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(cOrderId));
+                if (cOrderInfoEntity != null) {
+                   continue;
+                }
+                JSONArray cOrderSkuList = cOrderJsonObject.getJSONArray("sku");
+                BigDecimal jdPrice = BigDecimal.ZERO;//订单金额
+                Integer sumNum = 0;
+                for (int j = 0; j < cOrderSkuList.size(); j++) {
+                    BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
+                    int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
+                    jdPrice = jdPrice.add(price.multiply(new BigDecimal(num)));
+                    sumNum = sumNum + num;
+                }
+                //创建新的订单号
+                String cOrderQh = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
+                //拆单创建新的订单
+                OrderInfoEntity orderInfo = new OrderInfoEntity();
+                orderInfo.setUserId(orderInfoEntity.getUserId());
+                orderInfo.setOrderAmt(jdPrice);
+                orderInfo.setSource(SourceType.JD.getCode());
+                orderInfo.setExtParentId(-1);//为子订单
+                orderInfo.setDeviceType(deviceType);
+                orderInfo.setOrderId(cOrderQh);
+                orderInfo.setGoodsNum(Long.valueOf(sumNum));
+                orderInfo.setPayStatus(PaymentStatus.PAYSUCCESS.getCode());
+                orderInfo.setProvince(orderInfoEntity.getProvince());
+                orderInfo.setCity(orderInfoEntity.getCity());
+                orderInfo.setDistrict(orderInfoEntity.getDistrict());
+                orderInfo.setAddress(orderInfoEntity.getAddress());
+                orderInfo.setPostcode(orderInfoEntity.getPostcode());
+                orderInfo.setName(orderInfoEntity.getName());
+                orderInfo.setTelephone(orderInfoEntity.getTelephone());
+                orderInfo.setMerchantCode(merchantCode);
+                orderInfo.setExtendAcceptGoodsNum(orderInfoEntity.getExtendAcceptGoodsNum());
+                orderInfo.setAddressId(orderInfoEntity.getAddressId());
+                orderInfo.setPreDelivery(orderInfoEntity.getPreDelivery());
+                orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
+                orderInfo.setUpdateDate(new Date());
+                orderInfo.setExtOrderId(String.valueOf(cOrderId));
+                Integer successStatus = orderInfoRepository.insert(orderInfo);
+                if (successStatus < 1) {
+                    LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
+                    continue;
+                }
+                for (int j = 0; j < cOrderSkuList.size(); j++) {
+                    long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
+                    GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    if (goodsInfoEntity == null) {
+                        LOGGER.info("pOrder {}, jdOrderId {} goodsInfoEntity {}", cOrderJsonObject.getLongValue("pOrder"), jdOrderId, goodsInfoEntity);
+                        continue;
+                    }
+                    long goodsId = goodsInfoEntity.getId();
+                    BigDecimal price = cOrderSkuList.getJSONObject(j).getBigDecimal("price");
+                    int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
+                    String name = cOrderSkuList.getJSONObject(j).getString("name");
+                    GoodsInfoEntity goods = goodsDao.select(goodsId);
+                    //orderDetail插入对应记录
+                    OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
+                    orderDetail.setOrderId(cOrderQh);
+                    orderDetail.setGoodsId(goodsId);
+                    orderDetail.setSkuId(String.valueOf(skuId));
+                    orderDetail.setSource(SourceType.JD.getCode());
+                    orderDetail.setGoodsPrice(price);
+                    orderDetail.setGoodsNum(Long.valueOf(num));
+                    orderDetail.setMerchantCode(merchantCode);
+                    orderDetail.setGoodsTitle(goods.getGoodsTitle());
+                    orderDetail.setCategoryCode(goods.getCategoryCode());
+                    orderDetail.setGoodsName(goods.getGoodsName());
+                    orderDetail.setGoodsSellPt(goods.getGoodsSellPt());
+                    orderDetail.setGoodsType(goods.getGoodsType());
+                    orderDetail.setListTime(goods.getListTime());
+                    orderDetail.setDelistTime(goods.getDelistTime());
+                    orderDetail.setProDate(goods.getProDate());
+                    orderDetail.setKeepDate(goods.getKeepDate());
+                    orderDetail.setSupNo(goods.getSupNo());
+                    orderDetail.setCreateDate(new Date());
+                    Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
+                    if (orderDetailSuccess < 1) {
+                        LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order detail error  ", jdOrderId, cOrderId, cOrderQh);
+                        continue;
+                    }
+                }
+            }
+
+        }
+    }
 }

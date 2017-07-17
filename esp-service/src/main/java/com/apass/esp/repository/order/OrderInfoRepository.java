@@ -212,4 +212,18 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
         return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus");
     }
+
+    /**
+     * 根据京东订单号得到订单
+     * @param extOrderId
+     * @return
+     */
+    public OrderInfoEntity getOrderInfoByExtOrderId(String extOrderId){
+        return getSqlSession().selectOne("getOrderInfoByExtOrderId",extOrderId);
+    }
+
+
+    public void updateOrderStatusByExtOrderId(OrderInfoEntity entity){
+        this.getSqlSession().update("updateOrderStatusByExtOrderId",entity);
+    }
 }
