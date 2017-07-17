@@ -18,12 +18,21 @@ public class AddressInfoEntity {
     
     private Long userId;
     
+    private String provinceCode;
+    
     private String province;
     
+    private String cityCode;
+
     private String city;
+    
+    private String districtCode;
+
     
     private String district;
     
+    private String townsCode;
+
     private String towns;
     
     private String address;
@@ -130,6 +139,38 @@ public class AddressInfoEntity {
 
 	public void setTowns(String towns) {
 		this.towns = towns;
+	}
+
+	public String getProvinceCode() {
+		return provinceCode;
+	}
+
+	public void setProvinceCode(String provinceCode) {
+		this.provinceCode = provinceCode;
+	}
+
+	public String getCityCode() {
+		return cityCode;
+	}
+
+	public void setCityCode(String cityCode) {
+		this.cityCode = cityCode;
+	}
+
+	public String getDistrictCode() {
+		return districtCode;
+	}
+
+	public void setDistrictCode(String districtCode) {
+		this.districtCode = districtCode;
+	}
+
+	public String getTownsCode() {
+		return townsCode;
+	}
+
+	public void setTownsCode(String townsCode) {
+		this.townsCode = townsCode;
 	}
     
     
