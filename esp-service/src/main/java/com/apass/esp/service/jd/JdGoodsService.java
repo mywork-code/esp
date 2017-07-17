@@ -113,7 +113,7 @@ public class JdGoodsService {
 		String cateId = paramMap.get("cateId");//京东类目id
 		List<GoodsInfoEntity> goodsInfos = goodsService.selectByCategoryId3(cateId);
 		LOGGER.info("存在已上架或待审核商品，分别是：{}",GsonUtils.toJson(goodsInfos));
-		if(goodsInfos != null){
+		if(goodsInfos.size()>0){
 			throw new BusinessException("该分类下有上架或待审核商品，请先将商品下架或驳回。");
 		}
 		
