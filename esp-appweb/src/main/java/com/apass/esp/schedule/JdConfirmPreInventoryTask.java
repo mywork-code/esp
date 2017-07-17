@@ -99,8 +99,8 @@ public class JdConfirmPreInventoryTask {
                 JSONObject jsonObject = jdApiResponse.getResult();
                 Object pOrderV = jsonObject.get("pOrder");
                 if (pOrderV instanceof Number) {
-                    //拆单消息mq接收
-
+                    //没有拆单
+                    continue;
                     //long pOrderId = ((Number) pOrderV).longValue();
                 } else {
                     String merchantCode = orderInfoEntity.getMerchantCode();
