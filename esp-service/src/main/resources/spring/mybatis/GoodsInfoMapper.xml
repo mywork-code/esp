@@ -524,6 +524,7 @@
 		AND	a.goods_type = '2'
 		AND CURRENT_TIMESTAMP > a.list_time
 		AND a.`status` = 'G02'
+		AND a.is_delete = '01'
 		ORDER BY a.update_date DESC
 		limit #{pageIndex},#{pageSize}
 	]]>
@@ -570,6 +571,7 @@
 		AND	a.goods_type = '2'
 		AND CURRENT_TIMESTAMP > a.list_time
 		AND a.`status` = 'G02'
+		AND a.is_delete = '01'
 	)d
 	</select>
 	

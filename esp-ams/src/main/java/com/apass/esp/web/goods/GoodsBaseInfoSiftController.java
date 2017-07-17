@@ -157,8 +157,8 @@ public class GoodsBaseInfoSiftController {
 			
 			// 设为精选
 			if (goodsType.equals(GoodsType.GOOD_SIFT.getCode())) {
-				if (countSift >= 10) {
-					return Response.fail("精选商品的数量不能超过10件");
+				if (countSift >= 50) {
+					return Response.fail("精选商品的数量不能超过50件");
 				}
 				String goodsSiftUrl = goodsInfoEntity.getGoodsSiftUrl();// 精选图片的url
 				if (StringUtils.isBlank(goodsSiftUrl)) {
