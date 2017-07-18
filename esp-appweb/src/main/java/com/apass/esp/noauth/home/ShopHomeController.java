@@ -104,7 +104,7 @@ public class ShopHomeController {
 
             Pagination<GoodsBasicInfoEntity>  recommendGoods = goodService.loadRecommendGoods(0,10);
             returnMap.put("banners", banners);
-            returnMap.put("recommendGoods", recommendGoods);
+            returnMap.put("recommendGoods", recommendGoods.getDataList());
 
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
