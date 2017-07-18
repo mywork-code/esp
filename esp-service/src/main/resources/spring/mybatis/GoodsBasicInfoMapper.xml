@@ -141,6 +141,7 @@
 				     a.id = b.goods_id
 				AND  a.id = c.goods_id
 				AND  a.`status`='G02'
+				AND  a.is_delete ='01'
 				AND  CURRENT_TIMESTAMP > a.list_time
 	]]>
   		<!-- 添加商品类目查询条件 -->
@@ -203,6 +204,7 @@
 				     a.id = b.goods_id
 				AND  a.id = c.goods_id
 				AND  a.`status`='G02'
+				AND  a.is_delete ='01'
 				AND  CURRENT_TIMESTAMP > a.list_time
 	]]>
 		<!-- 添加商品类目查询条件 -->
