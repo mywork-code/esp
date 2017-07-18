@@ -3,12 +3,15 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.entity.ServiceError;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.ServiceErrorType;
 import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.mapper.ServiceErrorMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
@@ -57,6 +60,9 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private JdOrderApiClient jdOrderApiClient;
 
+    @Autowired
+    private ServiceErrorMapper serviceErrorMapper;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
@@ -88,6 +94,12 @@ public class JdConfirmPreInventoryTask {
                     continue;
                 }
             } else {
+                ServiceError serviceError = new ServiceError();
+                serviceError.setCreateDate(new Date());
+                serviceError.setOrderId(jdOrderIdp);
+                serviceError.setUpdateDate(new Date());
+                serviceError.setType(ServiceErrorType.JD_ORDER_PAY.getDesc());
+                serviceErrorMapper.insertSelective(serviceError);
                 LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
             }
         }
