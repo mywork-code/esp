@@ -697,4 +697,45 @@
 	<update id="updateOrderStatusByExtOrderId" parameterType="OrderInfoEntity">
 		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR},update_date = NOW() WHERE ext_order_id =  #{extOrderId, jdbcType=VARCHAR}
 	</update>
+
+	<select id="getJdOrderByOrderStatus" resultType="OrderInfoEntity">
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate,
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
+		FROM
+			t_esp_order_info
+		where
+		source = 'jd'
+		and orderstatus=#{orderStatus}
+	</select>
 </mapper>
