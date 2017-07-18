@@ -401,6 +401,9 @@ public class CategoryInfoService {
 	 */
 	public List<OtherCategoryGoodsVo> otherCategoryGoods(
 			Long categoryId) throws BusinessException {
+		//查询一级类目banner
+		Category categoryTemp = categoryMapper.selectByPrimaryKey(categoryId);
+		
     	//查询一级类目下的所有二级类目
 		List<OtherCategoryGoodsVo> list = Lists.newArrayList();
 		List<Category> categories = categoryMapper.selectByParentId(categoryId);//查询所有父级id为categoryId可见的所有类目
@@ -413,7 +416,10 @@ public class CategoryInfoService {
 		}
     	//查询每个二级类目下的前10条商品（按上架时间降序排列）
 		for (OtherCategoryGoodsVo categoryVo : list) {
-			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryId());
+			if(categoryTemp != null){
+				categoryVo.setBanner(categoryTemp.getPictureUrl());
+			}
+			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryIdSecond());
 			List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
 			if(goodsEntities != null){
 				for (GoodsInfoEntity goodsInfoEntity : goodsEntities) {
@@ -453,7 +459,7 @@ public class CategoryInfoService {
 		if("jd".equals(goodsInfoEntity.getSource())){
 			goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
 		}else{
-			goodsCategoryDto.setGoodsLogoUrl(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));
+			goodsCategoryDto.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));
 		}
 		
 		goodsCategoryDto.setGoodsId(goodsInfoEntity.getId());
@@ -473,8 +479,8 @@ public class CategoryInfoService {
 	 */
 	private OtherCategoryGoodsVo convertToOtherCategoryGoodsVo(Category category) {
 		OtherCategoryGoodsVo vo = new OtherCategoryGoodsVo();
-		vo.setCategoryId(category.getId());
-		vo.setCategoryName(category.getCategoryName());
+		vo.setCategoryIdSecond(category.getId());
+		vo.setCategoryNameSecond(category.getCategoryName());
 		vo.setCreateDate(DateFormatUtil.dateToString(category.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 		vo.setCreateUser(category.getCreateUser());
 		vo.setLevel(category.getLevel());

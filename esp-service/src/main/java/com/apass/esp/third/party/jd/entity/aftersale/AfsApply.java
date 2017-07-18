@@ -13,12 +13,8 @@ import java.util.Date;
  * @since JDK 1.8
  */
 public class AfsApply {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6811537132657522899L;
     private Long jdOrderId;
-    private Long personId;//personId
+    private Long userId;//userId
     private Integer customerExpect;// 客户预期
     private String questionDesc;// 产品问题描述
     private Integer isNeedDetectionReport;// 是否需要检测报告
@@ -36,7 +32,6 @@ public class AfsApply {
     private String asReturnwareDto;// AsReturnwareDto 返件信息实体
     private String asDetailDto;// AsDetailDto 申请单明细
     private int num;
-    private String mallId;
     private Date apply_time;
 
     public void initDTOK() {
@@ -58,6 +53,31 @@ public class AfsApply {
         afsApply.setIsHasPackageBoolean(new Integer(1).equals(afsApply.isHasPackage) ? true : false);
         afsApply.setIsNeedDetectionReportBoolean(new Integer(1).equals(afsApply.isNeedDetectionReport) ? true : false);
         return afsApply;
+    }
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Boolean getNeedDetectionReportBoolean() {
+        return isNeedDetectionReportBoolean;
+    }
+
+    public void setNeedDetectionReportBoolean(Boolean needDetectionReportBoolean) {
+        isNeedDetectionReportBoolean = needDetectionReportBoolean;
+    }
+
+    public Boolean getHasPackageBoolean() {
+        return isHasPackageBoolean;
+    }
+
+    public void setHasPackageBoolean(Boolean hasPackageBoolean) {
+        isHasPackageBoolean = hasPackageBoolean;
     }
 
     public AsCustomerDto getAsCustomerDtok() {
@@ -202,22 +222,6 @@ public class AfsApply {
 
     public void setNum(int num) {
         this.num = num;
-    }
-
-    public String getMallId() {
-        return mallId;
-    }
-
-    public void setMallId(String mallId) {
-        this.mallId = mallId;
-    }
-
-    public Long getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Long personId) {
-        this.personId = personId;
     }
 
     public Date getApply_time() {

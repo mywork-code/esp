@@ -191,6 +191,7 @@ public class GoodsService {
         for (GoodsStockInfoEntity goodsStock : goodsStockList) {
             BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(), goodsStock.getGoodsStockId());
             goodsStock.setGoodsPrice(price);
+            goodsStock.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//对接京东后新增字段（商品首付价）
             totalCurrentAmt += goodsStock.getStockCurrAmt();
             // 20170322
 
@@ -206,15 +207,15 @@ public class GoodsService {
         returnMap.put("totalCurrentAmt", totalCurrentAmt);
         returnMap.put("goodsStockList", goodsStockList);
         returnMap.put("postage", "0");//电商3期511  添加邮费字段（当邮费为0时显示免运费） 20170517
-        List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
-        // 20170322
-        for(BannerInfoEntity banner : goodsBannerList){
-            banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
-            banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
-            banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
-        }
-
-        returnMap.put("goodsBannerList", goodsBannerList);
+//        List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+//        // 20170322
+//        for(BannerInfoEntity banner : goodsBannerList){
+//            banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+//            banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+//            banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+//        }
+//
+//        returnMap.put("goodsBannerList", goodsBannerList);
         BigDecimal maxPrice = BigDecimal.ZERO;
         BigDecimal minPrice = BigDecimal.ZERO;
         if (null != goodsStockList && goodsStockList.size() > 0) {

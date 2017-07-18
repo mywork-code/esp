@@ -1898,6 +1898,12 @@ public class OrderService {
         Object pOrderV = jsonObject.get("pOrder");
 
         if (pOrderV instanceof Number) {
+			//订阅物流信息
+        	HashMap <String,String> hashMap = new HashMap();
+			hashMap.put("logisticsName","jd");
+			hashMap.put("logisticsNo",jdOrderIdp);
+			hashMap.put("orderId",orderInfoEntity.getOrderId());
+			updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
             throw new BusinessException();
         } else {
             String merchantCode = orderInfoEntity.getMerchantCode();
@@ -1960,6 +1966,13 @@ public class OrderService {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
                     continue;
                 }
+                //订阅物流信息
+				HashMap <String,String> hashMap = new HashMap();
+				hashMap.put("logisticsName","jd");
+				hashMap.put("logisticsNo",String.valueOf(cOrderId));
+				hashMap.put("orderId",cOrderQh);
+				updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+
                 for (int j = 0; j < cOrderSkuList.size(); j++) {
                     long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
@@ -2002,4 +2015,13 @@ public class OrderService {
 
         }
     }
+
+	/**
+	 * 根据状态获取所有京东的订单
+	 * @param orderStatus
+	 * @return
+	 */
+	public List<OrderInfoEntity> getJdOrderByOrderStatus(String orderStatus){
+		return orderInfoRepository.getJdOrderByOrderStatus(orderStatus);
+	}
 }

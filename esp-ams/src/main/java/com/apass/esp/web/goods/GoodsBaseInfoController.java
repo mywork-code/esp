@@ -555,28 +555,26 @@ public class GoodsBaseInfoController {
             return "查询系统参数错误";
         }
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
-            if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
-	            BigDecimal goodsPrice =  goodsStockInfoEntity1.getGoodsPrice();
-	            BigDecimal goodsCostPrice =  goodsStockInfoEntity1.getGoodsCostPrice();
-	            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice,4, BigDecimal.ROUND_HALF_UP);
-	            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4,BigDecimal.ROUND_HALF_UP);;
-	            //商品售价除以成本价小于保本率
-	            if (dividePoint.compareTo(dividePoint1) == -1) {
-	                entity.setId(Long.valueOf(id));
-	                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
-	                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-	                goodsService.updateService(entity);
-	                return "该商品已进入保本率审核页面";
-	            }
+            BigDecimal goodsPrice = goodsStockInfoEntity1.getGoodsPrice();
+            BigDecimal goodsCostPrice = goodsStockInfoEntity1.getGoodsCostPrice();
+            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
+            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_HALF_UP);
+            ;
+            //商品售价除以成本价小于保本率
+            if (dividePoint.compareTo(dividePoint1) == -1) {
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return "该商品已进入保本率审核页面";
+            }else{
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return SUCCESS;
             }
-
-	        entity.setId(Long.valueOf(id));
-	        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
-	        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-	        goodsService.updateService(entity);
-        
         }
-        
         return SUCCESS;
     }
 
@@ -652,7 +650,7 @@ public class GoodsBaseInfoController {
                     if (!"reject".equals(flag)) {
                         entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
                     } else {
-                        entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
                     }
                     entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                     goodsService.updateService(entity);

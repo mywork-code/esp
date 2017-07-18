@@ -35,6 +35,8 @@ public class GoodsStockInfoEntity {
 
     /** 商品价格 --售价**/
     private BigDecimal goodsPrice;
+    /**  商品首付价   **/
+    private BigDecimal goodsPriceFirst;
 
     private String     goodsName;
 
@@ -232,6 +234,14 @@ public class GoodsStockInfoEntity {
 
 	public void setStockCurrAmtDesc(String stockCurrAmtDesc) {
 		this.stockCurrAmtDesc = stockCurrAmtDesc;
+	}
+
+	public BigDecimal getGoodsPriceFirst() {
+		return goodsPriceFirst;
+	}
+
+	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
+		this.goodsPriceFirst = goodsPriceFirst;
 	}
     
     

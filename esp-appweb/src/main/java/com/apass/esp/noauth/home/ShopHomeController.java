@@ -109,14 +109,20 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
-                //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-                Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
-                goods.setMarketPrice(new BigDecimal(marketPrice));
-
-                goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
-                goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
+             
+                if("jd".equals(goods.getSource())){
+                    goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                }else{
+                	//电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
+                    goods.setMarketPrice(new BigDecimal(marketPrice));
+            	    goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                }
             }
             return Response.successResponse(returnMap);
         } catch (Exception e) {
@@ -286,14 +292,14 @@ public class ShopHomeController {
 					goodsInfo.setGoodsPrice(price);
 					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
 
-					Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
-					goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+logoUrl);
 						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+logoUrl);
 					}else{
+						Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+						goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+						
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						String siftUrl = goodsInfo.getGoodsSiftUrl();
 
@@ -384,22 +390,18 @@ public class ShopHomeController {
             	LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            if (!StringUtils.isEmpty(userId)) {
-                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
-                returnMap.put("amountInCart", amountInCart);
-            }
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
             //查询京东地址
             List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
-            	addty.setProvinceCode("provinceCode");
+            	addty.setProvinceCode("1");
             	addty.setProvince("province");
-            	addty.setCityCode("cityCode");
+            	addty.setCityCode("0");
             	addty.setCity("city");
-            	addty.setDistrictCode("districtCode");
+            	addty.setDistrictCode("0");
             	addty.setDistrict("district");
-            	addty.setTownsCode("townsCode");
+            	addty.setTownsCode("0");
             	addty.setTowns("towns");
             	addty.setIsDefault("1");
             	addressInfoList.add(addty);
@@ -423,6 +425,11 @@ public class ShopHomeController {
             	returnMap.put("source", "jd");
             }else{
                 goodService.loadGoodsBasicInfoById(goodsId,returnMap);
+            }
+            //获取购物车中商品种类数
+            if (!StringUtils.isEmpty(userId)) {
+                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+                returnMap.put("amountInCart", amountInCart);
             }
             returnMap.put("address", addressInfoList);
             return Response.success("加载成功", returnMap);

@@ -6,13 +6,17 @@ import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 
 public class OtherCategoryGoodsVo {
 	/**
-	 * 类目Id
+	 * 每个一级类目下的轮播图--固定
 	 */
-    private Long categoryId;
+	private String banner;
+	/**
+	 * 二级类目Id
+	 */
+    private Long categoryIdSecond;
     /**
      * 类目名称
      */
-    private String categoryName;
+    private String categoryNameSecond;
     /**
      * 级别
      */
@@ -42,17 +46,25 @@ public class OtherCategoryGoodsVo {
      */
     private List<GoodsCategoryDto> goodsCategoryDtos;
     
-	public Long getCategoryId() {
-		return categoryId;
+	public String getBanner() {
+		return banner;
 	}
-	public void setCategoryId(Long categoryId) {
-		this.categoryId = categoryId;
+	public void setBanner(String banner) {
+		this.banner = banner;
 	}
-	public String getCategoryName() {
-		return categoryName;
+
+	
+	public Long getCategoryIdSecond() {
+		return categoryIdSecond;
 	}
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
+	public void setCategoryIdSecond(Long categoryIdSecond) {
+		this.categoryIdSecond = categoryIdSecond;
+	}
+	public String getCategoryNameSecond() {
+		return categoryNameSecond;
+	}
+	public void setCategoryNameSecond(String categoryNameSecond) {
+		this.categoryNameSecond = categoryNameSecond;
 	}
 	public Long getLevel() {
 		return level;
