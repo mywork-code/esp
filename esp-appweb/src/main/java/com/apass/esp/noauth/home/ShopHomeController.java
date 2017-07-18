@@ -311,7 +311,7 @@ public class ShopHomeController {
 			
 				}
 			}
-			if(falgePrice && "DESC".equals(order)){//按售价排序(降序)
+			if(falgePrice && "DESC".equalsIgnoreCase(order)){//按售价排序(降序)
 				GoodsBasicInfoEntity temp=new GoodsBasicInfoEntity() ;
 				for (int i=0;i<goodsBasicInfoList.size()-1;i++) {
 					 for(int j=i+1;j<goodsBasicInfoList.size();j++){
