@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.dto.WorkCityJdDto;
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.enums.AddressDefaultStatus;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.mapper.WorkCityJdMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 
@@ -23,7 +26,9 @@ public class AddressService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AddressService.class);
 	@Autowired
 	private AddressInfoRepository addressInfoRepository;
-
+	@Autowired
+	private WorkCityJdMapper cityJdMapper;
+	
 	/**
 	 * 查询地址信息
 	 * 
@@ -71,6 +76,7 @@ public class AddressService {
 				addressInfoRepository.updateAddressStatus(addAddressInfo.getUserId());
 			}
 			//将地址插入数据库
+			addPropertiesToEntity(addAddressInfo);
 			addressInfoRepository.insert(addAddressInfo);
 			return addAddressInfo.getId();
 		} catch (Exception e) {
@@ -96,6 +102,7 @@ public class AddressService {
 				addressInfoRepository.updateAddressStatus(addInfo.getUserId());
 			}
 			//更新地址的信息
+			addPropertiesToEntity(addInfo);
 			Integer updateFlag = addressInfoRepository.updateAddressInfo(addInfo);
 			if(updateFlag != 1){
 			    throw new BusinessException("更新地址信息失败",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
@@ -166,5 +173,31 @@ public class AddressService {
 	public AddressInfoEntity queryOneAddressByAddressId(long addressId) {
 
 		return addressInfoRepository.queryOneAddressByAddressId(addressId);
+	}
+	
+	/**
+	 * 根据province/city/distract/towns,获取对应的code
+	 * @return
+	 */
+	public AddressInfoEntity addPropertiesToEntity(AddressInfoEntity address){
+		
+		WorkCityJdDto dto1 = new WorkCityJdDto(address.getProvince(),"0");
+		WorkCityJd provice = cityJdMapper.selectByNameAndParent(dto1);
+
+		WorkCityJdDto dto2 = new WorkCityJdDto(address.getCity(),provice.getCode());
+		WorkCityJd city = cityJdMapper.selectByNameAndParent(dto2);
+
+		WorkCityJdDto dto3 = new WorkCityJdDto(address.getDistrict(),city.getCode());
+		WorkCityJd district = cityJdMapper.selectByNameAndParent(dto3);
+
+		WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(),district.getCode());
+		WorkCityJd towns = cityJdMapper.selectByNameAndParent(dto4);
+
+		address.setProvinceCode(provice.getCode());
+		address.setCityCode(city.getCode());
+		address.setDistrictCode(district.getCode());
+		address.setTownsCode((null == towns)?"0":towns.getCode());
+		
+		return address;
 	}
 }

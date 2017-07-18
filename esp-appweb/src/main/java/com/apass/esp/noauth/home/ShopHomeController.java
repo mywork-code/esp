@@ -633,9 +633,9 @@ public class ShopHomeController {
     	}
     	try{
     		list = categoryInfoService.otherCategoryGoods(categoryId);
-    	}catch (Exception e ){
+    	}catch (BusinessException e){
     		LOGGER.error("根据一级类目查询所有二级类目下商品失败,一级类目id:{}",categoryId,e);
-            return Response.fail(BusinessErrorCode.NO);
+            return Response.fail(e.getErrorDesc());
         }
     	
     	return Response.successResponse(list);

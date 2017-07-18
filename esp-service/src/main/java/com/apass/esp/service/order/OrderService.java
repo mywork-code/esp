@@ -462,23 +462,10 @@ public class OrderService {
 
 		AddressInfoEntity address = addressInfoDao.select(Long.valueOf(addressId));
 
-		//根据省、市、区获取对应的编码
-		WorkCityJdDto dto1 = new WorkCityJdDto(address.getProvince(),"0");
-		WorkCityJd provice = cityJdMapper.selectByNameAndParent(dto1);
-
-		WorkCityJdDto dto2 = new WorkCityJdDto(address.getCity(),provice.getCode());
-		WorkCityJd city = cityJdMapper.selectByNameAndParent(dto2);
-
-		WorkCityJdDto dto3 = new WorkCityJdDto(address.getDistrict(),city.getCode());
-		WorkCityJd district = cityJdMapper.selectByNameAndParent(dto3);
-
-		WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(),district.getCode());
-		WorkCityJd towns = cityJdMapper.selectByNameAndParent(dto4);
-
-		addressInfo.setProvinceId(Integer.valueOf(provice.getCode()));
-        addressInfo.setCityId(Integer.valueOf(city.getCode()));
-        addressInfo.setCountyId(Integer.valueOf(district.getCode()));
-        addressInfo.setTownId((null == towns)?0:Integer.valueOf(towns.getCode()));
+		addressInfo.setProvinceId(Integer.valueOf(address.getProvinceCode()));
+        addressInfo.setCityId(Integer.valueOf(address.getCityCode()));
+        addressInfo.setCountyId(Integer.valueOf(address.getDistrictCode()));
+        addressInfo.setTownId(Integer.valueOf(address.getTownsCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
         addressInfo.setEmail("xujie@apass.cn");

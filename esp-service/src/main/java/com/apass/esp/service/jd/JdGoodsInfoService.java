@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
@@ -29,6 +30,8 @@ import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -50,7 +53,10 @@ public class JdGoodsInfoService {
 	private GoodsRepository goodsRepository;
 	@Autowired
 	private  GoodsService  goodsService;
-
+	@Autowired
+	private GoodsStockInfoRepository goodsStockInfoRepository;
+	@Autowired
+	private CommonService commonService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -147,12 +153,16 @@ public class JdGoodsInfoService {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			String skuId = iterator.next();
 			// 查询商品价格
-			Collection<Long> skuPrice = new ArrayList<Long>();
-			skuPrice.add(Long.parseLong(skuId));
-			List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+			GoodsInfoEntity goodsInfo=goodsRepository.selectGoodsByExternalId(skuId);
+			Long goodsId=goodsInfo.getId();
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
+        	if(jdGoodsStockInfoList.size()==1){
+                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                jdSimilarSkuVo.setPrice(price);
+        	}
+			//查询商品是否有货
 			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
 			jdSimilarSkuVo.setSkuId(skuId);
-			jdSimilarSkuVo.setPrice(jdSellPriceList.get(0).getPrice());
 			if ("33".equals(jdGoodStock.getState())) {
 				jdSimilarSkuVo.setStockDesc(jdGoodStock.getDesc());
 			}
@@ -321,12 +331,15 @@ public class JdGoodsInfoService {
 	 */
 	public JdGoodStock stockForListBatget(String sku, Region region) {
 		Gson gson = new Gson();
-		JdGoodStock jdGoodStock = new JdGoodStock();
+		List<JdGoodStock> jdGoodStockList = new ArrayList<>();
 		JdApiResponse<JSONArray> stockForListBatgetResponse = jdProductApiClient.stockForListBatget(sku, region);
 		if (null != stockForListBatgetResponse && null != stockForListBatgetResponse.getResult() && stockForListBatgetResponse.isSuccess()) {
-			jdGoodStock = gson.fromJson(stockForListBatgetResponse.getResult().toString(), JdGoodStock.class);
+			for (int i = 0; i < stockForListBatgetResponse.getResult().size(); i++) {
+				JdGoodStock jdstock= gson.fromJson(stockForListBatgetResponse.getResult().getString(i), JdGoodStock.class);
+				jdGoodStockList.add(jdstock);
+			}
 		}
-		return jdGoodStock;
+		return jdGoodStockList.get(0);
 	}
 
 
