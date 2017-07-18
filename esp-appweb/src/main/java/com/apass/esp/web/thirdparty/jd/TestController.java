@@ -172,17 +172,17 @@ public class TestController {
     /**
      * 获取商品库存接口（建议商品列表页使用）
      */
-    @RequestMapping(value = "/stockForListBatget", method = RequestMethod.POST)
-    @ResponseBody
-    public Response stockForListBatget(@RequestBody Map<String, Object> paramMap){
-		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
-    	 Region region=new Region();
-    	 region.setProvinceId(1);
-    	 region.setCityId(0);
-    	 region.setCountyId(0);
-    	 JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.stockForListBatget(sku,region);
-         return Response.success("1", jdApiResponse);
-    }
+//    @RequestMapping(value = "/stockForListBatget", method = RequestMethod.POST)
+//    @ResponseBody
+//    public Response stockForListBatget(@RequestBody Map<String, Object> paramMap){
+//		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+//    	 Region region=new Region();
+//    	 region.setProvinceId(1);
+//    	 region.setCityId(0);
+//    	 region.setCountyId(0);
+//    	 JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.stockForListBatget(sku,region);
+//         return Response.success("1", jdApiResponse);
+//    }
     /**
      * 查询规格
      */
