@@ -395,13 +395,13 @@ public class ShopHomeController {
             //查询京东地址
             List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
-            	addty.setProvinceCode("provinceCode");
+            	addty.setProvinceCode("1");
             	addty.setProvince("province");
-            	addty.setCityCode("cityCode");
+            	addty.setCityCode("0");
             	addty.setCity("city");
-            	addty.setDistrictCode("districtCode");
+            	addty.setDistrictCode("0");
             	addty.setDistrict("district");
-            	addty.setTownsCode("townsCode");
+            	addty.setTownsCode("0");
             	addty.setTowns("towns");
             	addty.setIsDefault("1");
             	addressInfoList.add(addty);
