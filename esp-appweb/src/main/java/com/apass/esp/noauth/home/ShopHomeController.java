@@ -292,14 +292,14 @@ public class ShopHomeController {
 					goodsInfo.setGoodsPrice(price);
 					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
 
-					Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
-					goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+logoUrl);
 						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+logoUrl);
 					}else{
+						Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+						goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+						
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						String siftUrl = goodsInfo.getGoodsSiftUrl();
 
