@@ -29,7 +29,6 @@ public class SucceedOrderInfoController {
     public OrderService orderService;
 
     private static final String NO_USER = "对不起!用户号不能为空";
-    private static final String ORDER_ID = "orderId";
 
     @POST
     @Path("/latest/ordertime")
@@ -44,7 +43,8 @@ public class SucceedOrderInfoController {
                 return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
             }
             Long userId = Long.valueOf(userIdStr);
-            String orderDate = orderService.latestSuccessOrderTime(userId);
+            String orderDate = orderService.latestSuccessTime(userId);
+            
             Map<String, String> resultMap = Maps.newHashMap();
             resultMap.put("orderDate", orderDate);
             return Response.success("success", GsonUtils.toJson(resultMap));
