@@ -555,7 +555,6 @@ public class GoodsBaseInfoController {
             return "查询系统参数错误";
         }
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
-            if (goodsStockInfoEntity1.getGoodsPrice().compareTo(goodsStockInfoEntity1.getGoodsCostPrice()) == -1) {
 	            BigDecimal goodsPrice =  goodsStockInfoEntity1.getGoodsPrice();
 	            BigDecimal goodsCostPrice =  goodsStockInfoEntity1.getGoodsCostPrice();
 	            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice,4, BigDecimal.ROUND_HALF_UP);
@@ -568,8 +567,6 @@ public class GoodsBaseInfoController {
 	                goodsService.updateService(entity);
 	                return "该商品已进入保本率审核页面";
 	            }
-            }
-
 	        entity.setId(Long.valueOf(id));
 	        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
 	        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -650,7 +647,7 @@ public class GoodsBaseInfoController {
                     GoodsInfoEntity entity = new GoodsInfoEntity();
                     entity.setId(Long.valueOf(strArr[i]));
                     if (!"reject".equals(flag)) {
-                        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
                     } else {
                         entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
                     }
