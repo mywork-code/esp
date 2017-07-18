@@ -25,4 +25,11 @@
     from t_esp_work_city_jd
     where (province = #{value} or city = #{value} or district = #{value} or towns = #{value}) and parent = #{parent}
 </select>
+
+<select id="selectDateByParentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_work_city_jd
+    where parent = #{code}
+</select>
 </mapper>

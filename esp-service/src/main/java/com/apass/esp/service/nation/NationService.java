@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.apass.esp.domain.enums.CityEnums;
+import com.apass.esp.mapper.WorkCityJdMapper;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.domain.entity.nation.NationEntity;
 import com.apass.esp.repository.nation.NationRepository;
@@ -43,7 +45,18 @@ public class NationService {
             new String[]{"650000", "540000", "620000", "640000", "150000", "630000", "810000", "820000", "710000"});
     @Autowired
     private NationRepository nationRepository;
+    @Autowired
+    private WorkCityJdMapper cityJdMapper;
 
+    /**
+     * 根据code,查询数据
+     *
+     * @return
+     * @throws BusinessException
+     */
+    public List<WorkCityJd> queryDistrictForAms(String districtCode){
+    	return cityJdMapper.selectDateByParentId(districtCode);
+    }
     /**
      * 查询城市公共方法
      *
@@ -263,6 +276,22 @@ public class NationService {
 			String code = nationRepository.queryDistrictCodeByName(name);
 			if(StringUtils.isNotBlank(code)){
 				codes = codes.append(code+",");
+			}
+		}
+		return codes.toString();
+	}
+	/**
+	 * 京东根据省份名称，查询code
+	 * @param provinceName
+	 * @return
+	 */
+	public String queryCodeByProvinceName(String provinceName){
+		StringBuffer codes = new StringBuffer();
+		String[] names= provinceName.split(",");
+		for (String name : names) {
+			WorkCityJd code = cityJdMapper.selectByProvinceName(name);
+			if(null != code && StringUtils.isNotBlank(code.getCode())){
+				codes = codes.append(code.getCode()+",");
 			}
 		}
 		return codes.toString();

@@ -183,9 +183,9 @@ public class OrderQueryController {
 	        	throw new BusinessException("订单中京东订单号为空!");
 	        }
 	        try {
-	        	List<JdTrack> trackList = jdLogisticsService.getSignleTrackingsByOrderId(entity.getExtOrderId());
+	        	//List<JdTrack> trackList = jdLogisticsService.getSignleTrackingsByOrderId(entity.getExtOrderId());
 	        	respBody.setMsg("物流信息查询成功！");
-                respBody.setRows(trackList);
+                //respBody.setRows(trackList);
                 respBody.setStatus(CommonCode.SUCCESS_CODE);
 			} catch (Exception e) {
 				 LOG.error("物流信息查询失败", e);

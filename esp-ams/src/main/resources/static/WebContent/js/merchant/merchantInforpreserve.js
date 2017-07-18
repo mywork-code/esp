@@ -38,25 +38,25 @@ $(function(){
 function loadDirect(provinceId, cityId, areaId) {
     $('#' + provinceId).combobox({
         method: "get",
-        url: ctx + "/application/nation/queryNations",
+        url: ctx + "/application/nation/v1/queryNations",
         valueField: 'code',
-        textField: 'name',
+        textField: 'province',
         onSelect: function (data) {
             $("#" + cityId).textbox('setValue', '');
             $("#" + areaId).combobox('loadData', {});
             $("#" + areaId).textbox('setValue', '');
             $('#' + cityId).combobox({
                 method: "get",
-                url: ctx + "/application/nation/queryNations?districtCode=" + data.code,
+                url: ctx + "/application/nation/v1/queryNations?districtCode=" + data.code,
                 valueField: 'code',
-                textField: 'name',
+                textField: 'city',
                 onSelect: function (data) {
                     $("#" + areaId).combobox('loadData', {});
                     $('#' + areaId).combobox({
                         method: "get",
-                        url: ctx + "/application/nation/queryAreas?districtCode=" + data.code,
+                        url: ctx + "/application/nation/v1/queryNations?districtCode=" + data.code,
                         valueField: 'code',
-                        textField: 'name',
+                        textField: 'district',
                         onSelect: function (data) {
                            
                         }
@@ -77,9 +77,9 @@ function load(){
 			var code=$("#editMerchantProvince").combobox('getValue');
 			$('#editMerchantCity').combobox({
 				method:"get",
-				url:ctx + "/application/nation/queryNations?districtCode="+code,
+				url:ctx + "/application/nation/v1/queryNations?districtCode="+code,
 			    valueField:'code',
-			    textField:'name'
+			    textField:'city'
 			});
 		}
 	});
@@ -88,14 +88,14 @@ function load(){
 			var code=$("#editMerchantCity").combobox('getValue');
 			$('#editMerchantArea').combobox({
 				method:"get",
-				url:ctx + "/application/nation/queryAreas?districtCode=" + code,
+				url:ctx + "/application/nation/v1/queryNations?districtCode=" + code,
 				valueField:'code',
-				textField:'name'
+				textField:'district'
 			});
 		}
 	});
+	
 	//加载省份 和城市
-	//loadDirect("editMerchantProvince","editMerchantCity");
 	loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
 	//回显页面信息
 	$.get( ctx + "/application/merchantinfor/merchant/queryByMerchantcode",function(datas){
@@ -135,7 +135,6 @@ function load(){
 			$("#saveIdSpan").css('display','none');
 		}
 		
-		//console.log($("#editMerchantStatu  ~ span input"));
 		$("#editMerchantStatu  ~ span input").css("color","red");
 		
 	});
@@ -187,15 +186,12 @@ function saveorsubmit(statu){
 		return;
 	}
 	var merchantCity = $("#editMerchantCity").combobox('getValue');
-//	var merchantCity = $("#editMerchantCity").combobox('getText');
 	if (null == merchantCity || ("") == merchantCity) {
-//		alert("所在城市不能为空！");
 		$.messager.alert("<span style='color: black;'>提示</span>","所在城市不能为空!",'info');
 		return;
 	}
 
     var merchantArea = $("#editMerchantArea").combobox('getValue');
-//	var merchantCity = $("#editMerchantCity").combobox('getText');
     if (null == merchantArea || ("") == merchantArea) {
 		alert("所在城市不能为空！");
         $.messager.alert("<span style='color: black;'>提示</span>","所在区域不能为空!",'info');
@@ -247,15 +243,8 @@ function saveorsubmit(statu){
 	debugger;
 	var status = $("#editMerchantStatu").combobox('getValue');
 	
-	
-//	if (null == status || ("") == status) {
-//		alert("经营类型不能为空！");
-//		$.messager.alert('提示',"商户状态不能为空！",'info');
-//		return;
-//	}
 	var orgCode = $("#editOrgCode").textbox('getValue');
 	if (null == orgCode || ("") == orgCode) {
-//		alert("企业机构代码不能为空！");
 		$.messager.alert("<span style='color: black;'>提示</span>","企业机构代码不能为空！",'info');
 		return;
 	}

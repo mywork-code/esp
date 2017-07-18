@@ -2,8 +2,6 @@ package com.apass.esp.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.apass.esp.domain.dto.WorkCityJdDto;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.gfb.framework.mybatis.GenericMapper;
@@ -21,5 +19,9 @@ public interface WorkCityJdMapper extends GenericMapper<WorkCityJd, Long>{
 	 * 根据省份/市/县/乡镇名称，查询编码
 	 */
 	WorkCityJd selectByNameAndParent(WorkCityJdDto cityJdDto);
+	
+	List<WorkCityJd> selectDateByParentId(String code);
+	
+	WorkCityJd selectByProvinceName(String provinceName);
 	
 }

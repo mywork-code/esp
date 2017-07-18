@@ -72,8 +72,6 @@ public class LogisticsService {
     private AfterSaleService          afterSaleService;
     @Autowired
     private ImageService imageService;
-    @Autowired
-    private JdLogisticsService jdLogisticsService;
 
     /**
      * 快递鸟查询物流详情
@@ -385,11 +383,11 @@ public class LogisticsService {
     
     public Map<String, Object> loadLogisticInfo(String orderId) throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
-        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
-        	return jdLogisticsService.getSignleTrackings(orderId);
-        }else{
+//        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+//        	return jdLogisticsService.getSignleTrackings(orderId);
+//        }else{
         	return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
-        }
+//        }
     }
     
     /**
@@ -414,11 +412,11 @@ public class LogisticsService {
 					
 			try{
 				//如果查询物流出现异常的时候，就默认轨迹不存在
-				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
-					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
-				}else{
+//				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+//					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
+//				}else{
 					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
-				}
+//				}
 			}catch(Exception e){
 				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
 			}

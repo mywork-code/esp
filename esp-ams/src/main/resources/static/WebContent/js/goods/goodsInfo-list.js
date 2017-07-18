@@ -572,11 +572,11 @@ $(function() {
     	$("#addGoodsStock").css('display','none');
     	
     	$("#addUnSupportProvince").combobox({
-    		url:ctx + "/application/nation/queryNations", //后台获取所有省  
+    		url:ctx + "/application/nation/v1/queryNations", //后台获取所有省  
             method:'get',  
             panelHeight:200,//设置为固定高度，combobox出现竖直滚动条  
             valueField:'code',  
-            textField:'name',  
+            textField:'province',  
             multiple:true,  
             formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
                 var opts = $(this).combobox('options');  
@@ -2155,18 +2155,18 @@ function initEditGoodsInfo(row){
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
 	var unSupportPrivincesCodes;//省份编码 
 	$.ajax({
-		url : ctx + '/application/nation/queryCode',
+		url : ctx + '/application/nation/v1/queryCode',
 		data : {unSupportPrivinces:unSupportPrivinces},
 		type : "get",
 		dataType : "text",
 		success : function(resp) {
 			unSupportPrivincesCodes = resp;
 			$("#editUnSupportProvince").combobox({
-				url:ctx + "/application/nation/queryNations", //后台获取所有省  
+				url:ctx + "/application/nation/v1/queryNations", //后台获取所有省  
 				method:'get',  
 				panelHeight:200,//设置为固定高度，combobox出现竖直滚动条  
 				valueField:'code',  
-				textField:'name',  
+				textField:'province',  
 				multiple:true,  
 				formatter: function (row) { //formatter方法就是实现了在每个下拉选项前面增加checkbox框的方法  
 					var opts = $(this).combobox('options');  

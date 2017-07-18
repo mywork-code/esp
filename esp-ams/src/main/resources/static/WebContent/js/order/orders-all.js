@@ -183,16 +183,16 @@ $(function () {
                                 }
                             }
                             //查询物流信息
-                            if (orderStatus == 'D03' && preDelivery == 'Y' && source == '')
+                            if (orderStatus == 'D03' && preDelivery == 'Y')
 	                        {
 		                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 		                        content += " onclick='$.logisticsInfo(\"" + row.orderId + "\",\""
 		                                + row.logisticsName + "\",\"" + row.logisticsNo + "\");'>物流信息</a>";
 	                        }
-                            if(orderStatus == 'D03' && preDelivery == 'Y' && source == 'jd'){
-                            	content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-		                        content += " onclick='$.jdlogisticsInfo(\"" + row.orderId + "\");'>物流信息</a>";
-                            }
+//                            if(orderStatus == 'D03' && source == 'jd'){
+//                            	content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+//		                        content += " onclick='$.jdlogisticsInfo(\"" + row.orderId + "\");'>物流信息</a>";
+//                            }
                             return content;
                         }
                     }

@@ -431,9 +431,6 @@ public class MerchantInforController extends BaseController {
         }
 
         if (null != merchantSettlementDate && !merchantSettlementDate.trim().isEmpty()) {
-            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            // Date temp = sdf.parse(merchantSettlementDate.trim());
-            // mity.setMerchantSettlementDate(temp);
             mity.setMerchantSettlementDate(Integer.valueOf(merchantSettlementDate));
         }
         if (null != settlementBankName && !settlementBankName.trim().isEmpty()) {
