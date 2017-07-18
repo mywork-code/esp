@@ -104,7 +104,7 @@ public class ShopHomeController {
 
             Pagination<GoodsBasicInfoEntity>  recommendGoods = goodService.loadRecommendGoods(0,10);
             returnMap.put("banners", banners);
-            returnMap.put("recommendGoods", recommendGoods);
+            returnMap.put("recommendGoods", recommendGoods.getDataList());
 
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
@@ -311,7 +311,7 @@ public class ShopHomeController {
 			
 				}
 			}
-			if(falgePrice && "DESC".equals(order)){//按售价排序(降序)
+			if(falgePrice && "DESC".equalsIgnoreCase(order)){//按售价排序(降序)
 				GoodsBasicInfoEntity temp=new GoodsBasicInfoEntity() ;
 				for (int i=0;i<goodsBasicInfoList.size()-1;i++) {
 					 for(int j=i+1;j<goodsBasicInfoList.size();j++){
@@ -590,18 +590,24 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
+                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
                 Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
                 goods.setMarketPrice(new BigDecimal(marketPrice));
-                goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
-                goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                if("jd".equals(goods.getSource())){
+                    goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                }else{
+                    goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                }
             }
             resultMap.put("recommendGoods", recommendGoods);
             return Response.successResponse(resultMap);
         }catch (BusinessException e){
-            LOGGER.error("indexInit fail", e);
-            LOGGER.error("首页加载失败");
+            LOGGER.error("loadRecommendGoodsByPage fail", e);
+            LOGGER.error("精选推荐 大于10个时 分页展示");
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
 

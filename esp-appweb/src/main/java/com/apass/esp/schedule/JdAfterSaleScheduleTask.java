@@ -45,7 +45,7 @@ public class JdAfterSaleScheduleTask {
 
         List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
 
-        List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D04");
+        List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
             long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
             JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(jdOrderId, 1, 10);
@@ -60,6 +60,8 @@ public class JdAfterSaleScheduleTask {
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = (JSONObject) array.get(i);
                 AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+                Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+//待处理
 
 
                 //详细信息
@@ -73,6 +75,7 @@ public class JdAfterSaleScheduleTask {
                     return;
                 }
                 JSONObject jb = (JSONObject) afterSaleDetail.getResult();
+//待处理
 
 
             }
