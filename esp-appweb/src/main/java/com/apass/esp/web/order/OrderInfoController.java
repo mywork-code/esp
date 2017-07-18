@@ -632,13 +632,15 @@ public class OrderInfoController {
                 cashRefundService.agreeRefund(cash.getUserId() + "", orderId);
               }
             }
-          }
-          //判断用户是否进行主动还款，如果是 则【退款】按钮不显示
-          if (txnInfoService.isActiveRepayForConsumableCredit(dto.getUserId(), dto.getMainOrderId())) {
-            dto.setCashRefundStatus(CashRefundVoStatus.CASHREFUND_OTHER.getCode());
-          } else {
-            //根据返回结果，判断页面要显示的按钮
             dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
+          }else {
+            //判断用户是否进行主动还款，如果是 则【退款】按钮不显示
+            if (txnInfoService.isActiveRepayForConsumableCredit(dto.getUserId(), dto.getMainOrderId())) {
+              dto.setCashRefundStatus(CashRefundVoStatus.CASHREFUND_OTHER.getCode());
+            } else {
+              //根据返回结果，判断页面要显示的按钮
+              dto.setCashRefundStatus(cashRefundService.getCashRundStatus(orderId));
+            }
           }
 
         }
