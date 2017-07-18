@@ -128,8 +128,8 @@ public class JdGoodsInfoService {
 				List<String> skuIds = jdsa.getSkuIds();
 				for (int i = 0; i < skuIds.size(); i++) {
 					String skuId = skuIds.get(i);
-					GoodsInfoEntity gty = goodsRepository.selectGoodsBySkuId(skuId);
-					if (null == gty) {// 当改商品的规格中的商品没有关联时移除
+					GoodsInfoEntity gty = goodsRepository.selectGoodsInfoByExternalId(skuId);
+					if (null == gty) {// 当改商品的规格中的商品没有上架则移除
 						skuIds.remove(i);
 					} else {
 						skusSet.add(skuId);
@@ -163,8 +163,10 @@ public class JdGoodsInfoService {
 			//查询商品是否有货
 			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
 			jdSimilarSkuVo.setSkuId(skuId);
-			if ("33".equals(jdGoodStock.getState())) {
-				jdSimilarSkuVo.setStockDesc(jdGoodStock.getDesc());
+			if ("34".equals(jdGoodStock.getState())) {
+				jdSimilarSkuVo.setStockDesc("无货");
+			}else{
+				jdSimilarSkuVo.setStockDesc("有货");
 			}
 			JdSimilarSkuVoList.add(jdSimilarSkuVo);
 		}
