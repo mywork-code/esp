@@ -493,7 +493,8 @@
 			a.goods_title goodsTitle,
 			a.goods_sell_pt goodsSellPt,
 			a.goods_sift_url goodsSiftUrl,
-			c.minPrice goodsPrice
+			c.minPrice goodsPrice,
+			a.source   source
 		FROM
 			t_esp_goods_base_info a,
 		 (
