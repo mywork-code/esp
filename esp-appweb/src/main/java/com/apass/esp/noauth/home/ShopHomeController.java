@@ -590,18 +590,24 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
+                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
                 Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
                 goods.setMarketPrice(new BigDecimal(marketPrice));
-                goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
-                goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
-                goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                if("jd".equals(goods.getSource())){
+                    goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                }else{
+                    goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
+                    goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
+                }
             }
             resultMap.put("recommendGoods", recommendGoods);
             return Response.successResponse(resultMap);
         }catch (BusinessException e){
-            LOGGER.error("indexInit fail", e);
-            LOGGER.error("首页加载失败");
+            LOGGER.error("loadRecommendGoodsByPage fail", e);
+            LOGGER.error("精选推荐 大于10个时 分页展示");
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
 
