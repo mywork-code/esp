@@ -110,13 +110,14 @@ public class ShopHomeController {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
                 goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
-                //电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-                Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
-                goods.setMarketPrice(new BigDecimal(marketPrice));
+             
                 if("jd".equals(goods.getSource())){
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                 }else{
+                	//电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    Long marketPrice=goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
+                    goods.setMarketPrice(new BigDecimal(marketPrice));
             	    goods.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                     goods.setGoodsLogoUrl(EncodeUtils.base64Encode(goods.getGoodsLogoUrl()));
@@ -291,14 +292,14 @@ public class ShopHomeController {
 					goodsInfo.setGoodsPrice(price);
 					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
 
-					Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
-					goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+logoUrl);
 						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+logoUrl);
 					}else{
+						Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
+						goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+						
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						String siftUrl = goodsInfo.getGoodsSiftUrl();
 
