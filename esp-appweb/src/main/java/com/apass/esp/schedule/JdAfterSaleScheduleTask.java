@@ -60,7 +60,9 @@ public class JdAfterSaleScheduleTask {
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = (JSONObject) array.get(i);
                 AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-                Integer afsServiceStep =  newAfsInfo.getAfsServiceStep();
+                Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+//待处理
+
 
                 //详细信息
                 long afsServiceId = jsonObject.getLong("afsServiceId");
@@ -73,6 +75,7 @@ public class JdAfterSaleScheduleTask {
                     return;
                 }
                 JSONObject jb = (JSONObject) afterSaleDetail.getResult();
+//待处理
 
 
             }
