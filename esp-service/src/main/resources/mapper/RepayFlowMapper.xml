@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.RepayFlowMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.RepayFlow" >
+    <id column="FLOW_ID" property="flowId" jdbcType="BIGINT" />
+    <result column="USER_ID" property="userId" jdbcType="BIGINT" />
+    <result column="SCHEDULE_ID" property="scheduleId" jdbcType="BIGINT" />
+    <result column="REPAY_AMT" property="repayAmt" jdbcType="DECIMAL" />
+    <result column="REPAY_DATE" property="repayDate" jdbcType="TIMESTAMP" />
+    <result column="REPAY_DESC" property="repayDesc" jdbcType="VARCHAR" />
+    <result column="ORIG_TRANS_DATE" property="origTransDate" jdbcType="VARCHAR" />
+    <result column="ORIG_TXN_CODE" property="origTxnCode" jdbcType="VARCHAR" />
+    <result column="ORIG_TXN_AMT" property="origTxnAmt" jdbcType="DECIMAL" />
+    <result column="LOAN_ID" property="loanId" jdbcType="BIGINT" />
+    <result column="LOAN_TERM" property="loanTerm" jdbcType="INTEGER" />
+    <result column="SUB_BANK" property="subBank" jdbcType="VARCHAR" />
+    <result column="OPEN_BANK_ID" property="openBankId" jdbcType="VARCHAR" />
+    <result column="OPEN_BANK" property="openBank" jdbcType="VARCHAR" />
+    <result column="CARD_NO" property="cardNo" jdbcType="VARCHAR" />
+    <result column="USR_NAME" property="usrName" jdbcType="VARCHAR" />
+    <result column="CERT_TYPE" property="certType" jdbcType="VARCHAR" />
+    <result column="CERT_ID" property="certId" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FLOW_ID, USER_ID, SCHEDULE_ID, REPAY_AMT, REPAY_DATE, REPAY_DESC, ORIG_TRANS_DATE, 
+    ORIG_TXN_CODE, ORIG_TXN_AMT, LOAN_ID, LOAN_TERM, SUB_BANK, OPEN_BANK_ID, OPEN_BANK, 
+    CARD_NO, USR_NAME, CERT_TYPE, CERT_ID, STATUS, CREATE_DATE, UPDATE_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_apass_repay_flow
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_apass_repay_flow
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.RepayFlow" >
+    insert into t_apass_repay_flow (FLOW_ID, USER_ID, SCHEDULE_ID, 
+      REPAY_AMT, REPAY_DATE, REPAY_DESC, 
+      ORIG_TRANS_DATE, ORIG_TXN_CODE, ORIG_TXN_AMT, 
+      LOAN_ID, LOAN_TERM, SUB_BANK, 
+      OPEN_BANK_ID, OPEN_BANK, CARD_NO, 
+      USR_NAME, CERT_TYPE, CERT_ID, 
+      STATUS, CREATE_DATE, UPDATE_DATE
+      )
+    values (#{flowId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{scheduleId,jdbcType=BIGINT}, 
+      #{repayAmt,jdbcType=DECIMAL}, #{repayDate,jdbcType=TIMESTAMP}, #{repayDesc,jdbcType=VARCHAR}, 
+      #{origTransDate,jdbcType=VARCHAR}, #{origTxnCode,jdbcType=VARCHAR}, #{origTxnAmt,jdbcType=DECIMAL}, 
+      #{loanId,jdbcType=BIGINT}, #{loanTerm,jdbcType=INTEGER}, #{subBank,jdbcType=VARCHAR}, 
+      #{openBankId,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR}, #{cardNo,jdbcType=VARCHAR}, 
+      #{usrName,jdbcType=VARCHAR}, #{certType,jdbcType=VARCHAR}, #{certId,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.RepayFlow" >
+    insert into t_apass_repay_flow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="flowId != null" >
+        FLOW_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="scheduleId != null" >
+        SCHEDULE_ID,
+      </if>
+      <if test="repayAmt != null" >
+        REPAY_AMT,
+      </if>
+      <if test="repayDate != null" >
+        REPAY_DATE,
+      </if>
+      <if test="repayDesc != null" >
+        REPAY_DESC,
+      </if>
+      <if test="origTransDate != null" >
+        ORIG_TRANS_DATE,
+      </if>
+      <if test="origTxnCode != null" >
+        ORIG_TXN_CODE,
+      </if>
+      <if test="origTxnAmt != null" >
+        ORIG_TXN_AMT,
+      </if>
+      <if test="loanId != null" >
+        LOAN_ID,
+      </if>
+      <if test="loanTerm != null" >
+        LOAN_TERM,
+      </if>
+      <if test="subBank != null" >
+        SUB_BANK,
+      </if>
+      <if test="openBankId != null" >
+        OPEN_BANK_ID,
+      </if>
+      <if test="openBank != null" >
+        OPEN_BANK,
+      </if>
+      <if test="cardNo != null" >
+        CARD_NO,
+      </if>
+      <if test="usrName != null" >
+        USR_NAME,
+      </if>
+      <if test="certType != null" >
+        CERT_TYPE,
+      </if>
+      <if test="certId != null" >
+        CERT_ID,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="flowId != null" >
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="scheduleId != null" >
+        #{scheduleId,jdbcType=BIGINT},
+      </if>
+      <if test="repayAmt != null" >
+        #{repayAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="repayDate != null" >
+        #{repayDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayDesc != null" >
+        #{repayDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="origTransDate != null" >
+        #{origTransDate,jdbcType=VARCHAR},
+      </if>
+      <if test="origTxnCode != null" >
+        #{origTxnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="origTxnAmt != null" >
+        #{origTxnAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="loanId != null" >
+        #{loanId,jdbcType=BIGINT},
+      </if>
+      <if test="loanTerm != null" >
+        #{loanTerm,jdbcType=INTEGER},
+      </if>
+      <if test="subBank != null" >
+        #{subBank,jdbcType=VARCHAR},
+      </if>
+      <if test="openBankId != null" >
+        #{openBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="openBank != null" >
+        #{openBank,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="usrName != null" >
+        #{usrName,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certId != null" >
+        #{certId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.RepayFlow" >
+    update t_apass_repay_flow
+    <set >
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="scheduleId != null" >
+        SCHEDULE_ID = #{scheduleId,jdbcType=BIGINT},
+      </if>
+      <if test="repayAmt != null" >
+        REPAY_AMT = #{repayAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="repayDate != null" >
+        REPAY_DATE = #{repayDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repayDesc != null" >
+        REPAY_DESC = #{repayDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="origTransDate != null" >
+        ORIG_TRANS_DATE = #{origTransDate,jdbcType=VARCHAR},
+      </if>
+      <if test="origTxnCode != null" >
+        ORIG_TXN_CODE = #{origTxnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="origTxnAmt != null" >
+        ORIG_TXN_AMT = #{origTxnAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="loanId != null" >
+        LOAN_ID = #{loanId,jdbcType=BIGINT},
+      </if>
+      <if test="loanTerm != null" >
+        LOAN_TERM = #{loanTerm,jdbcType=INTEGER},
+      </if>
+      <if test="subBank != null" >
+        SUB_BANK = #{subBank,jdbcType=VARCHAR},
+      </if>
+      <if test="openBankId != null" >
+        OPEN_BANK_ID = #{openBankId,jdbcType=VARCHAR},
+      </if>
+      <if test="openBank != null" >
+        OPEN_BANK = #{openBank,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        CARD_NO = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="usrName != null" >
+        USR_NAME = #{usrName,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        CERT_TYPE = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="certId != null" >
+        CERT_ID = #{certId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.RepayFlow" >
+    update t_apass_repay_flow
+    set USER_ID = #{userId,jdbcType=BIGINT},
+      SCHEDULE_ID = #{scheduleId,jdbcType=BIGINT},
+      REPAY_AMT = #{repayAmt,jdbcType=DECIMAL},
+      REPAY_DATE = #{repayDate,jdbcType=TIMESTAMP},
+      REPAY_DESC = #{repayDesc,jdbcType=VARCHAR},
+      ORIG_TRANS_DATE = #{origTransDate,jdbcType=VARCHAR},
+      ORIG_TXN_CODE = #{origTxnCode,jdbcType=VARCHAR},
+      ORIG_TXN_AMT = #{origTxnAmt,jdbcType=DECIMAL},
+      LOAN_ID = #{loanId,jdbcType=BIGINT},
+      LOAN_TERM = #{loanTerm,jdbcType=INTEGER},
+      SUB_BANK = #{subBank,jdbcType=VARCHAR},
+      OPEN_BANK_ID = #{openBankId,jdbcType=VARCHAR},
+      OPEN_BANK = #{openBank,jdbcType=VARCHAR},
+      CARD_NO = #{cardNo,jdbcType=VARCHAR},
+      USR_NAME = #{usrName,jdbcType=VARCHAR},
+      CERT_TYPE = #{certType,jdbcType=VARCHAR},
+      CERT_ID = #{certId,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP}
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+</mapper>
