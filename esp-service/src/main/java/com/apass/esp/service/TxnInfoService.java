@@ -37,7 +37,7 @@ public class TxnInfoService {
     } else {
       List<CashRefund> cashRefunds = cashRefundService.getCashRefundByMainOrderId(mainOrderId, CashRefundStatus.CASHREFUND_STATUS3);
       //如果有撤销退款的申请，按照撤销退款的创建时间比较
-      if (CollectionUtils.isEmpty(cashRefunds)) {
+      if (CollectionUtils.isNotEmpty(cashRefunds)) {
         Date createD = cashRefunds.get(0).getCreateDate();
         if (createD != null && txn.getTxnDate() != null && txn.getTxnDate().getTime() >= createD.getTime()) {
           return true;
