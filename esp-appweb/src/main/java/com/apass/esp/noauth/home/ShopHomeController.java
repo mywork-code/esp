@@ -393,7 +393,7 @@ public class ShopHomeController {
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
             //查询京东地址
-            List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
+            List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(userId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
             	addty.setProvinceCode("1");
             	addty.setProvince("province");
@@ -431,7 +431,7 @@ public class ShopHomeController {
                 int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
                 returnMap.put("amountInCart", amountInCart);
             }
-            returnMap.put("address", addressInfoList);
+            returnMap.put("addressList", addressInfoList);
             return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);

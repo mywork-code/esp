@@ -93,11 +93,9 @@
 			FROM
 				t_esp_address_info
 			WHERE
-				user_id = 683
+				user_id = #{value}
 			AND towns_code != ''
-			ORDER BY
-				is_default DESC,
-				id DESC
+		  ORDER BY is_default DESC, id DESC
 	]]>
 	</select>
 	<!-- 更新地址信息的状态为非默认 -->
