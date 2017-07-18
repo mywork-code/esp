@@ -200,5 +200,9 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 	public GoodsInfoEntity  selectGoodsBySkuId(String skuId){
     	return this.getSqlSession().selectOne("selectGoodsByExternalId",skuId);
 	}
-
+	
+	//根据京东skuid查询数据库中是否已经上架了的商品
+	public GoodsInfoEntity  selectGoodsInfoByExternalId(String skuId){
+    	return this.getSqlSession().selectOne("selectGoodsInfoByExternalId",skuId);
+	}
 }

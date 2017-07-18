@@ -390,22 +390,18 @@ public class ShopHomeController {
             	LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            if (!StringUtils.isEmpty(userId)) {
-                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
-                returnMap.put("amountInCart", amountInCart);
-            }
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
             //查询京东地址
             List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(goodsId));
             if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
-            	addty.setProvinceCode("provinceCode");
+            	addty.setProvinceCode("1");
             	addty.setProvince("province");
-            	addty.setCityCode("cityCode");
+            	addty.setCityCode("0");
             	addty.setCity("city");
-            	addty.setDistrictCode("districtCode");
+            	addty.setDistrictCode("0");
             	addty.setDistrict("district");
-            	addty.setTownsCode("townsCode");
+            	addty.setTownsCode("0");
             	addty.setTowns("towns");
             	addty.setIsDefault("1");
             	addressInfoList.add(addty);
@@ -429,6 +425,11 @@ public class ShopHomeController {
             	returnMap.put("source", "jd");
             }else{
                 goodService.loadGoodsBasicInfoById(goodsId,returnMap);
+            }
+            //获取购物车中商品种类数
+            if (!StringUtils.isEmpty(userId)) {
+                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+                returnMap.put("amountInCart", amountInCart);
             }
             returnMap.put("address", addressInfoList);
             return Response.success("加载成功", returnMap);
