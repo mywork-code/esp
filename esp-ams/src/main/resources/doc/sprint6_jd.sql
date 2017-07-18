@@ -91,3 +91,16 @@ ADD COLUMN `city_code`  varchar(20) DEFAULT '' COMMENT '城市编码',
 ADD COLUMN `district_code`  varchar(20) DEFAULT '' COMMENT '县城编码',
 ADD COLUMN `towns_code`  varchar(20) DEFAULT '' COMMENT '乡镇编码',
 ADD COLUMN `towns`  varchar(20)  DEFAULT '' COMMENT '乡镇';
+
+ALTER TABLE `t_esp_order_info`
+MODIFY COLUMN `pre_delivery`  varchar(1) DEFAULT '' COMMENT '是否为预发货（系统自动更改：N(否)，商户填写物流单号后更改：Y(是)）';
+
+DROP TABLE  IF EXISTS esp.`t_esp_service_error`;
+CREATE TABLE `t_esp_service_error` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+ `create_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+   `order_id` varchar(128) DEFAULT '' comment '订单id',
+   `type` varchar(64) DEFAULT '' comment '类型',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='服务异常表';
