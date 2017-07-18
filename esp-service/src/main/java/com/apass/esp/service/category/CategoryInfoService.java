@@ -18,6 +18,7 @@ import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
@@ -25,6 +26,7 @@ import com.apass.esp.domain.enums.CategoryStatus;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -50,6 +52,8 @@ public class CategoryInfoService {
 	
 	@Autowired
     private ImageService imageService;
+	@Autowired
+	private GoodsBasicRepository goodsBasicRepository;
 	 
 	public List<CategoryVo> listCategory(CategoryDto dto) {
 		//获取所有的一级分类
@@ -117,15 +121,26 @@ public class CategoryInfoService {
 	public List<CategoryVo> selectCategoryVoListJd(Long levelId){
 		List<Category> categories = categoryMapper.selectCategoryListJd(levelId);
 		List<CategoryVo> voList = new ArrayList<CategoryVo>();
-		for (Category c : categories) {
-			String pictureUrl=espImageUrl+"/static"+ c.getPictureUrl();
-			c.setPictureUrl(pictureUrl);
+		List<Category> categories2 = new ArrayList<Category>();
+
+			for(int i=0;i<categories.size();i++){
+			if(StringUtils.isNotEmpty(categories.get(i).getPictureUrl())){
+				String pictureUrl=espImageUrl+"/static"+ categories.get(i).getPictureUrl();
+				categories.get(i).setPictureUrl(pictureUrl);
+			}
 			//限制一级类目的名字为2个字
-			if(c.getCategoryName().length()>2){
-				c.setCategoryName(c.getCategoryName().substring(0,2));
+			if(categories.get(i).getCategoryName().length()>2){
+				categories.get(i).setCategoryName(categories.get(i).getCategoryName().substring(0,2));
+			}
+			//判断该一级类目下是否有可在app端显示的商品，如何没有则改一级类目不显示在app端
+			GoodsBasicInfoEntity  goodsBasicInfoEntity =new GoodsBasicInfoEntity();
+			goodsBasicInfoEntity.setCategoryId1(categories.get(i).getId());
+			Integer totalCount = goodsBasicRepository.loadGoodsByParamCount(goodsBasicInfoEntity);
+			if(totalCount>0){
+				categories2.add(categories.get(i));
 			}
 		}
-		for (Category v : categories) {
+		for (Category v : categories2) {
 			voList.add(categroyToCathgroyEntiy(v));
 		}	
 		return voList;
