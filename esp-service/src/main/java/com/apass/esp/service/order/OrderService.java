@@ -2018,16 +2018,20 @@ public class OrderService {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
                     continue;
                 }
-                //订阅物流信息
-				HashMap <String,String> hashMap = new HashMap();
-				hashMap.put("logisticsName","jd");
-				hashMap.put("logisticsNo",String.valueOf(cOrderId));
-				hashMap.put("orderId",cOrderQh);
-				updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+//                try{
+//					//订阅物流信息
+//					HashMap <String,String> hashMap = new HashMap();
+//					hashMap.put("logisticsName","jd");
+//					hashMap.put("logisticsNo",String.valueOf(cOrderId));
+//					hashMap.put("orderId",cOrderQh);
+//					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+//				}catch (Exception e ){
+//
+//				}
 
                 for (int j = 0; j < cOrderSkuList.size(); j++) {
                     long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
-                    GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    GoodsInfoEntity goodsInfoEntity =  goodsDao.selectGoodsByExternalId(String.valueOf(skuId));
                     if (goodsInfoEntity == null) {
                         LOGGER.info("pOrder {}, jdOrderId {} goodsInfoEntity {}", cOrderJsonObject.getLongValue("pOrder"), jdOrderId, goodsInfoEntity);
                         continue;

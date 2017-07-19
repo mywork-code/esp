@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.exception.BusinessException;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -90,7 +93,8 @@ public class TestController {
 
     @Autowired
     private JdOrderApiClient jdOrderApiClient;
-
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private JdGoodsMapper jdGoodsMapper;
@@ -726,20 +730,32 @@ public class TestController {
     @RequestMapping(value = "/orderOccupyStockConfirm", method = RequestMethod.POST)
     @ResponseBody
     public Response orderOccupyStockConfirm(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(59616806118l);
-        LOGGER.info("confirm order error, {}", confirmResponse.toString());
-        int confirmStatus = 0;
-        if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
+//        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(59616806118l);
+//        LOGGER.info("confirm order error, {}", confirmResponse.toString());
+//        int confirmStatus = 0;
+//        if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
             // orderSyncer.addOrder(jdOrderId);
 
             //orderStateSyncer.addOrder(orderNo);
-            confirmStatus = 1;
+//            confirmStatus = 1;
 //			return true;
 
-            JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59461122154l);
-            return Response.success("1", jdApiResponse);
+            JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59616806118l);
+        OrderInfoEntity orderInfoEntity = orderService.getOrderInfoEntityByOrderId("38290560798");
+        JSONObject jsonObject = jdApiResponse.getResult();
+        try {
+            orderService.jdSplitOrderMessageHandle(jsonObject,orderInfoEntity);
+        } catch (BusinessException e) {
+            LOGGER.info("jdSplitOrderMessageHandle do not have split ",orderInfoEntity.getOrderId());
+
+        }catch (Exception e ){
+
         }
-        return Response.success("1", 59461122154l);
+
+
+            return Response.success("1", jdApiResponse);
+//        }
+//        return Response.success("1", 59461122154l);
     }
 
     /**
