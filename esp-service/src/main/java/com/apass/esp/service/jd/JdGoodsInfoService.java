@@ -27,6 +27,7 @@ import com.apass.esp.domain.entity.jd.JdImage;
 import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -98,7 +99,8 @@ public class JdGoodsInfoService {
 	 * 根据商品编号获取商品需要展示App信息
 	 * @throws BusinessException 
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList) throws BusinessException {
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList)
+			throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
@@ -113,10 +115,10 @@ public class JdGoodsInfoService {
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
 		}
 		// 查看商品的邮费
-		List<Long> goodsIds=new ArrayList<>();
+		List<Long> goodsIds = new ArrayList<>();
 		goodsIds.add(sku);
-		BigDecimal postage=goodsService.getPostage(goodsIds);
-        map.put("postage", postage);
+		BigDecimal postage = goodsService.getPostage(goodsIds);
+		map.put("postage", postage);
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
@@ -131,30 +133,35 @@ public class JdGoodsInfoService {
 			for (JdSaleAttr jdsa : saleAttrList) {
 				jdsa.setImagePath("http://img13.360buyimg.com/n4/" + jdsa.getImagePath());
 				List<String> skuIds = jdsa.getSkuIds();
-				List<String> skuIds2=new ArrayList<>();
-				for(String skuId:skuIds){
-					//判断该skuId是否已经上架，如何没有则移除该规格下的skuId
+				List<String> skuIds2 = new ArrayList<>();
+				for (String skuId : skuIds) {
+					// 判断该skuId是否已经上架，如何没有则移除该规格下的skuId
 					GoodsInfoEntity gty = goodsRepository.selectGoodsInfoByExternalId(skuId);
-					if(null!=gty){
+					if (null != gty) {
 						skuIds2.add(skuId);
 						skusSet.add(skuId);
 					}
 				}
 				jdsa.setSkuIds(skuIds2);
-				if(skuIds2.size()>0){
-				   saleAttrList2.add(jdsa);
+				if (skuIds2.size() > 0) {
+					saleAttrList2.add(jdsa);
 				}
 			}
 			jdsk.setSaleAttrList(saleAttrList2);
-			if(saleAttrList2.size()>0){
+			if (saleAttrList2.size() > 0) {
 				jdSimilarSkuList2.add(jdsk);
 			}
 		}
-		//为规格添加唯一标识
+		// 为规格添加唯一标识
 		for (JdSimilarSku jdsk : jdSimilarSkuList2) {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
-			for(int i=0;i<saleAttrList.size();i++){
-				saleAttrList.get(i).setSaleValueId("s"+i);
+			for (int i = 0; i < saleAttrList.size(); i++) {
+				if (i > 9) {
+					saleAttrList.get(i).setSaleValueId(i + "");
+				} else {
+					saleAttrList.get(i).setSaleValueId("0" + i);
+				}
+
 			}
 		}
 		// 获取地址信息
@@ -167,53 +174,57 @@ public class JdGoodsInfoService {
 			}
 		}
 		// 查询商品规格中的商品的价格和库存
-		List<JdSimilarSkuVo> JdSimilarSkuVoList = new ArrayList<>();
+		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
 		while (iterator.hasNext()) {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+
 			String skuId = iterator.next();
 			// 查询商品价格
-			GoodsInfoEntity goodsInfo=goodsRepository.selectGoodsByExternalId(skuId);
-			Long goodsId=goodsInfo.getId();
-			List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
-        	if(jdGoodsStockInfoList.size()==1){
-                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-                jdSimilarSkuVo.setPrice(price);
-        	}
-			//查询商品是否有货
+			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
+			Long goodsId = goodsInfo.getId();
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+			if (jdGoodsStockInfoList.size() == 1) {
+				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+				jdSimilarSkuVo.setPrice(price);
+				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
+			}
+			// 查询商品是否有货
 			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
 			jdSimilarSkuVo.setSkuId(skuId);
 			if ("34".equals(jdGoodStock.getState())) {
 				jdSimilarSkuVo.setStockDesc("无货");
-			}else{
+			} else {
 				jdSimilarSkuVo.setStockDesc("有货");
 			}
-			 String skuIdOrder="";
+			String skuIdOrder = "";
 			for (JdSimilarSku jdsk : jdSimilarSkuList2) {
-				if(skuIdOrder.length()==0){
-					skuIdOrder=jdsk.getDim().toString();
-				}else{
-					skuIdOrder=skuIdOrder+";"+jdsk.getDim().toString();
+				if (skuIdOrder.length() == 0) {
+					skuIdOrder = jdsk.getDim().toString();
+				} else {
+					skuIdOrder = skuIdOrder + ";" + jdsk.getDim().toString();
 				}
 				List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
-				for(JdSaleAttr jdsa:saleAttrList){
-					List<String> skuIds=jdsa.getSkuIds();
-					for(String skuId2:skuIds){
-						if(skuId2.equals(skuId)){
-							skuIdOrder=skuIdOrder+","+jdsa.getSaleValueId();
+				for (JdSaleAttr jdsa : saleAttrList) {
+					List<String> skuIds = jdsa.getSkuIds();
+					for (String skuId2 : skuIds) {
+						if (skuId2.equals(skuId)) {
+							skuIdOrder = skuIdOrder + jdsa.getSaleValueId();
 						}
 					}
 				}
 			}
-			System.out.println(skuIdOrder);
-			JdSimilarSkuVoList.add(jdSimilarSkuVo);
+			jdSimilarSkuTo.setSkuIdOrder(skuIdOrder);
+			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+			JdSimilarSkuToList.add(jdSimilarSkuTo);
 		}
-		map.put("JdSimilarSkuVoList", JdSimilarSkuVoList);
+		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
 		map.put("skuId", String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		return map;
-	}
+		}
 	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
