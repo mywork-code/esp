@@ -119,6 +119,8 @@ public class OrderService {
 	@Autowired
 	private GoodsStockLogRepository goodsStcokLogDao;
 	@Autowired
+	private GoodsStockInfoRepository getGoodsStockDao;
+	@Autowired
 	private PaymentHttpClient paymentHttpClient;
 	@Autowired
 	private ImageService imageService;
@@ -2042,6 +2044,13 @@ public class OrderService {
                     int num = cOrderSkuList.getJSONObject(j).getIntValue("num");
                     String name = cOrderSkuList.getJSONObject(j).getString("name");
                     GoodsInfoEntity goods = goodsDao.select(goodsId);
+					List<GoodsStockInfoEntity> goodsStockInfoEntityList = getGoodsStockDao.loadByGoodsId(goodsId);
+					long goodsStockId = 48433l;
+					if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
+						goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
+					}else{
+						goodsStockId= 48433l;
+					}
                     //orderDetail插入对应记录
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
                     orderDetail.setOrderId(cOrderQh);
@@ -2062,6 +2071,7 @@ public class OrderService {
                     orderDetail.setKeepDate(goods.getKeepDate());
                     orderDetail.setSupNo(goods.getSupNo());
                     orderDetail.setCreateDate(new Date());
+					orderDetail.setGoodsStockId(goodsStockId);
                     Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
                     if (orderDetailSuccess < 1) {
                         LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order detail error  ", jdOrderId, cOrderId, cOrderQh);
