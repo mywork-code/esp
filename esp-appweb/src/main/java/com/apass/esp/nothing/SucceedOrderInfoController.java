@@ -44,7 +44,6 @@ public class SucceedOrderInfoController {
             }
             Long userId = Long.valueOf(userIdStr);
             String orderDate = orderService.latestSuccessTime(userId);
-            
             Map<String, String> resultMap = Maps.newHashMap();
             resultMap.put("orderDate", orderDate);
             return Response.success("success", GsonUtils.toJson(resultMap));

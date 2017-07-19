@@ -31,7 +31,6 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.RepayFlow;
-import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -54,7 +53,7 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
-import com.apass.esp.mapper.WorkCityJdMapper;
+import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -132,13 +131,13 @@ public class OrderService {
 	@Autowired
     private JdProductApiClient jdProductApiClient;
 	@Autowired
-	private RepayFlowMapper flowMapper;
-	@Autowired
     private JdOrderApiClient jdOrderApiClient;
 	@Autowired
     private GoodsService goodsService;
 
-
+	@Autowired
+	private RepayFlowMapper flowMapper;
+	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -1657,7 +1656,9 @@ public class OrderService {
 		
 		return DateFormatUtil.datetime2String(getMaxDate(orderCreateDate, repayCreateDate));
 	}
+
 	
+
 	/**
 	 * 获取两个时间的大小
 	 * @param date1

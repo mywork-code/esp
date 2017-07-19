@@ -123,9 +123,10 @@
 					a.goods_logo_url goodsLogoUrl,
 					a.source       source
 				FROM
-					t_esp_goods_base_info a,
-					t_esp_goods_sales_volume c,
-					(
+					  t_esp_goods_base_info a
+			LEFT JOIN t_esp_goods_sales_volume c ON a.id = c.goods_id
+            LEFT JOIN  
+			        (
 						SELECT
 							min(goods_price) AS goods_price,
 							goods_id,
@@ -136,11 +137,9 @@
 							stock_curr_amt != 0
 						GROUP BY
 							goods_id
-					) b
+					  ) b ON a.id = b.goods_id
 				WHERE
-				     a.id = b.goods_id
-				AND  a.id = c.goods_id
-				AND  a.`status`='G02'
+				     a.`status`='G02'
 				AND  a.is_delete ='01'
 				AND  CURRENT_TIMESTAMP > a.list_time
 	]]>
@@ -186,9 +185,10 @@
 			SELECT
 				count(1)
 					FROM
-					t_esp_goods_base_info a,
-					t_esp_goods_sales_volume c,
-					(
+					  t_esp_goods_base_info a
+			LEFT JOIN t_esp_goods_sales_volume c ON a.id = c.goods_id
+            LEFT JOIN  
+			        (
 						SELECT
 							min(goods_price) AS goods_price,
 							goods_id,
@@ -199,11 +199,9 @@
 							stock_curr_amt != 0
 						GROUP BY
 							goods_id
-					) b
+					  ) b ON a.id = b.goods_id
 				WHERE
-				     a.id = b.goods_id
-				AND  a.id = c.goods_id
-				AND  a.`status`='G02'
+				     a.`status`='G02'
 				AND  a.is_delete ='01'
 				AND  CURRENT_TIMESTAMP > a.list_time
 	   ]]>
