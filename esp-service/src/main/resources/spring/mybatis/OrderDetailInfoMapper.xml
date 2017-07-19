@@ -44,6 +44,8 @@
 		goodsstockinfo.goods_sku_attr goodsSkuAttr,
 		goodsstockinfo.stock_curr_amt stockCurrAmt,
 		orderdetail.CREATE_DATE createDate,
+		orderdetail.source source,
+		orderdetail.sku_id skuId,
 		orderdetail.UPDATE_DATE updateDate
 		FROM
 			t_esp_order_detail_info orderdetail
@@ -59,10 +61,10 @@
 	<select id="queryOrderDetailBySubOrderId" parameterType="String" resultType="OrderDetailInfoEntity">
 	<![CDATA[
 		SELECT
-     			ID                           id,
+     			 ID                           id,
                  ORDER_ID                     orderId,
                  GOODS_ID                     goodsId,
-                 goods_stock_id				 goodsStockId,
+                 goods_stock_id				  goodsStockId,
                  MERCHANT_CODE                merchantCode,
                  GOODS_PRICE                  goodsPrice,
                  GOODS_NUM                    goodsNum,
@@ -82,7 +84,7 @@
 		FROM
 			t_esp_order_detail_info
 		WHERE
-			sub_order_id=#{subOrderId}
+			order_id=#{subOrderId}
 		ORDER BY update_date DESC	
 	]]>
 	</select>

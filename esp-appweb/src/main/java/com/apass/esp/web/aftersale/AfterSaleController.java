@@ -79,6 +79,19 @@ public class AfterSaleController {
     }
     
     /**
+     * 退换货：包括京东商品
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/v1/returngoods")
+    public Response returnGoodsV1(Map<String, Object> paramMap){
+    	
+    	
+    	return null;
+    }
+    
+    /**
      * 退换货
      * 
      * @param paramMap
@@ -94,7 +107,7 @@ public class AfterSaleController {
         String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
         String orderId = CommonUtils.getValue(paramMap, "orderId");
         String returnPrice = CommonUtils.getValue(paramMap, "returnPrice");
-        String operate = CommonUtils.getValue(paramMap, "operate");     
+        String operate = CommonUtils.getValue(paramMap, "operate");//退货或换货     
         String reason = CommonUtils.getValue(paramMap, "reason");
         String content = CommonUtils.getValue(paramMap, "content");
         String returngoodsInfo = CommonUtils.getValue(paramMap, "returngoodsInfo");
@@ -105,7 +118,6 @@ public class AfterSaleController {
         LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
         
         try {
-            
             int imageNumVal = Integer.parseInt(imageNum);
             BigDecimal returnPriceVal = new BigDecimal(returnPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
             
@@ -155,7 +167,6 @@ public class AfterSaleController {
             
             afterSaleService.returnGoods(requestId, userId, orderId, returnPriceVal, operate, reason, content, returngoodsList, imageNumVal);
             
-            
             return Response.success("退换货成功");
             
         } catch(BusinessException e){
@@ -166,6 +177,8 @@ public class AfterSaleController {
             return Response.fail("退换货失败");
         }
     }
+    
+    
     
     /**
      * 查看进度、售后流程

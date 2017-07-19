@@ -30,6 +30,15 @@ public class RefundDetailInfoEntity {
     
     /** 标记 **/
     private String remark;
+    
+    /**
+     * 来源
+     */
+    private String source;
+    /**
+     * 售后状态
+     */
+    private String status;
 
     public Long getId() {
         return id;
@@ -79,4 +88,21 @@ public class RefundDetailInfoEntity {
         this.remark = remark;
     }
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+    
 }
