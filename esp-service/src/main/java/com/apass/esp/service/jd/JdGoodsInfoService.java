@@ -77,10 +77,13 @@ public class JdGoodsInfoService {
 		// 查询商品价格
 		Collection<Long> skuPrice = new ArrayList<Long>();
 		skuPrice.add(sku);
+
 		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
 		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
 			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
 		}
+		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
+		map.put("goodsPrice",goodsInfoEntity.getGoodsPrice());
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
