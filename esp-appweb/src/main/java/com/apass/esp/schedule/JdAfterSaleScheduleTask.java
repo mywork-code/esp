@@ -3,6 +3,10 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -17,7 +21,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -40,30 +46,50 @@ public class JdAfterSaleScheduleTask {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private AfterSaleService afterSaleService;
+
+    @Autowired
+    private OrderRefundRepository orderRefundDao;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
-
         List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
-
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
             long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
             JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(jdOrderId, 1, 10);
             if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
-                return;
+                continue;
             }
             String result = afsInfo.getResult().getString("serviceInfoList");
             if (result == null || "".equals(result)) {
-                return;
+                continue;
             }
             JSONArray array = JSONArray.parseArray(result);
+
+            String refundStatus = getStatus(array);//所有的京东售后单完成才把该售后单变成完成
+            Map<String, String> paramMap = new HashMap<String, String>();
+            paramMap.put("orderId", orderInfoEntity.getOrderId());
+            if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())) {
+                //根据状态改为售后完成 或者售后失败
+                paramMap.put("status", refundStatus);
+                orderRefundDao.updateRefundStatusAndCtimeByOrderId(paramMap);
+                Integer customerExpect = getCustomerExpect(array);
+                //为退货 且京东已退款完成
+                if (customerExpect == 10&&refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS05.getCode())) {
+                    //订单状态改为退款处理中
+                    //orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
+                    //orderService.updateOrderStatus(orderInfoEntity);
+                }
+            }
+
+            //改变refundDetail里的状态
+
+
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = (JSONObject) array.get(i);
                 AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-                Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
-//待处理
-
-
                 //详细信息
                 long afsServiceId = jsonObject.getLong("afsServiceId");
                 JdApiResponse<JSONObject> afterSaleDetail = jdAfterSaleApiClient
@@ -74,13 +100,45 @@ public class JdAfterSaleScheduleTask {
                 if (afterSaleDetail == null || afterSaleDetail.getResult() == null) {
                     return;
                 }
+                //退货
+                if (newAfsInfo.getCustomerExpect() == 10) {
+                    //是否退款完成
+                }
                 JSONObject jb = (JSONObject) afterSaleDetail.getResult();
-//待处理
-
-
             }
         }
 
     }
 
+    /**
+     *
+     * @param jsonArray
+     * @return
+     */
+    private String getStatus(JSONArray jsonArray) {
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+            Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+            if (afsServiceStep == 20 || afsServiceStep == 60) {
+                return RefundStatus.REFUND_STATUS06.getCode();
+            }
+            if (afsServiceStep != 40 && afsServiceStep != 50) {
+                return RefundStatus.REFUND_STATUS01.getCode();
+            }
+        }
+        return RefundStatus.REFUND_STATUS05.getCode();
+    }
+
+    /**
+     * 得到 退货(10)、换货(20)
+     *
+     * @param jsonArray
+     * @return
+     */
+    private Integer getCustomerExpect(JSONArray jsonArray) {
+        JSONObject jsonObject = (JSONObject) jsonArray.get(0);
+        AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+        return newAfsInfo.getAfsServiceStep();
+    }
 }
