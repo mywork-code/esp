@@ -1,7 +1,5 @@
 package com.apass.esp.domain.entity.jd;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 
 public class JdSaleAttr {
@@ -9,6 +7,8 @@ public class JdSaleAttr {
     private String imagePath;
 
     private String saleValue;
+    
+    private String saleValueId;
 
     private List<String> skuIds;
 
@@ -47,4 +47,12 @@ public class JdSaleAttr {
         this.skuIds = skuIds;
     }
 
+	public String getSaleValueId() {
+		return saleValueId;
+	}
+
+	public void setSaleValueId(String saleValueId) {
+		this.saleValueId = saleValueId;
+	}
+    
 }

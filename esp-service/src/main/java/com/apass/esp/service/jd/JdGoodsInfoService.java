@@ -121,20 +121,37 @@ public class JdGoodsInfoService {
 		// 查询商品规格
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		List<JdSimilarSku> jdSimilarSkuList2 = new ArrayList<>();
 		for (JdSimilarSku jdsk : jdSimilarSkuList) {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+			List<JdSaleAttr> saleAttrList2 = new ArrayList<>();
 			for (JdSaleAttr jdsa : saleAttrList) {
 				jdsa.setImagePath("http://img13.360buyimg.com/n4/" + jdsa.getImagePath());
 				List<String> skuIds = jdsa.getSkuIds();
-				for (int i = 0; i < skuIds.size(); i++) {
-					String skuId = skuIds.get(i);
+				List<String> skuIds2=new ArrayList<>();
+				for(String skuId:skuIds){
+					//判断该skuId是否已经上架，如何没有则移除该规格下的skuId
 					GoodsInfoEntity gty = goodsRepository.selectGoodsInfoByExternalId(skuId);
-					if (null == gty) {// 当改商品的规格中的商品没有上架则移除
-						skuIds.remove(i);
-					} else {
+					if(null!=gty){
+						skuIds2.add(skuId);
 						skusSet.add(skuId);
 					}
 				}
+				jdsa.setSkuIds(skuIds2);
+				if(skuIds2.size()>0){
+				   saleAttrList2.add(jdsa);
+				}
+			}
+			jdsk.setSaleAttrList(saleAttrList2);
+			if(saleAttrList2.size()>0){
+				jdSimilarSkuList2.add(jdsk);
+			}
+		}
+		//为规格添加唯一标识
+		for (JdSimilarSku jdsk : jdSimilarSkuList2) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+			for(int i=0;i<saleAttrList.size();i++){
+				saleAttrList.get(i).setSaleValueId("s"+i);
 			}
 		}
 		// 获取地址信息
@@ -168,12 +185,30 @@ public class JdGoodsInfoService {
 			}else{
 				jdSimilarSkuVo.setStockDesc("有货");
 			}
+			 String skuIdOrder="";
+			for (JdSimilarSku jdsk : jdSimilarSkuList2) {
+				if(skuIdOrder.length()==0){
+					skuIdOrder=jdsk.getDim().toString();
+				}else{
+					skuIdOrder=skuIdOrder+";"+jdsk.getDim().toString();
+				}
+				List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+				for(JdSaleAttr jdsa:saleAttrList){
+					List<String> skuIds=jdsa.getSkuIds();
+					for(String skuId2:skuIds){
+						if(skuId2.equals(skuId)){
+							skuIdOrder=skuIdOrder+","+jdsa.getSaleValueId();
+						}
+					}
+				}
+			}
+			System.out.println(skuIdOrder);
 			JdSimilarSkuVoList.add(jdSimilarSkuVo);
 		}
 		map.put("JdSimilarSkuVoList", JdSimilarSkuVoList);
 		map.put("skuId", String.valueOf(sku));
-		map.put("jdSimilarSkuList", jdSimilarSkuList);
-		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		map.put("jdSimilarSkuList", jdSimilarSkuList2);
+		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		return map;
 	}
 	/**

@@ -114,7 +114,7 @@ ALTER TABLE `t_esp_cash_refund`
 ADD COLUMN `refund_type`  varchar(10)  DEFAULT 'online' COMMENT '退款方式（online: 线上  offline:线下）' ;
 
 ALTER TABLE `t_esp_cash_refund`
-ADD COLUMN `auditor_id`  int(11)  DEFAULT NULL COMMENT '审核人id' ,
+ADD COLUMN `auditor_name`  varchar(20)  DEFAULT '' COMMENT '审核人' ,
 ADD COLUMN `auditor_date`  datetime  DEFAULT NULL COMMENT '审核时间' ;
 
 ALTER TABLE `t_esp_refund_detail_info`
