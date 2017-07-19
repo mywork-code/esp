@@ -19,10 +19,12 @@
     <result column="second_category" property="secondCategory" jdbcType="INTEGER" />
     <result column="third_category" property="thirdCategory" jdbcType="INTEGER" />
     <result column="similar_skus" property="similarSkus" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, sku_id, price, jd_price, brand_name, name, image_path, weight, upc, product_area, 
-    sale_unit, ware_qd, state, first_category, second_category, third_category, similar_skus
+    sale_unit, ware_qd, state, first_category, second_category, third_category, similar_skus, create_date, update_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -40,13 +42,13 @@
       weight, upc, product_area, 
       sale_unit, ware_qd, state, 
       first_category, second_category, third_category, 
-      similar_skus)
+      similar_skus, create_date, update_date)
     values (#{skuId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{jdPrice,jdbcType=DECIMAL}, 
       #{brandName,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{imagePath,jdbcType=VARCHAR}, 
       #{weight,jdbcType=DECIMAL}, #{upc,jdbcType=VARCHAR}, #{productArea,jdbcType=VARCHAR}, 
       #{saleUnit,jdbcType=VARCHAR}, #{wareQd,jdbcType=VARCHAR}, #{state,jdbcType=BIT}, 
       #{firstCategory,jdbcType=INTEGER}, #{secondCategory,jdbcType=INTEGER}, #{thirdCategory,jdbcType=INTEGER}, 
-      #{similarSkus,jdbcType=VARCHAR})
+      #{similarSkus,jdbcType=VARCHAR},#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdGoods" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_jd_goods
@@ -99,6 +101,12 @@
       <if test="similarSkus != null" >
         similar_skus,
       </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="skuId != null" >
@@ -148,6 +156,12 @@
       </if>
       <if test="similarSkus != null" >
         #{similarSkus,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -202,6 +216,12 @@
       <if test="similarSkus != null" >
         similar_skus = #{similarSkus,jdbcType=VARCHAR},
       </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -222,7 +242,9 @@
       first_category = #{firstCategory,jdbcType=INTEGER},
       second_category = #{secondCategory,jdbcType=INTEGER},
       third_category = #{thirdCategory,jdbcType=INTEGER},
-      similar_skus = #{similarSkus,jdbcType=VARCHAR}
+      similar_skus = #{similarSkus,jdbcType=VARCHAR},
+       create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

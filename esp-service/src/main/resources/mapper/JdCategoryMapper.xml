@@ -12,10 +12,12 @@
     <result column="category_id3" property="categoryId3" jdbcType="BIGINT" />
     <result column="flag" property="flag" jdbcType="BIT" />
     <result column="status" property="status" jdbcType="BIT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, cat_id, name, parent_id, cat_class, category_id1, category_id2, category_id3, 
-    flag, status
+    flag, `status`, create_date, update_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -30,10 +32,10 @@
   <insert id="insert" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_jd_category (cat_id, name, parent_id, 
       cat_class, category_id1, category_id2, 
-      category_id3, flag, status)
+      category_id3, flag, status, create_date, update_date)
     values (#{catId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, 
       #{catClass,jdbcType=INTEGER}, #{categoryId1,jdbcType=BIGINT}, #{categoryId2,jdbcType=BIGINT}, 
-      #{categoryId3,jdbcType=BIGINT}, #{flag,jdbcType=BIT}, #{status,jdbcType=BIT})
+      #{categoryId3,jdbcType=BIGINT}, #{flag,jdbcType=BIT}, #{status,jdbcType=BIT},#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.third.party.jd.entity.base.JdCategory" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_jd_category
@@ -65,6 +67,12 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="catId != null" >
@@ -93,6 +101,12 @@
       </if>
       <if test="status != null" >
         #{status,jdbcType=BIT},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -126,6 +140,12 @@
       <if test="status != null" >
         status = #{status,jdbcType=BIT},
       </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -139,7 +159,9 @@
       category_id2 = #{categoryId2,jdbcType=BIGINT},
       category_id3 = #{categoryId3,jdbcType=BIGINT},
       flag = #{flag,jdbcType=BIT},
-      status = #{status,jdbcType=BIT}
+      status = #{status,jdbcType=BIT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

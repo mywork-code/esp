@@ -1,5 +1,7 @@
 package com.apass.esp.third.party.jd.entity.base;
 
+import java.util.Date;
+
 public class JdCategory {
     private Long id;
 
@@ -20,6 +22,26 @@ public class JdCategory {
     private Boolean flag;
 
     private Boolean status;
+
+    private Date createDate;
+
+    private Date updateDate;
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 
     public Long getId() {
         return id;
