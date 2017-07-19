@@ -513,10 +513,19 @@ public class ShopHomeController {
         return Response.successResponse(goodsList);
     }
 
+	/**
+	 * 获取商品价格
+	 * @param goodsIds
+	 * @return
+	 * @throws BusinessException
+	 */
 	private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
 		List<GoodsInfoEntity> goodsList=new ArrayList<>();
 		for (String goodsId:goodsIds){
 		    GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		    if(goodsInfoEntity == null){
+		    	continue;
+		    }
 		    if(goodsInfoEntity.getSource()==null){
 		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
 		        goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
@@ -526,9 +535,11 @@ public class ShopHomeController {
 		        goodsInfoEntity.setSource("jd");
 		    }
 		    goodsInfoEntity.setGoogsDetail("");
-		    BigDecimal goodsPrice = getGoodsPrice(goodsInfoEntity.getId());
-            goodsInfoEntity.setGoodsPrice(goodsPrice);
-            goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+		    BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
+		    if(goodsPrice != null){
+		    	goodsInfoEntity.setGoodsPrice(goodsPrice);
+		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+		    }
             
 		    goodsList.add(goodsInfoEntity);
 		}
@@ -565,9 +576,9 @@ public class ShopHomeController {
         	goodsNecessaryList = getSaleVolumeGoods(goodsNcessids);
            
             resultMap.put("goodsNecessaryList", goodsNecessaryList);
-        }catch (Exception e ){
+        }catch (BusinessException e){
         	LOGGER.error("查询首页推荐列表失败",e);
-            return Response.fail(BusinessErrorCode.NO);
+            return Response.fail(e.getErrorDesc());
         }
         return Response.successResponse(resultMap);
     }
