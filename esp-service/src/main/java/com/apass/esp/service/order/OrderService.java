@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -43,6 +44,7 @@ import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -109,6 +111,8 @@ public class OrderService {
 	private MerchantInforService merchantInforService;
 	@Autowired
 	private CashRefundMapper   cashRefundMapper;
+	@Autowired
+	private RepayFlowMapper flowMapper;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1449,6 +1453,56 @@ public class OrderService {
 	public String latestSuccessOrderTime(Long userId) {
 		OrderInfoEntity orderInfoEntity = orderInfoRepository.queryLatestSuccessOrderInfo(userId);
 		return orderInfoEntity == null ? "" : DateFormatUtil.datetime2String(orderInfoEntity.getCreateDate());
+	}
+	
+	/**
+	 * 根据用户的Id,查询出最新的时间
+	 * @param userId
+	 * @return
+	 */
+	public String latestSuccessTime(Long userId){
+		Date orderCreateDate = null;
+		Date repayCreateDate = null;
+		
+		OrderInfoEntity orderInfo = orderInfoRepository.queryLatestSuccessOrderInfo(userId);
+		if(null != orderInfo){
+			orderCreateDate = orderInfo.getCreateDate();
+		}
+		
+		RepayFlow flow = flowMapper.queryLatestSuccessOrderInfo(userId);
+		if(null != flow){
+			repayCreateDate = flow.getCreateDate();
+		}
+		
+		return DateFormatUtil.datetime2String(getMaxDate(orderCreateDate, repayCreateDate));
+	}
+	
+	/**
+	 * 获取两个时间的大小
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public Date getMaxDate(Date date1,Date date2){
+		
+		if(null != date1 && null == date2){
+			return date1;
+		}
+		
+		if(null == date1 && null != date2){
+			return date2;
+		}
+		
+		if(null != date1 && null != date2){
+			
+			if(date1.before(date2)){
+				return date2;
+			}else{
+				return date1;
+			}
+		}
+		
+		return null;
 	}
 	
 	public List<OrderInfoEntity> selectByMainOrderId(String mainOrderId) throws BusinessException{
