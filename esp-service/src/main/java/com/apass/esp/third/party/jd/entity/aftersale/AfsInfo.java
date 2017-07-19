@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSONObject;
 public class AfsInfo implements Serializable {
 	private static final long serialVersionUID = -6811537132657521899L;
 	private Long afsServiceId;
-	private Long personId;
 	private Long jdOrderId;
 	private Integer customerExpect;
 	private String customerExpectName;
@@ -18,10 +17,9 @@ public class AfsInfo implements Serializable {
 	private String afsServiceStepName;
 	private Integer cancel;
 	private Date afsApplyTime;
-	
-	//新增wareName,orderNo,orderSource,customerExpectName,refundStep
-	private String orderNo;
-	private String mallId;
+
+	private String orderId;
+
 
 	public static AfsInfo fromOriginalJson(JSONObject jsonObject) {
 		AfsInfo afsInfo = new AfsInfo();
@@ -117,30 +115,6 @@ public class AfsInfo implements Serializable {
 
 	public void setAfsApplyTime(Date afsApplyTime) {
 		this.afsApplyTime = afsApplyTime;
-	}
-
-	public String getMallId() {
-		return mallId;
-	}
-
-	public void setMallId(String mallId) {
-		this.mallId = mallId;
-	}
-
-	public String getOrderNo() {
-		return orderNo;
-	}
-
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
-
-	public Long getPersonId() {
-		return personId;
-	}
-
-	public void setPersonId(Long personId) {
-		this.personId = personId;
 	}
 
 }

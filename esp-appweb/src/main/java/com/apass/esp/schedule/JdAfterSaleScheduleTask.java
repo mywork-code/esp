@@ -3,6 +3,9 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -17,7 +20,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -40,6 +45,12 @@ public class JdAfterSaleScheduleTask {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private AfterSaleService afterSaleService;
+
+    @Autowired
+    private OrderRefundRepository orderRefundDao;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
@@ -61,9 +72,40 @@ public class JdAfterSaleScheduleTask {
                 JSONObject jsonObject = (JSONObject) array.get(i);
                 AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
                 Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
-//待处理
+                String refundStatus = RefundStatus.REFUND_STATUS01.getCode();
+                switch (afsServiceStep) {
+                    case 20:
+                        refundStatus = RefundStatus.REFUND_STATUS06.getCode();
+                        break;
+                    case 31:
+                        refundStatus = RefundStatus.REFUND_STATUS03.getCode();
+                        break;
+                    case 32:
+                        refundStatus = RefundStatus.REFUND_STATUS03.getCode();
+                        break;
+                    case 33:
+                        refundStatus = RefundStatus.REFUND_STATUS03.getCode();
+                        break;
+                    case 34:
+                        refundStatus = RefundStatus.REFUND_STATUS03.getCode();
+                        break;
+                    case 40:
+                        refundStatus = RefundStatus.REFUND_STATUS05.getCode();
+                        break;
+                    case 50:
+                        refundStatus = RefundStatus.REFUND_STATUS05.getCode();
+                        break;
+                    case 60:
+                        refundStatus = RefundStatus.REFUND_STATUS06.getCode();
+                        break;
+                }
+                Map<String, String> paramMap = new HashMap<String, String>();
+                String jdOrderId1 = String.valueOf(newAfsInfo.getJdOrderId());
 
+                paramMap.put("orderId", jdOrderId1);
+                paramMap.put("status", refundStatus);
 
+                int updateFlag = orderRefundDao.updateRefundStatusAndCtimeByOrderId(paramMap);
                 //详细信息
                 long afsServiceId = jsonObject.getLong("afsServiceId");
                 JdApiResponse<JSONObject> afterSaleDetail = jdAfterSaleApiClient
@@ -74,9 +116,11 @@ public class JdAfterSaleScheduleTask {
                 if (afterSaleDetail == null || afterSaleDetail.getResult() == null) {
                     return;
                 }
+                //退货
+                if (newAfsInfo.getCustomerExpect() == 10) {
+                //是否退款完成
+                }
                 JSONObject jb = (JSONObject) afterSaleDetail.getResult();
-//待处理
-
 
             }
         }
