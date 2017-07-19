@@ -398,7 +398,7 @@
                                 <div class="items"
                                      data-sku="${list2.skuIdStr!}"
                                      data-value="">
-                                    <a href="javascript:;">
+                                    <a href="javascript:;" target='_self'>
                                         <#if list2.imagePath??>
                                             <img class="img1" src="http://img13.360buyimg.com/n5/${list2.imagePath!}"
                                                  alt=""/>
@@ -508,6 +508,7 @@
                     parentTabs.tabs('select', subtitle);
                     return;
                 }
+                window.parent.$('#tabs').tabs('close','商品预览-'+skuId);
                 parentTabs.tabs('add', {
                     title: subtitle,
                     content: function () {
