@@ -393,8 +393,11 @@ public class ShopHomeController {
             //查看地址信息
             AddressInfoEntity  addty=new AddressInfoEntity();
             //查询京东地址
-            List<AddressInfoEntity> addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(userId));
-            if(addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
+            List<AddressInfoEntity> addressInfoList=new ArrayList<>();
+            if(StringUtils.isNotEmpty(userId)){
+                addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(userId));
+            }
+            if(null ==addressInfoList || addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
             	addty.setProvinceCode("1");
             	addty.setProvince("province");
             	addty.setCityCode("0");
