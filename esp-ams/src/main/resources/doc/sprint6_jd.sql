@@ -120,3 +120,6 @@ ADD COLUMN `auditor_date`  datetime  DEFAULT NULL COMMENT '审核时间' ;
 ALTER TABLE `t_esp_refund_detail_info`
 ADD COLUMN `source`  varchar(255) DEFAULT '' COMMENT '商品来源（如：jd）',
 ADD COLUMN `status`  varchar(255)  DEFAULT '' COMMENT '京东商品售后状态';
+
+ALTER TABLE `t_esp_order_info`
+ADD COLUMN `towns`  varchar(20) DEFAULT '' COMMENT '乡镇';
