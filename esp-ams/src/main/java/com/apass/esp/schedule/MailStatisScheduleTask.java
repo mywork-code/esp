@@ -1,5 +1,6 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ExportDomain;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
@@ -72,32 +73,32 @@ public class MailStatisScheduleTask {
         //当天是1号  发上个月的
         String  beginDate = dateBeforeDate + "01";
 
-        int count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
+        Integer count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
         //待发货
-        int count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
+        Integer count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
         //待收货
-        int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
+        Integer count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
         //订单失效
-        int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
+        Integer count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
         //订单删除
-        int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
+        Integer countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
         //银行卡总额
-        int count5 = orderService.selectSumAmt(beginDate, currentDate);
+        Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
         //额度支付
-        int count6 = orderService.selectCreAmt(beginDate, currentDate);
-        int count7 = count1 + count2 + count3 + count4;
+        Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
+        Integer count7 = count1 + count2 + count3 + count4;
 
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
         exportDomain.setDate(beginDate  + " ~ " + dateBefore);
-        exportDomain.setCount1(count1);
-        exportDomain.setCount2(count2);
-        exportDomain.setCount3(count3);
-        exportDomain.setCount4(count4);
-        exportDomain.setCount5(count5);
-        exportDomain.setCount6(count6);
-        exportDomain.setCount7(count7);
-        exportDomain.setCountd(countd);
+        exportDomain.setCount1(NumberUtils.nullToZero(count1));
+        exportDomain.setCount2(NumberUtils.nullToZero(count2));
+        exportDomain.setCount3(NumberUtils.nullToZero(count3));
+        exportDomain.setCount4(NumberUtils.nullToZero(count4));
+        exportDomain.setCount5(NumberUtils.nullToZero(count5));
+        exportDomain.setCount6(NumberUtils.nullToZero(count6));
+        exportDomain.setCount7(NumberUtils.nullToZero(count7));
+        exportDomain.setCountd(NumberUtils.nullToZero(countd));
         list.add(exportDomain);
         try {
             generateFile(list);
