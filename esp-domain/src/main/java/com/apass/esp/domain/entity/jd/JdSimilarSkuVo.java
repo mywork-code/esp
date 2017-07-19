@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class JdSimilarSkuVo {
 	private  String skuId;
 	private   BigDecimal price;
+	private   BigDecimal priceFirst;
 	private  String stockDesc;
 	public String getSkuId() {
 		return skuId;
@@ -24,6 +25,11 @@ public class JdSimilarSkuVo {
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
-	
+	public BigDecimal getPriceFirst() {
+		return priceFirst;
+	}
+	public void setPriceFirst(BigDecimal priceFirst) {
+		this.priceFirst = priceFirst;
+	}
 	
 }
