@@ -4,15 +4,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
+import com.apass.esp.service.refund.ServiceProcessService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import java.util.*;
 
 /**
  * type: class
+ * 京东订单售后进度处理
  *
  * @author xianzhi.wang
  * @see
@@ -53,6 +56,9 @@ public class JdAfterSaleScheduleTask {
 
     @Autowired
     private OrderRefundRepository orderRefundDao;
+
+    @Autowired
+    private ServiceProcessService serviceProcessService;
 
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
@@ -97,7 +103,6 @@ public class JdAfterSaleScheduleTask {
 
             //改变refundDetail里的状态
 
-
             for (int i = 0; i < array.size(); i++) {
                 JSONObject jsonObject = (JSONObject) array.get(i);
                 AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
@@ -122,6 +127,8 @@ public class JdAfterSaleScheduleTask {
     }
 
     /**
+     * 得到状态
+     *
      * @param jsonArray
      * @return
      */
@@ -156,64 +163,15 @@ public class JdAfterSaleScheduleTask {
             list.add(afsServiceStep);
         }
         Integer i = Collections.min(list);
-
-        switch (i) {
-            case 20:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS06.getCode());
-                } catch (Exception e) {
-
-                }
-                break;
-//            case 21:
-//                break;
-//            case 22:
-//                break;
-            case 31:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS03.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 32:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS03.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 33:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 34:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 40:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 50:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
-                } catch (Exception e) {
-                }
-                break;
-            case 60:
-                try {
-                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS06.getCode());
-                } catch (Exception e) {
-                }
-                break;
-
+        if (i == 20 || i == 60) {
+            insertProcess(refundId, RefundStatus.REFUND_STATUS06.getCode());
+        } else if (i == 31 || i == 32) {
+            insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode());
+        } else if (i == 33 || i == 34) {
+            //insertProcess(refundId,RefundStatus.REFUND_STATUS03.getCode());
+        } else if (i == 40 || i == 50) {
+            insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode());
         }
-
     }
 
 
@@ -227,5 +185,25 @@ public class JdAfterSaleScheduleTask {
         JSONObject jsonObject = (JSONObject) jsonArray.get(0);
         AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
         return newAfsInfo.getAfsServiceStep();
+    }
+
+    /**
+     * 插入进度
+     *
+     * @param refundId
+     * @param status
+     */
+    private void insertProcess(long refundId, String status) {
+        Map<String, String> map = new HashMap<>();
+        try {
+            map.put("refundId", String.valueOf(refundId));
+            map.put("nodeName", status);
+            List<ServiceProcessEntity> list1 = serviceProcessService.queryServiceProcessByParam(map);
+            if (CollectionUtils.isEmpty(list1)) {
+                afterSaleService.insertServiceProcessInfo(refundId, status);
+            }
+        } catch (Exception e) {
+            LOGGER.error("refundId {} status {} 插入进度失败", refundId, status);
+        }
     }
 }
