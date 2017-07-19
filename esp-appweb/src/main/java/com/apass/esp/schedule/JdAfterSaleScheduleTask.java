@@ -147,7 +147,7 @@ public class JdAfterSaleScheduleTask {
      * @param refundId
      * @return
      */
-    private String process(JSONArray jsonArray, long refundId) {
+    private void process(JSONArray jsonArray, long refundId) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
