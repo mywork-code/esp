@@ -3,11 +3,13 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
@@ -20,10 +22,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * type: class
@@ -50,6 +49,9 @@ public class JdAfterSaleScheduleTask {
     private AfterSaleService afterSaleService;
 
     @Autowired
+    private OrderRefundService orderRefundService;
+
+    @Autowired
     private OrderRefundRepository orderRefundDao;
 
     @Scheduled(cron = "0 0/30 * * * *")
@@ -67,7 +69,16 @@ public class JdAfterSaleScheduleTask {
                 continue;
             }
             JSONArray array = JSONArray.parseArray(result);
-
+            Integer customerExpect = getCustomerExpect(array);
+            Map<String, Object> map = new HashMap<>();
+            map.put("orderId", orderInfoEntity.getOrderId());
+            if (customerExpect == 10) {
+                map.put("refundType", "0");
+            } else {
+                map.put("refundType", "1");
+            }
+            RefundInfoEntity refundInfoEntity = orderRefundService.queryRefundInfoByOrderIdAndRefundType(map);
+            process(array, refundInfoEntity.getId());
             String refundStatus = getStatus(array);//所有的京东售后单完成才把该售后单变成完成
             Map<String, String> paramMap = new HashMap<String, String>();
             paramMap.put("orderId", orderInfoEntity.getOrderId());
@@ -75,9 +86,9 @@ public class JdAfterSaleScheduleTask {
                 //根据状态改为售后完成 或者售后失败
                 paramMap.put("status", refundStatus);
                 orderRefundDao.updateRefundStatusAndCtimeByOrderId(paramMap);
-                Integer customerExpect = getCustomerExpect(array);
+
                 //为退货 且京东已退款完成
-                if (customerExpect == 10&&refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS05.getCode())) {
+                if (customerExpect == 10 && refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS05.getCode())) {
                     //订单状态改为退款处理中
                     //orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
                     //orderService.updateOrderStatus(orderInfoEntity);
@@ -111,7 +122,6 @@ public class JdAfterSaleScheduleTask {
     }
 
     /**
-     *
      * @param jsonArray
      * @return
      */
@@ -129,6 +139,67 @@ public class JdAfterSaleScheduleTask {
         }
         return RefundStatus.REFUND_STATUS05.getCode();
     }
+
+    /**
+     * 插入进度
+     *
+     * @param jsonArray
+     * @param refundId
+     * @return
+     */
+    private String process(JSONArray jsonArray, long refundId) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+            Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+            list.add(afsServiceStep);
+        }
+        Integer i = Collections.min(list);
+
+        switch (i) {
+            case 20:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS06.getCode());
+                } catch (Exception e) {
+
+                }
+                break;
+//            case 21:
+//                break;
+//            case 22:
+//                break;
+            case 31:
+                break;
+            case 32:
+                break;
+            case 33:
+                break;
+            case 34:
+                break;
+            case 40:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
+                } catch (Exception e) {
+                }
+                break;
+            case 50:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
+                } catch (Exception e) {
+                }
+                break;
+            case 60:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS06.getCode());
+                } catch (Exception e) {
+                }
+                break;
+
+        }
+
+    }
+
 
     /**
      * 得到 退货(10)、换货(20)
