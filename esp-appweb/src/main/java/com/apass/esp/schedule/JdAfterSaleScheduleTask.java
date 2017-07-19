@@ -170,12 +170,28 @@ public class JdAfterSaleScheduleTask {
 //            case 22:
 //                break;
             case 31:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS03.getCode());
+                } catch (Exception e) {
+                }
                 break;
             case 32:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS03.getCode());
+                } catch (Exception e) {
+                }
                 break;
             case 33:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
+                } catch (Exception e) {
+                }
                 break;
             case 34:
+                try {
+                    afterSaleService.insertServiceProcessInfo(refundId, RefundStatus.REFUND_STATUS05.getCode());
+                } catch (Exception e) {
+                }
                 break;
             case 40:
                 try {
