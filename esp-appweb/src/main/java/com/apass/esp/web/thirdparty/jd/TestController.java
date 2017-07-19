@@ -639,10 +639,10 @@ public class TestController {
     public Response createOrder(@RequestBody Map<String, Object> paramMap) {
         List<SkuNum> skuNumList = new ArrayList<>();
         List<PriceSnap> priceSnaps = new ArrayList<>();
-        String a = "1248889,2206628,3750556,3220081,2174577,1012927,1236412";
+        String a = "3505346,2327491,2076926,1282385,1236044";
         String aa[] = a.split(",");
         List<Long> skulist = new ArrayList<Long>();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 5; i++) {
             SkuNum skuNum = new SkuNum();
             skuNum.setNum(1);
             skuNum.setSkuId(Long.valueOf(aa[i]));
@@ -680,7 +680,7 @@ public class TestController {
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
         orderReq.setRemark("test");
-
+        orderReq.setOrderNo("56595646464");
         JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(orderReq.getSkuNumList());
         if (!skuCheckResult.isSuccess()) {
             LOGGER.warn("check order status error, {}", skuCheckResult.toString());
@@ -726,7 +726,7 @@ public class TestController {
     @RequestMapping(value = "/orderOccupyStockConfirm", method = RequestMethod.POST)
     @ResponseBody
     public Response orderOccupyStockConfirm(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(59461122154l);
+        JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(59616806118l);
         LOGGER.info("confirm order error, {}", confirmResponse.toString());
         int confirmStatus = 0;
         if (confirmResponse.isSuccess() && confirmResponse.getResult()) {

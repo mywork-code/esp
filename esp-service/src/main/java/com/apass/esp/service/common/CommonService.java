@@ -191,10 +191,14 @@ public class CommonService {
         dateString = dateString.substring(dateString.length() - 4, dateString.length());
         StringBuffer sb = new StringBuffer();
         sb.append(dateString);
-        if (deviceType.equals(DeviceType.ANDROID.getName())) {
+        if(deviceType==null){
             sb.append(DeviceType.ANDROID.getCode());
         } else {
-            sb.append(DeviceType.IOS.getCode());
+            if (deviceType.equals(DeviceType.ANDROID.getName())) {
+                sb.append(DeviceType.ANDROID.getCode());
+            } else {
+                sb.append(DeviceType.IOS.getCode());
+            }
         }
         sb.append(RandomUtils.getRandomNum(4));
         String mechantStr = String.valueOf(merchantId);
