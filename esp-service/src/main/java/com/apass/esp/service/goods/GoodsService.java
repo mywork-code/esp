@@ -22,6 +22,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.repository.goods.GoodsBasicRepository;
@@ -30,6 +31,7 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -61,6 +63,8 @@ public class GoodsService {
 
     @Autowired
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
+    @Autowired
+	private JdCategoryMapper jdCategoryMapper;
     /**
      * app 首页加载精品推荐商品
      *
@@ -535,12 +539,13 @@ public class GoodsService {
 		return goodsDao.selectByCategoryId2(categoryId);
 	}
 	/**
-	 * 判断该类目下是否存在已上架待审核状态商品
+	 * 判断该类目下京东是否存在已上架待审核状态商品
 	 * @param cateId:京东的三级类目，状态在sql语句中写死(G01,G02,G04)
 	 * @return
 	 */
 	public List<GoodsInfoEntity> selectByCategoryId3(String cateId) {
-		return goodsDao.selectByCategoryId3(Long.valueOf(cateId));
+		JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(Long.valueOf(cateId));
+		return goodsDao.selectByCategoryId3(jdCategory.getCategoryId3());
 	}
 	
 	

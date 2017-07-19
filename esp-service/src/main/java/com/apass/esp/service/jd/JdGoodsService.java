@@ -22,6 +22,7 @@ import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -50,7 +51,14 @@ public class JdGoodsService {
 		//往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据 
 		String cateId = paramMap.get("cateId");//京东类目id
 		String username = paramMap.get("username");//当前用户
-
+		//判断是否已经关联类目
+		JdCategory jdCatego = jdCategoryMapper.getCateGoryByCatId(Long.valueOf(cateId));
+		if(jdCatego.getFlag()){
+			//取消关联
+			disRelevanceJdCategory(paramMap);
+		}
+		
+		
 		//根据第三级类目 id查询京东三级类目下所有商品
 		List<JdGoods> JdGoodsList = jdGoodsMapper.queryGoodsByThirdCateId(cateId);
 		if(JdGoodsList == null){
