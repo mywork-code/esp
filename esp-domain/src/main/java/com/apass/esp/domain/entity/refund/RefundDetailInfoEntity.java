@@ -39,6 +39,11 @@ public class RefundDetailInfoEntity {
      * 售后状态
      */
     private String status;
+    
+    /**
+     * 商品id
+     */
+    private String goodsId;
 
     public Long getId() {
         return id;
@@ -102,6 +107,14 @@ public class RefundDetailInfoEntity {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
 	}
 
     
