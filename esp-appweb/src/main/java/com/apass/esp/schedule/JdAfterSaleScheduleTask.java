@@ -195,7 +195,7 @@ public class JdAfterSaleScheduleTask {
             JSONObject jsonObject1 = (JSONObject) object;
             AfsInfo newAfsInfo1 = AfsInfo.fromOriginalJson(jsonObject1);
             RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
-            refundDetailInfoEntity.setGoodsId(String.valueOf(newAfsInfo1.getWareId()));
+            refundDetailInfoEntity.setGoodsId(newAfsInfo1.getWareId());
             refundDetailInfoEntity.setOrderId(orderId);
             if (i == 20 || i == 60) {
                 refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS06.getCode());

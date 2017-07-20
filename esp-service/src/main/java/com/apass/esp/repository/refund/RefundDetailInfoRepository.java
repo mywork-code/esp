@@ -11,9 +11,9 @@ import java.util.Map;
 public class RefundDetailInfoRepository extends BaseMybatisRepository<RefundDetailInfoEntity, Long> {
 
     public int updateByStatusAndGoodsId(RefundDetailInfoEntity refundDetailInfoEntity) {
-        HashMap<String, String> hashMap = new HashMap<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("orderId", refundDetailInfoEntity.getOrderId());
-        hashMap.put("goodsId", refundDetailInfoEntity.getGoodsId());
+        hashMap.put("goodsId",refundDetailInfoEntity.getGoodsId());
         hashMap.put("status", refundDetailInfoEntity.getStatus());
         return getSqlSession().update(getSQL("updateByStatusAndGoodsId"), hashMap);
     }
