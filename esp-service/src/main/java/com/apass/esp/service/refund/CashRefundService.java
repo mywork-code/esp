@@ -512,4 +512,8 @@ public class CashRefundService {
     public CashRefund getCashRefundById(Long cashRefundId) {
         return cashRefundMapper.selectByPrimaryKey(cashRefundId);
     }
+
+    public List<CashRefund> getCashRefundByMainOrderId(String mainOrderId,CashRefundStatus status){
+        return cashRefundMapper.queryByMainOrderIdAndStatus(mainOrderId,Integer.valueOf(status.getCode()));
+    }
 }

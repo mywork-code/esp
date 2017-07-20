@@ -50,4 +50,8 @@ public class NumberUtils {
     }
     return ret;
   }
+
+  public static Integer nullToZero(Integer t){
+    return t == null ? 0:t;
+  }
 }
