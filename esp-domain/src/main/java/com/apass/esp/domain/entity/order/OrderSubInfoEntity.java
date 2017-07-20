@@ -234,7 +234,50 @@ public class OrderSubInfoEntity {
     private String goodsSkuAttr;
     private String goodsPrice;
     
-    public String getGoodsSkuAttr() {
+    
+    
+    
+    
+    
+    //退款金额 退款状态 审核人 审核日期
+    private BigDecimal txnAmt;
+    private String refundStatus;
+    private Long auditorId;
+    private Date auditorDate;
+    
+    public BigDecimal getTxnAmt() {
+		return txnAmt;
+	}
+
+	public void setTxnAmt(BigDecimal txnAmt) {
+		this.txnAmt = txnAmt;
+	}
+
+	public String getRefundStatus() {
+		return refundStatus;
+	}
+
+	public void setRefundStatus(String refundStatus) {
+		this.refundStatus = refundStatus;
+	}
+
+	public Long getAuditorId() {
+		return auditorId;
+	}
+
+	public void setAuditorId(Long auditorId) {
+		this.auditorId = auditorId;
+	}
+
+	public Date getAuditorDate() {
+		return auditorDate;
+	}
+
+	public void setAuditorDate(Date auditorDate) {
+		this.auditorDate = auditorDate;
+	}
+
+	public String getGoodsSkuAttr() {
         return goodsSkuAttr;
     }
 

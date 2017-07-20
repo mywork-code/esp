@@ -23,7 +23,7 @@ public class TxnInfoDto {
      */
     private Long userId;
     /**
-     * 交易类型(T01：卡首付、T02：信用支付、T03：现金提现、T04：消费分期、T05：卡全额支付)
+     * 交易类型(T01：卡首付、T02：信用支付、T03：现金提现、T04：消费分期、T05：卡全额支付、T10:支付宝全卡 、T11:支付宝首付)
      */
     private String txnType;
     /**

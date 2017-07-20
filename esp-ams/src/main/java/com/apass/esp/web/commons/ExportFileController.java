@@ -850,6 +850,16 @@ public class ExportFileController {
         }else if (busCode.equals(ExportBusConfig.BUS_AWARDINTRO.getCode())){
         	ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList = awardDetailService.queryAwardIntroList(map);
         	list = queryAwardIntroList.getRows();
+        }else if(StringUtils.equals(ExportBusConfig.BUS_ORDER_EXCEPTION.getCode(), busCode)){
+        	String refundType = (String) map.get("refundType");
+        	if(StringUtils.equals(refundType, "1")){
+        		Pagination<OrderSubInfoEntity> refundList = orderService.queryOrderRefundException(map, page);
+        		list = refundList.getDataList();
+        	}else{
+        		Pagination<OrderSubInfoEntity> cashRefundList = orderService.queryOrderCashRefundException(map, page);
+        		list = cashRefundList.getDataList();
+        	}
+        	
         }
         return list;
     }

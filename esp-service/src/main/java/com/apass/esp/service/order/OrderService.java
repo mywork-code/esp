@@ -25,6 +25,8 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
@@ -44,6 +46,7 @@ import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
@@ -66,6 +69,8 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
@@ -113,6 +118,8 @@ public class OrderService {
 	private CashRefundMapper   cashRefundMapper;
 	@Autowired
 	private RepayFlowMapper flowMapper;
+	@Autowired
+	private CashRefundTxnMapper cashRefundTxnMapper;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -174,6 +181,32 @@ public class OrderService {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
 			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
 		}
+	}
+	
+	/**
+	 * @throws BusinessException 
+	 * 查询异常订单，即为支付宝申请二次退款的订单
+	 */
+	public Pagination<OrderSubInfoEntity> queryOrderCashRefundException(Map<String,String> map,Page page) throws BusinessException{
+		try {
+		Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+				.queryOrderCashRefundException(map, page);
+			return orderDetailInfoList;
+		} catch (Exception e) {
+			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
+			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
+		}
+	}
+	
+	public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String,String> map,Page page) throws BusinessException{
+		try {
+			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+					.queryOrderRefundException(map, page);
+				return orderDetailInfoList;
+			} catch (Exception e) {
+				LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
+				throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
+			}
 	}
 	
 	/**
@@ -1651,5 +1684,40 @@ public class OrderService {
 	    param.put("dateBegin", dateBegin);
 	    param.put("dateEnd", dateEnd);
 		return orderSubInfoRepository.queryOrderSubInfoByTime(param);
+	}
+	/**
+	 * 根据订单号，退款
+	 * @param orderId
+	 */
+	public void orderCashRefund(String orderId,String refundType){
+		//根据订单id，获取订单信息
+		OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
+		
+		ListeningCustomSecurityUserDetails listeningCustomSecurityUserDetails = SpringSecurityUtils
+                .getLoginUserDetails();
+		String userName = listeningCustomSecurityUserDetails.getUsername();
+		
+		if(StringUtils.equals(refundType, "0")){
+			//根据订单号id，获取cashrefund的记录
+			CashRefund refund = cashRefundMapper.getCashRefundByOrderId(orderId);
+			//根据cashrefund的记录，获取refund_txn的记录
+			if(null != refund){
+				List<CashRefundTxn> txnList = cashRefundTxnMapper.queryCashRefundTxnByCashRefundId(refund.getId());
+				for (CashRefundTxn cashRefundTxn : txnList) {
+					cashRefundTxn.setStatus("2");
+					cashRefundTxnMapper.updateByPrimaryKey(cashRefundTxn);
+				}
+				refund.setStatus(4);
+				refund.setAuditorName(userName);
+				refund.setAuditorDate(new Date());
+				cashRefundMapper.updateByPrimaryKeySelective(refund);
+			}
+			order.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+			orderInfoRepository.updateOrderStatus(order);
+		}else{
+			order.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
+			orderInfoRepository.updateOrderStatus(order);
+		}
+		
 	}
 }

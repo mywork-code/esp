@@ -30,6 +30,12 @@ public class CashRefund {
 
     private Date agreeD;
 
+    private String refundType;
+
+    private String auditorName;
+
+    private Date auditorDate;
+
     public Long getId() {
         return id;
     }
@@ -132,5 +138,29 @@ public class CashRefund {
 
     public void setAgreeD(Date agreeD) {
         this.agreeD = agreeD;
+    }
+
+    public String getRefundType() {
+        return refundType;
+    }
+
+    public void setRefundType(String refundType) {
+        this.refundType = refundType;
+    }
+
+    public String getAuditorName() {
+        return auditorName;
+    }
+
+    public void setAuditorName(String auditorName) {
+        this.auditorName = auditorName;
+    }
+
+    public Date getAuditorDate() {
+        return auditorDate;
+    }
+
+    public void setAuditorDate(Date auditorDate) {
+        this.auditorDate = auditorDate;
     }
 }
