@@ -273,4 +273,62 @@
 		</where>
 		ORDER BY orderInfo.orderstatus, orderInfo.create_date DESC
 	</select>
+	
+	
+	
+	
+	<!-- 订单查询页面显示  -->
+	<select id="queryOrderCashRefundException" parameterType="Map"
+		resultType="OrderSubInfoEntity">
+		<![CDATA[
+		SELECT
+		orderInfo.order_id orderId,
+		orderInfo.orderstatus orderStatus,
+		orderInfo.payType payType,
+		orderInfo.orderstatus orderStatusDsc,
+		round(orderInfo.order_amt,2) orderAmt,
+		round(txn.amt,2) txnAmt,
+	    orderInfo.create_date createDate,
+	    refundInfo.status refundStatus,
+	    refundInfo.auditor_id auditorId,
+	    refundInfo.auditor_date auditorDate
+		FROM
+		t_esp_order_info orderInfo 
+        left join t_esp_cash_refund refundInfo on orderInfo.order_id=refundInfo.order_id,
+        left join t_esp_refund_txn txn on txn.cash_refund_id = refundInfo.id
+		]]>
+		where 
+		refundInfo.refund_type = 'offline' and 
+		orderInfo.orderStatus = 'D09'  and
+		txn.type_code in ('T10','T11')
+	    <![CDATA[
+		ORDER BY t_esp_cash_refund.create_date DESC
+		]]>
+	</select>
+	
+	<select id="queryOrderRefundException" parameterType="Map"
+		resultType="OrderSubInfoEntity">
+		<![CDATA[
+		SELECT
+		orderInfo.order_id orderId,
+		orderInfo.orderstatus orderStatus,
+		orderInfo.payType payType,
+		orderInfo.orderstatus orderStatusDsc,
+		round(orderInfo.order_amt,2) orderAmt,
+		round(txn.amt,2) txnAmt,
+	    orderInfo.create_date createDate
+		FROM
+		t_esp_refund_info refund
+        left join  t_esp_order_info orderInfo on refund.order_id = orderInfo.order_id
+	    left join  t_apass_txn_info txn on txn.order_id = orderInfo.main_order_id
+		]]>
+		where 
+		refund.refund_type = '0' and 
+		refund.is_agree = '1'
+		orderInfo.orderStatus = 'D05'  and
+		txn.type_code in ('T10','T11')
+	    <![CDATA[
+		ORDER BY refund.create_date DESC
+		]]>
+	</select>
 </mapper>

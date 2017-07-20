@@ -1,34 +1,17 @@
 package com.apass.esp.service.order;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.service.goods.GoodsService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.WorkCityJdDto;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
@@ -51,9 +34,10 @@ import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
-import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -83,10 +67,28 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -134,11 +136,15 @@ public class OrderService {
     private JdProductApiClient jdProductApiClient;
 	@Autowired
     private JdOrderApiClient jdOrderApiClient;
+
 	@Autowired
-    private GoodsService goodsService;
+	private CashRefundMapper cashRefundMapper;
+
 
 	@Autowired
 	private RepayFlowMapper flowMapper;
+	@Autowired
+	private CashRefundTxnMapper cashRefundTxnMapper;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -147,7 +153,6 @@ public class OrderService {
 	/**
 	 * 查询订单概要信息
 	 *
-	 * @param customerInfo
 	 * @return
 	 */
 	public List<OrderInfoEntity> queryOrderInfo(Long userId, String[] statusStr) throws BusinessException {
@@ -167,7 +172,6 @@ public class OrderService {
 	/**
 	 * 查询订单详细信息
 	 *
-	 * @param customerInfo
 	 * @return
 	 */
 	public List<OrderDetailInfoEntity> queryOrderDetailInfo(String requestId, String orderId) throws BusinessException {
@@ -187,7 +191,6 @@ public class OrderService {
 	/**
 	 * 通过商户号查询订单详细信息
 	 *
-	 * @param merchantCode
 	 * @return
 	 */
 	public Pagination<OrderSubInfoEntity> queryOrderSubDetailInfoByParam(Map<String, String> map, Page page)
@@ -202,6 +205,32 @@ public class OrderService {
 		}
 	}
 
+	/**
+	 * @throws BusinessException 
+	 * 查询异常订单，即为支付宝申请二次退款的订单
+	 */
+	public Pagination<OrderSubInfoEntity> queryOrderCashRefundException(Map<String,String> map,Page page) throws BusinessException{
+		try {
+		Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+				.queryOrderCashRefundException(map, page);
+			return orderDetailInfoList;
+		} catch (Exception e) {
+			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
+			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
+		}
+	}
+	
+	public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String,String> map,Page page) throws BusinessException{
+		try {
+			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
+					.queryOrderRefundException(map, page);
+				return orderDetailInfoList;
+			} catch (Exception e) {
+				LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
+				throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
+			}
+	}
+	
 	/**
 	 * 查询被二次拒绝的订单
 	 * @throws BusinessException
@@ -220,7 +249,6 @@ public class OrderService {
 	/**
 	 * 通过订单号更新物流信息
 	 *
-	 * @param merchantCode
 	 * @return
 	 */
 	@Transactional
@@ -236,7 +264,6 @@ public class OrderService {
 	/**
 	 * 通过订单号更新物流信息、订单状态
 	 *
-	 * @param merchantCode
 	 * @return
 	 */
 	@Transactional
@@ -941,7 +968,6 @@ public class OrderService {
 	 *
 	 * @param userId
 	 * @param orderId
-	 * @param returnMap
 	 * @throws BusinessException
 	 */
 	@Transactional
@@ -1024,8 +1050,6 @@ public class OrderService {
 	 *
 	 * @param userId
 	 *            用户id
-	 * @param statusStr
-	 *            订单状态
 	 * @return
 	 * @throws BusinessException
 	 */
@@ -1590,7 +1614,6 @@ public class OrderService {
 	 * 根据订单号和用户id查询订单信息
 	 *
 	 * @param orderId
-	 * @param userId
 	 * @return
 	 * @throws BusinessException
 	 */
@@ -1823,7 +1846,6 @@ public class OrderService {
     /**
      * 根据地址id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId
-     * @param orderId
      * @param goodsId
      * @throws BusinessException
      */
@@ -1944,7 +1966,6 @@ public class OrderService {
 
 	/**
 	 * 京东拆单消息处理
-	 * @param pOrderV
 	 * @param orderInfoEntity
 	 */
     public void jdSplitOrderMessageHandle(JSONObject jsonObject, OrderInfoEntity orderInfoEntity) throws BusinessException {
@@ -2088,7 +2109,38 @@ public class OrderService {
 	 * @param orderStatus
 	 * @return
 	 */
-	public List<OrderInfoEntity> getJdOrderByOrderStatus(String orderStatus){
+	public List<OrderInfoEntity> getJdOrderByOrderStatus(String orderStatus) {
 		return orderInfoRepository.getJdOrderByOrderStatus(orderStatus);
+	}
+	/**
+	 * 根据订单号，退款
+	 * @param orderId
+	 */
+	public void orderCashRefund(String orderId,String refundType,String userName){
+		//根据订单id，获取订单信息
+		OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
+		
+		if(StringUtils.equals(refundType, "0")){
+			//根据订单号id，获取cashrefund的记录
+			CashRefund refund = cashRefundMapper.getCashRefundByOrderId(orderId);
+			//根据cashrefund的记录，获取refund_txn的记录
+			if(null != refund){
+				List<CashRefundTxn> txnList = cashRefundTxnMapper.queryCashRefundTxnByCashRefundId(refund.getId());
+				for (CashRefundTxn cashRefundTxn : txnList) {
+					cashRefundTxn.setStatus("2");
+					cashRefundTxnMapper.updateByPrimaryKey(cashRefundTxn);
+				}
+				refund.setStatus(4);
+				refund.setAuditorName(userName);
+				refund.setAuditorDate(new Date());
+				cashRefundMapper.updateByPrimaryKeySelective(refund);
+			}
+			order.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+			orderInfoRepository.updateOrderStatus(order);
+		}else{
+			order.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
+			orderInfoRepository.updateOrderStatus(order);
+		}
+		
 	}
 }

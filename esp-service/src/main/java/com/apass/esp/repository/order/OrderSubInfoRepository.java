@@ -37,6 +37,32 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
     }
     
     /**
+     * 查询订单详情通过参数
+     * 
+     * @throws BusinessException
+     */
+    public Pagination<OrderSubInfoEntity> queryOrderCashRefundException(Map<String, String> map,
+                                                                         Page page) throws BusinessException {
+        try {
+            Pagination<OrderSubInfoEntity> orderList = page(map, page, getSQL("queryOrderCashRefundException"));
+            return orderList;
+        } catch (Exception e) {
+            throw new BusinessException("通过商户号查询订单列表失败", e);
+        }
+    }
+    
+    public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String, String> map,
+            Page page) throws BusinessException {
+		try {
+			Pagination<OrderSubInfoEntity> orderList = page(map, page, getSQL("queryOrderRefundException"));
+			return orderList;
+		} catch (Exception e) {
+			throw new BusinessException("通过商户号查询订单列表失败", e);
+		}
+	}
+    
+    
+    /**
      * 查询被二次拒绝的订单
      */
     public Pagination<OrderSubInfoEntity> queryOrderInfoRejectAgain(Page page) throws BusinessException {

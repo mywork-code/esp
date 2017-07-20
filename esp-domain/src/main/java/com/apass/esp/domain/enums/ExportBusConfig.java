@@ -15,7 +15,9 @@ public enum ExportBusConfig {
 
                              BUS_ACTIVITY("E003", "活动推荐导出"),
                              
-                             BUS_AWARDINTRO("E004","转介绍放款导出");
+                             BUS_AWARDINTRO("E004","转介绍放款导出"),
+                             
+                             BUS_ORDER_EXCEPTION("E005","异常订单信息导出");
 
     private String code;
 

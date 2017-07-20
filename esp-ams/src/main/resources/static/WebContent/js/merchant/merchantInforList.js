@@ -211,15 +211,20 @@ $(function () {
             $.messager.alert("<span style='color: black;'>提示</span>", "收货人联系电话长度不能为空！", 'info');
             return;
         }
-        if (merchantReturnPhone.length > 11) {
-            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话长度不能超过11！", 'warning');
-            return;
+        var r=/^[0-9-]*$/;//数字和横杆
+        if(!r.test(merchantReturnPhone)){
+        	  $.messager.alert("<span style='color: black;'>提示</span>", "收货人联系电话只能填写数字和-", 'info');
+              return;
         }
-        var merchantReturnPhoneFalge = /^1\d{10}$/.test(merchantReturnPhone);
-        if (!merchantReturnPhoneFalge) {
-            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话填写错误！", 'warning');
-            return;
-        }
+//        if (merchantReturnPhone.length > 11) {
+//            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话长度不能超过11！", 'warning');
+//            return;
+//        }
+//        var merchantReturnPhoneFalge = /^1\d{10}$/.test(merchantReturnPhone);
+//        if (!merchantReturnPhoneFalge) {
+//            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话填写错误！", 'warning');
+//            return;
+//        }
 
         var merchantProvince = $("#addMerchantProvince").combobox('getValue');//数据库存储对应省市的code更加灵活
         var merchantCity = $("#addMerchantCity").combobox('getValue');
@@ -533,15 +538,20 @@ $(function () {
             $.messager.alert("<span style='color: black;'>提示</span>", "收货人联系电话长度不能为空！", 'info');
             return;
         }
-        if (merchantReturnPhone.length > 11) {
-            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话长度不能超过11！", 'warning');
-            return;
+        var r=/^[0-9-]*$/;//数字和横杆
+        if(!r.test(merchantReturnPhone)){
+        	  $.messager.alert("<span style='color: black;'>提示</span>", "收货人联系电话只能填写数字和-", 'info');
+              return;
         }
-        var merchantReturnPhoneFalge = /^1\d{10}$/.test(merchantReturnPhone);
-        if (!merchantReturnPhoneFalge) {
-            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话填写错误！", 'warning');
-            return;
-        }
+//        if (merchantReturnPhone.length > 11) {
+//            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话长度不能超过11！", 'warning');
+//            return;
+//        }
+//        var merchantReturnPhoneFalge = /^1\d{10}$/.test(merchantReturnPhone);
+//        if (!merchantReturnPhoneFalge) {
+//            $.messager.alert("<span style='color: black;'>警告</span>", "收货人联系电话填写错误！", 'warning');
+//            return;
+//        }
         var merchantArea = $("#editMerchantArea").combobox('getValue');
         var channel = $("#channel").combobox('getValue');
         var merchantProvince = $("#editMerchantProvince").combobox('getValue');

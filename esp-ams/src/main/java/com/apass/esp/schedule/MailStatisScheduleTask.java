@@ -1,7 +1,9 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.common.utils.NumberUtils;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ExportDomain;
+import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
@@ -16,6 +18,8 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +54,8 @@ import java.util.List;
 @Profile("Schedule")
 public class MailStatisScheduleTask {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailStatisScheduleTask.class);
+
     @Value("${monitor.receive.emails}")
     public String receiveEmails;
 
@@ -75,37 +81,41 @@ public class MailStatisScheduleTask {
         //当天是1号  发上个月的
         String  beginDate = dateBeforeDate + "01";
 
-        int count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
+        Integer count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
         //待发货
-        int count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
+        Integer count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
         //待收货
-        int count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
+        Integer count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
         //订单失效
-        int count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
+        Integer count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
         //订单删除
-        int countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
+        Integer countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
+        //交易完成
+        Integer countc = orderService.selectOrderCountByStatus("D04", beginDate, currentDate);
         //银行卡总额
-        int count5 = orderService.selectSumAmt(beginDate, currentDate);
+        Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
         //额度支付
-        int count6 = orderService.selectCreAmt(beginDate, currentDate);
-        int count7 = count1 + count2 + count3 + count4;
-
+        Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
+        Integer count7 = count1 + count2 + count3 + count4 + countc + countd;
+        LOGGER.info(" mailStatisSchedule  beginDate {} currentDate {}",beginDate,currentDate);
+        LOGGER.info("mailStatisSchedule  D00 {}  D02 {} D03 {} D07 {} D08 {} D04 {}",count1,count2,count3,count4,count5,count6,countc,countd);
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
         exportDomain.setDate(beginDate  + " ~ " + dateBefore);
-        exportDomain.setCount1(count1);
-        exportDomain.setCount2(count2);
-        exportDomain.setCount3(count3);
-        exportDomain.setCount4(count4);
-        exportDomain.setCount5(count5);
-        exportDomain.setCount6(count6);
-        exportDomain.setCount7(count7);
-        exportDomain.setCountd(countd);
+        exportDomain.setCount1(NumberUtils.nullToZero(count1));
+        exportDomain.setCount2(NumberUtils.nullToZero(count2));
+        exportDomain.setCount3(NumberUtils.nullToZero(count3));
+        exportDomain.setCount4(NumberUtils.nullToZero(count4));
+        exportDomain.setCount5(NumberUtils.nullToZero(count5));
+        exportDomain.setCount6(NumberUtils.nullToZero(count6));
+        exportDomain.setCount7(NumberUtils.nullToZero(count7));
+        exportDomain.setCountd(NumberUtils.nullToZero(countd));
+        exportDomain.setCountc(NumberUtils.nullToZero(countc));
         list.add(exportDomain);
         try {
             generateFile(list);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("mailStatisSchedule generateFile error .... ",e);
         }
         MailSenderInfo mailSenderInfo = new MailSenderInfo();
         mailSenderInfo.setMailServerHost("SMTP.263.net");
@@ -132,7 +142,7 @@ public class MailStatisScheduleTask {
             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
             msgPart.addBodyPart(body);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error("mailStatisSchedule msgPart   body error.... ",e);
         }
         mailSenderInfo.setMultipart(msgPart);
         MailUtil mailUtil = new MailUtil();
@@ -149,8 +159,8 @@ public class MailStatisScheduleTask {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
-        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效","删除订单", "银行卡支付总额", "额度支付总额", "总计"};
-        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd","count5", "count6", "count7"};
+        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效","删除订单", "交易完成","银行卡支付总额", "额度支付总额", "总计"};
+        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd","countc","count5", "count6", "count7"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);

@@ -122,7 +122,11 @@ public class OrderDetailInfoEntity {
      */
     private String skuId;
     
+    //商品金额
+    private BigDecimal goodsAmt;
     
+    //退款金额
+    private BigDecimal refundAmt;
 
     public String getGoodsModel() {
         return goodsModel;
@@ -321,7 +325,22 @@ public class OrderDetailInfoEntity {
 	}
 
 	public void setSkuId(String skuId) {
-		this.skuId = skuId;
+      this.skuId = skuId;
+  }
+	public BigDecimal getGoodsAmt() {
+		return goodsAmt;
+	}
+
+	public void setGoodsAmt(BigDecimal goodsAmt) {
+		this.goodsAmt = goodsAmt;
+	}
+
+	public BigDecimal getRefundAmt() {
+		return refundAmt;
+	}
+
+	public void setRefundAmt(BigDecimal refundAmt) {
+		this.refundAmt = refundAmt;
 	}
 
 }
