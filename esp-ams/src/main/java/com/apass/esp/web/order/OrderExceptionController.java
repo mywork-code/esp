@@ -1,7 +1,6 @@
 package com.apass.esp.web.order;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +22,7 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -47,11 +47,11 @@ public class OrderExceptionController {
 
 	@Autowired
 	private OrderService orderService;
-	@Autowired
-	private CashRefundService cashRefundService;
     @Autowired
     private TxnInfoMapper txnInfoMapper;
-	
+    @Autowired
+    private OrderInforMailSendScheduleTask task;
+    
 	/**
      * 订单信息页面
      */
@@ -190,5 +190,19 @@ public class OrderExceptionController {
             }
         }
         return firstAmount.divide(txtAmount);
+    }
+    
+    @ResponseBody
+	@RequestMapping("/daily")
+    public Response sendOrderMailEveryDay(){
+    	task.sendOrderMailEveryDay();
+    	return Response.success("发送成功");
+    }
+    
+    @ResponseBody
+   	@RequestMapping("/monthly")
+    public Response sendOrderMailOn1stMonth(){
+    	task.sendOrderMailOn1stMonth();
+    	return Response.success("发送成功");
     }
 }
