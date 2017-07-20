@@ -3,10 +3,12 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.repository.refund.RefundDetailInfoRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
@@ -58,6 +60,9 @@ public class JdAfterSaleScheduleTask {
     private OrderRefundRepository orderRefundDao;
 
     @Autowired
+    private RefundDetailInfoRepository refundDetailInfoRepository;
+
+    @Autowired
     private ServiceProcessService serviceProcessService;
 
     @Scheduled(cron = "0 0/30 * * * *")
@@ -76,6 +81,7 @@ public class JdAfterSaleScheduleTask {
             }
             JSONArray array = JSONArray.parseArray(result);
             Integer customerExpect = getCustomerExpect(array);
+
             Map<String, Object> map = new HashMap<>();
             map.put("orderId", orderInfoEntity.getOrderId());
             if (customerExpect == 10) {
@@ -184,7 +190,26 @@ public class JdAfterSaleScheduleTask {
     private Integer getCustomerExpect(JSONArray jsonArray) {
         JSONObject jsonObject = (JSONObject) jsonArray.get(0);
         AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-        return newAfsInfo.getAfsServiceStep();
+        Integer i = newAfsInfo.getAfsServiceStep();
+        for (Object object : jsonArray) {
+            JSONObject jsonObject1 = (JSONObject) jsonArray.get(0);
+            AfsInfo newAfsInfo1 = AfsInfo.fromOriginalJson(jsonObject1);
+            RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
+           // refundDetailInfoEntity.se
+            if (i == 20 || i == 60) {
+
+            } else if (i == 31 || i == 32) {
+
+            } else if (i == 33 || i == 34) {
+
+            } else if (i == 40 || i == 50) {
+
+            }
+          //  refundDetailInfoEntity.setStatus();
+           // refundDetailInfoRepository.update();
+        }
+
+        return i;
     }
 
     /**
