@@ -555,15 +555,25 @@ public class ShoppingCartService {
             cartDto.setUserId(userIdVal);
             cartDto.setGoodsStockId(idNum.getGoodsStockId());
             
-            int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
-            if(stockCurrAmt < idNum.getGoodsNum()){
-                cartDto.setGoodsNum(stockCurrAmt);
-                synFlag = "0";
-                synMessage +=  cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
-            } else {
-                cartDto.setGoodsNum(idNum.getGoodsNum());
-            }
-            
+        	// 查询商品库存信息
+    		GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(idNum.getGoodsStockId());
+    		if (null == goodsStockInfo) {
+    			throw new BusinessException("无效的商品库存id", BusinessErrorCode.GOODS_NOT_EXIST);
+    		}
+    		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
+    		
+			if ("jd".equals(goodsInfo.getSource())) {
+				cartDto.setGoodsNum(idNum.getGoodsNum());
+			} else {
+				int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
+				if (stockCurrAmt < idNum.getGoodsNum()) {
+					cartDto.setGoodsNum(stockCurrAmt);
+					synFlag = "0";
+					synMessage += cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
+				} else {
+					cartDto.setGoodsNum(idNum.getGoodsNum());
+				}
+			}
             int updateGoodsNumFlag =cartInfoRepository.updateGoodsNum(cartDto);
             if(updateGoodsNumFlag != 1){
                 LOG.info(requestId, "更新购物车中该商品数量失败", String.valueOf(idNum.getGoodsStockId()));
