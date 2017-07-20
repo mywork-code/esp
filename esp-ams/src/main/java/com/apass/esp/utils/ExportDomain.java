@@ -17,6 +17,15 @@ public class ExportDomain {
     private int count6;
     private int count7;
     private int  countd;
+    private int countc;
+
+    public int getCountc() {
+        return countc;
+    }
+
+    public void setCountc(int countc) {
+        this.countc = countc;
+    }
 
     public int getCountd() {
         return countd;
