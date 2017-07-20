@@ -792,9 +792,12 @@ public class OrderService {
 		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 		boolean offShelfFlag = true;
 		for (GoodsStockInfoEntity goodsStock : goodsList) {
-			if (goodsStock.getStockCurrAmt() > 0) {
-				offShelfFlag = false;
-				break;
+			GoodsInfoEntity goodsInfo1 = goodsDao.select(goodsStock.getGoodsId());
+			if (goodsInfo1.getSource() != null) {
+				if (goodsStock.getStockCurrAmt() > 0) {
+					offShelfFlag = false;
+					break;
+				}
 			}
 		}
 		if (offShelfFlag) {
