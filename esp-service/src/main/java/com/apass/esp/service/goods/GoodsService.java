@@ -449,6 +449,10 @@ public class GoodsService {
     public int getBelongCategoryGoodsNumber(long categoryId){
     	return goodsDao.getBelongCategoryGoodsNumber(categoryId);
     }
+
+    public List<GoodsInfoEntity> getBelongCategoryGoods(long categoryId){
+        return goodsDao.getBelongCategoryGoods(categoryId);
+    }
     /**
      * 根据类目id查询其类目下所有已经下架了的商品信息
      * @param id

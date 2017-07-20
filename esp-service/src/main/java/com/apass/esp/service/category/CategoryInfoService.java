@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -316,12 +317,20 @@ public class CategoryInfoService {
 	   CategoryVo v = getCategoryById(id);
 	   Long level3 = Long.parseLong(CategoryLevel.CATEGORY_LEVEL3.getCode());
 	   if(v.getLevel() == level3){
-		   
-		  //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
-		   int count = goodsService.getBelongCategoryGoodsNumber(id);
-		   if(count>0){
-			 throw new BusinessException("该商品分类下存在商品!");
+		   List<GoodsInfoEntity> list = goodsService.getBelongCategoryGoods(id);
+		   if (CollectionUtils.isNotEmpty(list)) {
+			   for (GoodsInfoEntity goodsInfoEntity : list) {
+				   if (goodsInfoEntity.getSource() != null) {
+					   throw new BusinessException("请先将京东分类取消关联并再次操作");
+				   }
+			   }
+			   throw new BusinessException("该商品分类下有上架商品,请先将商品下架!");
 		   }
+		   //id或parentId下属是否有商品,并且此时商品的状态应该不是(G03:已下架)
+//		   int count = goodsService.getBelongCategoryGoodsNumber(id);
+//		   if (count > 0) {
+//			   throw new BusinessException("该商品分类下有上架商品,请先将商品下架!");
+//		   }
 	   }
 	   List<GoodsInfoEntity> goodsList=goodsService.getDownCategoryGoodsByCategoryId(id);
 	   //将要删除的目录id下的所有已经下架的商品的类目设置为空
