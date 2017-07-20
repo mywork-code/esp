@@ -80,7 +80,7 @@ public class JdAfterSaleScheduleTask {
                 continue;
             }
             JSONArray array = JSONArray.parseArray(result);
-            Integer customerExpect = getCustomerExpect(array);
+            Integer customerExpect = getCustomerExpect(array,orderInfoEntity.getOrderId());
 
             Map<String, Object> map = new HashMap<>();
             map.put("orderId", orderInfoEntity.getOrderId());
@@ -187,26 +187,26 @@ public class JdAfterSaleScheduleTask {
      * @param jsonArray
      * @return
      */
-    private Integer getCustomerExpect(JSONArray jsonArray) {
+    private Integer getCustomerExpect(JSONArray jsonArray,String orderId) {
         JSONObject jsonObject = (JSONObject) jsonArray.get(0);
         AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
         Integer i = newAfsInfo.getAfsServiceStep();
         for (Object object : jsonArray) {
-            JSONObject jsonObject1 = (JSONObject) jsonArray.get(0);
+            JSONObject jsonObject1 = (JSONObject) object;
             AfsInfo newAfsInfo1 = AfsInfo.fromOriginalJson(jsonObject1);
             RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
-           // refundDetailInfoEntity.se
+            refundDetailInfoEntity.setGoodsId(newAfsInfo1.getWareId());
+            refundDetailInfoEntity.setOrderId(orderId);
             if (i == 20 || i == 60) {
-
+                refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS06.getCode());
             } else if (i == 31 || i == 32) {
-
+                refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS03.getCode());
             } else if (i == 33 || i == 34) {
-
+                refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS01.getCode());
             } else if (i == 40 || i == 50) {
-
+                refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS05.getCode());
             }
-          //  refundDetailInfoEntity.setStatus();
-           // refundDetailInfoRepository.update();
+            refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
         }
 
         return i;

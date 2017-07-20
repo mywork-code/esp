@@ -190,7 +190,6 @@ public class ShoppingCartService {
      * @param count
      * @throws BusinessException
      */
-    @Deprecated
     @Transactional(rollbackFor = Exception.class)
     public void setGoodsAmount(String userId, String goodsStockId, String count) throws BusinessException {
 
@@ -202,14 +201,21 @@ public class ShoppingCartService {
             LOGGER.error("修改商品数量错误[{}]", countVal);
             throw new BusinessException("修改商品数量错误");
         }
-        
-        // 商品当前库存量
-        int stockCurrAmt = goodsStockDao.getStockCurrAmt(goodsStockIdVal).intValue();
-        
-        if(stockCurrAmt < 1 || stockCurrAmt < countVal){
-            LOGGER.error("修改商品数量,商品库存ID[{}],当前库存量[{}],库存不足", goodsStockId, stockCurrAmt);
-            throw new BusinessException("该商品库存不足");
-        }
+		// 查询商品库存信息
+		GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(Long.parseLong(goodsStockId));
+		if (null == goodsStockInfo) {
+			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_NOT_EXIST);
+		}
+		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
+		if (!("jd".equals(goodsInfo.getSource()))) {
+			// 商品当前库存量
+			int stockCurrAmt = goodsStockDao.getStockCurrAmt(goodsStockIdVal).intValue();
+
+			if (stockCurrAmt < 1 || stockCurrAmt < countVal) {
+				LOGGER.error("修改商品数量,商品库存ID[{}],当前库存量[{}],库存不足", goodsStockId, stockCurrAmt);
+				throw new BusinessException("该商品库存不足");
+			}
+		}
 
         CartInfoEntity cartDto = new CartInfoEntity();
         cartDto.setUserId(userIdVal);
@@ -549,15 +555,25 @@ public class ShoppingCartService {
             cartDto.setUserId(userIdVal);
             cartDto.setGoodsStockId(idNum.getGoodsStockId());
             
-            int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
-            if(stockCurrAmt < idNum.getGoodsNum()){
-                cartDto.setGoodsNum(stockCurrAmt);
-                synFlag = "0";
-                synMessage +=  cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
-            } else {
-                cartDto.setGoodsNum(idNum.getGoodsNum());
-            }
-            
+        	// 查询商品库存信息
+    		GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(idNum.getGoodsStockId());
+    		if (null == goodsStockInfo) {
+    			throw new BusinessException("无效的商品库存id", BusinessErrorCode.GOODS_NOT_EXIST);
+    		}
+    		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
+    		
+			if ("jd".equals(goodsInfo.getSource())) {
+				cartDto.setGoodsNum(idNum.getGoodsNum());
+			} else {
+				int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
+				if (stockCurrAmt < idNum.getGoodsNum()) {
+					cartDto.setGoodsNum(stockCurrAmt);
+					synFlag = "0";
+					synMessage += cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
+				} else {
+					cartDto.setGoodsNum(idNum.getGoodsNum());
+				}
+			}
             int updateGoodsNumFlag =cartInfoRepository.updateGoodsNum(cartDto);
             if(updateGoodsNumFlag != 1){
                 LOG.info(requestId, "更新购物车中该商品数量失败", String.valueOf(idNum.getGoodsStockId()));
