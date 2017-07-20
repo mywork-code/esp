@@ -176,6 +176,7 @@ public class JdGoodsInfoService {
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
+		String isSelectSkuIdOrder="";//商品本身的规格参数
 		while (iterator.hasNext()) {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
@@ -218,6 +219,22 @@ public class JdGoodsInfoService {
 			jdSimilarSkuTo.setSkuIdOrder(skuIdOrder);
 			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
 			JdSimilarSkuToList.add(jdSimilarSkuTo);
+			if(skuId.equals(sku.toString())){
+				isSelectSkuIdOrder=skuIdOrder;
+			}
+		}
+		//为app端标记初始化被选中商品的规格
+		if(isSelectSkuIdOrder.length()>0){
+			String[] orderList=isSelectSkuIdOrder.split(";");
+			for(int i=0;i<orderList.length;i++){
+				String key=orderList[i].substring(1,3);
+				List<JdSaleAttr> jdSaleAttrList=jdSimilarSkuList2.get(i).getSaleAttrList();
+				for(JdSaleAttr jdSaleAttr:jdSaleAttrList){
+					if(jdSaleAttr.getSaleValueId().equals(key)){
+						jdSaleAttr.setIsSelect("true");
+					}
+				}
+			}
 		}
 		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
 		map.put("skuId", String.valueOf(sku));
