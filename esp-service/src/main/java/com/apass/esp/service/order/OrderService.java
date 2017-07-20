@@ -1689,13 +1689,9 @@ public class OrderService {
 	 * 根据订单号，退款
 	 * @param orderId
 	 */
-	public void orderCashRefund(String orderId,String refundType){
+	public void orderCashRefund(String orderId,String refundType,String userName){
 		//根据订单id，获取订单信息
 		OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
-		
-		ListeningCustomSecurityUserDetails listeningCustomSecurityUserDetails = SpringSecurityUtils
-                .getLoginUserDetails();
-		String userName = listeningCustomSecurityUserDetails.getUsername();
 		
 		if(StringUtils.equals(refundType, "0")){
 			//根据订单号id，获取cashrefund的记录

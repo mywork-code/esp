@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +126,8 @@ public class OrderExceptionController {
 			if(StringUtils.isBlank(orderId)){
 				throw new BusinessException("订单好不能为空!");
 			}
-			orderService.orderCashRefund(orderId,refundType);
+			orderService.orderCashRefund(orderId,refundType, SpringSecurityUtils
+          .getLoginUserDetails().getUsername());
 		} catch (BusinessException e) {
 			LOG.error("退款操作失败", e);
 			return Response.fail(e.getErrorDesc());
