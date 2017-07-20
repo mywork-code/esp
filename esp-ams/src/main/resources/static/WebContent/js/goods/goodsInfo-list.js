@@ -190,20 +190,14 @@ $(function() {
                 	 // 授权标示,
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
-                	 if(row.source =='jd'){
-                		 if(merchantStatus=="1" && row.status=='G00' && (row.status!='G02'||row.status!='G04')){
-                			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
-                				 + index +"');\">库存</a>&nbsp;&nbsp;"; 
-                		 }
-                	 }else{
-                		 if((row.status =='G01'|| row.status =='G02')&& merchantStatus=="1"){
-                			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
-                				 + index +"');\">库存</a>&nbsp;&nbsp;";
-                		 }
-                	 }
+                	
+            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source ==null){
+            			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
+            				 + index +"');\">库存</a>&nbsp;&nbsp;";
+            		 }
                 	 
                      if(grantedAuthority=='permission'){
-	                     if(row.status !='G01'&&row.status !='G02'&& merchantStatus=="1"&& row.source!='jd'){//待审核状态不允许修改,已上架不允许
+	                     if(row.status !='G02'&& merchantStatus=="1"){//已上架不允许修改
                     		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoods('"
                               + index + "');\">修改</a>&nbsp;&nbsp;"
                     	 }
@@ -212,14 +206,14 @@ $(function() {
 	                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelves('"
 	                    		 +  row.id + "','" +  row.source + "');\">上架</a>&nbsp;&nbsp;" 
                          }
-                         if(row.status =='G02'){//上架商品才能下架
+                         if(row.status =='G02'&& merchantStatus=="1"){//上架商品才能下架
                         	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"
                                  + row.id + "','" +  row.source + "');\">下架</a>&nbsp;&nbsp;"
                          }
                      }
-                         content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
-                             + row.id +"','"+ row.source+ "','"+ row.externalId+ "');\">预览</a>&nbsp;&nbsp;";
-                    	 return content;
+                     content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
+                         + row.id +"','"+ row.source+ "','"+ row.externalId+ "');\">预览</a>&nbsp;&nbsp;";
+                	 return content;
                     }
                 }]],
         loader : function(param, success, error) {
