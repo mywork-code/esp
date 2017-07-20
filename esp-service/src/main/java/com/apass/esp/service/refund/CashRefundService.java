@@ -177,7 +177,7 @@ public class CashRefundService {
                 cr.setMemo(memo);
                 
                 Boolean s = alipayType(orderInfo.getMainOrderId());
-                if(!s){
+                if(s){
                 	cr.setRefundType(RefundType.OFF_LINE.getCode());
                 }else{
                 	cr.setRefundType(RefundType.ON_LINE.getCode());
@@ -213,7 +213,7 @@ public class CashRefundService {
                 }
                 for(TxnInfoEntity txnInfo:txnlinfoList){
                 	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
-            			Response res = agreeRefund(userId,orderId);
+        				Response res = agreeRefund(userId,orderId);
                 		if(!res.statusResult()){
         	    			throw new BusinessException("退款申请失败，请重新申请！");
                 		}
@@ -332,6 +332,8 @@ public class CashRefundService {
     @Transactional(rollbackFor = Exception.class)
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+        
+        OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
 
         //1:退款提交 才能进行同意
         if (cashRefund == null || cashRefund.getStatus() != 1) {
@@ -345,7 +347,7 @@ public class CashRefundService {
         Date date = new Date();
         if (txnInfoEntityList.size() == 1) {
             String txnType = txnInfoEntityList.get(0).getTxnType();
-            txnAmt = txnInfoEntityList.get(0).getTxnAmt();
+            txnAmt = orderEntity.getOrderAmt();
             CashRefundTxn cashRefundTxn = new CashRefundTxn();
             cashRefundTxn.setAmt(txnAmt);
             cashRefundTxn.setStatus("1");

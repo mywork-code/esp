@@ -17,14 +17,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.repository.merchant.MerchantInforRepository;
 import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
 import com.apass.esp.service.order.OrderService;
-import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -51,6 +52,8 @@ public class OrderExceptionController {
     private TxnInfoMapper txnInfoMapper;
     @Autowired
     private OrderInforMailSendScheduleTask task;
+    @Autowired
+    private MerchantInforRepository merchant;
     
 	/**
      * 订单信息页面
@@ -146,17 +149,16 @@ public class OrderExceptionController {
         try {
             // 获取请求的参数
             String orderId = HttpWebUtils.getValue(request, "orderId");
-
             // 通过商户号查收订单详情信息
             List<OrderDetailInfoEntity> orderDetailList = orderService.queryOrderDetailInfo(null,orderId);
-            
             for (OrderDetailInfoEntity detail : orderDetailList) {
             	detail.setGoodsAmt(detail.getGoodsPrice().multiply(new BigDecimal(detail.getGoodsNum())));
             	//首先根据订单的Id，查询订单的信息，然后根据订单的main_order_id ,查询交易流水表
             	BigDecimal refundAmt = detail.getGoodsAmt().multiply(getScale(orderId));
             	detail.setRefundAmt(refundAmt);
-			}
-            
+            	MerchantInfoEntity entity = merchant.queryByMerchantCode(detail.getMerchantCode());
+            	detail.setMerchantCode(null!= entity?entity.getMerchantName():detail.getMerchantCode());
+            }
             respBody.setTotal(orderDetailList.size());
             respBody.setRows(orderDetailList);
             respBody.setStatus(CommonCode.SUCCESS_CODE);

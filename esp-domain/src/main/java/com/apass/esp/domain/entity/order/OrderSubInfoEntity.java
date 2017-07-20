@@ -242,7 +242,7 @@ public class OrderSubInfoEntity {
     //退款金额 退款状态 审核人 审核日期
     private BigDecimal txnAmt;
     private String refundStatus;
-    private Long auditorId;
+    private String auditorName;
     private Date auditorDate;
     
     public BigDecimal getTxnAmt() {
@@ -261,12 +261,12 @@ public class OrderSubInfoEntity {
 		this.refundStatus = refundStatus;
 	}
 
-	public Long getAuditorId() {
-		return auditorId;
+	public String getAuditorName() {
+		return auditorName;
 	}
 
-	public void setAuditorId(Long auditorId) {
-		this.auditorId = auditorId;
+	public void setAuditorName(String auditorName) {
+		this.auditorName = auditorName;
 	}
 
 	public Date getAuditorDate() {

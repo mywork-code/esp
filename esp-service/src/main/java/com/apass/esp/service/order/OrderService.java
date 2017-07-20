@@ -40,6 +40,7 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
+import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -1707,7 +1708,7 @@ public class OrderService {
 					cashRefundTxn.setStatus("2");
 					cashRefundTxnMapper.updateByPrimaryKey(cashRefundTxn);
 				}
-				refund.setStatus(4);
+				refund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
 				refund.setAuditorName(userName);
 				refund.setAuditorDate(new Date());
 				cashRefundMapper.updateByPrimaryKeySelective(refund);

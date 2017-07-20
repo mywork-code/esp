@@ -3,9 +3,9 @@
  */
 $ (function ()
 {
+	var refundType = "0";
 	
 	$ ('#orderDetailListWin,#serviceDetailList,#logisticsDetail,#serviceDetail,#rejectDialog,#orderRefundDetailList,#sendGoodsAgain,#addLogisticsDetails').window ('close');
-	
 	// Grid 列表
 	$ ('#tablelist').datagrid (
 	        {
@@ -76,7 +76,9 @@ $ (function ()
 		                        width : 100,
 		                        align : 'center',
 	                            formatter: function (value, row, index) {
-	                                return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+	                            	if(value != ''){
+	                            		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+	                            	}
 	                            }
 		                    },
 		                    {
@@ -98,8 +100,7 @@ $ (function ()
 			                        if (refundStatus == '2' || refundStatus == '')
 			                        {
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-				                        content += " onclick='$.logisticsInfo(\"" + row.orderId + "\",\""
-				                                + row.logisticsName + "\",\"" + row.logisticsNo + "\");'>退款</a>";
+				                        content += " onclick='$.orderRefund(\"" + row.orderId + "\");'>退款</a>";
 			                        }
 			                        return content;
 		                        }
@@ -131,6 +132,7 @@ $ (function ()
 	{
 		var params = {};
 		params['refundType'] = $ ("#refundType").textbox ('getValue');
+		refundType = params['refundType'];
 		$ ('#tablelist').datagrid ('load', params);
 	});
 	
@@ -152,6 +154,21 @@ $ (function ()
 		});
 		
 	});
+	//退款
+	$.orderRefund = function (orderId)
+	{
+		// 调用退款接口
+		$.ajax({
+            type: "POST",
+            url: ctx + '/application/business/order/exception/refund',
+            data: {"orderId":orderId,"refundType":refundType},
+            dataType: "json",
+            success: function(data){
+            	alert(data.msg);
+            	$ (".search-btn").click();
+            }
+        });
+	}
 	
 	// 查询订单详情
 	$.queryOrderDetail = function (data)
@@ -187,7 +204,7 @@ $ (function ()
 			            },
 			            {
 			                title : '商户名称',
-			                field : 'merchantName',
+			                field : 'merchantCode',
 			                width : 70,
 			                align : 'center'
 			            },
