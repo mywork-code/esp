@@ -747,10 +747,12 @@ public class OrderService {
 		for (PurchaseRequestDto purchase : purchaseList) {
 			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsId(),
 					purchase.getGoodsStockId());
-
-			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
-				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
-				throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
+			GoodsInfoEntity goodsInfo = goodsDao.select(goodsDetail.getGoodsId());
+			if (goodsInfo.getSource() == null) {
+				if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
+					LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
+					throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
+				}
 			}
 			if (purchase.getBuyNum() <= 0) {
 				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
@@ -790,12 +792,12 @@ public class OrderService {
 			throw new BusinessException(goodsInfo.getGoodsName() + "商品已下架\n请重新下单");
 		}
 		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
-		boolean offShelfFlag = true;
+		boolean offShelfFlag = false;
 		for (GoodsStockInfoEntity goodsStock : goodsList) {
 			GoodsInfoEntity goodsInfo1 = goodsDao.select(goodsStock.getGoodsId());
-			if (goodsInfo1.getSource() != null) {
-				if (goodsStock.getStockCurrAmt() > 0) {
-					offShelfFlag = false;
+			if (goodsInfo1.getSource() == null) {
+				if (goodsStock.getStockCurrAmt() < 0) {
+					offShelfFlag = true;
 					break;
 				}
 			}
