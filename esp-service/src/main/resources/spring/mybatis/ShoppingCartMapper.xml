@@ -128,6 +128,8 @@
 	            t2.IS_DELETE                isDelete,   
 	            t2.STATUS                   goodsStatus,
 	            t2.un_support_province      unSupportProvince, 
+	            t2.source                   goodsSource,
+	            t2.goods_logo_url           goodsBaseLogoUrl,
 	            t3.GOODS_ID                 goodsId,
                 t3.STOCK_CURR_AMT           stockCurrAmt,
                 t3.GOODS_SKU_ATTR           goodsSkuAttr
