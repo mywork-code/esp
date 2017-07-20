@@ -68,7 +68,7 @@ public class MailStatisScheduleTask {
     @Autowired
     private OrderService orderService;
 
-    @Scheduled(cron = "0 o 8 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
 
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
