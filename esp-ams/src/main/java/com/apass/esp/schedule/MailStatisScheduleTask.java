@@ -93,7 +93,7 @@ public class MailStatisScheduleTask {
         Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
         //额度支付
         Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
-        Integer count7 = count1 + count2 + count3 + count4;
+        Integer count7 = count1 + count2 + count3 + count4 + countc + countd;
         LOGGER.info(" mailStatisSchedule  beginDate {} currentDate {}",beginDate,currentDate);
         LOGGER.info("mailStatisSchedule  D00 {}  D02 {} D03 {} D07 {} D08 {} D04 {}",count1,count2,count3,count4,count5,count6,countc,countd);
         List<ExportDomain> list = new ArrayList<>();
@@ -112,7 +112,7 @@ public class MailStatisScheduleTask {
         try {
             generateFile(list);
         } catch (IOException e) {
-            LOGGER.error("mailStatisSchedule generateFile error .... ");
+            LOGGER.error("mailStatisSchedule generateFile error .... ",e);
         }
         MailSenderInfo mailSenderInfo = new MailSenderInfo();
         mailSenderInfo.setMailServerHost("SMTP.263.net");
@@ -139,7 +139,7 @@ public class MailStatisScheduleTask {
             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
             msgPart.addBodyPart(body);
         } catch (MessagingException e) {
-            LOGGER.error("mailStatisSchedule msgPart   body error.... ");
+            LOGGER.error("mailStatisSchedule msgPart   body error.... ",e);
         }
         mailSenderInfo.setMultipart(msgPart);
         MailUtil mailUtil = new MailUtil();
