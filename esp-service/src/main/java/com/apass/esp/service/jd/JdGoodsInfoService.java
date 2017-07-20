@@ -124,7 +124,17 @@ public class JdGoodsInfoService {
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
 
-		// 查询商品规格
+		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,AddressInfoEntityList);
+		map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
+		map.put("skuId", map2.get("skuId"));
+		map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
+		map.put("jdSimilarSkuListSize", map2.get("jdSimilarSkuListSize"));
+		return map;
+		}
+	
+	// 查询商品规格（包括库存）
+	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,List<AddressInfoEntity> AddressInfoEntityList) throws BusinessException {
+		Map<String, Object> map = Maps.newHashMap();
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
 		List<JdSimilarSku> jdSimilarSkuList2 = new ArrayList<>();
@@ -132,7 +142,7 @@ public class JdGoodsInfoService {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
 			List<JdSaleAttr> saleAttrList2 = new ArrayList<>();
 			for (JdSaleAttr jdsa : saleAttrList) {
-				jdsa.setImagePath("http://img13.360buyimg.com/n4/" + jdsa.getImagePath());
+				jdsa.setImagePath("http://img13.360buyimg.com/n3/" + jdsa.getImagePath());
 				List<String> skuIds = jdsa.getSkuIds();
 				List<String> skuIds2 = new ArrayList<>();
 				for (String skuId : skuIds) {
@@ -165,19 +175,11 @@ public class JdGoodsInfoService {
 
 			}
 		}
-		// 获取地址信息
-		Region region = new Region();
-		for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
-			if ("1".equals(addressInfoEntity.getIsDefault())) {
-				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-			}
-		}
+
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
-		String isSelectSkuIdOrder="";//商品本身的规格参数
+		String isSelectSkuIdOrder = "";// 商品本身的规格参数
 		while (iterator.hasNext()) {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
@@ -191,6 +193,15 @@ public class JdGoodsInfoService {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
+			}
+			// 获取地址信息
+			Region region = new Region();
+			for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
+				if ("1".equals(addressInfoEntity.getIsDefault())) {
+					region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+					region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
+					region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+				}
 			}
 			// 查询商品是否有货
 			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
@@ -220,18 +231,18 @@ public class JdGoodsInfoService {
 			jdSimilarSkuTo.setSkuIdOrder(skuIdOrder);
 			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
 			JdSimilarSkuToList.add(jdSimilarSkuTo);
-			if(skuId.equals(sku.toString())){
-				isSelectSkuIdOrder=skuIdOrder;
+			if (skuId.equals(sku.toString())) {
+				isSelectSkuIdOrder = skuIdOrder;
 			}
 		}
-		//为app端标记初始化被选中商品的规格
-		if(isSelectSkuIdOrder.length()>0){
-			String[] orderList=isSelectSkuIdOrder.split(";");
-			for(int i=0;i<orderList.length;i++){
-				String key=orderList[i].substring(1,3);
-				List<JdSaleAttr> jdSaleAttrList=jdSimilarSkuList2.get(i).getSaleAttrList();
-				for(JdSaleAttr jdSaleAttr:jdSaleAttrList){
-					if(jdSaleAttr.getSaleValueId().equals(key)){
+		// 为app端标记初始化被选中商品的规格
+		if (isSelectSkuIdOrder.length() > 0) {
+			String[] orderList = isSelectSkuIdOrder.split(";");
+			for (int i = 0; i < orderList.length; i++) {
+				String key = orderList[i].substring(1, 3);
+				List<JdSaleAttr> jdSaleAttrList = jdSimilarSkuList2.get(i).getSaleAttrList();
+				for (JdSaleAttr jdSaleAttr : jdSaleAttrList) {
+					if (jdSaleAttr.getSaleValueId().equals(key)) {
 						jdSaleAttr.setIsSelect("true");
 					}
 				}
@@ -242,7 +253,115 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		return map;
+	}
+
+	// 查询商品规格（包括不包括库存）
+	public Map<String, Object> jdSimilarSkuInfo(Long sku) throws BusinessException {
+		Map<String, Object> map = Maps.newHashMap();
+		TreeSet<String> skusSet = new TreeSet<String>();
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		List<JdSimilarSku> jdSimilarSkuList2 = new ArrayList<>();
+		for (JdSimilarSku jdsk : jdSimilarSkuList) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+			List<JdSaleAttr> saleAttrList2 = new ArrayList<>();
+			for (JdSaleAttr jdsa : saleAttrList) {
+				jdsa.setImagePath("http://img13.360buyimg.com/n3/" + jdsa.getImagePath());
+				List<String> skuIds = jdsa.getSkuIds();
+				List<String> skuIds2 = new ArrayList<>();
+				for (String skuId : skuIds) {
+					// 判断该skuId是否已经上架，如何没有则移除该规格下的skuId
+					GoodsInfoEntity gty = goodsRepository.selectGoodsInfoByExternalId(skuId);
+					if (null != gty) {
+						skuIds2.add(skuId);
+						skusSet.add(skuId);
+					}
+				}
+				jdsa.setSkuIds(skuIds2);
+				if (skuIds2.size() > 0) {
+					saleAttrList2.add(jdsa);
+				}
+			}
+			jdsk.setSaleAttrList(saleAttrList2);
+			if (saleAttrList2.size() > 0) {
+				jdSimilarSkuList2.add(jdsk);
+			}
 		}
+		// 为规格添加唯一标识
+		for (JdSimilarSku jdsk : jdSimilarSkuList2) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+			for (int i = 0; i < saleAttrList.size(); i++) {
+				if (i > 9) {
+					saleAttrList.get(i).setSaleValueId(i + "");
+				} else {
+					saleAttrList.get(i).setSaleValueId("0" + i);
+				}
+
+			}
+		}
+
+		// 查询商品规格中的商品的价格和库存
+		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
+		Iterator<String> iterator = skusSet.iterator();
+		String isSelectSkuIdOrder = "";// 商品本身的规格参数
+		while (iterator.hasNext()) {
+			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+
+			String skuId = iterator.next();
+			// 查询商品价格
+			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
+			Long goodsId = goodsInfo.getId();
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+			if (jdGoodsStockInfoList.size() == 1) {
+				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+				jdSimilarSkuVo.setPrice(price);
+				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
+			}
+
+			jdSimilarSkuVo.setSkuId(skuId);
+
+			String skuIdOrder = "";
+			for (JdSimilarSku jdsk : jdSimilarSkuList2) {
+				if (skuIdOrder.length() == 0) {
+					skuIdOrder = jdsk.getDim().toString();
+				} else {
+					skuIdOrder = skuIdOrder + ";" + jdsk.getDim().toString();
+				}
+				List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+				for (JdSaleAttr jdsa : saleAttrList) {
+					List<String> skuIds = jdsa.getSkuIds();
+					for (String skuId2 : skuIds) {
+						if (skuId2.equals(skuId)) {
+							skuIdOrder = skuIdOrder + jdsa.getSaleValueId();
+						}
+					}
+				}
+			}
+			jdSimilarSkuTo.setSkuIdOrder(skuIdOrder);
+			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+			JdSimilarSkuToList.add(jdSimilarSkuTo);
+			if (skuId.equals(sku.toString())) {
+				isSelectSkuIdOrder = skuIdOrder;
+			}
+		}
+		// 为app端标记初始化被选中商品的规格
+		if (isSelectSkuIdOrder.length() > 0) {
+			String[] orderList = isSelectSkuIdOrder.split(";");
+			for (int i = 0; i < orderList.length; i++) {
+				String key = orderList[i].substring(1, 3);
+				List<JdSaleAttr> jdSaleAttrList = jdSimilarSkuList2.get(i).getSaleAttrList();
+				for (JdSaleAttr jdSaleAttr : jdSaleAttrList) {
+					if (jdSaleAttr.getSaleValueId().equals(key)) {
+						jdSaleAttr.setIsSelect("true");
+					}
+				}
+			}
+		}
+		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
+		map.put("jdSimilarSkuList", jdSimilarSkuList2);
+		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
+		return map;
+	}
 	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
