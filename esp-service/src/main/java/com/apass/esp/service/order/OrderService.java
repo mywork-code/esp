@@ -488,7 +488,7 @@ public class OrderService {
 		addressInfo.setProvinceId(Integer.valueOf(address.getProvinceCode()));
         addressInfo.setCityId(Integer.valueOf(address.getCityCode()));
         addressInfo.setCountyId(Integer.valueOf(address.getDistrictCode()));
-        addressInfo.setTownId(Integer.valueOf(address.getTownsCode()));
+        addressInfo.setTownId(StringUtils.isEmpty(address.getTownsCode())?0:Integer.valueOf(address.getTownsCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
         addressInfo.setEmail("xujie@apass.cn");
@@ -753,6 +753,13 @@ public class OrderService {
 					LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
 					throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
 				}
+			}else{
+				// 校验地址
+				AddressInfoEntity address1 = addressInfoDao.select(addressId);
+				if (address1.getProvinceCode()==null||address1.getCityCode()==null||address1.getDistrictCode()==null) {
+					LOG.info(requestId, "生成订单前校验,校验地址,存在京东商品时地址错误", addressId.toString());
+					throw new BusinessException("地址信息格式不正确");
+				}
 			}
 			if (purchase.getBuyNum() <= 0) {
 				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
@@ -786,10 +793,12 @@ public class OrderService {
 			LOG.info(requestId, "校验商品下架,根据商品id查询商品信息数据为空", goodsId.toString());
 			throw new BusinessException("商品号:" + goodsId + ",不存在或商户号不存在！");
 		}
-		if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
-				|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
-			LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
-			throw new BusinessException(goodsInfo.getGoodsName() + "商品已下架\n请重新下单");
+		if (goodsInfo.getSource() == null) {
+			if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
+					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
+				throw new BusinessException(goodsInfo.getGoodsName() + "商品已下架\n请重新下单");
+			}
 		}
 		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 		boolean offShelfFlag = false;
