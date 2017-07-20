@@ -61,14 +61,38 @@ public class AddressService {
 			throw new BusinessException("查询地址信息失败！", BusinessErrorCode.QUREY_INFO_FAILED);
 		}		
 	}
+	
+	
 	/**
 	 * 新增地址信息
 	 * 
 	 * @param customerInfo
 	 * @return
 	 */
-	 @Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public Long addAddressInfo(AddressInfoEntity addAddressInfo)
+			throws BusinessException {
+		try {
+			if(StringUtils.isNoneBlank(addAddressInfo.getIsDefault()) && addAddressInfo.getIsDefault().equals("1")){
+				//将原来的默认地址置为非默认的
+				addressInfoRepository.updateAddressStatus(addAddressInfo.getUserId());
+			}
+			//将地址插入数据库
+			addressInfoRepository.insert(addAddressInfo);
+			return addAddressInfo.getId();
+		} catch (Exception e) {
+			LOGGER.error("新增地址信息失败===>", e);
+			throw new BusinessException("新增地址信息失败！", BusinessErrorCode.ADD_INFO_FAILED);
+		}		
+	}
+	/**
+	 * 新增地址信息
+	 * 
+	 * @param customerInfo
+	 * @return
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public Long addAddressInfoV1(AddressInfoEntity addAddressInfo)
 			throws BusinessException {
 		try {
 			if(StringUtils.isNoneBlank(addAddressInfo.getIsDefault()) && addAddressInfo.getIsDefault().equals("1")){
@@ -93,6 +117,36 @@ public class AddressService {
 	 */
 	 @Transactional(rollbackFor = Exception.class)
 	public List<AddressInfoEntity> updateAddressInfo(AddressInfoEntity addInfo)
+			throws BusinessException {
+		String isDefault = addInfo.getIsDefault();//是否是默认地址
+		
+		try {
+			if(YesNo.isYes(isDefault)){
+				//将原来的默认地址置为非默认的
+				addressInfoRepository.updateAddressStatus(addInfo.getUserId());
+			}
+			//更新地址的信息
+			Integer updateFlag = addressInfoRepository.updateAddressInfo(addInfo);
+			if(updateFlag != 1){
+			    throw new BusinessException("更新地址信息失败",BusinessErrorCode.ADDRESS_UPDATE_FAILED);
+			}
+			//更新完地址信息，将最新的地址信息返回
+			List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoList(addInfo.getUserId());
+			return addressInfoList;
+		} catch (Exception e) {
+			LOGGER.error("更新地址信息失败===>", e);
+			throw new BusinessException("更新地址信息失败！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
+		}
+	}
+	 
+	 /**
+	 * 更新地址信息
+	 * 
+	 * @param customerInfo
+	 * @return
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public List<AddressInfoEntity> updateAddressInfoV1(AddressInfoEntity addInfo)
 			throws BusinessException {
 		String isDefault = addInfo.getIsDefault();//是否是默认地址
 		

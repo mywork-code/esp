@@ -28,6 +28,7 @@ import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -296,17 +297,27 @@ public class ShoppingCartService {
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
-                //添加新的图片地址
-                String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
-                goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+            	if("jd".equals(goodsInfoInCart.getGoodsSource())){
+            		String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
+            		goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
+            		//购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+            		if(goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+            			goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+            		}
+            	}else{
+            		//添加新的图片地址
+                    String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
+                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
 
-                // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-                if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
-                        || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
-                        || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
-                    goodsInfoInCart.setIsDelete("00");//失效
-                    goodsInfoInCart.setIsSelect("0");//不选中
-                }
+                    // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+                    if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
+                            || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
+                            || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+                        goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+                    }
+            	}
                 
                 // 计算商品折扣后价格
                 BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoInCart.getGoodsId(), goodsInfoInCart.getGoodsStockId());
