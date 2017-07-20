@@ -25,14 +25,7 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
-import com.apass.esp.domain.enums.AcceptGoodsType;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PaymentStatus;
-import com.apass.esp.domain.enums.PreDeliveryType;
-import com.apass.esp.domain.enums.PreStockStatus;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
@@ -2037,6 +2030,7 @@ public class OrderService {
                 orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
                 orderInfo.setUpdateDate(new Date());
                 orderInfo.setExtOrderId(String.valueOf(cOrderId));
+				orderInfo.setStatus(OrderStatus.ORDER_SEND.getCode());
                 Integer successStatus = orderInfoRepository.insert(orderInfo);
                 if (successStatus < 1) {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
