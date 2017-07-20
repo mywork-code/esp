@@ -8,6 +8,7 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.LogStashKey;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
@@ -17,6 +18,7 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +29,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * type: class
@@ -87,11 +85,20 @@ public class CashRefundController {
         if(agreeDate!=null){
             cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
+        List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
+        if(CollectionUtils.isNotEmpty(txnInfoDtoList)){
+            //支付宝全额支付
+            if(txnInfoDtoList.size()==1&&TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())){
+                cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
+            }
+            //支付宝首付
+            if(txnInfoDtoList.size()==2&&(TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())||TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(1).getTxnType()))){
+                cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
+            }
+        }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
-        List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
         try {
-            txnInfoDtoList = cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
             orderDetailInfoDto = orderService.getOrderDetailInfoDto("", cashRefundDto.getOrderId());
         } catch (BusinessException e) {
             return Response.fail(BusinessErrorCode.NO);
