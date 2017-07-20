@@ -147,7 +147,7 @@ public class JdGoodsService {
 					idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 					idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 					
-					if((i+1)/100 == 0){
+					if((i+1)%100 == 0){
 						if(idsStock != null && idsStock.size() !=0){
 							goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
 						}

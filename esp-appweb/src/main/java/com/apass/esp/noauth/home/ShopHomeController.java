@@ -524,7 +524,8 @@ public class ShopHomeController {
 		for (String goodsId:goodsIds){
 		    GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(goodsId));
 		    if(goodsInfoEntity == null){
-		    	continue;
+		    	LOGGER.error("热销商品id:{}在商品表中无对应商品",goodsId);
+		    	throw new BusinessException("数据异常");
 		    }
 		    if(goodsInfoEntity.getSource()==null){
 		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东

@@ -181,10 +181,17 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 		this.getSqlSession().delete("deleteJDGoodsBatch", ids);
 	}
 
-	public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId")String externalId)  {
-		List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
-		
-		return goodsInfoEnties.get(0);
+	public GoodsInfoEntity selectGoodsByExternalId(@Param("externalId")String externalId){
+		try{
+			List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList("selectGoodsByExternalId", externalId);
+			if(goodsInfoEnties.isEmpty() || goodsInfoEnties == null){
+				LOGGER.error("数据有误，externalId={}的就东商品在商品表里不存在",externalId);
+				throw new BusinessException("数据有误");
+			}
+			return goodsInfoEnties.get(0);
+		}catch(BusinessException e){
+			return null;
+		}
 		
 	}
 
