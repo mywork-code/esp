@@ -87,35 +87,37 @@ public class ShoppingCartService {
         
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
         Date date = new Date();
-        if(!("jd".equals(goodsInfo.getSource()))){
-        	//非京东商品做校验
-        	if(null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
-                    || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())){
-                LOG.info(requestId, "该商品已下架", goodsStockId);
-                throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
-            }
-            
-            //商品库存如果都为0 则提示商品下架
-            List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
-            boolean offShelfFlag = true;
-            for (GoodsStockInfoEntity goodsStock : goodsList) {
-                if (goodsStock.getStockCurrAmt()>0) {
-                    offShelfFlag=false;
-                    break;
-                }
-            }
-            if (offShelfFlag) {
-                LOG.info(requestId, "商品各规格数量都为0", goodsStockId);
-                throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
-            }
-            
-            
-            if(goodsStockInfo.getStockCurrAmt() < 1 || goodsStockInfo.getStockCurrAmt() < countVal){
-                LOG.info(requestId, "该商品库存不足", goodsStockId);
-                throw new BusinessException("该商品库存不足",BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
-            }
-        	
-        }
+		if ("jd".equals(goodsInfo.getSource())) {
+			if (null == goodsInfo || goodsInfo.getIsDelete().equals("00") || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				LOG.info(requestId, "该商品已下架", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+		} else {
+			if (null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
+					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				LOG.info(requestId, "该商品已下架", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+
+			// 商品库存如果都为0 则提示商品下架
+			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
+			boolean offShelfFlag = true;
+			for (GoodsStockInfoEntity goodsStock : goodsList) {
+				if (goodsStock.getStockCurrAmt() > 0) {
+					offShelfFlag = false;
+					break;
+				}
+			}
+			if (offShelfFlag) {
+				LOG.info(requestId, "商品各规格数量都为0", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+
+			if (goodsStockInfo.getStockCurrAmt() < 1 || goodsStockInfo.getStockCurrAmt() < countVal) {
+				LOG.info(requestId, "该商品库存不足", goodsStockId);
+				throw new BusinessException("该商品库存不足", BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
+			}
+		}
         
         // 计算商品折扣后价格
         BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStockInfo.getGoodsId(), goodsStockIdVal);
