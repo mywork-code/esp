@@ -634,7 +634,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D02' and pre_stock_status = '1' and source='jd'
+			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
 		]]>
 	</select>
 	<!-- 根据订单的编号，修改字段 -->
