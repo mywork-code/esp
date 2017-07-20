@@ -6,6 +6,7 @@ import com.apass.esp.domain.dto.monitor.MonitorDto;
 import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
+import com.apass.esp.schedule.MailStatisScheduleTask;
 import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
@@ -34,7 +35,10 @@ public class MonitorController {
     private MonitorService monitorService;
     
     @Autowired
-    private CacheManager cacheManager; 
+    private CacheManager cacheManager;
+
+    @Autowired
+	private MailStatisScheduleTask mailStatisScheduleTask;
     
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
@@ -145,4 +149,12 @@ public class MonitorController {
   public ResponsePageBody<MonitorVo> listFlag1(MonitorQuery query){
 	  return  monitorService.pageListMonitor(query);
   }
+
+
+	@RequestMapping(value = "/orderStatis", method = RequestMethod.GET)
+	@ResponseBody
+	public Response orderStatis(){
+		mailStatisScheduleTask.mailStatisSchedule();
+		return   Response.success("发送成功");
+	}
 }
