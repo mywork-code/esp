@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
@@ -86,14 +87,17 @@ public class CashRefundController {
             cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
         List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByOrderId(cashRefundDto.getOrderId());
-        if(CollectionUtils.isNotEmpty(txnInfoDtoList)){
-            //支付宝全额支付
-            if(txnInfoDtoList.size()==1&&TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())){
-                cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
-            }
-            //支付宝首付
-            if(txnInfoDtoList.size()==2&&(TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())||TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(1).getTxnType()))){
-                cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
+        if (CollectionUtils.isNotEmpty(txnInfoDtoList)) {
+            //退款已成功 改变支付宝支付系统处理中的时间
+            if (String.valueOf(cashRefundDto.getStatus()).equals(CashRefundVoStatus.CASHREFUND_STATUS4.getCode())) {
+                //支付宝全额支付
+                if (txnInfoDtoList.size() == 1 && TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())) {
+                    cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
+                }
+                //支付宝首付
+                if (txnInfoDtoList.size() == 2 && (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(1).getTxnType()))) {
+                    cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
+                }
             }
         }
         Map<String, Object> resultMap = new HashMap<>();
