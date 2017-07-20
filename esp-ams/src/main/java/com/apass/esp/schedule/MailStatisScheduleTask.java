@@ -48,7 +48,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class MailStatisScheduleTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailStatisScheduleTask.class);
@@ -68,7 +68,7 @@ public class MailStatisScheduleTask {
     @Autowired
     private OrderService orderService;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 o 8 * * ?")
     public void mailStatisSchedule() {
 
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
@@ -123,8 +123,7 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
-        //mailSenderInfo.setToAddress("xujie@apass.cn");
-        mailSenderInfo.setToAddress("wangxianzhi1211@163.com");
+        mailSenderInfo.setToAddress("xujie@apass.cn");
         if("prod".equals(env)){
             mailSenderInfo.setToAddress("huangbeifang@apass.cn");
             mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
