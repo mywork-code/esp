@@ -191,7 +191,7 @@ $(function() {
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
                 	 if(row.source =='jd'){
-                		 if(merchantStatus=="1" && row.status=='G00' && row.status!='G03'){
+                		 if(merchantStatus=="1" && row.status=='G00' && (row.status!='G02'||row.status!='G04')){
                 			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
                 				 + index +"');\">库存</a>&nbsp;&nbsp;"; 
                 		 }
@@ -635,7 +635,6 @@ $(function() {
 	
 	//大图：下一步
 	$("#nextStepUpLoadPic").click(function() {
-		debugger;
 		var goodWallPic = $("#addGoodsLogoImg").attr("src");
 		if(goodWallPic==null || goodWallPic==''){
 			$.messager.alert("提示", "商品墙图片为空，请上传！", "info");
@@ -662,7 +661,7 @@ $(function() {
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','block');
     	
-    	loadStockGoods('addGoodsStockList',addGoodId);
+    	loadStockGoods('addGoodsStockList',addGoodId,null);
 	});
 	
 	//大图：上一步
@@ -1030,7 +1029,7 @@ $(function() {
     	$("#editUpLoadGoodsPicture").css('display','none');
     	$("#editGoodsStock").css('display','block');
     	
-    	loadStockGoods('editGoodsStockList',editGoodId);
+    	loadStockGoods('editGoodsStockList',editGoodId,null);
 	});
 	
 	//库存：保存
@@ -1386,10 +1385,11 @@ $(function() {
 		});
 	});
 	
+	var sourceJd;//修改库存时商品来源标识
 	//修改库存
-	$.editStockinfo = function(index,datagridId) {
+	$.editStockinfo = function(index,datagridId,source) {
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
-		
+		sourceJd = source;
 		if(row.goodsSkuAttr != null){
 			$("#editstockinfoId").val(row.id);
 			$("#editStockinfoIdInForm").val(row.id);
@@ -1502,9 +1502,9 @@ $(function() {
 					var params = {};
 			        params['goodsId'] = goodsId;
 			        
-			        loadStockGoods('addGoodsStockList',goodsId,null);
-			        loadStockGoods('editGoodsStockList',goodsId,null);
-			        loadStockGoods('goodsStockList',goodsId,null);
+			        loadStockGoods('addGoodsStockList',goodsId,sourceJd);
+			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
+			        loadStockGoods('goodsStockList',goodsId,sourceJd);
 			        $('#editGoodsStockInfoWin').window('close');
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1549,9 +1549,9 @@ $(function() {
 					var params = {};
 			        params['goodsId'] = goodsId;
 			        
-			        loadStockGoods('addGoodsStockList',goodsId,null);
-			        loadStockGoods('editGoodsStockList',goodsId,null);
-			        loadStockGoods('goodsStockList',goodsId,null);
+			        loadStockGoods('addGoodsStockList',goodsId,sourceJd);
+			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
+			        loadStockGoods('goodsStockList',goodsId,sourceJd);
 			        $('#editJDStockWin').window('close');
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -2119,7 +2119,7 @@ function loadStockGoods(datagridId,goodsId,source){
                     			"onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">加库存</a>&nbsp;&nbsp;";
                     		}
                     		if(status!='G02'){//上架后不能修改
-                    			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editStockinfo('"+index+"','"+datagridId+"');\">修改</a>&nbsp;&nbsp;";
+                    			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editStockinfo('"+index+"','"+datagridId+"','"+source+"');\">修改</a>&nbsp;&nbsp;";
                     		}
                     	}else{
                      		content +="权限不足";

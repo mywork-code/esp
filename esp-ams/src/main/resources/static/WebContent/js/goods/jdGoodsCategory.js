@@ -335,7 +335,7 @@ $(function() {
 		    	        	        				if(data.status=="1"){
 		    	        	                    		$.messager.alert("提示",data.msg,'info');  
 		    	        	                    		$that.animate({left:"54px"},50)
-		    	        	                			$that.parent().find('.relation-text').css('left','0px');
+		    	        	                			$that.parent().find('.relation-text').css('left','10px');
 		    	        	                    		$that.parent().find('.relation-text').html('已关联');
 		    	        	                    	}else{
 		    	        	                    		$.messager.alert("错误",data.msg,'error');  
