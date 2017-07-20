@@ -370,7 +370,7 @@ public class CashRefundService {
                 }
 
                 if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
+                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString());
                     if (!response.statusResult()) {
                       //退款成功
                       try {
@@ -436,7 +436,7 @@ public class CashRefundService {
                     }
                 }
                 if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType()) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId());
+                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString());
                     if (!response.statusResult()) {
                         //退款失败
                         try {

@@ -324,12 +324,13 @@ public class PaymentHttpClient {
      * @return
      * @throws BusinessException
      */
-    public Response refundAliPay(String mainOrderId)  {
+    public Response refundAliPay(String mainOrderId,String refundAmt)  {
         String responseJson = null;
         try {
             String address = bbsReqUrl + ALIPAY_REFUND;
             Map<String, Object> map = new HashMap<>();
             map.put("merOrderId", mainOrderId);
+            map.put("refundAmount", refundAmt);
             String requestJson = GsonUtils.toJson(map);
 
             LOG.logstashRequest("", "调用BSS退款请求:", requestJson);
