@@ -43,7 +43,7 @@ public class RefundDetailInfoEntity {
     /**
      * 商品id
      */
-    private String goodsId;
+    private Long goodsId;
 
     public Long getId() {
         return id;
@@ -109,11 +109,11 @@ public class RefundDetailInfoEntity {
 		this.status = status;
 	}
 
-	public String getGoodsId() {
+	public Long getGoodsId() {
 		return goodsId;
 	}
 
-	public void setGoodsId(String goodsId) {
+	public void setGoodsId(Long goodsId) {
 		this.goodsId = goodsId;
 	}
 
