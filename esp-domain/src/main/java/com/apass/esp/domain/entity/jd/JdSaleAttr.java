@@ -9,6 +9,8 @@ public class JdSaleAttr {
     private String saleValue;
     
     private String saleValueId;
+    
+    private String isSelect;
 
     private List<String> skuIds;
 
@@ -53,6 +55,14 @@ public class JdSaleAttr {
 
 	public void setSaleValueId(String saleValueId) {
 		this.saleValueId = saleValueId;
+	}
+
+	public String getIsSelect() {
+		return isSelect;
+	}
+
+	public void setIsSelect(String isSelect) {
+		this.isSelect = isSelect;
 	}
     
 }

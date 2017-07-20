@@ -32,6 +32,8 @@ public class GoodsStockInfoEntity {
 
     /** 商品id **/
     private Long       goodsId;
+    /**  商品来源**/
+    private String     goodsSource;
 
     /** 商品价格 --售价**/
     private BigDecimal goodsPrice;
@@ -242,6 +244,14 @@ public class GoodsStockInfoEntity {
 
 	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
 		this.goodsPriceFirst = goodsPriceFirst;
+	}
+
+	public String getGoodsSource() {
+		return goodsSource;
+	}
+
+	public void setGoodsSource(String goodsSource) {
+		this.goodsSource = goodsSource;
 	}
     
     
