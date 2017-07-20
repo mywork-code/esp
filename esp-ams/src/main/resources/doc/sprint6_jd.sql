@@ -121,3 +121,5 @@ ALTER TABLE `t_esp_refund_detail_info`
 ADD COLUMN `source`  varchar(255) DEFAULT '' COMMENT '商品来源（如：jd）',
 ADD COLUMN `status`  varchar(255)  DEFAULT '' COMMENT '京东商品售后状态';
 
+ALTER TABLE `t_esp_refund_detail_info`
+ADD COLUMN `goods_id` bigint(20) DEFAULT NULL COMMENT '商品id';
