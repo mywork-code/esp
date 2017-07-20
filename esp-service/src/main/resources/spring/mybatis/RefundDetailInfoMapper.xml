@@ -26,14 +26,20 @@
 	            ORDER_ID,
 	            ORDER_DETAIL_ID,
 	            GOODS_PRICE,
-	            GOODS_NUM
+	            GOODS_NUM,
+	            status,
+	            source,
+	            goods_id
             )
 			VALUES
 			(
 				#{orderId, jdbcType=BIGINT},
 		        #{orderDetailId, jdbcType=BIGINT},
 		        #{goodsPrice, jdbcType=DECIMAL},
-		        #{goodsNum, jdbcType=BIGINT}
+		        #{goodsNum, jdbcType=BIGINT},
+		        #{status, jdbcType=VARCHAR},
+		        #{source, jdbcType=VARCHAR},
+		        #{goodsId, jdbcType=BIGINT}
 		    )
 	]]>
 	</insert>

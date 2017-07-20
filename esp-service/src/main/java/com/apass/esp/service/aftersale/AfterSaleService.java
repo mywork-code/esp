@@ -308,7 +308,7 @@ public class AfterSaleService {
             refundDetailInfo.setOrderId(orderInfo.getOrderId());
             refundDetailInfo.setOrderDetailId(OrderDetailDto.getId());
             refundDetailInfo.setGoodsPrice(OrderDetailDto.getGoodsPrice());
-            refundDetailInfo.setGoodsId(OrderDetailDto.getGoodsId().toString());
+            refundDetailInfo.setGoodsId(OrderDetailDto.getGoodsId());
             refundDetailInfo.setGoodsNum(Long.valueOf(idNum.getGoodsNum()));
 
             // 保存退货详情
