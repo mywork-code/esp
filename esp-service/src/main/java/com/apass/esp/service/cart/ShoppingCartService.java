@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,7 +58,9 @@ public class ShoppingCartService {
 
     @Autowired
     private ImageService imageService;
-
+    
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
     /**
      * 添加商品到购物车
      * 
@@ -624,25 +627,30 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-        
-        List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
-        if(null == goodsInfo || goodsStockSkuList.isEmpty()){
-            LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
-            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
-        
-        // 根据市场价和折扣率 计算商品价格
-        for(GoodsStockSkuDto dto : goodsStockSkuList){
-            //添加新的图片地址
-            dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
+		if ("jd".equals(goodsInfo.getSource())) {
+			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
+			resultMap.put("JdSimilarSkuToList", jdSimilarSkuInfoMap.get("JdSimilarSkuToList"));
+			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
+			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
+		} else {
+			List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
+			if (null == goodsInfo || goodsStockSkuList.isEmpty()) {
+				LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
+				throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
 
-            dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
-        }
+			// 根据市场价和折扣率 计算商品价格
+			for (GoodsStockSkuDto dto : goodsStockSkuList) {
+				// 添加新的图片地址
+				dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
 
-        resultMap.put("goodsId", goodsInfo.getId());
-        resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
-        resultMap.put("goodsStockSkuList", goodsStockSkuList);
-        
+				dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
+			}
+
+			resultMap.put("goodsId", goodsInfo.getId());
+			resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
+			resultMap.put("goodsStockSkuList", goodsStockSkuList);
+		}
         return resultMap;
     }
 

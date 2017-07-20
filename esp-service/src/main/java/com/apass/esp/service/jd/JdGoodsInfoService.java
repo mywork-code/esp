@@ -357,7 +357,6 @@ public class JdGoodsInfoService {
 			}
 		}
 		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
-		map.put("skuId", String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		return map;
