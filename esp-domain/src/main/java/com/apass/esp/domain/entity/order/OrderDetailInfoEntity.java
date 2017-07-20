@@ -111,6 +111,12 @@ public class OrderDetailInfoEntity {
      * 商品的当前库存
      */
     private Long stockCurrAmt;
+    
+    //商品金额
+    private BigDecimal goodsAmt;
+    
+    //退款金额
+    private BigDecimal refundAmt;
 
     public String getGoodsModel() {
         return goodsModel;
@@ -294,6 +300,22 @@ public class OrderDetailInfoEntity {
 
 	public void setStockCurrAmt(Long stockCurrAmt) {
 		this.stockCurrAmt = stockCurrAmt;
+	}
+
+	public BigDecimal getGoodsAmt() {
+		return goodsAmt;
+	}
+
+	public void setGoodsAmt(BigDecimal goodsAmt) {
+		this.goodsAmt = goodsAmt;
+	}
+
+	public BigDecimal getRefundAmt() {
+		return refundAmt;
+	}
+
+	public void setRefundAmt(BigDecimal refundAmt) {
+		this.refundAmt = refundAmt;
 	}
 
 }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../common/component/library.html"/>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+#goodsUrlListDiv img{
+	width:30px;height:30px;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/order/orders-excepion.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+</head>
+<body>
+<!-- 授权标示 -->
+<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+	<!-- Toolbar -->
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 500px;">
+				<tr>
+					<td width="5%"><select style="width:120px" id="refundType" name="refundType"
+						class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
+							<option label="退款" value="0">退款</option>
+							<option label="退款退货" value="1">退款退货</option>
+					</select></td>
+				</tr>
+			</table>
+
+			<table style="width: 100%; text-align: right;">
+				<tr>
+					<td width="100%"><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;
+						 <a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+						data-options="iconCls:'icon-search'">导&nbsp;出&nbsp;</a>&nbsp;
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<!-- 订单查询列表 -->
+	<div id="tablelist"></div>
+
+	<!-- 订单详情列表 -->
+	<div id="orderDetailListWin" class="easyui-window" title="明细"
+		style="width: 700px; height: 400px"
+		data-options="iconCls:'icon-save',modal:true,maximizable:false,minimizable:false,resizable:false,collapsible:false">
+			<div id="orderDetailList" data-options="region:'center'"></div>
+	</div>
+</body>
+</html>

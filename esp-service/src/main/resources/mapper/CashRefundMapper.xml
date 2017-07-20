@@ -15,10 +15,13 @@
     <result column="reason" property="reason" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="agree_d" property="agreeD" jdbcType="TIMESTAMP" />
+    <result column="refund_type" property="refundType" jdbcType="VARCHAR" />
+    <result column="auditor_name" property="auditorName" jdbcType="VARCHAR" />
+    <result column="auditor_date" property="auditorDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, create_date, update_date, amt, order_id, status, status_d, reject_num, user_id, 
-    main_order_id, reason, memo, agree_d
+    main_order_id, reason, memo, agree_d, refund_type, auditor_name, auditor_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -34,12 +37,14 @@
     insert into t_esp_cash_refund (create_date, update_date, amt, 
       order_id, status, status_d, 
       reject_num, user_id, main_order_id, 
-      reason, memo, agree_d
+      reason, memo, agree_d, 
+      refund_type, auditor_name, auditor_date
       )
     values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{amt,jdbcType=DECIMAL}, 
       #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, 
       #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}, 
-      #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{agreeD,jdbcType=TIMESTAMP}
+      #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{agreeD,jdbcType=TIMESTAMP}, 
+      #{refundType,jdbcType=VARCHAR}, #{auditorName,jdbcType=VARCHAR}, #{auditorDate,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
@@ -81,6 +86,15 @@
       <if test="agreeD != null" >
         agree_d,
       </if>
+      <if test="refundType != null" >
+        refund_type,
+      </if>
+      <if test="auditorName != null" >
+        auditor_name,
+      </if>
+      <if test="auditorDate != null" >
+        auditor_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="createDate != null" >
@@ -118,6 +132,15 @@
       </if>
       <if test="agreeD != null" >
         #{agreeD,jdbcType=TIMESTAMP},
+      </if>
+      <if test="refundType != null" >
+        #{refundType,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorName != null" >
+        #{auditorName,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorDate != null" >
+        #{auditorDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -160,6 +183,15 @@
       <if test="agreeD != null" >
         agree_d = #{agreeD,jdbcType=TIMESTAMP},
       </if>
+      <if test="refundType != null" >
+        refund_type = #{refundType,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorName != null" >
+        auditor_name = #{auditorName,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorDate != null" >
+        auditor_date = #{auditorDate,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -176,7 +208,10 @@
       main_order_id = #{mainOrderId,jdbcType=VARCHAR},
       reason = #{reason,jdbcType=VARCHAR},
       memo = #{memo,jdbcType=VARCHAR},
-      agree_d = #{agreeD,jdbcType=TIMESTAMP}
+      agree_d = #{agreeD,jdbcType=TIMESTAMP},
+      refund_type = #{refundType,jdbcType=VARCHAR},
+      auditor_name = #{auditorName,jdbcType=VARCHAR},
+      auditor_date = #{auditorDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
