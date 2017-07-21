@@ -278,8 +278,11 @@
              device_type,
              create_date,
              update_date,
+             main_order_id,
              pre_delivery,
              source,
+             ext_order_id,
+             pre_stock_status,
              ext_parent_id
             )
 			values (
@@ -306,8 +309,11 @@
 	        #{deviceType, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
 	        CURRENT_TIMESTAMP,
+	        #{mainOrderId,jdbcType=VARCHAR},
 	        #{preDelivery,jdbcType=VARCHAR},
 	        #{source,jdbcType=VARCHAR},
+	        #{extOrderId,jdbcType=VARCHAR},
+	        #{preStockStatus,jdbcType=VARCHAR},
 	        #{extParentId,jdbcType=VARCHAR});
 	</insert>
 	
@@ -621,16 +627,39 @@
 	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
 	<![CDATA[
 		SELECT
-			id id,
+				id	id,
 			order_id orderId,
 			user_id userId,
 			payType payType,
+			order_amt orderAmt,
 			paystatus payStatus,
-			orderstatus STATUS,
-			source source,
-			ext_order_id extOrderId,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+              device_type           deviceType,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
 		FROM
 			t_esp_order_info
 		WHERE
@@ -686,7 +715,8 @@
 			update_date updateDate,
 			pre_delivery preDelivery,
 			source source,
-			ext_order_id extOrderId
+			ext_order_id extOrderId,
+			pre_stock_status preStockStatus
 		FROM
 			t_esp_order_info
 		where ext_order_id = #{extOrderId}

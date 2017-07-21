@@ -77,7 +77,7 @@ public class JdConfirmPreInventoryTask {
             long jdOrderId = Long.valueOf(jdOrderIdp);
             JdApiResponse<Boolean> confirmResponse = jdOrderApiClient.orderOccupyStockConfirm(jdOrderId);
             LOGGER.info("confirm order jdOrderIdp {} confirmResponse {}", jdOrderIdp, confirmResponse.toString());
-            //int confirmStatus = 0;
+            int confirmStatus = 0;
             if (confirmResponse.isSuccess() && confirmResponse.getResult()) {
                 JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
                 if (!jdApiResponse.isSuccess()) {
@@ -86,14 +86,15 @@ public class JdConfirmPreInventoryTask {
                 }
                 JSONObject jsonObject = jdApiResponse.getResult();
                 try {
-                    orderService.jdSplitOrderMessageHandle(jsonObject,orderInfoEntity);
+                    orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
                 } catch (BusinessException e) {
-                    LOGGER.info("jdSplitOrderMessageHandle do not have split ",jdOrderIdp);
+                    LOGGER.info("jdSplitOrderMessageHandle do not have split ", jdOrderIdp);
                     continue;
-                }catch (Exception e ){
+                } catch (Exception e) {
                     continue;
                 }
             } else {
+                //确认预占库存失败
                 ServiceError serviceError = new ServiceError();
                 serviceError.setCreateDate(new Date());
                 serviceError.setOrderId(jdOrderIdp);
@@ -102,7 +103,7 @@ public class JdConfirmPreInventoryTask {
                 serviceErrorMapper.insertSelective(serviceError);
                 LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
             }
+            }
         }
-    }
 
-}
+    }

@@ -53,7 +53,7 @@ public class PaymentHttpClient {
 
     private static final String NEW_CUSTOMER_FLAG_URL = "/myCenter/search/customerFlag";
 
-    //  支付结果实时查询
+    //  支付宝退款
     private static final String ALIPAY_REFUND = "/xinlan/apassRefund/refundCash";
     /**
      * 调用GFB获取客户信息

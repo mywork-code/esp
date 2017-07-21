@@ -27,6 +27,13 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.enums.AcceptGoodsType;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
@@ -60,8 +67,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
@@ -138,7 +143,7 @@ public class OrderService {
 	private RepayFlowMapper flowMapper;
 	@Autowired
 	private CashRefundTxnMapper cashRefundTxnMapper;
-	
+
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -199,7 +204,7 @@ public class OrderService {
 	}
 
 	/**
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 * 查询异常订单，即为支付宝申请二次退款的订单
 	 */
 	public Pagination<OrderSubInfoEntity> queryOrderCashRefundException(Map<String,String> map,Page page) throws BusinessException{
@@ -212,7 +217,7 @@ public class OrderService {
 			throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
 		}
 	}
-	
+
 	public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String,String> map,Page page) throws BusinessException{
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
@@ -223,7 +228,7 @@ public class OrderService {
 				throw new BusinessException(" 通过商户号查询订单详细信息失败！", e);
 			}
 	}
-	
+
 	/**
 	 * 查询被二次拒绝的订单
 	 * @throws BusinessException
@@ -1675,21 +1680,21 @@ public class OrderService {
 	public String latestSuccessTime(Long userId){
 		Date orderCreateDate = null;
 		Date repayCreateDate = null;
-		
+
 		OrderInfoEntity orderInfo = orderInfoRepository.queryLatestSuccessOrderInfo(userId);
 		if(null != orderInfo){
 			orderCreateDate = orderInfo.getCreateDate();
 		}
-		
+
 		RepayFlow flow = flowMapper.queryLatestSuccessOrderInfo(userId);
 		if(null != flow){
 			repayCreateDate = flow.getCreateDate();
 		}
-		
+
 		return DateFormatUtil.datetime2String(getMaxDate(orderCreateDate, repayCreateDate));
 	}
 
-	
+
 
 	/**
 	 * 获取两个时间的大小
@@ -1698,27 +1703,27 @@ public class OrderService {
 	 * @return
 	 */
 	public Date getMaxDate(Date date1,Date date2){
-		
+
 		if(null != date1 && null == date2){
 			return date1;
 		}
-		
+
 		if(null == date1 && null != date2){
 			return date2;
 		}
-		
+
 		if(null != date1 && null != date2){
-			
+
 			if(date1.before(date2)){
 				return date2;
 			}else{
 				return date1;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public List<OrderInfoEntity> selectByMainOrderId(String mainOrderId) throws BusinessException{
 		List<OrderInfoEntity> list = orderInfoRepository.selectByMainOrderId(mainOrderId);
 		return list;
@@ -1979,14 +1984,28 @@ public class OrderService {
         String jdOrderIdp = orderInfoEntity.getExtOrderId();
         long jdOrderId = Long.valueOf(jdOrderIdp);
         Object pOrderV = jsonObject.get("pOrder");
+        LOGGER.info("jdOrderId {} jdSplitOrderMessageHandle  ",jdOrderId);
 
-        if (pOrderV instanceof Number) {
+        //确认预占库存 改变订单状态
+		Map<String,Object> params = Maps.newHashMap();
+		params.put("preStockStatus",PreStockStatus.SURE_STOCK.getCode());
+		params.put("updateTime", new Date());
+		params.put("extOrderId", jdOrderId);
+		params.put("orderId", orderInfoEntity.getOrderId());
+		orderInfoRepository.updatePreStockStatusByOrderId(params);
+
+		if (pOrderV instanceof Number) {
+			//未拆单
 			//订阅物流信息
-        	HashMap <String,String> hashMap = new HashMap();
-			hashMap.put("logisticsName","jd");
-			hashMap.put("logisticsNo",jdOrderIdp);
-			hashMap.put("orderId",orderInfoEntity.getOrderId());
-			updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+			try{
+				HashMap <String,String> hashMap = new HashMap();
+				hashMap.put("logisticsName","jd");
+				hashMap.put("logisticsNo",jdOrderIdp);
+				hashMap.put("orderId",orderInfoEntity.getOrderId());
+				updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+			}catch (Exception e ){
+				throw new BusinessException();
+			}
             throw new BusinessException();
         } else {
             String merchantCode = orderInfoEntity.getMerchantCode();
@@ -1999,6 +2018,7 @@ public class OrderService {
             pOrderJsonObject.getIntValue("orderState");
             JSONArray cOrderArray = jsonObject.getJSONArray("cOrder");
 
+            //拆单 插入子订单
             for (int i = 0; i < cOrderArray.size(); i++) {
                 JSONObject cOrderJsonObject = cOrderArray.getJSONObject(i);
                 if (cOrderJsonObject.getLongValue("pOrder") != jdOrderId) {
@@ -2043,23 +2063,25 @@ public class OrderService {
                 orderInfo.setPreDelivery(orderInfoEntity.getPreDelivery());
                 orderInfo.setCreateDate(orderInfoEntity.getCreateDate());
                 orderInfo.setUpdateDate(new Date());
+				orderInfo.setMainOrderId(orderInfoEntity.getOrderId());
                 orderInfo.setExtOrderId(String.valueOf(cOrderId));
 				orderInfo.setStatus(OrderStatus.ORDER_SEND.getCode());
+				orderInfo.setPreStockStatus(PreStockStatus.SURE_STOCK.getCode());
                 Integer successStatus = orderInfoRepository.insert(orderInfo);
                 if (successStatus < 1) {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
                     continue;
                 }
-//                try{
-//					//订阅物流信息
-//					HashMap <String,String> hashMap = new HashMap();
-//					hashMap.put("logisticsName","jd");
-//					hashMap.put("logisticsNo",String.valueOf(cOrderId));
-//					hashMap.put("orderId",cOrderQh);
-//					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
-//				}catch (Exception e ){
-//
-//				}
+                try{
+					//订阅物流信息
+					HashMap <String,String> hashMap = new HashMap();
+					hashMap.put("logisticsName","jd");
+					hashMap.put("logisticsNo",String.valueOf(cOrderId));
+					hashMap.put("orderId",cOrderQh);
+					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+				}catch (Exception e ){
+
+				}
 
                 for (int j = 0; j < cOrderSkuList.size(); j++) {
                     long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
@@ -2074,12 +2096,7 @@ public class OrderService {
                     String name = cOrderSkuList.getJSONObject(j).getString("name");
                     GoodsInfoEntity goods = goodsDao.select(goodsId);
 					List<GoodsStockInfoEntity> goodsStockInfoEntityList = getGoodsStockDao.loadByGoodsId(goodsId);
-					long goodsStockId = 48433l;
-					if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
-						goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
-					}else{
-						goodsStockId= 48433l;
-					}
+					long goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
                     //orderDetail插入对应记录
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
                     orderDetail.setOrderId(cOrderQh);
@@ -2127,7 +2144,7 @@ public class OrderService {
 	public void orderCashRefund(String orderId,String refundType,String userName){
 		//根据订单id，获取订单信息
 		OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
-		
+
 		if(StringUtils.equals(refundType, "0")){
 			//根据订单号id，获取cashrefund的记录
 			CashRefund refund = cashRefundMapper.getCashRefundByOrderId(orderId);
@@ -2138,7 +2155,7 @@ public class OrderService {
 					cashRefundTxn.setStatus("2");
 					cashRefundTxnMapper.updateByPrimaryKey(cashRefundTxn);
 				}
-				refund.setStatus(4);
+				refund.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS4.getCode()));
 				refund.setAuditorName(userName);
 				refund.setAuditorDate(new Date());
 				cashRefundMapper.updateByPrimaryKeySelective(refund);
@@ -2149,6 +2166,6 @@ public class OrderService {
 			order.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
 			orderInfoRepository.updateOrderStatus(order);
 		}
-		
+
 	}
 }

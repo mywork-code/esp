@@ -7,6 +7,7 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.JdMessageEnum;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
@@ -102,6 +103,10 @@ public class JDTaskListener implements MessageListener {
             }
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
+
+            if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
+                return;
+            }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
             } catch (BusinessException e) {
