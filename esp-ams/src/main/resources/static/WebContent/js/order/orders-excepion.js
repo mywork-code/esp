@@ -76,7 +76,7 @@ $ (function ()
 		                        width : 100,
 		                        align : 'center',
 	                            formatter: function (value, row, index) {
-	                            	if(value != ''){
+	                            	if(null != value && '' != value){
 	                            		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
 	                            	}
 	                            }
