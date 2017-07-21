@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  * @see
  * @since JDK 1.8
  */
-//@Service
+@Service
 public class JdTokenSyncer extends AbstractSyncer {
     private static final String JD_TOKEN_REDIS_KEY = "JD_TOKEN_REDIS_KEY";
 
