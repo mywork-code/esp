@@ -728,7 +728,7 @@
 
 
 	<update id="updateOrderStatusByExtOrderId" parameterType="OrderInfoEntity">
-		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR},update_date = NOW() WHERE ext_order_id =  #{extOrderId, jdbcType=VARCHAR}
+		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR},update_date = NOW(),acceptgoodsdate = NOW() WHERE ext_order_id =  #{extOrderId, jdbcType=VARCHAR}
 	</update>
 
 	<select id="getJdOrderByOrderStatus" resultType="OrderInfoEntity">
