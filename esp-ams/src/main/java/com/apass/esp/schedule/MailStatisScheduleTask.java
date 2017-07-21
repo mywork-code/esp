@@ -76,7 +76,7 @@ public class MailStatisScheduleTask {
         String dateBefore = DateFormatUtil.dateToString(date, "YYYY-MM-dd");
         String dateBeforeDate = dateBefore.substring(0, 8);
         //当天是1号  发上个月的
-        String  beginDate = dateBeforeDate + "01";
+        String beginDate = dateBeforeDate + "01";
 
         Integer count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
         //待发货
@@ -93,26 +93,27 @@ public class MailStatisScheduleTask {
         Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
         //额度支付
         Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
-        Integer count7 = count1 + count2 + count3 + count4 + countc + countd;
-        LOGGER.info(" mailStatisSchedule  beginDate {} currentDate {}",beginDate,currentDate);
-        LOGGER.info("mailStatisSchedule  D00 {}  D02 {} D03 {} D07 {} D08 {} D04 {}",count1,count2,count3,count4,count5,count6,countc,countd);
+
+        LOGGER.info(" mailStatisSchedule  beginDate {} currentDate {}", beginDate, currentDate);
+        LOGGER.info("mailStatisSchedule  D00 {}  D02 {} D03 {} D07 {} D08 {} D04 {} count5 {} count6 {}", count1, count2, count3, count4, count5, count6);
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
-        exportDomain.setDate(beginDate  + " ~ " + dateBefore);
+        exportDomain.setDate(beginDate + " ~ " + dateBefore);
         exportDomain.setCount1(NumberUtils.nullToZero(count1));
         exportDomain.setCount2(NumberUtils.nullToZero(count2));
         exportDomain.setCount3(NumberUtils.nullToZero(count3));
         exportDomain.setCount4(NumberUtils.nullToZero(count4));
         exportDomain.setCount5(NumberUtils.nullToZero(count5));
         exportDomain.setCount6(NumberUtils.nullToZero(count6));
-        exportDomain.setCount7(NumberUtils.nullToZero(count7));
         exportDomain.setCountd(NumberUtils.nullToZero(countd));
         exportDomain.setCountc(NumberUtils.nullToZero(countc));
+        Integer count7 = NumberUtils.nullToZero(count1) + NumberUtils.nullToZero(count2) + NumberUtils.nullToZero(count3) + NumberUtils.nullToZero(count4) + NumberUtils.nullToZero(countc) + NumberUtils.nullToZero(countd);
+        exportDomain.setCount7(NumberUtils.nullToZero(count7));
         list.add(exportDomain);
         try {
             generateFile(list);
         } catch (IOException e) {
-            LOGGER.error("mailStatisSchedule generateFile error .... ",e);
+            LOGGER.error("mailStatisSchedule generateFile error .... ", e);
         }
         MailSenderInfo mailSenderInfo = new MailSenderInfo();
         mailSenderInfo.setMailServerHost("SMTP.263.net");
@@ -121,11 +122,11 @@ public class MailStatisScheduleTask {
         mailSenderInfo.setUserName(sendAddress);
         mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
         mailSenderInfo.setFromAddress(sendAddress);
-        mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate  + " ~ " + dateBefore + "】");
+        mailSenderInfo.setSubject("安家趣花电商订单统计【" + beginDate + " ~ " + dateBefore + "】");
         mailSenderInfo.setContent("请查收最新统计报表..");
         mailSenderInfo.setToAddress("xujie@apass.cn");
-        if("prod".equals(env)){
-            mailSenderInfo.setToAddress("huangbeifang@apass.cn");
+        if ("prod".equals(env)) {
+            mailSenderInfo.setToAddress("huangbeifang@apass.cn,xujie@apass.cn");
             mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
         }
 
@@ -139,7 +140,7 @@ public class MailStatisScheduleTask {
             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
             msgPart.addBodyPart(body);
         } catch (MessagingException e) {
-            LOGGER.error("mailStatisSchedule msgPart   body error.... ",e);
+            LOGGER.error("mailStatisSchedule msgPart   body error.... ", e);
         }
         mailSenderInfo.setMultipart(msgPart);
         MailUtil mailUtil = new MailUtil();
@@ -156,8 +157,8 @@ public class MailStatisScheduleTask {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
-        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效","删除订单", "交易完成","银行卡支付总额", "额度支付总额", "总计"};
-        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd","countc","count5", "count6", "count7"};
+        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效", "删除订单", "交易完成", "银行卡支付总额", "额度支付总额", "总计"};
+        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd", "countc", "count5", "count6", "count7"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
