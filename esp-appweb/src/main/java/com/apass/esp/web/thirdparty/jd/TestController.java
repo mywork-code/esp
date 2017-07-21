@@ -780,7 +780,7 @@ public class TestController {
     @RequestMapping(value = "/orderJdOrderQuery", method = RequestMethod.POST)
     @ResponseBody
     public Response orderJdOrderQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59461122154l);
+        JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(59616806118l);
 
         JSONObject jsonObject = jdApiResponse.getResult();
         Object pOrderV = jsonObject.get("pOrder");
