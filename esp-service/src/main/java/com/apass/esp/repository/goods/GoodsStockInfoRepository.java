@@ -80,4 +80,12 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	public void deleteJDGoodsStockBatch(List<Long> idsStock) {
 		this.getSqlSession().delete("deleteJDGoodsStockBatch", idsStock);
 	}
+	/**
+	 * 根据商品库存id查询 商品来源信息 -
+	 * @param stockId
+	 * @return
+	 */
+	public String getGoodsSourceByGoodsStockId(Long stockId){
+		return this.getSqlSession().selectOne("getGoodsSourceByGoodsStockId", stockId);
+	}
 }

@@ -225,6 +225,19 @@
                 GOODS_ID=#{value}
         ]]>
     </select>
+      	<!-- 根据商品库存id查询 商品来源信息 -->
+    <select id="getGoodsSourceByGoodsStockId" parameterType="Long" resultType="String">
+        <![CDATA[
+            SELECT
+					 T1.SOURCE
+				FROM
+					 T_ESP_GOODS_STOCK_INFO T,
+					 T_ESP_GOODS_BASE_INFO T1
+				WHERE
+					 T.GOODS_ID = T1.ID
+                AND  T.ID=#{VALUE}
+        ]]>
+    </select>
     	<!-- 根据商品id查询 商品库存中市场价最高价 -->
     <select id="getMaxMarketPriceByGoodsId" parameterType="Long" resultType="Long">
         <![CDATA[
