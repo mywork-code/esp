@@ -204,7 +204,8 @@
             t1.UPDATE_DATE              updateDate,
 			t1.goods_compare_url 		 goodsCompareUrl,
 			t1.goods_compare_url2 		 goodsCompareUrl2,
-			t2.source                   source
+			t2.source                    source,
+			t2.goods_logo_url            goodsLogoUrl
 		FROM
 			T_ESP_GOODS_STOCK_INFO t1 ,
 		    T_ESP_GOODS_BASE_INFO  t2

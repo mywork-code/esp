@@ -675,28 +675,32 @@ public class ShoppingCartService {
 		List<GoodsStockInfoEntity> goodsStockInfoList = new ArrayList<>();
         Map<Long, GoodsStockInfoEntity> resultMap= new HashMap<Long, GoodsStockInfoEntity>();
         GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
-
-        // 查询商品基本信息，返回客户端该商品单条信息
-        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
-        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
-		goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
-		if (null == goodsStockInfoList || goodsStockInfoList.isEmpty()) {
-			LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
-			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
-		}
-		for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
-			goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
-			resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
-		}
-		if (!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)) {
-			LOG.info(requestId, "商品库存id与商品id不匹配", "");
-			throw new BusinessException("无效的商品id或库存id", BusinessErrorCode.GOODS_ID_ERROR);
-		}
-		if ("jd".equals(goodsInfo.getSource())) {
-			goodsInfoInCart.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsInfo.getGoodsLogoUrl());
-			goodsInfoInCart.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfo.getGoodsLogoUrl());
-			
+        GoodsInfoEntity goodsInfo=new GoodsInfoEntity();
+        
+        GoodsStockInfoEntity preGoodsStockEntity=goodsStockDao.select(preGoodsStockIdVal);
+        GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
+		if ("jd".equals(preGoodsStockEntity.getGoodsSource()) && "jd".equals(secGoodsStockEntity.getGoodsSource())) {
+			// 查询商品基本信息，返回客户端该商品单条信息
+			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
+			goodsInfoInCart.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+secGoodsStockEntity.getGoodsLogoUrl());
+			goodsInfoInCart.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+secGoodsStockEntity.getGoodsLogoUrl());
 		} else {
+			// 查询商品基本信息，返回客户端该商品单条信息
+	        goodsInfo = goodsInfoDao.select(goodsIdVal);
+	        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
+			goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
+			if (null == goodsStockInfoList || goodsStockInfoList.isEmpty()) {
+				LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
+				throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
+			for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
+				goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
+				resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
+			}
+			if (!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)) {
+				LOG.info(requestId, "商品库存id与商品id不匹配", "");
+				throw new BusinessException("无效的商品id或库存id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
 	        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
 	        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
 	        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
