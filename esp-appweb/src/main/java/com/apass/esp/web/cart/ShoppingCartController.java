@@ -346,7 +346,7 @@ public class ShoppingCartController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
-        String goodsId = CommonUtils.getValue(paramMap, "goodsId");
+        String goodsId = CommonUtils.getValue(paramMap, "goodsId");//当是京东商品时，goodsId为修改后商品的
         String preGoodsStockId = CommonUtils.getValue(paramMap, "preGoodsStockId");
         String secGoodsStockId = CommonUtils.getValue(paramMap, "secGoodsStockId");
         String num = CommonUtils.getValue(paramMap, "num");
@@ -372,7 +372,7 @@ public class ShoppingCartController {
             return Response.success("修改商品规格成功", resultMap);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
-            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+            return Response.fail(e.getBusinessErrorCode());
         } catch (Exception e) {
             LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
             return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
