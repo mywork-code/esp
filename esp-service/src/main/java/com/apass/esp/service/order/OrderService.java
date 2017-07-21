@@ -2072,16 +2072,16 @@ public class OrderService {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
                     continue;
                 }
-//                try{
-//					//订阅物流信息
-//					HashMap <String,String> hashMap = new HashMap();
-//					hashMap.put("logisticsName","jd");
-//					hashMap.put("logisticsNo",String.valueOf(cOrderId));
-//					hashMap.put("orderId",cOrderQh);
-//					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
-//				}catch (Exception e ){
-//
-//				}
+                try{
+					//订阅物流信息
+					HashMap <String,String> hashMap = new HashMap();
+					hashMap.put("logisticsName","jd");
+					hashMap.put("logisticsNo",String.valueOf(cOrderId));
+					hashMap.put("orderId",cOrderQh);
+					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+				}catch (Exception e ){
+
+				}
 
                 for (int j = 0; j < cOrderSkuList.size(); j++) {
                     long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
