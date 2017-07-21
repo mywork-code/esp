@@ -39,7 +39,7 @@ import java.util.*;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class JdAfterSaleScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdAfterSaleScheduleTask.class);
 
@@ -67,7 +67,7 @@ public class JdAfterSaleScheduleTask {
 
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
-        List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
+        //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
             long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
@@ -109,25 +109,25 @@ public class JdAfterSaleScheduleTask {
 
             //改变refundDetail里的状态
 
-            for (int i = 0; i < array.size(); i++) {
-                JSONObject jsonObject = (JSONObject) array.get(i);
-                AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-                //详细信息
-                long afsServiceId = jsonObject.getLong("afsServiceId");
-                JdApiResponse<JSONObject> afterSaleDetail = jdAfterSaleApiClient
-                        .afterSaleServiceDetailInfoQuery(afsServiceId, appendInfoSteps);
-                if (!afterSaleDetail.isSuccess()) {
-                    LOGGER.info("afsServiceId: " + afsServiceId + "query jd afterSaleDetail is not success");
-                }
-                if (afterSaleDetail == null || afterSaleDetail.getResult() == null) {
-                    return;
-                }
-                //退货
-                if (newAfsInfo.getCustomerExpect() == 10) {
-                    //是否退款完成
-                }
-                JSONObject jb = (JSONObject) afterSaleDetail.getResult();
-            }
+//            for (int i = 0; i < array.size(); i++) {
+//                JSONObject jsonObject = (JSONObject) array.get(i);
+//                AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+//                //详细信息
+//                long afsServiceId = jsonObject.getLong("afsServiceId");
+//                JdApiResponse<JSONObject> afterSaleDetail = jdAfterSaleApiClient
+//                        .afterSaleServiceDetailInfoQuery(afsServiceId, appendInfoSteps);
+//                if (!afterSaleDetail.isSuccess()) {
+//                    LOGGER.info("afsServiceId: " + afsServiceId + "query jd afterSaleDetail is not success");
+//                }
+//                if (afterSaleDetail == null || afterSaleDetail.getResult() == null) {
+//                    return;
+//                }
+//                //退货
+//                if (newAfsInfo.getCustomerExpect() == 10) {
+//                    //是否退款完成
+//                }
+//                JSONObject jb = (JSONObject) afterSaleDetail.getResult();
+//            }
         }
 
     }
@@ -205,6 +205,8 @@ public class JdAfterSaleScheduleTask {
                 refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS01.getCode());
             } else if (i == 40 || i == 50) {
                 refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS05.getCode());
+            }else{
+                refundDetailInfoEntity.setStatus( RefundStatus.REFUND_STATUS01.getCode());
             }
             refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
         }

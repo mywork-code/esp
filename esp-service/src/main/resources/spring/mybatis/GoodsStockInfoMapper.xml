@@ -188,26 +188,30 @@
 	
   	<select id="selectByPK" resultType="GoodsStockInfoEntity" parameterType="Long" >
 		SELECT
-			ID                    	 goodsStockId,
-			ID						 id,
-			GOODS_ID                 goodsId,
-			GOODS_PRICE              goodsPrice,
-			GOODS_COST_PRICE         goodsCostPrice,
-			MARKET_PRICE             marketPrice,
-			GOODS_SKU_ATTR           goodsSkuAttr,
-			STOCK_TOTAL_AMT          stockTotalAmt,
-			STOCK_CURR_AMT           stockCurrAmt,
-			STOCK_LOGO               stockLogo,
-			CREATE_USER              createUser,
-            UPDATE_USER              updateUser,
-            CREATE_DATE              createDate,
-            UPDATE_DATE              updateDate,
-			goods_compare_url 		 goodsCompareUrl,
-			goods_compare_url2 		 goodsCompareUrl2
+			t1.ID                    	 goodsStockId,
+			t1.ID						 id,
+			t1.GOODS_ID                 goodsId,
+			t1.GOODS_PRICE              goodsPrice,
+			t1.GOODS_COST_PRICE         goodsCostPrice,
+			t1.MARKET_PRICE             marketPrice,
+			t1.GOODS_SKU_ATTR           goodsSkuAttr,
+			t1.STOCK_TOTAL_AMT          stockTotalAmt,
+			t1.STOCK_CURR_AMT           stockCurrAmt,
+			t1.STOCK_LOGO               stockLogo,
+			t1.CREATE_USER              createUser,
+            t1.UPDATE_USER              updateUser,
+            t1.CREATE_DATE              createDate,
+            t1.UPDATE_DATE              updateDate,
+			t1.goods_compare_url 		 goodsCompareUrl,
+			t1.goods_compare_url2 		 goodsCompareUrl2,
+			t2.source                    source,
+			t2.goods_logo_url            goodsLogoUrl
 		FROM
-			T_ESP_GOODS_STOCK_INFO
+			T_ESP_GOODS_STOCK_INFO t1 ,
+		    T_ESP_GOODS_BASE_INFO  t2
 		WHERE
-			ID = #{value}
+		    t1.GOODS_ID=t2.ID
+		AND t1.ID = #{value}
   	</select>
   	
   	<!-- 根据商品id查询 商品所有 sku属性 信息 -->
@@ -223,19 +227,6 @@
                 T_ESP_GOODS_STOCK_INFO
             WHERE
                 GOODS_ID=#{value}
-        ]]>
-    </select>
-      	<!-- 根据商品库存id查询 商品来源信息 -->
-    <select id="getGoodsSourceByGoodsStockId" parameterType="Long" resultType="String">
-        <![CDATA[
-            SELECT
-					 T1.SOURCE
-				FROM
-					 T_ESP_GOODS_STOCK_INFO T,
-					 T_ESP_GOODS_BASE_INFO T1
-				WHERE
-					 T.GOODS_ID = T1.ID
-                AND  T.ID=#{VALUE}
         ]]>
     </select>
     	<!-- 根据商品id查询 商品库存中市场价最高价 -->

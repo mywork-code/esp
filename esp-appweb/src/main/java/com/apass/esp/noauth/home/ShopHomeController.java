@@ -547,7 +547,7 @@ public class ShopHomeController {
         resultMap.put("goodsList",goodsList);
         resultMap.put("pageIndex",pageIndex);
         resultMap.put("totalCount",jdGoodSalesVolumePagination.getTotalCount());
-        return Response.successResponse(goodsList);
+        return Response.successResponse(resultMap);
     }
 
 	/**

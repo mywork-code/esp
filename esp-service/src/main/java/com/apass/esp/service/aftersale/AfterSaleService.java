@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,14 +165,20 @@ public class AfterSaleService {
         if("jd".equals(orderInfo.getSource())){
         	AfsApply afsApply = new AfsApply();
         	afsApply.setJdOrderId(Long.valueOf(orderInfo.getExtOrderId()));//京东订单号
+        	//afsApply.setJdOrderId(59904143604l);//京东订单号
         	afsApply.setUserId(Long.valueOf(userId));
-        	afsApply.setCustomerExpect(10);//客户预期（退货(10)、换货(20)、维修(30)）
+            if(operate.equals(YesNo.NO.getCode())){
+                afsApply.setCustomerExpect(10);//客户预期（退货(10)、换货(20)、维修(30)）
+            }else{
+                afsApply.setCustomerExpect(20);//客户预期（退货(10)、换货(20)、维修(30)）
+            }
         	afsApply.setQuestionDesc(content);//产品问题描述
         	/**客户信息实体*/
         	AsCustomerDto asCustomerDto = new AsCustomerDto();
         	asCustomerDto.setCustomerContactName(orderInfo.getName());
         	asCustomerDto.setCustomerPostcode(orderInfo.getPostcode());
         	asCustomerDto.setCustomerMobilePhone(orderInfo.getTelephone());
+            asCustomerDto.setCustomerTel(orderInfo.getTelephone());
         	afsApply.setAsCustomerDtok(asCustomerDto);
         	
         	/**取件信息实体*/
@@ -179,10 +186,10 @@ public class AfterSaleService {
         	//根据addressId查询地址
         	AddressInfoEntity addressInfoEntity = addressService.queryOneAddressByAddressId(orderInfo.getAddressId());
         	asPickwareDto.setPickwareType(4);
-        	asPickwareDto.setPickwareProvince(Integer.valueOf(addressInfoEntity.getProvinceCode()));
+            asPickwareDto.setPickwareProvince(Integer.valueOf(addressInfoEntity.getProvinceCode()));
         	asPickwareDto.setPickwareCity(Integer.valueOf(addressInfoEntity.getCityCode()));
         	asPickwareDto.setPickwareCounty(Integer.valueOf(addressInfoEntity.getDistrictCode()));
-        	asPickwareDto.setPickwareVillage(Integer.valueOf(addressInfoEntity.getTownsCode()));
+        	asPickwareDto.setPickwareVillage(StringUtils.isEmpty(addressInfoEntity.getTownsCode())?0:Integer.valueOf(addressInfoEntity.getTownsCode()));
         	asPickwareDto.setPickwareAddress(addressInfoEntity.getAddress());
         	afsApply.setAsPickwareDtok(asPickwareDto);
         	
@@ -191,14 +198,15 @@ public class AfterSaleService {
         	if(operate.equals(YesNo.NO.getCode())){
         		asReturnwareDto.setReturnwareType(10);
         	}else{
-        		asReturnwareDto.setReturnwareAddress(addressInfoEntity.getAddress());
-        		asReturnwareDto.setReturnwareType(20);
-        		asReturnwareDto.setReturnwareProvince(Integer.valueOf(addressInfoEntity.getProvinceCode()));
-        		asReturnwareDto.setReturnwareCity(Integer.valueOf(addressInfoEntity.getCityCode()));
-        		asReturnwareDto.setReturnwareCounty(Integer.valueOf(addressInfoEntity.getDistrictCode()));
-        		asReturnwareDto.setReturnwareVillage(Integer.valueOf(addressInfoEntity.getTownsCode()));
-        		asReturnwareDto.setReturnwareAddress(addressInfoEntity.getAddress());
+                asReturnwareDto.setReturnwareType(20);
         	}
+            asReturnwareDto.setReturnwareAddress(addressInfoEntity.getAddress());
+            asReturnwareDto.setReturnwareProvince(Integer.valueOf(addressInfoEntity.getProvinceCode()));
+            asReturnwareDto.setReturnwareCity(Integer.valueOf(addressInfoEntity.getCityCode()));
+            asReturnwareDto.setReturnwareCounty(Integer.valueOf(addressInfoEntity.getDistrictCode()));
+            asReturnwareDto.setReturnwareVillage(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.valueOf(addressInfoEntity.getTownsCode()));
+            asReturnwareDto.setReturnwareAddress(addressInfoEntity.getAddress());
+
         	afsApply.setAsReturnwareDtok(asReturnwareDto);
         	
         	/**申请单明细*/
@@ -208,12 +216,13 @@ public class AfterSaleService {
         	for (GoodsStockIdNumDto goodsStockIdNumDto : returngoodsList) {
         		OrderDetailInfoEntity orderDetailInfoEntity = resultMap.get(goodsStockIdNumDto.getGoodsStockId());
         		asDetailDto.setSkuId(Long.valueOf(orderDetailInfoEntity.getSkuId()));
+        		//asDetailDto.setSkuId(4126762l);
         		asDetailDto.setSkuNum(goodsStockIdNumDto.getGoodsNum());
         		afsApply.setAsDetailDtok(asDetailDto);
         		
         		JdApiResponse<Integer> jdApiResponse = jdAfterSaleApiClient.afterSaleAvailableNumberCompQuery(Long.valueOf(orderInfo.getExtOrderId()), Long.valueOf(orderDetailInfoEntity.getSkuId()));
         		LOGGER.info("skuId为{}的京东商品可退货数量：{}",orderDetailInfoEntity.getSkuId(),jdApiResponse.toString());
-        		if(jdApiResponse.getResult()-goodsStockIdNumDto.getGoodsNum()>0){//支持售后
+        		if(jdApiResponse.isSuccess()){//支持售后
         			JdApiResponse<JSONArray> jdApiResponse2 = jdAfterSaleApiClient.afterSaleCustomerExpectCompQuery(Long.valueOf(orderInfo.getExtOrderId()), Long.valueOf(orderDetailInfoEntity.getSkuId()));
         			String jdApiResponse2Str = GsonUtils.toJson(jdApiResponse2.getResult());
         			String type = "";
@@ -225,6 +234,7 @@ public class AfterSaleService {
         			if(!jdApiResponse2Str.contains(operate.equals(YesNo.NO.getCode())?"10":"20")){
         				LOGGER.error("skuId为{}的京东商品不支持"+type+"货",orderDetailInfoEntity.getSkuId());
         				refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
+                        throw new BusinessException("该商品不支持售后",BusinessErrorCode.PARAM_VALUE_ERROR);
         			}
         			
         			JdApiResponse<JSONArray> jdApiResponse3 = jdAfterSaleApiClient.afterSaleWareReturnJdCompQuery(Long.valueOf(orderInfo.getExtOrderId()), Long.valueOf(orderDetailInfoEntity.getSkuId()));
@@ -238,18 +248,23 @@ public class AfterSaleService {
         			}else{
         				LOGGER.error("skuId为{}的京东商品返回京东方式有误",orderDetailInfoEntity.getSkuId());
         				refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
+                        throw new BusinessException("该商品不支持售后",BusinessErrorCode.PARAM_VALUE_ERROR);
         			}
 
         			afsApply = AfsApply.fromOriginalJson(afsApply);
         			
         			//调用京东接口：申请服务
-        			jdAfterSaleApiClient.afterSaleAfsApplyCreate(afsApply);
+                    JdApiResponse<Integer> jdApiResponse1 = jdAfterSaleApiClient.afterSaleAfsApplyCreate(afsApply);
+                    if(!jdApiResponse1.isSuccess()){
+                        //TODO
+
+                        throw new BusinessException("该商品不支持售后",BusinessErrorCode.PARAM_VALUE_ERROR);
+                    }
         		}else{
         			refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
+                    throw new BusinessException("该商品不支持售后",BusinessErrorCode.PARAM_VALUE_ERROR);
         		}
-				
 			}
-        	
         }
          
         /** 4. 售后数据入库操作 */
