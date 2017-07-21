@@ -109,7 +109,7 @@ public class CashRefundService {
      * @param orderId
      * @return
      */
-    public List<TxnInfoDto> getTxnInfoByOrderId(String orderId) {
+    public List<TxnInfoDto> getTxnInfoByMainOrderId(String orderId) {
         List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderId);
         List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
         for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
