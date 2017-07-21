@@ -895,21 +895,25 @@ public class OrderService {
 			LOG.info(requestId, "校验订单状态", "当前订单状态不能取消该订单");
 			throw new BusinessException("对不起!当前订单状态不能取消该订单",BusinessErrorCode.ORDERSTATUS_NOTALLOW_CANCEL);
 		}
-		dealWithInvalidOrder(requestId, orderId);
+		dealWithInvalidOrder(requestId, order);
 	}
 
 	/**
 	 * 处理取消订单
 	 *
-	 * @param orderId
 	 * @throws BusinessException
 	 */
 	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
-	public void dealWithInvalidOrder(String requestId, String orderId) throws BusinessException {
+	public void dealWithInvalidOrder(String requestId, OrderInfoEntity order) throws BusinessException {
 
+		String orderId= order.getOrderId();
 		// 更新订单状态
 		LOG.info(requestId, "取消订单,更改订单状态为订单失效", orderId);
 		orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
+
+		if(SourceType.JD.getCode().equals(order.getSource())){
+				return;
+		}
 		// 回滚库存
 		GoodsStockLogEntity goodsStockLog = goodsStcokLogDao.loadByOrderId(orderId);
 		if (null != goodsStockLog) {
@@ -1238,7 +1242,7 @@ public class OrderService {
         // 待付款订单计算剩余付款时间
         if (order.getStatus().equals(OrderStatus.ORDER_NOPAY.getCode())) {
         	if (DateFormatUtil.isExpired(order.getCreateDate(), 1)) {
-        		dealWithInvalidOrder(requestId, order.getOrderId());
+        		dealWithInvalidOrder(requestId, order);
         		orderDetailInfoDto.setStatus(OrderStatus.ORDER_CANCEL.getCode());
         	} else {
         		orderDetailInfoDto.setRemainingTime(

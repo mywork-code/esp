@@ -64,7 +64,7 @@ public class OrderScheduleTask {
                 if (now.after(invalidDate)) {
                     if (OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
                         //处理订单失效
-                        orderService.dealWithInvalidOrder("requestId", order.getOrderId());
+                        orderService.dealWithInvalidOrder("requestId", order);
                         LOGGER.info("自动取消订单成功!orderId:{}", order.getOrderId());
                     }
                 }
