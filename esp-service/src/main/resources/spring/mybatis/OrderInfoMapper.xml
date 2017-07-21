@@ -414,6 +414,9 @@
 			<if test="mainOrderId != null ">
                 main_order_id = #{mainOrderId, jdbcType=VARCHAR},
             </if>
+			<if test="extParentId != null ">
+				ext_parent_id = #{extParentId, jdbcType=VARCHAR},
+			</if>
         </set>
         <![CDATA[
         WHERE ID = #{id, jdbcType=BIGINT} 

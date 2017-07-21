@@ -1995,7 +1995,10 @@ public class OrderService {
 		orderInfoRepository.updatePreStockStatusByOrderId(params);
 
 		if (pOrderV instanceof Number) {
-			//未拆单
+			//未拆单 
+			orderInfoEntity.setExtParentId(-1);
+			orderInfoRepository.update(orderInfoEntity);
+
 			//订阅物流信息
 			try{
 				HashMap <String,String> hashMap = new HashMap();
@@ -2045,7 +2048,7 @@ public class OrderService {
                 orderInfo.setUserId(orderInfoEntity.getUserId());
                 orderInfo.setOrderAmt(jdPrice);
                 orderInfo.setSource(SourceType.JD.getCode());
-                orderInfo.setExtParentId(-1);//为子订单
+                orderInfo.setExtParentId(Integer.valueOf(jdOrderIdp));//为子订单
                 orderInfo.setDeviceType(deviceType);
                 orderInfo.setOrderId(cOrderQh);
                 orderInfo.setGoodsNum(Long.valueOf(sumNum));
