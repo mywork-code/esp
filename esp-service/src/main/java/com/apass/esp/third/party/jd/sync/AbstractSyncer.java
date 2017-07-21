@@ -39,6 +39,7 @@ public abstract class AbstractSyncer implements Runnable {
             public void run() {
                 while (true) {
                     try {
+
                         if (!isFrequently()) {
                             Threads.sleepSeconds((long) (3600 * (Math.random() + 1)));
                         }

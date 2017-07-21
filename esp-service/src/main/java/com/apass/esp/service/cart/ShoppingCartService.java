@@ -671,31 +671,38 @@ public class ShoppingCartService {
         Long preGoodsStockIdVal = Long.valueOf(preGoodsStockId);
         Long secGoodsStockIdVal = Long.valueOf(secGoodsStockId);
         int numVal = Integer.parseInt(num);
-       String  preGoodsStockIdValSource=goodsStockDao.getGoodsSourceByGoodsStockId(preGoodsStockIdVal);
-       String  secGoodsStockIdValSource=goodsStockDao.getGoodsSourceByGoodsStockId(secGoodsStockIdVal);
-       if("jd".equals(preGoodsStockIdValSource) && "jd".equals(secGoodsStockIdValSource)){
-    	   
-       }else{
-    	   
-       }
-       // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
-        List<GoodsStockInfoEntity> goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
         
-        if(null == goodsStockInfoList || goodsStockInfoList.isEmpty()){
-            LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
-            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
-        
+		List<GoodsStockInfoEntity> goodsStockInfoList = new ArrayList<>();
         Map<Long, GoodsStockInfoEntity> resultMap= new HashMap<Long, GoodsStockInfoEntity>();
-        for(GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList){
-            goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
-            resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
-        }
-        if(!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)){
-            LOG.info(requestId, "商品库存id与商品id不匹配", "");
-            throw new BusinessException("无效的商品id或库存id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
-        
+        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+
+        // 查询商品基本信息，返回客户端该商品单条信息
+        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
+        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
+		goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
+		if (null == goodsStockInfoList || goodsStockInfoList.isEmpty()) {
+			LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
+			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
+		}
+		for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
+			goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
+			resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
+		}
+		if (!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)) {
+			LOG.info(requestId, "商品库存id与商品id不匹配", "");
+			throw new BusinessException("无效的商品id或库存id", BusinessErrorCode.GOODS_ID_ERROR);
+		}
+		if ("jd".equals(goodsInfo.getSource())) {
+			goodsInfoInCart.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+goodsInfo.getGoodsLogoUrl());
+			goodsInfoInCart.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfo.getGoodsLogoUrl());
+			
+		} else {
+	        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
+	        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
+	        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
+	        goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
+	        goodsInfoInCart.setDelistTime(goodsInfo.getDelistTime());
+		}
         // 2.删除购物车中原商品
         this.deleteGoodsInCart(requestId, userIdVal, new String[]{preGoodsStockId});
         
@@ -703,24 +710,19 @@ public class ShoppingCartService {
         this.addGoodsToCart(requestId, userId, secGoodsStockId, num);
         
         // 4.查询商品基本信息，返回客户端该商品单条信息
-        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
+//        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
         
         // 5.计算商品折扣后价格
         BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsIdVal, secGoodsStockIdVal);
         
-        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+//        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
         goodsInfoInCart.setUserId(userIdVal);
         goodsInfoInCart.setGoodsId(goodsIdVal);
         goodsInfoInCart.setGoodsStockId(secGoodsStockIdVal);
         goodsInfoInCart.setGoodsName(goodsInfo.getGoodsName());
         goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
-        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
-        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
         goodsInfoInCart.setGoodsNum(numVal);
-        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
-        goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
         goodsInfoInCart.setIsDelete(goodsInfo.getIsDelete());
-        goodsInfoInCart.setDelistTime(goodsInfo.getDelistTime());
         goodsInfoInCart.setIsSelect("1");
         goodsInfoInCart.setMerchantCode(goodsInfo.getMerchantCode());
         

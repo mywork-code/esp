@@ -65,6 +65,8 @@ public class GoodsStockInfoEntity {
 
     /** 商品规格logo url **/
     private String     stockLogo;
+    /** 商品logo**/
+    private String    goodsLogoUrl;
 
     public String getStockLogoNew() {
         return stockLogoNew;
@@ -252,6 +254,14 @@ public class GoodsStockInfoEntity {
 
 	public void setGoodsSource(String goodsSource) {
 		this.goodsSource = goodsSource;
+	}
+
+	public String getGoodsLogoUrl() {
+		return goodsLogoUrl;
+	}
+
+	public void setGoodsLogoUrl(String goodsLogoUrl) {
+		this.goodsLogoUrl = goodsLogoUrl;
 	}
     
     

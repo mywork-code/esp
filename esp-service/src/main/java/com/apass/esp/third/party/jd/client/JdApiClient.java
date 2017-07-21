@@ -39,10 +39,10 @@ public abstract class JdApiClient {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("method", UrlUtils.encode(method));
         params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
-        //JSONObject token = jdTokenManager.getToken();
+        JSONObject token = jdTokenManager.getToken();
         params.put("access_token",
-                "2d65f8b1551645df96abd5dd7cb28a308");
-               // UrlUtils.encode(token.getString("access_token")));
+               // "2d65f8b1551645df96abd5dd7cb28a308");
+               UrlUtils.encode(token.getString("access_token")));
         params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         params.put("format", UrlUtils.encode("json"));
         params.put("v", UrlUtils.encode(JdConstants.API_VERSION));
