@@ -684,6 +684,10 @@ public class ShoppingCartService {
 			LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
 			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
 		}
+		for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
+			goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
+			resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
+		}
 		if (!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)) {
 			LOG.info(requestId, "商品库存id与商品id不匹配", "");
 			throw new BusinessException("无效的商品id或库存id", BusinessErrorCode.GOODS_ID_ERROR);
@@ -693,10 +697,6 @@ public class ShoppingCartService {
 			goodsInfoInCart.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfo.getGoodsLogoUrl());
 			
 		} else {
-			for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
-				goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
-				resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
-			}
 	        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
 	        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
 	        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
