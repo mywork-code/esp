@@ -7,7 +7,6 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
-
 </head>
 <script type="text/javascript" charset="utf-8"
 	src="${rc.contextPath}/WebContent/ueditor1.4.3.3/ueditor.config.js"></script>
@@ -21,11 +20,9 @@
 #resetPasswordDetails+.window .panel-header>.panel-title {
 	color: #000;
 }
-
 .window>.panel-header>.panel-title {
 	color: #000;
 }
-
 #resetPasswordDetails table {
 	padding-top: 10px;
 }
@@ -407,7 +404,7 @@
 					<input type="hidden" id="editid" name="editid"/>
 					<tr>
 						<td width="20%" align="right"><font color="red">*</font>商品名称:</td>
-						<td colspan="1" width="60%" align="left"><input class="easyui-textbox" data-options="validType:'length[1,18]'"
+						<td colspan="1" width="60%" align="left"><input class="easyui-textbox"
 							id="editgoodsName" name="editgoodsName" style="width: 50%;" /><span id="editgoodsNameL"></span></td>
 					</tr>
 					<tr>
@@ -451,8 +448,8 @@
 					<tr>
 						<td align="right">保质期(多少个月):</td>
 						<td><input class="easyui-numberspinner" type="text"
-							data-options="min:1,max:100000" id="editkeepDate" name="editkeepDate"
-							required="true" missingMessage="1~100000之间的正整数"
+							data-options="min:1,max:100000" id="editkeepDate"
+							required="true" missingMessage="1~100000之间的正整数" disabled="disabled"
 							style="width: 100%;" /></td>
 					</tr>
 					<tr>
@@ -542,12 +539,14 @@
 		<div id="editGoodsStock" style="width: 100%; height: 100%">
 			<!-- 库存查询录入 -->
 			<div id="editGoodsStockInfoDiv">
-		  		<tr style="margin-top: 22px;">
-		  		<input type="hidden" name = "goodsId" id = "goodsId">
-				<td><a href="javascript:void(0);"
-				style="margin-left: 2px;" class="easyui-linkbutton addGoodsStockInfo">新&nbsp;增&nbsp;</a>
-					</td>
-				</tr>  
+				<table>
+			  		<tr style="margin-top: 22px;">
+			  		<input type="hidden" name="goodsId" id="goodsId">
+					<td><a href="javascript:void(0);" id = "editGoodsStockAddButton"
+					style="margin-left: 2px;" class="easyui-linkbutton addGoodsStockInfo">新&nbsp;增&nbsp;</a>
+						</td>
+					</tr>  
+				</table>
 		    	<div id="editGoodsStockList"></div>
 			</div>
 			<div style="width: 100%;min-height: 100px">
@@ -647,7 +646,7 @@
 					<td width="30%">
 					 <input type="hidden" name = "editstockinfoId" id = "editstockinfoId">
 					<input class="easyui-textbox"
-						type="text" id="editgoodsSkuAttr" name="editgoodsSkuAttr" style="width: 100%;" 		/>
+						type="text" id="editgoodsSkuAttr" name="editgoodsSkuAttr" style="width: 100%;" />
 					 </td>
 				</tr>
  				<tr>
@@ -742,13 +741,28 @@
 				<td><input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="editJDgoodsPrice" 
 				required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" /></td>
 			</tr>
+			<tr>
+				<td width="20%" align="right"><font color="red">*</font>比价链接1:</td>
+				<td width="30%">
+				<input class="easyui-textbox"
+					type="text" id="editJDgoodsCompareUrlone" style="width: 100%;" />
+				 </td>
+			</tr>
+			<tr>
+				<td width="20%" align="right"><font color="red">*</font>比价链接2:</td>
+				<td width="30%">
+				<input class="easyui-textbox"
+					type="text" id="editJDgoodsCompareUrltwo" style="width: 100%;" />
+				 </td>
+			</tr>
 			<tr style="margin-top: 22px;">
-					<td colspan="4"><a href="javascript:void(0);" id="editJDGoodsStockInfoDisy"
-						style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
-						<a href="javascript:void(0);" id="editJDGoodsStockInfoSumbit"
-						style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
-					</td>
-				</tr>
+				<td colspan="4"><a href="javascript:void(0);" id="editJDGoodsStockInfoDisy"
+					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+					<a href="javascript:void(0);" id="editJDGoodsStockInfoSumbit"
+					style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				</td>
+			</tr>
+			
 		</table>
 	</div>
 	

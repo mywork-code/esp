@@ -68,11 +68,11 @@ public class JdGoodsService {
 		for (JdGoods jdGoods : JdGoodsList) {
 			//封闭数据,往t_esp_goods_base_info表插入数据 
 			GoodsInfoEntity entity = new GoodsInfoEntity();
+			entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
 			entity.setCategoryId1(Long.valueOf(paramMap.get("categoryId1")));
 			entity.setCategoryId2(Long.valueOf(paramMap.get("categoryId2")));
 			entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
 			entity.setGoodsName(jdGoods.getName());
-			entity.setGoodsTitle("");
 			entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
 			entity.setMerchantCode("0000103");
 			entity.setStatus(GoodStatus.GOOD_NEW.getCode());

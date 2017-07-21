@@ -339,9 +339,9 @@ public class GoodsBaseInfoController {
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
                          HttpServletRequest request) {
         String message = SUCCESS;
-        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsModel(), pageModelEdit.getGoodsName(),
-                pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
-                || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
+        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(),
+                pageModelEdit.getGoodsTitle()) || pageModelEdit.getListTime().equals("")
+                || pageModelEdit.getDelistTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
