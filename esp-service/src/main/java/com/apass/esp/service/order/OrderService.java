@@ -2096,12 +2096,7 @@ public class OrderService {
                     String name = cOrderSkuList.getJSONObject(j).getString("name");
                     GoodsInfoEntity goods = goodsDao.select(goodsId);
 					List<GoodsStockInfoEntity> goodsStockInfoEntityList = getGoodsStockDao.loadByGoodsId(goodsId);
-					long goodsStockId = 48433l;
-					if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
-						goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
-					}else{
-						goodsStockId= 48433l;
-					}
+					long goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
                     //orderDetail插入对应记录
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
                     orderDetail.setOrderId(cOrderQh);

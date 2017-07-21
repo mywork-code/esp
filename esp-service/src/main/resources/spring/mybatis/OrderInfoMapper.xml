@@ -715,7 +715,8 @@
 			update_date updateDate,
 			pre_delivery preDelivery,
 			source source,
-			ext_order_id extOrderId
+			ext_order_id extOrderId,
+			pre_stock_status preStockStatus
 		FROM
 			t_esp_order_info
 		where ext_order_id = #{extOrderId}
