@@ -2072,16 +2072,16 @@ public class OrderService {
                     LOGGER.info("jdOrderId {}  cOrderId {} cOrderQh {} create order error  ", jdOrderId, cOrderId, cOrderQh);
                     continue;
                 }
-//                try{
-//					//订阅物流信息
-//					HashMap <String,String> hashMap = new HashMap();
-//					hashMap.put("logisticsName","jd");
-//					hashMap.put("logisticsNo",String.valueOf(cOrderId));
-//					hashMap.put("orderId",cOrderQh);
-//					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
-//				}catch (Exception e ){
-//
-//				}
+                try{
+					//订阅物流信息
+					HashMap <String,String> hashMap = new HashMap();
+					hashMap.put("logisticsName","jd");
+					hashMap.put("logisticsNo",String.valueOf(cOrderId));
+					hashMap.put("orderId",cOrderQh);
+					updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
+				}catch (Exception e ){
+
+				}
 
                 for (int j = 0; j < cOrderSkuList.size(); j++) {
                     long skuId = cOrderSkuList.getJSONObject(j).getLongValue("skuId");
@@ -2096,12 +2096,7 @@ public class OrderService {
                     String name = cOrderSkuList.getJSONObject(j).getString("name");
                     GoodsInfoEntity goods = goodsDao.select(goodsId);
 					List<GoodsStockInfoEntity> goodsStockInfoEntityList = getGoodsStockDao.loadByGoodsId(goodsId);
-					long goodsStockId = 48433l;
-					if(CollectionUtils.isNotEmpty(goodsStockInfoEntityList)){
-						goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
-					}else{
-						goodsStockId= 48433l;
-					}
+					long goodsStockId = goodsStockInfoEntityList.get(0).getGoodsStockId();
                     //orderDetail插入对应记录
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
                     orderDetail.setOrderId(cOrderQh);
