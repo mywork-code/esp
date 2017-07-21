@@ -3,10 +3,12 @@ package com.apass.esp.domain.entity.jd;
 import java.math.BigDecimal;
 
 public class JdSimilarSkuVo {
-	private  String skuId;
-	private   BigDecimal price;
-	private   BigDecimal priceFirst;
-	private  String stockDesc;
+	private String skuId;
+	private String goodsId;
+	private String goodsStockId;
+	private BigDecimal price;
+	private BigDecimal priceFirst;
+	private String stockDesc;
 	public String getSkuId() {
 		return skuId;
 	}
@@ -30,6 +32,18 @@ public class JdSimilarSkuVo {
 	}
 	public void setPriceFirst(BigDecimal priceFirst) {
 		this.priceFirst = priceFirst;
+	}
+	public String getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
+	}
+	public String getGoodsStockId() {
+		return goodsStockId;
+	}
+	public void setGoodsStockId(String goodsStockId) {
+		this.goodsStockId = goodsStockId;
 	}
 	
 }

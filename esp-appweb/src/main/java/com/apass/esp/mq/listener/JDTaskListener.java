@@ -86,6 +86,7 @@ public class JDTaskListener implements MessageListener {
                 OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
                 orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
                 orderInfoEntity.setExtOrderId(String.valueOf(orderId));
+                //orderInfoEntity.setAcceptGoodsDate(new Date());
                 orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
             }
 
