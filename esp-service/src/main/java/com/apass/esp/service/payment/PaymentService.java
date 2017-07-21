@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.enums.SourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -777,8 +778,10 @@ public class PaymentService {
                     List<OrderDetailInfoEntity> orderDetails = orderService.loadOrderDetail(payingOrders);
                     for (OrderDetailInfoEntity orderDetail : orderDetails) {
                         try {
-                            orderService.modifyGoodsQuantity(orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),
-                                orderDetail.getGoodsNum(), 1, OrderService.errorNo);
+													if(!SourceType.JD.getCode().equals(orderDetail.getSource())){
+														orderService.modifyGoodsQuantity(orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),
+																orderDetail.getGoodsNum(), 1, OrderService.errorNo);
+													}
                         } catch (Exception e) {
                             LOGGER.error("callback_{}_goodsStockId{} updateGoodsStock fail:{}", mainOrderId,
                                 orderDetail.getGoodsStockId(), e);
