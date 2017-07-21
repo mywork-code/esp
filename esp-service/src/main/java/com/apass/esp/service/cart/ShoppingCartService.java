@@ -629,6 +629,7 @@ public class ShoppingCartService {
         }
 		if ("jd".equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
+			resultMap.put("goodsSource", "jd");
 			resultMap.put("JdSimilarSkuToList", jdSimilarSkuInfoMap.get("JdSimilarSkuToList"));
 			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
@@ -646,7 +647,7 @@ public class ShoppingCartService {
 
 				dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
 			}
-
+			resultMap.put("goodsSource", "");
 			resultMap.put("goodsId", goodsInfo.getId());
 			resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
 			resultMap.put("goodsStockSkuList", goodsStockSkuList);
@@ -670,8 +671,14 @@ public class ShoppingCartService {
         Long preGoodsStockIdVal = Long.valueOf(preGoodsStockId);
         Long secGoodsStockIdVal = Long.valueOf(secGoodsStockId);
         int numVal = Integer.parseInt(num);
-        
-        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
+       String  preGoodsStockIdValSource=goodsStockDao.getGoodsSourceByGoodsStockId(preGoodsStockIdVal);
+       String  secGoodsStockIdValSource=goodsStockDao.getGoodsSourceByGoodsStockId(secGoodsStockIdVal);
+       if("jd".equals(preGoodsStockIdValSource) && "jd".equals(secGoodsStockIdValSource)){
+    	   
+       }else{
+    	   
+       }
+       // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
         List<GoodsStockInfoEntity> goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
         
         if(null == goodsStockInfoList || goodsStockInfoList.isEmpty()){

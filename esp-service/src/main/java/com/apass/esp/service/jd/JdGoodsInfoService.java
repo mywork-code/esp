@@ -123,7 +123,23 @@ public class JdGoodsInfoService {
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
-
+		//查询是否有货无货
+		// 获取地址信息
+		Region region = new Region();
+		for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
+			if ("1".equals(addressInfoEntity.getIsDefault())) {
+				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
+				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+			}
+		}
+		// 查询商品是否有货
+		JdGoodStock jdGoodStock = stockForListBatget(sku.toString(), region);
+		if ("34".equals(jdGoodStock.getState())) {
+			map.put("goodsStockDes", "无货");
+		} else {
+			map.put("goodsStockDes", "有货");
+		}
 		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,AddressInfoEntityList);
 		map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 		map.put("skuId", map2.get("skuId"));
@@ -187,10 +203,12 @@ public class JdGoodsInfoService {
 			String skuId = iterator.next();
 			// 查询商品价格
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
+			jdSimilarSkuVo.setGoodsId(goodsInfo.getId().toString());
 			Long goodsId = goodsInfo.getId();
 			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
 			if (jdGoodsStockInfoList.size() == 1) {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
 			}

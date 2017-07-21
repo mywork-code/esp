@@ -26,6 +26,7 @@ import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.utils.ConstantsUtils;
@@ -39,6 +40,7 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -445,6 +447,41 @@ public class ShopHomeController {
             LOGGER.error("获取商品基本信息失败");
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
+    }
+    /**
+     * 地址改变，查看是否有货
+     *
+     * @return
+     */
+    @POST
+    @Path("/v2/addressChange")
+    public Response addressChange(Map<String, Object> paramMap){
+    	String goodsId = CommonUtils.getValue(paramMap,"goodsId");
+        String provinceCode=CommonUtils.getValue(paramMap,"provinceCode");
+        String cityCode=CommonUtils.getValue(paramMap,"cityCode");
+        String districtCode=CommonUtils.getValue(paramMap,"districtCode");
+        String townsCode=CommonUtils.getValue(paramMap,"townsCode");
+        if(StringUtils.isAnyEmpty(goodsId,provinceCode,cityCode,districtCode,townsCode)){
+        	LOGGER.error("传入参数不能为空!");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        }
+        Map<String,Object> map=new HashMap<>();
+        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+        if("jd".equals(goodsInfo.getSource())){
+        	 Region region = new Region();
+             region.setProvinceId(Integer.parseInt(provinceCode));
+             region.setCityId(Integer.parseInt(cityCode));
+             region.setCountyId(Integer.parseInt(districtCode));
+//             region.setTownId(Integer.parseInt(townsCode));
+     		// 查询商品是否有货
+     		JdGoodStock jdGoodStock = jdGoodsInfoService.stockForListBatget(goodsInfo.getExternalId(), region);
+     		if ("34".equals(jdGoodStock.getState())) {
+     			map.put("goodsStockDes", "无货");
+     		} else {
+     			map.put("goodsStockDes", "有货");
+     		}
+        }
+    	return Response.success("成功！", map);
     }
     /**
      * 根据商品id获取商品规格详情信息(商品库存表)
