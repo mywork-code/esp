@@ -441,7 +441,7 @@ public class CategoryInfoService {
     	//查询每个二级类目下的前10条商品（按上架时间降序排列）
 		for (OtherCategoryGoodsVo categoryVo : list) {
 			if(categoryTemp != null){
-				categoryVo.setBanner(categoryTemp.getPictureUrl());
+				categoryVo.setBanner(imageService.getImageUrl(categoryTemp.getPictureUrl()));
 			}
 			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryIdSecond());
 			List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
