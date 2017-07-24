@@ -545,16 +545,22 @@
 			resultType="OrderInfoEntity">
 		<![CDATA[
 		SELECT
-			id	id,
-			order_id orderId,
-			user_id userId,
-			payType payType,
-			paystatus payStatus,
-			create_date createDate,
-			update_date updateDate
+			a.id	id,
+			a.order_id orderId,
+			a.user_id userId,
+			a.payType payType,
+			a.paystatus payStatus,
+			a.create_date createDate,
+			a.update_date updateDate
 		FROM
-			t_esp_order_info
-			WHERE payType='T02' and payStatus = 'P02' AND user_id = #{value} ORDER BY createDate DESC limit 1
+			t_esp_order_info a
+			WHERE a.payType='T02' and 
+			a.payStatus = 'P02' AND 
+			a.user_id = #{value} and 
+			not EXISTS 
+            (select b.id from t_esp_cash_refund b where a.order_id=b.order_id and b.status = 4)	
+			
+			ORDER BY a.create_date DESC limit 1
 		]]>
 	</select>
 	
