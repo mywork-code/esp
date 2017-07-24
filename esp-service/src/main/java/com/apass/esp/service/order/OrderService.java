@@ -619,7 +619,7 @@ public class OrderService {
 		if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
 				|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
 			LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
-			throw new BusinessException(goodsInfo.getGoodsName() + "商品已下架\n请重新下单");
+			throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
 		}
 		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 		boolean offShelfFlag = true;
@@ -631,7 +631,7 @@ public class OrderService {
 		}
 		if (offShelfFlag) {
 			LOG.info(requestId, "校验商品下架,商品各规格数量都为0,已下架", goodsId.toString());
-			throw new BusinessException(goodsInfo.getGoodsName() + "商品已下架\n请重新下单");
+			throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
 		}
 	}
 
