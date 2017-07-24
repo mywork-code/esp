@@ -7,12 +7,14 @@ import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.service.refund.CashRefundTxnService;
@@ -33,7 +35,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -59,6 +65,9 @@ public class CashRefundController {
 
     @Autowired
     private CashRefundTxnService cashRefundTxnService;
+
+    @Autowired
+    private TxnInfoService txnInfoService;
     /**
      * 退款详情
      *
@@ -204,7 +213,18 @@ public class CashRefundController {
             if(!statusFalge){
             	return Response.success("抱歉，商户已发货暂不支持退款",false);
             }else if(falge){
-            	cashRefundService.requestRefund(requestId,orderId,userId, reason,csom);
+                OrderInfoEntity orderInfo = orderService.selectByOrderId(orderId);
+                 cashRefundService.requestRefund(requestId,orderInfo,userId, reason,csom);
+                List<TxnInfoEntity> txnInfoEntityList = txnInfoService.getByMainOrderId(orderInfo.getMainOrderId());
+                for(TxnInfoEntity txnInfo:txnInfoEntityList){
+                    if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
+                        Response res = cashRefundService.agreeRefund(userId,orderId);
+                        if(!res.statusResult()){
+                            throw new BusinessException("退款申请失败，请重新申请！");
+                        }
+                        break;
+                    }
+                }
                 return Response.success("退款申请成功",true);
             }else{
             	return Response.fail("该订单已经出账无法申请退款！");

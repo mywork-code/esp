@@ -37,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -151,9 +153,9 @@ public class CashRefundService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public void requestRefund(String requestId, String orderId, String userId, String reason, String memo)
+    public void requestRefund(String requestId, OrderInfoEntity orderInfo, String userId, String reason, String memo)
             throws BusinessException {
-        OrderInfoEntity orderInfo = orderInfoRepository.selectByOrderIdAndUserId(orderId, Long.parseLong(userId));
+        String orderId = orderInfo.getOrderId();
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
         CashRefund cr = new CashRefund();
         if (null != cashRefund) {
@@ -208,16 +210,6 @@ public class CashRefundService {
                     txnInfoEntity.setStatus("S");
                     txnInfoEntity.setTxnDesc(TxnTypeCode.CASH_REFUND_CODE.getMessage());
                     txnInfoMapper.insert(txnInfoEntity);
-
-                }
-                for(TxnInfoEntity txnInfo:txnlinfoList){
-                	if(TxnTypeCode.ALIPAY_CODE.getCode().equals(txnInfo.getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equals(txnInfo.getTxnType())){
-        				Response res = agreeRefund(userId,orderId);
-                		if(!res.statusResult()){
-        	    			throw new BusinessException("退款申请失败，请重新申请！");
-                		}
-                		break;
-                	}
                 }
             }
         }
@@ -342,6 +334,7 @@ public class CashRefundService {
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
             return Response.fail(BusinessErrorCode.NO);
         }
+
         BigDecimal txnAmt = new BigDecimal(0);
         Date date = new Date();
         if (txnInfoEntityList.size() == 1) {
@@ -375,7 +368,7 @@ public class CashRefundService {
                     if (!response.statusResult()) {
                       //退款失败
                       try {
-                        paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
+                        paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
                       }catch (Exception e){
 
                       }
@@ -383,7 +376,7 @@ public class CashRefundService {
                     }else{
                         //退款成功
                         try {
-                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
+                            paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
                         }catch (Exception e){
 
                         }
@@ -395,6 +388,18 @@ public class CashRefundService {
                 return Response.fail(BusinessErrorCode.NO);
             }
         } else {
+            //txnInfoList 排序，将信用支付的排在末尾
+            Collections.sort(txnInfoEntityList, new Comparator<TxnInfoEntity>() {
+                @Override
+                public int compare(TxnInfoEntity o1, TxnInfoEntity o2) {
+                    if(TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(o1.getTxnType())){
+                        return 1;
+                    }else{
+                        return -1;
+                    }
+                }
+            });
+
             CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
@@ -416,7 +421,7 @@ public class CashRefundService {
                     if (!response.statusResult()) {
                         //退款失败
                         try {
-                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "0","");
+                            paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
                         }catch (Exception e){
 
                         }
@@ -424,7 +429,7 @@ public class CashRefundService {
                     }else{
                         //退款成功
                         try {
-                            paymentService.refundCallback("", cashRefund.getMainOrderId() + "", "1","0000");
+                            paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
                         }catch (Exception e){
 
                         }

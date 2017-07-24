@@ -59,4 +59,9 @@ public class TxnInfoService {
     }
   }
 
+  public List<TxnInfoEntity> getByMainOrderId(String mainOrderId){
+    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(mainOrderId);
+    return txnlinfoList;
+  }
+
 }
