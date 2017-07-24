@@ -97,7 +97,7 @@ $ (function ()
 			                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 			                        content += " onclick='$.queryOrderDetail(" + JSON.stringify (row) + ");'>查看详情</a>";
 			                        
-			                        if (refundStatus == '2' || refundStatus == '')
+			                        if (refundStatus == '2' || refundStatus == '' || refundStatus == null)
 			                        {
 				                        content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
 				                        content += " onclick='$.orderRefund(\"" + row.orderId + "\");'>退款</a>";
