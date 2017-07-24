@@ -328,19 +328,17 @@
 		orderInfo.payType payType,
 		orderInfo.orderstatus orderStatusDsc,
 		round(orderInfo.order_amt,2) orderAmt,
-		round(refundTxn.txn_amt,2) txnAmt,
+		round(refund.refund_amt,2) txnAmt,
 	    orderInfo.create_date createDate
 		FROM
 		t_esp_refund_info refund
         left join  t_esp_order_info orderInfo on refund.order_id = orderInfo.order_id
-	    left join  t_apass_txn_info refundTxn on refundTxn.order_id = orderInfo.main_order_id
 
 		where 
 		refund.refund_type = '0' and 
 		refund.is_agree = '1'  and
 		orderInfo.orderStatus = 'D05'  and
-		refundTxn.txn_type in ('T10','T11')
-	    
+		exists (select * from t_apass_txn_info refundTxn where refundTxn.order_id = orderInfo.main_order_id and refundTxn.txn_type in ('T10','T11') )
 		ORDER BY refund.create_date DESC
 	</select>
 	<select id="queryOrderRefundExceptionCount" parameterType="Map"
