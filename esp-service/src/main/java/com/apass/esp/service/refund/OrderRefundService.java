@@ -276,7 +276,7 @@ public class OrderRefundService {
                 statusmap.put("orderId", info.getOrderId());
                 orderRefundRepository.updateRefundStatusByOrderId(statusmap);
                 
-                afterSaleService.insertServiceProcessInfo(info.getId(), RefundStatus.REFUND_STATUS05.getCode());
+                afterSaleService.insertServiceProcessInfo(info.getId(), RefundStatus.REFUND_STATUS05.getCode(),"");
             }
         }
     }

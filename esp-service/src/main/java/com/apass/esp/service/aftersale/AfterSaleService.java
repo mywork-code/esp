@@ -307,7 +307,7 @@ public class AfterSaleService {
         }
 
         //插入售后流程数据
-        insertServiceProcessInfo(refundInfo.getId(), RefundStatus.REFUND_STATUS01.getCode());
+        insertServiceProcessInfo(refundInfo.getId(), RefundStatus.REFUND_STATUS01.getCode(),"");
 
         // 遍历 获取订单详情ID 和 数量
         for (GoodsStockIdNumDto idNum : returngoodsList) {
@@ -393,10 +393,11 @@ public class AfterSaleService {
      * @throws BusinessException
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertServiceProcessInfo(Long refundId, String nodeName) throws BusinessException {
+    public void insertServiceProcessInfo(Long refundId, String nodeName,String nodeMessage) throws BusinessException {
         ServiceProcessEntity Dto = new ServiceProcessEntity();
         Dto.setRefundId(refundId);
         Dto.setNodeName(nodeName);
+        Dto.setNodeMessage(nodeMessage);
         serviceProcessDao.insert(Dto);
         if (null == Dto.getId()) {
             throw new BusinessException("保存售后流程信息失败!",BusinessErrorCode.ORDER_REFUNDSAVE_FAILED);
@@ -494,7 +495,7 @@ public class AfterSaleService {
         }
         
         /** 5. 插入售后流程数据 */
-        insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode());
+        insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode(),"");
         
     }
 
@@ -527,17 +528,6 @@ public class AfterSaleService {
             LOG.info(requestId, "当前订单状态不支持售后进度查询", orderStatus);
             throw new BusinessException("当前订单状态不支持售后进度查询!");
         }
-        
-        /**
-         * 根据商户的编码获取商户的详细信息，然后获取商户的退货地址
-         */
-        MerchantInfoEntity merchantInfo = memChantRepository.queryByMerchantCode(orderInfo.getMerchantCode());
-        
-        if(null == merchantInfo){
-            LOG.info(requestId, "根据商户编码获取商户详细信息", "数据为空");
-            throw new BusinessException("无效的商户编码!");
-        }
-        
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("orderId", orderId);
         List<RefundInfoEntity> refundInfoList = orderRefundDao.queryRefundInfoByParam(param);
@@ -552,12 +542,21 @@ public class AfterSaleService {
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
-        
-        //在商品退换货的时候，加上商户的退货地址
-        serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
-        serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
-        serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
-        
+        if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
+            /**
+             * 根据商户的编码获取商户的详细信息，然后获取商户的退货地址
+             */
+            MerchantInfoEntity merchantInfo = memChantRepository.queryByMerchantCode(orderInfo.getMerchantCode());
+
+            if (null == merchantInfo) {
+                LOG.info(requestId, "根据商户编码获取商户详细信息", "数据为空");
+                throw new BusinessException("无效的商户编码!");
+            }
+            //在商品退换货的时候，加上商户的退货地址
+            serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
+            serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
+            serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
+        }
         /** status 状态 RS01, 退货信息表字段 is_agree=1 时，可提交物流信息   */
         if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
             && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
@@ -646,6 +645,7 @@ public class AfterSaleService {
         orderDetailInfoDto.setStatus(orderInfo.getStatus());
         orderDetailInfoDto.setOrderDetailInfoList(goodsListInEachOrder);
         orderDetailInfoDto.setOrderCreateDate(orderInfo.getCreateDate());
+        orderDetailInfoDto.setSource(orderInfo.getSource());
 
         resultMap.put("serviceProcessDto", serviceProcessDto);
         resultMap.put("refundOrderInfo", orderDetailInfoDto);

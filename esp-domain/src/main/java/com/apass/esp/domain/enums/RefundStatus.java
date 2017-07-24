@@ -12,12 +12,12 @@ import java.util.Arrays;
 public enum RefundStatus {
 
     /** 退换货类型(t_esp_refund_info.refund_type: 0退货、1换货) */
-    REFUND_STATUS01("RS01","申请退/换货"),
-    REFUND_STATUS02("RS02","提交退换货物流单号"),
-    REFUND_STATUS03("RS03","商家确认收货"),
-    REFUND_STATUS04("RS04","退款完成/商家重新发货"),
-    REFUND_STATUS05("RS05","售后完成"),
-	REFUND_STATUS06("RS06","售后失败");
+    REFUND_STATUS01("RS01","申请退/换货"),//10 21 22
+    REFUND_STATUS02("RS02","提交退换货物流单号/上门取件"),//31
+    REFUND_STATUS03("RS03","商家确认收货"),//32
+    REFUND_STATUS04("RS04","退款完成/商家重新发货"),//33 34
+    REFUND_STATUS05("RS05","售后完成"),//40 50
+	REFUND_STATUS06("RS06","售后失败");//20 60
     
     private String code;
     

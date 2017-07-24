@@ -72,6 +72,9 @@ public class ServiceProcessEntity {
     /** 节点名称 **/
     private String nodeName;
 
+    /**备注信息**/
+    private String nodeMessage;
+
     /** 换货商户发货物流厂商 **/
     private String rLogisticsName;
 
@@ -98,6 +101,14 @@ public class ServiceProcessEntity {
     private Date   updateDate;
 
     private String remark;
+
+    public String getNodeMessage() {
+        return nodeMessage;
+    }
+
+    public void setNodeMessage(String nodeMessage) {
+        this.nodeMessage = nodeMessage;
+    }
 
     public Long getId() {
         return id;
