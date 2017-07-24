@@ -427,12 +427,7 @@ public class CashRefundService {
                         }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
-                        //退款成功
-                        try {
-                            paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
-                        }catch (Exception e){
-
-                        }
+                        continue;
                     }
                 }
 
@@ -459,6 +454,12 @@ public class CashRefundService {
                     } catch (BusinessException e) {
                         e.printStackTrace();
                     }
+                }
+                //退款成功
+                try {
+                    paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
+                }catch (Exception e){
+
                 }
             }
             return Response.successResponse();
