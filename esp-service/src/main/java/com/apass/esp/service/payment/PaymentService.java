@@ -463,7 +463,7 @@ public class PaymentService {
 				Long stockCurrAmt = detail.getStockCurrAmt();
 				if(goodNum > stockCurrAmt){
 					LOG.info(requestId, "商品库存不足，订单不允许付款", orderId+"商品的库存不足");
-					throw new BusinessException(detail.getGoodsName() + "商品库存不足\n请修改商品数量");
+					throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
 				}
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
