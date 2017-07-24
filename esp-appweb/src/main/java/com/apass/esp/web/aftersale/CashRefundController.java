@@ -6,13 +6,16 @@ import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
+import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.esp.web.feedback.EmojiFilter;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -50,8 +53,12 @@ public class CashRefundController {
 
     @Autowired
     private OrderService orderService;
+
     @Autowired
     private CommonHttpClient  commonHttpClient;
+
+    @Autowired
+    private CashRefundTxnService cashRefundTxnService;
     /**
      * 退款详情
      *
@@ -86,7 +93,16 @@ public class CashRefundController {
         if(agreeDate!=null){
             cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
-        List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByMainOrderId(cashRefundDto.getMainOrderId());
+       // List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByMainOrderId(cashRefundDto.getMainOrderId());
+        List<CashRefundTxn> cashRefundTxnList =  cashRefundTxnService.queryCashRefundTxnByCashRefundId(cashRefundDto.getId());
+        List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
+        for (CashRefundTxn cashRefundTxn:cashRefundTxnList){
+            TxnInfoDto txnInfoDto = new TxnInfoDto();
+            txnInfoDto.setTxnAmt(cashRefundTxn.getAmt());
+            txnInfoDto.setTxnType(cashRefundTxn.getTypeCode());
+            txnInfoDto.setStatus(cashRefundTxn.getStatus().equals(2)?"S":"F");
+            txnInfoDtoList.add(txnInfoDto);
+        }
         if (CollectionUtils.isNotEmpty(txnInfoDtoList)) {
             //退款已成功 改变支付宝支付系统处理中的时间
             if (String.valueOf(cashRefundDto.getStatus()).equals(CashRefundVoStatus.CASHREFUND_STATUS4.getCode())) {
