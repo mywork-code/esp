@@ -401,6 +401,7 @@ public class CashRefundService {
             });
 
             CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
+            boolean alpaySFFlag = false;
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
                 CashRefundTxn cashRefundTxn = new CashRefundTxn();
                 if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
@@ -427,6 +428,7 @@ public class CashRefundService {
                         }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
+                        alpaySFFlag = true;
                         continue;
                     }
                 }
@@ -455,11 +457,13 @@ public class CashRefundService {
                         e.printStackTrace();
                     }
                 }
-                //退款成功
-                try {
-                    paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
-                }catch (Exception e){
+                if(alpaySFFlag){
+                    //退款成功
+                    try {
+                        paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
+                    }catch (Exception e){
 
+                    }
                 }
             }
             return Response.successResponse();
