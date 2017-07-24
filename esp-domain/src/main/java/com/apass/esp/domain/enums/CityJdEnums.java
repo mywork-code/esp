@@ -8,12 +8,12 @@ import org.apache.commons.codec.binary.StringUtils;
 public enum CityJdEnums {
 
     TIANJIN("3", "天津", "T"),
-
     BEIJING("1", "北京", "B"),
     SHANGHAI("2", "上海", "S"),
     CHONGQING("4", "重庆", "C"),
     HKANDMAC("52993","港澳","G"),
-    TANWAN("32","台湾","T");
+    TANWAN("32","台湾","T"),
+    DIAOYUISLAND("84","钓鱼岛","D");
 
     CityJdEnums(String code, String name, String prefix) {
         this.code = code;
