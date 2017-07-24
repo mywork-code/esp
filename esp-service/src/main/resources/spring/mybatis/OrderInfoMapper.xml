@@ -543,7 +543,7 @@
 			a.payStatus = 'P02' AND 
 			a.user_id = #{value} and 
 			not EXISTS 
-            (select b.id from t_esp_cash_refund b where a.order_id=b.order_id and b.status = 4)	
+            (select b.id from t_esp_cash_refund b where a.order_id=b.order_id and b.status in (2,4))	
 			
 			ORDER BY a.create_date DESC limit 1
 		]]>
