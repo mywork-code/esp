@@ -439,13 +439,13 @@ public class PaymentService {
 		for (String orderId : orderList) {
 			OrderInfoEntity orderInfo = orderDao.selectByOrderIdAndUserId(orderId, userId);
 			if (null == orderInfo || !OrderStatus.ORDER_NOPAY.getCode().equals(orderInfo.getStatus())) {
-			    LOG.info(requestId, "订单状态不允许付款", orderId+"订单状态不允许付款");
-				throw new BusinessException("订单状态不允许付款");
+			    LOG.info(requestId, "订单状态已变更，暂不支持付款", orderId+"订单状态已变更，暂不支持付款");
+				throw new BusinessException("抱歉，订单状态已变更，暂不支持付款");
 			}
 			if (!PaymentStatus.NOPAY.getCode().equals(orderInfo.getPayStatus())
 					&& !PaymentStatus.PAYFAIL.getCode().equals(orderInfo.getPayStatus())) {
-			    LOG.info(requestId, "订单状态不允许付款", orderId+"订单状态不允许付款");
-				throw new BusinessException("订单状态不允许付款");
+			    LOG.info(requestId, "订单状态已变更，暂不支持付款", orderId+"订单状态已变更，暂不支持付款");
+				throw new BusinessException("抱歉，订单状态已变更，暂不支持付款");
 			}
 			/**
 			 * 查询订单下的所有的订单详情
@@ -463,7 +463,7 @@ public class PaymentService {
 				//商品的当前库存
 				Long stockCurrAmt = detail.getStockCurrAmt();
 				if(goodNum > stockCurrAmt){
-					LOG.info(requestId, "订单状态不允许付款", orderId+"商品的库存不足");
+					LOG.info(requestId, "商品库存不足，订单不允许付款", orderId+"商品的库存不足");
 					throw new BusinessException(detail.getGoodsName() + "商品库存不足\n请修改商品数量");
 				}
 				//验证商品是否已经下架
