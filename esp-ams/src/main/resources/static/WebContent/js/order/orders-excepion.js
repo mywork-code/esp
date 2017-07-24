@@ -146,7 +146,7 @@ $ (function ()
 			{
 				var params = {};
 				
-				params['refundType'] = $ ("#refundType").combobox ('getValue');
+				params['refundType'] = refundType;
 				params['busCode'] = 'E005';// 订单导出code
 				
 				exportFile ("tablelist", "异常订单信息", params);
