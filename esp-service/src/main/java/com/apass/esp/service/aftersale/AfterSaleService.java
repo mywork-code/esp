@@ -1,12 +1,9 @@
 package com.apass.esp.service.aftersale;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.apass.esp.third.party.jd.entity.aftersale.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
@@ -49,11 +46,6 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.fileview.FileViewService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.entity.aftersale.AfsApply;
-import com.apass.esp.third.party.jd.entity.aftersale.AsCustomerDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsDetailDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsPickwareDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsReturnwareDto;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -468,35 +460,70 @@ public class AfterSaleService {
             LOG.info(requestId, "售后信息查询", "数据为空");
             throw new BusinessException("无售后记录,无法提交物流信息!");
         }
-        
+
         /** 3. 校验售后信息 */
         RefundInfoEntity refundInfo = refundInfoList.get(0);
-        if(!refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())){
+        if (!refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())) {
             LOG.info(requestId, "售后状态查询,当前售后状态不允许提交物流信息", refundInfo.getStatus());
             throw new BusinessException("当前售后状态不允许提交物流信息");
         }
-        
-        if(null == refundInfo.getIsAgree() || !refundInfo.getIsAgree().equals("1")){
-            LOG.info(requestId, "等待客服审核,暂时不能提交物流信息", "");
-            throw new BusinessException("等待客服审核,暂时不能提交物流信息!");
-        }
-        
-        /** 4. 保存物流信息 */
-        RefundInfoEntity riDto = new RefundInfoEntity();
-        riDto.setId(refundIdVal);
-        riDto.setSlogisticsName(logisticsName);
-        riDto.setSlogisticsNo(logisticsNo);
-        riDto.setStatus(RefundStatus.REFUND_STATUS02.getCode());
+        if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
+            if (null == refundInfo.getIsAgree() || !refundInfo.getIsAgree().equals("1")) {
+                LOG.info(requestId, "等待客服审核,暂时不能提交物流信息", "");
+                throw new BusinessException("等待客服审核,暂时不能提交物流信息!");
+            }
+            /** 4. 保存物流信息 */
+            RefundInfoEntity riDto = new RefundInfoEntity();
+            riDto.setId(refundIdVal);
+            riDto.setSlogisticsName(logisticsName);
+            riDto.setSlogisticsNo(logisticsNo);
+            riDto.setStatus(RefundStatus.REFUND_STATUS02.getCode());
 
-        int updateFlag = orderRefundDao.submitLogisticsInfo(riDto);
-        if (updateFlag < 1) {
-            LOG.info(requestId, "保存物流厂商、单号信息", "数据入库失败");
-            throw new BusinessException("保存物流厂商、单号信息失败!");
+            int updateFlag = orderRefundDao.submitLogisticsInfo(riDto);
+            if (updateFlag < 1) {
+                LOG.info(requestId, "保存物流厂商、单号信息", "数据入库失败");
+                throw new BusinessException("保存物流厂商、单号信息失败!");
+            }
+
+            /** 5. 插入售后流程数据 */
+            insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode(),"");
+
+        }else{
+            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
+            if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
+                throw new BusinessException("调用第三方接口失败!");
+            }
+            String result = afsInfo.getResult().getString("serviceInfoList");
+            if (result == null || "".equals(result)) {
+                throw new BusinessException("调用第三方接口失败!");
+            }
+            JSONArray array = JSONArray.parseArray(result);
+            for (Object object : array) {
+                JSONObject jsonObject = (JSONObject) object;
+                AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+                long afsServiceId = newAfsInfo.getAfsServiceId();
+                SendSku sendSku = new SendSku();
+                sendSku.setAfsServiceId(Integer.parseInt(String.valueOf(afsServiceId)) );
+                sendSku.setDeliverDate(DateFormatUtil.getCurrentDate());
+                sendSku.setExpressCompany(logisticsName);
+                sendSku.setExpressCode(logisticsNo);
+                sendSku.setFreightMoney(new BigDecimal(6));
+                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
+            }
+            /** 4. 保存物流信息 */
+            RefundInfoEntity riDto = new RefundInfoEntity();
+            riDto.setId(refundIdVal);
+            riDto.setSlogisticsName(logisticsName);
+            riDto.setSlogisticsNo(logisticsNo);
+            riDto.setStatus(RefundStatus.REFUND_STATUS02.getCode());
+            int updateFlag = orderRefundDao.submitLogisticsInfo(riDto);
+            if (updateFlag < 1) {
+                LOG.info(requestId, "保存物流厂商、单号信息", "数据入库失败");
+                throw new BusinessException("保存物流厂商、单号信息失败!");
+            }
+
         }
-        
-        /** 5. 插入售后流程数据 */
-        insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode(),"");
-        
+
     }
 
     /**
@@ -538,7 +565,7 @@ public class AfterSaleService {
 
         // 退换货信息
         RefundInfoEntity refundInfo = refundInfoList.get(0);
-
+        serviceProcessDto.setSource(orderInfo.getSource());
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
@@ -556,25 +583,24 @@ public class AfterSaleService {
             serviceProcessDto.setMerchantInfoReturnAddress(merchantInfo.getMerchantReturnAddress());
             serviceProcessDto.setMerchantReturnName(merchantInfo.getMerchantReturnName());
             serviceProcessDto.setMerchantReturnPhone(merchantInfo.getMerchantReturnPhone());
-        }
-        /** status 状态 RS01, 退货信息表字段 is_agree=1 时，可提交物流信息   */
-        if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
-            && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
-            serviceProcessDto.setIsAllowed("1");
-        }
+            /** status 状态 RS01, 退货信息表字段 is_agree=1 时，可提交物流信息   */
+            if (refundInfo.getStatus().equals(RefundStatus.REFUND_STATUS01.getCode())
+                    && null != refundInfo.getIsAgree() && refundInfo.getIsAgree().equals("1")) {
+                serviceProcessDto.setIsAllowed("1");
+            }
 
-        /** RS02、RS03、RS04、RS05 客户端显示客户发货物流地址 */
-        if (RefundStatus.showSlogistics(refundInfo.getStatus())) {
-            serviceProcessDto.setSlogisticsName(refundInfo.getSlogisticsName());
-            serviceProcessDto.setSlogisticsNo(refundInfo.getSlogisticsNo());
-        }
+            /** RS02、RS03、RS04、RS05 客户端显示客户发货物流地址 */
+            if (RefundStatus.showSlogistics(refundInfo.getStatus())) {
+                serviceProcessDto.setSlogisticsName(refundInfo.getSlogisticsName());
+                serviceProcessDto.setSlogisticsNo(refundInfo.getSlogisticsNo());
+            }
 
-        /** 换货(refundType=1) RS04、RS05 客户端显示商户发货物流地址 */
-        if (refundInfo.getRefundType().equals("1") && RefundStatus.showRlogistics(refundInfo.getStatus())) {
-            serviceProcessDto.setRlogisticsName(dataDicRepository.queryDataNameByDataNo(refundInfo.getRlogisticsName()));
-            serviceProcessDto.setRlogisticsNo(refundInfo.getRlogisticsNo());
+            /** 换货(refundType=1) RS04、RS05 客户端显示商户发货物流地址 */
+            if (refundInfo.getRefundType().equals("1") && RefundStatus.showRlogistics(refundInfo.getStatus())) {
+                serviceProcessDto.setRlogisticsName(dataDicRepository.queryDataNameByDataNo(refundInfo.getRlogisticsName()));
+                serviceProcessDto.setRlogisticsNo(refundInfo.getRlogisticsNo());
+            }
         }
-
         ServiceProcessEntity spDto = new ServiceProcessEntity();
         spDto.setRefundId(refundInfo.getId());
         List<ServiceProcessEntity> serviceProcessList = serviceProcessDao.filter(spDto);
@@ -614,8 +640,29 @@ public class AfterSaleService {
         RefundDetailInfoEntity RefundDetailInfoQueryDto = new RefundDetailInfoEntity();
         RefundDetailInfoQueryDto.setOrderId(orderId);
         List<RefundDetailInfoEntity> refundDetailInfoList = refundDetailInfoDao.filter(RefundDetailInfoQueryDto);
-        
-        
+        if("jd".equalsIgnoreCase(orderInfo.getSource())){
+            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
+            if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
+                throw new BusinessException("调用第三方接口失败!");
+            }
+            String result = afsInfo.getResult().getString("serviceInfoList");
+            if (result == null || "".equals(result)) {
+                throw new BusinessException("调用第三方接口失败!");
+            }
+            JSONArray array = JSONArray.parseArray(result);
+            StringBuffer sb = new StringBuffer();
+            JSONObject jsonObject = (JSONObject) array.get(0);
+            AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+            if(newAfsInfo.getAfsServiceStep()!=20&&newAfsInfo.getAfsServiceStep()!=60&&newAfsInfo.getAfsServiceStep()!=10){
+                sb.append("审核结果：");
+                for (RefundDetailInfoEntity refundDetailInfo : refundDetailInfoList) {
+                    OrderDetailInfoEntity orderDetailInfo = orderDetailInfoRepository.select(refundDetailInfo.getOrderDetailId());
+                    sb.append(orderDetailInfo.getGoodsName() + ",￥" + orderDetailInfo.getGoodsPrice().toString());
+                }
+                sb.append("，以上商品达成售后申请，趣花采用京东配送将在1-3天内上门取件， 请准备好商品交给配送人员。如实际收货发现商品与描述不符，商品将原物返回。如有疑问请联系客服：021-51349369，感谢您的支持。");
+                serviceProcessDto.setMemo(sb.toString());
+            }
+        }
         List<GoodsInfoInOrderDto> goodsListInEachOrder = new ArrayList<GoodsInfoInOrderDto>();
         // 退换货商品总数目
         int goodsSum = 0;

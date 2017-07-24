@@ -63,6 +63,26 @@ public class ServiceProcessDto {
     /** RS06(售后失败)-处理时间 */
     private Date rs06Time;
 
+    private String memo;
+
+    private String source ;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
     public Long getRefundId() {
         return refundId;
     }
