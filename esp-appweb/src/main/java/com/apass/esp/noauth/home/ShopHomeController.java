@@ -476,6 +476,9 @@ public class ShopHomeController {
 		}
 		Map<String, Object> map = new HashMap<>();
 		GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		if(null==goodsInfo){
+			return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+		}
 		if(StringUtils.isBlank(townsCode)){
 			townsCode="0";
 		}
