@@ -98,8 +98,21 @@ public class ServiceProcessEntity {
     private Date   updateDate;
 
     private String remark;
+    
+    /**
+     * 支付方式
+     */
+    private String payType;
+    
+    public String getPayType() {
+		return payType;
+	}
 
-    public Long getId() {
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public Long getId() {
         return id;
     }
 
