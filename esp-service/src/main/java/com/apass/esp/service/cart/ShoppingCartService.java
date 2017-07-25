@@ -686,8 +686,8 @@ public class ShoppingCartService {
 		if ("jd".equals(preGoodsStockEntity.getCreateUser()) && "jd".equals(secGoodsStockEntity.getCreateUser())) {
 			// 查询商品基本信息，返回客户端该商品单条信息
 			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
-			goodsInfoInCart.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+secGoodsStockEntity.getGoodsLogoUrl());
-			goodsInfoInCart.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+secGoodsStockEntity.getGoodsLogoUrl());
+			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
+			goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 		} else {
 			// 查询商品基本信息，返回客户端该商品单条信息
 	        goodsInfo = goodsInfoDao.select(goodsIdVal);

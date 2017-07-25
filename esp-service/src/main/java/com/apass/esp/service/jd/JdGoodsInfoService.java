@@ -37,6 +37,8 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -547,6 +549,29 @@ public class JdGoodsInfoService {
 		}
 		return jdGoodStockList.get(0);
 	}
-
+	   /**
+     * 获取当个sku库存接口（建议订单详情页、下单使用）
+     *
+     * @param skuNums
+     * @param region
+     * @return
+     */
+    public String getStockBySku(String sku, Region region) {
+    	String isStock="";
+    	List<SkuNum> skuNums =new ArrayList<>();
+    	SkuNum skuNum=new SkuNum();
+    	skuNum.setSkuId(Long.parseLong(sku));
+    	skuNum.setNum(1);
+    	skuNums.add(skuNum);
+        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
+        if(result.size()==1){
+        	isStock=result.get(0).getStockStateDesc();
+        }
+        if("33".equals(isStock)|| "39".equals(isStock)||"40".equals(isStock)){
+        	return "有货";
+        }else{
+        	return "无货";
+        }
+    }
 
 }
