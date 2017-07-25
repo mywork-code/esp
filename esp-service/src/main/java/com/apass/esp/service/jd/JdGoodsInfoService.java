@@ -87,7 +87,7 @@ public class JdGoodsInfoService {
 		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
 		map.put("goodsPrice",goodsStockInfoEntityList.get(0).getGoodsPrice());
 		// 查询商品图片
-		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
+		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
 		map.put("jdImagePathList", JdImagePathList);
 		// 查询商品规格
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
