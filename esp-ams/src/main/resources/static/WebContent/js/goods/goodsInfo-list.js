@@ -2251,27 +2251,22 @@ function initEditGoodsInfo(row){
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
-//				$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
-				$("#editgoodsSkuType").next("span").children(".validatebox-text").attr("disabled","disabled");
 				$("#editgoodsSkuType").combobox('disable');
-				$("#editUnSupportProvince").next("span").children(".validatebox-text").attr("disabled","disabled");
-//				$("#editlistTime").datetimebox('setValue',new Date(row.listTime).Format("yyyy-MM-dd hh:mm:ss")); 
-//				$("#editdelistTime").datetimebox('setValue',new Date(row.delistTime).Format("yyyy-MM-dd hh:mm:ss"));
+				$("#editUnSupportProvince").combobox('disable');
 				$("#editproDate").next("span").children(".validatebox-text").attr("disabled","disabled");
-				$("#editkeepDate").next("span").children(".textbox-value").attr("disabled","disabled");
+				$("#editproDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
+				$("#editkeepDate").next("span").children(".validatebox-text").attr("disabled","disabled");
+				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').attr("disabled","disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
 			}else{
-//				$("#editmerchantCode").textbox('textbox').attr("disabled","");
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
-//				$("#editgoodsName").textbox('textbox').attr("data-options","validType:'length[1,18]'");
-//				$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
 				$("#editgoodsSkuType").combobox('enable');
-				$("#editUnSupportProvince").next("span").children(".validatebox-text").removeAttr("disabled");
-//				$("#editlistTime").datetimebox('setValue',new Date(row.listTime).Format("yyyy-MM-dd hh:mm:ss")); 
-//				$("#editdelistTime").datetimebox('setValue',new Date(row.delistTime).Format("yyyy-MM-dd hh:mm:ss"));
+				$("#editUnSupportProvince").combobox('enable');
 				$("#editproDate").next("span").children(".validatebox-text").removeAttr("disabled");
-				$("#editkeepDate").numberbox("enable");
+				$("#editproDate").next("span").children(".textbox-addon-right").children("a").removeClass("textbox-icon-disabled");
+				$("#editkeepDate").next("span").children(".validatebox-text").removeAttr("disabled");
+				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").removeClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
 			}
