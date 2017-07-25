@@ -481,7 +481,7 @@ public class CategoryInfoService {
 		}
 		GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
 		if("jd".equals(goodsInfoEntity.getSource())){
-			goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goodsInfoEntity.getGoodsLogoUrl());
+			goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+goodsInfoEntity.getGoodsLogoUrl());
 		}else{
 			goodsCategoryDto.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));
 		}
