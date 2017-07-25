@@ -31,6 +31,7 @@ import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -62,6 +63,7 @@ import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
@@ -121,6 +123,8 @@ public class OrderService {
 	private RepayFlowMapper flowMapper;
 	@Autowired
 	private CashRefundTxnMapper cashRefundTxnMapper;
+	@Autowired
+	private CustomerServiceClient customerServiceClient;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -192,6 +196,11 @@ public class OrderService {
 		try {
 		Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 				.queryOrderCashRefundException(map, page);
+			List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
+			Map<Long,CustomerInfo> maps = Maps.newHashMap();
+			for (OrderSubInfoEntity order : subList) {
+				setProperties(maps, order);
+			}
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
@@ -199,10 +208,32 @@ public class OrderService {
 		}
 	}
 	
+	public void setProperties(Map<Long,CustomerInfo> maps,OrderSubInfoEntity order) throws BusinessException{
+		CustomerInfo customer = null;
+		if(!maps.isEmpty() && maps.containsKey(order.getUserId())){
+			customer = maps.get(order.getUserId());
+		}else{
+			customer = customerServiceClient.getCustomerInfo(order.getUserId());
+			maps.put(order.getUserId(), customer);
+		}
+		if(null != customer){
+			order.setUserName(customer.getMobile());
+			order.setRealName(customer.getRealName());
+			order.setCardBank(customer.getCardBank());
+			order.setCardNo(customer.getCardNo());
+		}
+	}
+	
 	public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String,String> map,Page page) throws BusinessException{
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.queryOrderRefundException(map, page);
+			
+				List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
+				Map<Long,CustomerInfo> maps = Maps.newHashMap();
+				for (OrderSubInfoEntity order : subList) {
+					setProperties(maps, order);
+				}
 				return orderDetailInfoList;
 			} catch (Exception e) {
 				LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
