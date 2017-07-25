@@ -925,7 +925,7 @@ $(function() {
 		}
 	
 		if (null == goodsTitle || ("") == goodsTitle) {
-			$.messager.alert("提示", "商品大标题不能为空！", "info");
+			$.messager.alert("提示", "商品小标题不能为空！", "info");
 			return;
 		}
 		if ((!externalsource == 'jd') && goodsTitle.length>25) {
