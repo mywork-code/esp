@@ -63,9 +63,14 @@ public class ServiceProcessDto {
     /** RS06(售后失败)-处理时间 */
     private Date rs06Time;
 
+    /**审核完成备注*/
     private String memo;
-
+    
+    /**来源标识*/
     private String source ;
+    
+    /**京退换货方式*/
+    private String jdReturnType;
 
     public String getSource() {
         return source;
@@ -219,4 +224,13 @@ public class ServiceProcessDto {
         this.rs06Time = rs06Time;
     }
 
+	public String getJdReturnType() {
+		return jdReturnType;
+	}
+
+	public void setJdReturnType(String jdReturnType) {
+		this.jdReturnType = jdReturnType;
+	}
+
+    
 }

@@ -52,6 +52,7 @@
                 ORDER_DETAIL_ID         orderDetailId,
                 GOODS_PRICE             goodsPrice,
                 GOODS_NUM               goodsNum,
+                GOODS_ID 				goodsId,
                 REMARK                  remark
         FROM T_ESP_REFUND_DETAIL_INFO
     ]]>

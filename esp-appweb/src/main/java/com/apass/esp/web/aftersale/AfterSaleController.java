@@ -78,18 +78,6 @@ public class AfterSaleController {
         
     }
     
-    /**
-     * 退换货：包括京东商品
-     * @param paramMap
-     * @return
-     */
-    @POST
-    @Path("/v1/returngoods")
-    public Response returnGoodsV1(Map<String, Object> paramMap){
-    	
-    	
-    	return null;
-    }
     
     /**
      * 退换货

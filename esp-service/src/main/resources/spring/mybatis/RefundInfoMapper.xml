@@ -45,6 +45,7 @@
 		        refund.refund_type          refundType,
 		        refund.goods_url            goodsUrl,
 		        refund.is_agree             isAgree,
+		        refund.jd_return_type		jdReturnType,
 		        refund.completion_time      completionTime
 	        from t_esp_refund_info refund 
 		]]>
