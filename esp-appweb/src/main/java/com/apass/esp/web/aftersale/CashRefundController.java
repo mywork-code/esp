@@ -114,7 +114,8 @@ public class CashRefundController {
         }
         if (CollectionUtils.isNotEmpty(txnInfoDtoList)) {
             //退款已成功 改变支付宝支付系统处理中的时间
-            if (String.valueOf(cashRefundDto.getStatus()).equals(CashRefundVoStatus.CASHREFUND_STATUS4.getCode())) {
+            //不管是否成功，改变支付宝支付 系统处理中的时间
+            //if (String.valueOf(cashRefundDto.getStatus()).equals(CashRefundVoStatus.CASHREFUND_STATUS4.getCode())) {
                 //支付宝全额支付
                 if (txnInfoDtoList.size() == 1 && TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())) {
                     cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
@@ -123,7 +124,7 @@ public class CashRefundController {
                 if (txnInfoDtoList.size() == 2 && (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(1).getTxnType()))) {
                     cashRefundDto.setSystemProcessDate(cashRefundDto.getUpdateDate());
                 }
-            }
+            //}
         }
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;

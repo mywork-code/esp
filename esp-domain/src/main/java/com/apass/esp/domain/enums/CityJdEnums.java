@@ -58,5 +58,14 @@ public enum CityJdEnums {
         }
         return false;
     }
-
+    //判断是否包含传入的code
+    public static boolean isContainsCode(String code) {
+        CityJdEnums[] cityArray = CityJdEnums.values();
+        for (CityJdEnums cityEnum : cityArray) {
+            if (StringUtils.equals(cityEnum.getCode(), code)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
