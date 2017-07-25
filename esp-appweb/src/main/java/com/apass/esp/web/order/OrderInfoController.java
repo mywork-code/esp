@@ -154,16 +154,16 @@ public class OrderInfoController {
         LOGGER.error("请选择所购买的商品");
         return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
       }
-     /**
-      * 查询商品是否存在不支持配送区域
-      */
-     resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
-     //如果map为空，则说明订单下，不存在不支持配送的区域
-     if(resultMap.isEmpty()){
-    		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
-    			        purchaseList, sourceFlag, deviceType);
-    			     resultMap.put("orderList", orders);
-     }
+      /**
+       * 查询商品是否存在不支持配送区域
+       */
+      resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
+      //如果map为空，则说明订单下，不存在不支持配送的区域
+      if(resultMap.isEmpty()){
+     		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
+     			        purchaseList, sourceFlag, deviceType);
+     			     resultMap.put("orderList", orders);
+      }
     } catch (BusinessException e) {
       LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
       return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());

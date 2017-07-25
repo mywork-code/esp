@@ -255,7 +255,46 @@ public class OrderSubInfoEntity {
     private String auditorName;
     private Date auditorDate;
     
-    public BigDecimal getTxnAmt() {
+    //用户名  姓名  银行卡号  所属银行
+    private String userName;
+    private String realName;
+    private String cardNo;
+    private String cardBank;
+    
+    
+    public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public String getCardNo() {
+		return cardNo;
+	}
+
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+
+	public String getCardBank() {
+		return cardBank;
+	}
+
+	public void setCardBank(String cardBank) {
+		this.cardBank = cardBank;
+	}
+
+	public BigDecimal getTxnAmt() {
 		return txnAmt;
 	}
 

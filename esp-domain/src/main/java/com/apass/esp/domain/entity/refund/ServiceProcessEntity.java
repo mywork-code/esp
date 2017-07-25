@@ -102,6 +102,7 @@ public class ServiceProcessEntity {
 
     private String remark;
 
+
     public String getNodeMessage() {
         return nodeMessage;
     }
@@ -109,8 +110,20 @@ public class ServiceProcessEntity {
     public void setNodeMessage(String nodeMessage) {
         this.nodeMessage = nodeMessage;
     }
+    /**
+     * 支付方式
+     */
+    private String payType;
+    
+    public String getPayType() {
+		return payType;
+	}
 
-    public Long getId() {
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public Long getId() {
         return id;
     }
 

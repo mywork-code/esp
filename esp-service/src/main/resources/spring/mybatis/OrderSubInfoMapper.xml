@@ -282,6 +282,7 @@
 		resultType="OrderSubInfoEntity">
 		SELECT
 		orderInfo.order_id orderId,
+		orderInfo.user_id userId,
 		orderInfo.orderstatus orderStatus,
 		orderInfo.payType payType,
 		orderInfo.orderstatus orderStatusDsc,
@@ -325,6 +326,7 @@
 		resultType="OrderSubInfoEntity">
 		SELECT
 		orderInfo.order_id orderId,
+		orderInfo.user_id userId,
 		orderInfo.orderstatus orderStatus,
 		orderInfo.payType payType,
 		orderInfo.orderstatus orderStatusDsc,

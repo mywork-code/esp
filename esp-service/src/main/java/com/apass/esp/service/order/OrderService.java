@@ -17,6 +17,7 @@ import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -51,6 +52,7 @@ import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
@@ -138,12 +140,15 @@ public class OrderService {
 	@Autowired
 	private CashRefundMapper cashRefundMapper;
 
-
 	@Autowired
 	private RepayFlowMapper flowMapper;
+	
 	@Autowired
 	private CashRefundTxnMapper cashRefundTxnMapper;
 
+	@Autowired
+	private CustomerServiceClient customerServiceClient;
+	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
 	private static final String ORDERSOURCECARTFLAG = "cart";
@@ -211,6 +216,11 @@ public class OrderService {
 		try {
 		Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 				.queryOrderCashRefundException(map, page);
+			List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
+			Map<Long,CustomerInfo> maps = Maps.newHashMap();
+			for (OrderSubInfoEntity order : subList) {
+				setProperties(maps, order);
+			}
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
@@ -218,10 +228,32 @@ public class OrderService {
 		}
 	}
 
+	public void setProperties(Map<Long,CustomerInfo> maps,OrderSubInfoEntity order) throws BusinessException{
+		CustomerInfo customer = null;
+		if(!maps.isEmpty() && maps.containsKey(order.getUserId())){
+			customer = maps.get(order.getUserId());
+		}else{
+			customer = customerServiceClient.getCustomerInfo(order.getUserId());
+			maps.put(order.getUserId(), customer);
+		}
+		if(null != customer){
+			order.setUserName(customer.getMobile());
+			order.setRealName(customer.getRealName());
+			order.setCardBank(customer.getCardBank());
+			order.setCardNo(customer.getCardNo());
+		}
+	}
+	
 	public Pagination<OrderSubInfoEntity> queryOrderRefundException(Map<String,String> map,Page page) throws BusinessException{
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.queryOrderRefundException(map, page);
+			
+				List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
+				Map<Long,CustomerInfo> maps = Maps.newHashMap();
+				for (OrderSubInfoEntity order : subList) {
+					setProperties(maps, order);
+				}
 				return orderDetailInfoList;
 			} catch (Exception e) {
 				LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
@@ -765,6 +797,10 @@ public class OrderService {
 					LOG.info(requestId, "生成订单前校验,校验地址,存在京东商品时地址错误", addressId.toString());
 					throw new BusinessException("地址信息格式不正确");
 				}
+			}
+			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
+				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
+				throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
 			}
 			if (purchase.getBuyNum() <= 0) {
 				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
@@ -1810,6 +1846,25 @@ public class OrderService {
 	}
 
     /**
+     * 下单时，要验证商品的可配送区域
+     * @throws BusinessException
+     */
+    public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException{
+    	//验证提交信息中，是否存在不知配送区域的商品
+        Map<String, Object> results = Maps.newHashMap();
+        for (PurchaseRequestDto purchase : purchaseList) {
+          // 校验商品的不可发送区域
+          Map<String, Object> resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
+          Boolean s = (Boolean) resultMaps.get("unSupportProvince");
+          if (s) {
+            results.putAll(resultMaps);
+            break;
+          }
+        }
+    	return results;
+    }
+    
+    /**
      * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * @param requestId
      * @param orderId
@@ -1838,26 +1893,6 @@ public class OrderService {
 		resultMap.put("message",message);
 		return resultMap;
     }
-
-    /**
-     * 下单时，要验证商品的可配送区域
-     * @throws BusinessException
-     */
-    public Map<String,Object> validateGoodsUnSupportProvince(String requestId,Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException{
-    	//验证提交信息中，是否存在不知配送区域的商品
-        Map<String, Object> results = Maps.newHashMap();
-        for (PurchaseRequestDto purchase : purchaseList) {
-          // 校验商品的不可发送区域
-          Map<String, Object> resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
-          Boolean s = (Boolean) resultMaps.get("unSupportProvince");
-          if (s) {
-            results.putAll(resultMaps);
-            break;
-          }
-        }
-    	return results;
-    }
-
 
     /**
      * 根据地址id 和 商品Id，验证订单下，是否存在不支持配送的商品

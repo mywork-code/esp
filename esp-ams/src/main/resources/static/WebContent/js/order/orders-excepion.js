@@ -63,8 +63,27 @@ $ (function ()
 		                            if (val != null)
 		                                return val.toFixed(2);
 		                        }
-		                    },
-		                    {
+		                    },{
+		                        title : '用户名',
+		                        field : 'userName',
+		                        width : 100,
+		                        align : 'center'
+		                    },{
+		                        title : '姓名',
+		                        field : 'realName',
+		                        width : 100,
+		                        align : 'center'
+		                    },{
+		                        title : '银行卡号',
+		                        field : 'cardNo',
+		                        width : 100,
+		                        align : 'center'
+		                    },{
+		                        title : '所属银行',
+		                        field : 'cardBank',
+		                        width : 100,
+		                        align : 'center'
+		                    },{
 		                        title : '审核人',
 		                        field : 'auditorName',
 		                        width : 100,
@@ -146,7 +165,7 @@ $ (function ()
 			{
 				var params = {};
 				
-				params['refundType'] = $ ("#refundType").combobox ('getValue');
+				params['refundType'] = refundType;
 				params['busCode'] = 'E005';// 订单导出code
 				
 				exportFile ("tablelist", "异常订单信息", params);
