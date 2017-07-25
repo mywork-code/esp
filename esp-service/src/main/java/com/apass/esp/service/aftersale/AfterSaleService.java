@@ -617,7 +617,6 @@ public class AfterSaleService {
 				LOG.info(requestId, "保存物流厂商、单号信息", "数据入库失败");
 				throw new BusinessException("保存物流厂商、单号信息失败!");
 			}
-
 		}
 
 	}

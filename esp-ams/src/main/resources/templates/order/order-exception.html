@@ -51,8 +51,10 @@
 				   <td width="80%"><a href="javascript:void(0);"
 						class="easyui-linkbutton search-btn"
 						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;
-						 <a href="javascript:void(0);" class="easyui-linkbutton export-btn"
-						data-options="iconCls:'icon-search'">导&nbsp;出&nbsp;</a>&nbsp;
+						 <@apass.role value="EXCEPTION_ORDER_EXPORT">
+							 <a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+							data-options="iconCls:'icon-search'">导&nbsp;出&nbsp;</a>&nbsp;
+						</@apass.role>
 					</td>
 				</tr>
 			</table>

@@ -239,9 +239,7 @@ public class AfterSaleController {
         }
         
         try {
-            
             afterSaleService.submitLogisticsInfo(requestId, userId, refundId, orderId, logisticsName, logisticsNo);
-            
             return Response.success("提交售后物流信息成功!");
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
