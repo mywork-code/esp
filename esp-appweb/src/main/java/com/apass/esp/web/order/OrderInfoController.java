@@ -19,6 +19,7 @@ import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.order.OrderService;
@@ -77,6 +78,9 @@ public class OrderInfoController {
 
   @Autowired
   private TxnInfoService txnInfoService;
+  
+  @Autowired
+  private AddressService addressService;
 
   private static final String ORDER_ID = "orderId";
 
@@ -127,23 +131,19 @@ public class OrderInfoController {
       }
       Long userId = Long.valueOf(userIdStr);
       if (null == addressIdStr) {
-        //return Response.fail("用户收货地址不能为空");
         LOGGER.error("用户收货地址不能为空");
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
       }
       if (!StringUtils.isNumeric(addressIdStr)) {
-//                return Response.fail("地址信息传入非法!");
         LOGGER.error("地址信息传入非法!");
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
       }
       Long addressId = Long.valueOf(addressIdStr);
       if (StringUtils.isEmpty(buyInfo)) {
-//                return Response.fail("购买商品信息不能为空!");
         LOGGER.error("购买商品信息不能为空!");
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
       }
       if (StringUtils.isEmpty(totalPaymentStr)) {
-//                return Response.fail("购买商品总金额不能为空!");
         LOGGER.error("购买商品总金额不能为空!");
         return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
       } else {
@@ -155,14 +155,20 @@ public class OrderInfoController {
         return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
       }
       /**
+       * 如果根据addressId ,获取地址详细信息，如果存在京东商品，则towns必填
+       */
+      resultMap.putAll(addressService.validateJdGoods(purchaseList, addressId));
+      /**
        * 查询商品是否存在不支持配送区域
        */
-      resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
-      //如果map为空，则说明订单下，不存在不支持配送的区域
       if(resultMap.isEmpty()){
-     		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
-     			        purchaseList, sourceFlag, deviceType);
-     			     resultMap.put("orderList", orders);
+    	  resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
+          //如果map为空，则说明订单下，不存在不支持配送的区域
+          if(resultMap.isEmpty()){
+         		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
+         			        purchaseList, sourceFlag, deviceType);
+         			     resultMap.put("orderList", orders);
+          }
       }
     } catch (BusinessException e) {
       LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);

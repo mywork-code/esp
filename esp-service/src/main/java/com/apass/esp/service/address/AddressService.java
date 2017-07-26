@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.WorkCityJdDto;
+import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.AddressDefaultStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.WorkCityJdMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.google.common.collect.Maps;
 
 @Service
 public class AddressService {
@@ -28,6 +34,8 @@ public class AddressService {
 	private AddressInfoRepository addressInfoRepository;
 	@Autowired
 	private WorkCityJdMapper cityJdMapper;
+	@Autowired
+	public GoodsRepository goodsDao;
 	
 	/**
 	 * 查询地址信息
@@ -253,5 +261,35 @@ public class AddressService {
 		address.setTownsCode((null == towns)?"0":towns.getCode());
 		
 		return address;
+	}
+	
+	/**
+	 * 根据商品列表，查询是否存在京东商品，如果存在京东商品，就验证地址是否存在towns
+	 * @param purchaseList
+	 * @param addressId
+	 * @return
+	 */
+	public Map<String,Object> validateJdGoods(List<PurchaseRequestDto> purchaseList,Long addressId){
+		
+		Boolean bl = false;
+		Map<String,Object> maps = Maps.newHashMap();
+		if(!CollectionUtils.isEmpty(purchaseList)){
+			for (PurchaseRequestDto purchase : purchaseList) {
+				GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+				if (null != goods) {
+					if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+						bl = true;
+						break;
+					}
+				}
+			}
+		}
+		if(bl){
+			AddressInfoEntity address = queryOneAddressByAddressId(addressId);
+	        if(null != address && StringUtils.isBlank(address.getTowns())){
+	    	   maps.put("notExsitTowns", true);
+	        }
+		}
+		return maps;
 	}
 }
