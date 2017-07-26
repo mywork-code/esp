@@ -1883,8 +1883,8 @@ public class OrderService {
 					String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
 							purchase.getBuyNum());
 					if ("无货".equals(jdgoodsStock)) {
-						results.put("unSupportProvince", true);
-						results.put("message", "抱歉，暂不支持该地区发货！");
+						resultMaps.put("unSupportProvince", true);
+						resultMaps.put("message", "抱歉，暂不支持该地区发货！");
 					}
 				}
 
