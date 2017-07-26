@@ -126,3 +126,6 @@ ADD COLUMN `goods_id` bigint(20) DEFAULT NULL COMMENT '商品id';
 
 ALTER TABLE `t_esp_service_process_info`
 ADD COLUMN `node_message`  varchar(255) DEFAULT '' COMMENT '备注信息';
+
+ALTER TABLE `t_esp_refund_info`
+ADD COLUMN `jd_return_type`  varchar(12) DEFAULT '' COMMENT '京东退换货返回方式';
