@@ -801,18 +801,21 @@ public class OrderService {
 			}else{
 				// 校验地址
 				AddressInfoEntity address1 = addressInfoDao.select(addressId);
-				if (address1.getProvinceCode()==null||address1.getCityCode()==null||address1.getDistrictCode()==null) {
+				if (address1.getProvinceCode() == null || address1.getCityCode() == null || address1.getDistrictCode() == null) {
 					LOG.info(requestId, "生成订单前校验,校验地址,存在京东商品时地址错误", addressId.toString());
 					throw new BusinessException("地址信息格式不正确");
 				}
+
 			}
-			if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
-				LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
-				throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-			}
-			if (purchase.getBuyNum() <= 0) {
-				LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
-				throw new BusinessException("商品" + goodsDetail.getGoodsName() + "购买数量不能为零");
+			if (goodsInfo.getSource() == null) {
+				if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
+					LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
+					throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+				}
+				if (purchase.getBuyNum() <= 0) {
+					LOG.info(requestId, "生成订单前校验,商品购买数量为0", purchase.getBuyNum().toString());
+					throw new BusinessException("商品" + goodsDetail.getGoodsName() + "购买数量不能为零");
+				}
 			}
 			// 校验购物车
 			if (StringUtils.isNotEmpty(sourceFlag) && sourceFlag.equals(ORDERSOURCECARTFLAG)) {
