@@ -580,33 +580,38 @@ public class PaymentService {
 			//2、用户可用额度>0
 			// 计算额度支付金额
 			PayInfoEntity payInfo = calculateCreditPayRatio(customerCreditInfo.getAvailableAmount(), totalAmt);
-			Response overDue = paymentHttpClient.hasOverDueBill(userId);
-			boolean overDue1 = false;
-			if(!overDue.statusResult()){
-				overDue1=true;
-			}else{
-				overDue1 = (boolean)overDue.getData();
-			}
-			if(overDue1){
-				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
-			} else {
-				Map<String, Object> param = Maps.newHashMap();
-				param.put("userId", userId);
-				param.put("customerId", customerCreditInfo.getCustomerId());
-				param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
-				Response response1 = paymentHttpClient.creditPaymentAuth(param);
-				if(!response1.statusResult()){
-					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
+			
+			if(payInfo.isSupportCreditPay()){
+				Response overDue = paymentHttpClient.hasOverDueBill(userId);
+				boolean overDue1 = false;
+				if(!overDue.statusResult()){
+					overDue1=true;
 				}else{
-					// 支持额度支付
-					if ("1".equals(response1.getData())) {
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
-					} else {
-						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
+					overDue1 = (boolean)overDue.getData();
+				}
+				if(overDue1){
+					page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE;
+				} else {
+					Map<String, Object> param = Maps.newHashMap();
+					param.put("userId", userId);
+					param.put("customerId", customerCreditInfo.getCustomerId());
+					param.put("amount", payInfo.getCreditPayAmt()); // 额度支付总金额
+					Response response1 = paymentHttpClient.creditPaymentAuth(param);
+					if(!response1.statusResult()){
+						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
+					}else{
+						// 支持额度支付
+						if ("1".equals(response1.getData())) {
+							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
+						} else {
+							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
+						}
 					}
 				}
-
+			}else{
+				page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
 			}
+			
 		}
 
 		resultMap.put("page", page);
