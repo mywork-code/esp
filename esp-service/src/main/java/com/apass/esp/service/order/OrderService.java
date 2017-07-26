@@ -3,6 +3,7 @@ package com.apass.esp.service.order;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -1878,7 +1879,7 @@ public class OrderService {
 						region.setProvinceId(Integer.parseInt(address.getProvinceCode()));
 						region.setCityId(Integer.parseInt(address.getCityCode()));
 						region.setCountyId(Integer.parseInt(address.getDistrictCode()));
-						region.setTownId(Integer.parseInt(address.getTownsCode()));
+						region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer.parseInt(address.getTownsCode()));
 					}
 					String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
 							purchase.getBuyNum());
@@ -1886,16 +1887,15 @@ public class OrderService {
 						resultMaps.put("unSupportProvince", true);
 						resultMaps.put("message", "抱歉，暂不支持该地区发货！");
 					}
+				} else {
+					// 校验非京东商品的不可发送区域
+					resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
 				}
-
-			} else {
-				// 校验非京东商品的不可发送区域
-				resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
 			}
 			Boolean s = (Boolean) resultMaps.get("unSupportProvince");
 			if (s) {
 				results.putAll(resultMaps);
-				break;
+				throw  new BusinessException("抱歉，暂不支持该地区发货");
 			}
 		}
     	return results;
