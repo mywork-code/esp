@@ -133,7 +133,7 @@ public class OrderExceptionController {
     
     
     /**
-	 * 更新订单物流信息、订单信息
+	 * 更新退款状态
 	 */
 	@ResponseBody
 	@RequestMapping("/refund")

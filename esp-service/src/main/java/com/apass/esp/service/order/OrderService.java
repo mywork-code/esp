@@ -28,12 +28,14 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
@@ -49,6 +51,7 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.order.OrderSubInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
@@ -65,6 +68,7 @@ import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.Stock;
+import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -148,6 +152,10 @@ public class OrderService {
 
 	@Autowired
 	private CustomerServiceClient customerServiceClient;
+	@Autowired
+	private OrderRefundService orderRefundService;
+	@Autowired
+	private OrderRefundRepository orderRefundRepository;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -2182,8 +2190,9 @@ public class OrderService {
 	/**
 	 * 根据订单号，退款
 	 * @param orderId
+	 * @throws BusinessException 
 	 */
-	public void orderCashRefund(String orderId,String refundType,String userName){
+	public void orderCashRefund(String orderId,String refundType,String userName) throws BusinessException{
 		//根据订单id，获取订单信息
 		OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
 
@@ -2205,8 +2214,16 @@ public class OrderService {
 			order.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
 			orderInfoRepository.updateOrderStatus(order);
 		}else{
-			order.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
-			orderInfoRepository.updateOrderStatus(order);
+			Map<String,Object> map = Maps.newHashMap();
+			map.put("orderId", orderId);
+			map.put("refundType","0");
+			RefundInfoEntity refundEntity = orderRefundRepository.queryRefundInfoByOrderIdAndRefundType(map);
+			if(null != refundEntity){
+				Map<String,String> refundMap = Maps.newHashMap();
+				refundMap.put("orderId", orderId);
+				refundMap.put("refundId", refundEntity.getId()+"");
+				orderRefundService.confirmRefundByOrderId(refundMap);
+			}
 		}
 
 	}
