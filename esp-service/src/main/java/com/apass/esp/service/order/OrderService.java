@@ -58,11 +58,13 @@ import com.apass.esp.service.bill.BillService;
 import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
+import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -156,6 +158,8 @@ public class OrderService {
 	private OrderRefundService orderRefundService;
 	@Autowired
 	private OrderRefundRepository orderRefundRepository;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1864,14 +1868,36 @@ public class OrderService {
     	//验证提交信息中，是否存在不知配送区域的商品
         Map<String, Object> results = Maps.newHashMap();
         for (PurchaseRequestDto purchase : purchaseList) {
-          // 校验商品的不可发送区域
-          Map<String, Object> resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
-          Boolean s = (Boolean) resultMaps.get("unSupportProvince");
-          if (s) {
-            results.putAll(resultMaps);
-            break;
-          }
-        }
+			GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+			Map<String, Object> resultMaps = new HashMap<>();
+			if (null != goods) {
+				if ("jd".equals(goods.getSource())) {
+					AddressInfoEntity address = addressInfoDao.select(addreesId);
+					Region region = new Region();
+					if (null != address) {
+						region.setProvinceId(Integer.parseInt(address.getProvinceCode()));
+						region.setCityId(Integer.parseInt(address.getCityCode()));
+						region.setCountyId(Integer.parseInt(address.getDistrictCode()));
+						region.setTownId(Integer.parseInt(address.getTownsCode()));
+					}
+					String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
+							purchase.getBuyNum());
+					if ("无货".equals(jdgoodsStock)) {
+						results.put("unSupportProvince", true);
+						results.put("message", "抱歉，暂不支持该地区发货！");
+					}
+				}
+
+			} else {
+				// 校验非京东商品的不可发送区域
+				resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
+			}
+			Boolean s = (Boolean) resultMaps.get("unSupportProvince");
+			if (s) {
+				results.putAll(resultMaps);
+				break;
+			}
+		}
     	return results;
     }
     
