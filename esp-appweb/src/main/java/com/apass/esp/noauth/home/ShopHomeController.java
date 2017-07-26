@@ -402,14 +402,14 @@ public class ShopHomeController {
                 addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(userId));
             }
             if(null ==addressInfoList || addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
-            	addty.setProvinceCode("1");
-            	addty.setProvince("province");
-            	addty.setCityCode("0");
-            	addty.setCity("city");
-            	addty.setDistrictCode("0");
-            	addty.setDistrict("district");
+            	addty.setProvinceCode("2");
+            	addty.setProvince("上海");
+            	addty.setCityCode("2815");
+            	addty.setCity("长宁区");
+            	addty.setDistrictCode("51975");
+            	addty.setDistrict("城区");
             	addty.setTownsCode("0");
-            	addty.setTowns("towns");
+            	addty.setTowns("");
             	addty.setIsDefault("1");
             	addressInfoList.add(addty);
             }else{
