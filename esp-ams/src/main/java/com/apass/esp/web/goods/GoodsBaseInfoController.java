@@ -517,6 +517,8 @@ public class GoodsBaseInfoController {
     public String shelves(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
         String source = HttpWebUtils.getValue(request, "source");
+        String listTime = HttpWebUtils.getValue(request, "listTime");
+        String delistTime = HttpWebUtils.getValue(request, "delistTime");
         GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
         if (null == goodsEntity) {
             return "商品不存在！";
@@ -544,6 +546,10 @@ public class GoodsBaseInfoController {
             if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
                 return "商品类目不能为空，请先选择类目！";
             }
+        }else{
+        	if(StringUtils.isAnyBlank(listTime,delistTime)||"null".equals(listTime)||"null".equals(delistTime)){
+        		return "商品上架和下架时间不能为空，请先选择类目！";
+        	}
         }
         SystemParamEntity systemParamEntity = null;
         try {

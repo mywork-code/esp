@@ -206,7 +206,7 @@ $(function() {
                     	 
                          if((row.status =='G03'||row.status =='G00')&& merchantStatus=="1"){//待上架或下架才能上架
 	                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelves('"
-	                    		 +  row.id + "','" +  row.source + "');\">上架</a>&nbsp;&nbsp;" 
+	                    		 +  row.id + "','" +  row.source + "','" +  row.listTime + "','" +  row.delistTime + "');\">上架</a>&nbsp;&nbsp;" 
                          }
                          if(row.status =='G02'&& merchantStatus=="1"){//上架商品才能下架
                         	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"
@@ -1624,19 +1624,25 @@ $(function() {
 	 
 	};	
 	//上架
-	$.shelves = function(id,source) {
+	$.shelves = function(id,source,listTime,delistTime) {
 		$.messager.confirm('提示框', '你确定要上架吗?',function(r){
 			if(r){
 				debugger;
 				var params = {};
 				params['id']=id;
 				params['source']=source;
+				params['listTime']=listTime;
+				params['delistTime']=delistTime;
 //				var editorGoodsDetail  = UE.getEditor('editor').getContent();
 //				params['editorGoodsDetail']=editorGoodsDetail;
-//				if (null == editorGoodsDetail || ("") == editorGoodsDetail) {
-//					$.messager.alert("提示", "商品详情不能为空！", "info");
-//					return;
-//				}
+				if (null == listTime || 'null' == listTime) {
+					$.messager.alert("提示", "商品上架时间不能为空！", "info");
+					return;
+				}
+				if (null == delistTime || 'null' == delistTime) {
+					$.messager.alert("提示", "商品下架时间不能为空！", "info");
+					return;
+				}
 				$.ajax({
 					type : "POST",
 					url : ctx + '/application/goods/management/shelves',

@@ -241,7 +241,6 @@ $(function () {
 
     // 查询订单详情
     $.queryOrderDetail = function (orderId, userId, orderAmt, orderStatusDsc, goodName, payType, transNo, createDate) {
-        debugger;
         // 设置窗口中的订单信息
 //		$ ("#orderDetailListWin #userId").textbox ('setValue', userId);
         $("#orderDetailListWin #orderId").textbox('setValue', orderId);
