@@ -573,5 +573,28 @@ public class JdGoodsInfoService {
         	return "无货";
         }
     }
-
+    /**
+     * 获取当个sku库存接口（建议订单详情页、下单使用）
+     *
+     * @param skuNums
+     * @param region
+     * @return
+     */
+    public String getStockBySkuNum(String sku, Region region,Integer num) {
+    	String isStock="";
+    	List<SkuNum> skuNums =new ArrayList<>();
+    	SkuNum skuNum=new SkuNum();
+    	skuNum.setSkuId(Long.parseLong(sku));
+    	skuNum.setNum(num);
+    	skuNums.add(skuNum);
+        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
+        if(result.size()==1){
+        	isStock=result.get(0).getStockStateDesc();
+        }
+        if("33".equals(isStock)|| "39".equals(isStock)||"40".equals(isStock)){
+        	return "有货";
+        }else{
+        	return "无货";
+        }
+    }
 }
