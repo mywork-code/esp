@@ -133,15 +133,12 @@ public class JdGoodsInfoService {
 				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
 				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
 				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+				region.setTownId(Integer.parseInt(addressInfoEntity.getTownsCode()));
 			}
 		}
 		// 查询商品是否有货
-		JdGoodStock jdGoodStock = stockForListBatget(sku.toString(), region);
-		if ("34".equals(jdGoodStock.getState())) {
-			map.put("goodsStockDes", "无货");
-		} else {
-			map.put("goodsStockDes", "有货");
-		}
+		String jdGoodStock = getStockBySku(sku.toString(), region);
+		map.put("goodsStockDes", jdGoodStock);
 		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,AddressInfoEntityList);
 		map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 		map.put("skuId", map2.get("skuId"));
@@ -214,6 +211,7 @@ public class JdGoodsInfoService {
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
 			}
+			
 			// 获取地址信息
 			Region region = new Region();
 			for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
@@ -221,16 +219,15 @@ public class JdGoodsInfoService {
 					region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
 					region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
 					region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+					region.setTownId(Integer.parseInt(addressInfoEntity.getTownsCode()));
 				}
 			}
 			// 查询商品是否有货
-			JdGoodStock jdGoodStock = stockForListBatget(skuId, region);
+			String jdGoodStock = getStockBySku(sku.toString(), region);
+			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);
-			if ("34".equals(jdGoodStock.getState())) {
-				jdSimilarSkuVo.setStockDesc("无货");
-			} else {
-				jdSimilarSkuVo.setStockDesc("有货");
-			}
+			jdSimilarSkuVo.setStockDesc(jdGoodStock);
+			
 			String skuIdOrder = "";
 			for (JdSimilarSku jdsk : jdSimilarSkuList2) {
 				if (skuIdOrder.length() == 0) {
