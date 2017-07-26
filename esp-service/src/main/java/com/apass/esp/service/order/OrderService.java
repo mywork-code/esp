@@ -1871,7 +1871,7 @@ public class OrderService {
 			GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
 			Map<String, Object> resultMaps = new HashMap<>();
 			if (null != goods) {
-				if ("jd".equals(goods.getSource())) {
+				if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
 					AddressInfoEntity address = addressInfoDao.select(addreesId);
 					Region region = new Region();
 					if (null != address) {
