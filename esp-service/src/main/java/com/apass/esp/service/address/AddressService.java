@@ -286,7 +286,7 @@ public class AddressService {
 		}
 		if(bl){
 			AddressInfoEntity address = queryOneAddressByAddressId(addressId);
-	        if(null != address && StringUtils.isBlank(address.getTowns())){
+	        if(null != address && StringUtils.isBlank(address.getTownsCode())){
 	    	   maps.put("notExsitTowns", true);
 	        }
 		}
