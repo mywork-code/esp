@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -133,7 +134,7 @@ public class JdGoodsInfoService {
 				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
 				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
 				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-				region.setTownId(Integer.parseInt(addressInfoEntity.getTownsCode()));
+				region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
 			}
 		}
 		// 查询商品是否有货
@@ -219,7 +220,7 @@ public class JdGoodsInfoService {
 					region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
 					region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
 					region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-					region.setTownId(Integer.parseInt(addressInfoEntity.getTownsCode()));
+					region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
 				}
 			}
 			// 查询商品是否有货
