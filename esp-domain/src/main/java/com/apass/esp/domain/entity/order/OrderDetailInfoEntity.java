@@ -248,16 +248,16 @@ public class OrderDetailInfoEntity {
         this.merchantCode = merchantCode;
     }
 
-    public String getListTime() {
-        return DateFormatUtil.dateToString(listTime, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+    public Date getListTime() {
+        return listTime;
     }
 
     public void setListTime(Date listTime) {
         this.listTime = listTime;
     }
 
-    public String getDelistTime() {
-        return DateFormatUtil.dateToString(delistTime, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+    public Date getDelistTime() {
+        return delistTime;
     }
 
     public void setDelistTime(Date delistTime) {
