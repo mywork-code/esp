@@ -850,28 +850,29 @@ public class OrderService {
 			LOG.info(requestId, "校验商品下架,根据商品id查询商品信息数据为空", goodsId.toString());
 			throw new BusinessException("商品号:" + goodsId + ",不存在或商户号不存在！");
 		}
+		if (now.before(goodsInfo.getListTime()) ||!GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+			LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
+			throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
+		}
 		if (goodsInfo.getSource() == null) {
-			if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
-					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+			if (now.after(goodsInfo.getDelistTime())) {
 				LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
 				throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
 			}
-		}
-		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
-		boolean offShelfFlag = false;
-		for (GoodsStockInfoEntity goodsStock : goodsList) {
-			GoodsInfoEntity goodsInfo1 = goodsDao.select(goodsStock.getGoodsId());
-			if (goodsInfo1.getSource() == null) {
-				if (goodsStock.getStockCurrAmt() < 0) {
-					offShelfFlag = true;
+			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
+			boolean offShelfFlag = true;
+			for (GoodsStockInfoEntity goodsStock : goodsList) {
+				if (goodsStock.getStockCurrAmt() > 0) {
+					offShelfFlag = false;
 					break;
 				}
 			}
+			if (offShelfFlag) {
+				LOG.info(requestId, "校验商品下架,商品各规格数量都为0,已下架", goodsId.toString());
+				throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
+			}
 		}
-		if (offShelfFlag) {
-			LOG.info(requestId, "校验商品下架,商品各规格数量都为0,已下架", goodsId.toString());
-			throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
-		}
+		
 	}
 
 	/**
