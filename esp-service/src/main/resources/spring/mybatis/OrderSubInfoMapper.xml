@@ -339,6 +339,7 @@
 		where 
 		refund.refund_type = '0' and 
 		refund.is_agree = '1'  and
+		refund.status = 'RS03' and
 		orderInfo.orderStatus = 'D05'  and
 		exists (select * from t_apass_txn_info refundTxn where refundTxn.order_id = orderInfo.main_order_id and refundTxn.txn_type in ('T10','T11') )
 		ORDER BY refund.create_date DESC
