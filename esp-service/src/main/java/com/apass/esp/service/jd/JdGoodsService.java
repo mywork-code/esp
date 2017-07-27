@@ -135,7 +135,7 @@ public class JdGoodsService {
 			throw new BusinessException("京东此类目下无商品");
 		}
 		//判断此类目下商品是否有被下单
-		List<Long> skuIds = new ArrayList();
+		List<Long> skuIds = new ArrayList<Long>();
 		if(JdGoodsList.size()>100){
 			int num = JdGoodsList.size()/100;
 			for (int i = 0; i < JdGoodsList.size(); i++) {

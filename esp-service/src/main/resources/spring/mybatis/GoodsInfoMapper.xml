@@ -244,7 +244,7 @@
 	        #{sordNo, jdbcType=INTEGER},
 	        #{unSupportProvince, jdbcType=VARCHAR},
 	        #{source, jdbcType=VARCHAR},
-	        #{externalId, jdbcType=VARCHAR}
+	        #{externalId, jdbcType=VARCHAR})
 	]]>
 	</insert>
 	
