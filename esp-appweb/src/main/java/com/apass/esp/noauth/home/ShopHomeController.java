@@ -587,8 +587,8 @@ public class ShopHomeController {
 		    goodsInfoEntity.setGoogsDetail("");
 		    BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
 		    if(goodsPrice != null){
-		    	goodsInfoEntity.setGoodsPrice(goodsPrice);
-		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+		    	goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
+		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
 		    }
             
 		    goodsList.add(goodsInfoEntity);
