@@ -113,7 +113,7 @@ public class ShopHomeController {
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
-                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
+                goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)));//设置首付价=商品价*10%
              
                 if("jd".equals(goods.getSource())){
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
@@ -294,7 +294,7 @@ public class ShopHomeController {
 					BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
 							goodsInfo.getGoodsStockId());
 					goodsInfo.setGoodsPrice(price);
-					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
+					goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价
 
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
@@ -427,7 +427,7 @@ public class ShopHomeController {
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
             		returnMap.put("goodsPrice",price);//商品价格
-            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
+            		returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价格
             	}
             	returnMap.put("source", "jd");
             }else{
@@ -482,6 +482,7 @@ public class ShopHomeController {
 		if(StringUtils.isBlank(townsCode)){
 			townsCode="0";
 		}
+		String goodsStockDes="有货";
 		if ("jd".equals(goodsInfo.getSource())) {
 			Region region = new Region();
 			region.setProvinceId(Integer.parseInt(provinceCode));
@@ -489,10 +490,8 @@ public class ShopHomeController {
 			region.setCountyId(Integer.parseInt(districtCode));
 			region.setTownId(Integer.parseInt(townsCode));
 			// 查询商品是否有货
-			String goodsStockDes = jdGoodsInfoService.getStockBySku(goodsInfo.getExternalId(), region);
+			goodsStockDes = jdGoodsInfoService.getStockBySku(goodsInfo.getExternalId(), region);
 			map.put("goodsStockDes", goodsStockDes);
-		} else {
-			//非京东商品判断是否有货
 		}
 		return Response.success("成功！", map);
 	}
