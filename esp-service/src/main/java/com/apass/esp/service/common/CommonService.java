@@ -114,10 +114,10 @@ public class CommonService {
                 }
             }
             price = goodsStock.getMarketPrice().multiply(discount);
-            return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
+            return price.setScale(2, BigDecimal.ROUND_DOWN);//接近零的舍入模式保留二位小数
         }else{
             price = goodsStock.getGoodsPrice();
-            return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
+            return price.setScale(2, BigDecimal.ROUND_DOWN);//接近零的舍入模式保留二位小数
         }
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);
