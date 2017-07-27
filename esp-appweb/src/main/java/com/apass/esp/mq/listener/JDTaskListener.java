@@ -3,18 +3,21 @@ package com.apass.esp.mq.listener;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.JdMessageEnum;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PreStockStatus;
+import com.apass.esp.domain.enums.*;
+import com.apass.esp.mapper.JdCategoryMapper;
+import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
+import com.apass.esp.third.party.jd.entity.base.JdCategory;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +26,8 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Created by jie.xu on 17/7/14.
@@ -44,10 +46,19 @@ public class JDTaskListener implements MessageListener {
     private OrderInfoRepository orderInfoRepository;
 
     @Autowired
+    private JdGoodsMapper jdGoodsMapper;
+
+    @Autowired
+    private JdCategoryMapper jdCategoryMapper;
+
+    @Autowired
     private JdOrderApiClient jdOrderApiClient;
 
     @Autowired
     private JdProductApiClient jdProductApiClient;
+
+    @Autowired
+    private GoodsStockInfoService goodsStockInfoService;
 
     @Override
     public void onMessage(Message message) {
@@ -73,8 +84,102 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
                     goodsService.updateService(goodsInfoEntity);
-                    //TODO
-                    //上架处理  京东表处理
+                }else{
+                    JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(skuId);
+                    if(!jdApiResponse.isSuccess()||jdApiResponse!=null){
+                        continue;
+                    }
+                    JSONObject jsonObject1 = jdApiResponse.getResult();
+                    String category = (String) jsonObject1.get("category");
+                    String[] categorys = category.split(";");
+                    String name = (String) jsonObject1.get("name");//商品名称
+                    String brandName = (String) jsonObject1.get("brandName");//
+                    //Integer state = (Integer) jsonObject1.get("state");
+                    String imagePath = (String) jsonObject1.get("imagePath");//
+                    String weight = (String) jsonObject1.get("weight");//
+                    String productArea = (String) jsonObject1.get("productArea");//
+                    String upc = (String) jsonObject1.get("upc");//
+                    String saleUnit = (String) jsonObject1.get("saleUnit");//
+                    //String category = (String) jsonObject1.get("category");
+                    String wareQD = (String) jsonObject1.get("wareQD");//
+                    List<Long> skulist = new ArrayList<Long>();
+                    skulist.add(skuId);
+                    JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skulist);
+                    if (jsonArrayJdApiResponse == null) {
+                        continue;
+                    }
+                    JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
+                    if (productPriceList == null) {
+                        continue;
+                    }
+                    JSONObject jsonObject12 = null;
+                    try {
+                        jsonObject12 = (JSONObject) productPriceList.get(0);
+                    } catch (Exception e) {
+                        continue;
+                    }
+                    BigDecimal price = (BigDecimal) jsonObject12.get("price");
+                    BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
+                    int firstCategory = Integer.valueOf(categorys[0]);
+                    int secondCategory = Integer.valueOf(categorys[1]);
+                    int thirdCategory = Integer.valueOf(categorys[2]);
+                    JdGoods jdGoods = new JdGoods();
+                    jdGoods.setFirstCategory(firstCategory);
+                    jdGoods.setSecondCategory(secondCategory);
+                    jdGoods.setThirdCategory(thirdCategory);
+                    jdGoods.setSkuId(skuId);
+                    jdGoods.setBrandName(brandName);
+                    jdGoods.setImagePath(imagePath);
+                    jdGoods.setName(name);
+                    jdGoods.setProductArea(productArea);
+                    jdGoods.setJdPrice(jdPrice);
+                    jdGoods.setPrice(price);
+                    jdGoods.setSaleUnit(saleUnit);
+                    //jdGoods.setWareQd(wareQD);
+                    jdGoods.setWeight(new BigDecimal(weight));
+                    jdGoods.setUpc(upc);
+                    jdGoods.setState(state == 1 ? true : false);
+
+                    try {
+                        jdGoodsMapper.insertSelective(jdGoods);
+                    } catch (Exception e) {
+                        LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+                    }
+                    JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                    if(jdCategory.getFlag()){
+                        GoodsInfoEntity entity = new GoodsInfoEntity();
+                        entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
+                        entity.setCategoryId1(jdCategory.getCategoryId1());
+                        entity.setCategoryId2(jdCategory.getCategoryId2());
+                        entity.setCategoryId3(jdCategory.getCategoryId3());
+                        entity.setGoodsName(jdGoods.getName());
+                        entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
+                        entity.setMerchantCode("0000103");
+                        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+                        entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
+                        entity.setListTime(null);
+                        entity.setDelistTime(null);
+                        entity.setCreateUser("jd");
+                        entity.setUpdateUser("jd");
+                        entity.setSource("jd");
+                        entity.setGoodsLogoUrl(jdGoods.getImagePath());
+                        entity.setGoodsSiftUrl(jdGoods.getImagePath());
+                        entity.setExternalId(jdGoods.getSkuId().toString());
+                        entity.setExternalStatus((byte)1);
+                        GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
+
+                        //往t_esp_goods_stock_info表插数据
+                        GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
+                        stockEntity.setStockTotalAmt(-1l);
+                        stockEntity.setStockCurrAmt(-1l);
+                        stockEntity.setGoodsId(insertJdGoods.getGoodId());
+                        stockEntity.setGoodsPrice(jdGoods.getJdPrice());
+                        stockEntity.setMarketPrice(jdGoods.getJdPrice());
+                        stockEntity.setGoodsCostPrice(jdGoods.getPrice());
+                        stockEntity.setCreateUser("jd");
+                        stockEntity.setUpdateUser("jd");
+                        goodsStockInfoService.insert(stockEntity);
+                    }
                 }
             }
             return;
