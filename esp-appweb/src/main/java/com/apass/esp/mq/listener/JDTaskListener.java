@@ -165,7 +165,6 @@ public class JDTaskListener implements MessageListener {
                         entity.setGoodsLogoUrl(jdGoods.getImagePath());
                         entity.setGoodsSiftUrl(jdGoods.getImagePath());
                         entity.setExternalId(jdGoods.getSkuId().toString());
-                        entity.setExternalStatus((byte)1);
                         GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 
                         //往t_esp_goods_stock_info表插数据
