@@ -328,10 +328,12 @@ public class JdGoodsInfoService {
 			String skuId = iterator.next();
 			// 查询商品价格
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
+			jdSimilarSkuVo.setGoodsId(goodsInfo.getId().toString());
 			Long goodsId = goodsInfo.getId();
 			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
 			if (jdGoodsStockInfoList.size() == 1) {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
 			}
