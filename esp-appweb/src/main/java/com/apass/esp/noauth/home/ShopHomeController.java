@@ -427,7 +427,7 @@ public class ShopHomeController {
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
             		returnMap.put("goodsPrice",price);//商品价格
-            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
+            		returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价格
             	}
             	returnMap.put("source", "jd");
             }else{
