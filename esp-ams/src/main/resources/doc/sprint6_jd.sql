@@ -1,7 +1,6 @@
 ALTER TABLE `t_esp_goods_base_info`
 ADD COLUMN `source`  varchar(12) DEFAULT '' COMMENT '商品来源标识(如：jd)',
-ADD COLUMN `external_id`  varchar(32) DEFAULT '' COMMENT '外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)',
-ADD COLUMN `external_status`  tinyint(1) DEFAULT '' COMMENT '外部商品是否关联标识(0：未关联，1：已关联)';
+ADD COLUMN `external_id`  varchar(32) DEFAULT '' COMMENT '外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)';
 
 DROP TABLE  IF EXISTS esp.`t_esp_work_city_jd`;
 CREATE TABLE `t_esp_work_city_jd` (
@@ -12,9 +11,9 @@ CREATE TABLE `t_esp_work_city_jd` (
   `DISTRICT` varchar(200) DEFAULT '' COMMENT '县',
   `TOWNS` varchar(200) DEFAULT '' COMMENT '乡镇',
   `PARENT` bigint(20) DEFAULT '0' COMMENT '父节点',
-  `LEVEL` varchar(2) DEFAULT NULL COMMENT '第几级目录',
-  `PREFIX` varchar(10) DEFAULT NULL COMMENT '首字母',
-  `SPELL` varchar(50) DEFAULT NULL COMMENT '城市中文拼音',
+  `LEVEL` varchar(2) DEFAULT '' COMMENT '第几级目录',
+  `PREFIX` varchar(10) DEFAULT '' COMMENT '首字母',
+  `SPELL` varchar(50) DEFAULT '' COMMENT '城市中文拼音',
   `CREATE_DATE` datetime NOT NULL,
   `UPDATE_DATE` datetime NOT NULL,
   PRIMARY KEY (`ID`)
@@ -46,7 +45,7 @@ CREATE TABLE `t_esp_jd_goods` (
   `brand_name` varchar(255) NOT NULL COMMENT '品牌',
   `name` varchar(255) NOT NULL COMMENT '商品名称',
   `image_path` varchar(255) DEFAULT '' COMMENT '主图地址',
-  `weight` decimal(10,0) DEFAULT '0' COMMENT '重量',
+  `weight` decimal(10,2) DEFAULT '0.00' COMMENT '重量',
   `upc` varchar(20) DEFAULT '' COMMENT '条形码',
   `product_area` varchar(20) DEFAULT '' COMMENT '产地',
   `sale_unit` varchar(10) DEFAULT '' COMMENT '销售单位',
@@ -63,7 +62,7 @@ CREATE TABLE `t_esp_jd_goods` (
 
 
 ALTER TABLE `t_esp_system_param_info`
-ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT 0 COMMENT '保本率(售价/成本价*100%=保本率)';
+ADD COLUMN `price_cost_rate` decimal(10,4) DEFAULT '0.0000' COMMENT '保本率(售价/成本价*100%=保本率)';
 
 ALTER TABLE `t_esp_order_info`
 ADD COLUMN `source`  varchar(12) DEFAULT '' COMMENT '商品来源标识(如：jd)',
