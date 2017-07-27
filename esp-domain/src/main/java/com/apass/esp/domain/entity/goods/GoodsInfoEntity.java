@@ -165,10 +165,6 @@ public class GoodsInfoEntity {
      */
     private String externalId;
     
-    /**
-     * 外部商品是否关联标识(0：未关联，1：已关联)
-     */
-    private byte externalStatus;
 
     /**
      * 商品价格
@@ -196,15 +192,6 @@ public class GoodsInfoEntity {
 		this.externalId = externalId;
 	}
 
-	public byte getExternalStatus() {
-		return externalStatus;
-	}
-
-	public void setExternalStatus(byte externalStatus) {
-		this.externalStatus = externalStatus;
-	}
-
-    
     public String getUnSupportProvince() {
 		return unSupportProvince;
 	}

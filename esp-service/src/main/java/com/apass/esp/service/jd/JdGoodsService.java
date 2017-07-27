@@ -16,6 +16,7 @@ import com.apass.esp.domain.enums.GoodsIsDelete;
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
@@ -41,6 +42,9 @@ public class JdGoodsService {
 	
 	@Autowired
 	private GoodsStockInfoService goodsStockInfoService;
+	
+	@Autowired
+	private OrderDetailInfoRepository orderDetailInfoRepository;
 	
 	/**
 	 * 关联京东类目 
@@ -85,7 +89,6 @@ public class JdGoodsService {
 			entity.setGoodsLogoUrl(jdGoods.getImagePath());
 			entity.setGoodsSiftUrl(jdGoods.getImagePath());
 			entity.setExternalId(jdGoods.getSkuId().toString());
-			entity.setExternalStatus((byte)1);
 			GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 			
 			//往t_esp_goods_stock_info表插数据
@@ -130,6 +133,9 @@ public class JdGoodsService {
 		if(JdGoodsList == null){
 			throw new BusinessException("京东此类目下无商品");
 		}
+		//判断此类目下商品是否有被下单
+		
+		
 		
 		List<String> idsGoods = new ArrayList<String>();
 		List<Long> idsStock = new ArrayList<Long>();
