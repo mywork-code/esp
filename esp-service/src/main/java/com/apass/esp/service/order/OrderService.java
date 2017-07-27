@@ -83,6 +83,9 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import net.logstash.logback.encoder.com.lmax.disruptor.BusySpinWaitStrategy;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -487,6 +490,7 @@ public class OrderService {
         JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(orderReq.getSkuNumList());
         if (!skuCheckResult.isSuccess()) {
             LOGGER.warn("check order status error, {}", skuCheckResult.toString());
+            throw new BusinessException("下单失败!");
         }
         for (Object o : skuCheckResult.getResult()) {
             JSONObject jsonObject = (JSONObject) o;
@@ -494,6 +498,7 @@ public class OrderService {
             if (saleState != 1) {
                 LOGGER.info("sku[{}] could not sell,detail:", jsonObject.getLongValue("skuId"), jsonObject.toJSONString());
                 LOGGER.info(jsonObject.getLongValue("skuId") + "_");
+                throw new BusinessException("下单失败!");
             }
         }
 		/**
@@ -504,6 +509,7 @@ public class OrderService {
             if (!"有货".equals(stock.getStockStateDesc())) {
                 LOGGER.info("sku[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
                 LOGGER.info(stock.getSkuId() + "_");
+                throw new BusinessException("下单失败!");
             }
         }
 		/**
@@ -513,9 +519,11 @@ public class OrderService {
         LOGGER.info(orderResponse.toString());
         if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode())) && !"3004".equals(orderResponse.getResultCode())) {
             LOGGER.warn("submit order error, {}", orderResponse.toString());
+            throw new BusinessException("下单失败!");
 
         } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
             LOGGER.warn("submit order error, {}", orderResponse.toString());
+            throw new BusinessException("下单失败!");
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
 
@@ -547,7 +555,7 @@ public class OrderService {
 		addressInfo.setProvinceId(Integer.valueOf(address.getProvinceCode()));
         addressInfo.setCityId(Integer.valueOf(address.getCityCode()));
         addressInfo.setCountyId(Integer.valueOf(address.getDistrictCode()));
-        addressInfo.setTownId(StringUtils.isEmpty(address.getTownsCode())?0:Integer.valueOf(address.getTownsCode()));
+        addressInfo.setTownId(StringUtils.isBlank(address.getTownsCode())?0:Integer.valueOf(address.getTownsCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
         addressInfo.setEmail("xujie@apass.cn");
@@ -1901,8 +1909,7 @@ public class OrderService {
 					resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
 				}
 			}
-			Boolean s = (Boolean) resultMaps.get("unSupportProvince");
-			if (s) {
+			if (!resultMaps.isEmpty() && (Boolean) resultMaps.get("unSupportProvince")) {
 				results.putAll(resultMaps);
 				throw  new BusinessException("抱歉，暂不支持该地区发货");
 			}
