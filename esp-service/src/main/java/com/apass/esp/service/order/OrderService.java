@@ -1862,11 +1862,9 @@ public class OrderService {
 				jdGoodSalesVolume.setUpdateDate(date);
 				try {
 					int insertValue = jdGoodSalesVolumeMapper.insert(jdGoodSalesVolume);
-				}catch (Exception e ){
-					JdGoodSalesVolume jdGoodSalesVolume1 = jdGoodSalesVolumeMapper.getJdGoodSalesVolumeByGoodsId(goodsId);
-					jdGoodSalesVolumeMapper.updateJdGoodSalesVolumeByGoodsId(goodsId, jdGoodSalesVolume1.getSalesNum() + saleNum, date, jdGoodSalesVolume1.getSalesNum());
+				} catch (Exception e) {
+					LOGGER.error("updateJdGoodsSaleVolume goodsId {} saleNum {} ", goodsId, saleNum, e);
 				}
-
 			}
 		}
 	}
