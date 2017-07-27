@@ -48,4 +48,14 @@ public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetail
     public List<OrderDetailInfoEntity> queryOrderDetailBySubOrderId(String subOrderId) {
         return getSqlSession().selectList(getSQL("queryOrderDetailBySubOrderId"), subOrderId);
     }
+
+	/**
+	 * 根据skuId查询商品是否被下单过
+	 * @param skuIds
+	 * @return
+	 */
+	public List<OrderDetailInfoEntity> queryOrderDetailBySkuIds(
+			List<Long> skuIds) {
+		return getSqlSession().selectList(getSQL("queryOrderDetailBySkuIds"), skuIds);
+	}
 }

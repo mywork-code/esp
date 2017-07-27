@@ -274,4 +274,41 @@
 			</foreach>
 		</where>
 	</select>
+	
+	<select id="queryOrderDetailBySkuIds" resultType="OrderDetailInfoEntity">
+		SELECT
+     			ID                           id,
+                 ORDER_ID                     orderId,
+                 GOODS_ID                     goodsId,
+                 goods_stock_id				 goodsStockId,
+                 MERCHANT_CODE                merchantCode,
+                 GOODS_PRICE                  goodsPrice,
+                 GOODS_NUM                    goodsNum,
+                 GOODS_TITLE                  goodsTitle,
+                 CATEGORY_CODE                categoryCode,
+                 GOODS_NAME                   goodsName,
+                 GOODS_SELL_PT                goodsSellPt,
+                 GOODS_TYPE                   goodsType,
+                 GOODS_LOGO_URL               goodsLogoUrl,
+                 LIST_TIME                    listTime,
+                 DELIST_TIME                  delistTime,
+                 PRO_DATE                     proDate,
+                 KEEP_DATE                    keepDate,
+                 SUP_NO                       supNo,
+                 CREATE_DATE                  createDate,
+                 UPDATE_DATE                  updateDate,
+                 sku_id						  skuId
+		FROM
+			t_esp_order_detail_info
+	    <where>
+	    	sku_id in 
+	    	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+	    </where>
+	</select>
+	
+	
+	
+	
 </mapper>
