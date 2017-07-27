@@ -472,7 +472,7 @@ public class CategoryInfoService {
 			goodsPrice = goodsStocks.get(0).getGoodsPrice();
 			for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
 				if(goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0 ){
-					goodsPrice = goodsStockInfoEntity.getGoodsPrice();
+					goodsPrice = goodsStockInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_FLOOR);
 				}
 			}
 		}else{
@@ -490,7 +490,7 @@ public class CategoryInfoService {
 		goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
 		goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
 		goodsCategoryDto.setGoodsPrice(goodsPrice);
-		goodsCategoryDto.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+		goodsCategoryDto.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
 		goodsCategoryDto.setSource(goodsInfoEntity.getSource());
 		
 		return goodsCategoryDto;
