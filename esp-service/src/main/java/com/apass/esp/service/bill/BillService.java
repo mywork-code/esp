@@ -11,10 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.bill.StatementEntity;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.repository.bill.BillRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -32,6 +35,9 @@ public class BillService {
     
     @Autowired
     private TransactionService transactionService;
+    
+    @Autowired
+    private CommonHttpClient commonHttpClient;
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BillService.class);
 
@@ -55,13 +61,21 @@ public class BillService {
         Map<String,Object> paramMap = Maps.newHashMap();
         paramMap.put("userId", userId);
         // 1、查询客户信息
-        CustomerInfo customerInfo = customerServiceClient.getCustomerInfo(userId);
-        LOGGER.info("客户信息：[{}]", GsonUtils.toJson(customerInfo));
+        //CustomerInfo customerInfo = customerServiceClient.getCustomerInfo(userId);
+        String billDate = "";
+        Response responseCredit = commonHttpClient.getCustomerCreditInfo("", userId);
+        if (responseCredit != null && responseCredit.statusResult()) {
+            CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
+            if (customerCreditInfo != null) {
+                billDate = customerCreditInfo.getBillDate();//获取账单日
+            }
+        }
+        //LOGGER.info("客户信息：[{}]", GsonUtils.toJson(customerInfo));
         
         // 获取账单日
-        String billDay = customerInfo.getBillDate();
+        //String billDay = customerInfo.getBillDate();
         // String billDay = "18";
-        if (StringUtils.isBlank(billDay)) { // 没有获取到账单日,返货无账单数据 00
+        if (StringUtils.isBlank(billDate)) { // 没有获取到账单日,返货无账单数据 00
             return false;//如果没有授信，则无额度消费
         }
         
@@ -71,10 +85,10 @@ public class BillService {
         if(txnInfoEntity != null){
             Date txnDate = txnInfoEntity.getTxnDate();
             String txnDay = DateFormatUtil.dateToString(txnDate, "dd");
-            if(Integer.parseInt(billDay)>Integer.parseInt(txnDay)){
-                outStmtBillDate = DateFormatUtil.mergeDate(txnDate, Integer.parseInt(billDay));
+            if(Integer.parseInt(billDate)>Integer.parseInt(txnDay)){
+                outStmtBillDate = DateFormatUtil.mergeDate(txnDate, Integer.parseInt(billDate));
             }else{
-                outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(txnDate, 1), Integer.parseInt(billDay));
+                outStmtBillDate = DateFormatUtil.mergeDate(DateFormatUtil.addMonth(txnDate, 1), Integer.parseInt(billDate));
             }
         }else{
             LOGGER.info("交易流水数据未生成,查询参数orderId：[{}]", orderId);

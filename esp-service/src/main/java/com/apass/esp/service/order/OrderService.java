@@ -47,6 +47,9 @@ import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockLogRepository;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.logistics.LogisticsHttpClient;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
@@ -161,6 +164,8 @@ public class OrderService {
 	private OrderRefundRepository orderRefundRepository;
 	@Autowired
 	private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private CommonHttpClient commonHttpClient;
 	
 	public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -230,7 +235,7 @@ public class OrderService {
 		Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 				.queryOrderCashRefundException(map, page);
 			List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
-			Map<Long,CustomerInfo> maps = Maps.newHashMap();
+			Map<Long,CustomerBasicInfo> maps = Maps.newHashMap();
 			for (OrderSubInfoEntity order : subList) {
 				setProperties(maps, order);
 			}
@@ -241,12 +246,16 @@ public class OrderService {
 		}
 	}
 
-	public void setProperties(Map<Long,CustomerInfo> maps,OrderSubInfoEntity order) throws BusinessException{
-		CustomerInfo customer = null;
+	public void setProperties(Map<Long,CustomerBasicInfo> maps,OrderSubInfoEntity order) throws BusinessException{
+		CustomerBasicInfo customer = null;
 		if(!maps.isEmpty() && maps.containsKey(order.getUserId())){
 			customer = maps.get(order.getUserId());
 		}else{
-			customer = customerServiceClient.getCustomerInfo(order.getUserId());
+			Response response = commonHttpClient.getCustomerBasicInfo("", order.getUserId());
+			if(!response.statusResult()){
+				throw new BusinessException("客户信息查询失败");
+			}
+			customer = Response.resolveResult(response,CustomerBasicInfo.class);
 			maps.put(order.getUserId(), customer);
 		}
 		if(null != customer){
@@ -263,7 +272,7 @@ public class OrderService {
 					.queryOrderRefundException(map, page);
 			
 				List<OrderSubInfoEntity> subList =  orderDetailInfoList.getDataList();
-				Map<Long,CustomerInfo> maps = Maps.newHashMap();
+				Map<Long,CustomerBasicInfo> maps = Maps.newHashMap();
 				for (OrderSubInfoEntity order : subList) {
 					setProperties(maps, order);
 				}
