@@ -923,27 +923,31 @@ public class OrderService {
 			return;
 		}
 		List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
-		boolean offShelfFlag = true;
-		for (GoodsStockInfoEntity goodsStock : goodsList) {
-			if (goodsStock.getStockCurrAmt() > 0) {
-				offShelfFlag = false;
-				break;
+		//不为京东商品
+		if (goodsInfo.getSource() == null) {
+			boolean offShelfFlag = true;
+			for (GoodsStockInfoEntity goodsStock : goodsList) {
+				if (goodsStock.getStockCurrAmt() > 0) {
+					offShelfFlag = false;
+					break;
+				}
 			}
-		}
-		if (offShelfFlag) {
-			LOG.info(requestId, "支付失败您的订单含有下架商品", "");
-			throw new BusinessException("支付失败您的订单含有下架商品");
-		}
-		// Step 2 校验商品库存
-		GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsId, goodsStockId);
-
-		if (goodsDetail.getStockCurrAmt() < buyNum) {
-			LOG.info(requestId, "支付失败您的订单商品库存不足", "");
-			throw new BusinessException("支付失败您的订单商品库存不足");
-		}
-		if (buyNum <= 0) {
-			LOG.info(requestId, "购买数量不能为零", goodsDetail.getGoodsName() + "购买数量不能为零");
-			throw new BusinessException("商品" + goodsDetail.getGoodsName() + "购买数量不能为零");
+			if (offShelfFlag) {
+				LOG.info(requestId, "支付失败您的订单含有下架商品", "");
+				throw new BusinessException("支付失败您的订单含有下架商品");
+			}
+		
+			// Step 2 校验商品库存
+			GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsId, goodsStockId);
+		
+			if (goodsDetail.getStockCurrAmt() < buyNum) {
+				LOG.info(requestId, "支付失败您的订单商品库存不足", "");
+				throw new BusinessException("支付失败您的订单商品库存不足");
+			}
+			if (buyNum <= 0) {
+				LOG.info(requestId, "购买数量不能为零", goodsDetail.getGoodsName() + "购买数量不能为零");
+				throw new BusinessException("商品" + goodsDetail.getGoodsName() + "购买数量不能为零");
+			}
 		}
 	}
 
