@@ -529,6 +529,9 @@ public class GoodsService {
             jdGoodSalesVolumeList.addAll(goodsIdList);
         }
         Pagination<String> pagination = new Pagination<String>();
+        if(pageIndex>6){
+        	pagination.setDataList(null);
+        }
         pagination.setDataList(jdGoodSalesVolumeList);
         pagination.setTotalCount(120);
         return pagination;

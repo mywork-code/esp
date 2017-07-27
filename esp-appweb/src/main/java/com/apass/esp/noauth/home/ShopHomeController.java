@@ -26,7 +26,6 @@ import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
@@ -608,7 +607,7 @@ public class ShopHomeController {
         Map<String, Object> resultMap = new HashMap<>();
         Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
         int pageSize = 20;
-        if( pageIndex==null||pageIndex.intValue()>6||pageIndex<1){
+        if( pageIndex==null||pageIndex<1){
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
         try{
