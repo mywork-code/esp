@@ -555,7 +555,7 @@ public class JdGoodsInfoService {
      * @return
      */
     public String getStockBySku(String sku, Region region) {
-    	String isStock="";
+    	int isStock=0;
     	List<SkuNum> skuNums =new ArrayList<>();
     	SkuNum skuNum=new SkuNum();
     	skuNum.setSkuId(Long.parseLong(sku));
@@ -563,9 +563,9 @@ public class JdGoodsInfoService {
     	skuNums.add(skuNum);
         List<Stock> result =jdProductApiClient.getStock(skuNums, region);
         if(result.size()==1){
-        	isStock=result.get(0).getStockStateDesc();
+        	isStock=result.get(0).getStockStateId();
         }
-        if("33".equals(isStock)|| "39".equals(isStock)||"40".equals(isStock)){
+        if(33==isStock|| 39==isStock||40==isStock){
         	return "有货";
         }else{
         	return "无货";
@@ -579,7 +579,7 @@ public class JdGoodsInfoService {
      * @return
      */
     public String getStockBySkuNum(String sku, Region region,Integer num) {
-    	String isStock="";
+    	int isStock=0;
     	List<SkuNum> skuNums =new ArrayList<>();
     	SkuNum skuNum=new SkuNum();
     	skuNum.setSkuId(Long.parseLong(sku));
@@ -587,9 +587,9 @@ public class JdGoodsInfoService {
     	skuNums.add(skuNum);
         List<Stock> result =jdProductApiClient.getStock(skuNums, region);
         if(result.size()==1){
-        	isStock=result.get(0).getStockStateDesc();
+        	isStock=result.get(0).getStockStateId();
         }
-        if("33".equals(isStock)|| "39".equals(isStock)||"40".equals(isStock)){
+        if(33==isStock|| 39==isStock||40==isStock){
         	return "有货";
         }else{
         	return "无货";
