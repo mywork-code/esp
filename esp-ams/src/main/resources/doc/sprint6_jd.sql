@@ -110,13 +110,6 @@ CREATE TABLE `t_esp_service_error` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='服务异常表';
 
 
-ALTER TABLE `t_esp_cash_refund`
-ADD COLUMN `refund_type`  varchar(10)  DEFAULT 'online' COMMENT '退款方式（online: 线上  offline:线下）' ;
-
-ALTER TABLE `t_esp_cash_refund`
-ADD COLUMN `auditor_name`  varchar(20)  DEFAULT '' COMMENT '审核人' ,
-ADD COLUMN `auditor_date`  datetime  DEFAULT NULL COMMENT '审核时间' ;
-
 ALTER TABLE `t_esp_refund_detail_info`
 ADD COLUMN `source`  varchar(255) DEFAULT '' COMMENT '商品来源（如：jd）',
 ADD COLUMN `status`  varchar(255)  DEFAULT '' COMMENT '京东商品售后状态';

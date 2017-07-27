@@ -38,13 +38,13 @@
       order_id, status, status_d, 
       reject_num, user_id, main_order_id, 
       reason, memo, agree_d, 
-      refund_type, auditor_name, auditor_date
+      refund_type
       )
     values (#{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{amt,jdbcType=DECIMAL}, 
       #{orderId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{statusD,jdbcType=TIMESTAMP}, 
       #{rejectNum,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{mainOrderId,jdbcType=VARCHAR}, 
       #{reason,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{agreeD,jdbcType=TIMESTAMP}, 
-      #{refundType,jdbcType=VARCHAR}, #{auditorName,jdbcType=VARCHAR}, #{auditorDate,jdbcType=TIMESTAMP}
+      #{refundType,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CashRefund" useGeneratedKeys="true" keyProperty="id" >
