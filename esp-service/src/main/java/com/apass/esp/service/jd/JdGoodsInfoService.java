@@ -126,17 +126,6 @@ public class JdGoodsInfoService {
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
-		//查询是否有货无货
-		// 获取地址信息
-//		Region region = new Region();
-//		for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
-//			if ("1".equals(addressInfoEntity.getIsDefault())) {
-//				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-//				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-//				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-//				region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
-//			}
-//		}
 		// 查询商品是否有货
 		String jdGoodStock = getStockBySku(sku.toString(), region);
 		map.put("goodsStockDes", jdGoodStock);
@@ -212,17 +201,6 @@ public class JdGoodsInfoService {
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
 			}
-			
-			// 获取地址信息
-//			Region region = new Region();
-//			for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
-//				if ("1".equals(addressInfoEntity.getIsDefault())) {
-//					region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-//					region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-//					region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-//					region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
-//				}
-//			}
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(sku.toString(), region);
 			// 查询商品是否有货

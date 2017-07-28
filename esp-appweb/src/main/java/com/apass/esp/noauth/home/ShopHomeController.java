@@ -480,14 +480,13 @@ public class ShopHomeController {
 				if (!CityJdEnums.isContainsCode(provinceCode)) {
 					if (StringUtils.isEmpty(townsCode)) {
 						return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-					} else {
-						region.setProvinceId(Integer.parseInt(provinceCode));
-						region.setCityId(Integer.parseInt(cityCode));
-						region.setCountyId(Integer.parseInt(districtCode));
-						region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-						flage = false;
 					}
 				}
+				region.setProvinceId(Integer.parseInt(provinceCode));
+				region.setCityId(Integer.parseInt(cityCode));
+				region.setCountyId(Integer.parseInt(districtCode));
+				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+				flage = false;
 			}
 			Region region2 = new Region();
 			// 查看地址信息
@@ -497,7 +496,13 @@ public class ShopHomeController {
 			if (StringUtils.isNotEmpty(userId)) {
 				addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
 			}
-			if (null == addressInfoList || addressInfoList.size() == 0) {// 当数据库中无京东地址时，传给app端默认的地址()
+			if(addressInfoList.size()>0){
+				if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
+					addressInfoList.get(0).setIsDefault("1");
+				}
+			}
+			//app端没传地址并且数据库地址为空时，使用默认地址
+			if(flage && addressInfoList.size()==0){
 				addty.setId(Long.parseLong("-1"));
 				addty.setProvinceCode("2");
 				addty.setProvince("上海");
@@ -509,10 +514,6 @@ public class ShopHomeController {
 				addty.setTowns("");
 				addty.setIsDefault("1");
 				addressInfoList.add(addty);
-			} else {
-				if (!("1".equals(addressInfoList.get(0).getIsDefault()))) {
-					addressInfoList.get(0).setIsDefault("1");
-				}
 			}
 			// 获取地址信息
 			for (AddressInfoEntity addressInfoEntity : addressInfoList) {
