@@ -2325,6 +2325,7 @@ function loadLogo (id,picUrl)
 	{
 		$ ("#"+id).attr ("src","");
 		$ ("#"+id).attr ("src", ctx + "/fileView/query?picUrl=" + picUrl);
+        $("#"+id).css('display','block');
 	}else{
 		$ ("#"+id).attr ("src", '');
 	}
