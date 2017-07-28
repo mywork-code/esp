@@ -1,10 +1,7 @@
 package com.apass.esp.noauth.home;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +112,7 @@ public class ShopHomeController {
                 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId() ,goods.getGoodsStockId());
                 goods.setGoodsPrice(price);
                 goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));//设置首付价=商品价*10%
-             
+
                 if("jd".equals(goods.getSource())){
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/"+goods.getGoodsLogoUrl());
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
@@ -285,7 +283,7 @@ public class ShopHomeController {
 				goodsInfoEntity.setSort("default");
 				goodsBasicInfoList = goodsService.loadGoodsByParam(goodsInfoEntity, page, rows);
 			}
-			
+
 			Integer totalCount = goodsService.loadGoodsByParamCount(goodsInfoEntity);
 			returnMap.put("totalCount", totalCount);
 
@@ -303,7 +301,7 @@ public class ShopHomeController {
 					}else{
 						Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo.getGoodId());
 						goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-						
+
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						String siftUrl = goodsInfo.getGoodsSiftUrl();
 
@@ -312,7 +310,7 @@ public class ShopHomeController {
 						goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
 						goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
 					}
-			
+
 				}
 			}
 			if(falgePrice && "DESC".equalsIgnoreCase(order)){//按售价排序(降序)
@@ -535,100 +533,129 @@ public class ShopHomeController {
 
     /**
      * 热买单品列表
+     *
      * @param paramMap
      * @return
      */
     @POST
     @Path("/popularProducts")
-    public Response popularProducts(Map<String, Object> paramMap){
+    public Response popularProducts(Map<String, Object> paramMap) {
         Map<String, Object> resultMap = new HashMap<>();
-        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
-        //Long pageSize = CommonUtils.getLong(paramMap,"pageSize");
-        int pageSize = 20;
-        if( pageIndex==null||pageIndex.intValue()>3||pageIndex.intValue()<1){
-            return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
+        List<String> list = goodsService.popularGoods(0,50);
+        List<GoodsInfoEntity> goodsList = new ArrayList<>();
+        List<String> goodsIdList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(list) || list.size() < 50) {
+            if (CollectionUtils.isEmpty(list)) {
+                goodsIdList = goodsService.getRemainderGoodsNew(0, 50);
+            } else {
+                goodsIdList = goodsService.getRemainderGoodsNew(0, 50 - list.size());
+            }
+            if(CollectionUtils.isNotEmpty(goodsIdList)){
+                goodsIdList.removeAll(list);
+                goodsIdList.addAll(list);
+            }
+        } else {
+            goodsIdList.removeAll(list);
+            goodsIdList.addAll(list);
         }
-        Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolumeByPage(pageIndex.intValue(),pageSize);
-        List<GoodsInfoEntity> goodsList=new ArrayList<>();
-        List<String> goodsIds = jdGoodSalesVolumePagination.getDataList();
-        try{
-        	goodsList = getSaleVolumeGoods(goodsIds);
-        }catch (Exception e ){
-        	LOGGER.error("查询热买单品列表失败",e);
+        try {
+            goodsList = getSaleVolumeGoods(goodsIdList);
+            resultMap.put("goodsList", goodsList);
+            if(CollectionUtils.isEmpty(goodsList)){
+                resultMap.put("totalCount", 0);
+            }else{
+                resultMap.put("totalCount", goodsList.size());
+            }
+        } catch (Exception e) {
+            LOGGER.error("查询热买单品列表失败", e);
             return Response.fail(BusinessErrorCode.NO);
         }
-        resultMap.put("goodsList",goodsList);
-        resultMap.put("pageIndex",pageIndex);
-        resultMap.put("totalCount",jdGoodSalesVolumePagination.getTotalCount());
         return Response.successResponse(resultMap);
     }
 
-	/**
-	 * 获取商品价格
-	 * @param goodsIds
-	 * @return
-	 * @throws BusinessException
-	 */
-	private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
-		List<GoodsInfoEntity> goodsList=new ArrayList<>();
-		for (String goodsId:goodsIds){
-		    GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(goodsId));
-		    if(goodsInfoEntity == null){
-		    	LOGGER.error("热销商品id:{}在商品表中无对应商品",goodsId);
-		    	throw new BusinessException("数据异常");
-		    }
-		    if(goodsInfoEntity.getSource()==null){
-		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
-		        goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
-		    }else{
-		        goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
-		        goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
-		        goodsInfoEntity.setSource("jd");
-		    }
-		    goodsInfoEntity.setGoogsDetail("");
-		    BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
-		    if(goodsPrice != null){
-		    	goodsInfoEntity.setGoodsPrice(goodsPrice);
-		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
-		    }
-            
-		    goodsList.add(goodsInfoEntity);
-		}
-		
-		return goodsList;
-	}
+    /**
+     * 获取商品价格
+     *
+     * @param goodsIds
+     * @return
+     * @throws BusinessException
+     */
+    private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
+        if(CollectionUtils.isEmpty(goodsIds)){
+            return Collections.EMPTY_LIST;
+        }
+        List<GoodsInfoEntity> goodsList = new ArrayList<>();
+        for (String goodsId : goodsIds) {
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+            if (goodsInfoEntity == null) {
+                LOGGER.error("热销商品id:{}在商品表中无对应商品", goodsId);
+                throw new BusinessException("数据异常");
+            }
+            if (goodsInfoEntity.getSource() == null) {
+                goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));//非京东
+                goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsSiftUrl()));
+            } else {
+                goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/" + goodsInfoEntity.getGoodsLogoUrl());
+                goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/" + goodsInfoEntity.getGoodsSiftUrl());
+                goodsInfoEntity.setSource("jd");
+            }
+            goodsInfoEntity.setGoogsDetail("");
+            BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
+            if (goodsPrice != null) {
+                goodsInfoEntity.setGoodsPrice(goodsPrice);
+                goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
+            }
+            goodsList.add(goodsInfoEntity);
+        }
+        return goodsList;
+    }
 
     /**
      * 必买清单
+     *
      * @param paramMap
      * @return
      */
     @POST
     @Path("/crazeProducts")
-    public Response crazeProducts(Map<String, Object> paramMap){
+    public Response crazeProducts(Map<String, Object> paramMap) {
         Map<String, Object> resultMap = new HashMap<>();
-        Long pageIndex = CommonUtils.getLong(paramMap,"pageIndex");
+        Long pageIndex = CommonUtils.getLong(paramMap, "pageIndex");
         int pageSize = 20;
-        if( pageIndex==null||pageIndex.intValue()>6||pageIndex<1){
+        if (pageIndex == null  || pageIndex < 1) {
             return Response.fail(BusinessErrorCode.PARAM_VALUE_ERROR);
         }
-        try{
-        	//热买单品
-        	Pagination<String> pageGoodsIds = goodsService.jdGoodSalesVolumeByPage(1,4);
-        	List<GoodsInfoEntity> goodsPopuLists =new ArrayList<>();
-        	List<String> goodsPopuIds = pageGoodsIds.getDataList();
-        	goodsPopuLists = getSaleVolumeGoods(goodsPopuIds);
-        	resultMap.put("goodsPopuLists", goodsPopuLists);
-        	
-        	//必买清单
-        	Pagination<String> jdGoodSalesVolumePagination =goodsService.jdGoodSalesVolume(pageIndex.intValue(),pageSize);
-        	List<GoodsInfoEntity> goodsNecessaryList=new ArrayList<>();
-        	List<String> goodsNcessids = jdGoodSalesVolumePagination.getDataList();
-        	goodsNecessaryList = getSaleVolumeGoods(goodsNcessids);
-           
+        if(pageIndex.intValue() > 6){
+            resultMap.put("goodsNecessaryList", Collections.emptyList());
+            return Response.successResponse(resultMap);
+        }
+        try {
+            //热卖单品
+            List<String> list = goodsService.popularGoods(0, 4);
+            List<String> goodsIdList = new ArrayList<>();
+            if (CollectionUtils.isEmpty(list) || list.size() < 4) {
+                if (CollectionUtils.isEmpty(list)) {
+                    goodsIdList = goodsService.getRemainderGoodsNew(0, 4);
+                } else {
+                    goodsIdList = goodsService.getRemainderGoodsNew(0, 4 - list.size());
+                }
+                if (CollectionUtils.isNotEmpty(goodsIdList)) {
+                    goodsIdList.addAll(list);
+                }
+            } else {
+                goodsIdList = list;
+            }
+            List<GoodsInfoEntity> goodsPopuLists = new ArrayList<>();
+            goodsPopuLists = getSaleVolumeGoods(goodsIdList);
+            resultMap.put("goodsPopuLists", goodsPopuLists);
+            //必买清单
+            Pagination<String> jdGoodSalesVolumePagination = goodsService.jdGoodSalesVolume(pageIndex.intValue(), pageSize);
+            List<GoodsInfoEntity> goodsNecessaryList = new ArrayList<>();
+            List<String> goodsNcessids = jdGoodSalesVolumePagination.getDataList();
+            goodsNecessaryList = getSaleVolumeGoods(goodsNcessids);
             resultMap.put("goodsNecessaryList", goodsNecessaryList);
-        }catch (BusinessException e){
-        	LOGGER.error("查询首页推荐列表失败",e);
+        } catch (BusinessException e) {
+            LOGGER.error("查询首页推荐列表失败", e);
             return Response.fail(e.getErrorDesc());
         }
         return Response.successResponse(resultMap);
@@ -679,7 +706,7 @@ public class ShopHomeController {
     }
 
     private BigDecimal getGoodsPrice(Long goodsId) throws BusinessException {
-    	//根据goodsid查询库存，找出最低售价显示前端 
+    	//根据goodsid查询库存，找出最低售价显示前端
 		List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsId);
 		if(goodsStocks == null || goodsStocks.size() == 0){
 			LOGGER.error("数据异常，商品id为:{}无对应库存",goodsId.toString());
@@ -691,7 +718,7 @@ public class ShopHomeController {
 				goodsPrice = goodsStockInfoEntity.getGoodsPrice();
 			}
 		}
-		
+
 		return goodsPrice;
 	}
 
@@ -715,7 +742,7 @@ public class ShopHomeController {
     		LOGGER.error("根据一级类目查询所有二级类目下商品失败,一级类目id:{}",categoryId,e);
             return Response.fail(e.getErrorDesc());
         }
-    	
+
     	return Response.successResponse(list);
     }
 }

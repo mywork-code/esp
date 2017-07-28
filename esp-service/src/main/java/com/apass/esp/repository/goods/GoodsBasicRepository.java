@@ -1,7 +1,6 @@
 package com.apass.esp.repository.goods;
 
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -31,4 +30,39 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 	public Integer loadGoodsByParamCount(GoodsBasicInfoEntity param){
 		return getSqlSession().selectOne("loadGoodsByParamCount", param);
 	}
+
+	/**
+	 * 热卖单品(新)
+	 * @return
+	 */
+	public List<String> popularGoods(int begin,int count){
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("begin", begin);
+		param.put("count", count);
+		return getSqlSession().selectList("popularGoods",param);
+	}
+
+	public int popularGoodsCount(){
+		return getSqlSession().selectOne("popularGoodsCount");
+	}
+
+
+	public int getRemainderGoodsNewCount(){
+		return getSqlSession().selectOne("getRemainderGoodsNewCount");
+	}
+
+	/**
+	 * 必买清单（新）
+	 * @param pageBegin
+	 * @param count
+	 * @return
+	 */
+	public List<String> getRemainderGoodsNew(int pageBegin, int count) {
+		HashMap<String, Object> param = new HashMap<>();
+		param.put("pageBegin", pageBegin);
+		param.put("count", count);
+		return this.getSqlSession().selectList("getRemainderGoodsNew", param);
+	}
+
+
 }

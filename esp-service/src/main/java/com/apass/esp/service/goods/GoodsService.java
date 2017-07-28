@@ -2,6 +2,7 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -512,24 +513,35 @@ public class GoodsService {
 
 
     public Pagination<String> jdGoodSalesVolume(int pageIndex ,int pageSize){
-        int totalConut = jdGoodSalesVolumeMapper.jdGoodSalesVolumeCount();
-        int pageBegin = pageSize * (pageIndex-1);
-        if (totalConut >= 170) {
-            List<String> list = jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-            Pagination<String> pagination = new Pagination<String>();
-            pagination.setDataList(list);
-            pagination.setTotalCount(120);
-            return pagination;
-        }
-
-        List<String> jdGoodSalesVolumeList =  jdGoodSalesVolumeMapper.jdGoodSalesVolumeByPage(pageBegin,pageSize);
-        if(CollectionUtils.isEmpty(jdGoodSalesVolumeList)||jdGoodSalesVolumeList.size()<20){
-            int size = jdGoodSalesVolumeList.size();
-            List<String> goodsIdList =  goodsBasicRepository.getRemainderGoods((6-pageIndex)*20,20-size);
-            jdGoodSalesVolumeList.addAll(goodsIdList);
-        }
         Pagination<String> pagination = new Pagination<String>();
-        pagination.setDataList(jdGoodSalesVolumeList);
+        int totalConut = goodsBasicRepository.popularGoodsCount();//热卖单品数量
+        int remainderGoodsNewCount = goodsBasicRepository.getRemainderGoodsNewCount();//必买单品数量
+       /* if(remainderGoodsNewCount+totalConut<50){
+            pagination.setDataList(Collections.EMPTY_LIST);
+            return pagination;
+        }*/
+        int pageBegin = pageSize * (pageIndex-1);
+
+        //热卖单品大于170件时 全从热卖单品里取数据
+        if (totalConut >= 170) {
+            List<String> list =  goodsBasicRepository.popularGoods(50+pageBegin,pageSize);
+            pagination.setDataList(list);
+        }
+        //热卖单品大于50，小于170时
+        //部分数据可能从热卖单品中取
+        if (totalConut > 50 && totalConut < 170) {
+            List<String> list =  goodsBasicRepository.popularGoods(50+pageBegin,pageSize);
+            if (CollectionUtils.isEmpty(list) || list.size() != 20) {
+                List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
+                pagination.setDataList(s);
+            }else{
+                pagination.setDataList(list);
+            }
+        }
+        if(totalConut<50){
+            List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
+            pagination.setDataList(s);
+        }
         pagination.setTotalCount(120);
         return pagination;
     }
@@ -583,5 +595,18 @@ public class GoodsService {
 		
 		return postage;
 	}
+
+    public List<String> popularGoods(int begin,int count){
+	    return goodsBasicRepository.popularGoods( begin,count);
+    }
+
+
+    public int popularGoodsCount(){
+        return goodsBasicRepository.popularGoodsCount();
+    }
+    public List<String> getRemainderGoodsNew(int pageIndex ,int pageSize){
+        return goodsBasicRepository.getRemainderGoodsNew( pageIndex , pageSize);
+    }
+
 }
 
