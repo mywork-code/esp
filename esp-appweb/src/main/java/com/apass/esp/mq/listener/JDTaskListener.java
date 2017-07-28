@@ -83,11 +83,15 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
-                    goodsService.updateService(goodsInfoEntity);
-                }else{
+                    try {
+                        goodsService.updateService(goodsInfoEntity);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
                     JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(skuId);
-                    if(!jdApiResponse.isSuccess()||jdApiResponse!=null){
-                        continue;
+                    if (!jdApiResponse.isSuccess() || jdApiResponse != null) {
+                        throw new RuntimeException();
                     }
                     JSONObject jsonObject1 = jdApiResponse.getResult();
                     String category = (String) jsonObject1.get("category");
@@ -106,17 +110,17 @@ public class JDTaskListener implements MessageListener {
                     skulist.add(skuId);
                     JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skulist);
                     if (jsonArrayJdApiResponse == null) {
-                        continue;
+                        throw new RuntimeException();
                     }
                     JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
                     if (productPriceList == null) {
-                        continue;
+                        throw new RuntimeException();
                     }
                     JSONObject jsonObject12 = null;
                     try {
                         jsonObject12 = (JSONObject) productPriceList.get(0);
                     } catch (Exception e) {
-                        continue;
+                        throw new RuntimeException(e);
                     }
                     BigDecimal price = (BigDecimal) jsonObject12.get("price");
                     BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
@@ -144,9 +148,10 @@ public class JDTaskListener implements MessageListener {
                         jdGoodsMapper.insertSelective(jdGoods);
                     } catch (Exception e) {
                         LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+                        throw new RuntimeException(e);
                     }
                     JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
-                    if(jdCategory.getFlag()){
+                    if (jdCategory.getFlag()) {
                         GoodsInfoEntity entity = new GoodsInfoEntity();
                         entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
                         entity.setCategoryId1(jdCategory.getCategoryId1());
@@ -177,7 +182,11 @@ public class JDTaskListener implements MessageListener {
                         stockEntity.setGoodsCostPrice(jdGoods.getPrice());
                         stockEntity.setCreateUser("jd");
                         stockEntity.setUpdateUser("jd");
-                        goodsStockInfoService.insert(stockEntity);
+                        try {
+                            goodsStockInfoService.insert(stockEntity);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
@@ -204,18 +213,18 @@ public class JDTaskListener implements MessageListener {
             JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
             if (!jdApiResponse.isSuccess()) {
                 LOGGER.info("confirm order result {}", jdApiResponse);
-                return;
+                throw new RuntimeException();
             }
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
 
             if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
-                return;
+                throw new RuntimeException();
             }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
             } catch (BusinessException e) {
-                return;
+                throw new RuntimeException(e);
             }
 
         }
