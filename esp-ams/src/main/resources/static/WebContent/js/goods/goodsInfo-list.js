@@ -1406,6 +1406,7 @@ $(function() {
 	var sourceJd;//修改库存时商品来源标识
 	//修改库存
 	$.editStockinfo = function(index,datagridId,source,status) {
+		debugger;
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
 		sourceJd = source;
 		if(source == "jd"){
@@ -2112,6 +2113,7 @@ function loadBanner(datagridId,goodsId){
 }
 //加载库存列表
 function loadStockGoods(datagridId,goodsId,source){
+	debugger;
 	var statusV = null;
 	if('goodsStockList' == datagridId){
 		statusV = 'G02';

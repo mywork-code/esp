@@ -226,11 +226,14 @@ $(function() {
     });
 	//添加一级类目
 	$("#addFirstCategory").click(function(){
+		picUrl == '';
 		showCategroyName('1');
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');
 		categoryLevel = 1;
 		clickPid = null;
+		$("#addCategoryFilePic").val('');
+		loadPic("addShowCategoryPicId",null);
 	});
 	//添加二级类目
 	$("#addSecondCategory").click(function(){
@@ -265,10 +268,16 @@ $(function() {
 	
 	// 确认添加 
 	$("#addConfirmGoodCategory").click(function(){
+		debugger;
 		var reg;
 		var categoryName = $("#addCategoryName").textbox('getValue');
+		var addCategoryFilePic=$('#addCategoryFilePic').val();
 		if(categoryName == null || categoryName == ''){
 			$.messager.alert("提示", "请输入类目名称", "info");
+			return;
+		}
+		if (null == addCategoryFilePic || ('') == addCategoryFilePic) {
+			$.messager.alert("提示", "请先上传文件！", "info");
 			return;
 		}
 		if(categoryLevel == 1){
@@ -294,7 +303,7 @@ $(function() {
 				return;
 			}
 		}
-		if(categoryLevel==3 && (picUrl==null || picUrl == '')){
+		if((categoryLevel==3 || categoryLevel==1) && (picUrl==null || picUrl == '')){
 			$.messager.alert("提示", "请先上传图片。", "info");
 			return;
 		}
@@ -588,7 +597,6 @@ function ifLogout(data){
 }
 //显示类目名称方法
 function showCategroyName(level){
-	debugger;
 	$("#addCategoryLevel").val(level);
 	if(level=='1'){
 		$(".oneCategory").css("display","inline");
@@ -708,7 +716,6 @@ function mysort(index, type, gridname,categoryLevel,categoryId,parentId) {
 /** 回显图标* */
 function loadPic (id,pictureUrl)
 {
-	debugger;
 	if (pictureUrl != null)
 	{
 		$ ("#"+id).attr ("src","");
