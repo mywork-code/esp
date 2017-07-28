@@ -1548,14 +1548,14 @@ $(function() {
 		var editJDgoodsCompareUrlone=$("#editJDgoodsCompareUrlone").textbox('getValue');
 		var editJDgoodsCompareUrltwo=$("#editJDgoodsCompareUrltwo").textbox('getValue');
 		
-		if (null == editJDgoodsCompareUrlone || ("") == editJDgoodsCompareUrlone) {
-			$.messager.alert("提示", "比价链接不允许为空！", "info");
-			return;
-		}
-		if (null == editJDgoodsCompareUrltwo || ("") == editJDgoodsCompareUrltwo) {
-			$.messager.alert("提示", "比价链接不允许为空！", "info");
-			return;
-		}
+//		if (null == editJDgoodsCompareUrlone || ("") == editJDgoodsCompareUrlone) {
+//			$.messager.alert("提示", "比价链接不允许为空！", "info");
+//			return;
+//		}
+//		if (null == editJDgoodsCompareUrltwo || ("") == editJDgoodsCompareUrltwo) {
+//			$.messager.alert("提示", "比价链接不允许为空！", "info");
+//			return;
+//		}
 		if (null == goodsPrice || ("") == goodsPrice) {
 			$.messager.alert("提示", "商品价格不能为空！", "info");
 			return;

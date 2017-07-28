@@ -176,8 +176,8 @@ public class CategoryController {
             	boolean checkGoodBannerImgSize = ImageTools.checkCategoryLevel1ImgSize(file);// 尺寸
                 int size = file.getInputStream().available();
                 if (!(checkGoodBannerImgSize && checkImgType)) {
-                    file.getInputStream().close();// 100*100;大小：≤300kb;.jpg .png
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：100px,高：100px,格式：.jpg,.png", url);
+                    file.getInputStream().close();// 750*248;大小：≤300kb;.jpg .png
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：248px,格式：.jpg,.png", url);
                 } else if (size > 1024 * 300) {
                     file.getInputStream().close();
                     return Response.fail("文件不能大于300kb!", url);
