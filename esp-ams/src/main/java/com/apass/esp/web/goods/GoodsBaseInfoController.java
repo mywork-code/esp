@@ -246,7 +246,9 @@ public class GoodsBaseInfoController {
                 String level = aArray[0];
                 String id = aArray[1];
                 if ("1".equals(level)) {
-                    goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+                	if(!("-1".equals(id))){
+                		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+                	}
                 } else if ("2".equals(level)) {
                     goodsInfoEntity.setCategoryId2(Long.valueOf(id));
                 } else if ("3".equals(level)) {
