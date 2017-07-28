@@ -173,10 +173,10 @@
 			<if test="goodsCostPrice != null and goodsCostPrice != ''">
 			  A.goods_Cost_Price = #{goodsCostPrice, jdbcType=BIGINT},
 			</if>
-			<if test="goodsCompareUrl != null and goodsCompareUrl != ''">
+			<if test="goodsCompareUrl != null">
 			  A.goods_compare_url = #{goodsCompareUrl, jdbcType=VARCHAR},
 			</if>
-			<if test="goodsCompareUrl2 != null and goodsCompareUrl2 != ''">
+			<if test="goodsCompareUrl2 != null">
 			  A.goods_compare_url2 = #{goodsCompareUrl2, jdbcType=VARCHAR},
 			</if>
 			

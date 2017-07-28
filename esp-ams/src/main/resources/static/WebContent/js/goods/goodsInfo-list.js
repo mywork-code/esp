@@ -1187,7 +1187,7 @@ $(function() {
 		
 		var uehtml = UE.getEditor('editEditor').getAllHtml();
 		uehtml = uehtml.replace(/<p>/g,"<p style='margin: 0px'>");
-		console.log(uehtml);
+		
 		params['goodsDetail'] =uehtml;
 		if(UE.getEditor('editEditor').getContent() == null || UE.getEditor('editEditor').getContent()==''){
 			$.messager.alert("提示", "请输入详情信息", "info");
@@ -1553,14 +1553,12 @@ $(function() {
 		var editJDgoodsCompareUrlone=$("#editJDgoodsCompareUrlone").textbox('getValue');
 		var editJDgoodsCompareUrltwo=$("#editJDgoodsCompareUrltwo").textbox('getValue');
 		
-//		if (null == editJDgoodsCompareUrlone || ("") == editJDgoodsCompareUrlone) {
-//			$.messager.alert("提示", "比价链接不允许为空！", "info");
-//			return;
-//		}
-//		if (null == editJDgoodsCompareUrltwo || ("") == editJDgoodsCompareUrltwo) {
-//			$.messager.alert("提示", "比价链接不允许为空！", "info");
-//			return;
-//		}
+		if (null == editJDgoodsCompareUrlone || ("") == editJDgoodsCompareUrlone) {
+			editJDgoodsCompareUrlone = '';
+		}
+		if (null == editJDgoodsCompareUrltwo || ("") == editJDgoodsCompareUrltwo) {
+			editJDgoodsCompareUrltwo = '';
+		}
 		if (null == goodsPrice || ("") == goodsPrice) {
 			$.messager.alert("提示", "商品价格不能为空！", "info");
 			return;
