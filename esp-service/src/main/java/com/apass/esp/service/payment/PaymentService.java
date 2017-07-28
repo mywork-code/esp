@@ -451,6 +451,10 @@ public class PaymentService {
 			 * 查询订单下的所有的订单详情
 			 */
 			List<OrderDetailInfoEntity> orderDetailList =  orderDetailDao.queryOrderDetailInfo(orderId);
+			OrderInfoEntity orderEntity = orderService.getOrderInfoEntityByOrderId(orderId);
+			/**
+			 * 如果是京东订单，则不要做验证，如果是其他商户订单则正常验证
+			 */
 			for (OrderDetailInfoEntity detail : orderDetailList) {
 				//验证商品的价格是否发生改变，如何改变则将改订单设为无效
 	            BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
@@ -458,24 +462,26 @@ public class PaymentService {
 	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
 	    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
 	            }
-				//商品的购买数量
-				Long goodNum = detail.getGoodsNum();
-				//商品的当前库存
-				Long stockCurrAmt = detail.getStockCurrAmt();
-				if(goodNum > stockCurrAmt){
-					LOG.info(requestId, "商品库存不足，订单不允许付款", orderId+"商品的库存不足");
-					throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-				}
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
-				//验证不配送区域
-				Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
-				Boolean s = (Boolean)resultMap.get("unSupportProvince");
-	    		if(s){
-	    			 return resultMap;
+				//如果是京东订单，则不要做以下判断
+				if(!StringUtils.equals(orderEntity.getSource(), SourceType.JD.getCode())){
+					//商品的购买数量
+					Long goodNum = detail.getGoodsNum();
+					//商品的当前库存
+					Long stockCurrAmt = detail.getStockCurrAmt();
+					if(goodNum > stockCurrAmt){
+						LOG.info(requestId, "商品库存不足，订单不允许付款", orderId+"商品的库存不足");
+						throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+					}
+					//验证不配送区域
+					Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+					Boolean s = (Boolean)resultMap.get("unSupportProvince");
+		    		if(s){
+		    			 return resultMap;
+		    		}
 	    		}
 			}
-			
 			totalAmt = totalAmt.add(orderInfo.getOrderAmt());
 			orderInfoList.add(orderInfo);
 		}

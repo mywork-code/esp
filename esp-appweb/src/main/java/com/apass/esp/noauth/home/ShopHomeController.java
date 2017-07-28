@@ -24,7 +24,6 @@ import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
@@ -292,7 +291,7 @@ public class ShopHomeController {
 					BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
 							goodsInfo.getGoodsStockId());
 					goodsInfo.setGoodsPrice(price);
-					goodsInfo.setGoodsPriceFirst(price.multiply(new BigDecimal("0.1")));// 商品首付价
+					goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价
 
 					if("jd".equals(goodsInfo.getSource())){//京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
@@ -425,7 +424,7 @@ public class ShopHomeController {
             	if(jdGoodsStockInfoList.size()==1){
                     BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
             		returnMap.put("goodsPrice",price);//商品价格
-            		returnMap.put("goodsPriceFirstPayment",new BigDecimal("0.1").multiply(price));//商品首付价格
+            		returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价格
             	}
             	returnMap.put("source", "jd");
             }else{
@@ -480,6 +479,7 @@ public class ShopHomeController {
 		if(StringUtils.isBlank(townsCode)){
 			townsCode="0";
 		}
+		String goodsStockDes="有货";
 		if ("jd".equals(goodsInfo.getSource())) {
 			Region region = new Region();
 			region.setProvinceId(Integer.parseInt(provinceCode));
@@ -487,10 +487,8 @@ public class ShopHomeController {
 			region.setCountyId(Integer.parseInt(districtCode));
 			region.setTownId(Integer.parseInt(townsCode));
 			// 查询商品是否有货
-			String goodsStockDes = jdGoodsInfoService.getStockBySku(goodsInfo.getExternalId(), region);
+			goodsStockDes = jdGoodsInfoService.getStockBySku(goodsInfo.getExternalId(), region);
 			map.put("goodsStockDes", goodsStockDes);
-		} else {
-			//非京东商品判断是否有货
 		}
 		return Response.success("成功！", map);
 	}
@@ -573,42 +571,40 @@ public class ShopHomeController {
         return Response.successResponse(resultMap);
     }
 
-    /**
-     * 获取商品价格
-     *
-     * @param goodsIds
-     * @return
-     * @throws BusinessException
-     */
-    private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
-        if(CollectionUtils.isEmpty(goodsIds)){
-            return Collections.EMPTY_LIST;
-        }
-        List<GoodsInfoEntity> goodsList = new ArrayList<>();
-        for (String goodsId : goodsIds) {
-            GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-            if (goodsInfoEntity == null) {
-                LOGGER.error("热销商品id:{}在商品表中无对应商品", goodsId);
-                throw new BusinessException("数据异常");
-            }
-            if (goodsInfoEntity.getSource() == null) {
-                goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));//非京东
-                goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsSiftUrl()));
-            } else {
-                goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/" + goodsInfoEntity.getGoodsLogoUrl());
-                goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/" + goodsInfoEntity.getGoodsSiftUrl());
-                goodsInfoEntity.setSource("jd");
-            }
-            goodsInfoEntity.setGoogsDetail("");
-            BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
-            if (goodsPrice != null) {
-                goodsInfoEntity.setGoodsPrice(goodsPrice);
-                goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)));
-            }
-            goodsList.add(goodsInfoEntity);
-        }
-        return goodsList;
-    }
+	/**
+	 * 获取商品价格
+	 * @param goodsIds
+	 * @return
+	 * @throws BusinessException
+	 */
+	private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
+		List<GoodsInfoEntity> goodsList=new ArrayList<>();
+		for (String goodsId:goodsIds){
+		    GoodsInfoEntity goodsInfoEntity =  goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		    if(goodsInfoEntity == null){
+		    	LOGGER.error("热销商品id:{}在商品表中无对应商品",goodsId);
+		    	throw new BusinessException("数据异常");
+		    }
+		    if(goodsInfoEntity.getSource()==null){
+		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
+		        goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
+		    }else{
+		        goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
+		        goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
+		        goodsInfoEntity.setSource("jd");
+		    }
+		    goodsInfoEntity.setGoogsDetail("");
+		    BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
+		    if(goodsPrice != null){
+		    	goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
+		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
+		    }
+            
+		    goodsList.add(goodsInfoEntity);
+		}
+		
+		return goodsList;
+	}
 
     /**
      * 必买清单

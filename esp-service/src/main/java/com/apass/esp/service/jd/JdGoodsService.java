@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsIsDelete;
 import com.apass.esp.domain.enums.GoodsType;
@@ -134,11 +135,40 @@ public class JdGoodsService {
 			throw new BusinessException("京东此类目下无商品");
 		}
 		//判断此类目下商品是否有被下单
+		List<Long> skuIds = new ArrayList<Long>();
+		if(JdGoodsList.size()>100){
+			int num = JdGoodsList.size()/100;
+			for (int i = 0; i < JdGoodsList.size(); i++) {
+				if(i<100*num){
+					skuIds.add(JdGoodsList.get(i).getSkuId());
+					while ((i+1)%100 == 0) {
+						List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailBySkuIds(skuIds);
+						if(orderDetails.size()>0){
+							throw new BusinessException("该分类下有已下单商品，无法取消关联");
+						}
+						skuIds.clear();
+					}
+				}else{
+					skuIds.add(JdGoodsList.get(i).getSkuId());
+				}
+			}
+			List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailBySkuIds(skuIds);
+			if(orderDetails.size()>0){
+				throw new BusinessException("该分类下有已下单商品，无法取消关联");
+			}
+			skuIds.clear();
+		}else{
+			for (int i = 0; i < JdGoodsList.size(); i++) {
+				skuIds.add(JdGoodsList.get(i).getSkuId());
+			}
+			List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailBySkuIds(skuIds);
+			if(orderDetails.size()>0){
+				throw new BusinessException("该分类下有已下单商品，无法取消关联");
+			}
+		}
 		
-		
-		
-		List<String> idsGoods = new ArrayList<String>();
-		List<Long> idsStock = new ArrayList<Long>();
+		List<String> idsGoods = new ArrayList<String>();//商品表id
+		List<Long> idsStock = new ArrayList<Long>();//库存表id
 		//删除t_esp_goods_base_info和t_esp_goods_stock_info表中对应京东数据
 		if(JdGoodsList.size()>100){
 			for(int i=0; i<JdGoodsList.size(); i++){

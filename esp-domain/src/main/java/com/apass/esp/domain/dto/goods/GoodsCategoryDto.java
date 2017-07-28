@@ -16,7 +16,7 @@ public class GoodsCategoryDto {
     /**
      *  商品Id
      */
-    private Long goodsId;
+    private Long goodId;
 
     /** 商品名称 **/
     private String goodsName;
@@ -45,12 +45,12 @@ public class GoodsCategoryDto {
      */
     private String source;
 
-	public Long getGoodsId() {
-		return goodsId;
+	public Long getGoodId() {
+		return goodId;
 	}
 
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
+	public void setGoodId(Long goodId) {
+		this.goodId = goodId;
 	}
 
 	public String getGoodsName() {

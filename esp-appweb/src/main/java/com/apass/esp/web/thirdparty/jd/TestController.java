@@ -224,6 +224,22 @@ public class TestController {
         return Response.success("1", map);
     }
     /**
+     * 查询商品本身的规格
+     */
+    @RequestMapping(value = "/getStockBySku", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getStockBySku(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		Region  region=new Region();
+		region.setProvinceId(2);
+		region.setCityId(2815);
+		region.setCountyId(51975);
+		region.setTownId(0);
+		String result=jdGoodsInfoService.getStockBySku("1750526", region);
+    	 return Response.success(result);
+    }
+
+    /**
      * 查询预付款余额
      *
      * @param paramMap
