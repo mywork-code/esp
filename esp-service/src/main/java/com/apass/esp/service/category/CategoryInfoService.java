@@ -486,7 +486,7 @@ public class CategoryInfoService {
 			goodsCategoryDto.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));
 		}
 		
-		goodsCategoryDto.setGoodsId(goodsInfoEntity.getId());
+		goodsCategoryDto.setGoodId(goodsInfoEntity.getId());
 		goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
 		goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
 		goodsCategoryDto.setGoodsPrice(goodsPrice);
