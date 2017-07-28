@@ -1,41 +1,26 @@
 package com.apass.esp.schedule;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.entity.ServiceError;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.PaymentStatus;
-import com.apass.esp.domain.enums.ServiceErrorType;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.mapper.ServiceErrorMapper;
-import com.apass.esp.repository.goods.GoodsRepository;
-import com.apass.esp.repository.order.OrderDetailInfoRepository;
-import com.apass.esp.repository.order.OrderInfoRepository;
-import com.apass.esp.service.common.CommonService;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.service.merchant.MerchantInforService;
-import com.apass.esp.service.order.OrderService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.client.JdOrderApiClient;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.entity.ServiceError;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.ServiceErrorType;
+import com.apass.esp.mapper.ServiceErrorMapper;
+import com.apass.esp.service.order.OrderService;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.client.JdOrderApiClient;
+import com.apass.gfb.framework.exception.BusinessException;
 
 /**
  * type: class

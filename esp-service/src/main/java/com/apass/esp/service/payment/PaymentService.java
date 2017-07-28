@@ -137,17 +137,20 @@ public class PaymentService {
         }
         //更新库存
         for (OrderInfoEntity order : orderInfoList) {
-            GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
-            LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
-            if (null == stockLog) {
-                //减库存
-                modifyGoodsStock(requestId, userId, order);
-                //插入库存日志
-                GoodsStockLogEntity goodStockLog = new GoodsStockLogEntity();
-                goodStockLog.setOrderId(order.getOrderId());
-                goodStockLog.setUserId(userId);
-                goodsStockLogDao.insert(goodStockLog);
+            if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
+                LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
+                if (null == stockLog) {
+                    //减库存
+                    modifyGoodsStock(requestId, userId, order);
+                    //插入库存日志
+                    GoodsStockLogEntity goodStockLog = new GoodsStockLogEntity();
+                    goodStockLog.setOrderId(order.getOrderId());
+                    goodStockLog.setUserId(userId);
+                    goodsStockLogDao.insert(goodStockLog);
+                }
             }
+        	
         }
         //交易描述
         String txnDesc = obtainTxnDesc(orderDetailList);
@@ -836,12 +839,15 @@ public class PaymentService {
         //00:支付成功 非00:支付失败
         if (!"00".equals(payRealStatus)) {
             for (String orderId : orders) {
-                GoodsStockLogEntity sotckLog = goodsStockLogDao.loadByOrderId(orderId);
-                if (null==sotckLog) {
-                    continue;
-                }
-                //存在回滚
-                orderService.addGoodsStock(requestId, orderId);
+            	OrderInfoEntity order = orderDao.selectByOrderId(orderId);
+            	if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            		GoodsStockLogEntity sotckLog = goodsStockLogDao.loadByOrderId(orderId);
+                    if (null==sotckLog) {
+                        continue;
+                    }
+                    //存在回滚
+                    orderService.addGoodsStock(requestId, orderId);
+            	}
             }
         }
         
