@@ -1150,7 +1150,7 @@ $(function() {
 	//确定 获取编辑器的html
 	$("#addGetAllHtml").click(function() {
 		 	var params = {};
-     		$(".img").css('display','block');
+     		$("img").css('display','block');
 			params['id']=addGoodId;
 			params['goodsDetail'] = UE.getEditor('addEditor').getAllHtml();
 			params['goodsContent'] = UE.getEditor('addEditor').getContent();
@@ -1181,7 +1181,7 @@ $(function() {
 	//确定 获取编辑器的html
 	$("#editGetAllHtml").click(function() {
 		debugger;
-        $(".img").css('display','block');
+        $("img").css('display','block');
 		var params = {};
 		params['id']=editGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
