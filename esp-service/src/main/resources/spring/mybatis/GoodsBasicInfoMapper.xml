@@ -182,10 +182,10 @@
         </if>
         <!-- 按商品创建时间排序  （新品）DESC 降序，ASC 升序-->
         <if test="sort !=null and sort !='' and sort=='new' and order !=null and order !='' and order=='DESC'">
-            ORDER BY a.create_date DESC
+            ORDER BY a.id DESC
         </if>
         <if test="sort !=null and sort !='' and sort=='new' and order !=null and order !='' and order=='ASC'">
-            ORDER BY a.create_date ASC
+            ORDER BY a.id ASC
         </if>
         <!-- 按商品售价排序  DESC 降序，ASC 升序-->
         <if test="sort !=null and sort !='' and sort=='price' and order !=null and order !='' and order=='DESC'">

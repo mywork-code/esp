@@ -103,7 +103,7 @@ public class JdGoodsInfoService {
 	 * 根据商品编号获取商品需要展示App信息
 	 * @throws BusinessException 
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, List<AddressInfoEntity> AddressInfoEntityList)
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, Region region)
 			throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
@@ -126,21 +126,10 @@ public class JdGoodsInfoService {
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
 		map.put("jdImagePathList", JdImagePathList);
-		//查询是否有货无货
-		// 获取地址信息
-		Region region = new Region();
-		for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
-			if ("1".equals(addressInfoEntity.getIsDefault())) {
-				region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-				region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-				region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-				region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
-			}
-		}
 		// 查询商品是否有货
 		String jdGoodStock = getStockBySku(sku.toString(), region);
 		map.put("goodsStockDes", jdGoodStock);
-		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,AddressInfoEntityList);
+		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,region);
 		map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 		map.put("skuId", map2.get("skuId"));
 		map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
@@ -149,7 +138,7 @@ public class JdGoodsInfoService {
 		}
 	
 	// 查询商品规格（包括库存）
-	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,List<AddressInfoEntity> AddressInfoEntityList) throws BusinessException {
+	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -211,17 +200,6 @@ public class JdGoodsInfoService {
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(price);
 				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
-			}
-			
-			// 获取地址信息
-			Region region = new Region();
-			for (AddressInfoEntity addressInfoEntity : AddressInfoEntityList) {
-				if ("1".equals(addressInfoEntity.getIsDefault())) {
-					region.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-					region.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-					region.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-					region.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer.parseInt(addressInfoEntity.getTownsCode()));
-				}
 			}
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(sku.toString(), region);

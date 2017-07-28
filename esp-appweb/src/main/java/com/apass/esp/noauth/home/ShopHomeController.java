@@ -350,31 +350,109 @@ public class ShopHomeController {
      */
     @POST
     @Path("/loadDetailInfoById")
-    public Response loadGoodsBasicInfo(Map<String, Object> paramMap){
-        try{
-            Map<String,Object> returnMap = new HashMap<>();
-            Long goodsId = CommonUtils.getLong(paramMap,"goodsId");
-            String userId = CommonUtils.getValue(paramMap, "userId");
-            if(null==goodsId){
-            	LOGGER.error("商品号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-            }
-            if (!StringUtils.isEmpty(userId)) {
-                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
-                returnMap.put("amountInCart", amountInCart);
-            }
-            goodService.loadGoodsBasicInfoById(goodsId,returnMap);
-            return Response.success("加载成功", returnMap);
-        } catch (BusinessException e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        }
-        catch (Exception e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            LOGGER.error("获取商品基本信息失败");
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        }
-    }
+	public Response loadGoodsBasicInfo(Map<String, Object> paramMap) {
+		try {
+			Map<String, Object> returnMap = new HashMap<>();
+			Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+			String userId = CommonUtils.getValue(paramMap, "userId");
+			String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
+			String cityCode = CommonUtils.getValue(paramMap, "cityCode");
+			String districtCode = CommonUtils.getValue(paramMap, "districtCode");
+			String townsCode = CommonUtils.getValue(paramMap, "townsCode");
+
+			if (null == goodsId) {
+				LOGGER.error("商品号不能为空!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
+			Boolean flage = true;
+			Region region = new Region();// app端传过来的地址
+			if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
+				if (!CityJdEnums.isContainsCode(provinceCode)) {
+					if (StringUtils.isEmpty(townsCode)) {
+						return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+					} else {
+						region.setProvinceId(Integer.parseInt(provinceCode));
+						region.setCityId(Integer.parseInt(cityCode));
+						region.setCountyId(Integer.parseInt(districtCode));
+						region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+						flage = false;
+					}
+				}
+			}
+			Region region2 = new Region();
+			// 查看地址信息
+			AddressInfoEntity addty = new AddressInfoEntity();
+			// 查询京东地址
+			List<AddressInfoEntity> addressInfoList = new ArrayList<>();
+			if (StringUtils.isNotEmpty(userId)) {
+				addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
+			}
+			if (null == addressInfoList || addressInfoList.size() == 0) {// 当数据库中无京东地址时，传给app端默认的地址()
+				addty.setId(Long.parseLong("-1"));
+				addty.setProvinceCode("2");
+				addty.setProvince("上海");
+				addty.setCityCode("2815");
+				addty.setCity("长宁区");
+				addty.setDistrictCode("51975");
+				addty.setDistrict("城区");
+				addty.setTownsCode("0");
+				addty.setTowns("");
+				addty.setIsDefault("1");
+				addressInfoList.add(addty);
+			} else {
+				if (!("1".equals(addressInfoList.get(0).getIsDefault()))) {
+					addressInfoList.get(0).setIsDefault("1");
+				}
+			}
+			// 获取地址信息
+			for (AddressInfoEntity addressInfoEntity : addressInfoList) {
+				if ("1".equals(addressInfoEntity.getIsDefault())) {
+					region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+					region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
+					region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+					region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0
+							: Integer.parseInt(addressInfoEntity.getTownsCode()));
+				}
+			}
+			Region region3 = new Region();
+			if (flage) {
+				region3 = region2;
+			} else {
+				region3 = region;
+			}
+			GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+			// 判断是否是京东商品
+			if ("jd".equals(goodsInfo.getSource())) {// 来源于京东
+				String externalId = goodsInfo.getExternalId();// 外部商品id
+				returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(), region3);
+
+				List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+				if (jdGoodsStockInfoList.size() == 1) {
+					BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+					returnMap.put("goodsPrice", price);// 商品价格
+					returnMap.put("goodsPriceFirstPayment",
+							(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+				}
+				returnMap.put("source", "jd");
+			} else {
+				goodService.loadGoodsBasicInfoById(goodsId, returnMap);
+			}
+			// 获取购物车中商品种类数
+			if (!StringUtils.isEmpty(userId)) {
+				int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+				returnMap.put("amountInCart", amountInCart);
+			}
+			returnMap.put("addressList", addressInfoList);
+			return Response.success("加载成功", returnMap);
+		} catch (BusinessException e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		} catch (Exception e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			LOGGER.error("获取商品基本信息失败");
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		}
+	}
     /**
      * 获取商品详细信息 基本信息+详细信息(规格 价格 剩余量)
      *
@@ -382,71 +460,110 @@ public class ShopHomeController {
      */
     @POST
     @Path("/v2/loadDetailInfoById")
-    public Response loadGoodsBasicInfoJD(Map<String, Object> paramMap){
-        try{
-            Map<String,Object> returnMap = new HashMap<>();
-            Long goodsId = CommonUtils.getLong(paramMap,"goodsId");
-            String userId = CommonUtils.getValue(paramMap, "userId");
-            if(null==goodsId){
-            	LOGGER.error("商品号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-            }
-            //查看地址信息
-            AddressInfoEntity  addty=new AddressInfoEntity();
-            //查询京东地址
-            List<AddressInfoEntity> addressInfoList=new ArrayList<>();
-            if(StringUtils.isNotEmpty(userId)){
-                addressInfoList=addressService.queryAddressInfoJd(Long.valueOf(userId));
-            }
-            if(null ==addressInfoList || addressInfoList.size()==0){//当数据库中无京东地址时，传给app端默认的地址()
-            	addty.setProvinceCode("2");
-            	addty.setProvince("上海");
-            	addty.setCityCode("2815");
-            	addty.setCity("长宁区");
-            	addty.setDistrictCode("51975");
-            	addty.setDistrict("城区");
-            	addty.setTownsCode("0");
-            	addty.setTowns("");
-            	addty.setIsDefault("1");
-            	addressInfoList.add(addty);
-            }else{
-              if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
-            	  addressInfoList.get(0).setIsDefault("1");
-              }
-            }
-            GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-            //判断是否是京东商品
-            if("jd".equals(goodsInfo.getSource())){//来源于京东
-            	String externalId = goodsInfo.getExternalId();// 外部商品id
-            	returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),addressInfoList);
+	public Response loadGoodsBasicInfoJD(Map<String, Object> paramMap) {
+		try {
+			Map<String, Object> returnMap = new HashMap<>();
+			Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+			String userId = CommonUtils.getValue(paramMap, "userId");
+			String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
+			String cityCode = CommonUtils.getValue(paramMap, "cityCode");
+			String districtCode = CommonUtils.getValue(paramMap, "districtCode");
+			String townsCode = CommonUtils.getValue(paramMap, "townsCode");
 
-            	List<GoodsStockInfoEntity> jdGoodsStockInfoList=goodsStockInfoRepository.loadByGoodsId(goodsId);
-            	if(jdGoodsStockInfoList.size()==1){
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-            		returnMap.put("goodsPrice",price);//商品价格
-            		returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价格
-            	}
-            	returnMap.put("source", "jd");
-            }else{
-                goodService.loadGoodsBasicInfoById(goodsId,returnMap);
-            }
-            //获取购物车中商品种类数
-            if (!StringUtils.isEmpty(userId)) {
-                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
-                returnMap.put("amountInCart", amountInCart);
-            }
-            returnMap.put("addressList", addressInfoList);
-            return Response.success("加载成功", returnMap);
-        } catch (BusinessException e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        }
-        catch (Exception e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            LOGGER.error("获取商品基本信息失败");
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        }
-    }
+			if (null == goodsId) {
+				LOGGER.error("商品号不能为空!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
+			Boolean flage = true;
+			Region region = new Region();// app端传过来的地址
+			if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
+				if (!CityJdEnums.isContainsCode(provinceCode)) {
+					if (StringUtils.isEmpty(townsCode)) {
+						return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+					}
+				}
+				region.setProvinceId(Integer.parseInt(provinceCode));
+				region.setCityId(Integer.parseInt(cityCode));
+				region.setCountyId(Integer.parseInt(districtCode));
+				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+				flage = false;
+			}
+			Region region2 = new Region();
+			// 查看地址信息
+			AddressInfoEntity addty = new AddressInfoEntity();
+			// 查询京东地址
+			List<AddressInfoEntity> addressInfoList = new ArrayList<>();
+			if (StringUtils.isNotEmpty(userId)) {
+				addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
+			}
+			if(addressInfoList.size()>0){
+				if(!("1".equals(addressInfoList.get(0).getIsDefault()))){
+					addressInfoList.get(0).setIsDefault("1");
+				}
+			}
+			//app端没传地址并且数据库地址为空时，使用默认地址
+			if(flage && addressInfoList.size()==0){
+				addty.setId(Long.parseLong("-1"));
+				addty.setProvinceCode("2");
+				addty.setProvince("上海");
+				addty.setCityCode("2815");
+				addty.setCity("长宁区");
+				addty.setDistrictCode("51975");
+				addty.setDistrict("城区");
+				addty.setTownsCode("0");
+				addty.setTowns("");
+				addty.setIsDefault("1");
+				addressInfoList.add(addty);
+			}
+			// 获取地址信息
+			for (AddressInfoEntity addressInfoEntity : addressInfoList) {
+				if ("1".equals(addressInfoEntity.getIsDefault())) {
+					region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+					region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
+					region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
+					region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0
+							: Integer.parseInt(addressInfoEntity.getTownsCode()));
+				}
+			}
+			Region region3 = new Region();
+			if (flage) {
+				region3 = region2;
+			} else {
+				region3 = region;
+			}
+			GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+			// 判断是否是京东商品
+			if ("jd".equals(goodsInfo.getSource())) {// 来源于京东
+				String externalId = goodsInfo.getExternalId();// 外部商品id
+				returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(), region3);
+
+				List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+				if (jdGoodsStockInfoList.size() == 1) {
+					BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+					returnMap.put("goodsPrice", price);// 商品价格
+					returnMap.put("goodsPriceFirstPayment",
+							(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+				}
+				returnMap.put("source", "jd");
+			} else {
+				goodService.loadGoodsBasicInfoById(goodsId, returnMap);
+			}
+			// 获取购物车中商品种类数
+			if (!StringUtils.isEmpty(userId)) {
+				int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+				returnMap.put("amountInCart", amountInCart);
+			}
+			returnMap.put("addressList", addressInfoList);
+			return Response.success("加载成功", returnMap);
+		} catch (BusinessException e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		} catch (Exception e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			LOGGER.error("获取商品基本信息失败");
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		}
+	}
     /**
      * 地址改变，查看是否有货
      *
