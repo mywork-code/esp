@@ -141,7 +141,7 @@ public class JdGoodsService {
 			for (int i = 0; i < JdGoodsList.size(); i++) {
 				if(i<100*num){
 					skuIds.add(JdGoodsList.get(i).getSkuId());
-					while ((i+1)%100 == 0) {
+					if ((i+1)%100 == 0) {
 						List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository.queryOrderDetailBySkuIds(skuIds);
 						if(orderDetails.size()>0){
 							throw new BusinessException("该分类下有已下单商品，无法取消关联");
