@@ -1184,6 +1184,11 @@ $(function() {
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 		params['goodsDetail'] = UE.getEditor('editEditor').getAllHtml();;
 		params['goodsContent'] = UE.getEditor('editEditor').getContent();
+		
+		var uehtml = UE.getEditor('editEditor').getAllHtml();
+		uehtml = uehtml.replace(/<p>/g,"<p style='margin: 0px'>");
+		console.log(uehtml);
+		params['goodsDetail'] =uehtml;
 		if(UE.getEditor('editEditor').getContent() == null || UE.getEditor('editEditor').getContent()==''){
 			$.messager.alert("提示", "请输入详情信息", "info");
 			return;
