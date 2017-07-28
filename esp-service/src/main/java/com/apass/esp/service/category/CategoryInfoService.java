@@ -437,7 +437,7 @@ public class CategoryInfoService {
 		List<OtherCategoryGoodsVo> list = Lists.newArrayList();
 		List<Category> categories = categoryMapper.selectByParentId(categoryId);//查询所有父级id为categoryId可见的所有类目
 		LOGGER.info("一级类目id:{}对应的二级类目有：{}",categoryId.toString(),GsonUtils.toJson(categories));
-		if(categories == null){
+		if(CollectionUtils.isEmpty(categories)){
 			return list;
 		}
 		for (Category category : categories) {
@@ -473,7 +473,7 @@ public class CategoryInfoService {
 		//根据goodsid查询库存，找出最低售价显示前端 
 		List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getId());
 		BigDecimal goodsPrice = null;
-		if(goodsStocks != null && goodsStocks.size() > 0){
+		if(!CollectionUtils.isEmpty(goodsStocks)){
 			goodsPrice = goodsStocks.get(0).getGoodsPrice();
 			for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
 				if(goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0 ){
