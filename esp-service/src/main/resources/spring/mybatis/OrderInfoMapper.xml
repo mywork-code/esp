@@ -686,7 +686,7 @@
 		 	pre_stock_status = #{preStockStatus},
 		 </if>
 		 <if test="extOrderId != null and extOrderId != ''">
-		 	ext_order_id = #{extOrderId}
+		 	ext_order_id = #{extOrderId},
 		 </if>
 		</set>
 		where order_id = #{orderId}

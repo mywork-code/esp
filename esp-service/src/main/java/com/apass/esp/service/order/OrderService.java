@@ -2103,9 +2103,9 @@ public class OrderService {
 				hashMap.put("orderId",orderInfoEntity.getOrderId());
 				updateLogisticsInfoAndOrderInfoByOrderId(hashMap);
 			}catch (Exception e ){
-				throw new BusinessException();
+				return;
 			}
-            throw new BusinessException();
+            
         } else {
             String merchantCode = orderInfoEntity.getMerchantCode();
             String deviceType = orderInfoEntity.getDeviceType();
