@@ -213,10 +213,10 @@ public class GoodsStockInfoController {
         if (!StringUtils.isBlank(goodsPrice)) {
             entity.setGoodsPrice(new BigDecimal(goodsPrice));
         }
-        if (!StringUtils.isBlank(goodsCompareUrl)) {
+        if (goodsCompareUrl != null) {
             entity.setGoodsCompareUrl(goodsCompareUrl);
         }
-        if (!StringUtils.isBlank(goodsCompareUrl2)) {
+        if (goodsCompareUrl2 != null) {
             entity.setGoodsCompareUrl2(goodsCompareUrl2);
         }
 

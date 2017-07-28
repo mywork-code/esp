@@ -56,7 +56,7 @@
 			FROM    t_esp_work_city_jd   
 			WHERE   PARENT=#{code, jdbcType=VARCHAR}
 			AND     `LEVEL`=#{level, jdbcType=VARCHAR}
-			ORDER BY PREFIX
+			ORDER BY cast(`code` as signed integer) 
 		]]>
 	</select>
 </mapper> 

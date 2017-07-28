@@ -706,8 +706,8 @@ public class ShopHomeController {
 		        goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsLogoUrl()));//非京东
 		        goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl( goodsInfoEntity.getGoodsSiftUrl()));
 		    }else{
-		        goodsInfoEntity.setGoodsLogoUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsLogoUrl());
-		        goodsInfoEntity.setGoodsSiftUrl("http://img13.360buyimg.com/n3/"+ goodsInfoEntity.getGoodsSiftUrl());
+		        goodsInfoEntity.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+ goodsInfoEntity.getGoodsLogoUrl());
+		        goodsInfoEntity.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/"+ goodsInfoEntity.getGoodsSiftUrl());
 		        goodsInfoEntity.setSource("jd");
 		    }
 		    goodsInfoEntity.setGoogsDetail("");
