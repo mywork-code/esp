@@ -1150,12 +1150,13 @@ $(function() {
 	//确定 获取编辑器的html
 	$("#addGetAllHtml").click(function() {
 		 	var params = {};
-     		$("img").css('display','block');
+
 			params['id']=addGoodId;
 			params['goodsDetail'] = UE.getEditor('addEditor').getAllHtml();
 			params['goodsContent'] = UE.getEditor('addEditor').getContent();
             var uehtml = UE.getEditor('editEditor').getAllHtml();
 		    uehtml = uehtml.replace(/<p>/g,"<p style='margin: 0px'>");
+            uehtml = uehtml.replace(/<p>/g,"<p style='display: block'>");
 			if(UE.getEditor('addEditor').getContent() == null || UE.getEditor('addEditor').getContent()==''){
 				$.messager.alert("提示", "请输入详情信息", "info");
 				return;
@@ -1181,7 +1182,7 @@ $(function() {
 	//确定 获取编辑器的html
 	$("#editGetAllHtml").click(function() {
 		debugger;
-        $("img").css('display','block');
+       
 		var params = {};
 		params['id']=editGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
@@ -1191,7 +1192,7 @@ $(function() {
 		
 		var uehtml = UE.getEditor('editEditor').getAllHtml();
 		uehtml = uehtml.replace(/<p>/g,"<p style='margin: 0px'>");
-		
+        uehtml = uehtml.replace(/<p>/g,"<p style='display: block'>");
 		params['goodsDetail'] =uehtml;
 		if(UE.getEditor('editEditor').getContent() == null || UE.getEditor('editEditor').getContent()==''){
 			$.messager.alert("提示", "请输入详情信息", "info");
