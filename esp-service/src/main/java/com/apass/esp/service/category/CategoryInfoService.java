@@ -172,6 +172,11 @@ public class CategoryInfoService {
 	 */
 	public List<CategoryDo> categroyToCathgroyDo(List<Category> cateList){
 		List<CategoryDo> list=new ArrayList<CategoryDo>();
+		CategoryDo categoryDo2=new CategoryDo();
+		categoryDo2.setId("-1");
+		categoryDo2.setText("请选择");
+		categoryDo2.setLevel("1");
+		list.add(categoryDo2);
 		for(int i=0;i<cateList.size();i++){
 			CategoryDo cto=new CategoryDo();
 			cto.setId(cateList.get(i).getId().toString());
