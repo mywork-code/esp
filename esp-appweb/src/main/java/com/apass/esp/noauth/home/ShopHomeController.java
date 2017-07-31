@@ -9,6 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
+import com.apass.esp.domain.vo.CategoryVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -675,6 +677,10 @@ public class ShopHomeController {
         }
         try {
             goodsList = getSaleVolumeGoods(goodsIdList);
+			CategoryVo v = new CategoryVo();
+			v.setCategoryTitle("大小家电 尽在掌握");
+			v.setPictureUrl(espImageUrl+"/static/eshop/other/categoryElectric.png");
+			resultMap.put("banner",v);
             resultMap.put("goodsList", goodsList);
             if(CollectionUtils.isEmpty(goodsList)){
                 resultMap.put("totalCount", 0);
@@ -716,10 +722,10 @@ public class ShopHomeController {
 		    	goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
 		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
 		    }
-            
+
 		    goodsList.add(goodsInfoEntity);
 		}
-		
+
 		return goodsList;
 	}
 

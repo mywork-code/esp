@@ -282,21 +282,25 @@ $(function() {
 		}
 		if(categoryLevel == 1){
 			reg=/^[\u2E80-\u9FFF]+$/;
-			if(categoryName.length > 5 || !regExp_pattern(categoryName,reg)){
-				$.messager.alert("提示", "类目名称不能超过5个汉字", "info");
+            if(!regExp_pattern(categoryName,reg)){
+                $.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
+                return;
+            }
+			if(categoryName.length > 4){
+				$.messager.alert("提示", "类目名称不能超过2个汉字", "info");
 				return;
 			}
 		}else if(categoryLevel == 2){
-			reg= /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+			reg= /^[\u4E00-\u9FA5]+$/;
 			var leng = getLenString(categoryName);
-			if(leng > 15){
-				$.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
-				return;
-			}
 			if(!regExp_pattern(categoryName,reg)){
-				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字或字母,请重新输入", "info");
+				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
 				return;
 			}
+            if(leng > 8){
+                $.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
+                return;
+            }
 		}else if(categoryLevel == 3){
 			if(categoryName.length > 20){
 				$.messager.alert("提示", "字数长度不能大于20", "info");
