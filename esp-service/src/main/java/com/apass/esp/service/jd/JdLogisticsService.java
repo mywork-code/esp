@@ -134,9 +134,9 @@ public class JdLogisticsService {
          if (!CollectionUtils.isEmpty(tracks)) {
              for (JdTrack track : tracks) {
              	Trace jdTrace = new Trace();
-             	jdTrace.setAcceptStation(track.getStatusDescription());
+             	jdTrace.setAcceptStation(track.getDetails());
              	jdTrace.setAcceptTime(track.getDate());
-             	jdTrace.setRemark(track.getDetails());
+             	jdTrace.setRemark(track.getStatusDescription());
              	traces.add(jdTrace);
 			}
          }
