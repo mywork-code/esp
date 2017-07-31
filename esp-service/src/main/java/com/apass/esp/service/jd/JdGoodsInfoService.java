@@ -342,6 +342,8 @@ public class JdGoodsInfoService {
 				isSelectSkuIdOrder = skuIdOrder;
 			}
 		}
+		//京东商品本身的规格参数
+		String jdGoodsSimilarSku="";
 		// 为app端标记初始化被选中商品的规格
 		if (isSelectSkuIdOrder.length() > 0) {
 			String[] orderList = isSelectSkuIdOrder.split(";");
@@ -351,6 +353,7 @@ public class JdGoodsInfoService {
 				for (JdSaleAttr jdSaleAttr : jdSaleAttrList) {
 					if (jdSaleAttr.getSaleValueId().equals(key)) {
 						jdSaleAttr.setIsSelect("true");
+						jdGoodsSimilarSku=jdSaleAttr.getSaleValue()+" ";
 					}
 				}
 			}
@@ -358,6 +361,7 @@ public class JdGoodsInfoService {
 		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
+		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
 		return map;
 	}
 	/**
