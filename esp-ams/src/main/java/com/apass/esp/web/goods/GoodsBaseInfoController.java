@@ -615,6 +615,13 @@ public class GoodsBaseInfoController {
         String flag = HttpWebUtils.getValue(request, "flag");
         String message = HttpWebUtils.getValue(request, "message");
 
+        SystemParamEntity systemParamEntity = null;
+        try {
+            systemParamEntity = systemParamService.querySystemParamInfo().get(0);
+        } catch (Exception e) {
+            return "查询系统参数错误";
+        }
+
         if (!StringUtils.isBlank(ids)) {
             ids = ids.substring(1, ids.length() - 1);
             String[] strArr = ids.split(",");
@@ -625,7 +632,25 @@ public class GoodsBaseInfoController {
                     if ("reject".equals(flag)) {
                         entity.setStatus(GoodStatus.GOOD_NEW.getCode());
                     } else {
-                        entity.setStatus(GoodStatus.GOOD_UP.getCode());
+                        GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
+                        goodsStockInfoEntity.setGoodsId(Long.valueOf(strArr[i]));
+                        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
+                        List<GoodsStockInfoEntity> stockList = list.getDataList();
+                        if (stockList.isEmpty()) {
+                           continue;
+                        }
+                        for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
+                            BigDecimal goodsPrice = goodsStockInfoEntity1.getGoodsPrice();
+                            BigDecimal goodsCostPrice = goodsStockInfoEntity1.getGoodsCostPrice();
+                            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
+                            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_HALF_UP);
+                            //商品售价除以成本价小于保本率
+                            if (dividePoint.compareTo(dividePoint1) == -1) {
+                                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                            }else{
+                                entity.setStatus(GoodStatus.GOOD_UP.getCode());
+                            }
+                        }
                     }
                     entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                     entity.setRemark(message);
