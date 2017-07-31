@@ -446,6 +446,7 @@ public class CategoryInfoService {
 		for (Category category : categories) {
 			list.add(convertToOtherCategoryGoodsVo(category));
 		}
+		List<OtherCategoryGoodsVo> list2 = Lists.newArrayList();
     	//查询每个二级类目下的前10条商品（按上架时间降序排列）
 		for (OtherCategoryGoodsVo categoryVo : list) {
 			if(categoryTemp != null){
@@ -453,16 +454,17 @@ public class CategoryInfoService {
 			}
 			List<GoodsInfoEntity> goodsEntities= goodsService.selectByCategoryId2(categoryVo.getCategoryIdSecond());
 			List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
-			if(goodsEntities != null){
+			if(goodsEntities != null && goodsEntities.size()>0){
 				for (GoodsInfoEntity goodsInfoEntity : goodsEntities) {
 					GoodsCategoryDto goodsCategoryDto = convertToGoodsCategoryDto(goodsInfoEntity);
 					goodsCategoryDtos.add(goodsCategoryDto);
 				}
 				categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
+				list2.add(categoryVo);
 			}
 		}
     	
-		return list;
+		return list2;
 	}
 
 	/**
