@@ -242,12 +242,12 @@ public class TestController {
     /**
      * 查询预付款余额
      *
-     * @param paramMap
+     * @param
      * @return
      */
-    @RequestMapping(value = "/priceBalanceGet", method = RequestMethod.POST)
+    @RequestMapping(value = "/priceBalanceGet", method = RequestMethod.GET)
     @ResponseBody
-    public Response priceBalanceGet(@RequestBody Map<String, Object> paramMap) {
+    public Response priceBalanceGet() {
         JdApiResponse<String> jdApiResponse = jdOrderApiClient.priceBalanceGet(4);
         return Response.success("1", jdApiResponse);
     }
