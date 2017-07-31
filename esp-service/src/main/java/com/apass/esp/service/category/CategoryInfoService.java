@@ -172,11 +172,6 @@ public class CategoryInfoService {
 	 */
 	public List<CategoryDo> categroyToCathgroyDo(List<Category> cateList){
 		List<CategoryDo> list=new ArrayList<CategoryDo>();
-		CategoryDo categoryDo2=new CategoryDo();
-		categoryDo2.setId("-1");
-		categoryDo2.setText("请选择");
-		categoryDo2.setLevel("1");
-		list.add(categoryDo2);
 		for(int i=0;i<cateList.size();i++){
 			CategoryDo cto=new CategoryDo();
 			cto.setId(cateList.get(i).getId().toString());
@@ -232,7 +227,15 @@ public class CategoryInfoService {
 	 */
 	public List<CategoryDo> goodsCategoryList(){
 		List<Category> goodsCaListFirst=categoryMapper.goodsCategoryList(Long.parseLong("1"));
-		List<CategoryDo>  categoryDoListFirst=categroyToCathgroyDo(goodsCaListFirst);
+		List<Category> goodsCaListFirst2=new ArrayList<>();
+		Category category=new Category();
+		category.setId(Long.parseLong("-1"));
+		category.setCategoryName("请选择");
+		category.setSortOrder(Long.parseLong("0"));
+		category.setLevel(Long.parseLong("1"));
+		goodsCaListFirst2.add(category);
+		goodsCaListFirst2.addAll(goodsCaListFirst);
+		List<CategoryDo>  categoryDoListFirst=categroyToCathgroyDo(goodsCaListFirst2);
 		for(int i=0;i<categoryDoListFirst.size();i++){
 			List<CategoryDo> categoryDoListSecond=goodsCategoryListByParentId(Long.parseLong(categoryDoListFirst.get(i).getId()));
 			if(categoryDoListSecond.size()!=0){
