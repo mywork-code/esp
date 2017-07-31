@@ -725,21 +725,33 @@ public class AfterSaleService {
 			switch (spe.getNodeName()) {
 			case "RS01":
 				serviceProcessDto.setRs01Time(spe.getCreateDate());
+				serviceProcessDto.setRs01TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs01Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			case "RS02":
 				serviceProcessDto.setRs02Time(spe.getCreateDate());
+				serviceProcessDto.setRs02TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs02Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			case "RS03":
 				serviceProcessDto.setRs03Time(spe.getCreateDate());
+				serviceProcessDto.setRs03TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs03Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			case "RS04":
 				serviceProcessDto.setRs04Time(spe.getCreateDate());
+				serviceProcessDto.setRs04TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs04Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			case "RS05":
 				serviceProcessDto.setRs05Time(spe.getCreateDate());
+				serviceProcessDto.setRs05TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs05Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			case "RS06":
 				serviceProcessDto.setRs06Time(spe.getCreateDate());
+				serviceProcessDto.setRs06TimeStr(DateFormatUtil.dateToString(serviceProcessDto.getRs06Time(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
 				break;
 			default:
 				LOG.info(requestId, "售后流程详情表节点名称异常", spe.getNodeName());
