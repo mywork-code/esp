@@ -276,9 +276,11 @@ $(function() {
 			$.messager.alert("提示", "请输入类目名称", "info");
 			return;
 		}
-		if (null == addCategoryFilePic || ('') == addCategoryFilePic) {
-			$.messager.alert("提示", "请先上传文件！", "info");
-			return;
+        if(categoryLevel==3 || categoryLevel==1){
+            if (null == addCategoryFilePic || ('') == addCategoryFilePic) {
+                $.messager.alert("提示", "请先上传文件！", "info");
+                return;
+            }
 		}
 		if(categoryLevel == 1){
 			reg=/^[\u2E80-\u9FFF]+$/;
