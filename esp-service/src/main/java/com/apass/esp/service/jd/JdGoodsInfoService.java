@@ -124,7 +124,7 @@ public class JdGoodsInfoService {
 		BigDecimal postage = goodsService.getPostage(goodsIds);
 		map.put("postage", postage);
 		// 查询商品图片
-		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN0.getCode());
+		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
 		map.put("jdImagePathList", JdImagePathList);
 		// 查询商品是否有货
 		String jdGoodStock = getStockBySku(sku.toString(), region);
