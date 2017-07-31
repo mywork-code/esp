@@ -121,3 +121,7 @@ ADD COLUMN `node_message`  varchar(255) DEFAULT '' COMMENT '备注信息';
 
 ALTER TABLE `t_esp_refund_info`
 ADD COLUMN `jd_return_type`  varchar(12) DEFAULT '' COMMENT '京东退换货返回方式';
+
+
+ALTER TABLE `t_esp_goods_base_info`
+ADD COLUMN `newCreat_date`  datetime  DEFAULT '1900-01-01 00:00:00';
