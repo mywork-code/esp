@@ -26,6 +26,7 @@ import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -53,6 +54,7 @@ public class JdGoodsService {
 	 * @param paramMap
 	 * @throws BusinessException
 	 */
+	@Transactional(rollbackFor=Exception.class)
 	public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
 		//往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
 		String cateId = paramMap.get("cateId");//京东类目id
@@ -117,8 +119,8 @@ public class JdGoodsService {
 		jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
 	}
 
-
-    public List<JdGoods>  disRelevanceValidate(Map<String, String> paramMap) throws BusinessException{
+	@Transactional(rollbackFor=Exception.class)
+	public List<JdGoods>  disRelevanceValidate(Map<String, String> paramMap) throws BusinessException{
         String cateId = paramMap.get("cateId");//京东类目id
         List<GoodsInfoEntity> goodsInfos = goodsService.selectByCategoryId3(cateId);
         LOGGER.info("存在已上架或待审核商品，分别是：{}", GsonUtils.toJson(goodsInfos));
@@ -171,6 +173,7 @@ public class JdGoodsService {
 	 * @param paramMap
 	 * @throws BusinessException
 	 */
+	@Transactional(rollbackFor=Exception.class)
 	public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
         List<JdGoods> JdGoodsList = disRelevanceValidate(paramMap);
 		List<String> idsGoods = new ArrayList<String>();//商品表id
