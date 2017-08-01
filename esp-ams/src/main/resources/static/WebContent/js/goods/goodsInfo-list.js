@@ -356,14 +356,14 @@ $(function() {
  		  $("#addgoodsNameL").text('');
  	      $("#addgoodsTitleL").text('');
  		   var params = {};
- 	       $('#tablelist').datagrid('load', params);
+ 	       //$('#tablelist').datagrid('load', params);
  	   }
  	}); 
     /**监听关闭编辑商品窗口事件**/
     $('#editGoodsInfo').window({    
     	onBeforeClose:function(){ 
     		var params = {};
-    		$('#tablelist').datagrid('load', params);
+    		//$('#tablelist').datagrid('load', params);
     	}
     }); 
     $('#addGoodsInfo').window('close'); 
@@ -674,7 +674,7 @@ $(function() {
 		$("#addWriteGoodsInfo").css('display','none');
 		$("#addUpLoadGoodsPicture").css('display','none');
 		$("#addGoodsStock").css('display','none');
-		$('#tablelist').datagrid('load', {});
+		$(".search-btn").click();
 		
 		//关闭窗口
 		$('#addGoodsInfo').window('close');
@@ -849,9 +849,9 @@ $(function() {
 			url : ctx + '/application/goods/management/editCategory',
 			data : params,
 			success : function(data) {
-//				var response = JSON.parse(data);
 				if(data.status == '1'){
 					$.messager.alert("提示", "修改商品分类信息成功！", "info");
+					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", data.msg, "info");
 				}
@@ -996,6 +996,7 @@ $(function() {
 				var data = JSON.parse(response);
 				ifLogout(data);
 				if(data.status == '1'){
+					$(".search-btn").click();
 					$.messager.alert("提示", "修改商品成功", "info");
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1020,6 +1021,8 @@ $(function() {
 		loadLogo("editGoodsLogoImg",editGoodLogoUrl);
 		//商品大图回显
 		loadBanner("editGoodsbannerList",editGoodId);
+		
+		$(".search-btn").click();
 	});
 	
 	//保存上传的图片
@@ -1053,6 +1056,7 @@ $(function() {
 		
 		//关闭窗口
 		$('#editGoodsInfo').window('close');
+		$(".search-btn").click();
 	});
 	
 //==================================-------编辑商品 末--------===================================================================//````````````````````
@@ -1137,6 +1141,7 @@ $(function() {
 					$("#editBannerPicFile").val('')
 					debugger;
 					loadBanner("editGoodsbannerList",editGoodId);
+					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", response.msg);
 				}
@@ -1170,6 +1175,7 @@ $(function() {
 	    				return false;
 					}
 					if(data == 'SUCCESS'){
+						$(".search-btn").click();
 						$.messager.alert("提示", "保存商品详情成功", "info");
 					}
 				}
@@ -1207,6 +1213,7 @@ $(function() {
 //					return false;
 //				}
 				if(data == 'SUCCESS'){
+					$(".search-btn").click();
 					$.messager.alert("提示", "保存商品详情成功", "info");
 				}
 			}
@@ -1337,6 +1344,7 @@ $(function() {
 //			        params['goodsId'] = goodsId;
 //			        $('#addGoodsStockList').datagrid('load', params);
 					$('#addGoodsStockInfoWin').window('close');
+					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", response.msg, "info");
 				}
@@ -1401,6 +1409,7 @@ $(function() {
 		        loadStockGoods('editGoodsStockList',goodsId,null);
 		        loadStockGoods('goodsStockList',goodsId,null);
 		        $('#addAmtGoodsStockInfoWin').window('close');
+		        $(".search-btn").click();
 			}
 		});
 	});
@@ -1540,6 +1549,7 @@ $(function() {
 			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
 			        loadStockGoods('goodsStockList',goodsId,sourceJd);
 			        $('#editGoodsStockInfoWin').window('close');
+			        $(".search-btn").click();
 				}else{
 					$.messager.alert("提示", data.msg, "info");
 				}
@@ -1597,6 +1607,7 @@ $(function() {
 			        loadStockGoods('addGoodsStockList',goodsId,sourceJd);
 			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
 			        loadStockGoods('goodsStockList',goodsId,sourceJd);
+			        $(".search-btn").click();
 			        $('#editJDStockWin').window('close');
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -2049,6 +2060,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		    	$("#addWriteGoodsInfo").css('display','none');
 		    	$("#addUpLoadGoodsPicture").css('display','block');
 		    	$("#addGoodsStock").css('display','none');
+		    	$(".search-btn").click();
 		    	loadBanner("addGoodsbannerList",addGoodId);
 			}else{
 				$.messager.alert("提示", data, "info");

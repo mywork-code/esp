@@ -451,8 +451,8 @@ public class GoodsBaseInfoController {
             int size = file.getInputStream().available();
 
             if (!(checkGoodBannerImgSize && checkImgType)) {
-                file.getInputStream().close();// 750*672px;大小：≤500kb;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：672px,格式：.jpg,.png", url);
+                file.getInputStream().close();// 750*750px;大小：≤300kb;.jpg .png
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：750px,格式：.jpg,.png", url);
             } else if (size > 1024 * 300) {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);
@@ -702,7 +702,7 @@ public class GoodsBaseInfoController {
 
             if (!(checkLogoImgSize && checkImgType)) {
                 file.getInputStream().close();// 367*268px;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：367px,高：268px,格式：.jpg,.png", url);
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：350px,高：350px,格式：.jpg,.png", url);
             } else if (size > 1024 * 300) {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);

@@ -1,17 +1,5 @@
 package com.apass.esp.schedule;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.ServiceError;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -21,6 +9,17 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * type: class
@@ -48,7 +47,7 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private ServiceErrorMapper serviceErrorMapper;
 
-    //@Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
         List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
