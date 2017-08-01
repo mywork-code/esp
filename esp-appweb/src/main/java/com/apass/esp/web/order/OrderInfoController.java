@@ -555,7 +555,7 @@ public class OrderInfoController {
             }else{
               l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
             }
-            
+
           }
         }
       }
