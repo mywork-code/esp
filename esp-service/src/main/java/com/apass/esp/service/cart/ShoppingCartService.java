@@ -315,7 +315,7 @@ public class ShoppingCartService {
             		String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
             		goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
             		//购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-            		if(goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+            		if(goodsInfoInCart.getDelistTime().before(date) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
             			goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
             		}
