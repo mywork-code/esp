@@ -1,14 +1,19 @@
 package com.apass.esp.web.goods;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -75,6 +80,18 @@ public class JdGoodsController {
         return Response.success("关联京东类目成功！");
     }
 
+    @ResponseBody
+    @RequestMapping("/disrelevance1")
+    public Response disRelevance1(@RequestParam("param") String param) {
+        try {
+            Map<String, String> paramMap = validateParam(param);
+            jdGoodsService.disRelevanceValidate(paramMap);
+        } catch (BusinessException e) {
+            return Response.fail("重新关联失败：" + e.getErrorDesc());
+        }
+
+        return Response.success("");
+    }
     /**
      * 取消关联商品
      * 

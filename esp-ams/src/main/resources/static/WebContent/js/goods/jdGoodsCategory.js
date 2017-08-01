@@ -323,27 +323,41 @@ $(function() {
 	                		
 	                		if($that.css('left')=='0px') {
 	                			if(rowData.flag){
-		                			$.messager.confirm('确认','该类目已关联其它类目,你确定要重新关联吗？',function(r){    
-		                			    if (r){    
-		                			    	$.ajax({
-		    	        	        			url : ctx + '/application/jd/category/relevance',
-		    	        	        			data : {'param':JSON.stringify(param)},
-		    	        	        			type : "post",
-		    	        	        			dateType:"json",
-		    	        	        			success : function(data) {
-		    	        	        				ifLogout(data);
-		    	        	        				if(data.status=="1"){
-		    	        	                    		$.messager.alert("提示",data.msg,'info');  
-		    	        	                    		$that.animate({left:"54px"},50)
-		    	        	                			$that.parent().find('.relation-text').css('left','10px');
-		    	        	                    		$that.parent().find('.relation-text').html('已关联');
-		    	        	                    	}else{
-		    	        	                    		$.messager.alert("错误",data.msg,'error');  
-		    	        	                    	}
-		    	        	        			}
-		    	        	        		});    
-		                			    }    
-		                			});  
+	                				debugger
+                                    $.ajax({
+                                        url : ctx + '/application/jd/category/disrelevance1',
+                                        data : {'param':JSON.stringify(param)},
+                                        type : "post",
+                                        dateType:"json",
+                                        success : function(data) {
+                                            ifLogout(data);
+                                            if(data.status=="1"){
+                                                $.messager.confirm('确认','该类目已关联其它类目,你确定要重新关联吗？',function(r){
+                                                    if (r){
+                                                        $.ajax({
+                                                            url : ctx + '/application/jd/category/relevance',
+                                                            data : {'param':JSON.stringify(param)},
+                                                            type : "post",
+                                                            dateType:"json",
+                                                            success : function(data) {
+                                                                ifLogout(data);
+                                                                if(data.status=="1"){
+                                                                    $.messager.alert("提示",data.msg,'info');
+                                                                    $that.animate({left:"54px"},50)
+                                                                    $that.parent().find('.relation-text').css('left','10px');
+                                                                    $that.parent().find('.relation-text').html('已关联');
+                                                                }else{
+                                                                    $.messager.alert("错误",data.msg,'error');
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert("错误",data.msg,'error');
+                                            }
+                                        }
+                                    });
 		                		}else{
 		                			$.ajax({
 		                				url : ctx + '/application/jd/category/relevance',

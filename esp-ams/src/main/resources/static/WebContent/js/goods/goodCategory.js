@@ -621,7 +621,7 @@ function showCategroyName(level){
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","inline");
 		$(".threeCategoryAndOneCategoryShow").css("display","inline");
-		$(".spanRemind").css("display","none");
+		$(".spanRemind").css("display","block");
 	}
 }
 //上移下移方法
