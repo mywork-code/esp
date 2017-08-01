@@ -282,14 +282,19 @@ public class GoodsService {
      * @return
      */
     public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo, String pageSize) {
-        Page page = new Page();
-        page.setPage(Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo));
-        page.setLimit(Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize));
+        Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
+        Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
+        Integer begin = (pageNum-1)*pageSiz;
+        goodsInfoEntity.setBegin(begin);
+        goodsInfoEntity.setPageSize(pageSiz);
+//        Page page = new Page();
+//        page.setPage(Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo));
+//        page.setLimit(Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize));
 
         PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
 
-        Pagination<GoodsInfoEntity> entity = goodsDao.pageList(goodsInfoEntity, page);
-        List<GoodsInfoEntity> dataList = entity.getDataList();
+        List<GoodsInfoEntity> dataList  = goodsDao.pageList(goodsInfoEntity);
+        Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
         for (GoodsInfoEntity goodsInfo : dataList) {
 			if("jd".equals(goodsInfo.getSource())){
 				goodsInfo.setMerchantName("京东");
@@ -303,9 +308,8 @@ public class GoodsService {
 		}
 
 
-        result.setDataList(entity.getDataList());
-        result.setPageInfo(page.getPageNo(), page.getPageSize());
-        result.setTotalCount(entity.getTotalCount());
+        result.setDataList(dataList);
+        result.setTotalCount(totalCount);
         return result;
     }
 

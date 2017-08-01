@@ -99,6 +99,7 @@
 	<![CDATA[
 		ORDER BY t.update_date DESC 
 	]]>
+		limit #{begin},#{pageSize}
 	</select>
 	
 	
