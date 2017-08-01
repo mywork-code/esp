@@ -12,7 +12,10 @@ public enum JdMessageEnum {
 
     DELIVERED_ORDER(5, "订单妥投消息"),
 
-    WITHDRAW_SKU(4, "商品下架消息");
+    WITHDRAW_SKU(4, "商品上下架消息"),
+
+    DELETEADD_SKU(6, "商品添加删除消息");
+
     private int type;
     private String message;
 

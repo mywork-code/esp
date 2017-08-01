@@ -2091,9 +2091,7 @@ public class OrderService {
 		orderInfoRepository.updatePreStockStatusByOrderId(params);
 
 		if (pOrderV instanceof Number) {
-			//未拆单 
-			orderInfoEntity.setExtParentId(-1);
-			orderInfoRepository.update(orderInfoEntity);
+
 
 			//订阅物流信息
 			try{
@@ -2107,6 +2105,9 @@ public class OrderService {
 			}
             
         } else {
+			//拆单
+			orderInfoEntity.setExtParentId(-1);
+			orderInfoRepository.update(orderInfoEntity);
             String merchantCode = orderInfoEntity.getMerchantCode();
             String deviceType = orderInfoEntity.getDeviceType();
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);

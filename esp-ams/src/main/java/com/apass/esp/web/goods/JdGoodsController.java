@@ -69,6 +69,18 @@ public class JdGoodsController {
         return Response.success("关联京东类目成功！");
     }
 
+    @ResponseBody
+    @RequestMapping("/disrelevance1")
+    public Response disRelevance1(@RequestParam("param") String param) {
+        try {
+            Map<String, String> paramMap = validateParam(param);
+            jdGoodsService.disRelevanceValidate(paramMap);
+        } catch (BusinessException e) {
+            return Response.fail("重新关联失败：" + e.getErrorDesc());
+        }
+
+        return Response.success("");
+    }
     /**
      * 取消关联商品
      * 

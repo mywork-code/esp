@@ -40,7 +40,7 @@ public class JDMessageScheduleTask {
 
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJDMessageScheduleTask() {
-        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType());
+        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(),JdMessageEnum.DELETEADD_SKU.getType());
         for (JdApiMessage jdApiMessage : jdApiMessageList
                 ) {
             try {

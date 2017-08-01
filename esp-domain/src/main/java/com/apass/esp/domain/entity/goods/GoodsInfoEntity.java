@@ -4,6 +4,7 @@
 package com.apass.esp.domain.entity.goods;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.apass.esp.domain.enums.GoodStatus;
@@ -83,7 +84,9 @@ public class GoodsInfoEntity {
 
     /** 商品下架时间 **/
     private Date delistTime;
-
+    /** 商品新建时间**/
+    private String newCreatDate;
+    
     /** 商品生产日期 **/
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date proDate;
@@ -525,6 +528,14 @@ public class GoodsInfoEntity {
 
 	public void setFirstPrice(BigDecimal firstPrice) {
 		this.firstPrice = firstPrice;
+	}
+
+	public String getNewCreatDate() {
+		return newCreatDate;
+	}
+
+	public void setNewCreatDate(Date newCreatDate) {
+		this.newCreatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(newCreatDate);
 	}
 	
 }
