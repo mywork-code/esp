@@ -289,7 +289,7 @@ $(function() {
                 $.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
                 return;
             }
-			if(categoryName.length > 4){
+			if(categoryName.length > 2){
 				$.messager.alert("提示", "类目名称不能超过2个汉字", "info");
 				return;
 			}
