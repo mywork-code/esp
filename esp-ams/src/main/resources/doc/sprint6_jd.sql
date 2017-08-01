@@ -124,4 +124,4 @@ ADD COLUMN `jd_return_type`  varchar(12) DEFAULT '' COMMENT '京东退换货返�
 
 
 ALTER TABLE `t_esp_goods_base_info`
-ADD COLUMN `newCreat_date`  datetime  DEFAULT '1900-01-01 00:00:00';
+ADD COLUMN `newCreat_date`  datetime  DEFAULT '1900-01-01 00:00:00' comment '新品创建时间';
