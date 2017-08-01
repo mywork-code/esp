@@ -1,4 +1,6 @@
 $(function() {
+	$("#goodsStockWindow").window('close');
+	
 	//初始化
     $('#tablelist').datagrid({
         title : '商品列表',
@@ -147,6 +149,12 @@ $(function() {
                     	}
                     }
                 },{
+                	title : '商品来源标识',
+                	field : 'source',
+                	width : 140,
+                	align : 'center',
+                	hidden: 'hidden'
+                },{
                     title : '操作',
                     field : 'opt',
                     width : 100,
@@ -155,6 +163,8 @@ $(function() {
                     	// 授权标示
                     	var grantedAuthority=$('#grantedAuthority').val();
                     	 var content = "";
+                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodStockDetail("
+                             + row.id + ","+ row.source + ");\">查看详情</a>&nbsp;&nbsp;";
                     	 if(grantedAuthority=='permission'){
                     	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.checkOne("
                              + row.id + ");\">审核</a>&nbsp;&nbsp;";
@@ -219,6 +229,34 @@ $(function() {
 
     });
 	 
+	 $.queryGoodStockDetail = function(goodsId,source){
+		$("#goodsStockWindow").window('open');
+		$("#goodsStockList").datagrid({
+	        height:220,
+	        width:"100%",
+	        url : ctx + '/application/goods/stockinfo/pagelist?goodsId='+goodsId,
+	        idField:'id',
+	        pagination : true,
+			rownumbers : true,
+	        columns: [[
+	                {field: 'goodsSkuAttr', title: '库存规格', width: 80,align : 'center'},
+	                {field: 'goodsCostPrice', title: '成本价格', width: 80,align : 'center',
+//		                formatter:function(value,row,index){
+//		                	// 授权标示
+//		                 	var goodCostpriceIf=$('#goodCostpriceIf').val();
+//		                 	if(goodCostpriceIf=='permission'){
+//		                		return value;
+//		                	} 
+//		                		return "未授权";
+//		                }
+	                },
+	                {field: 'marketPrice', title: '市场价格', width: 80,align : 'center'},
+	                {field: 'goodsPrice', title: '商品现价', width: 80,align : 'center'},
+	                {field: 'stockTotalAmt', title: '商品总量', width: 80,align : 'center'},
+	                {field: 'stockCurrAmt', title: '当前库存量', width: 80,align : 'center'}	                
+	            ]] 
+	    });
+	 }
 
 	// 刷新
 	$ ("#flush").click (function ()
