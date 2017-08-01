@@ -17,6 +17,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
+import com.google.common.collect.Maps;
 
 /**
  * 
@@ -74,6 +75,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
      * 
      * @param domain
      *            GoodsInfoEntity
+     * @param pageSiz 
+     * @param begin 
      * @return
      */
     public List<GoodsInfoEntity> pageList(GoodsInfoEntity domain) {

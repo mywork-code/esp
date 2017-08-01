@@ -24,6 +24,7 @@
     from t_esp_category
     where status = '0'
     and parent_id = #{value}
+    order by update_date desc
 	
   </select>
   

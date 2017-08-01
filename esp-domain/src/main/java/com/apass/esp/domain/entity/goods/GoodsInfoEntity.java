@@ -184,6 +184,16 @@ public class GoodsInfoEntity {
      */
     private BigDecimal firstPrice;
     
+    /**
+     * 起始索引
+     */
+    private Integer begin;
+
+    /**
+     * 页面大小
+     */
+    private Integer pageSize;
+    
     public String getSource() {
 		return source;
 	}
@@ -558,6 +568,25 @@ public class GoodsInfoEntity {
 	public void setDelistTimeString(Date delistTime) {
 		this.delistTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(delistTime);
 	}
+
+
+    public Integer getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Integer begin) {
+        this.begin = begin;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+	
 	
 	
 }
