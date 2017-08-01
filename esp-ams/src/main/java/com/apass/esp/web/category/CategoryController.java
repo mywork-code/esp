@@ -284,9 +284,9 @@ public class CategoryController {
 
         commonValidate(dto);    
 
-        if (dto.getLevel() == 3) {
+        if (dto.getLevel() == 1) {
             if (StringUtils.isBlank(dto.getPictureUrl())) {
-                throw new BusinessException("三级必须上传图标！");
+                throw new BusinessException("一级类目必须上传图片！");
             }
         }
 

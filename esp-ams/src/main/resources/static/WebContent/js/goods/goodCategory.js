@@ -114,6 +114,7 @@ $(function() {
 	    		if(categoryLevel == 3 || categoryLevel == 1){
 	    			loadPic("editShowCategoryPicId",picUrl);
 	    		}
+	    		
 	    		$("#editCategoryName").textbox('setValue',categoryName);
 	    	}else if(item.text == '删除'){
 	    		$.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function(r) {
@@ -276,7 +277,7 @@ $(function() {
 			$.messager.alert("提示", "请输入类目名称", "info");
 			return;
 		}
-        if(categoryLevel==3 || categoryLevel==1){
+        if(categoryLevel==1){
             if (null == addCategoryFilePic || ('') == addCategoryFilePic) {
                 $.messager.alert("提示", "请先上传文件！", "info");
                 return;
@@ -309,7 +310,7 @@ $(function() {
 				return;
 			}
 		}
-		if((categoryLevel==3 || categoryLevel==1) && (picUrl==null || picUrl == '')){
+		if((categoryLevel==1) && (picUrl==null || picUrl == '')){
 			$.messager.alert("提示", "请先上传图片。", "info");
 			return;
 		}
@@ -609,19 +610,16 @@ function showCategroyName(level){
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","none");
 		$(".threeCategoryAndOneCategoryShow").css("display","inline");
-		$(".spanRemind").css("display","block");
 	}else if(level=='2'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","inline");
 		$(".threeCategory").css("display","none");
 		$(".threeCategoryAndOneCategoryShow").css("display","none");
-		$(".spanRemind").css("display","none");
 	}else if(level=='3'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","inline");
 		$(".threeCategoryAndOneCategoryShow").css("display","inline");
-		$(".spanRemind").css("display","block");
 	}
 }
 //上移下移方法
