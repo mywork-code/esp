@@ -716,14 +716,17 @@ public class ShopHomeController {
 		        goodsInfoEntity.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/"+ goodsInfoEntity.getGoodsSiftUrl());
 		        goodsInfoEntity.setSource("jd");
 		    }
-		    goodsInfoEntity.setGoogsDetail("");
-		    BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
-		    if(goodsPrice != null){
-		    	goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
-		    	goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
-		    }
-
-		    goodsList.add(goodsInfoEntity);
+			goodsInfoEntity.setGoogsDetail("");
+			try {
+				BigDecimal goodsPrice = getGoodsPrice(Long.valueOf(goodsId));
+				if (goodsPrice != null) {
+					goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
+					goodsInfoEntity.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
+				}
+				goodsList.add(goodsInfoEntity);
+			}catch (BusinessException e ){
+				continue;
+			}
 		}
 
 		return goodsList;
