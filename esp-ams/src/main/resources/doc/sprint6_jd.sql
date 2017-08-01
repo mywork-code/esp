@@ -17,7 +17,7 @@ CREATE TABLE `t_esp_work_city_jd` (
   `CREATE_DATE` datetime NOT NULL,
   `UPDATE_DATE` datetime NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=72797 DEFAULT CHARSET=utf8 COMMENT='京东工作城市表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='京东工作城市表';
 
 DROP TABLE  IF EXISTS esp.`t_esp_jd_category`;
 CREATE TABLE `t_esp_jd_category` (
