@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,18 +177,22 @@ public class JdGoodsService {
 				if(i<100*num){
 					GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
 					if(goodsInfoEntity == null){
-						LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
-						throw new BusinessException("数据库数据有误");
+//						LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+//						throw new BusinessException("数据库数据有误");
+						continue;
 					}
 					
 					idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 					idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 					
 					if((i+1)%100 == 0){
-						if(idsStock != null && idsStock.size() !=0){
+						if(!CollectionUtils.isEmpty(idsStock)){
 							goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
 						}
-						goodsService.deleteJDGoodsBatch(idsGoods);
+						if(!CollectionUtils.isEmpty(idsGoods)){
+							goodsService.deleteJDGoodsBatch(idsGoods);
+						}
+						
 						idsStock.clear();
 						idsGoods.clear();
 					}
@@ -195,18 +200,21 @@ public class JdGoodsService {
 					while(i<JdGoodsList.size()){
 						GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
 						if(goodsInfoEntity == null){
-							LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
-							throw new BusinessException("数据库数据有误");
+//							LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+//							throw new BusinessException("数据库数据有误");
+							continue;
 						}
 						
 						idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 						idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 						i++;
 					 }
-					if(idsStock != null && idsStock.size() !=0){
+					if(!CollectionUtils.isEmpty(idsStock)){
 						goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
 					}
-					goodsService.deleteJDGoodsBatch(idsGoods);
+					if(!CollectionUtils.isEmpty(idsGoods)){
+						goodsService.deleteJDGoodsBatch(idsGoods);
+					}
 				}
 				
 			}
@@ -214,17 +222,21 @@ public class JdGoodsService {
 			for(int i=0; i<JdGoodsList.size(); i++){
 				GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i).getSkuId().toString());
 				if(goodsInfoEntity == null){
-					LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
-					throw new BusinessException("数据库数据有误");
+//					LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+//					throw new BusinessException("数据库数据有误");
+					continue;
 				}
 				
 				idsStock.add(Long.valueOf(goodsInfoEntity.getId()));
 				idsGoods.add(JdGoodsList.get(i).getSkuId().toString());
 			}
-			if(idsStock != null && idsStock.size() !=0){
+			if(!CollectionUtils.isEmpty(idsStock)){
 				goodsStockInfoService.deleteJDGoodsStockBatch(idsStock);
 			}
-			goodsService.deleteJDGoodsBatch(idsGoods);
+			if(!CollectionUtils.isEmpty(idsGoods)){
+				goodsService.deleteJDGoodsBatch(idsGoods);
+			}
+			
 		}
 		
 		//修改t_esp_jd_category表中的状态

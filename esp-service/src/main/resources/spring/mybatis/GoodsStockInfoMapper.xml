@@ -39,6 +39,30 @@
 	]]>
 	</select>
 	
+	<select id="stockById" parameterType="GoodsStockInfoEntity" resultType="GoodsStockInfoEntity">
+		SELECT
+		id id,
+		goods_id goodsId,
+		goods_sku_attr goodsSkuAttr,
+		goods_price goodsPrice,
+		stock_total_amt stockTotalAmt,
+		stock_curr_amt stockCurrAmt,
+		create_user createUser,
+		update_user updateUser,
+		create_date createDate,
+		update_date updateDate,
+		market_price marketPrice,
+		goods_Cost_Price goodsCostPrice,
+		stock_Logo stockLogo,
+		goods_compare_url goodsCompareUrl,
+		goods_compare_url2 goodsCompareUrl2
+		FROM
+			t_esp_goods_stock_info
+			WHERE 1=1
+		AND id = #{id, jdbcType=BIGINT}
+		ORDER BY update_date DESC 
+	</select>
+	
 	<!-- 商品管理count -->
 	<select id="stockInfoPageCount" parameterType="GoodsStockInfoEntity" resultType="Integer">
 		<![CDATA[

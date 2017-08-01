@@ -1,6 +1,7 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -45,6 +48,8 @@ public class GoodsStockInfoController {
 
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    private GoodsService goodsService;
 
     @Value("${nfs.rootPath}")
     private String                rootPath;
@@ -83,6 +88,17 @@ public class GoodsStockInfoController {
         return respBody;
     }
 
+    
+    /**
+     * 更新数据库的更新人和更新时间
+     */
+    public void updateDB(Long goodsId){
+    	GoodsInfoEntity entity = new GoodsInfoEntity();
+    	entity.setId(goodsId);
+    	entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+    	entity.setUpdateDate(new Date());
+        goodsService.updateService(entity);
+    }
     /**
      * 新增库存
      * 
@@ -161,6 +177,10 @@ public class GoodsStockInfoController {
             entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             Integer count = goodsStockInfoService.insert(entity);
+            /**
+             * 更新base表中的数据
+             */
+            updateDB(stockInfo.getAddstockInfogoodsId());
             if (count == 1) {
                 return Response.success("success");
             } else {
@@ -223,6 +243,16 @@ public class GoodsStockInfoController {
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 
         goodsStockInfoService.updateService(entity);
+        
+        //根据库存的Id获取库存信息，然后根据goodsid获取
+        GoodsStockInfoEntity stock = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
+        /**
+         * 更新base表中的数据
+         */
+        if(null != stock && null != stock.getGoodsId()){
+        	updateDB(entity.getGoodsId());
+        }
+        
         return Response.success("success");
     }
 

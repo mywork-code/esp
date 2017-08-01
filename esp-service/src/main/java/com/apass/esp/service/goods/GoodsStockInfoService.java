@@ -2,6 +2,7 @@ package com.apass.esp.service.goods;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +81,14 @@ public class GoodsStockInfoService {
 		goodsStockDao.deleteJDGoodsStockBatch(idsStock);
 		
 	}
-
+	
+	/**
+	 * 根据库存id，查询库存详细信息
+	 * @param entity
+	 * @return
+	 */
+	public GoodsStockInfoEntity goodsStockInfoEntityByStockId(Long stockId){
+		GoodsStockInfoEntity stock = goodsStockDao.getGoodsStockInfoEntityByStockId(stockId);
+		return stock;
+	}
 }
