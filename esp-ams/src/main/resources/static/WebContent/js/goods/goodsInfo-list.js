@@ -125,25 +125,15 @@ $(function() {
                 }, 
                 {
                     title : '商品上架时间',
-                    field : 'listTime',
+                    field : 'listTimeString',
                     width : 140,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	if(value != null){
-                    		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                    	}
-                    }
+                    align : 'center'
                 }, 
                 {
                     title : '商品下架时间',
-                    field : 'delistTime',
+                    field : 'delistTimeString',
                     width : 140,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	if(value != null){
-                    		return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                    	}
-                    }
+                    align : 'center'
                 },
                 {
                     title : '创建人',
