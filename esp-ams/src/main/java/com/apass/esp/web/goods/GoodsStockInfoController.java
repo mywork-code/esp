@@ -93,11 +93,11 @@ public class GoodsStockInfoController {
      * 更新数据库的更新人和更新时间
      */
     public void updateDB(Long goodsId){
-    	GoodsInfoEntity entity = new GoodsInfoEntity();
-    	entity.setId(goodsId);
-    	entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-    	entity.setUpdateDate(new Date());
-        goodsService.updateService(entity);
+    	GoodsInfoEntity goods = new GoodsInfoEntity();
+    	goods.setId(goodsId);
+    	goods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+    	goods.setUpdateDate(new Date());
+        goodsService.updateService(goods);
     }
     /**
      * 新增库存
@@ -250,7 +250,7 @@ public class GoodsStockInfoController {
          * 更新base表中的数据
          */
         if(null != stock && null != stock.getGoodsId()){
-        	updateDB(entity.getGoodsId());
+        	updateDB(stock.getGoodsId());
         }
         
         return Response.success("success");
