@@ -48,7 +48,7 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private ServiceErrorMapper serviceErrorMapper;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    //@Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
 
         List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
