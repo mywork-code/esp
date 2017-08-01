@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,8 @@ public class ShoppingCartService {
     
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private GoodsService goodsService;
     /**
      * 添加商品到购物车
      * 
@@ -312,10 +315,14 @@ public class ShoppingCartService {
             		String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
             		goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
             		//购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-            		if(goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+            		if(goodsInfoInCart.getDelistTime().before(date) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
             			goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
             		}
+            		GoodsInfoEntity goodsInfoEntity=goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
+        			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfoEntity.getExternalId()));
+
+            		goodsInfoInCart.setGoodsSkuAttr(jdSimilarSkuInfoMap.get("jdGoodsSimilarSku")+"");
             	}else{
             		//添加新的图片地址
                     String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());

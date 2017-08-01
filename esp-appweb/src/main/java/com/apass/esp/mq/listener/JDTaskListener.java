@@ -76,6 +76,8 @@ public class JDTaskListener implements MessageListener {
                 JSONObject jsonObject = (JSONObject) o;
                 //long skuId1 = jsonObject.getLong("sku");
                 int state = jsonObject.getIntValue("state");
+
+                LOGGER.info("skuId {}, state {} 消息接收  0表示下架消息 1表示上架消息",skuId,state);
                 //下架
                 if (state == 0) {
                     //直接将商品下架
@@ -195,7 +197,9 @@ public class JDTaskListener implements MessageListener {
         if (jdApiMessage.getType() == JdMessageEnum.DELIVERED_ORDER.getType()) {//订单妥投消息
             long orderId = result.getLongValue("orderId");
             int state = result.getIntValue("state");
+            LOGGER.info("orderId {}, state {}  1表示妥投 2表示拒收",orderId,state);
             if (state == 1) {
+                LOGGER.info("orderId {}, 已投妥 ",orderId);
                 OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
                 orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
                 orderInfoEntity.setExtOrderId(String.valueOf(orderId));
@@ -210,6 +214,7 @@ public class JDTaskListener implements MessageListener {
         //拆单消息接收
         if (jdApiMessage.getType() == JdMessageEnum.SPLIT_ORDER.getType()) {
             long jdOrderId = result.getLongValue("pOrder");
+            LOGGER.info("jdOrderId {}, 拆单消息 ",jdOrderId);
             JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
             if (!jdApiResponse.isSuccess()) {
                 LOGGER.info("confirm order result {}", jdApiResponse);
@@ -217,9 +222,11 @@ public class JDTaskListener implements MessageListener {
             }
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
-
+            if (orderInfoEntity == null) {
+                return;
+            }
             if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
-                throw new RuntimeException();
+                return;
             }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);

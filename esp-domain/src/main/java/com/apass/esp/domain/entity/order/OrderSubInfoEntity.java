@@ -1,16 +1,15 @@
 package com.apass.esp.domain.entity.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 订单信息实体（所以订单相关信息实体）
@@ -319,7 +318,7 @@ public class OrderSubInfoEntity {
 	}
 
 	public Date getAuditorDate() {
-		return auditorDate;
+		return DateFormatUtil.emptyDate(auditorDate);
 	}
 
 	public void setAuditorDate(Date auditorDate) {
