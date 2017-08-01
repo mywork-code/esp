@@ -5,8 +5,6 @@ $(function() {
 	var categoryId1;
 	var categoryId2;
 	var categoryId3;
-	
-	
 	$('#jdCategoryTreeWindow').window('close');
 	
 	$('#westAttrDataGrid').datagrid({  

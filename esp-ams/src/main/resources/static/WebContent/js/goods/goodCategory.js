@@ -114,6 +114,7 @@ $(function() {
 	    		if(categoryLevel == 3 || categoryLevel == 1){
 	    			loadPic("editShowCategoryPicId",picUrl);
 	    		}
+	    		
 	    		$("#editCategoryName").textbox('setValue',categoryName);
 	    	}else if(item.text == '删除'){
 	    		$.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function(r) {
