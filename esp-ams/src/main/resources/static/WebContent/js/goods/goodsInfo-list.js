@@ -779,6 +779,7 @@ $(function() {
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		$("#editGoodsId").val(rowData.id);
+		$("#editNewCreatDate").val(rowData.newCreatDate);
 		editGoodLogoUrl = rowData.goodsLogoUrl;
 		editCategoryId1 = rowData.categoryId1;
 		editCategoryId2 = rowData.categoryId2;
@@ -901,6 +902,7 @@ $(function() {
 	 //编辑 -- 保存商品信息
 	$("#editgoodsAddinfo").click(function() {
 		var id=$("#editid").val(),
+		editNewCreatDate=$("#editNewCreatDate").val(),
 		goodsModel=$("#editgoodsModel").textbox('getValue'),
 		goodsName=$("#editgoodsName").textbox('getValue'), 
 		goodsTitle=$("#editgoodsTitle").textbox('getValue'),
@@ -971,7 +973,11 @@ $(function() {
 //			$.messager.alert("提示", "生产厂家不能为空！", "info");
 //			return;
 //		}
-		
+		var newGoodsCreatDate="1900-01-01 00:00:00";
+		var time = new Date().Format("yyyy-MM-dd hh:mm:ss");
+		if(externalsource == 'jd' && newGoodsCreatDate==editNewCreatDate){
+			editNewCreatDate=time;
+		}
 		//提交表单
 		//from重组
 		var formObj = $("<form></form>").attr("method","post");
@@ -986,7 +992,8 @@ $(function() {
 		}else{
 			formObj.append("<input type='text' name='proDate' value=''/>");
 		}
-		
+		formObj.append("<input type='text' name='newCreatDate' value='"+editNewCreatDate+"'/>");
+
 		formObj.append("<input type='text' name='keepDate' value='"+keepDate+"'/>");
 		formObj.append("<input type='text' name='supNo' value='"+supNo+"'/>");
 		formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");

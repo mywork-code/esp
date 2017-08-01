@@ -89,7 +89,8 @@
 				t.sord_no sordNo,
 				t.un_support_province unSupportProvince,
 				t.source source,
-				t.external_id externalId
+				t.external_id externalId,
+				t.newCreat_date   newCreatDate
 			FROM
 				t_esp_goods_base_info t
 			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
@@ -216,7 +217,9 @@
              sord_no,
              un_support_province,
              source,
-             external_id)
+             external_id,
+             newCreat_date
+             )
 			values (#{goodsModel, jdbcType=VARCHAR},
 		        #{goodsName, jdbcType=VARCHAR},
 	        #{categoryId1, jdbcType=BIGINT},
@@ -244,7 +247,9 @@
 	        #{sordNo, jdbcType=INTEGER},
 	        #{unSupportProvince, jdbcType=VARCHAR},
 	        #{source, jdbcType=VARCHAR},
-	        #{externalId, jdbcType=VARCHAR})
+	        #{externalId, jdbcType=VARCHAR},
+	        #{newCreatDate, jdbcType=VARCHAR}
+	        )
 	]]>
 	</insert>
 	
@@ -457,6 +462,9 @@
 			</if>
 			<if test="unSupportProvince != null">
 				un_support_province = #{unSupportProvince, jdbcType=VARCHAR},
+			</if>
+			<if test="newCreatDate != null">
+				newCreat_date = #{newCreatDate, jdbcType=VARCHAR},
 			</if>
 		</set>
 	<![CDATA[
