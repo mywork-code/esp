@@ -330,7 +330,7 @@ public class CategoryController {
         // 如果是二级分类
         if (dto.getLevel() == 2) {
             String name = dto.getCategoryName();
-            if (!ListeningRegExpUtils.isChineseOrLetterCharacter(name)) {
+            if (!ListeningRegExpUtils.isChineseCharacter(name)) {
                 throw new BusinessException("类目名称格式不正确，只能输入汉字,请重新输入");
             }
             if (!ListeningRegExpUtils.lengthValue(name, 1, 8)) {
