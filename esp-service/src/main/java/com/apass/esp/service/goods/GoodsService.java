@@ -294,6 +294,12 @@ public class GoodsService {
 			if("jd".equals(goodsInfo.getSource())){
 				goodsInfo.setMerchantName("京东");
 			}
+			if(null !=goodsInfo.getListTime()){
+				goodsInfo.setListTimeString(goodsInfo.getListTime());
+			}
+			if(null !=goodsInfo.getDelistTime()){
+				goodsInfo.setDelistTimeString(goodsInfo.getDelistTime());
+			}
 		}
 
 

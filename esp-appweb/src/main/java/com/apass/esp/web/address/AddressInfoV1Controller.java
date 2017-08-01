@@ -162,6 +162,28 @@ public class AddressInfoV1Controller {
 	
 	/**
 	 * <pre>
+	 * 设置默认地址信息
+	 * </pre>
+	 */
+	@POST
+	@Path("/setDefaultAddress")
+	public Response setDefaultAddress(Map<String, Object> paramMap) {
+		try {
+			String addressId = CommonUtils.getValue(paramMap, "addressId");
+			ValidateUtils.isNotBlank(addressId, "地址编号不能为空！");
+			addressService.setDefaultAddress(addressId);
+			return Response.success("设置默认地址信息成功!");
+		} catch (BusinessException e) {
+            logger.error(e.getErrorDesc(), e);
+            return Response.fail(e.getErrorDesc());
+        } catch (Exception e) {
+            logger.error("设置默认地址信息失败，错误原因", e);
+			return Response.fail("设置默认地址信息失败!");
+		}
+	} 
+	
+	/**
+	 * <pre>
 	 * 删除地址信息
 	 * </pre>
 	 */

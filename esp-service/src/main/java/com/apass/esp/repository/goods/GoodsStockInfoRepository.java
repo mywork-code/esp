@@ -88,4 +88,8 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	public String getGoodsSourceByGoodsStockId(Long stockId){
 		return this.getSqlSession().selectOne("getGoodsSourceByGoodsStockId", stockId);
 	}
+	
+	public GoodsStockInfoEntity getGoodsStockInfoEntityByStockId(Long stockId){
+		return this.getSqlSession().selectOne("stockById", stockId);
+	}
 }

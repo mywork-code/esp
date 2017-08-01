@@ -24,6 +24,7 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.mapper.WorkCityJdMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.google.common.collect.Maps;
 
@@ -176,6 +177,22 @@ public class AddressService {
 			LOGGER.error("更新地址信息失败===>", e);
 			throw new BusinessException("更新地址信息失败！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
 		}
+	}
+	
+	public Integer setDefaultAddress(String addressId) throws BusinessException{
+		
+		//首先根据addressId ,查询对应地址信息的详细信息 
+		ValidateUtils.isNotBlank(addressId, "地址编号不能为空!");
+		
+		AddressInfoEntity entity = addressInfoRepository.queryOneAddressByAddressId(Long.parseLong(addressId));
+		Integer count = null;
+		if(null != entity && null != entity.getUserId()){
+			//把之前默认收货地址修改为普通收货地址
+			addressInfoRepository.updateAddressStatus(entity.getUserId());
+			entity.setIsDefault("1");
+			count = addressInfoRepository.updateAddressInfo(entity);
+		}
+		return count;
 	}
 	
 	/**

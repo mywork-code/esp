@@ -3,15 +3,12 @@ package com.apass.esp.web.goods;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.apass.esp.domain.entity.common.SystemParamEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +26,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
+import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdGoods;
-import com.apass.esp.domain.entity.jd.JdGoodsBooks;
-import com.apass.esp.domain.entity.jd.JdImage;
-import com.apass.esp.domain.entity.jd.JdSellPrice;
-import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -56,7 +47,6 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
-import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
@@ -97,8 +87,6 @@ public class GoodsBaseInfoController {
     private MerchantInforService merchantInforService;
     @Autowired
     private CategoryInfoService categoryInfoService;
-    @Autowired
-    private JdProductApiClient jdProductApiClient;
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
     /**
@@ -486,7 +474,11 @@ public class GoodsBaseInfoController {
             entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             bannerInfoService.insert(entity);
-
+            /**
+             * 同时要修改goods_base中的update_user 和 update_time
+             */
+            updateDB(bannerDto.getBannerGoodsId());
+            
             return Response.success("success");
 
         } catch (Exception e) {
@@ -494,7 +486,17 @@ public class GoodsBaseInfoController {
             return Response.fail("上传商品大图失败!");
         }
     }
-
+    /**
+     * 更新数据库的更新人和更新时间
+     */
+    public void updateDB(String goodsId){
+    	GoodsInfoEntity entity = new GoodsInfoEntity();
+    	entity.setId(Long.valueOf(goodsId));
+    	entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+    	entity.setUpdateDate(new Date());
+        goodsService.updateService(entity);
+    }
+    
     /**
      * 删除banner图
      *
@@ -768,7 +770,12 @@ public class GoodsBaseInfoController {
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
-
+            
+            /**
+             * 更新goodsbase中的数据
+             */
+            updateDB(goodsId+"");
+            
             return Response.success("上传成功", url);
 
         } catch (Exception e) {

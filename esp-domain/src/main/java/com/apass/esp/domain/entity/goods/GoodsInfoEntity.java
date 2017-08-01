@@ -81,9 +81,14 @@ public class GoodsInfoEntity {
 
     /** 商品上架时间 **/
     private Date listTime;
-
+     
+    private String listTimeString;
+    
     /** 商品下架时间 **/
     private Date delistTime;
+    
+    private String delistTimeString;
+    
     /** 商品新建时间**/
     private String newCreatDate;
     
@@ -537,5 +542,22 @@ public class GoodsInfoEntity {
 	public void setNewCreatDate(Date newCreatDate) {
 		this.newCreatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(newCreatDate);
 	}
+
+	public String getListTimeString() {
+		return listTimeString;
+	}
+
+	public void setListTimeString(Date listTime) {
+		this.listTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(listTime);
+	}
+
+	public String getDelistTimeString() {
+		return delistTimeString;
+	}
+
+	public void setDelistTimeString(Date delistTime) {
+		this.delistTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(delistTime);
+	}
+	
 	
 }
