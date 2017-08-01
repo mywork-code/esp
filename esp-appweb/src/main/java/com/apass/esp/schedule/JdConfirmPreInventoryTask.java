@@ -1,18 +1,5 @@
 package com.apass.esp.schedule;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.ServiceError;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -22,6 +9,17 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * type: class
@@ -35,7 +33,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 @Component
 @Configurable
 @EnableScheduling
-@Profile("Schedule")
+//@Profile("Schedule")
 public class JdConfirmPreInventoryTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JdConfirmPreInventoryTask.class);
