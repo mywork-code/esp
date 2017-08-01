@@ -210,10 +210,10 @@ public class GoodsBaseInfoSiftController {
 			boolean checkImgType = ImageTools.checkImgType(file);// 类型
 			int size = file.getInputStream().available();// 大小
 
-			if (!(checkSiftGoodsImgSize && checkImgType)) {// 230*300; .png,.jpg
+			if (!(checkSiftGoodsImgSize && checkImgType)) {// 350*350; .png,.jpg
 				file.getInputStream().close();
-				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：264px,高：230px,格式：.jpg,.png");
-			} else if (size > 1024 * 512) {
+				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：350px,高：350px,格式：.jpg,.png");
+			} else if (size > 1024 * 500) {
 				file.getInputStream().close();
 				return Response.fail("文件不能大于500kb!");
 			}
