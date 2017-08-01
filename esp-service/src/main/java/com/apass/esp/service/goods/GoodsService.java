@@ -241,7 +241,24 @@ public class GoodsService {
         returnMap.put("minPriceFirstPayment", minPriceFistPayment);
         returnMap.put("source","notJd");
     }
-
+    //获取非京东商品的最小价格
+    public BigDecimal getMinPriceNotJdGoods(Long goodsId){
+        List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+        BigDecimal maxPrice = BigDecimal.ZERO;
+        BigDecimal minPrice = BigDecimal.ZERO;
+        if (null != goodsStockList && goodsStockList.size() > 0) {
+            minPrice = goodsStockList.get(0).getGoodsPrice();
+            for (GoodsStockInfoEntity stock : goodsStockList) {
+                if (stock.getGoodsPrice().compareTo(maxPrice) > 0) {
+                    maxPrice = stock.getGoodsPrice();
+                }
+                if (minPrice.compareTo(stock.getGoodsPrice()) > 0) {
+                    minPrice = stock.getGoodsPrice();
+                }
+            }
+        }
+    	return minPrice;
+    }
     /**
      * 获取商品详细信息(尺寸规格价格大小等)
      *
