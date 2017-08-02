@@ -73,7 +73,7 @@ public class ServiceProcessEntity {
     private String nodeName;
 
     /**备注信息**/
-    private String nodeMessage;
+    private String nodeMessage = "";
 
     /** 换货商户发货物流厂商 **/
     private String rLogisticsName;

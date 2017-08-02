@@ -13,73 +13,75 @@ import com.apass.gfb.framework.annotation.MyBatisEntity;
 /**
  * @description
  * 
- * 				商品详情(商户信息+商品基本信息+商品库存信息)
+ *              商品详情(商户信息+商品基本信息+商品库存信息)
  * 
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
  */
 @MyBatisEntity
 public class GoodsDetailInfoEntity {
-	/** 商品id */
-	private Long goodsId;
+    /** 商品id */
+    private Long goodsId;
 
-	/** 商品名称 **/
-	private String goodsName;
+    /** 商品名称 **/
+    private String goodsName;
 
-	/** 商品大标题 **/
-	private String goodsTitle;
+    /** 商品大标题 **/
+    private String goodsTitle;
 
-	/** 商品卖点 **/
-	private String goodsSellPt;
+    /** 商品卖点 **/
+    private String goodsSellPt;
 
-	/** 商品logo地址 **/
-	private String goodsLogoUrl;
+    /** 商品logo地址 **/
+    private String goodsLogoUrl;
 
-	/*** 商品库存Id */
-	private Long goodsStockId;
+    /*** 商品库存Id */
+    private Long goodsStockId;
 
-	/** 商品价格 **/
-	private BigDecimal price;
+    /** 商品价格 **/
+    private BigDecimal price;
 
-	/** 库存总量 **/
-	private Long stockTotalAmt;
+    /** 库存总量 **/
+    private Long stockTotalAmt;
 
-	/** 当前库存量 **/
-	private Long stockCurrAmt;
+    /** 当前库存量 **/
+    private Long stockCurrAmt;
 
-	/** 商品颜色 **/
-	private String goodsColor;
+    /** 商品颜色 **/
+    private String goodsColor;
 
-	/**
-	 * 商户名称
-	 */
-	private String merchantName;
+    /**
+     * 商户名称
+     */
+    private String merchantName;
 
-	private String merchantCode;
+    private String merchantCode;
 
-	/** 商品上架时间 **/
-	private Date listTime;
+    /** 商品上架时间 **/
+    private Date listTime;
 
-	/** 商品下架时间 **/
-	private Date delistTime;
-	/**
-	 * 商品状态
-	 */
-	private String status;
-	 /**
+    /** 商品下架时间 **/
+    private Date delistTime;
+
+    /**
+     * 商品状态
+     */
+    private String status;
+
+    /**
      * 不支持配送区域
      */
     private String unSupportProvince;
 
-	public String getUnSupportProvince() {
-		return unSupportProvince;
-	}
+    public String getUnSupportProvince() {
+        return unSupportProvince;
+    }
 
-	public void setUnSupportProvince(String unSupportProvince) {
-		this.unSupportProvince = unSupportProvince;
-	}
+    public void setUnSupportProvince(String unSupportProvince) {
+        this.unSupportProvince = unSupportProvince;
+    }
 
-	public String getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -88,115 +90,115 @@ public class GoodsDetailInfoEntity {
     }
 
     public String getMerchantCode() {
-		return merchantCode;
-	}
+        return merchantCode;
+    }
 
-	public void setMerchantCode(String merchantCode) {
-		this.merchantCode = merchantCode;
-	}
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
+    }
 
-	public Date getListTime() {
-		return listTime;
-	}
+    public Date getListTime() {
+        return listTime;
+    }
 
-	public void setListTime(Date listTime) {
-		this.listTime = listTime;
-	}
+    public void setListTime(Date listTime) {
+        this.listTime = listTime;
+    }
 
-	public Date getDelistTime() {
-		return delistTime;
-	}
+    public Date getDelistTime() {
+        return delistTime;
+    }
 
-	public void setDelistTime(Date delistTime) {
-		this.delistTime = delistTime;
-	}
+    public void setDelistTime(Date delistTime) {
+        this.delistTime = delistTime;
+    }
 
-	public Long getGoodsId() {
-		return goodsId;
-	}
+    public Long getGoodsId() {
+        return goodsId;
+    }
 
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
+    public void setGoodsId(Long goodsId) {
+        this.goodsId = goodsId;
+    }
 
-	public String getGoodsName() {
-		return goodsName;
-	}
+    public String getGoodsName() {
+        return goodsName;
+    }
 
-	public void setGoodsName(String goodsName) {
-		this.goodsName = goodsName;
-	}
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
 
-	public String getGoodsTitle() {
-		return goodsTitle;
-	}
+    public String getGoodsTitle() {
+        return goodsTitle;
+    }
 
-	public void setGoodsTitle(String goodsTitle) {
-		this.goodsTitle = goodsTitle;
-	}
+    public void setGoodsTitle(String goodsTitle) {
+        this.goodsTitle = goodsTitle;
+    }
 
-	public String getGoodsSellPt() {
-		return goodsSellPt;
-	}
+    public String getGoodsSellPt() {
+        return goodsSellPt;
+    }
 
-	public void setGoodsSellPt(String goodsSellPt) {
-		this.goodsSellPt = goodsSellPt;
-	}
+    public void setGoodsSellPt(String goodsSellPt) {
+        this.goodsSellPt = goodsSellPt;
+    }
 
-	public String getGoodsLogoUrl() {
-		return goodsLogoUrl;
-	}
+    public String getGoodsLogoUrl() {
+        return goodsLogoUrl;
+    }
 
-	public void setGoodsLogoUrl(String goodsLogoUrl) {
-		this.goodsLogoUrl = goodsLogoUrl;
-	}
+    public void setGoodsLogoUrl(String goodsLogoUrl) {
+        this.goodsLogoUrl = goodsLogoUrl;
+    }
 
-	public Long getGoodsStockId() {
-		return goodsStockId;
-	}
+    public Long getGoodsStockId() {
+        return goodsStockId;
+    }
 
-	public void setGoodsStockId(Long goodsStockId) {
-		this.goodsStockId = goodsStockId;
-	}
+    public void setGoodsStockId(Long goodsStockId) {
+        this.goodsStockId = goodsStockId;
+    }
 
-	public BigDecimal getPrice() {
-		return price;
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
-	public Long getStockTotalAmt() {
-		return stockTotalAmt;
-	}
+    public Long getStockTotalAmt() {
+        return stockTotalAmt;
+    }
 
-	public void setStockTotalAmt(Long stockTotalAmt) {
-		this.stockTotalAmt = stockTotalAmt;
-	}
+    public void setStockTotalAmt(Long stockTotalAmt) {
+        this.stockTotalAmt = stockTotalAmt;
+    }
 
-	public Long getStockCurrAmt() {
-		return stockCurrAmt;
-	}
+    public Long getStockCurrAmt() {
+        return stockCurrAmt;
+    }
 
-	public void setStockCurrAmt(Long stockCurrAmt) {
-		this.stockCurrAmt = stockCurrAmt;
-	}
+    public void setStockCurrAmt(Long stockCurrAmt) {
+        this.stockCurrAmt = stockCurrAmt;
+    }
 
-	public String getGoodsColor() {
-		return goodsColor;
-	}
+    public String getGoodsColor() {
+        return goodsColor;
+    }
 
-	public void setGoodsColor(String goodsColor) {
-		this.goodsColor = goodsColor;
-	}
+    public void setGoodsColor(String goodsColor) {
+        this.goodsColor = goodsColor;
+    }
 
-	public String getMerchantName() {
-		return merchantName;
-	}
+    public String getMerchantName() {
+        return merchantName;
+    }
 
-	public void setMerchantName(String merchantName) {
-		this.merchantName = merchantName;
-	}
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
 
 }

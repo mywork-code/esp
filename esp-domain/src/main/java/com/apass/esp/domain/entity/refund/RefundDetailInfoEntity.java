@@ -34,11 +34,11 @@ public class RefundDetailInfoEntity {
     /**
      * 来源
      */
-    private String source;
+    private String source = "";
     /**
      * 售后状态
      */
-    private String status;
+    private String status = "";
     
     /**
      * 商品id
