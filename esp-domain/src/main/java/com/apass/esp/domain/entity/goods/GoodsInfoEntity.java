@@ -3,6 +3,8 @@
  */
 package com.apass.esp.domain.entity.goods;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.apass.esp.domain.enums.GoodStatus;
@@ -17,6 +19,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  *
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
+ */
+/**
+ * @author xiaohai
+ *
  */
 @MyBatisEntity
 public class GoodsInfoEntity {
@@ -75,10 +81,17 @@ public class GoodsInfoEntity {
 
     /** 商品上架时间 **/
     private Date listTime;
-
+     
+    private String listTimeString;
+    
     /** 商品下架时间 **/
     private Date delistTime;
-
+    
+    private String delistTimeString;
+    
+    /** 商品新建时间**/
+    private String newCreatDate;
+    
     /** 商品生产日期 **/
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date proDate;
@@ -149,6 +162,53 @@ public class GoodsInfoEntity {
      * 不支持配送区域
      */
     private String unSupportProvince;
+    
+    /**
+     *  商品来源标识(如：jd)
+     */
+    private String source;
+    
+    /**
+     * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
+     */
+    private String externalId;
+    
+
+    /**
+     * 商品价格
+     */
+    private BigDecimal goodsPrice;
+    
+    /**
+     * 首付价
+     */
+    private BigDecimal firstPrice;
+    
+    /**
+     * 起始索引
+     */
+    private Integer begin;
+
+    /**
+     * 页面大小
+     */
+    private Integer pageSize;
+    
+    public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 
     public String getUnSupportProvince() {
 		return unSupportProvince;
@@ -468,4 +528,65 @@ public class GoodsInfoEntity {
 	public void setCategoryName3(String categoryName3) {
 		this.categoryName3 = categoryName3;
 	}
+
+	public BigDecimal getGoodsPrice() {
+		return goodsPrice;
+	}
+
+	public void setGoodsPrice(BigDecimal goodsPrice) {
+		this.goodsPrice = goodsPrice;
+	}
+
+	public BigDecimal getFirstPrice() {
+		return firstPrice;
+	}
+
+	public void setFirstPrice(BigDecimal firstPrice) {
+		this.firstPrice = firstPrice;
+	}
+
+	public String getNewCreatDate() {
+		return newCreatDate;
+	}
+
+	public void setNewCreatDate(Date newCreatDate) {
+		this.newCreatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(newCreatDate);
+	}
+
+	public String getListTimeString() {
+		return listTimeString;
+	}
+
+	public void setListTimeString(Date listTime) {
+		this.listTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(listTime);
+	}
+
+	public String getDelistTimeString() {
+		return delistTimeString;
+	}
+
+	public void setDelistTimeString(Date delistTime) {
+		this.delistTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(delistTime);
+	}
+
+
+    public Integer getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Integer begin) {
+        this.begin = begin;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+	
+	
+	
 }

@@ -34,6 +34,7 @@ import com.apass.esp.domain.entity.common.ConstantEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.TrackingmoreStatus;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.LogisticsFirstDataVo;
@@ -44,6 +45,7 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.jd.JdLogisticsService;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -71,6 +73,8 @@ public class LogisticsService {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private  JdLogisticsService jdLogisticsService;
     /**
      * 快递鸟查询物流详情
      * 
@@ -381,7 +385,11 @@ public class LogisticsService {
     
     public Map<String, Object> loadLogisticInfo(String orderId) throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
-        return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
+        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+        	return jdLogisticsService.getSignleTrackings(orderId);
+        }else{
+        	return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
+        }
     }
     
     /**
@@ -406,7 +414,11 @@ public class LogisticsService {
 					
 			try{
 				//如果查询物流出现异常的时候，就默认轨迹不存在
-				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
+				}else{
+					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
+				}
 			}catch(Exception e){
 				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
 			}

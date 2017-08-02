@@ -16,14 +16,18 @@ public interface CategoryMapper extends GenericMapper<Category, Long> {
     List<Category> selectByParentKey(@Param("parentId") Long parentId);
     
     List<Category> selectByCategoryName(@Param("categoryName") String categoryName,@Param("level") long level);
-    
+    //查询客户端首页的前3个类目信息
     List<Category> selectCategoryList(Long levelId);
-    
+    //查询客户端首页的1级类目信息
+    List<Category> selectCategoryListJd(Long levelId);
+     
     Integer getMaxSortOrder(@Param("level")Long level);
     
     void updateStatus1To0();
     
     List<Category> goodsCategoryList(Long levelId);
     List<Category> goodsCategoryListById(Long parentId);
+
+	List<Category> selectByParentId(Long parentId);
 }
 

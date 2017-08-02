@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP管理平台</title>
+    <#include "../common/component/library.html"/>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/common/swiper.min.js"></script>
+    <script type="text/javascript"
+            src="${rc.contextPath}/WebContent/js/goods/goodsPreviewProduct-view.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="${rc.contextPath}/WebContent/css/jd.css">
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        #selectWrap {
+            display: block;
+            color: #333;
+        }
+
+        #selectWrap .category {
+            margin-bottom: 5px;
+        }
+
+        #selectWrap .category .items {
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        #selectWrap .category .items a > .img1 {
+            width: 30px;
+            vertical-align: middle;
+        }
+
+        #selectWrap .list {
+
+            height: 20px;
+            line-height: 20px;
+            margin-bottom: 5px;
+        }
+
+        #selectWrap .list .Lititle, #selectWrap .category .Lititle {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: inline-block;
+            width: 80px;
+            font-size: 18px;
+        }
+
+        #selectWrap .list .items {
+            display: inline-block;
+
+            height: 30px;
+
+        }
+
+        #selectWrap .comList {
+            position: relative;
+            padding-left: 80px;
+        }
+
+        #selectWrap .comList .items a {
+            display: block;
+            color: #333;
+            padding: 0 10px;
+            border: 1px #ccc solid;
+        }
+
+        #selectWrap .comList .items a:hover, #selectWrap .comList .items.select a {
+            border: 1px solid #e3393c;
+            color: #666;
+        }
+
+        #selectWrap .comList .items.disabled a {
+            border: 1px dashed #ccc;
+            color: #888;
+        }
+
+        #Product_detailsWrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        #Product_details {
+            width: 375px;
+            height: 600px;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            -webkit-transform: translate(-50%, 0);
+            -moz-transform: translate(-50%, 0);
+            -ms-transform: translate(-50%, 0);
+            -o-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+            background-color: #fff;
+        }
+
+        #Product_details::-webkit-scrollbar { /*滚动条整体样式*/
+            width: 4px; /*高宽分别对应横竖滚动条的尺寸*/
+            height: 4px;
+        }
+
+        #Product_details::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #Product_details::-webkit-scrollbar-track { /*滚动条里面轨道*/
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        #Product_details > .nav {
+            width: 100%;
+            height: 40px;
+            text-align: center;
+            background-color: #969696;
+            line-height: 40px;
+        }
+
+        #Product_details > .nav a {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 100%;
+            line-height: 100%;
+            text-align: center;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #Product_details > .nav a.active:after {
+            content: '';
+            position: absolute;
+            bottom: 13px;
+            left: 50%;
+            display: block;
+            width: 0;
+            height: 0;
+            border: 3px #fff solid;
+            -webkit-transform: rotate(45deg) translateX(-50%);
+            -moz-transform: rotate(45deg) translateX(-50%);
+            -ms-transform: rotate(45deg) translateX(-50%);
+            -o-transform: rotate(45deg) translateX(-50%);
+            transform: rotate(45deg) translateX(-50%);
+        }
+
+        #Product_details .swiper-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        #Product_details .swiper-container .swiper-slide {
+            height: 300px;
+        }
+
+        #Product_details .swiper-container .swiper-pagination-fraction {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-weight: bolder;
+        }
+
+        #Product_details .product .title {
+            text-align: center;
+            padding: 10px 0 4px;
+            font-size: 20px;
+            color: #000;
+        }
+
+        #Product_details .product .sub {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        #Product_details .product .price {
+            text-align: center;
+            padding: 4px 0 10px;
+            color: #D60000;
+        }
+
+        #Product_details .product .chose {
+            position: relative;
+            margin: 0 16px;
+            height: 40px;
+            line-height: 40px;
+            border-top: 1px #e6e6e6 solid;
+            font-size: 14px;
+            background: url("${rc.contextPath}/WebContent/images/arrow-right.png") no-repeat right center;
+            -webkit-background-size: 10px 20px;
+            background-size: 10px 20px;
+        }
+
+        #Product_details .product .SIZE {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #fff;
+            height: 260px;
+            z-index: 99;
+            font-size: 14px;
+        }
+
+        #Product_details .product .SIZE .close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+        }
+
+        #Product_details .product .SIZE .pro_img {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            width: 56px;
+            height: 56px;
+        }
+
+        #Product_details .product .SIZE .SIZE_price {
+            padding-top: 20px;
+            color: #333;
+            text-indent: 90px;
+            line-height: 20px;
+        }
+
+        #Product_details .product .SIZE .SIZE_costPrice {
+            color: black;
+            padding-left: 100px;
+            line-height: 20px;
+        }
+
+        #Product_details .product .SIZE .SIZE_color {
+            padding-top: 10px;
+            text-indent: 90px;
+            color: #666;
+            line-height: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        #Product_details .product .SIZE .SIZE_title {
+            padding: 14px 12px 0px;
+            color: #000;
+        }
+
+        #Product_details .product .SIZE .SIZE_Chcolor {
+            padding: 0 12px;
+            line-height: 20px;
+            color: #444;
+            font-size: 14px;
+        }
+
+        #Product_details .product .SIZE .SIZE_Chcolor span {
+            margin-right: 12px;
+        }
+
+        #Product_details .product .SIZE .SIZE_Chcolor span.active {
+            color: #D60000;
+        }
+
+        #Product_details .product .SIZE .supply {
+            padding: 0 12px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        #Product_details .details {
+            display: none;
+            width: 375px;
+            height:50%;
+            background-color: #cecece;
+        }
+        #Product_details .details750 {
+            width:750px;
+            -webkit-transform: scale(0.5, 0.5) translate(-50%,-50%);
+            -moz-transform: scale(0.5, 0.5) translate(-50%,-50%);
+            -ms-transform: scale(0.5, 0.5) translate(-50%,-50%);
+            -o-transform: scale(0.5, 0.5) translate(-50%,-50%);
+            transform: scale(0.5, 0.5) translate(-50%,-50%);
+        }
+
+        #Product_details .details .top {
+            background: #fff;
+            padding: 4px 0 4px 12px;
+            margin-bottom: 8px;
+        }
+
+        #Product_details .details .top > p {
+            border-bottom: 1px #e4e4e4 solid;
+            height: 36px;
+            line-height: 36px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        #Product_details .details .top > p span {
+            margin-right: 10px;
+        }
+
+        #Product_details .details .img_content {
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        #Product_details .details img {
+            width: 100%;
+        }
+
+        #Product_details .details .img_content img {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        .product .swiper-slide img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .compare_url {
+            padding: 0 12px;
+            font-size: 14px;
+            line-height: 26px;
+        }
+
+        .compare_url a {
+            color: #b70000;
+        }
+    </style>
+</head>
+<body>
+<div class="easyui-tabs" id="tabs" style="width: 98%;">
+
+    <div id="Product_detailsWrap">
+        <input id="viewName" type="hidden" value="${view!}">
+        <div id="Product_details">
+            <p class="nav">
+                <a class="active">商品</a>
+                <a>详情</a>
+            </p>
+            <div class="page product">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <#if jdImagePathList??>
+                            <#list jdImagePathList as jdImagePath>
+                                <div class="swiper-slide"><img id='goodsBanner_2' src="${jdImagePath!}"/></div>
+                            </#list>
+                        </#if>
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination"></div>
+                    <!-- Add Arrows -->
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+                <p class="title">${goodsName!}</p>
+                <p class="price">¥ ${goodsPrice!}</p>
+
+                <div id="selectWrap" class="swiper-wrapper">
+                    <#list jdSimilarSkuList as list>
+                        <div class="category comList">
+                            <span class="Lititle">${list.saleName!}</span>
+                            <#list list.saleAttrList as list2>
+                                <div class="items"
+                                     data-sku="${list2.skuIdStr!}"
+                                     data-value="">
+                                    <a href="javascript:;" target='_self'>
+                                        <#if list2.imagePath??>
+                                            <img class="img1" src="http://img13.360buyimg.com/n5/${list2.imagePath!}"
+                                                 alt=""/>
+                                        </#if>
+                                        ${list2.saleValue!}</a>
+                                </div>
+                            </#list>
+                        </div>
+                    </#list>
+                </div>
+            </div>
+            <!-- 商品详情 -->
+            <div class="page details" style="display: none;">
+                <div class="details750">
+                    ${(googsDetail)!}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var view = $("#viewName").val();
+        if (view == "list") {
+            $(".SIZE_costPrice").hide();
+        }
+    });
+    var swiper = new Swiper('.swiper-container', {
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+        pagination: '.swiper-pagination',
+        paginationType: 'fraction'
+    });
+
+    var $prod = $("#Product_details");
+    var $prodPage = $prod.children(".page");
+    var $prodChose = $("#Product_details .chose");
+    var $prodChoseClose = $("#Product_details .close");
+    $prod.on('click', 'a', function () {
+        $(this).addClass('active').siblings().removeClass();
+        var ind = $(this).index();
+        $prodPage.hide();
+        $prodPage.eq(ind).show();
+    });
+    $prodChose.click(function () {
+        $(this).children(".SIZE").show();
+    });
+    $prodChoseClose.on('click', function () {
+        $(this).parent().hide();
+        event.stopPropagation();
+    });
+
+</script>
+
+<script>
+    var length1 = ${jdSimilarSkuListSize!};
+    var skuId = ${skuId!};
+
+    var shuID = skuId, shuIDArr = [];
+    var selectWrap = $("#selectWrap"), selectWrapList = $("#selectWrap .comList");
+    selectWrapList.children(".items").each(function(i,e){
+        var sufSkuId = $(this).attr("data-sku")
+        index = $(this).parents(".comList").index();
+        if(sufSkuId.indexOf(skuId) >= 0){
+            $(this).addClass("select");
+            shuIDArr[index] = sufSkuId;
+
+        }
+    })
+    selectWrapList.on("click", ".items", function () {
+        if ($(this).hasClass("disabled")) {//点击虚线选项，初始化数据，页面
+            shuIDArr = [];
+            selectWrapList.find(".items").removeClass("disabled").removeClass("select");
+        }
+        $(this).addClass("select").siblings(".items").removeClass("select");
+
+        var $selectItems = selectWrap.find(".select"),
+            index = $(this).parents(".comList").index(),
+            curSku = $(this).attr("data-sku");
+        shuIDArr[index] = curSku;
+
+        selectWrapList.each(function (i, e) {
+            console.log(i,index);
+            if (index==0||i != index) {
+                $.each($(e).children(".items"), function (ind, ele) {
+                    var sku = $(ele).attr("data-sku");
+                    var comSku = isHasSameSku(sku.split(","), offUndefined(shuIDArr));
+                    if (comSku.length) {
+                        shuID = comSku;
+                        console.log(shuID);
+                        $(ele).removeClass("disabled");
+                    } else {
+                        $(ele).addClass("disabled");
+                    }
+                })
+            }
+            if (offUndefined(shuIDArr).length == length1) {//全部各项都有选择
+                if(shuID==undefined){
+                    return;
+                }
+                var subtitle = "商品预览-" + shuID;
+                var parentTabs = parent.$('#tabs');
+                destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?skuId=" + shuID;
+                if (parentTabs.tabs('exists', subtitle)) {
+                    parentTabs.tabs('select', subtitle);
+                    return;
+                }
+                window.parent.$('#tabs').tabs('close','商品预览-'+skuId);
+                parentTabs.tabs('add', {
+                    title: subtitle,
+                    content: function () {
+                        var array = new Array();
+                        array.push('<iframe name="mainFrame" ');
+                        array.push('scrolling="auto" ');
+                        array.push('frameborder="0" ');
+                        array.push('src="' + destAddress + '" ');
+                        array.push(' style="width:100%;height:100%;" ');
+                        array.push(' ></iframe>');
+                        return array.join('');
+                    },
+                    closable: true
+                });
+
+            }
+        });
+    });
+
+    function isHasSameSku(arr, shuIDArr) {//返回2个数组中的相同项
+        var resArr = [], returnArr = [];
+        var firstSku = shuIDArr[0].split(",");
+        shuIDArr.forEach(function (e, i) {
+            if (i != 0) {
+                e.split(",").forEach(function (ele, ind) {
+                    if (firstSku.indexOf(ele) >= 0) {
+                        resArr.push(ele);
+                        firstSku = resArr;
+                    }
+                })
+            }
+        });
+        arr.forEach(function (e, i) {
+            if (firstSku.indexOf(e) != -1) {
+                returnArr.push(e)
+            }
+        });
+        return returnArr
+
+    }
+
+    function offUndefined(arr) {//剔除数组中的undefined项
+        var newArr = [];
+        arr.forEach(function (e) {
+            newArr.push(e)
+        });
+        return newArr
+    }
+
+    function arrToString(arr) {//数组转为，拼接字符串
+        return arr.join(",")
+    }
+</script>
+
+
+</body>
+</html>

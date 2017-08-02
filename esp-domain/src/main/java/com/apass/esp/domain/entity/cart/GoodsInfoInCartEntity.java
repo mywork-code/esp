@@ -40,7 +40,11 @@ public class GoodsInfoInCartEntity {
 
     /** 商品logo地址 **/
     private String goodsLogoUrlNew;
-
+    /** 商品来源（标记京东商品）  **/
+    private String goodsSource;
+    /** （京东商品使用）商品logo地址 **/
+    private String goodsBaseLogoUrl;
+    
     public String getGoodsLogoUrlNew() {
         return goodsLogoUrlNew;
     }
@@ -192,4 +196,20 @@ public class GoodsInfoInCartEntity {
         this.merchantCode = merchantCode;
     }
 
+	public String getGoodsSource() {
+		return goodsSource;
+	}
+
+	public void setGoodsSource(String goodsSource) {
+		this.goodsSource = goodsSource;
+	}
+
+	public String getGoodsBaseLogoUrl() {
+		return goodsBaseLogoUrl;
+	}
+
+	public void setGoodsBaseLogoUrl(String goodsBaseLogoUrl) {
+		this.goodsBaseLogoUrl = goodsBaseLogoUrl;
+	}
+    
 }

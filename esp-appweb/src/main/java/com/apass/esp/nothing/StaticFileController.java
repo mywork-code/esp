@@ -2,7 +2,10 @@ package com.apass.esp.nothing;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
+import com.apass.esp.mq.listener.JDTaskAmqpAccess;
+import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +35,15 @@ public class StaticFileController {
 
     @Value("${esp.image.uri}")
     private String appWebDomain;
+
+    @Autowired
+    private  OrderInfoRepository orderInfoRepository;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private JDTaskAmqpAccess jdTaskAmqpAccess;
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
@@ -65,4 +78,21 @@ public class StaticFileController {
 
         return Response.successResponse(t);
     }
+
+    @RequestMapping(value = "jsUtils/initGoodsSaleVolume", method = RequestMethod.POST)
+    @ResponseBody
+    public Response initGoodsSaleVolume(@RequestBody Map<String, Object> paramMap){
+        List<String> orderIdList = orderInfoRepository.initGoodsSaleVolume();
+        orderService.updateJdGoodsSaleVolume(orderIdList);
+        return Response.successResponse();
+    }
+
+    @RequestMapping("/test/mq/sendmsg")
+    @ResponseBody
+    public String testSendMsgToMq(){
+        jdTaskAmqpAccess.directSend("test");
+        return "success";
+    }
+
+
 }

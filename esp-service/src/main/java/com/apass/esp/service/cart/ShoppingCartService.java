@@ -11,6 +11,8 @@ import java.util.Map;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -56,7 +59,11 @@ public class ShoppingCartService {
 
     @Autowired
     private ImageService imageService;
-
+    
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private GoodsService goodsService;
     /**
      * 添加商品到购物车
      * 
@@ -86,31 +93,37 @@ public class ShoppingCartService {
         
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
         Date date = new Date();
-        if(null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
-                || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())){
-            LOG.info(requestId, "该商品已下架", goodsStockId);
-            throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
-        }
-        
-        //商品库存如果都为0 则提示商品下架
-        List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
-        boolean offShelfFlag = true;
-        for (GoodsStockInfoEntity goodsStock : goodsList) {
-            if (goodsStock.getStockCurrAmt()>0) {
-                offShelfFlag=false;
-                break;
-            }
-        }
-        if (offShelfFlag) {
-            LOG.info(requestId, "商品各规格数量都为0", goodsStockId);
-            throw new BusinessException("该商品已下架",BusinessErrorCode.GOODS_ALREADY_REMOV);
-        }
-        
-        
-        if(goodsStockInfo.getStockCurrAmt() < 1 || goodsStockInfo.getStockCurrAmt() < countVal){
-            LOG.info(requestId, "该商品库存不足", goodsStockId);
-            throw new BusinessException("该商品库存不足",BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
-        }
+		if ("jd".equals(goodsInfo.getSource())) {
+			if (null == goodsInfo || goodsInfo.getIsDelete().equals("00") || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				LOG.info(requestId, "该商品已下架", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+		} else {
+			if (null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
+					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				LOG.info(requestId, "该商品已下架", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+
+			// 商品库存如果都为0 则提示商品下架
+			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
+			boolean offShelfFlag = true;
+			for (GoodsStockInfoEntity goodsStock : goodsList) {
+				if (goodsStock.getStockCurrAmt() > 0) {
+					offShelfFlag = false;
+					break;
+				}
+			}
+			if (offShelfFlag) {
+				LOG.info(requestId, "商品各规格数量都为0", goodsStockId);
+				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+			}
+
+			if (goodsStockInfo.getStockCurrAmt() < 1 || goodsStockInfo.getStockCurrAmt() < countVal) {
+				LOG.info(requestId, "该商品库存不足", goodsStockId);
+				throw new BusinessException("该商品库存不足", BusinessErrorCode.GOODS_STOCK_NOTENOUGH);
+			}
+		}
         
         // 计算商品折扣后价格
         BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStockInfo.getGoodsId(), goodsStockIdVal);
@@ -183,7 +196,6 @@ public class ShoppingCartService {
      * @param count
      * @throws BusinessException
      */
-    @Deprecated
     @Transactional(rollbackFor = Exception.class)
     public void setGoodsAmount(String userId, String goodsStockId, String count) throws BusinessException {
 
@@ -195,14 +207,21 @@ public class ShoppingCartService {
             LOGGER.error("修改商品数量错误[{}]", countVal);
             throw new BusinessException("修改商品数量错误");
         }
-        
-        // 商品当前库存量
-        int stockCurrAmt = goodsStockDao.getStockCurrAmt(goodsStockIdVal).intValue();
-        
-        if(stockCurrAmt < 1 || stockCurrAmt < countVal){
-            LOGGER.error("修改商品数量,商品库存ID[{}],当前库存量[{}],库存不足", goodsStockId, stockCurrAmt);
-            throw new BusinessException("该商品库存不足");
-        }
+		// 查询商品库存信息
+		GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(Long.parseLong(goodsStockId));
+		if (null == goodsStockInfo) {
+			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_NOT_EXIST);
+		}
+		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
+		if (!("jd".equals(goodsInfo.getSource()))) {
+			// 商品当前库存量
+			int stockCurrAmt = goodsStockDao.getStockCurrAmt(goodsStockIdVal).intValue();
+
+			if (stockCurrAmt < 1 || stockCurrAmt < countVal) {
+				LOGGER.error("修改商品数量,商品库存ID[{}],当前库存量[{}],库存不足", goodsStockId, stockCurrAmt);
+				throw new BusinessException("该商品库存不足");
+			}
+		}
 
         CartInfoEntity cartDto = new CartInfoEntity();
         cartDto.setUserId(userIdVal);
@@ -292,17 +311,31 @@ public class ShoppingCartService {
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
-                //添加新的图片地址
-                String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
-                goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+            	if("jd".equals(goodsInfoInCart.getGoodsSource())){
+            		String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
+            		goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
+            		//购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+            		if(goodsInfoInCart.getDelistTime().before(date) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+            			goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+            		}
+            		GoodsInfoEntity goodsInfoEntity=goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
+        			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfoEntity.getExternalId()));
 
-                // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-                if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
-                        || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
-                        || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
-                    goodsInfoInCart.setIsDelete("00");//失效
-                    goodsInfoInCart.setIsSelect("0");//不选中
-                }
+            		goodsInfoInCart.setGoodsSkuAttr(jdSimilarSkuInfoMap.get("jdGoodsSimilarSku")+"");
+            	}else{
+            		//添加新的图片地址
+                    String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
+                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+
+                    // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+                    if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt() 
+                            || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
+                            || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+                        goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+                    }
+            	}
                 
                 // 计算商品折扣后价格
                 BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoInCart.getGoodsId(), goodsInfoInCart.getGoodsStockId());
@@ -507,7 +540,11 @@ public class ShoppingCartService {
         Map<Long, GoodsInfoInCartEntity> cartInfoMap= new HashMap<Long, GoodsInfoInCartEntity>();
         List<Long> goodsStockIdList = new LinkedList<Long>();
         for(GoodsInfoInCartEntity cartInfo : goodsInfoInCartList){
-            cartInfo.setGoodsLogoUrlNew(imageService.getImageUrl(cartInfo.getGoodsLogoUrl()));
+        	if("jd".equals(cartInfo.getGoodsSource())){
+        		cartInfo.setGoodsLogoUrlNew(imageService.getJDImageUrl(cartInfo.getGoodsBaseLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
+        	}else{
+                cartInfo.setGoodsLogoUrlNew(imageService.getImageUrl(cartInfo.getGoodsLogoUrl()));
+        	}
             cartInfoMap.put(cartInfo.getGoodsStockId(), cartInfo);
             goodsStockIdList.add(cartInfo.getGoodsStockId());
         }
@@ -532,15 +569,25 @@ public class ShoppingCartService {
             cartDto.setUserId(userIdVal);
             cartDto.setGoodsStockId(idNum.getGoodsStockId());
             
-            int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
-            if(stockCurrAmt < idNum.getGoodsNum()){
-                cartDto.setGoodsNum(stockCurrAmt);
-                synFlag = "0";
-                synMessage +=  cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
-            } else {
-                cartDto.setGoodsNum(idNum.getGoodsNum());
-            }
-            
+        	// 查询商品库存信息
+    		GoodsStockInfoEntity goodsStockInfo = goodsStockDao.select(idNum.getGoodsStockId());
+    		if (null == goodsStockInfo) {
+    			throw new BusinessException("无效的商品库存id", BusinessErrorCode.GOODS_NOT_EXIST);
+    		}
+    		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
+    		
+			if ("jd".equals(goodsInfo.getSource())) {
+				cartDto.setGoodsNum(idNum.getGoodsNum());
+			} else {
+				int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
+				if (stockCurrAmt < idNum.getGoodsNum()) {
+					cartDto.setGoodsNum(stockCurrAmt);
+					synFlag = "0";
+					synMessage += cartInfoMap.get(idNum.getGoodsStockId()).getGoodsName() + " ";
+				} else {
+					cartDto.setGoodsNum(idNum.getGoodsNum());
+				}
+			}
             int updateGoodsNumFlag =cartInfoRepository.updateGoodsNum(cartDto);
             if(updateGoodsNumFlag != 1){
                 LOG.info(requestId, "更新购物车中该商品数量失败", String.valueOf(idNum.getGoodsStockId()));
@@ -591,25 +638,31 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-        
-        List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
-        if(null == goodsInfo || goodsStockSkuList.isEmpty()){
-            LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
-            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
-        
-        // 根据市场价和折扣率 计算商品价格
-        for(GoodsStockSkuDto dto : goodsStockSkuList){
-            //添加新的图片地址
-            dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
+		if ("jd".equals(goodsInfo.getSource())) {
+			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
+			resultMap.put("goodsSource", "jd");
+			resultMap.put("JdSimilarSkuToList", jdSimilarSkuInfoMap.get("JdSimilarSkuToList"));
+			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
+			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
+		} else {
+			List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
+			if (null == goodsInfo || goodsStockSkuList.isEmpty()) {
+				LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
+				throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
 
-            dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
-        }
+			// 根据市场价和折扣率 计算商品价格
+			for (GoodsStockSkuDto dto : goodsStockSkuList) {
+				// 添加新的图片地址
+				dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
 
-        resultMap.put("goodsId", goodsInfo.getId());
-        resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
-        resultMap.put("goodsStockSkuList", goodsStockSkuList);
-        
+				dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
+			}
+			resultMap.put("goodsSource", "");
+			resultMap.put("goodsId", goodsInfo.getId());
+			resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
+			resultMap.put("goodsStockSkuList", goodsStockSkuList);
+		}
         return resultMap;
     }
 
@@ -630,24 +683,41 @@ public class ShoppingCartService {
         Long secGoodsStockIdVal = Long.valueOf(secGoodsStockId);
         int numVal = Integer.parseInt(num);
         
-        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
-        List<GoodsStockInfoEntity> goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
-        
-        if(null == goodsStockInfoList || goodsStockInfoList.isEmpty()){
-            LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
-            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
-        
+		List<GoodsStockInfoEntity> goodsStockInfoList = new ArrayList<>();
         Map<Long, GoodsStockInfoEntity> resultMap= new HashMap<Long, GoodsStockInfoEntity>();
-        for(GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList){
-            goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
-            resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
-        }
-        if(!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)){
-            LOG.info(requestId, "商品库存id与商品id不匹配", "");
-            throw new BusinessException("无效的商品id或库存id",BusinessErrorCode.GOODS_ID_ERROR);
-        }
+        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+        GoodsInfoEntity goodsInfo=new GoodsInfoEntity();
         
+        GoodsStockInfoEntity preGoodsStockEntity=goodsStockDao.select(preGoodsStockIdVal);
+        GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
+		if ("jd".equals(preGoodsStockEntity.getCreateUser()) && "jd".equals(secGoodsStockEntity.getCreateUser())) {
+			// 查询商品基本信息，返回客户端该商品单条信息
+			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
+			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
+			goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
+		} else {
+			// 查询商品基本信息，返回客户端该商品单条信息
+	        goodsInfo = goodsInfoDao.select(goodsIdVal);
+	        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
+			goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
+			if (null == goodsStockInfoList || goodsStockInfoList.isEmpty()) {
+				LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
+				throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
+			for (GoodsStockInfoEntity goodsStockInfo : goodsStockInfoList) {
+				goodsStockInfo.setStockLogoNew(imageService.getImageUrl(goodsStockInfo.getStockLogo()));
+				resultMap.put(goodsStockInfo.getGoodsStockId(), goodsStockInfo);
+			}
+			if (!resultMap.containsKey(preGoodsStockIdVal) || !resultMap.containsKey(secGoodsStockIdVal)) {
+				LOG.info(requestId, "商品库存id与商品id不匹配", "");
+				throw new BusinessException("无效的商品id或库存id", BusinessErrorCode.GOODS_ID_ERROR);
+			}
+	        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
+	        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
+	        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
+	        goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
+	        goodsInfoInCart.setDelistTime(goodsInfo.getDelistTime());
+		}
         // 2.删除购物车中原商品
         this.deleteGoodsInCart(requestId, userIdVal, new String[]{preGoodsStockId});
         
@@ -655,24 +725,19 @@ public class ShoppingCartService {
         this.addGoodsToCart(requestId, userId, secGoodsStockId, num);
         
         // 4.查询商品基本信息，返回客户端该商品单条信息
-        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
+//        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
         
         // 5.计算商品折扣后价格
         BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsIdVal, secGoodsStockIdVal);
         
-        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+//        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
         goodsInfoInCart.setUserId(userIdVal);
         goodsInfoInCart.setGoodsId(goodsIdVal);
         goodsInfoInCart.setGoodsStockId(secGoodsStockIdVal);
         goodsInfoInCart.setGoodsName(goodsInfo.getGoodsName());
         goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
-        goodsInfoInCart.setGoodsLogoUrl(resultMap.get(secGoodsStockIdVal).getStockLogo());
-        goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(resultMap.get(secGoodsStockIdVal).getStockLogo()));
         goodsInfoInCart.setGoodsNum(numVal);
-        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
-        goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
         goodsInfoInCart.setIsDelete(goodsInfo.getIsDelete());
-        goodsInfoInCart.setDelistTime(goodsInfo.getDelistTime());
         goodsInfoInCart.setIsSelect("1");
         goodsInfoInCart.setMerchantCode(goodsInfo.getMerchantCode());
         

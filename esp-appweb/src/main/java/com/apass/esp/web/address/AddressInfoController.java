@@ -83,6 +83,10 @@ public class AddressInfoController {
 			addressInfoEntity.setProvince(province);
 			addressInfoEntity.setTelephone(telephone);
 			addressInfoEntity.setUserId(Long.parseLong(userId));
+			addressInfoEntity.setProvinceCode("");
+			addressInfoEntity.setCityCode("");
+			addressInfoEntity.setDistrictCode("");
+			addressInfoEntity.setTownsCode("");
 			
 			Map<String, Object> resultMap = new HashMap<String, Object>();
 			
@@ -236,6 +240,10 @@ public class AddressInfoController {
 			addInfo.setProvince(province);
 			addInfo.setTelephone(telephone);
 			addInfo.setUserId(Long.valueOf(userId));
+			addInfo.setProvinceCode("");
+			addInfo.setCityCode("");
+			addInfo.setDistrictCode("");
+			addInfo.setTownsCode("");
             
 			List<AddressInfoEntity> addressInfoList = addressService.updateAddressInfo(addInfo);
 			resultMap.put("addressInfoList", addressInfoList);

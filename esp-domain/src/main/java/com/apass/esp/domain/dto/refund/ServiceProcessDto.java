@@ -47,21 +47,100 @@ public class ServiceProcessDto {
     /** 处理进度-处理时间 */
     /** RS01(申请退/换货)-处理时间 */
     private Date rs01Time;
+    private String rs01TimeStr;
 
     /** RS02(提交退货物流单号)-处理时间 */
     private Date rs02Time;
+    private String rs02TimeStr;
 
     /** RS03(商家确认收货)-处理时间 */
     private Date rs03Time;
+    private String rs03TimeStr;
 
     /** RS04(等待退款/商家重新发货)-处理时间 */
     private Date rs04Time;
+    private String rs04TimeStr;
 
     /** RS05(售后完成)-处理时间 */
     private Date rs05Time;
-    
+    private String rs05TimeStr;
+
     /** RS06(售后失败)-处理时间 */
     private Date rs06Time;
+    private String rs06TimeStr;
+
+    /**审核完成备注*/
+    private String memo;
+    
+    /**来源标识*/
+    private String source ;
+    
+    /**京退换货方式*/
+    private String jdReturnType;
+
+    public String getRs01TimeStr() {
+        return rs01TimeStr;
+    }
+
+    public void setRs01TimeStr(String rs01TimeStr) {
+        this.rs01TimeStr = rs01TimeStr;
+    }
+
+    public String getRs02TimeStr() {
+        return rs02TimeStr;
+    }
+
+    public void setRs02TimeStr(String rs02TimeStr) {
+        this.rs02TimeStr = rs02TimeStr;
+    }
+
+    public String getRs03TimeStr() {
+        return rs03TimeStr;
+    }
+
+    public void setRs03TimeStr(String rs03TimeStr) {
+        this.rs03TimeStr = rs03TimeStr;
+    }
+
+    public String getRs04TimeStr() {
+        return rs04TimeStr;
+    }
+
+    public void setRs04TimeStr(String rs04TimeStr) {
+        this.rs04TimeStr = rs04TimeStr;
+    }
+
+    public String getRs05TimeStr() {
+        return rs05TimeStr;
+    }
+
+    public void setRs05TimeStr(String rs05TimeStr) {
+        this.rs05TimeStr = rs05TimeStr;
+    }
+
+    public String getRs06TimeStr() {
+        return rs06TimeStr;
+    }
+
+    public void setRs06TimeStr(String rs06TimeStr) {
+        this.rs06TimeStr = rs06TimeStr;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 
     public Long getRefundId() {
         return refundId;
@@ -199,4 +278,13 @@ public class ServiceProcessDto {
         this.rs06Time = rs06Time;
     }
 
+	public String getJdReturnType() {
+		return jdReturnType;
+	}
+
+	public void setJdReturnType(String jdReturnType) {
+		this.jdReturnType = jdReturnType;
+	}
+
+    
 }

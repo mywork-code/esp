@@ -3,6 +3,7 @@ package com.apass.esp.repository.goods;
 import java.util.List;
 
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -67,7 +68,28 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
     }
 
 
-    public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
+	public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
         return this.getSqlSession().selectList("getSkuInfo", goodsId);
     }
+
+	/**
+	 * 批量删除商品库存表商品
+	 * @param idsStock
+	 * @return 
+	 */
+	public void deleteJDGoodsStockBatch(List<Long> idsStock) {
+		this.getSqlSession().delete("deleteJDGoodsStockBatch", idsStock);
+	}
+	/**
+	 * 根据商品库存id查询 商品来源信息 -
+	 * @param stockId
+	 * @return
+	 */
+	public String getGoodsSourceByGoodsStockId(Long stockId){
+		return this.getSqlSession().selectOne("getGoodsSourceByGoodsStockId", stockId);
+	}
+	
+	public GoodsStockInfoEntity getGoodsStockInfoEntityByStockId(Long stockId){
+		return this.getSqlSession().selectOne("stockById", stockId);
+	}
 }

@@ -109,7 +109,7 @@ $(function () {
         var flag= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time1);
         var flag2= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time2);
         var flag3= /^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/.test(time3);
-debugger
+
         if(!flag||time1.split(":")[0]>=24){
             $.messager.alert("<span style='color: black;'>提示</span>", "第一个时间节点输入错误，请重新输入");
             return;

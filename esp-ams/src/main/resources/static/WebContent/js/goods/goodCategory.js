@@ -110,9 +110,11 @@ $(function() {
 	    onClick:function(item){   
 	    	if(item.text == '编辑'){
 	    		$("#editCategoryDetail").window('open');
-	    		if(categoryLevel == 3){
+	    		$("#editCategoryLevel").val(categoryLevel);
+	    		if(categoryLevel == 3 || categoryLevel == 1){
 	    			loadPic("editShowCategoryPicId",picUrl);
 	    		}
+	    		
 	    		$("#editCategoryName").textbox('setValue',categoryName);
 	    	}else if(item.text == '删除'){
 	    		$.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function(r) {
@@ -225,11 +227,14 @@ $(function() {
     });
 	//添加一级类目
 	$("#addFirstCategory").click(function(){
+		picUrl == '';
 		showCategroyName('1');
 		$("#addCategoryName").textbox("clear");
 		$("#addCategoryDetail").window('open');
 		categoryLevel = 1;
 		clickPid = null;
+		$("#addCategoryFilePic").val('');
+		loadPic("addShowCategoryPicId",null);
 	});
 	//添加二级类目
 	$("#addSecondCategory").click(function(){
@@ -264,36 +269,48 @@ $(function() {
 	
 	// 确认添加 
 	$("#addConfirmGoodCategory").click(function(){
+		debugger;
 		var reg;
 		var categoryName = $("#addCategoryName").textbox('getValue');
+		var addCategoryFilePic=$('#addCategoryFilePic').val();
 		if(categoryName == null || categoryName == ''){
 			$.messager.alert("提示", "请输入类目名称", "info");
 			return;
 		}
+        if(categoryLevel==1){
+            if (null == addCategoryFilePic || ('') == addCategoryFilePic) {
+                $.messager.alert("提示", "请先上传文件！", "info");
+                return;
+            }
+		}
 		if(categoryLevel == 1){
 			reg=/^[\u2E80-\u9FFF]+$/;
-			if(categoryName.length > 5 || !regExp_pattern(categoryName,reg)){
-				$.messager.alert("提示", "类目名称不能超过5个汉字", "info");
+            if(!regExp_pattern(categoryName,reg)){
+                $.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
+                return;
+            }
+			if(categoryName.length > 2){
+				$.messager.alert("提示", "类目名称不能超过2个汉字", "info");
 				return;
 			}
 		}else if(categoryLevel == 2){
-			reg= /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+			reg= /^[\u4E00-\u9FA5]+$/;
 			var leng = getLenString(categoryName);
-			if(leng > 15){
-				$.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
-				return;
-			}
 			if(!regExp_pattern(categoryName,reg)){
-				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字或字母,请重新输入", "info");
+				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
 				return;
 			}
+            if(leng > 8){
+                $.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
+                return;
+            }
 		}else if(categoryLevel == 3){
 			if(categoryName.length > 20){
 				$.messager.alert("提示", "字数长度不能大于20", "info");
 				return;
 			}
 		}
-		if(categoryLevel==3 && (picUrl==null || picUrl == '')){
+		if((categoryLevel==1) && (picUrl==null || picUrl == '')){
 			$.messager.alert("提示", "请先上传图片。", "info");
 			return;
 		}
@@ -344,7 +361,6 @@ $(function() {
 		thisform.form("submit",{
 			url : ctx + '/categoryinfo/category/addpic',
 			success : function(data) {
-				debugger;
 				var response = JSON.parse(data);
 				ifLogout(response);
 				if(response.status=="1"){
@@ -588,18 +604,22 @@ function ifLogout(data){
 }
 //显示类目名称方法
 function showCategroyName(level){
+	$("#addCategoryLevel").val(level);
 	if(level=='1'){
 		$(".oneCategory").css("display","inline");
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","none");
+		$(".threeCategoryAndOneCategoryShow").css("display","inline");
 	}else if(level=='2'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","inline");
 		$(".threeCategory").css("display","none");
+		$(".threeCategoryAndOneCategoryShow").css("display","none");
 	}else if(level=='3'){
 		$(".oneCategory").css("display","none");
 		$(".twoCategory").css("display","none");
 		$(".threeCategory").css("display","inline");
+		$(".threeCategoryAndOneCategoryShow").css("display","inline");
 	}
 }
 //上移下移方法
@@ -700,7 +720,6 @@ function mysort(index, type, gridname,categoryLevel,categoryId,parentId) {
 /** 回显图标* */
 function loadPic (id,pictureUrl)
 {
-	debugger;
 	if (pictureUrl != null)
 	{
 		$ ("#"+id).attr ("src","");

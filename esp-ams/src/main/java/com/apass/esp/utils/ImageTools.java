@@ -142,7 +142,7 @@ public class ImageTools {
 			int width = getImgWidth(file.getInputStream());
 			int height = getImgHeight(file.getInputStream());
 
-			if (width == 264 && height == 230) {// 264px*230px
+			if (width == 350 && height == 350) {// 350px*350px
 				return true;
 			}
 		} catch (IOException e) {
@@ -171,6 +171,27 @@ public class ImageTools {
 		}
 		return false;
 	}
+	
+	/**
+	 * 文件宽度高度验证:一级类目图标
+	 * 
+	 * @param file
+	 *            图片文件
+	 * @return boolean
+	 */
+	public static boolean checkCategoryLevel1ImgSize(MultipartFile file) {
+		try {
+			int width = getImgWidth(file.getInputStream());
+			int height = getImgHeight(file.getInputStream());
+			
+			if (width == 750 && height == 248) {// 750*248
+				return true;
+			}
+		} catch (IOException e) {
+			LOGGER.info("图片宽度高度校验失败！", e);
+		}
+		return false;
+	}
 
 	/**
 	 * 文件宽度高度验证:logo图
@@ -184,7 +205,8 @@ public class ImageTools {
 			int width = getImgWidth(file.getInputStream());
 			int height = getImgHeight(file.getInputStream());
 
-			if (width == 367 && height == 268) {// 367*268
+			if (width == 350 && height == 350) {// 350*350
+
 				return true;
 			}
 		} catch (IOException e) {
@@ -205,7 +227,8 @@ public class ImageTools {
 			int width = getImgWidth(file.getInputStream());
 			int height = getImgHeight(file.getInputStream());
 
-			if (width == 750 && height == 672) {// 750*672px;大小：≤500kb
+			if (width == 750 && height == 750) {// 750*750px;大小：≤300kb
+
 				return true;
 			}
 		} catch (IOException e) {

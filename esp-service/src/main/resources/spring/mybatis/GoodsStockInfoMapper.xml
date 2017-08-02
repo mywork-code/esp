@@ -39,6 +39,30 @@
 	]]>
 	</select>
 	
+	<select id="stockById" parameterType="GoodsStockInfoEntity" resultType="GoodsStockInfoEntity">
+		SELECT
+		id id,
+		goods_id goodsId,
+		goods_sku_attr goodsSkuAttr,
+		goods_price goodsPrice,
+		stock_total_amt stockTotalAmt,
+		stock_curr_amt stockCurrAmt,
+		create_user createUser,
+		update_user updateUser,
+		create_date createDate,
+		update_date updateDate,
+		market_price marketPrice,
+		goods_Cost_Price goodsCostPrice,
+		stock_Logo stockLogo,
+		goods_compare_url goodsCompareUrl,
+		goods_compare_url2 goodsCompareUrl2
+		FROM
+			t_esp_goods_stock_info
+			WHERE 1=1
+		AND id = #{id, jdbcType=BIGINT}
+		ORDER BY update_date DESC 
+	</select>
+	
 	<!-- 商品管理count -->
 	<select id="stockInfoPageCount" parameterType="GoodsStockInfoEntity" resultType="Integer">
 		<![CDATA[
@@ -173,10 +197,10 @@
 			<if test="goodsCostPrice != null and goodsCostPrice != ''">
 			  A.goods_Cost_Price = #{goodsCostPrice, jdbcType=BIGINT},
 			</if>
-			<if test="goodsCompareUrl != null and goodsCompareUrl != ''">
+			<if test="goodsCompareUrl != null">
 			  A.goods_compare_url = #{goodsCompareUrl, jdbcType=VARCHAR},
 			</if>
-			<if test="goodsCompareUrl2 != null and goodsCompareUrl2 != ''">
+			<if test="goodsCompareUrl2 != null">
 			  A.goods_compare_url2 = #{goodsCompareUrl2, jdbcType=VARCHAR},
 			</if>
 			
@@ -188,26 +212,30 @@
 	
   	<select id="selectByPK" resultType="GoodsStockInfoEntity" parameterType="Long" >
 		SELECT
-			ID                    	 goodsStockId,
-			ID						 id,
-			GOODS_ID                 goodsId,
-			GOODS_PRICE              goodsPrice,
-			GOODS_COST_PRICE         goodsCostPrice,
-			MARKET_PRICE             marketPrice,
-			GOODS_SKU_ATTR           goodsSkuAttr,
-			STOCK_TOTAL_AMT          stockTotalAmt,
-			STOCK_CURR_AMT           stockCurrAmt,
-			STOCK_LOGO               stockLogo,
-			CREATE_USER              createUser,
-            UPDATE_USER              updateUser,
-            CREATE_DATE              createDate,
-            UPDATE_DATE              updateDate,
-			goods_compare_url 		 goodsCompareUrl,
-			goods_compare_url2 		 goodsCompareUrl2
+			t1.ID                    	 goodsStockId,
+			t1.ID						 id,
+			t1.GOODS_ID                 goodsId,
+			t1.GOODS_PRICE              goodsPrice,
+			t1.GOODS_COST_PRICE         goodsCostPrice,
+			t1.MARKET_PRICE             marketPrice,
+			t1.GOODS_SKU_ATTR           goodsSkuAttr,
+			t1.STOCK_TOTAL_AMT          stockTotalAmt,
+			t1.STOCK_CURR_AMT           stockCurrAmt,
+			t1.STOCK_LOGO               stockLogo,
+			t1.CREATE_USER              createUser,
+            t1.UPDATE_USER              updateUser,
+            t1.CREATE_DATE              createDate,
+            t1.UPDATE_DATE              updateDate,
+			t1.goods_compare_url 		 goodsCompareUrl,
+			t1.goods_compare_url2 		 goodsCompareUrl2,
+			t2.source                    source,
+			t2.goods_logo_url            goodsLogoUrl
 		FROM
-			T_ESP_GOODS_STOCK_INFO
+			T_ESP_GOODS_STOCK_INFO t1 ,
+		    T_ESP_GOODS_BASE_INFO  t2
 		WHERE
-			ID = #{value}
+		    t1.GOODS_ID=t2.ID
+		AND t1.ID = #{value}
   	</select>
   	
   	<!-- 根据商品id查询 商品所有 sku属性 信息 -->
@@ -255,4 +283,14 @@
 		WHERE ID =  #{id} and stock_curr_amt=#{stockAmt}
 	]]>
 	</update>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteJDGoodsStockBatch">
+        delete from t_esp_goods_stock_info where goods_id in (
+        <foreach collection="list" item="goodsId" separator=",">
+            #{goodsId}
+        </foreach>
+        )  
+   </delete>
+   
 </mapper> 

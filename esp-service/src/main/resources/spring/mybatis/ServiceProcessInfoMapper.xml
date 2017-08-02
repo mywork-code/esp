@@ -43,6 +43,7 @@
                 REFUND_ID,
                 NODE_NAME,
                 APPROVAL_COMMENTS,
+                NODE_MESSAGE,
                 CREATE_DATE,
                 UPDATE_DATE
             )
@@ -51,6 +52,7 @@
                 #{refundId, jdbcType=BIGINT},
                 #{nodeName, jdbcType=VARCHAR}, 
                 #{approvalComments, jdbcType=VARCHAR},
+                #{nodeMessage, jdbcType=VARCHAR},
                 CURRENT_TIMESTAMP,
                 CURRENT_TIMESTAMP
             )

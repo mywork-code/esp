@@ -94,7 +94,17 @@ public class OrderDetailInfoDto {
      * 退款状态(0.退款 1.处理中 2.退款中 3.退款成功 4.取消退款)
      */
     private String cashRefundStatus;
-    
+
+    private String source;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     public String getDelayAcceptGoodFlag() {
         return delayAcceptGoodFlag;
     }

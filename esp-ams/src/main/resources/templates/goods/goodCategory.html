@@ -34,6 +34,7 @@ textarea {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
+
 .messager-window>.panel-header-noborder.window-header>.panel-title{color:#000;}
 </style>
 <script type="text/javascript"
@@ -100,6 +101,7 @@ textarea {
 		<div>
 			<div style="width: 110%;height:35px;overflow:hidden;padding-top: 70px;">
 				<span style="width:33%;display:block;float:left;height:35px;">
+					<font color="red">*</font>
 					<font class="oneCategory">一</font>
 					<font class="twoCategory">二</font>
 					<font class="threeCategory">三</font>
@@ -110,11 +112,12 @@ textarea {
 				</span>
 				<span style="width:33%;display:block;float:left;height:35px;"></span>
 			</div>
-			<div style="width: 100%; height:35px; overflow:hidden;" class="threeCategory">
-				<span style="width: 33%; height: 35px;display:block;float:left;">添加分类图标:</span>
+			<div style="width: 100%; height:35px; overflow:hidden;" class="threeCategoryAndOneCategoryShow">
+				<span style="width: 33%; height: 35px;display:block;float:left;"><font color="red" class="oneCategory">*</font>上传类目图片:</span>
 				<span style="width: 33%; height: 35px;display:block;float:left;">	
-					<form id="editCategoryFilePicForm" method="POST" enctype="multipart/form-data">
+					<form id="editCategoryFilePicForm" method="POST" enctype="multipart/form-data" modelAttribute="categoryPicDto">
 						<input type="file" id="editCategoryFilePic" name="file" />
+						<input type="hidden" id="editCategoryLevel" name="categoryLevel"/>
 					</form>
 				</span>
 				<span style="width: 33%; height: 35px;display:block;float:left;">
@@ -123,9 +126,10 @@ textarea {
 					</a>
 				</span>
 			</div>
-			<div style="width: 100%"  class="threeCategory">
+			<div style="width: 100%"  class="threeCategoryAndOneCategoryShow">
 				<img id="editShowCategoryPicId" src="">
 			</div>
+			<div class="spanRemind">支持格式：.jpg .png 图片尺寸：750*248 图片大小：300kb</div>
 			<div style="width: 100%">
 				<a href="javascript:void(0);" id="editDisGoodCategory"
 					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
@@ -142,6 +146,7 @@ textarea {
 		<div>
 			<div style="width: 110%;height:35px;overflow:hidden;padding-top: 70px;">
 				<span style="width:33%;display:block;float:left;height:35px;">
+					<font color="red">*</font>
 					<font class="oneCategory">一</font>
 					<font class="twoCategory">二</font>
 					<font class="threeCategory">三</font>
@@ -152,11 +157,12 @@ textarea {
 				</span>
 				<span style="width:33%;display:block;float:left;height:35px;"></span>
 			</div>
-			<div style="width: 100%; height:35px; overflow:hidden;" class="threeCategory">
-				<span style="width: 33%; height: 35px;display:block;float:left;">添加分类图标:</span>
+			<div style="width: 100%; height:35px; overflow:hidden;" class="threeCategoryAndOneCategoryShow">
+				<span style="width: 33%; height: 35px;display:block;float:left;"><font color="red" class="oneCategory">*</font>上传类目图片:</span>
 				<span style="width: 33%; height: 35px;display:block;float:left;">
-					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data">
+					<form id="addCategoryFilePicForm"  method="POST" enctype="multipart/form-data" modelAttribute="categoryPicDto">
 						<input type="file" id="addCategoryFilePic" name="file" />
+						<input type="hidden" id="addCategoryLevel" name="categoryLevel"/>
 					</form>
 				</span>
 				<span style="width: 33%; height: 35px;display:block;float:left;">
@@ -165,9 +171,11 @@ textarea {
 					</a>
 				</span>
 			</div>
-			<div style="width: 100%"  class="threeCategory">
+			<div style="width: 100%"  class="threeCategoryAndOneCategoryShow">
 				<img id="addShowCategoryPicId" src="">
 			</div>
+			<div class="oneCategory">支持格式：.jpg .png 图片尺寸：750*248 图片大小：300kb</div>
+			<div class="threeCategory">支持格式：.jpg .png 图片尺寸： 100*100 图片大小：20kb</div>
 			<div style="width: 100%">
 				<a href="javascript:void(0);" id="addDisGoodCategory"
 					style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;

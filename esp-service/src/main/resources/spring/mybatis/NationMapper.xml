@@ -26,6 +26,37 @@
 			SELECT CODE FROM T_ESP_WORK_CITY WHERE PROVINCE = #{value}
 		]]>
 	</select>
-	
-	
+	<!-- 根据code查询 -->
+	<select id="selectByCode" resultType="NationEntity">
+		<![CDATA[
+				SELECT  ID                    ID,
+					CODE                  CODE,
+					PROVINCE              PROVINCE,
+					CITY                  CITY,
+					DISTRICT              DISTRICT,
+					TOWNS                 TOWNS,
+					PARENT                PARENT,
+					PREFIX                PREFIX,
+					`LEVEL`               `LEVEL`
+			FROM t_esp_work_city_jd WHERE CODE=#{value}
+		]]>
+	</select>
+		<!-- 根据code查询 -->
+	<select id="selectListByCode" resultType="NationEntity" parameterType="NationEntity">
+		<![CDATA[
+				SELECT  ID                    ID,
+						CODE                  CODE,
+						PROVINCE              PROVINCE,
+						CITY                  CITY,
+						DISTRICT              DISTRICT,
+						TOWNS                 TOWNS,
+						PARENT                PARENT,
+						PREFIX                PREFIX,
+						`LEVEL`               `LEVEL`
+			FROM    t_esp_work_city_jd   
+			WHERE   PARENT=#{code, jdbcType=VARCHAR}
+			AND     `LEVEL`=#{level, jdbcType=VARCHAR}
+			ORDER BY cast(`code` as signed integer) 
+		]]>
+	</select>
 </mapper> 

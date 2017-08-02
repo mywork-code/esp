@@ -157,8 +157,8 @@ public class GoodsBaseInfoSiftController {
 			
 			// 设为精选
 			if (goodsType.equals(GoodsType.GOOD_SIFT.getCode())) {
-				if (countSift >= 10) {
-					return Response.fail("精选商品的数量不能超过10件");
+				if (countSift >= 50) {
+					return Response.fail("精选商品的数量不能超过50件");
 				}
 				String goodsSiftUrl = goodsInfoEntity.getGoodsSiftUrl();// 精选图片的url
 				if (StringUtils.isBlank(goodsSiftUrl)) {
@@ -210,10 +210,10 @@ public class GoodsBaseInfoSiftController {
 			boolean checkImgType = ImageTools.checkImgType(file);// 类型
 			int size = file.getInputStream().available();// 大小
 
-			if (!(checkSiftGoodsImgSize && checkImgType)) {// 230*300; .png,.jpg
+			if (!(checkSiftGoodsImgSize && checkImgType)) {// 350*350; .png,.jpg
 				file.getInputStream().close();
-				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：264px,高：230px,格式：.jpg,.png");
-			} else if (size > 1024 * 512) {
+				return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：350px,高：350px,格式：.jpg,.png");
+			} else if (size > 1024 * 500) {
 				file.getInputStream().close();
 				return Response.fail("文件不能大于500kb!");
 			}

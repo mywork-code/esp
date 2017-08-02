@@ -1,7 +1,6 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -34,20 +32,20 @@ import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
+import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.domain.entity.rbac.MenusDO;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.service.RolesService;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -63,7 +61,7 @@ import com.google.common.collect.Maps;
 
 /**
  * 商品管理
- * 
+ *
  * @author zwd
  * @version 1.0
  * @date 2016年12月21日
@@ -72,38 +70,40 @@ import com.google.common.collect.Maps;
 @RequestMapping("/application/goods/management")
 public class GoodsBaseInfoController {
 
-    private static final Logger   LOGGER  = LoggerFactory.getLogger(GoodsBaseInfoController.class);
-    private static final String   SUCCESS = "SUCCESS";
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBaseInfoController.class);
+    private static final String SUCCESS = "SUCCESS";
 
     @Autowired
-    private GoodsService          goodsService;
+    private GoodsService goodsService;
     @Autowired
-    private BannerInfoService     bannerInfoService;
+    private BannerInfoService bannerInfoService;
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
-    private UsersService          usersService;
+    private UsersService usersService;
     @Autowired
-    private SystemParamService    systemParamService;
+    private SystemParamService systemParamService;
     @Autowired
-    private MerchantInforService  merchantInforService;
+    private MerchantInforService merchantInforService;
     @Autowired
-    private CategoryInfoService   categoryInfoService;
+    private CategoryInfoService categoryInfoService;
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
     /**
      * 图片服务器地址
      */
     @Value("${nfs.rootPath}")
-    private String                rootPath;
+    private String rootPath;
 
     @Value("${nfs.banner}")
-    private String                nfsBanner;
+    private String nfsBanner;
 
     @Value("${nfs.goods}")
-    private String                nfsGoods;
+    private String nfsGoods;
 
     /**
      * form表单提交 Date类型数据绑定 <功能详细描述>
-     * 
+     *
      * @param binder
      * @see [类、类#方法、类#成员]
      */
@@ -131,15 +131,16 @@ public class GoodsBaseInfoController {
                 map.put("merchantStatus", merchantStatus);
             }
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
-            
-            if(SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
-            	map.put("grantedAuthority", "permission");
-    		}
-            if(SpringSecurityUtils.hasPermission("GOODS_COSTPRICE_IF")) {
-            	map.put("goodCostpriceIf", "permission");
-    		}
+
+            if (SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
+                map.put("grantedAuthority", "permission");
+            }
+            if (SpringSecurityUtils.hasPermission("GOODS_COSTPRICE_IF")) {
+                map.put("goodCostpriceIf", "permission");
+            }
         } catch (BusinessException e) {
             LOGGER.error("查询系统参数异常", e);
         }
@@ -155,18 +156,32 @@ public class GoodsBaseInfoController {
         Map<String, Object> map = Maps.newHashMap();
         try {
             // 系统参数费率
-            map.put("goodsPriceRate", systemParamService.querySystemParamInfo().get(0).getGoodsPriceRate());
+            map.put("goodsPriceRate", 1);
+            map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
             map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
-       
-            if(SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
-            	map.put("grantedAuthority", "permission");
-    		}
+
+            if (SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
+                map.put("grantedAuthority", "permission");
+            }
         } catch (BusinessException e) {
             LOGGER.error("查询系统参数异常", e);
         }
         LOGGER.info("商品审核初始化成功...");
         return new ModelAndView("goods/goodsInfoCheck-list", map);
     }
+
+    /**
+     * 商品管理页面加载
+     */
+    @RequestMapping("/bBenPage")
+    public ModelAndView bBenPage() {
+        Map<String, Object> map = Maps.newHashMap();
+        if (SpringSecurityUtils.hasPermission("GOODS_BBEN_CHECK_BATCH")) {
+            map.put("grantedAuthority", "permission");
+        }
+        return new ModelAndView("goods/goodsInfoBben-list", map);
+    }
+
     /**
      * 商品类目列表
      */
@@ -177,10 +192,11 @@ public class GoodsBaseInfoController {
             List<CategoryDo> categoryList = categoryInfoService.goodsCategoryList();
             return Response.success("success", categoryList);
         } catch (Exception e) {
-        	  LOGGER.error("商品类目列表加载失败！", e);
+            LOGGER.error("商品类目列表加载失败！", e);
             return Response.fail("商品类目列表加载失败！");
         }
     }
+
     /**
      * 商品管理分页json
      */
@@ -200,43 +216,44 @@ public class GoodsBaseInfoController {
             String goodsType = HttpWebUtils.getValue(request, "goodsType");
             String merchantName = HttpWebUtils.getValue(request, "merchantName");
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
-            String goodsCategoryCombo=HttpWebUtils.getValue(request, "goodsCategoryCombo");
+            String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "status");
-            String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
+//            String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
-            
+
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
             goodsInfoEntity.setGoodsType(goodsType);
             goodsInfoEntity.setMerchantName(merchantName);
             goodsInfoEntity.setMerchantType(merchantType);
-            if(StringUtils.isNotBlank(goodsCategoryCombo)){
-            	String[] aArray =goodsCategoryCombo.split("_");
-            	String level=aArray[0];
-            	String id=aArray[1];
-            	if("1".equals(level)){
-            		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
-            	}else if("2".equals(level)){
-            		goodsInfoEntity.setCategoryId2(Long.valueOf(id));
-            	}else if("3".equals(level)){
-            		 goodsInfoEntity.setCategoryId3(Long.valueOf(id));
-            	}
+            if (StringUtils.isNotBlank(goodsCategoryCombo)) {
+                String[] aArray = goodsCategoryCombo.split("_");
+                String level = aArray[0];
+                String id = aArray[1];
+                if ("1".equals(level)) {
+                	if(!("-1".equals(id))){
+                		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+                	}
+                } else if ("2".equals(level)) {
+                    goodsInfoEntity.setCategoryId2(Long.valueOf(id));
+                } else if ("3".equals(level)) {
+                    goodsInfoEntity.setCategoryId3(Long.valueOf(id));
+                }
             }
-            
-            
-            if(!StringUtils.isAnyBlank(categoryId1,categoryId2,categoryId3)){
+
+
+            if (!StringUtils.isAnyBlank(categoryId1, categoryId2, categoryId3)) {
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
                 goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
             }
-            
-            
-            if (StringUtils.isBlank(isAll)) {
-                goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
-            }
+
+
+            goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
+
             PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo, pageSize);
 
             if (pagination == null) {
@@ -246,13 +263,13 @@ public class GoodsBaseInfoController {
             }
             for (int i = 0; i < pagination.getDataList().size(); i++) {
                 pagination.getDataList().get(i)
-                    .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
-                        systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
-                
-                Long categoryId=pagination.getDataList().get(i).getCategoryId3();
-                Category category=categoryInfoService.selectNameById(categoryId);
-                if(null !=category){
-                	pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
+                        .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
+                                systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+
+                Long categoryId = pagination.getDataList().get(i).getCategoryId3();
+                Category category = categoryInfoService.selectNameById(categoryId);
+                if (null != category) {
+                    pagination.getDataList().get(i).setCategoryName3(category.getCategoryName());
                 }
             }
             respBody.setTotal(pagination.getTotalCount());
@@ -267,7 +284,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品基本信息录入
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -278,11 +295,11 @@ public class GoodsBaseInfoController {
     public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
-        
+
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(), pageModel.getGoodsName(),
-            pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
-            || pageModel.getDelistTime().equals("")||pageModel.getCategoryId1().equals("")||pageModel.getCategoryId2().equals("")
-            ||pageModel.getCategoryId3().equals("")) {
+                pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
+                || pageModel.getDelistTime().equals("") || pageModel.getCategoryId1().equals("") || pageModel.getCategoryId2().equals("")
+                || pageModel.getCategoryId3().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -292,6 +309,7 @@ public class GoodsBaseInfoController {
             pageModel.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
             pageModel.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
             pageModel.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
+            pageModel.setNewCreatDate(new Date());
             goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
             LOGGER.error("商品添加失败", e);
@@ -301,7 +319,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品基本信息修改
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -310,11 +328,11 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-                       HttpServletRequest request) {
+                         HttpServletRequest request) {
         String message = SUCCESS;
-        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsModel(), pageModelEdit.getGoodsName(),
-            pageModelEdit.getGoodsTitle(), pageModelEdit.getGoodsSkuType()) || pageModelEdit.getListTime().equals("")
-            || pageModelEdit.getSordNo().equals("") || pageModelEdit.getDelistTime().equals("")) {
+        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(),
+                pageModelEdit.getGoodsTitle()) || pageModelEdit.getListTime().equals("")
+                || pageModelEdit.getDelistTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -327,11 +345,11 @@ public class GoodsBaseInfoController {
         }
         return Response.success(message);
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-            HttpServletRequest request) {
+                                 HttpServletRequest request) {
         String message = SUCCESS;
         try {
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
@@ -356,7 +374,7 @@ public class GoodsBaseInfoController {
 
     /**
      * editor商品描述html
-     * 
+     *
      * @param request
      * @return
      */
@@ -398,7 +416,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传banner图
-     * 
+     *
      * @param pageModel
      * @param model
      * @param request
@@ -422,7 +440,7 @@ public class GoodsBaseInfoController {
             MultipartFile file = bannerDto.getBannerPicFile();
             String imgType = ImageTools.getImgType(file);
             String fileName = "banner_" + bannerDto.getBannerGoodsId() + "_" + System.currentTimeMillis() + "_"
-                              + bannerDto.getBannerPicOrder() + "." + imgType;
+                    + bannerDto.getBannerPicOrder() + "." + imgType;
             String url = nfsBanner + bannerDto.getBannerGoodsId() + "/" + fileName;
 
             /**
@@ -433,8 +451,8 @@ public class GoodsBaseInfoController {
             int size = file.getInputStream().available();
 
             if (!(checkGoodBannerImgSize && checkImgType)) {
-                file.getInputStream().close();// 750*672px;大小：≤500kb;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：672px,格式：.jpg,.png", url);
+                file.getInputStream().close();// 750*750px;大小：≤300kb;.jpg .png
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：750px,格式：.jpg,.png", url);
             } else if (size > 1024 * 300) {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);
@@ -456,7 +474,11 @@ public class GoodsBaseInfoController {
             entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             bannerInfoService.insert(entity);
-
+            /**
+             * 同时要修改goods_base中的update_user 和 update_time
+             */
+            updateDB(bannerDto.getBannerGoodsId());
+            
             return Response.success("success");
 
         } catch (Exception e) {
@@ -464,10 +486,20 @@ public class GoodsBaseInfoController {
             return Response.fail("上传商品大图失败!");
         }
     }
-
+    /**
+     * 更新数据库的更新人和更新时间
+     */
+    public void updateDB(String goodsId){
+    	GoodsInfoEntity entity = new GoodsInfoEntity();
+    	entity.setId(Long.valueOf(goodsId));
+    	entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+    	entity.setUpdateDate(new Date());
+        goodsService.updateService(entity);
+    }
+    
     /**
      * 删除banner图
-     * 
+     *
      * @param request
      * @return
      */
@@ -481,7 +513,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上架
-     * 
+     *
      * @param request
      * @return
      */
@@ -489,10 +521,14 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelves")
     public String shelves(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
-        List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
-        if (bannerList.isEmpty()) {
-            return "商品大图为空，请上传！";
+        String source = HttpWebUtils.getValue(request, "source");
+        String listTime = HttpWebUtils.getValue(request, "listTime");
+        String delistTime = HttpWebUtils.getValue(request, "delistTime");
+        GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
+        if (null == goodsEntity) {
+            return "商品不存在！";
         }
+
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
         PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
@@ -500,31 +536,59 @@ public class GoodsBaseInfoController {
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
         }
-        GoodsInfoEntity goodsEntity = goodsService.selectByGoodsId(Long.valueOf(id));
-        if (null == goodsEntity) {
-            return "商品不存在！";
-        }
-        if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
-            return "商品墙图片为空，请上传！";
-        }
-        if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
-            return "商品详情不能为空,请添加！";
-        }
-        if(goodsEntity.getCategoryId1()==null || goodsEntity.getCategoryId2()==null || goodsEntity.getCategoryId3() == null){
-        	return "商品类目不能为空，请先选择类目！";
-        }
-
         GoodsInfoEntity entity = new GoodsInfoEntity();
-        entity.setId(Long.valueOf(id));
-        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
-        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-        goodsService.updateService(entity);
+        if (!"jd".equals(source)) {
+            List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
+            if (bannerList.isEmpty()) {
+                return "商品大图为空，请上传！";
+            }
+            if (StringUtils.isBlank(goodsEntity.getGoodsLogoUrl())) {
+                return "商品墙图片为空，请上传！";
+            }
+            if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
+                return "商品详情不能为空,请添加！";
+            }
+            if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
+                return "商品类目不能为空，请先选择类目！";
+            }
+        }else{
+        	if(StringUtils.isAnyBlank(listTime,delistTime)||"null".equals(listTime)||"null".equals(delistTime)){
+        		return "商品上架和下架时间不能为空，请先选择类目！";
+        	}
+        }
+        SystemParamEntity systemParamEntity = null;
+        try {
+            systemParamEntity = systemParamService.querySystemParamInfo().get(0);
+        } catch (Exception e) {
+            return "查询系统参数错误";
+        }
+        for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
+            BigDecimal goodsPrice = goodsStockInfoEntity1.getGoodsPrice();
+            BigDecimal goodsCostPrice = goodsStockInfoEntity1.getGoodsCostPrice();
+            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
+            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_HALF_UP);
+            
+            //商品售价除以成本价小于保本率
+            if (dividePoint.compareTo(dividePoint1) == -1) {
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return "该商品已进入保本率审核页面";
+            }else{
+                entity.setId(Long.valueOf(id));
+                entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                goodsService.updateService(entity);
+                return SUCCESS;
+            }
+        }
         return SUCCESS;
     }
 
     /**
      * 下架
-     * 
+     *
      * @param request
      * @return
      */
@@ -532,6 +596,7 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelf")
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
+//        String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
@@ -542,6 +607,7 @@ public class GoodsBaseInfoController {
 
     /**
      * check复核
+     *
      * @param request
      * @return
      */
@@ -573,9 +639,36 @@ public class GoodsBaseInfoController {
         return SUCCESS;
     }
 
+
+    @ResponseBody
+    @RequestMapping("/bBencheckview")
+    public String bBencheckview(HttpServletRequest request) {
+        String ids = HttpWebUtils.getValue(request, "ids");
+        String flag = HttpWebUtils.getValue(request, "flag");
+        if (!StringUtils.isBlank(ids)) {
+            ids = ids.substring(1, ids.length() - 1);
+            String[] strArr = ids.split(",");
+            if (null != strArr && strArr.length >= 0) {
+                for (int i = 0; i < strArr.length; i++) {
+                    GoodsInfoEntity entity = new GoodsInfoEntity();
+                    entity.setId(Long.valueOf(strArr[i]));
+                    if (!"reject".equals(flag)) {
+                        entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
+                    } else {
+                        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+                    }
+                    entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                    goodsService.updateService(entity);
+                }
+            }
+        }
+        return SUCCESS;
+    }
+
+
     /**
      * loadLogo
-     * 
+     *
      * @param request
      * @return
      * @throws Exception
@@ -589,17 +682,17 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传logo
-     * 
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/uplogoFile", method = RequestMethod.POST)
     public Response uplogoFile(@ModelAttribute("logoFileModel") LogoFileModel logoFileModel) {
         try {
-            Integer random = (int) (Math.random()*9000+1000);//生成4位随机数
+            Integer random = (int) (Math.random() * 9000 + 1000);//生成4位随机数
             MultipartFile file = logoFileModel.getEditGoodsLogoFile();
             String imgType = ImageTools.getImgType(file);
-            String fileName = "logo_" +random+ logoFileModel.getEditLogogoodsId() + "." + imgType;
+            String fileName = "logo_" + random + logoFileModel.getEditLogogoodsId() + "." + imgType;
             String url = nfsGoods + logoFileModel.getEditLogogoodsId() + "/" + fileName;
 
             // 图片验证
@@ -609,7 +702,7 @@ public class GoodsBaseInfoController {
 
             if (!(checkLogoImgSize && checkImgType)) {
                 file.getInputStream().close();// 367*268px;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：367px,高：268px,格式：.jpg,.png", url);
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：350px,高：350px,格式：.jpg,.png", url);
             } else if (size > 1024 * 300) {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);
@@ -637,7 +730,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 上传库存logo
-     * 
+     *
      * @return
      */
     @ResponseBody
@@ -649,9 +742,9 @@ public class GoodsBaseInfoController {
             Long stockinfoIdInForm = logoFileModel.getEditStockinfoIdInForm();
             String imgType = ImageTools.getImgType(file);
             String fileDiName = RandomUtils.getRandom(10);
-            String fileName = "stocklogo_"+ fileDiName + "." + imgType;
+            String fileName = "stocklogo_" + fileDiName + "." + imgType;
             String url = nfsGoods + goodsId + "/" + fileName;
-            
+
             // 图片验证
             boolean checkLogoImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
             boolean checkImgType = ImageTools.checkImgType(file);// 类型
@@ -669,7 +762,7 @@ public class GoodsBaseInfoController {
              * 上传文件
              */
             FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
-            
+
             //保存url到数据库
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             entity.setStockLogo(url);
@@ -677,6 +770,11 @@ public class GoodsBaseInfoController {
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
+            
+            /**
+             * 更新goodsbase中的数据
+             */
+            updateDB(goodsId+"");
             
             return Response.success("上传成功", url);
 
@@ -688,7 +786,7 @@ public class GoodsBaseInfoController {
 
     /**
      * 商品预览
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -750,5 +848,30 @@ public class GoodsBaseInfoController {
 
         return new ModelAndView("goods/goodsPreviewProduct-view", map);
     }
+
+    /**
+     * 商品预览
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/loadAllBannerPicJD")
+    public ModelAndView loadAllBannerPicJD(HttpServletRequest request) throws Exception {
+        Map<String, Object> map = Maps.newHashMap();
+        String id = HttpWebUtils.getValue(request, "id");
+        String view = HttpWebUtils.getValue(request, "view");
+        String skuId = HttpWebUtils.getValue(request, "skuId");
+        if (StringUtils.isNotEmpty(skuId)) {
+            map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
+            map.put("view", view);
+            return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+        }
+        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
+        String externalId = goodsInfo.getExternalId();// 外部商品id
+        map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
+        map.put("view", view);
+        return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+    }
+
 
 }

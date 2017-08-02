@@ -354,4 +354,5 @@ public class MerchantInfoEntity {
     public void setChannel(Integer channel) {
         this.channel = channel;
     }
+    
 }

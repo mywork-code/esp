@@ -55,6 +55,7 @@
 			create_date createDate,
 			update_date updateDate,
 			pre_delivery preDelivery,
+			source source,
 			main_order_id mainOrderId
 		FROM
 			t_esp_order_info
@@ -235,7 +236,9 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
 		FROM
 			t_esp_order_info
 			WHERE 1=1
@@ -276,7 +279,12 @@
              device_type,
              create_date,
              update_date,
-             pre_delivery
+             main_order_id,
+             pre_delivery,
+             source,
+             ext_order_id,
+             pre_stock_status,
+             ext_parent_id
             )
 			values (
 			#{userId, jdbcType=BIGINT},
@@ -302,7 +310,12 @@
 	        #{deviceType, jdbcType=VARCHAR},
 	        CURRENT_TIMESTAMP,
 	        CURRENT_TIMESTAMP,
-	        #{preDelivery,jdbcType=VARCHAR});
+	        #{mainOrderId,jdbcType=VARCHAR},
+	        #{preDelivery,jdbcType=VARCHAR},
+	        #{source,jdbcType=VARCHAR},
+	        #{extOrderId,jdbcType=VARCHAR},
+	        #{preStockStatus,jdbcType=VARCHAR},
+	        #{extParentId,jdbcType=VARCHAR});
 	</insert>
 	
 	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
@@ -402,6 +415,9 @@
 			<if test="mainOrderId != null ">
                 main_order_id = #{mainOrderId, jdbcType=VARCHAR},
             </if>
+			<if test="extParentId != null ">
+				ext_parent_id = #{extParentId, jdbcType=VARCHAR},
+			</if>
         </set>
         <![CDATA[
         WHERE ID = #{id, jdbcType=BIGINT} 
@@ -592,4 +608,174 @@
 		select sum(txn_amt) from t_apass_txn_info where txn_type = 'T02' and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
 	</select>
 	
+	<select id="initGoodsSaleVolume" resultType="java.lang.String">
+		select order_id from t_esp_order_info
+		where orderstatus in ('D02' , 'D03','D04','D05')
+	</select>
+
+
+    <!-- 获取失效和删除的预占库存的京东订单 -->
+	<select id="getInvalidAndDeleteJdOrder" resultType="OrderInfoEntity">
+	<![CDATA[
+			id id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			paystatus payStatus,
+			orderstatus STATUS,
+			create_date createDate,
+			update_date updateDate,
+			source source,
+			pre_stock_status preStockStatus,
+			ext_order_id extOrderId
+			FROM
+			t_esp_order_info
+		WHERE
+			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
+		]]>
+	</select>
+	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
+	<![CDATA[
+		SELECT
+				id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+              device_type           deviceType,
+			create_date createDate,
+			update_date updateDate,
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
+		FROM
+			t_esp_order_info
+		WHERE
+			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
+		]]>
+	</select>
+	<!-- 根据订单的编号，修改字段 -->
+	<update id="updatePreStockStatusByOrderId" parameterType="Map">
+		update
+		t_esp_order_info 
+		<set>
+		  update_date = #{updateTime},
+		 <if test="preStockStatus != null and preStockStatus != ''">
+		 	pre_stock_status = #{preStockStatus},
+		 </if>
+		 <if test="extOrderId != null and extOrderId != ''">
+		 	ext_order_id = #{extOrderId},
+		 </if>
+		</set>
+		where order_id = #{orderId}
+	</update>
+
+	<select id="getOrderInfoByExtOrderId" resultType="OrderInfoEntity">
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate,
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId,
+			pre_stock_status preStockStatus
+		FROM
+			t_esp_order_info
+		where ext_order_id = #{extOrderId}
+
+	</select>
+
+
+	<update id="updateOrderStatusByExtOrderId" parameterType="OrderInfoEntity">
+		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR},update_date = NOW(),acceptgoodsdate = NOW() WHERE ext_order_id =  #{extOrderId, jdbcType=VARCHAR}
+	</update>
+
+	<select id="getJdOrderByOrderStatus" resultType="OrderInfoEntity">
+		SELECT
+			id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			remark remark,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			logistics_sign_time logisticsSignDate,
+			merchant_code merchantCode,
+			province province,
+			city city,
+			district district,
+			address address,
+			postcode postcode,
+			name name,
+			telephone telephone,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate,
+            addressId               addressId,
+            main_order_id           mainOrderId,
+            down_payment_amount    downPaymentAmount,
+			create_date createDate,
+			update_date updateDate,
+			pre_delivery preDelivery,
+			source source,
+			ext_order_id extOrderId
+		FROM
+			t_esp_order_info
+		where
+		source = 'jd'
+		and orderstatus=#{orderStatus}
+	</select>
 </mapper>

@@ -82,7 +82,7 @@ $(function () {
                             + encodeURI(JSON.stringify(row)) + "');\">编辑</a>&nbsp;&nbsp;";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.setStatus('"
                             + row.merchantCode + "','" + row.status + "');\">设为无效</a>&nbsp;&nbsp;";
-                    }//encodeURI(JSON.stringify(row) )
+                    }
                     if (row.status == "-1") {
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.setStatus('"
                             + row.merchantCode + "','" + row.status + "');\">设为正常</a>&nbsp;&nbsp;";
@@ -100,7 +100,6 @@ $(function () {
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    //console.log(data);
                     $.validateResponse(data, function () {
                         success(data);
                     });
@@ -156,18 +155,7 @@ $(function () {
             $("#addMerchantPostcode").textbox('setValue', '');
             return;
         }
-    })
-    //商户编码校验
-//	$("input",$("#addMerchantCode").next("span")).blur(function(){  
-//		debugger;
-//		var merchantCode = $("#addMerchantCode").textbox('getValue');
-//		var pattern=new RegExp(/^.{4}$/);  //只能输入4位
-//		if(!regExp_pattern(merchantCode,pattern)){
-//			$.messager.alert("<span style='color: black;'>提示</span>","商户编码必须为4位！",'info');
-//			$("#addMerchantCode").textbox('clear');
-//			return;
-//		}
-//	})  
+    }) 
 
     //确认   添加商户信息
     $("#agreeAdd").click(function () {
@@ -176,15 +164,10 @@ $(function () {
             $.messager.alert("<span style='color: black;'>提示</span>", "商户编码不能为空！", 'info');
             return;
         }
-//		if(merchantCode.length != 4){
-//			$.messager.alert("<span style='color: black;'>提示</span>","商户编码必须为4位！",'info');
-//			return;
-//		}
 
         var merchantName = $("#addMerchantName").textbox('getValue');
 
         if (null == merchantName || ("") == merchantName) {
-            // "<span style='color: red;'>提示</span>"
             $.messager.alert("<span style='color: black;'>提示</span>", "商户名称不能为空！", 'info');
             return;
         }
@@ -244,7 +227,6 @@ $(function () {
 //        }
 
         var merchantProvince = $("#addMerchantProvince").combobox('getValue');//数据库存储对应省市的code更加灵活
-//		var merchantProvince = $("#addMerchantProvince").combobox('getText');
         var merchantCity = $("#addMerchantCity").combobox('getValue');
         var merchantArea = $("#addMerchantArea").combobox('getValue');
         var channel = $("#channelAdd").combobox('getValue');
@@ -306,8 +288,6 @@ $(function () {
 
                 console.log(data);
                 if (data.result == false && data.message == 'timeout') {
-//            		$.messager.alert("提示", "超时，请重新登录", "info");
-//            		parent.location.reload();//刷新整个页面
                     $.messager.alert("操作提示", "登录超时, 请重新登录", "info");
                     window.top.location = ctx + "/logout";
                     return false;
@@ -375,19 +355,20 @@ $(function () {
     //监听事件,当页面省(直辖市)回显时加载对应二级区域
     $("#editMerchantProvince").combobox({
         onChange: function (n, o) {
+        	debugger;
             var code = $("#editMerchantProvince").combobox('getValue');
             $('#editMerchantCity').combobox({
                 method: "get",
-                url: ctx + "/application/nation/queryNations?districtCode=" + code,
+                url: ctx + "/application/nation/v1/queryNations?districtCode=" + code,
                 valueField: 'code',
-                textField: 'name',
+                textField: 'city',
                 onChange: function (n, o) {
                     var city = $("#editMerchantCity").combobox('getValue');
                     $('#editMerchantArea').combobox({
                         method: "get",
-                        url: ctx + "/application/nation/queryAreas?districtCode=" + city,
+                        url: ctx + "/application/nation/v1/queryNations?districtCode=" + city,
                         valueField: 'code',
-                        textField: 'name',
+                        textField: 'district',
                     });
                 }
             });
@@ -444,7 +425,6 @@ $(function () {
         loadDirect("editMerchantProvince", "editMerchantCity", "editMerchantArea");
         //string转json对象
         var row3 = JSON.parse(decodeURI(row));
-        console.log(row3);
         //回显编辑弹出框中的数据
         $("#merchantId").val(row3.id);
         $("#channel").combobox('setValue', row3.channel);
@@ -459,7 +439,6 @@ $(function () {
         $("#editMerchantReturnPhone").textbox('setValue', row3.merchantReturnPhone);
         $("#editMerchantReturnPostCode").textbox('setValue', row3.merchantReturnPostCode);
         $("#editMerchantPostcode").textbox('setValue', row3.merchantPostcode);
-        //alert(row3.merchantType);
         $("#editMerchantType").combobox('setValue', row3.merchantType);
 
         if (null == row3.merchantSettlementDate || '' == row3.merchantSettlementDate) {
@@ -551,10 +530,6 @@ $(function () {
             return;
         }
 
-//		if(!/^[\u4e00-\u9fa5]{1,12}$/.test(merchantReturnName)){ 
-//	    	$.messager.alert("<span style='color: black;'>警告</span>","收货人姓名必须是中文且长度不能超过12！",'warning');
-//	    	return;
-//	    }
         if (merchantReturnName.length > 6) {
             $.messager.alert("<span style='color: black;'>警告</span>", "收货人姓名长度不能超过6！", 'warning');
             return;
@@ -581,7 +556,6 @@ $(function () {
         var channel = $("#channel").combobox('getValue');
         var merchantProvince = $("#editMerchantProvince").combobox('getValue');
         var merchantCity = $("#editMerchantCity").combobox('getValue');
-//		var merchantCity = $("#editMerchantCity").combobox('getText');
         var merchantAddress = $("#editMerchantAddress").textbox('getValue');
         var merchantPostcode = $("#editMerchantPostcode").textbox('getValue');
         var merchantType = $("#editMerchantType").combobox('getValue');
@@ -714,37 +688,34 @@ $(function () {
 
 
 function loadDirect(provinceId, cityId, areaId) {
-
     $('#' + provinceId).combobox({
         method: "get",
-        url: ctx + "/application/nation/queryNations",
+        url: ctx + "/application/nation/v1/queryNations",
         valueField: 'code',
-        textField: 'name',
+        textField: 'province',
         onSelect: function (data) {
             $('#addMerchantCode').textbox('setValue', '');
             $("#" + cityId).textbox('setValue', '');
             $("#" + areaId).combobox('loadData', {});
             $("#" + areaId).textbox('setValue', '');
             $('#' + cityId).combobox({
-                //url:ctx + "/application/merchantinfor/merchant/queryCity?provinceId="+data.code,
                 method: "get",
-                url: ctx + "/application/nation/queryNations?districtCode=" + data.code,
+                url: ctx + "/application/nation/v1/queryNations?districtCode=" + data.code,
                 valueField: 'code',
-                textField: 'name',
+                textField: 'city',
                 onSelect: function (data) {
                     $("#" + areaId).combobox('loadData', {});
                     $('#addMerchantCode').textbox('setValue', '');
                     $('#' + areaId).combobox({
                         method: "get",
-                        url: ctx + "/application/nation/queryAreas?districtCode=" + data.code,
+                        url: ctx + "/application/nation/v1/queryNations?districtCode=" + data.code,
                         valueField: 'code',
-                        textField: 'name',
+                        textField: 'district',
                         onSelect: function (data) {
                             var pId = $("#" + provinceId).textbox('getValue');
                             var cId = $("#" + cityId).textbox('getValue');
                             var aId = $("#" + areaId).textbox('getValue');
                             var channel = $('#channelAdd').combobox('getValue');
-                            //$("#" + cityId).combobox('setValue','请选择');
                             if(cId==null||cId.length==0){
                                 $.messager.alert("<span style='color: black;'>提示</span>", '请先选择所在城市！', 'error');
                                 return;
@@ -777,15 +748,12 @@ function loadDirect(provinceId, cityId, areaId) {
                                 });
 
                             }
-                            //$("#" + cityId).combobox('setValue','');
                         }
                     });
                     $("#" + areaId).combobox('setValue','请选择');
-
                 }
             });
             $("#" + areaId).combobox('setValue','请选择');
-            debugger;
             $("#" + cityId).combobox('setValue','请选择');
         }
     });

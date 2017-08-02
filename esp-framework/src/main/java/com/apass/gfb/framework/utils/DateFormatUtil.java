@@ -1,15 +1,15 @@
 package com.apass.gfb.framework.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @ClassName: DateFormatUtil
@@ -457,4 +457,26 @@ public class DateFormatUtil {
 		}
 		return false;
 	}
+
+    /**
+     * 忽略时间是1900-01-01
+     */
+    public static String emptyDateStr(String dateStr){
+        if(StringUtils.contains(dateStr,"1900")){
+            return StringUtils.EMPTY;
+        }
+        return dateStr;
+    }
+
+    public static String emptyDateStr(Date date){
+        String str = dateToString(date);
+        return emptyDateStr(str);
+    }
+    public static Date emptyDate(Date date){
+        String str = dateToString(date);
+        if(StringUtils.contains(str,"1900")){
+            return null;
+        }
+        return date;
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.service.nation.NationService;
 import com.apass.esp.web.merchant.MerchantInforController;
@@ -54,6 +55,20 @@ public class QueryAddressController {
 	}
 	
 	@ResponseBody
+	@RequestMapping("/v1/queryNations")
+	public List<WorkCityJd> queryCity(String districtCode){
+		//此时查询的是省份
+		if(StringUtils.isBlank(districtCode)){
+			districtCode = "0";
+		}
+		
+		List<WorkCityJd> jdlist = nationService.queryDistrictForAms(districtCode);
+		
+		return jdlist;
+	}
+	
+	
+	@ResponseBody
 	@RequestMapping("/queryCode")
 	public String queryCodeByName(HttpServletRequest request) {
 		String unSupportCodes = null;
@@ -67,6 +82,19 @@ public class QueryAddressController {
 			}
 		} catch (Exception e) {
 			LOGGER.error("根据省的名称查询 code出错。", e);
+		}
+		return unSupportCodes;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/v1/queryCode")
+	public String queryCodeByProvinceName(String unSupportPrivinces){
+		String unSupportCodes = null;
+		if(StringUtils.isNotBlank(unSupportPrivinces)){
+			unSupportCodes = nationService.queryCodeByProvinceName(unSupportPrivinces);
+		}
+		if(StringUtils.isNotBlank(unSupportCodes)){
+			unSupportCodes = unSupportCodes.substring(0, unSupportCodes.length()-1);
 		}
 		return unSupportCodes;
 	}

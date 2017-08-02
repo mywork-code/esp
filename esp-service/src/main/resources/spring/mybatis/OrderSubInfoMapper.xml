@@ -89,7 +89,9 @@
 		refundInfo.id refundId,
 		refundInfo.refund_type refundType,
 		orderInfo.pre_delivery preDelivery,
-		orderInfo.pre_delivery preDeliveryMsg
+		orderInfo.pre_delivery preDeliveryMsg,
+		orderInfo.source source,
+		orderInfo.ext_order_id extOrderId
 		FROM
 		t_esp_order_info orderInfo 
         left join t_esp_merchant_info merchant on 
@@ -184,7 +186,6 @@
 		send_outgoodsdate = CURRENT_TIMESTAMP
 		where order_id = #{orderId}
 	</update>
-
 	<!-- 记录总数 -->
 	<select id="querySubOrderDetailInfoByParamCount" parameterType="Map"
 		resultType="Integer">

@@ -32,9 +32,13 @@ public class GoodsStockInfoEntity {
 
     /** 商品id **/
     private Long       goodsId;
+    /**  商品来源**/
+    private String     goodsSource;
 
-    /** 商品价格 **/
+    /** 商品价格 --售价**/
     private BigDecimal goodsPrice;
+    /**  商品首付价   **/
+    private BigDecimal goodsPriceFirst;
 
     private String     goodsName;
 
@@ -52,12 +56,17 @@ public class GoodsStockInfoEntity {
 
     /** 当前库存量 **/
     private Long       stockCurrAmt;
+    
+    /** 当前库存量描述 **/
+    private String     stockCurrAmtDesc;
 
     /** 库存量 **/
     private Long       stockAmt;
 
     /** 商品规格logo url **/
     private String     stockLogo;
+    /** 商品logo**/
+    private String    goodsLogoUrl;
 
     public String getStockLogoNew() {
         return stockLogoNew;
@@ -222,6 +231,38 @@ public class GoodsStockInfoEntity {
     public void setGoodsCompareUrl2(String goodsCompareUrl2) {
         this.goodsCompareUrl2 = goodsCompareUrl2;
     }
+
+	public String getStockCurrAmtDesc() {
+		return stockCurrAmtDesc;
+	}
+
+	public void setStockCurrAmtDesc(String stockCurrAmtDesc) {
+		this.stockCurrAmtDesc = stockCurrAmtDesc;
+	}
+
+	public BigDecimal getGoodsPriceFirst() {
+		return goodsPriceFirst;
+	}
+
+	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
+		this.goodsPriceFirst = goodsPriceFirst;
+	}
+
+	public String getGoodsSource() {
+		return goodsSource;
+	}
+
+	public void setGoodsSource(String goodsSource) {
+		this.goodsSource = goodsSource;
+	}
+
+	public String getGoodsLogoUrl() {
+		return goodsLogoUrl;
+	}
+
+	public void setGoodsLogoUrl(String goodsLogoUrl) {
+		this.goodsLogoUrl = goodsLogoUrl;
+	}
     
     
 }

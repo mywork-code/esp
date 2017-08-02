@@ -184,4 +184,55 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("selectCreAmt", param);
     }
 
+    public List<String> initGoodsSaleVolume(){
+        return this.getSqlSession().selectList("initGoodsSaleVolume");
+    }
+    
+    /**
+     * 获取失效和删除的预占库存的京东订单
+     * @return
+     */
+    public List<OrderInfoEntity> getInvalidAndDeleteJdOrder() {
+    	return this.getSqlSession().selectList("getInvalidAndDeleteJdOrder");
+    }
+    
+    /**
+     * 更新订单的是否预占库存状态
+     * 
+     * @throws BusinessException
+     */
+    public void updatePreStockStatusByOrderId(Map<String, Object> map) throws BusinessException {
+        updateBymap(map, getSQL("updatePreStockStatusByOrderId"));
+    }
+
+    /**
+     * 查询预占库存 代发货的订单
+     * @return
+     */
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
+        return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus");
+    }
+
+    /**
+     * 根据京东订单号得到订单
+     * @param extOrderId
+     * @return
+     */
+    public OrderInfoEntity getOrderInfoByExtOrderId(String extOrderId){
+        return getSqlSession().selectOne("getOrderInfoByExtOrderId",extOrderId);
+    }
+
+
+    public void updateOrderStatusByExtOrderId(OrderInfoEntity entity){
+        this.getSqlSession().update("updateOrderStatusByExtOrderId",entity);
+    }
+
+    /**
+     * 根据状态获取所有京东的订单
+     * @param orderStatus
+     * @return
+     */
+    public List<OrderInfoEntity>  getJdOrderByOrderStatus(String orderStatus){
+        return getSqlSession().selectList("getJdOrderByOrderStatus",orderStatus);
+    }
 }

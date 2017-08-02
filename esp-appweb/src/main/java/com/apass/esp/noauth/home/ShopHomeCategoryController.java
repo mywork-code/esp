@@ -15,12 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -35,13 +30,10 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.web.activity.RegisterInfoController;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
-//@Controller
-//@RequestMapping("/v1/home/category")
-@Path("/v1/home/category")
+@Path("")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ShopHomeCategoryController {
@@ -61,10 +53,8 @@ public class ShopHomeCategoryController {
     /**
    	 * 1. 首页初始化 加载类目信息
    	 */
-//    @ResponseBody
-//    @RequestMapping(value="/init",method=RequestMethod.POST)
     @POST
-    @Path("/init")
+    @Path("/v1/home/category/init")
    	public Response indexCategoryInit() {
    		try {
              Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -77,13 +67,25 @@ public class ShopHomeCategoryController {
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
 		}
    	}
+    @POST
+    @Path("/v2/home/category/init")
+   	public Response indexCategoryInitJd() {
+   		try {
+             Map<String, Object> returnMap = new HashMap<String, Object>();
+             List<CategoryVo> CategoryVos=categoryInfoService.selectCategoryVoListJd(Long.parseLong(CategoryLevel.CATEGORY_LEVEL1.getCode()));
+             returnMap.put("categorys", CategoryVos);
+   		     return Response.successResponse(returnMap);
+		} catch (Exception e) {
+			logger.error("indexCategoryInit fail", e);
+			logger.error("首页类目信息加载失败");
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+		}
+   	}
     /**
    	 * 2. 查看当前类目下的全部商品列表
    	 */
-//   	@ResponseBody
-//   	@RequestMapping(value = "/loanGoodsList",method = RequestMethod.POST)
     @POST
-    @Path("/loanGoodsList")
+    @Path("/v1/home/category/loanGoodsList")
    	public Response loanGoodsListByCategoryId(@RequestBody Map<String, Object> paramMap) {
    		try {
    			 String categoryId = CommonUtils.getValue(paramMap, "categoryId");//类目Id

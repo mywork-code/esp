@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.WorkCityJdMapper">
+
+<select id="selectAllCity" resultType="String">
+	SELECT CODE FROM t_esp_work_city_jd WHERE `LEVEL`='2'
+</select>
+<select id="selectDistrict" resultType="String">
+	SELECT CODE FROM t_esp_work_city_jd WHERE `LEVEL`='3'
+</select>
+<select id="selectByCode" resultType="Integer" parameterType="java.lang.String">
+	SELECT COUNT(1) FROM t_esp_work_city_jd WHERE `CODE`= #{value}
+</select>
+
+<select id="selectByProvinceName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_work_city_jd
+    where province = #{province}
+</select>
+
+<select id="selectByNameAndParent" resultMap="BaseResultMap" parameterType="Map">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_work_city_jd
+    where (province = #{value} or city = #{value} or district = #{value} or towns = #{value}) and parent = #{parent}
+</select>
+
+<select id="selectDateByParentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_work_city_jd
+    where parent = #{code}
+</select>
+</mapper>

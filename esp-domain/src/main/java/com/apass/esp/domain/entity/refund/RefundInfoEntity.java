@@ -93,8 +93,21 @@ public class RefundInfoEntity {
     private String isAgree;
     
     private Date completionTime;
+    
+    /**
+     * 京东退换货返回方式
+     */
+    private String jdReturnType;
 
-    public Long getId() {
+    public String getJdReturnType() {
+		return jdReturnType;
+	}
+
+	public void setJdReturnType(String jdReturnType) {
+		this.jdReturnType = jdReturnType;
+	}
+
+	public Long getId() {
         return id;
     }
 

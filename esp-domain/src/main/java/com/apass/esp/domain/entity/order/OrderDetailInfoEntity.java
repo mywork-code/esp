@@ -112,6 +112,16 @@ public class OrderDetailInfoEntity {
      */
     private Long stockCurrAmt;
     
+    /**
+     * 来源（比如：京东（jd））
+     */
+    private String source;
+    
+    /**
+     * 京东商品的编号
+     */
+    private String skuId;
+    
     //商品金额
     private BigDecimal goodsAmt;
     
@@ -238,16 +248,16 @@ public class OrderDetailInfoEntity {
         this.merchantCode = merchantCode;
     }
 
-    public String getListTime() {
-        return DateFormatUtil.dateToString(listTime, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+    public Date getListTime() {
+        return listTime;
     }
 
     public void setListTime(Date listTime) {
         this.listTime = listTime;
     }
 
-    public String getDelistTime() {
-        return DateFormatUtil.dateToString(delistTime, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+    public Date getDelistTime() {
+        return delistTime;
     }
 
     public void setDelistTime(Date delistTime) {
@@ -302,6 +312,21 @@ public class OrderDetailInfoEntity {
 		this.stockCurrAmt = stockCurrAmt;
 	}
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+      this.skuId = skuId;
+  }
 	public BigDecimal getGoodsAmt() {
 		return goodsAmt;
 	}

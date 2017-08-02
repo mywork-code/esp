@@ -30,6 +30,20 @@ public class RefundDetailInfoEntity {
     
     /** 标记 **/
     private String remark;
+    
+    /**
+     * 来源
+     */
+    private String source;
+    /**
+     * 售后状态
+     */
+    private String status;
+    
+    /**
+     * 商品id
+     */
+    private Long goodsId;
 
     public Long getId() {
         return id;
@@ -79,4 +93,29 @@ public class RefundDetailInfoEntity {
         this.remark = remark;
     }
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+    
 }

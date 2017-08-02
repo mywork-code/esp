@@ -1,5 +1,15 @@
 package com.apass.esp.service.common;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.apass.esp.domain.enums.DeviceType;
+import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.gfb.framework.utils.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.common.SequenceEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
@@ -70,46 +80,47 @@ public class CommonService {
     }
 
     /**
-     * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格
-     *
+     * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格(过时)
+     * 根据是否有活动折扣率计算商品价格
+     * 
      * @param goodsStockId
      * @param goodsId
      * @return
      * @throws BusinessException
      */
     public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
-
-        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
         Date now = new Date();
-
         //  系统折扣率
-        List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
+//        List<SystemParamEntity> systemParams = systemParamDao.querySystemParamInfo();
         BigDecimal discount = BigDecimal.ZERO;
-        if (null != systemParams && systemParams.size() > 0) {
-            SystemParamEntity systemParam = systemParams.get(0);
-            discount = systemParam.getGoodsPriceRate();
-        }
+        BigDecimal price = BigDecimal.ZERO;
+//        if (null != systemParams && systemParams.size() > 0) {
+//            SystemParamEntity systemParam = systemParams.get(0);
+//            discount = systemParam.getGoodsPriceRate();
+//        }
+        GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
         ActivityInfoEntity param = new ActivityInfoEntity();
         param.setGoodsId(goodsId);
         param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
         List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-
         if (null != activitys && activitys.size() > 0 && discount.compareTo(BigDecimal.ZERO) == 0) {
             discount = activitys.get(0).getpDiscountRate();
-        }
-        //  最优折扣率
-        for (ActivityInfoEntity activity : activitys) {
-            if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
-                if (discount.compareTo(activity.getpDiscountRate()) > 0) {
-                    discount = activity.getpDiscountRate();
+            //  最优折扣率
+            for (ActivityInfoEntity activity : activitys) {
+                if (activity.getaStartDate().before(now) && activity.getaEndDate().after(now)) {
+                    if (discount.compareTo(activity.getpDiscountRate()) > 0) {
+                        discount = activity.getpDiscountRate();
+                    }
                 }
             }
+            price = goodsStock.getMarketPrice().multiply(discount);
+            return price.setScale(2, BigDecimal.ROUND_FLOOR);//接近负无穷大的舍入模式 保留两位小数
+        }else{
+            price = goodsStock.getGoodsPrice();
+            return price.setScale(2, BigDecimal.ROUND_FLOOR);//接近负无穷大的舍入模式 保留两位小数
         }
-        if(discount == null) discount = BigDecimal.ONE;
-        BigDecimal price = goodsStock.getMarketPrice().multiply(discount);
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);
-          return price.setScale(1, BigDecimal.ROUND_HALF_UP);//四舍五入保留一位小数
     }
 
     /**
@@ -180,10 +191,14 @@ public class CommonService {
         dateString = dateString.substring(dateString.length() - 4, dateString.length());
         StringBuffer sb = new StringBuffer();
         sb.append(dateString);
-        if (deviceType.equals(DeviceType.ANDROID.getName())) {
+        if(deviceType==null){
             sb.append(DeviceType.ANDROID.getCode());
         } else {
-            sb.append(DeviceType.IOS.getCode());
+            if (deviceType.equals(DeviceType.ANDROID.getName())) {
+                sb.append(DeviceType.ANDROID.getCode());
+            } else {
+                sb.append(DeviceType.IOS.getCode());
+            }
         }
         sb.append(RandomUtils.getRandomNum(4));
         String mechantStr = String.valueOf(merchantId);
