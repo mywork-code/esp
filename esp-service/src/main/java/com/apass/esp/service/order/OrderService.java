@@ -733,6 +733,7 @@ public class OrderService {
             orderInfo.setGoodsNum(orderGoodsNum);
             orderInfo.setPreDelivery("N");
             orderInfo.setExtOrderId("");
+            orderInfo.setPreStockStatus("");
             Integer successStatus = orderInfoRepository.insert(orderInfo);
             if (successStatus < 1) {
                 LOG.info(requestId, "生成订单", "订单表数据插入失败");

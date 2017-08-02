@@ -836,6 +836,11 @@ public class OrderInfoController {
       addressInfoDto.setDistrict(district);
       addressInfoDto.setAddress(address);
       addressInfoDto.setIsDefault("0");
+      addressInfoDto.setProvinceCode("");
+      addressInfoDto.setCityCode("");
+      addressInfoDto.setDistrictCode("");
+      addressInfoDto.setTownsCode("");
+      addressInfoDto.setTowns("");
 
       orderService.modifyOrderAddress(requestId, orderId, userId, addressInfoDto);
 

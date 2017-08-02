@@ -3,12 +3,16 @@ package com.apass.esp.domain.entity.order;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.ctc.wstx.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 商品订单详情实体
+ * 
  * @author wyy
  *
  */
@@ -17,115 +21,134 @@ public class OrderDetailInfoEntity {
     /**
      * id
      */
-    private Long       id;
+    private Long id;
+
     /**
      * 订单id
      */
-    private String     orderId;
+    private String orderId;
+
     /**
      * 商品id
      */
-    private Long       goodsId;
+    private Long goodsId;
+
     /**
      * 商品库存Id
      */
-    private Long       goodsStockId;
+    private Long goodsStockId;
+
     /**
      * 商品价格
      */
     private BigDecimal goodsPrice;
+
     /**
      * 商品数量
      */
-    private Long       goodsNum;
+    private Long goodsNum;
+
     /**
      * 商品标题
      */
-    private String     goodsTitle;
+    private String goodsTitle;
+
     /**
      * 商品类目编码
      */
-    private String     categoryCode;
+    private String categoryCode;
+
     /**
      * 商品名称
      */
-    private String     goodsName;
+    private String goodsName;
+
     /**
      * 商品卖点
      */
-    private String     goodsSellPt;
+    private String goodsSellPt;
+
     /**
      * 商品类型
      */
-    private String     goodsType;
+    private String goodsType;
+
     /**
      * 商品logo地址
      */
-    private String     goodsLogoUrl;
+    private String goodsLogoUrl;
+
     /**
      * 商户code
      */
-    private String     merchantCode;
+    private String merchantCode;
+
     /**
      * 商品上架时间
      */
-    private Date       listTime;
+    private Date listTime;
+
     /**
      * 下架时间
      */
-    private Date       delistTime;
+    private Date delistTime;
 
     /**
      * 商品生产日期
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date       proDate;
+    private Date proDate;
+
     /**
      * 商品有效期多少月
      */
-    private String     keepDate;
+    private String keepDate;
+
     /**
      * 生产厂家
      */
-    private String     supNo;
+    private String supNo;
+
     /**
      * 创建日期
      */
-    private Date       createDate;
+    private Date createDate;
+
     /**
      * 更新日期
      */
-    private Date       updateDate;
+    private Date updateDate;
+
     /**
      * 商品型号
      */
-    private String     goodsModel;
+    private String goodsModel;
 
     /**
      * 商品规格
      */
-    private String     goodsSkuAttr;
-    
+    private String goodsSkuAttr;
+
     /**
      * 
      * 商品的当前库存
      */
     private Long stockCurrAmt;
-    
+
     /**
      * 来源（比如：京东（jd））
      */
     private String source;
-    
+
     /**
      * 京东商品的编号
      */
     private String skuId;
-    
-    //商品金额
+
+    // 商品金额
     private BigDecimal goodsAmt;
-    
-    //退款金额
+
+    // 退款金额
     private BigDecimal refundAmt;
 
     public String getGoodsModel() {
@@ -304,43 +327,56 @@ public class OrderDetailInfoEntity {
         this.updateDate = updateDate;
     }
 
-	public Long getStockCurrAmt() {
-		return stockCurrAmt;
-	}
+    public Long getStockCurrAmt() {
+        return stockCurrAmt;
+    }
 
-	public void setStockCurrAmt(Long stockCurrAmt) {
-		this.stockCurrAmt = stockCurrAmt;
-	}
+    public void setStockCurrAmt(Long stockCurrAmt) {
+        this.stockCurrAmt = stockCurrAmt;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public String getSource() {
+        if(StringUtils.isBlank(source)){
+            return "";
+        }
+        return source;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setSource(String source) {
+        if(StringUtils.isBlank(source)){
+            this.source = "";
+        }
+        this.source = source;
+    }
 
-	public String getSkuId() {
-		return skuId;
-	}
+    public String getSkuId() {
+        if(StringUtils.isBlank(skuId)){
+            return "";
+        }
+        return skuId;
+    }
 
-	public void setSkuId(String skuId) {
-      this.skuId = skuId;
-  }
-	public BigDecimal getGoodsAmt() {
-		return goodsAmt;
-	}
+    public void setSkuId(String skuId) {
+        if(StringUtils.isBlank(skuId)){
+            this.skuId = "";
+        }
+        this.skuId = skuId;
+    }
 
-	public void setGoodsAmt(BigDecimal goodsAmt) {
-		this.goodsAmt = goodsAmt;
-	}
+    public BigDecimal getGoodsAmt() {
+        return goodsAmt;
+    }
 
-	public BigDecimal getRefundAmt() {
-		return refundAmt;
-	}
+    public void setGoodsAmt(BigDecimal goodsAmt) {
+        this.goodsAmt = goodsAmt;
+    }
 
-	public void setRefundAmt(BigDecimal refundAmt) {
-		this.refundAmt = refundAmt;
-	}
+    public BigDecimal getRefundAmt() {
+        return refundAmt;
+    }
+
+    public void setRefundAmt(BigDecimal refundAmt) {
+        this.refundAmt = refundAmt;
+    }
 
 }

@@ -97,7 +97,7 @@ public class RefundInfoEntity {
     /**
      * 京东退换货返回方式
      */
-    private String jdReturnType;
+    private String jdReturnType = "";
 
     public String getJdReturnType() {
 		return jdReturnType;

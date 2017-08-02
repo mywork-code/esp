@@ -181,17 +181,17 @@ public class OrderInfoEntity {
     /**
      * 订单来源(如：京东（jd）)
      */
-    private String source;
+    private String source = "";
 
     /**
      * 订单的外部Id（如：京东 订单Id）
      */
-    private String extOrderId;
+    private String extOrderId = "";
 
     /**
      * 预占库存状态
      */
-    private String preStockStatus;
+    private String preStockStatus = "";
 
     /**
      * 是否为京东父Id

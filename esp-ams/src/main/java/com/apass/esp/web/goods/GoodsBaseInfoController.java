@@ -327,6 +327,8 @@ public class GoodsBaseInfoController {
             pageModel.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
             pageModel.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
             pageModel.setNewCreatDate(new Date());
+            pageModel.setSource("");
+            pageModel.setExternalId("");
             goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
             LOGGER.error("商品添加失败", e);

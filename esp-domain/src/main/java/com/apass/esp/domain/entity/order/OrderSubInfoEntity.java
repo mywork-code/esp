@@ -101,12 +101,12 @@ public class OrderSubInfoEntity {
     /**
      * 订单来源(如：京东（jd）)
      */
-    private String source;
+    private String source = "";
     
     /**
      * 订单的外部Id（如：京东 订单Id）
      */
-    private String extOrderId;
+    private String extOrderId = "";
 
     public String getRefundType() {
         return refundType;

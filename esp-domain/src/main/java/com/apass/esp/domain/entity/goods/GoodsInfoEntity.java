@@ -28,9 +28,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class GoodsInfoEntity {
 
     private Long id;
+
     // 等同id避免IOS关键字
     private Long goodId;
-    //商品编号
+
+    // 商品编号
     private String goodsCode;
 
     public String getGoodsCode() {
@@ -53,7 +55,7 @@ public class GoodsInfoEntity {
     /** 商品卖点 **/
     private String goodsSellPt;
 
-    /** 商品类型 -1：正常，精选**/
+    /** 商品类型 -1：正常，精选 **/
     private String goodsType;
 
     /** 商品类型描述 **/
@@ -62,13 +64,13 @@ public class GoodsInfoEntity {
     /** 商品logo地址 **/
     private String goodsLogoUrl;
 
-    /** 商品logo地址 (新)**/
+    /** 商品logo地址 (新) **/
     private String goodsLogoUrlNew;
 
     /** 精选商品地址 **/
     private String goodsSiftUrl;
 
-    /** 精选商品地址 (新)**/
+    /** 精选商品地址 (新) **/
     private String goodsSiftUrlNew;
 
     public String getGoodsSiftUrlNew() {
@@ -81,17 +83,17 @@ public class GoodsInfoEntity {
 
     /** 商品上架时间 **/
     private Date listTime;
-     
+
     private String listTimeString;
-    
+
     /** 商品下架时间 **/
     private Date delistTime;
-    
+
     private String delistTimeString;
-    
-    /** 商品新建时间**/
-    private String newCreatDate;
-    
+
+    /** 商品新建时间 **/
+    private String newCreatDate = "1900-01-01 00:00:00";
+
     /** 商品生产日期 **/
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date proDate;
@@ -131,59 +133,64 @@ public class GoodsInfoEntity {
 
     /** 商品详情 **/
     private String googsDetail;
+
     /**
      * 商品最小单元分类-规格类型(颜色，尺寸等)
      */
     private String goodsSkuType;
+
     /**
      * 商品型号
      */
     private String goodsModel;
+
     /**
      * 商户名称
      */
     private String merchantName;
+
     /**
      * 商户类型（个人、企业）
      */
     private String merchantType;
-    /**商品一级分类*/
+
+    /** 商品一级分类 */
     private Long categoryId1;
-    
-    /**商品二级分类*/
+
+    /** 商品二级分类 */
     private Long categoryId2;
-    
-    /**商品三级分类*/
+
+    /** 商品三级分类 */
     private Long categoryId3;
-    /**商品三级分类名称*/
+
+    /** 商品三级分类名称 */
     private String categoryName3;
-    
+
     /**
      * 不支持配送区域
      */
     private String unSupportProvince;
-    
+
     /**
-     *  商品来源标识(如：jd)
+     * 商品来源标识(如：jd)
      */
-    private String source;
-    
+    private String source = "";
+
     /**
      * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
      */
-    private String externalId;
-    
+    private String externalId = "";
 
     /**
      * 商品价格
      */
     private BigDecimal goodsPrice;
-    
+
     /**
      * 首付价
      */
     private BigDecimal firstPrice;
-    
+
     /**
      * 起始索引
      */
@@ -193,32 +200,32 @@ public class GoodsInfoEntity {
      * 页面大小
      */
     private Integer pageSize;
-    
+
     public String getSource() {
-		return source;
-	}
+        return source;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public String getExternalId() {
-		return externalId;
-	}
+    public String getExternalId() {
+        return externalId;
+    }
 
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 
     public String getUnSupportProvince() {
-		return unSupportProvince;
-	}
+        return unSupportProvince;
+    }
 
-	public void setUnSupportProvince(String unSupportProvince) {
-		this.unSupportProvince = unSupportProvince;
-	}
+    public void setUnSupportProvince(String unSupportProvince) {
+        this.unSupportProvince = unSupportProvince;
+    }
 
-	public Long getCategoryId1() {
+    public Long getCategoryId1() {
         return categoryId1;
     }
 
@@ -521,54 +528,53 @@ public class GoodsInfoEntity {
         this.merchantType = merchantType;
     }
 
-	public String getCategoryName3() {
-		return categoryName3;
-	}
+    public String getCategoryName3() {
+        return categoryName3;
+    }
 
-	public void setCategoryName3(String categoryName3) {
-		this.categoryName3 = categoryName3;
-	}
+    public void setCategoryName3(String categoryName3) {
+        this.categoryName3 = categoryName3;
+    }
 
-	public BigDecimal getGoodsPrice() {
-		return goodsPrice;
-	}
+    public BigDecimal getGoodsPrice() {
+        return goodsPrice;
+    }
 
-	public void setGoodsPrice(BigDecimal goodsPrice) {
-		this.goodsPrice = goodsPrice;
-	}
+    public void setGoodsPrice(BigDecimal goodsPrice) {
+        this.goodsPrice = goodsPrice;
+    }
 
-	public BigDecimal getFirstPrice() {
-		return firstPrice;
-	}
+    public BigDecimal getFirstPrice() {
+        return firstPrice;
+    }
 
-	public void setFirstPrice(BigDecimal firstPrice) {
-		this.firstPrice = firstPrice;
-	}
+    public void setFirstPrice(BigDecimal firstPrice) {
+        this.firstPrice = firstPrice;
+    }
 
-	public String getNewCreatDate() {
-		return newCreatDate;
-	}
+    public String getNewCreatDate() {
+        return newCreatDate;
+    }
 
-	public void setNewCreatDate(Date newCreatDate) {
-		this.newCreatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(newCreatDate);
-	}
+    public void setNewCreatDate(Date newCreatDate) {
+        this.newCreatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(newCreatDate);
+    }
 
-	public String getListTimeString() {
-		return listTimeString;
-	}
+    public String getListTimeString() {
+        return listTimeString;
+    }
 
-	public void setListTimeString(Date listTime) {
-		this.listTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(listTime);
-	}
+    public void setListTimeString(Date listTime) {
+        this.listTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(listTime);
+    }
 
-	public String getDelistTimeString() {
-		return delistTimeString;
-	}
+    public String getDelistTimeString() {
+        return delistTimeString;
+    }
 
-	public void setDelistTimeString(Date delistTime) {
-		this.delistTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(delistTime);
-	}
-
+    public void setDelistTimeString(Date delistTime) {
+        this.delistTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(delistTime);
+    }
 
     public Integer getBegin() {
         return begin;
@@ -586,7 +592,4 @@ public class GoodsInfoEntity {
         this.pageSize = pageSize;
     }
 
-	
-	
-	
 }
