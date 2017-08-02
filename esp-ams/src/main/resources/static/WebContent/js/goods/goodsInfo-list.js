@@ -769,7 +769,12 @@ $(function() {
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		$("#editGoodsId").val(rowData.id);
-		$("#editNewCreatDate").val(rowData.newCreatDate);
+		//防止数据库中商品新建时间为空
+		if(null==rowData.newCreatDate || ''==rowData.newCreatDate){
+			$("#editNewCreatDate").val("1900-01-01 00:00:00");
+		}else{
+			$("#editNewCreatDate").val(rowData.newCreatDate);
+		}
 		editGoodLogoUrl = rowData.goodsLogoUrl;
 		editCategoryId1 = rowData.categoryId1;
 		editCategoryId2 = rowData.categoryId2;
