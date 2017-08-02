@@ -1,5 +1,6 @@
 package com.apass.esp.web.goods;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,9 +60,13 @@ public class JdGoodsController {
             paramMap.put("username", username);
 
             // 关联京东类目
-            jdGoodsService.relevanceJdCategory(paramMap);
-
-        } catch (BusinessException e) {
+        
+				jdGoodsService.relevanceJdCategory(paramMap);
+			 
+        } catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (BusinessException e) {
             LOGGER.error("关联京东类目失败！", e.getErrorCode());
             return Response.fail("关联京东类目失败！",e.getErrorCode());
         }
