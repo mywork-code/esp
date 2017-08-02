@@ -320,6 +320,7 @@ $(function() {
 	                		};
 	                		
 	                		if($that.css('left')=='0px') {
+	                			debugger;
 	                			if(rowData.flag){
 	                				debugger
                                     $.ajax({
