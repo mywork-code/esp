@@ -1885,7 +1885,7 @@ public class OrderService {
 				jdGoodSalesVolume.setCreateDate(date);
 				jdGoodSalesVolume.setUpdateDate(date);
 				try {
-					int insertValue = jdGoodSalesVolumeMapper.insert(jdGoodSalesVolume);
+					int insertValue = jdGoodSalesVolumeMapper.insertSelective(jdGoodSalesVolume);
 				} catch (Exception e) {
 					LOGGER.error("updateJdGoodsSaleVolume goodsId {} saleNum {} ", goodsId, saleNum, e);
 				}
