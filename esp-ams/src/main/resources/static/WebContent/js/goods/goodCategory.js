@@ -171,11 +171,45 @@ $(function() {
 	//确认编辑 
 	$("#editConfirmGoodCategory").click(function(){
 		var categoryName = $("#editCategoryName").textbox('getValue');
+		
+		if(categoryName == null || categoryName == ''){
+			$.messager.alert("提示", "请输入类目名称", "info");
+			return;
+		}
+		if(categoryLevel == 1){
+			reg=/^[\u2E80-\u9FFF]+$/;
+            if(!regExp_pattern(categoryName,reg)){
+                $.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
+                return;
+            }
+			if(categoryName.length > 2){
+				$.messager.alert("提示", "类目名称不能超过2个汉字", "info");
+				return;
+			}
+		}else if(categoryLevel == 2){
+			reg= /^[\u4E00-\u9FA5]+$/;
+			var leng = getLenString(categoryName);
+			if(!regExp_pattern(categoryName,reg)){
+				$.messager.alert("提示", "类目名称格式不正确，只能输入汉字,请重新输入", "info");
+				return;
+			}
+            if(leng > 8){
+                $.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
+                return;
+            }
+		}else if(categoryLevel == 3){
+			if(categoryName.length > 20){
+				$.messager.alert("提示", "字数长度不能大于20", "info");
+				return;
+			}
+		}
+		
 		var leng = getLenString(categoryName);
 		if(leng > 15){
 			$.messager.alert("提示", "字数超过最大长度，请重新输入。", "info");
 			return;
 		}
+		
 		var params = {
 			'categoryId':categoryId,
 			'categoryName':categoryName,
