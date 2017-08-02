@@ -492,7 +492,7 @@ public class OrderService {
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
-        orderReq.setRemark("test");
+        orderReq.setRemark("");
         orderReq.setOrderNo(orders.get(0));
 		/**
 		 * 验证商品是否可售

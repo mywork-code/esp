@@ -575,6 +575,7 @@ public class ShopHomeController {
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
                 }
                 returnMap.put("source", "jd");
+                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
             } else {
                 goodService.loadGoodsBasicInfoById(goodsId, returnMap);
             }
@@ -710,7 +711,7 @@ public class ShopHomeController {
             goodsList = getSaleVolumeGoods(goodsIdList);
             CategoryVo v = new CategoryVo();
             v.setCategoryTitle("大小家电 尽在掌握");
-            v.setPictureUrl(espImageUrl + "/static/eshop/other/categoryElectric.png");
+            v.setPictureUrl(espImageUrl + "/static/eshop/other/1501692516414.jpg");
             resultMap.put("banner", v);
             resultMap.put("goodsList", goodsList);
             if (CollectionUtils.isEmpty(goodsList)) {
