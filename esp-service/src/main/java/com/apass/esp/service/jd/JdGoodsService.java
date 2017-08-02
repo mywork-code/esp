@@ -1,8 +1,12 @@
 package com.apass.esp.service.jd;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -26,6 +30,7 @@ import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -55,9 +60,10 @@ public class JdGoodsService {
      * 
      * @param paramMap
      * @throws BusinessException
+     * @throws ParseException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
+    public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
         // 往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
         String cateId = paramMap.get("cateId");// 京东类目id
         String username = paramMap.get("username");// 当前用户
@@ -94,12 +100,14 @@ public class JdGoodsService {
             entity.setGoodsLogoUrl(jdGoods.getImagePath());
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
+            entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 
             // 往t_esp_goods_stock_info表插数据
             GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
             stockEntity.setStockTotalAmt(-1l);
             stockEntity.setStockCurrAmt(-1l);
+            stockEntity.setStockLogo(jdGoods.getImagePath());
             stockEntity.setGoodsId(insertJdGoods.getGoodId());
             stockEntity.setGoodsPrice(jdGoods.getJdPrice());
             stockEntity.setMarketPrice(jdGoods.getJdPrice());
@@ -123,8 +131,8 @@ public class JdGoodsService {
     public List<JdGoods> disRelevanceValidate(Map<String, String> paramMap) throws BusinessException {
         String cateId = paramMap.get("cateId");// 京东类目id
         List<GoodsInfoEntity> goodsInfos = goodsService.selectByCategoryId3(cateId);
-        LOGGER.info("存在已上架或待审核商品，分别是：{}", GsonUtils.toJson(goodsInfos));
         if (goodsInfos.size() > 0) {
+            LOGGER.info("上架或待审核商品：{}",GsonUtils.toJson(goodsInfos));
             throw new BusinessException("该分类下有上架或待审核商品，请先将商品下架或驳回。");
         }
 
@@ -144,6 +152,7 @@ public class JdGoodsService {
                         List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository
                                 .queryOrderDetailBySkuIds(skuIds);
                         if (orderDetails.size() > 0) {
+                            LOGGER.info("下单商品：{}",GsonUtils.toJson(orderDetails));
                             throw new BusinessException("该分类下有已下单商品，无法取消关联");
                         }
                         skuIds.clear();
@@ -152,20 +161,26 @@ public class JdGoodsService {
                     skuIds.add(JdGoodsList.get(i).getSkuId());
                 }
             }
-            List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository
-                    .queryOrderDetailBySkuIds(skuIds);
-            if (orderDetails.size() > 0) {
-                throw new BusinessException("该分类下有已下单商品，无法取消关联");
+            if(skuIds.size()>0){
+                List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository
+                        .queryOrderDetailBySkuIds(skuIds);
+                if (orderDetails.size() > 0) {
+                    LOGGER.info("下单商品：{}",GsonUtils.toJson(orderDetails));
+                    throw new BusinessException("该分类下有已下单商品，无法取消关联");
+                }
+                skuIds.clear();
             }
-            skuIds.clear();
         } else {
             for (int i = 0; i < JdGoodsList.size(); i++) {
                 skuIds.add(JdGoodsList.get(i).getSkuId());
             }
-            List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository
-                    .queryOrderDetailBySkuIds(skuIds);
-            if (orderDetails.size() > 0) {
-                throw new BusinessException("该分类下有已下单商品，无法取消关联");
+            if(skuIds.size()>0){
+                List<OrderDetailInfoEntity> orderDetails = orderDetailInfoRepository
+                        .queryOrderDetailBySkuIds(skuIds);
+                if (orderDetails.size() > 0) {
+                    LOGGER.info("下单商品：{}",GsonUtils.toJson(orderDetails));
+                    throw new BusinessException("该分类下有已下单商品，无法取消关联");
+                }
             }
         }
         return JdGoodsList;
@@ -183,7 +198,7 @@ public class JdGoodsService {
         List<String> idsGoods = new ArrayList<String>();// 商品表id
         List<Long> idsStock = new ArrayList<Long>();// 库存表id
         // 删除t_esp_goods_base_info和t_esp_goods_stock_info表中对应京东数据
-        if (JdGoodsList.size() >= 100) {
+        if (JdGoodsList.size() > 100) {
             for (int i = 0; i < JdGoodsList.size(); i++) {
                 int num = JdGoodsList.size() / 100;
                 if (i < 100 * num) {
@@ -237,9 +252,9 @@ public class JdGoodsService {
                 GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i)
                         .getSkuId().toString());
                 if (goodsInfoEntity == null) {
-                    // LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
-                    // throw new BusinessException("数据库数据有误");
-                    continue;
+                     LOGGER.error("数据库数据有误,externalId:{}",JdGoodsList.get(i).getSkuId().toString());
+                     throw new BusinessException("数据库数据有误");
+//                    continue;
                 }
 
                 idsStock.add(Long.valueOf(goodsInfoEntity.getId()));

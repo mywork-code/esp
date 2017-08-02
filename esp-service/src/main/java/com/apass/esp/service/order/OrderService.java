@@ -222,6 +222,16 @@ public class OrderService {
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.querySubOrderDetailInfoByParam(map, page);
+			List<OrderSubInfoEntity> list=orderDetailInfoList.getDataList();
+			// 查询改订单的用户名和电话
+			for (OrderSubInfoEntity osifty : list) {
+				Response response = commonHttpClient.getCustomerBasicInfo("", osifty.getUserId());
+				if (response.statusResult()) {
+					CustomerBasicInfo customer = Response.resolveResult(response, CustomerBasicInfo.class);
+					osifty.setUserName(customer.getMobile());
+					osifty.setRealName(customer.getRealName());
+				}
+			}
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);

@@ -1,6 +1,7 @@
 package com.apass.esp.service.goods;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -78,8 +79,7 @@ public class GoodsStockInfoService {
 	 * @param idsStock
 	 */
 	public void deleteJDGoodsStockBatch(List<Long> idsStock) {
-		goodsStockDao.deleteJDGoodsStockBatch(idsStock);
-		
+	    goodsStockDao.deleteJDGoodsStockBatch(idsStock);
 	}
 	
 	/**

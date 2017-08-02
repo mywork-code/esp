@@ -257,16 +257,17 @@ public class JDTaskListener implements MessageListener {
                     }
                 }
             }else{
-                //商品池商品删除  直接将商品下架
-                LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
-                GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
-                goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
-                goodsInfoEntity.setUpdateDate(new Date());
-                goodsInfoEntity.setDelistTime(new Date());
+
                 try {
+                    //商品池商品删除  直接将商品下架
+                    LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
+                    GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
+                    goodsInfoEntity.setUpdateDate(new Date());
+                    goodsInfoEntity.setDelistTime(new Date());
                     goodsService.updateService(goodsInfoEntity);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                   // throw new RuntimeException(e);
                 }
             }
         }
