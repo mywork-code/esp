@@ -40,9 +40,17 @@ $(function () {
                         field: 'createDate',
                         width: 150,
                         align: 'center'
-                    },
-
-                    {
+                    },{
+                        title : '用户名',
+                        field : 'userName',
+                        width : 100,
+                        align : 'center'
+                    },{
+                        title : '姓名',
+                        field : 'realName',
+                        width : 100,
+                        align : 'center'
+                    },{
                         title: '收货人姓名',
                         field: 'name',
                         width: 70,

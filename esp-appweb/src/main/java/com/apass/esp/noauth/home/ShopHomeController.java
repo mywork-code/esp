@@ -575,6 +575,7 @@ public class ShopHomeController {
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
                 }
                 returnMap.put("source", "jd");
+                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
             } else {
                 goodService.loadGoodsBasicInfoById(goodsId, returnMap);
             }
