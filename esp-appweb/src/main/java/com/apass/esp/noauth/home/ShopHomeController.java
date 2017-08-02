@@ -700,15 +700,15 @@ public class ShopHomeController {
                 goodsIdList = goodsService.getRemainderGoodsNew(0, 50 - list.size());
             }
             if (CollectionUtils.isNotEmpty(goodsIdList)) {
-                goodsIdList.removeAll(list);
-                goodsIdList.addAll(list);
+                list.removeAll(goodsIdList);
+                list.addAll(goodsIdList);
             }
         } else {
-            goodsIdList.removeAll(list);
-            goodsIdList.addAll(list);
+            list.removeAll(goodsIdList);
+            list.addAll(goodsIdList);
         }
         try {
-            goodsList = getSaleVolumeGoods(goodsIdList);
+            goodsList = getSaleVolumeGoods(list);
             CategoryVo v = new CategoryVo();
             v.setCategoryTitle("大小家电 尽在掌握");
             v.setPictureUrl(espImageUrl + "/static/eshop/other/1501692516414.jpg");
