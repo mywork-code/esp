@@ -852,14 +852,20 @@ public class AfterSaleService {
 			goodsInfo.setBuyNum(refundDetailInfo.getGoodsNum());
 			GoodsStockInfoEntity goodsStock = goodsStockDao
 					.select(orderDetailInfo.getGoodsStockId());
-			goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
-			goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsStock
-					.getStockLogo()));
+			if(goodsStock!=null){
+				goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
+				if(goodsStock.getStockTotalAmt()==-1l){
+					goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+					goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+goodsStock.getStockLogo());
+				}else{
+					goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+					goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsStock
+							.getStockLogo()));
+				}
+			}
 			goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
 			goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
 			goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
-			goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
-
 			goodsListInEachOrder.add(goodsInfo);
 		}
 
