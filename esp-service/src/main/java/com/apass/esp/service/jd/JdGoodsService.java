@@ -187,7 +187,7 @@ public class JdGoodsService {
      * @param paramMap
      * @throws BusinessException
      */
-//    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
         List<JdGoods> JdGoodsList = disRelevanceValidate(paramMap);
         List<String> idsGoods = new ArrayList<String>();// 商品表id
