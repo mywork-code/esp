@@ -43,7 +43,7 @@ CREATE TABLE `t_esp_jd_goods` (
   `name` varchar(255) NOT NULL COMMENT '商品名称',
   `image_path` varchar(255) NOT NULL DEFAULT '' COMMENT '主图地址',
   `weight` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '重量',
-  `upc` varchar(20) NOT NULL DEFAULT '' COMMENT '条形码',
+  `upc` varchar(255) NOT NULL DEFAULT '' COMMENT '条形码',
   `product_area` varchar(20) NOT NULL DEFAULT '' COMMENT '产地',
   `sale_unit` varchar(10) NOT NULL DEFAULT '' COMMENT '销售单位',
   `ware_qd` varchar(255) NOT NULL DEFAULT '' COMMENT '包装清单',

@@ -26,6 +26,8 @@ import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
@@ -573,6 +575,22 @@ public class ShopHomeController {
                     returnMap.put("goodsPrice", price);// 商品价格
                     returnMap.put("goodsPriceFirstPayment",
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+                    //京东商品没有规格情况拼凑数据格式
+                    int jdSimilarSkuListSize= (int) returnMap.get("jdSimilarSkuListSize");
+                    if(jdSimilarSkuListSize==0){
+                	 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
+        			 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+	       			 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+	       			 jdSimilarSkuVo.setGoodsId(goodsId.toString());
+	       			 jdSimilarSkuVo.setSkuId(externalId);
+	       			 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+	       			 jdSimilarSkuVo.setPrice(price);
+	       			 jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+	       			 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+	       			 jdSimilarSkuTo.setSkuIdOrder("");
+	       			 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+	       			 JdSimilarSkuToList.add(jdSimilarSkuTo);
+                    }
                 }
                 returnMap.put("source", "jd");
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
@@ -700,15 +718,15 @@ public class ShopHomeController {
                 goodsIdList = goodsService.getRemainderGoodsNew(0, 50 - list.size());
             }
             if (CollectionUtils.isNotEmpty(goodsIdList)) {
-                goodsIdList.removeAll(list);
-                goodsIdList.addAll(list);
+                list.removeAll(goodsIdList);
+                list.addAll(goodsIdList);
             }
         } else {
-            goodsIdList.removeAll(list);
-            goodsIdList.addAll(list);
+            list.removeAll(goodsIdList);
+            list.addAll(goodsIdList);
         }
         try {
-            goodsList = getSaleVolumeGoods(goodsIdList);
+            goodsList = getSaleVolumeGoods(list);
             CategoryVo v = new CategoryVo();
             v.setCategoryTitle("大小家电 尽在掌握");
             v.setPictureUrl(espImageUrl + "/static/eshop/other/1501692516414.jpg");
