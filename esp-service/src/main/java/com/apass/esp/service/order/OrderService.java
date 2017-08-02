@@ -222,6 +222,16 @@ public class OrderService {
 		try {
 			Pagination<OrderSubInfoEntity> orderDetailInfoList = orderSubInfoRepository
 					.querySubOrderDetailInfoByParam(map, page);
+			List<OrderSubInfoEntity> list=orderDetailInfoList.getDataList();
+			// 查询改订单的用户名和电话
+			for (OrderSubInfoEntity osifty : list) {
+				Response response = commonHttpClient.getCustomerBasicInfo("", osifty.getUserId());
+				if (response.statusResult()) {
+					CustomerBasicInfo customer = Response.resolveResult(response, CustomerBasicInfo.class);
+					osifty.setUserName(customer.getMobile());
+					osifty.setRealName(customer.getRealName());
+				}
+			}
 			return orderDetailInfoList;
 		} catch (Exception e) {
 			LOGGER.error(" 通过商户号查询订单详细信息失败===>", e);
@@ -482,7 +492,7 @@ public class OrderService {
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
-        orderReq.setRemark("test");
+        orderReq.setRemark("");
         orderReq.setOrderNo(orders.get(0));
 		/**
 		 * 验证商品是否可售
@@ -507,7 +517,7 @@ public class OrderService {
         List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo().toRegion());
         for (Stock stock : stocks) {
             if (!"有货".equals(stock.getStockStateDesc())) {
-                LOGGER.info("sku[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
+                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
                 LOGGER.info(stock.getSkuId() + "_");
                 throw new BusinessException("下单失败!");
             }
@@ -518,11 +528,11 @@ public class OrderService {
         JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
         LOGGER.info(orderResponse.toString());
         if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode())) && !"3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("submit order error, {}", orderResponse.toString());
+            LOGGER.warn("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
             throw new BusinessException("下单失败!");
 
         } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("submit order error, {}", orderResponse.toString());
+            LOGGER.warn("call jd comfireOrder is failed ! ", orderResponse.toString());
             throw new BusinessException("下单失败!");
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");

@@ -60,7 +60,6 @@ public class JdGoodsController {
             paramMap.put("username", username);
 
             // 关联京东类目
-        
             jdGoodsService.relevanceJdCategory(paramMap);
 			 
         } catch (ParseException e) {
