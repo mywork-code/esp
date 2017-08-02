@@ -507,7 +507,7 @@ public class OrderService {
         List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo().toRegion());
         for (Stock stock : stocks) {
             if (!"有货".equals(stock.getStockStateDesc())) {
-                LOGGER.info("sku[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
+                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(), stock.getStockStateDesc());
                 LOGGER.info(stock.getSkuId() + "_");
                 throw new BusinessException("下单失败!");
             }
@@ -518,11 +518,11 @@ public class OrderService {
         JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
         LOGGER.info(orderResponse.toString());
         if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode())) && !"3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("submit order error, {}", orderResponse.toString());
+            LOGGER.warn("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
             throw new BusinessException("下单失败!");
 
         } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("submit order error, {}", orderResponse.toString());
+            LOGGER.warn("call jd comfireOrder is failed ! ", orderResponse.toString());
             throw new BusinessException("下单失败!");
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
