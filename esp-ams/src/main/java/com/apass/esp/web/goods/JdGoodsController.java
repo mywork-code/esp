@@ -61,7 +61,7 @@ public class JdGoodsController {
 
             // 关联京东类目
         
-				jdGoodsService.relevanceJdCategory(paramMap);
+            jdGoodsService.relevanceJdCategory(paramMap);
 			 
         } catch (ParseException e) {
 			// TODO Auto-generated catch block
