@@ -690,7 +690,7 @@ public class ShoppingCartService {
         
         GoodsStockInfoEntity preGoodsStockEntity=goodsStockDao.select(preGoodsStockIdVal);
         GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
-		if ("jd".equals(preGoodsStockEntity.getCreateUser()) && "jd".equals(secGoodsStockEntity.getCreateUser())) {
+		if ("jd".equals(preGoodsStockEntity.getGoodsSource()) && "jd".equals(secGoodsStockEntity.getGoodsSource())) {
 			// 查询商品基本信息，返回客户端该商品单条信息
 			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
 			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
