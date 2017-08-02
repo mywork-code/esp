@@ -121,8 +121,8 @@ public class JdGoodsInfoService {
 		// 查看商品的邮费
 		List<Long> goodsIds = new ArrayList<>();
 		goodsIds.add(sku);
-		BigDecimal postage = goodsService.getPostage(goodsIds);
-		map.put("postage", postage);
+//		BigDecimal postage = goodsService.getPostage(goodsIds);
+		map.put("postage", "0");
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
 		map.put("jdImagePathList", JdImagePathList);
