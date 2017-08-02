@@ -71,24 +71,33 @@ import com.google.common.collect.Maps;
 public class GoodsBaseInfoController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBaseInfoController.class);
+
     private static final String SUCCESS = "SUCCESS";
 
     @Autowired
     private GoodsService goodsService;
+
     @Autowired
     private BannerInfoService bannerInfoService;
+
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
+
     @Autowired
     private UsersService usersService;
+
     @Autowired
     private SystemParamService systemParamService;
+
     @Autowired
     private MerchantInforService merchantInforService;
+
     @Autowired
     private CategoryInfoService categoryInfoService;
+
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+
     /**
      * 图片服务器地址
      */
@@ -133,7 +142,8 @@ public class GoodsBaseInfoController {
             // 系统参数费率
             map.put("goodsPriceRate", 1);
             map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
-            map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
+            map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0)
+                    .getMerchantSettleRate());
 
             if (SpringSecurityUtils.hasPermission("GOODS_INFO_EDIT")) {
                 map.put("grantedAuthority", "permission");
@@ -158,7 +168,8 @@ public class GoodsBaseInfoController {
             // 系统参数费率
             map.put("goodsPriceRate", 1);
             map.put("priceCostRate", systemParamService.querySystemParamInfo().get(0).getPriceCostRate());
-            map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate());
+            map.put("merchantSettleRate", systemParamService.querySystemParamInfo().get(0)
+                    .getMerchantSettleRate());
 
             if (SpringSecurityUtils.hasPermission("GOODS_CHECK_BATCH")) {
                 map.put("grantedAuthority", "permission");
@@ -205,11 +216,11 @@ public class GoodsBaseInfoController {
     public ResponsePageBody<GoodsInfoEntity> handlePageList(HttpServletRequest request) {
         ResponsePageBody<GoodsInfoEntity> respBody = new ResponsePageBody<GoodsInfoEntity>();
         try {
-            //            if (null == usersService.loadBasicInfo().getMerchantCode()) {
-            //                respBody.setTotal(0);
-            //                respBody.setStatus("1");
-            //                return respBody;
-            //            }
+            // if (null == usersService.loadBasicInfo().getMerchantCode()) {
+            // respBody.setTotal(0);
+            // respBody.setStatus("1");
+            // return respBody;
+            // }
             String pageNo = HttpWebUtils.getValue(request, "page");
             String pageSize = HttpWebUtils.getValue(request, "rows");
             String goodsName = HttpWebUtils.getValue(request, "goodsName");
@@ -218,7 +229,7 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "status");
-//            String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
+            // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
@@ -234,9 +245,9 @@ public class GoodsBaseInfoController {
                 String level = aArray[0];
                 String id = aArray[1];
                 if ("1".equals(level)) {
-                	if(!("-1".equals(id))){
-                		goodsInfoEntity.setCategoryId1(Long.valueOf(id));
-                	}
+                    if (!("-1".equals(id))) {
+                        goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+                    }
                 } else if ("2".equals(level)) {
                     goodsInfoEntity.setCategoryId2(Long.valueOf(id));
                 } else if ("3".equals(level)) {
@@ -244,17 +255,16 @@ public class GoodsBaseInfoController {
                 }
             }
 
-
             if (!StringUtils.isAnyBlank(categoryId1, categoryId2, categoryId3)) {
                 goodsInfoEntity.setCategoryId1(Long.valueOf(categoryId1));
                 goodsInfoEntity.setCategoryId2(Long.valueOf(categoryId2));
                 goodsInfoEntity.setCategoryId3(Long.valueOf(categoryId3));
             }
 
-
             goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
 
-            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo, pageSize);
+            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,
+                    pageSize);
 
             if (pagination == null) {
                 respBody.setTotal(0);
@@ -262,9 +272,13 @@ public class GoodsBaseInfoController {
                 return respBody;
             }
             for (int i = 0; i < pagination.getDataList().size(); i++) {
-                pagination.getDataList().get(i)
-                        .setColFalgt(goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
-                                systemParamService.querySystemParamInfo().get(0).getMerchantSettleRate()));
+                pagination
+                        .getDataList()
+                        .get(i)
+                        .setColFalgt(
+                                goodsService.ifRate(Long.valueOf(pagination.getDataList().get(i).getId()),
+                                        systemParamService.querySystemParamInfo().get(0)
+                                                .getMerchantSettleRate()));
 
                 Long categoryId = pagination.getDataList().get(i).getCategoryId3();
                 Category category = categoryInfoService.selectNameById(categoryId);
@@ -296,9 +310,12 @@ public class GoodsBaseInfoController {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
 
-        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(), pageModel.getGoodsName(),
-                pageModel.getGoodsTitle(), pageModel.getGoodsSkuType()) || pageModel.getListTime().equals("")
-                || pageModel.getDelistTime().equals("") || pageModel.getCategoryId1().equals("") || pageModel.getCategoryId2().equals("")
+        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(),
+                pageModel.getGoodsName(), pageModel.getGoodsTitle(), pageModel.getGoodsSkuType())
+                || pageModel.getListTime().equals("")
+                || pageModel.getDelistTime().equals("")
+                || pageModel.getCategoryId1().equals("")
+                || pageModel.getCategoryId2().equals("")
                 || pageModel.getCategoryId3().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
@@ -328,11 +345,10 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-                         HttpServletRequest request) {
+            HttpServletRequest request) {
         String message = SUCCESS;
-        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(),
-                pageModelEdit.getGoodsTitle()) || pageModelEdit.getListTime().equals("")
-                || pageModelEdit.getDelistTime().equals("")) {
+        if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
+                || pageModelEdit.getListTime().equals("") || pageModelEdit.getDelistTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -349,7 +365,7 @@ public class GoodsBaseInfoController {
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-                                 HttpServletRequest request) {
+            HttpServletRequest request) {
         String message = SUCCESS;
         try {
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
@@ -439,8 +455,8 @@ public class GoodsBaseInfoController {
         try {
             MultipartFile file = bannerDto.getBannerPicFile();
             String imgType = ImageTools.getImgType(file);
-            String fileName = "banner_" + bannerDto.getBannerGoodsId() + "_" + System.currentTimeMillis() + "_"
-                    + bannerDto.getBannerPicOrder() + "." + imgType;
+            String fileName = "banner_" + bannerDto.getBannerGoodsId() + "_" + System.currentTimeMillis()
+                    + "_" + bannerDto.getBannerPicOrder() + "." + imgType;
             String url = nfsBanner + bannerDto.getBannerGoodsId() + "/" + fileName;
 
             /**
@@ -478,7 +494,7 @@ public class GoodsBaseInfoController {
              * 同时要修改goods_base中的update_user 和 update_time
              */
             updateDB(bannerDto.getBannerGoodsId());
-            
+
             return Response.success("success");
 
         } catch (Exception e) {
@@ -486,17 +502,18 @@ public class GoodsBaseInfoController {
             return Response.fail("上传商品大图失败!");
         }
     }
+
     /**
      * 更新数据库的更新人和更新时间
      */
-    public void updateDB(String goodsId){
-    	GoodsInfoEntity entity = new GoodsInfoEntity();
-    	entity.setId(Long.valueOf(goodsId));
-    	entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-    	entity.setUpdateDate(new Date());
+    public void updateDB(String goodsId) {
+        GoodsInfoEntity entity = new GoodsInfoEntity();
+        entity.setId(Long.valueOf(goodsId));
+        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+        entity.setUpdateDate(new Date());
         goodsService.updateService(entity);
     }
-    
+
     /**
      * 删除banner图
      *
@@ -531,7 +548,8 @@ public class GoodsBaseInfoController {
 
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "10");
+        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity,
+                "0", "10");
         List<GoodsStockInfoEntity> stockList = list.getDataList();
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
@@ -548,13 +566,15 @@ public class GoodsBaseInfoController {
             if (StringUtils.isBlank(goodsEntity.getGoogsDetail())) {
                 return "商品详情不能为空,请添加！";
             }
-            if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null || goodsEntity.getCategoryId3() == null) {
+            if (goodsEntity.getCategoryId1() == null || goodsEntity.getCategoryId2() == null
+                    || goodsEntity.getCategoryId3() == null) {
                 return "商品类目不能为空，请先选择类目！";
             }
-        }else{
-        	if(StringUtils.isAnyBlank(listTime,delistTime)||"null".equals(listTime)||"null".equals(delistTime)){
-        		return "商品上架和下架时间不能为空，请先选择类目！";
-        	}
+        } else {
+            if (StringUtils.isAnyBlank(listTime, delistTime) || "null".equals(listTime)
+                    || "null".equals(delistTime)) {
+                return "商品上架和下架时间不能为空，请先选择类目！";
+            }
         }
         SystemParamEntity systemParamEntity = null;
         try {
@@ -566,16 +586,17 @@ public class GoodsBaseInfoController {
             BigDecimal goodsPrice = goodsStockInfoEntity1.getGoodsPrice();
             BigDecimal goodsCostPrice = goodsStockInfoEntity1.getGoodsCostPrice();
             BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
-            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01)).setScale(4, BigDecimal.ROUND_HALF_UP);
-            
-            //商品售价除以成本价小于保本率
+            BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
+                    .setScale(4, BigDecimal.ROUND_HALF_UP);
+
+            // 商品售价除以成本价小于保本率
             if (dividePoint.compareTo(dividePoint1) == -1) {
                 entity.setId(Long.valueOf(id));
                 entity.setStatus(GoodStatus.GOOD_BBEN.getCode());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 goodsService.updateService(entity);
                 return "该商品已进入保本率审核页面";
-            }else{
+            } else {
                 entity.setId(Long.valueOf(id));
                 entity.setStatus(GoodStatus.GOOD_NOCHECK.getCode());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -596,7 +617,7 @@ public class GoodsBaseInfoController {
     @RequestMapping("/shelf")
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
-//        String source = HttpWebUtils.getValue(request, "source");
+        // String source = HttpWebUtils.getValue(request, "source");
         GoodsInfoEntity entity = new GoodsInfoEntity();
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
@@ -639,7 +660,6 @@ public class GoodsBaseInfoController {
         return SUCCESS;
     }
 
-
     @ResponseBody
     @RequestMapping("/bBencheckview")
     public String bBencheckview(HttpServletRequest request) {
@@ -665,7 +685,6 @@ public class GoodsBaseInfoController {
         return SUCCESS;
     }
 
-
     /**
      * loadLogo
      *
@@ -689,7 +708,7 @@ public class GoodsBaseInfoController {
     @RequestMapping(value = "/uplogoFile", method = RequestMethod.POST)
     public Response uplogoFile(@ModelAttribute("logoFileModel") LogoFileModel logoFileModel) {
         try {
-            Integer random = (int) (Math.random() * 9000 + 1000);//生成4位随机数
+            Integer random = (int) (Math.random() * 9000 + 1000);// 生成4位随机数
             MultipartFile file = logoFileModel.getEditGoodsLogoFile();
             String imgType = ImageTools.getImgType(file);
             String fileName = "logo_" + random + logoFileModel.getEditLogogoodsId() + "." + imgType;
@@ -763,19 +782,19 @@ public class GoodsBaseInfoController {
              */
             FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
 
-            //保存url到数据库
+            // 保存url到数据库
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             entity.setStockLogo(url);
             entity.setGoodsId(goodsId);
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
-            
+
             /**
              * 更新goodsbase中的数据
              */
-            updateDB(goodsId+"");
-            
+            updateDB(goodsId + "");
+
             return Response.success("上传成功", url);
 
         } catch (Exception e) {
@@ -798,7 +817,8 @@ public class GoodsBaseInfoController {
         List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
         if (!bannerList.isEmpty()) {
             for (int i = 0; i < bannerList.size(); i++) {
-                String colorBigSquare = ImageUtils.imageToBase64(rootPath + bannerList.get(i).getBannerImgUrl());
+                String colorBigSquare = ImageUtils.imageToBase64(rootPath
+                        + bannerList.get(i).getBannerImgUrl());
                 if (colorBigSquare.length() > 0) {
                     map.put("goodsBanner_" + (i + 1), colorBigSquare);
                 }
@@ -811,7 +831,7 @@ public class GoodsBaseInfoController {
         int goodsStockNumber = goodsStockList.size();
         map.put("goodsStockNumber", goodsStockNumber);// 商品最小单元数目
         map.put("goodsSkuType", goodsInfo.getGoodsSkuType());// 商品最小单元分类
-        BigDecimal min = null, max = null;//商品价格区间
+        BigDecimal min = null, max = null;// 商品价格区间
         if (goodsStockList != null && goodsStockNumber != 0) {
             min = max = goodsStockList.get(0).getGoodsPrice();
         }
@@ -825,10 +845,11 @@ public class GoodsBaseInfoController {
             }
         }
 
-        //设值库存logo
+        // 设值库存logo
         for (int i = 0; i < goodsStockList.size(); i++) {
             GoodsStockInfoEntity goodsStockInfoEntity = goodsStockList.get(i);
-            goodsStockInfoEntity.setStockLogo(ImageUtils.imageToBase64(rootPath + goodsStockInfoEntity.getStockLogo()));
+            goodsStockInfoEntity.setStockLogo(ImageUtils.imageToBase64(rootPath
+                    + goodsStockInfoEntity.getStockLogo()));
         }
         if (null != min) { // 最小值
             map.put("goodsMinPrice", new DecimalFormat("0.00").format(min));// 价格区间
@@ -872,6 +893,5 @@ public class GoodsBaseInfoController {
         map.put("view", view);
         return new ModelAndView("goods/goodsPreviewProductJD-view", map);
     }
-
 
 }
