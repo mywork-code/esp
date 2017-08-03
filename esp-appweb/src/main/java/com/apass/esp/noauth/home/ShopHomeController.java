@@ -227,6 +227,7 @@ public class ShopHomeController {
                     BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
                             goodsInfo.getGoodsStockId());
                     goodsInfo.setGoodsPrice(price);
+                    goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
                     // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
                     Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
                             .getGoodId());
