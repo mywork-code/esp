@@ -17,34 +17,38 @@ public class SystemParamEntity {
     /**
      * 主键id
      */
-    private Long       id;
+    private Long id;
 
     /**
      * 商户结算折扣率%(成本价/市场价)
      */
     private BigDecimal merchantSettleRate;
+
     /**
      * 商品价格折扣率%(市场价*折扣率=当前售价)
      */
     private BigDecimal goodsPriceRate;
+
     /**
      * 创建人
      */
-    private String     createUser;
+    private String createUser;
+
     /**
      * 创建日期
      */
-    private Date       createDate;
+    private Date createDate;
 
     /**
      * 修改人
      */
-    private String     updateUser;
+    private String updateUser;
+
     /**
      * 修改日期
      */
-    private Date       updateDate;
-    
+    private Date updateDate;
+
     /**
      * 保本率(售价/成本价*100%=保本率)
      */
@@ -115,11 +119,14 @@ public class SystemParamEntity {
     }
 
     public BigDecimal getPriceCostRate() {
-		return priceCostRate;
-	}
+        if(priceCostRate == null){
+            return new BigDecimal(0.0000);
+        }
+        return priceCostRate;
+    }
 
-	public void setPriceCostRate(BigDecimal priceCostRate) {
-		this.priceCostRate = priceCostRate.multiply(new BigDecimal(100));
-	}
+    public void setPriceCostRate(BigDecimal priceCostRate) {
+        this.priceCostRate = priceCostRate.multiply(new BigDecimal(100));
+    }
 
 }

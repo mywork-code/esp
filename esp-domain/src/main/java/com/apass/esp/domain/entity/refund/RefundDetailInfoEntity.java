@@ -2,11 +2,14 @@ package com.apass.esp.domain.entity.refund;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 
 /**
  * 退货详情表
- * @description 
+ * 
+ * @description
  *
  * @author liuchao01
  * @version $Id: RefundDetailInfoEntity.java, v 0.1 2016年12月26日 下午1:33:57 liuchao01 Exp ${0xD}
@@ -15,31 +18,32 @@ import com.apass.gfb.framework.annotation.MyBatisEntity;
 public class RefundDetailInfoEntity {
 
     private Long id;
-    
+
     /** 子订单id **/
     private String orderId;
-    
+
     /** 订单详情id **/
     private Long orderDetailId;
-    
+
     /** 商品价格 **/
     private BigDecimal goodsPrice;
-    
+
     /** 商品数量 **/
     private Long goodsNum;
-    
+
     /** 标记 **/
     private String remark;
-    
+
     /**
      * 来源
      */
     private String source = "";
+
     /**
      * 售后状态
      */
     private String status = "";
-    
+
     /**
      * 商品id
      */
@@ -93,29 +97,37 @@ public class RefundDetailInfoEntity {
         this.remark = remark;
     }
 
-	public String getSource() {
-		return source;
-	}
+    public String getSource() {
+        if(StringUtils.isBlank(source)){
+            return "";            
+        }
+        return source;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        if(StringUtils.isBlank(status)){
+            return "";            
+        }
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public Long getGoodsId() {
-		return goodsId;
-	}
+    public Long getGoodsId() {
+        if(goodsId == null){
+            return -1l;
+        }
+        return goodsId;
+    }
 
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
+    public void setGoodsId(Long goodsId) {
+        this.goodsId = goodsId;
+    }
 
-    
 }
