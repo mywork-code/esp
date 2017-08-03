@@ -711,7 +711,7 @@ public class OrderService {
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
                 orderInfo.setSource(SourceType.JD.getCode());
-                orderInfo.setExtParentId(0);
+                orderInfo.setExtParentId("0");
             }
             String orderId = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
             orderList.add(orderId);
@@ -2183,7 +2183,7 @@ public class OrderService {
 
         } else {
             // 拆单
-            orderInfoEntity.setExtParentId(-1);
+            orderInfoEntity.setExtParentId("-1");
             orderInfoRepository.update(orderInfoEntity);
             String merchantCode = orderInfoEntity.getMerchantCode();
             String deviceType = orderInfoEntity.getDeviceType();
@@ -2224,7 +2224,7 @@ public class OrderService {
                 orderInfo.setUserId(orderInfoEntity.getUserId());
                 orderInfo.setOrderAmt(jdPrice);
                 orderInfo.setSource(SourceType.JD.getCode());
-                orderInfo.setExtParentId(Integer.valueOf(jdOrderIdp));// 为子订单
+                orderInfo.setExtParentId(jdOrderIdp);// 为子订单
                 orderInfo.setDeviceType(deviceType);
                 orderInfo.setOrderId(cOrderQh);
                 orderInfo.setGoodsNum(Long.valueOf(sumNum));

@@ -33,7 +33,7 @@ ADD COLUMN `source`  varchar(255) NOT NULL DEFAULT '' COMMENT '商品来源（�
 ADD COLUMN `status`  varchar(255)  NOT NULL DEFAULT '' COMMENT '京东商品售后状态';
 
 ALTER TABLE `t_esp_refund_detail_info`
-ADD COLUMN `goods_id` bigint(20) NOT NULL DEFAULT NULL COMMENT '商品id';
+ADD COLUMN `goods_id` bigint(20) NOT NULL DEFAULT -1 COMMENT '商品id';
 
 ALTER TABLE `t_esp_service_process_info`
 ADD COLUMN `node_message`  varchar(255) NOT NULL DEFAULT '' COMMENT '备注信息';

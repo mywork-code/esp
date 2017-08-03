@@ -3,10 +3,13 @@ package com.apass.esp.domain.entity.refund;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 
 /**
  * 退货信息实体
+ * 
  * @author wyy
  *
  */
@@ -15,99 +18,114 @@ public class RefundInfoEntity {
     /**
      * id
      */
-    private Long       id;
+    private Long id;
+
     /**
      * 订单id
      */
-    private String       orderId;
+    private String orderId;
+
     /**
      * 订单金额
      */
     private BigDecimal orderAmt;
+
     /**
      * 退货金额
      */
     private BigDecimal refundAmt;
-    
+
     /**
      * 退换货类型(下拉 ：退货、换货)
      */
-    private String     refundType;
+    private String refundType;
+
     /**
      * 客户发货物流厂商
      */
-    private String     slogisticsName;
+    private String slogisticsName;
+
     /**
      * 客户发货物流单号
      */
-    private String     slogisticsNo;
-    
+    private String slogisticsNo;
+
     /**
      * 换货商户发货物流唯一标识
      */
     private String rlogisticsId;
+
     /**
      * 换货商户发货物流厂商
      */
-    private String     rlogisticsName;
+    private String rlogisticsName;
+
     /**
      * 换货商户发货物流单号
      */
-    private String     rlogisticsNo;
+    private String rlogisticsNo;
+
     /**
      * 状态
      */
-    private String     status;
+    private String status;
+
     /**
      * 拒绝原因
      */
-    private String     refundReason;
+    private String refundReason;
+
     /**
      * 驳回原因
      */
-    private String     rejectReason;
-    
+    private String rejectReason;
+
     /** 批复人 */
-    private String     approvalUser;
-    
+    private String approvalUser;
+
     /** 批复结果 */
-    private String     approvalComments;
-    
+    private String approvalComments;
+
     /**
      * 备注
      */
-    private String     remark;
+    private String remark;
+
     /**
      * 创建日期
      */
-    private Date       createDate;
+    private Date createDate;
+
     /**
      * 更新日期
      */
-    private Date       updateDate;
-    
-    /**　图片url */
-    private String     goodsUrl;
-    
-    /** 售后是否同意退换货  1 : 同意  0：拒绝 */
+    private Date updateDate;
+
+    /** 　图片url */
+    private String goodsUrl;
+
+    /** 售后是否同意退换货 1 : 同意 0：拒绝 */
     private String isAgree;
-    
+
     private Date completionTime;
-    
+
     /**
      * 京东退换货返回方式
      */
     private String jdReturnType = "";
 
     public String getJdReturnType() {
-		return jdReturnType;
-	}
+        if(StringUtils.isBlank(jdReturnType)){
+            return "";            
+        }
+        return jdReturnType;
+    }
 
-	public void setJdReturnType(String jdReturnType) {
-		this.jdReturnType = jdReturnType;
-	}
+    public void setJdReturnType(String jdReturnType) {
+        this.jdReturnType = jdReturnType;
+    }
 
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -274,5 +292,5 @@ public class RefundInfoEntity {
     public void setCompletionTime(Date completionTime) {
         this.completionTime = completionTime;
     }
-    
+
 }

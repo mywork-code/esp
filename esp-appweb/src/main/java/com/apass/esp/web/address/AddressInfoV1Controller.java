@@ -32,57 +32,58 @@ import com.google.common.collect.Maps;
 public class AddressInfoV1Controller {
 
     private static final Logger logger = LoggerFactory.getLogger(AddressInfoV1Controller.class);
-    
-	@Autowired
-	private AddressService addressService;
-	/**
-	 * <pre>
-	 * 新增地址信息
-	 * </pre>
-	 */
-	@POST
-	@Path("/addAddressInfo")
-	public Response addAddressInfo(Map<String, Object> paramMap) {
-		try {
-			AddressInfoEntity addressInfoEntity = paramsToEntity(paramMap,true);
-			Map<String, Object> resultMap = Maps.newHashMap();
-			Long addressId = addressService.addAddressInfoV1(addressInfoEntity);
-			resultMap.put("addressId", addressId.toString());
-			return Response.successResponse(resultMap);
-		}catch (BusinessException e) {
-		    logger.error("添加地址信息失败，错误原因", e);
-			return Response.fail(e.getErrorDesc());
-		}catch (Exception e) {
-		    logger.error("添加地址信息失败，错误原因", e);
-			return Response.fail("添加地址信息失败！");
-		}
-	}	
 
-	/**
-	 * <pre>
-	 * 根据用户id查询地址信息列表
-	 * </pre>
-	 */
-	@POST
-	@Path("/queryAddressInfo")
-	public Response queryAddressInfo(Map<String, Object> paramMap) {
-		try {
-			Map<String, Object> resultMap = new HashMap<String, Object>();
-			String userId = CommonUtils.getValue(paramMap, "userId");
-			ValidateUtils.isNotBlank(userId, "用户Id为空！",BusinessErrorCode.PARAM_IS_EMPTY);
-			List<AddressInfoEntity> addressInfoList = addressService.queryAddressInfo(Long.parseLong(userId));
-			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("查询地址信息成功！", resultMap);
-		}catch(BusinessException e){
-			logger.error("查询地址信息失败，错误原因", e);
-			return Response.fail(e.getErrorDesc());
-		}catch (Exception e) {
-		    logger.error("查询地址信息失败，错误原因", e);
-			return Response.fail("查询地址信息失败！");
-		}
-	}
-	
-	/**
+    @Autowired
+    private AddressService addressService;
+
+    /**
+     * <pre>
+     * 新增地址信息
+     * </pre>
+     */
+    @POST
+    @Path("/addAddressInfo")
+    public Response addAddressInfo(Map<String, Object> paramMap) {
+        try {
+            AddressInfoEntity addressInfoEntity = paramsToEntity(paramMap, true);
+            Map<String, Object> resultMap = Maps.newHashMap();
+            Long addressId = addressService.addAddressInfoV1(addressInfoEntity);
+            resultMap.put("addressId", addressId.toString());
+            return Response.successResponse(resultMap);
+        } catch (BusinessException e) {
+            logger.error("添加地址信息失败，错误原因", e);
+            return Response.fail(e.getErrorDesc());
+        } catch (Exception e) {
+            logger.error("添加地址信息失败，错误原因", e);
+            return Response.fail("添加地址信息失败！");
+        }
+    }
+
+    /**
+     * <pre>
+     * 根据用户id查询地址信息列表
+     * </pre>
+     */
+    @POST
+    @Path("/queryAddressInfo")
+    public Response queryAddressInfo(Map<String, Object> paramMap) {
+        try {
+            Map<String, Object> resultMap = new HashMap<String, Object>();
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            ValidateUtils.isNotBlank(userId, "用户Id为空！", BusinessErrorCode.PARAM_IS_EMPTY);
+            List<AddressInfoEntity> addressInfoList = addressService.queryAddressInfo(Long.parseLong(userId));
+            resultMap.put("addressInfoList", addressInfoList);
+            return Response.success("查询地址信息成功！", resultMap);
+        } catch (BusinessException e) {
+            logger.error("查询地址信息失败，错误原因", e);
+            return Response.fail(e.getErrorDesc());
+        } catch (Exception e) {
+            logger.error("查询地址信息失败，错误原因", e);
+            return Response.fail("查询地址信息失败！");
+        }
+    }
+
+    /**
      * <pre>
      * 根据用户id查询默认地址信息
      * 
@@ -94,19 +95,19 @@ public class AddressInfoV1Controller {
         try {
             Map<String, Object> resultMap = new HashMap<String, Object>();
             String userId = CommonUtils.getValue(paramMap, "userId");
-            ValidateUtils.isNotBlank(userId, "用户Id为空！",BusinessErrorCode.PARAM_IS_EMPTY);
+            ValidateUtils.isNotBlank(userId, "用户Id为空！", BusinessErrorCode.PARAM_IS_EMPTY);
             AddressInfoEntity defaultAddress = addressService.queryDefaultByUserId(Long.parseLong(userId));
             resultMap.put("defaultAddress", defaultAddress);
             return Response.success("查询地址信息成功！", resultMap);
-        } catch(BusinessException e){
-			logger.error("查询地址信息失败，错误原因", e);
-			return Response.fail(e.getErrorDesc());
-		} catch (Exception e) {
+        } catch (BusinessException e) {
+            logger.error("查询地址信息失败，错误原因", e);
+            return Response.fail(e.getErrorDesc());
+        } catch (Exception e) {
             logger.error("查询地址信息失败，错误原因", e);
             return Response.fail("查询默认地址信息失败！");
         }
     }
-    
+
     /**
      * <pre>
      * 根据用户id查询默认地址信息
@@ -123,164 +124,168 @@ public class AddressInfoV1Controller {
         try {
             Map<String, Object> resultMap = new HashMap<String, Object>();
             String userId = CommonUtils.getValue(paramMap, "userId");
-            ValidateUtils.isNotBlank(userId, "用户Id为空！",BusinessErrorCode.PARAM_IS_EMPTY);
+            ValidateUtils.isNotBlank(userId, "用户Id为空！", BusinessErrorCode.PARAM_IS_EMPTY);
             AddressInfoEntity defaultAddress = addressService.queryOneAddressByUserId(Long.parseLong(userId));
-            
+
             resultMap.put("defaultAddress", defaultAddress);
             return Response.success("查询地址信息成功", resultMap);
-        }catch(BusinessException e){
-			logger.error("查询地址信息失败，错误原因", e);
-			return Response.fail(e.getErrorDesc());
-		} catch (Exception e) {
+        } catch (BusinessException e) {
+            logger.error("查询地址信息失败，错误原因", e);
+            return Response.fail(e.getErrorDesc());
+        } catch (Exception e) {
             logger.error("查询地址信息失败，错误原因", e);
             return Response.fail("查询地址信息失败");
         }
     }
-    
-    
-	
-	/**
-	 * <pre>
-	 * 更新地址信息
-	 * </pre>
-	 */
-	@POST
-	@Path("/updateAddressInfo")
-	public Response updateAddressInfo(Map<String, Object> paramMap) {
-		try {
-			Map<String, Object> resultMap = new HashMap<String, Object>();
-			AddressInfoEntity addInfo = paramsToEntity(paramMap,false);
-			List<AddressInfoEntity> addressInfoList = addressService.updateAddressInfoV1(addInfo);
-			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("更新地址信息成功!", resultMap);
-		} catch (BusinessException e) {
+
+    /**
+     * <pre>
+     * 更新地址信息
+     * </pre>
+     */
+    @POST
+    @Path("/updateAddressInfo")
+    public Response updateAddressInfo(Map<String, Object> paramMap) {
+        try {
+            Map<String, Object> resultMap = new HashMap<String, Object>();
+            AddressInfoEntity addInfo = paramsToEntity(paramMap, false);
+            List<AddressInfoEntity> addressInfoList = addressService.updateAddressInfoV1(addInfo);
+            resultMap.put("addressInfoList", addressInfoList);
+            return Response.success("更新地址信息成功!", resultMap);
+        } catch (BusinessException e) {
             logger.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             logger.error("更新地址信息失败，错误原因", e);
-			return Response.fail("更新地址信息失败!");
-		}
-	}
-	
-	/**
-	 * <pre>
-	 * 设置默认地址信息
-	 * </pre>
-	 */
-	@POST
-	@Path("/setDefaultAddress")
-	public Response setDefaultAddress(Map<String, Object> paramMap) {
-		try {
-			String addressId = CommonUtils.getValue(paramMap, "addressId");
-			ValidateUtils.isNotBlank(addressId, "地址编号不能为空！");
-			addressService.setDefaultAddress(addressId);
-			return Response.success("设置默认地址信息成功!");
-		} catch (BusinessException e) {
+            return Response.fail("更新地址信息失败!");
+        }
+    }
+
+    /**
+     * <pre>
+     * 设置默认地址信息
+     * </pre>
+     */
+    @POST
+    @Path("/setDefaultAddress")
+    public Response setDefaultAddress(Map<String, Object> paramMap) {
+        try {
+            String addressId = CommonUtils.getValue(paramMap, "addressId");
+            ValidateUtils.isNotBlank(addressId, "地址编号不能为空！");
+            addressService.setDefaultAddress(addressId);
+            return Response.success("设置默认地址信息成功!");
+        } catch (BusinessException e) {
             logger.error(e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             logger.error("设置默认地址信息失败，错误原因", e);
-			return Response.fail("设置默认地址信息失败!");
-		}
-	} 
-	
-	/**
-	 * <pre>
-	 * 删除地址信息
-	 * </pre>
-	 */
-	@POST
-	@Path("/deleteAddressInfo")
-	public Response deleteAddressInfo(Map<String, Object> paramMap) {
-		try {
-			Map<String, Object> resultMap = new HashMap<String, Object>();
-			String userId = CommonUtils.getValue(paramMap, "userId");
-			//以逗号分隔的订单字符串
-			String idStr = CommonUtils.getValue(paramMap, "idStr");
-			ValidateUtils.isNotBlank(userId, "用户Id为空！",BusinessErrorCode.PARAM_IS_EMPTY);
-			ValidateUtils.isNotBlank(idStr, "地址Id为空！",BusinessErrorCode.PARAM_IS_EMPTY);
-			List<AddressInfoEntity> addressInfoList = addressService.deleteAddressInfo(Long.parseLong(userId),idStr.split(","));
-			resultMap.put("addressInfoList", addressInfoList);
-			return Response.success("删除地址信息成功!", resultMap);
-		} catch (BusinessException e) {
-		    logger.error("删除地址信息失败，错误原因", e);
-			return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
-		}catch (Exception e) {
-		    logger.error("删除地址信息失败，错误原因", e);
-			return Response.fail("删除地址信息失败!");
-		}
-	}
-	
-	/**
-	 * 把map数据转为entity
-	 * @return
-	 * @throws BusinessException 
-	 */
-	public AddressInfoEntity paramsToEntity(Map<String, Object> paramMap,boolean isSave) throws BusinessException{
-		String userId = CommonUtils.getValue(paramMap, "userId");
-		String province = CommonUtils.getValue(paramMap, "province");    //省
-		String city = CommonUtils.getValue(paramMap, "city");            //市
-		String district = CommonUtils.getValue(paramMap, "district");    //区
-		String towns  = CommonUtils.getValue(paramMap, "towns");		 //乡镇
-		String address = CommonUtils.getValue(paramMap, "address");      //街道(详细地址)
-		String postcode = CommonUtils.getValue(paramMap, "postcode");    //邮编(暂未使用)
-		String name = CommonUtils.getValue(paramMap, "name");            //收货人姓名
-		String telephone = CommonUtils.getValue(paramMap, "telephone");  //收货人电话号码
-		String isDefault = CommonUtils.getValue(paramMap, "isDefault");  //是否是默认地址
-		String id = CommonUtils.getValue(paramMap, "id");                //地址id(表主键)
-		//验证参数
-		validateParams(id,userId,province,city,district,towns,address,name,telephone,isDefault,isSave);
-		//封装参数
-		AddressInfoEntity addressInfoEntity=new AddressInfoEntity();
-		addressInfoEntity.setAddress(address);
-		addressInfoEntity.setCity(city);
-		addressInfoEntity.setDistrict(district);
-		addressInfoEntity.setTowns(StringUtils.isBlank(towns)?"":towns);
-		addressInfoEntity.setIsDefault(isDefault);
-		addressInfoEntity.setName(name);
-		addressInfoEntity.setPostcode(postcode);
-		addressInfoEntity.setProvince(province);
-		addressInfoEntity.setTelephone(telephone);
-		addressInfoEntity.setUserId(Long.parseLong(userId));
-		if(!isSave){
-			addressInfoEntity.setId(Long.valueOf(id));
-		}
-		return addressInfoEntity;
-	}
-	
-	/**
-	 * 验证参数
-	 * @param userId
-	 * @param province
-	 * @param city
-	 * @param district
-	 * @param towns
-	 * @param address
-	 * @param name
-	 * @param telephone
-	 * @param isDefault
-	 * @throws BusinessException
-	 */
-	public void validateParams(String id,String userId,String province,String city,String district,String towns,
-			String address,String name,String telephone,String isDefault,boolean isSave) throws BusinessException{
-		ValidateUtils.isNotBlank(userId, "用户编号不能为空！");
-		ValidateUtils.isNotBlank(province, "省份不能为空！");
-		ValidateUtils.isNotBlank(city, "城市不能为空！");
-		ValidateUtils.isNotBlank(district, "区县不能为空！");
-		
-		if(!CityJdEnums.isContains(province)){
-			ValidateUtils.isNotBlank(towns, "乡镇不能为空！");
-		}
-		
-		ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
-		ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");
-		ValidateUtils.isNotBlank(name, "收货人姓名不能为空！");
-		ValidateUtils.checkLength(name, 1, 10, "收货人姓名输入不合法");
-		ValidateUtils.isNotBlank(telephone, "收货人联系电话不能为空！");
-		ValidateUtils.checkLength(telephone, 1, 15, "收货人联系电话输入不合法");
-		ValidateUtils.isNotBlank(isDefault, "是否默认地址不能为空！");
-		if(!isSave){
-			ValidateUtils.isNotBlank(id, "地址编号不能为空！");
-		}
-	}
+            return Response.fail("设置默认地址信息失败!");
+        }
+    }
+
+    /**
+     * <pre>
+     * 删除地址信息
+     * </pre>
+     */
+    @POST
+    @Path("/deleteAddressInfo")
+    public Response deleteAddressInfo(Map<String, Object> paramMap) {
+        try {
+            Map<String, Object> resultMap = new HashMap<String, Object>();
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            // 以逗号分隔的订单字符串
+            String idStr = CommonUtils.getValue(paramMap, "idStr");
+            ValidateUtils.isNotBlank(userId, "用户Id为空！", BusinessErrorCode.PARAM_IS_EMPTY);
+            ValidateUtils.isNotBlank(idStr, "地址Id为空！", BusinessErrorCode.PARAM_IS_EMPTY);
+            List<AddressInfoEntity> addressInfoList = addressService.deleteAddressInfo(
+                    Long.parseLong(userId), idStr.split(","));
+            resultMap.put("addressInfoList", addressInfoList);
+            return Response.success("删除地址信息成功!", resultMap);
+        } catch (BusinessException e) {
+            logger.error("删除地址信息失败，错误原因", e);
+            return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
+        } catch (Exception e) {
+            logger.error("删除地址信息失败，错误原因", e);
+            return Response.fail("删除地址信息失败!");
+        }
+    }
+
+    /**
+     * 把map数据转为entity
+     * 
+     * @return
+     * @throws BusinessException
+     */
+    public AddressInfoEntity paramsToEntity(Map<String, Object> paramMap, boolean isSave)
+            throws BusinessException {
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        String province = CommonUtils.getValue(paramMap, "province"); // 省
+        String city = CommonUtils.getValue(paramMap, "city"); // 市
+        String district = CommonUtils.getValue(paramMap, "district"); // 区
+        String towns = CommonUtils.getValue(paramMap, "towns"); // 乡镇
+        String address = CommonUtils.getValue(paramMap, "address"); // 街道(详细地址)
+        String postcode = CommonUtils.getValue(paramMap, "postcode"); // 邮编(暂未使用)
+        String name = CommonUtils.getValue(paramMap, "name"); // 收货人姓名
+        String telephone = CommonUtils.getValue(paramMap, "telephone"); // 收货人电话号码
+        String isDefault = CommonUtils.getValue(paramMap, "isDefault"); // 是否是默认地址
+        String id = CommonUtils.getValue(paramMap, "id"); // 地址id(表主键)
+        // 验证参数
+        validateParams(id, userId, province, city, district, towns, address, name, telephone, isDefault,
+                isSave);
+        // 封装参数
+        AddressInfoEntity addressInfoEntity = new AddressInfoEntity();
+        addressInfoEntity.setAddress(address);
+        addressInfoEntity.setCity(city);
+        addressInfoEntity.setDistrict(district);
+        addressInfoEntity.setTowns(StringUtils.isBlank(towns) ? "" : towns);
+        addressInfoEntity.setIsDefault(isDefault);
+        addressInfoEntity.setName(name);
+        addressInfoEntity.setPostcode(postcode);
+        addressInfoEntity.setProvince(province);
+        addressInfoEntity.setTelephone(telephone);
+        addressInfoEntity.setUserId(Long.parseLong(userId));
+        if (!isSave) {
+            addressInfoEntity.setId(Long.valueOf(id));
+        }
+        return addressInfoEntity;
+    }
+
+    /**
+     * 验证参数
+     * 
+     * @param userId
+     * @param province
+     * @param city
+     * @param district
+     * @param towns
+     * @param address
+     * @param name
+     * @param telephone
+     * @param isDefault
+     * @throws BusinessException
+     */
+    public void validateParams(String id, String userId, String province, String city, String district,
+            String towns, String address, String name, String telephone, String isDefault, boolean isSave)
+            throws BusinessException {
+        ValidateUtils.isNotBlank(userId, "用户编号不能为空！");
+        ValidateUtils.isNotBlank(province, "省份不能为空！");
+        ValidateUtils.isNotBlank(city, "城市不能为空！");
+        ValidateUtils.isNotBlank(district, "区县不能为空！");
+
+        if (!CityJdEnums.isContains(province)) {
+            ValidateUtils.isNotBlank(towns, "乡镇不能为空！");
+        }
+
+        ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
+        ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");
+        ValidateUtils.isNotBlank(name, "收货人姓名不能为空！");
+        ValidateUtils.checkLength(name, 1, 10, "收货人姓名输入不合法");
+        ValidateUtils.isNotBlank(telephone, "收货人联系电话不能为空！");
+        ValidateUtils.checkLength(telephone, 1, 15, "收货人联系电话输入不合法");
+        ValidateUtils.isNotBlank(isDefault, "是否默认地址不能为空！");
+        if (!isSave) {
+            ValidateUtils.isNotBlank(id, "地址编号不能为空！");
+        }
+    }
 }

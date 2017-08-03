@@ -1,5 +1,7 @@
 package com.apass.esp.domain.entity.address;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 
 /**
@@ -134,6 +136,9 @@ public class AddressInfoEntity {
     }
 
     public String getTowns() {
+        if(StringUtils.isBlank(towns)){
+            return "";
+        }
         return towns;
     }
 
@@ -142,6 +147,9 @@ public class AddressInfoEntity {
     }
 
     public String getProvinceCode() {
+        if(StringUtils.isBlank(provinceCode)){
+            return "";            
+        }
         return provinceCode;
     }
 
@@ -150,6 +158,9 @@ public class AddressInfoEntity {
     }
 
     public String getCityCode() {
+        if(StringUtils.isBlank(cityCode)){
+            return "";            
+        }
         return cityCode;
     }
 
@@ -158,6 +169,9 @@ public class AddressInfoEntity {
     }
 
     public String getDistrictCode() {
+        if(StringUtils.isBlank(districtCode)){
+            return "";            
+        }
         return districtCode;
     }
 
@@ -166,6 +180,9 @@ public class AddressInfoEntity {
     }
 
     public String getTownsCode() {
+        if(StringUtils.isBlank(townsCode)){
+            return "";            
+        }
         return townsCode;
     }
 
