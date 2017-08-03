@@ -64,8 +64,8 @@ public class AddressInfoController {
             }
 
             if (telephone.length() > 15) {
-                logger.error("收货人电话输入不合法");
-                return Response.fail("收货人电话输入不合法！");
+                logger.error("收货人电话格式错误");
+                return Response.fail("收货人电话格式错误！");
             }
 
             if (address.length() < 5 || address.length() > 80) {
@@ -219,7 +219,7 @@ public class AddressInfoController {
             }
 
             if (null != telephone && telephone.length() > 15) {
-                logger.error("收货人电话输入不合法!");
+                logger.error("收货人电话格式错误!");
                 return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
             }
 
