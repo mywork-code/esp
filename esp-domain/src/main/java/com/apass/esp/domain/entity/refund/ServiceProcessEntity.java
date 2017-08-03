@@ -107,7 +107,7 @@ public class ServiceProcessEntity {
 
     public String getNodeMessage() {
         if(StringUtils.isBlank(nodeMessage)){
-            return null;            
+            return "";            
         }
         return nodeMessage;
     }
