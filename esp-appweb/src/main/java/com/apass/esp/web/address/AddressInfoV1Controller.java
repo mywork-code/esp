@@ -264,11 +264,11 @@ public class AddressInfoV1Controller {
                              String towns, String address, String name, String telephone, String isDefault, boolean isSave)
       throws BusinessException {
     ValidateUtils.isNotBlank(userId, "用户编号不能为空！");
-    ValidateUtils.isNotBlank(province, "省份不能为空！");
-    ValidateUtils.isNotBlank(city, "城市不能为空！");
-    ValidateUtils.isNotBlank(district, "区县不能为空！");
+    ValidateUtils.isNotBlank(province, "请将收货地址所在区域填写完整！");
+    ValidateUtils.isNotBlank(city, "请将收货地址所在区域填写完整！");
+    ValidateUtils.isNotBlank(district, "请将收货地址所在区域填写完整！");
     if (!CityJdEnums.isContains(province)) {
-      ValidateUtils.isNotBlank(towns, "乡镇不能为空！");
+      ValidateUtils.isNotBlank(towns, "请将收货地址所在区域填写完整！");
     }
     ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
     ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");

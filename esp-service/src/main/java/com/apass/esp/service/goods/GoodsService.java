@@ -163,7 +163,7 @@ public class GoodsService {
     public void loadGoodsBasicInfoById(Long goodsId, Map<String, Object> returnMap) throws BusinessException {
         GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
         Long totalCurrentAmt=0L;
-        Long CurrentAmtDesc=10L;
+        Long CurrentAmtDesc=11L;
         if (null == goodsBasicInfo) {
             LOGGER.error("商品信息不存在:{}", goodsId);
             throw new BusinessException("商品信息不存在");
