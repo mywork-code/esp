@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.apass.esp.service.address.AddressService;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
 
 @Path("/v1/address")
@@ -233,7 +235,7 @@ public class AddressInfoV1Controller {
 		addressInfoEntity.setAddress(address);
 		addressInfoEntity.setCity(city);
 		addressInfoEntity.setDistrict(district);
-		addressInfoEntity.setTowns(towns);
+		addressInfoEntity.setTowns(StringUtils.isBlank(towns)?"":towns);
 		addressInfoEntity.setIsDefault(isDefault);
 		addressInfoEntity.setName(name);
 		addressInfoEntity.setPostcode(postcode);
