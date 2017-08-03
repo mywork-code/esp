@@ -605,14 +605,16 @@ public class AfterSaleService {
         serviceProcessDto.setRefundId(refundInfo.getId());
         serviceProcessDto.setStatus(refundInfo.getStatus());
         serviceProcessDto.setRefundType(refundInfo.getRefundType());
-        if (StringUtils.isNotEmpty(refundInfo.getJdReturnType())) {
-            serviceProcessDto.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
-                    : "40");
-            refundInfo.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
-                    : "40");
-        }else{
-            serviceProcessDto.setJdReturnType("4");
-            refundInfo.setJdReturnType("4");
+        if ("jd".equalsIgnoreCase(orderInfo.getSource())) {
+            if (StringUtils.isNotEmpty(refundInfo.getJdReturnType())) {
+                serviceProcessDto.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
+                        : "40");
+                refundInfo
+                        .setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4" : "40");
+            } else {
+                serviceProcessDto.setJdReturnType("4");
+                refundInfo.setJdReturnType("4");
+            }
         }
         if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
             /**
