@@ -18,6 +18,8 @@ public class GoodsStockSkuDto {
 
     /** 商品价格 **/
     private BigDecimal goodsPrice;
+    /**  商品首付价  **/
+    private BigDecimal goodsPriceFirst;
     
     /** 商品最小单元sku属性 */
     private String goodsSkuAttr;
@@ -79,4 +81,12 @@ public class GoodsStockSkuDto {
         this.stockLogo = stockLogo;
     }
 
+	public BigDecimal getGoodsPriceFirst() {
+		return goodsPriceFirst;
+	}
+
+	public void setGoodsPriceFirst(BigDecimal goodsPriceFirst) {
+		this.goodsPriceFirst = goodsPriceFirst;
+	}
+    
 }
