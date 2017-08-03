@@ -246,6 +246,9 @@ public class JdGoodsInfoService {
 					}
 				}
 			}
+		}else{
+			JdSimilarSkuToList= new ArrayList<>();
+			jdSimilarSkuList2=new ArrayList<>();
 		}
 		map.put("JdSimilarSkuToList", JdSimilarSkuToList);
 		map.put("skuId", String.valueOf(sku));
