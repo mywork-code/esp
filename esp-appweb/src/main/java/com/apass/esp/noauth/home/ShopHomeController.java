@@ -566,7 +566,9 @@ public class ShopHomeController {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), region3);
-
+                
+                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
+                
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
                 if (jdGoodsStockInfoList.size() == 1) {
