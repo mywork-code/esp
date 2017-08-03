@@ -3,6 +3,8 @@ package com.apass.esp.domain.entity.refund;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.esp.domain.enums.RefundReason;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
@@ -104,6 +106,9 @@ public class ServiceProcessEntity {
 
 
     public String getNodeMessage() {
+        if(StringUtils.isBlank(nodeMessage)){
+            return null;            
+        }
         return nodeMessage;
     }
 

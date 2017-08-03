@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
@@ -19,10 +21,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  *
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
- */
-/**
- * @author xiaohai
- *
  */
 @MyBatisEntity
 public class GoodsInfoEntity {
@@ -202,6 +200,9 @@ public class GoodsInfoEntity {
     private Integer pageSize;
 
     public String getSource() {
+        if(StringUtils.isBlank(source)){
+            return "";
+        }
         return source;
     }
 
@@ -210,6 +211,9 @@ public class GoodsInfoEntity {
     }
 
     public String getExternalId() {
+        if(StringUtils.isBlank(externalId)){
+            return "";
+        }
         return externalId;
     }
 
@@ -553,6 +557,9 @@ public class GoodsInfoEntity {
     }
 
     public String getNewCreatDate() {
+        if(StringUtils.isBlank(newCreatDate)){
+            return "1900-01-01 00:00:00";
+        }
         return newCreatDate;
     }
 

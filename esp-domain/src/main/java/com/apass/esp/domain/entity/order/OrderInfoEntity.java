@@ -3,6 +3,8 @@ package com.apass.esp.domain.entity.order;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 
 /**
@@ -196,7 +198,7 @@ public class OrderInfoEntity {
     /**
      * 是否为京东父Id
      */
-    private Integer extParentId;
+    private String extParentId = "";
 
     public String getDeviceType() {
         return deviceType;
@@ -463,6 +465,9 @@ public class OrderInfoEntity {
     }
 
     public String getSource() {
+        if(StringUtils.isBlank(source)){
+            return "";            
+        }
         return source;
     }
 
@@ -471,6 +476,9 @@ public class OrderInfoEntity {
     }
 
     public String getExtOrderId() {
+        if(StringUtils.isBlank(extOrderId)){
+            return "";            
+        }
         return extOrderId;
     }
 
@@ -479,6 +487,9 @@ public class OrderInfoEntity {
     }
 
     public String getPreStockStatus() {
+        if(StringUtils.isBlank(preStockStatus)){
+            return "";            
+        }
         return preStockStatus;
     }
 
@@ -486,12 +497,16 @@ public class OrderInfoEntity {
         this.preStockStatus = preStockStatus;
     }
 
-    public Integer getExtParentId() {
+    public String getExtParentId() {
+        if(StringUtils.isBlank(extOrderId)){
+            return "";
+        }
         return extParentId;
     }
 
-    public void setExtParentId(Integer extParentId) {
+    public void setExtParentId(String extParentId) {
         this.extParentId = extParentId;
     }
-
+    
+ 
 }
