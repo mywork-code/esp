@@ -121,7 +121,7 @@
 			<if test="district != null and district != ''">
 				district = #{district},
 			</if>
-			<if test="towns != null and towns != ''">
+			<if test="towns != null">
 				towns = #{towns},
 			</if>
 			<if test="provinceCode != null and provinceCode != ''">

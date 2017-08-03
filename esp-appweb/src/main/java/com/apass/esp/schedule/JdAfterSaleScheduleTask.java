@@ -163,11 +163,9 @@ public class JdAfterSaleScheduleTask {
         Integer i = Collections.min(list);
         if (i == 20 || i == 60) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS06.getCode(), "");
-        } else if (i == 31) {
+        } else if (i == 33 || i == 34||i == 32||i == 31) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS02.getCode(), "");
-        } else if (i == 32) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "");
-        } else if (i == 33 || i == 34) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "");
         } else if (i == 40 || i == 50) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode(), "");
