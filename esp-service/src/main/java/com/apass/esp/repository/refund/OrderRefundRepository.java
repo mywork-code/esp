@@ -126,7 +126,7 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
      * @param map
      * @return
      */
-    public RefundInfoEntity queryRefundInfoByOrderIdAndRefundType(Map<String, Object> map){
-    	return getSqlSession().selectOne(getSQL("queryRefundInfoByOrderIdAndRefundType"), map);
+    public RefundInfoEntity queryRefundInfoByOrderIdAndRefundType(Map<String, Object> map) {
+        return getSqlSession().selectOne(getSQL("queryRefundInfoByOrderIdAndRefundType"), map);
     }
 }
