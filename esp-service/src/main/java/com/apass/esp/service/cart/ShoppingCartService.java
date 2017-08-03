@@ -656,7 +656,10 @@ public class ShoppingCartService {
 				// 添加新的图片地址
 				dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
 
-				dto.setGoodsPrice(commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId()));
+                BigDecimal price = commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId());
+                dto.setGoodsPrice(price);// 商品价格
+                dto.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价
+             
 			}
 			resultMap.put("goodsSource", "");
 			resultMap.put("goodsId", goodsInfo.getId());
