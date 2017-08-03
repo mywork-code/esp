@@ -273,9 +273,9 @@ public class AddressInfoV1Controller {
     ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
     ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");
     ValidateUtils.isNotBlank(name, "收货人姓名不能为空！");
-    ValidateUtils.checkLength(name, 1, 10, "收货人姓名输入不合法");
+    ValidateUtils.checkLength(name, 1, 10, "收货人姓名输入不合法!");
     ValidateUtils.isNotBlank(telephone, "收货人联系电话不能为空！");
-    ValidateUtils.checkLength(telephone, 1, 15, "收货人联系电话输入不合法");
+    ValidateUtils.checkLength(telephone, 1, 15, "收货人电话格式错误!");
     ValidateUtils.isNotBlank(isDefault, "是否默认地址不能为空！");
     if (!isSave) {
       ValidateUtils.isNotBlank(id, "地址编号不能为空！");
