@@ -258,6 +258,7 @@ public class AfterSaleService {
                             .afterSaleWareReturnJdCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
                                     Long.valueOf(orderDetailInfoEntity.getSkuId()));
                     String jdApiResponse3String = GsonUtils.toJson(jdApiResponse3.getResult());
+                    LOGGER.info("订单支持返回的京东方式{}", jdApiResponse3String);
                     if (jdApiResponse3String.contains("4")) {
                         asPickwareDto.setPickwareType(4);
                     } else if (jdApiResponse3String.contains("40")) {
@@ -607,6 +608,11 @@ public class AfterSaleService {
         if (StringUtils.isNotEmpty(refundInfo.getJdReturnType())) {
             serviceProcessDto.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
                     : "40");
+            refundInfo.setJdReturnType(refundInfo.getJdReturnType().equalsIgnoreCase("上门取件") ? "4"
+                    : "40");
+        }else{
+            serviceProcessDto.setJdReturnType("4");
+            refundInfo.setJdReturnType("4");
         }
         if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
             /**
@@ -714,7 +720,7 @@ public class AfterSaleService {
                 }
 
                 JSONArray array = JSONArray.parseArray(result);
-                if (refundInfo.getJdReturnType().equals(JDReturnType.TO_YOUR_HOME1.getMessage())) {
+                if (refundInfo.getJdReturnType().equals(JDReturnType.TO_YOUR_HOME1.getCode().toString())) {
                     StringBuffer sb1 = new StringBuffer();// 京东审核通过
                     StringBuffer sb2 = new StringBuffer(); // 京东审核拒绝
                     StringBuffer sb = new StringBuffer(); // 最终
