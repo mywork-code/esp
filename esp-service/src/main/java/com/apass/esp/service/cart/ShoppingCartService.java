@@ -213,7 +213,13 @@ public class ShoppingCartService {
 			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_NOT_EXIST);
 		}
 		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
-		if (!("jd".equals(goodsInfo.getSource()))) {
+		if ("jd".equals(goodsInfo.getSource())) {
+            //	京东商品购买数量不能超过200		
+			if(countVal>200){
+				LOGGER.error("商品数量不能超过200！", goodsStockId, countVal);
+				throw new BusinessException("商品数量不能超过200");
+			}
+		}else{
 			// 商品当前库存量
 			int stockCurrAmt = goodsStockDao.getStockCurrAmt(goodsStockIdVal).intValue();
 
@@ -319,6 +325,7 @@ public class ShoppingCartService {
             			goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
             		}
+            		goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));//设置商品的当前库存为200
             		GoodsInfoEntity goodsInfoEntity=goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
         			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfoEntity.getExternalId()));
 
@@ -698,6 +705,7 @@ public class ShoppingCartService {
 			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
 			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 			goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
+			goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));
 		} else {
 			// 查询商品基本信息，返回客户端该商品单条信息
 	        goodsInfo = goodsInfoDao.select(goodsIdVal);

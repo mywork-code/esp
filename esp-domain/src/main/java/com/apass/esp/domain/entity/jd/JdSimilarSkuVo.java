@@ -6,6 +6,7 @@ public class JdSimilarSkuVo {
 	private String skuId;
 	private String goodsId;
 	private String goodsStockId;
+	private Long stockCurrAmt;
 	private BigDecimal price;
 	private BigDecimal priceFirst;
 	private String stockDesc;
@@ -45,5 +46,12 @@ public class JdSimilarSkuVo {
 	public void setGoodsStockId(String goodsStockId) {
 		this.goodsStockId = goodsStockId;
 	}
+	public Long getStockCurrAmt() {
+		return stockCurrAmt;
+	}
+	public void setStockCurrAmt(Long stockCurrAmt) {
+		this.stockCurrAmt = stockCurrAmt;
+	}
+	
 	
 }

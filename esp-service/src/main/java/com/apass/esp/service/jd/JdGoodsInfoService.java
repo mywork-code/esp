@@ -188,7 +188,10 @@ public class JdGoodsInfoService {
 		while (iterator.hasNext()) {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-
+			
+			//为京东商品添加库存
+			jdSimilarSkuVo.setStockCurrAmt(Long.parseLong("200"));
+			
 			String skuId = iterator.next();
 			// 查询商品价格
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
@@ -302,7 +305,8 @@ public class JdGoodsInfoService {
 		while (iterator.hasNext()) {
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-
+			//为京东商品添加库存
+			jdSimilarSkuVo.setStockCurrAmt(Long.parseLong("200"));
 			String skuId = iterator.next();
 			// 查询商品价格
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
