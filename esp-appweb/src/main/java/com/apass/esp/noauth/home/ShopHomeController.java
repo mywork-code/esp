@@ -759,7 +759,7 @@ public class ShopHomeController {
                 LOGGER.error("热销商品id:{}在商品表中无对应商品", goodsId);
                 throw new BusinessException("数据异常");
             }
-            if (goodsInfoEntity.getSource() == null) {
+            if (StringUtils.isEmpty(goodsInfoEntity.getSource())) {
                 goodsInfoEntity
                         .setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));// 非京东
                 goodsInfoEntity
