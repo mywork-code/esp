@@ -85,6 +85,7 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
+                    goodsInfoEntity.setUpdateUser("jdAdmin");
                     try {
                         goodsService.updateService(goodsInfoEntity);
                     } catch (Exception e) {
@@ -247,8 +248,8 @@ public class JDTaskListener implements MessageListener {
                     stockEntity.setGoodsPrice(jdGoods.getJdPrice());
                     stockEntity.setMarketPrice(jdGoods.getJdPrice());
                     stockEntity.setGoodsCostPrice(jdGoods.getPrice());
-                    stockEntity.setCreateUser("jd");
-                    stockEntity.setUpdateUser("jd");
+                    stockEntity.setCreateUser("jdAdmin");
+                    stockEntity.setUpdateUser("jdAdmin");
                     try {
                         goodsStockInfoService.insert(stockEntity);
                     } catch (Exception e) {

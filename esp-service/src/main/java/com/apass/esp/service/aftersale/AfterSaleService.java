@@ -802,8 +802,10 @@ public class AfterSaleService {
                     goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsStock.getStockLogo()));
                 }
             }else{
-                goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
-                goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" +goods.getGoodsLogoUrl());
+                if(goods!=null){
+                    goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
+                    goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" +goods.getGoodsLogoUrl());
+                }
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());

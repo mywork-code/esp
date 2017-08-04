@@ -23,6 +23,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
+import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -42,6 +43,7 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.nation.NationService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -94,7 +96,9 @@ public class ShopHomeController {
 
     @Autowired
     private AddressService addressService;
-
+    @Autowired
+    private NationService  nationService;
+    
     @Value("${esp.image.uri}")
     private String espImageUrl;
 
@@ -394,15 +398,16 @@ public class ShopHomeController {
             Region region = new Region();// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
                 if (!CityJdEnums.isContainsCode(provinceCode)) {
-                    if (StringUtils.isEmpty(townsCode)) {
+                	List<DictDTO> result=nationService.queryDistrictJd(districtCode);
+                	if(result.size()==0){
+                		  region.setProvinceId(Integer.parseInt(provinceCode));
+                          region.setCityId(Integer.parseInt(cityCode));
+                          region.setCountyId(Integer.parseInt(districtCode));
+                          region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                          flage = false;
+                	}else{
                         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                    } else {
-                        region.setProvinceId(Integer.parseInt(provinceCode));
-                        region.setCityId(Integer.parseInt(cityCode));
-                        region.setCountyId(Integer.parseInt(districtCode));
-                        region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                        flage = false;
-                    }
+                	}
                 }
             }
             Region region2 = new Region();
@@ -508,15 +513,17 @@ public class ShopHomeController {
             Region region = new Region();// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
                 if (!CityJdEnums.isContainsCode(provinceCode)) {
-                    if (StringUtils.isEmpty(townsCode)) {
+                	List<DictDTO> result=nationService.queryDistrictJd(districtCode);
+                	if(result.size()==0){
+                		  region.setProvinceId(Integer.parseInt(provinceCode));
+                          region.setCityId(Integer.parseInt(cityCode));
+                          region.setCountyId(Integer.parseInt(districtCode));
+                          region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                          flage = false;
+                	}else{
                         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                    }
+                	}
                 }
-                region.setProvinceId(Integer.parseInt(provinceCode));
-                region.setCityId(Integer.parseInt(cityCode));
-                region.setCountyId(Integer.parseInt(districtCode));
-                region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                flage = false;
             }
             Region region2 = new Region();
             // 查看地址信息
