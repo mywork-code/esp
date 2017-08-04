@@ -378,12 +378,11 @@ public class JdGoodsInfoService {
 		if (sku.toString().length() != 8) {
 			return null;
 		}
-		Gson gson = new Gson();
 		JdGoodsBooks jdGoodsBooks = new JdGoodsBooks();
 		// 查询图书音像类目商品信息
 		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
 		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
-			jdGoodsBooks = gson.fromJson(jdGoodsBooksDetail.getResult().toString(), JdGoodsBooks.class);
+			jdGoodsBooks = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoodsBooks>(){});
 		}
 		return jdGoodsBooks;
 	}
@@ -394,12 +393,11 @@ public class JdGoodsInfoService {
 		if (sku.toString().length() == 8) {
 			return null;
 		}
-		Gson gson = new Gson();
 		JdGoods jdGoods = new JdGoods();
 		// 查询图书音像类目商品信息
 		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
 		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
-			jdGoods = gson.fromJson(jdGoodsBooksDetail.getResult().toString(), JdGoods.class);
+			jdGoods = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoods>(){});
 		}
 		return jdGoods;
 	}
@@ -411,12 +409,11 @@ public class JdGoodsInfoService {
 	 * @return
 	 */
 	public List<JdSellPrice> getJdSellPriceBySku(Collection<Long> sku) {
-		Gson gson = new Gson();
 		List<JdSellPrice> jdSellPriceList = new ArrayList<>();
 		JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(sku);
 		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
 			for (int i = 0; i < jdSellPrice.getResult().size(); i++) {
-				JdSellPrice jp = gson.fromJson(jdSellPrice.getResult().getString(i), JdSellPrice.class);
+				JdSellPrice jp = JSONObject.parseObject(jdSellPrice.getResult().getString(i),  new TypeReference<JdSellPrice>(){});
 				jdSellPriceList.add(jp);
 			}
 		}
@@ -488,11 +485,10 @@ public class JdGoodsInfoService {
 	 * @return
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
-		Gson gson = new Gson();
 		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
 		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
-			JdSimilarSku jp = gson.fromJson(jdSimilarResponse.getResult().getString(i), JdSimilarSku.class);
+			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
 			jp.update(jp.getSaleAttrList());
 			JdSimilarSkuList.add(jp);
 		}
@@ -541,8 +537,6 @@ public class JdGoodsInfoService {
 	   /**
      * 获取当个sku库存接口（建议订单详情页、下单使用）
      *
-     * @param skuNums
-     * @param region
      * @return
      */
     public String getStockBySku(String sku, Region region) {
