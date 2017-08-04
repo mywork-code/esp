@@ -327,9 +327,7 @@ public class ShoppingCartService {
             		}
             		goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));//设置商品的当前库存为200
             		GoodsInfoEntity goodsInfoEntity=goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
-        			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfoEntity.getExternalId()));
-
-            		goodsInfoInCart.setGoodsSkuAttr(jdSimilarSkuInfoMap.get("jdGoodsSimilarSku")+"");
+            		goodsInfoInCart.setGoodsSkuAttr(goodsInfoEntity.getAttrDesc());
             	}else{
             		//添加新的图片地址
                     String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());

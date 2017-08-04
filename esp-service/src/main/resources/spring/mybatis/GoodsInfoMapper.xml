@@ -778,7 +778,8 @@
 			goods_model goodsModel,
 			un_support_province unSupportProvince,
 			source     source,
-			external_id   externalId
+			external_id   externalId,
+			attr_desc     attrDesc
 		FROM
 			t_esp_goods_base_info
 		WHERE
