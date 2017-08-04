@@ -881,7 +881,7 @@ public class OrderService {
                 }
 
             }
-            if (goodsInfo.getSource() == null) {
+            if (StringUtils.isBlank(goodsInfo.getSource())) {
                 if (goodsDetail.getStockCurrAmt() < purchase.getBuyNum()) {
                     LOG.info(requestId, "生成订单前校验,商品库存不足", goodsDetail.getGoodsStockId().toString());
                     throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
