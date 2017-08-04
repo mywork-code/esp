@@ -1352,6 +1352,8 @@ public class OrderService {
             if (null != goodsStock) {
                 goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
                 goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
+            }else{
+                goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
