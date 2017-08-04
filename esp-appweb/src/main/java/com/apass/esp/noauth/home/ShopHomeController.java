@@ -721,12 +721,9 @@ public class ShopHomeController {
                 goodsIdList = goodsService.getRemainderGoodsNew(0, 50 - list.size());
             }
             if (CollectionUtils.isNotEmpty(goodsIdList)) {
-                list.removeAll(goodsIdList);
+                //list.removeAll(goodsIdList);
                 list.addAll(goodsIdList);
             }
-        } else {
-            list.removeAll(goodsIdList);
-            list.addAll(goodsIdList);
         }
         try {
             goodsList = getSaleVolumeGoods(list);

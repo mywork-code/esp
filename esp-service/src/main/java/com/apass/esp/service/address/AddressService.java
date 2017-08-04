@@ -114,6 +114,9 @@ public class AddressService {
             addPropertiesToEntity(addAddressInfo);
             addressInfoRepository.insert(addAddressInfo);
             return addAddressInfo.getId();
+        }catch(BusinessException e){
+        	LOGGER.error("新增地址信息失败===>", e);
+        	throw new BusinessException(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("新增地址信息失败===>", e);
             throw new BusinessException("新增地址信息失败！", BusinessErrorCode.ADD_INFO_FAILED);
@@ -175,6 +178,9 @@ public class AddressService {
             List<AddressInfoEntity> addressInfoList = addressInfoRepository.queryAddressInfoList(addInfo
                     .getUserId());
             return addressInfoList;
+        } catch(BusinessException e){
+        	LOGGER.error("更新地址信息失败===>", e);
+        	throw new BusinessException(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("更新地址信息失败===>", e);
             throw new BusinessException("更新地址信息失败！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
@@ -260,8 +266,9 @@ public class AddressService {
      * 根据province/city/distract/towns,获取对应的code
      * 
      * @return
+     * @throws BusinessException 
      */
-    public AddressInfoEntity addPropertiesToEntity(AddressInfoEntity address) {
+    public AddressInfoEntity addPropertiesToEntity(AddressInfoEntity address) throws BusinessException {
 
         WorkCityJdDto dto1 = new WorkCityJdDto(address.getProvince(), "0");
         WorkCityJd provice = cityJdMapper.selectByNameAndParent(dto1);
@@ -272,6 +279,13 @@ public class AddressService {
         WorkCityJdDto dto3 = new WorkCityJdDto(address.getDistrict(), city.getCode());
         WorkCityJd district = cityJdMapper.selectByNameAndParent(dto3);
 
+        
+        List<WorkCityJd> townList = cityJdMapper.selectDateByParentId(district.getCode());
+        
+        if(!CollectionUtils.isEmpty(townList) && StringUtils.isBlank(address.getTowns())){
+        	throw new BusinessException("请将收货地址所在区域填写完整！");
+        }
+        
         WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(), district.getCode());
         WorkCityJd towns = cityJdMapper.selectByNameAndParent(dto4);
 

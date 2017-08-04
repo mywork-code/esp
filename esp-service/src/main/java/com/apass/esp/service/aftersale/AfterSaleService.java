@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.repository.goods.GoodsRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +108,9 @@ public class AfterSaleService {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    public GoodsRepository goodsDao;
 
     @Autowired
     private GoodsService goodsService;
@@ -786,6 +790,7 @@ public class AfterSaleService {
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(refundDetailInfo.getGoodsNum());
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
+            GoodsInfoEntity goods = goodsDao.select(orderDetailInfo.getGoodsId());
             if (goodsStock != null) {
                 goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
                 if (goodsStock.getStockTotalAmt() == -1l) {
@@ -796,6 +801,9 @@ public class AfterSaleService {
                     goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
                     goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsStock.getStockLogo()));
                 }
+            }else{
+                goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
+                goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" +goods.getGoodsLogoUrl());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());

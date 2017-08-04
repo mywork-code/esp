@@ -272,7 +272,33 @@
                 AND CURDATE()
                 GROUP BY
                     goods_id)
-        order by list_time desc
+        AND teg.id not in(
+         SELECT
+            teg.id goodsId
+        FROM
+            (
+                SELECT
+                    goods_id,
+                    sum(sales_num) su
+                FROM
+                    t_esp_goods_sales_volume
+                WHERE
+                    `create_date` BETWEEN (CURDATE() - INTERVAL 30 DAY)
+                AND CURDATE()
+                GROUP BY
+                    goods_id
+                ORDER BY
+                    su DESC
+            ) a
+        LEFT JOIN t_esp_goods_base_info teg ON teg.id = a.goods_id
+        WHERE
+            teg.goods_type != 2
+        AND teg.`status` = 'G02'
+        AND teg.is_delete='01'
+        AND CURRENT_TIMESTAMP > teg.list_time
+        AND CURRENT_TIMESTAMP < teg.delist_time
+        )
+        order by teg.update_date desc
         limit #{pageBegin},#{count}
         ]]>
     </select>
@@ -297,6 +323,32 @@
                 AND CURDATE()
                 GROUP BY
                     goods_id)
+         AND teg.id not in(
+         SELECT
+            teg.id goodsId
+         FROM
+            (
+                SELECT
+                    goods_id,
+                    sum(sales_num) su
+                FROM
+                    t_esp_goods_sales_volume
+                WHERE
+                    `create_date` BETWEEN (CURDATE() - INTERVAL 30 DAY)
+                AND CURDATE()
+                GROUP BY
+                    goods_id
+                ORDER BY
+                    su DESC
+            ) a
+        LEFT JOIN t_esp_goods_base_info teg ON teg.id = a.goods_id
+        WHERE
+            teg.goods_type != 2
+        AND teg.`status` = 'G02'
+        AND teg.is_delete='01'
+        AND CURRENT_TIMESTAMP > teg.list_time
+        AND CURRENT_TIMESTAMP < teg.delist_time
+        )
         ]]>
     </select>
 

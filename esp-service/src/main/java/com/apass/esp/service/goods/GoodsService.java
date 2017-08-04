@@ -551,7 +551,7 @@ public class GoodsService {
 
         //热卖单品大于170件时 全从热卖单品里取数据
         if (totalConut >= 170) {
-            List<String> list =  goodsBasicRepository.popularGoods(50+pageBegin,pageSize);
+            List<String> list =  goodsBasicRepository.popularGoods(50 +pageBegin,pageSize);
             pagination.setDataList(list);
         }
         //热卖单品大于50，小于170时
@@ -559,14 +559,14 @@ public class GoodsService {
         if (totalConut > 50 && totalConut < 170) {
             List<String> list =  goodsBasicRepository.popularGoods(50+pageBegin,pageSize);
             if (CollectionUtils.isEmpty(list) || list.size() != 20) {
-                List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
+                List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, 20-pageSize);
                 pagination.setDataList(s);
             }else{
                 pagination.setDataList(list);
             }
         }
         if(totalConut<50){
-            List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
+            List<String> s = goodsBasicRepository.getRemainderGoodsNew(50-totalConut+pageBegin, pageSize);
             pagination.setDataList(s);
         }
         pagination.setTotalCount(120);
