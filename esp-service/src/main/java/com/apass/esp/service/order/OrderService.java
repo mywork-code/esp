@@ -1993,6 +1993,44 @@ public class OrderService {
         }
         return results;
     }
+    
+    /**
+     * 验证商品是否支持配送区域
+     * @param addreesId
+     * @param purchaseList
+     * @return
+     * @throws BusinessException
+     */
+    public List<PurchaseRequestDto> validateGoodsUnSupportProvince(Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException {
+    	for (PurchaseRequestDto purchase : purchaseList) {
+            GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+            if (null != goods) {
+                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                    AddressInfoEntity address = addressInfoDao.select(addreesId);
+                    Region region = new Region();
+                    if (null != address) {
+                        region.setProvinceId(Integer.parseInt(address.getProvinceCode()));
+                        region.setCityId(Integer.parseInt(address.getCityCode()));
+                        region.setCountyId(Integer.parseInt(address.getDistrictCode()));
+                        region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer
+                                .parseInt(address.getTownsCode()));
+                    }
+                    String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
+                            purchase.getBuyNum());
+                    if ("无货".equals(jdgoodsStock)) {
+                    	purchase.setUnSupportProvince(true);
+                    }
+                } else {
+                    // 校验非京东商品的不可发送区域
+                	Map<String, Object> resultMaps = validateGoodsUnSupportProvince("", addreesId, purchase.getGoodsId());
+                	if(!resultMaps.isEmpty()){
+                		purchase.setUnSupportProvince((Boolean)resultMaps.get("unSupportProvince"));
+                	}
+                }
+            }
+    	}
+        return purchaseList;
+    }
 
     /**
      * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
