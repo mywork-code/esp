@@ -13,10 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
@@ -30,9 +27,9 @@ import java.util.List;
  * @since JDK 1.8
  */
 
-@Component
-@Configurable
-@EnableScheduling
+//@Component
+//@Configurable
+//@EnableScheduling
 //@Profile("Schedule")
 public class JdConfirmPreInventoryTask {
 
