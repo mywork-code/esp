@@ -269,9 +269,9 @@ public class AddressInfoV1Controller {
     ValidateUtils.isNotBlank(province, "请将收货地址所在区域填写完整！");
     ValidateUtils.isNotBlank(city, "请将收货地址所在区域填写完整！");
     ValidateUtils.isNotBlank(district, "请将收货地址所在区域填写完整！");
-    if (!CityJdEnums.isContains(province)) {
+    /*if (!CityJdEnums.isContains(province)) {
       ValidateUtils.isNotBlank(towns, "请将收货地址所在区域填写完整！");
-    }
+    }*/
     ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
     ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");
     ValidateUtils.isNotBlank(name, "收货人姓名不能为空！");
