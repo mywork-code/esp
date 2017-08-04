@@ -1324,8 +1324,13 @@ public class OrderService {
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity);
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto goodsInfoInOrderDto : goodsInfoInOrderDtoList) {
-            goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils
-                    .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
+            if (StringUtils.isEmpty(dto.getSource())){
+                goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils
+                        .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
+            }else{
+                goodsInfoInOrderDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+goodsInfoInOrderDto.getGoodsLogoUrl());
+            }
+
         }
         return dto;
     }

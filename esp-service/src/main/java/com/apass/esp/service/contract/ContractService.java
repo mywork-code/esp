@@ -457,6 +457,9 @@ public class ContractService {
         String currentYearMonth = DateFormatUtil.dateToString(new Date(), "yyyy-MM");
         Calendar billDateCalendar = Calendar.getInstance();
         billDateCalendar.setTime(DateFormatUtil.string2date(currentYearMonth + "-" + CommonUtils.leftPad(billDay + "", 2, "0")));
+        
+        //还款日
+        model.setRepaymentDate(customerCreditInfo.getRepaymentDate());
 
         // 当前日
         Calendar currentCalendar = Calendar.getInstance();

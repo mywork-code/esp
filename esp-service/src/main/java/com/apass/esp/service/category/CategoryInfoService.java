@@ -356,7 +356,7 @@ public class CategoryInfoService {
             List<GoodsInfoEntity> list = goodsService.getBelongCategoryGoods(id);
             if (CollectionUtils.isNotEmpty(list)) {
                 for (GoodsInfoEntity goodsInfoEntity : list) {
-                    if (goodsInfoEntity.getSource() != null) {
+                    if (goodsInfoEntity.getSource() == "jd") {
                         throw new BusinessException("请先将京东分类取消关联并再次操作");
                     }
                 }
