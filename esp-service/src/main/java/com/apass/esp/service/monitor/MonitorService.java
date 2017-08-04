@@ -10,7 +10,6 @@ import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.mapper.MonitorEntityMapper;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.BaseConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -30,9 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MonitorService {
     @Autowired
     public MonitorEntityMapper monitorEntityMapper;
-
-    @Autowired
-    private CacheManager cacheManager;
 
     public  ConcurrentHashMap<String, MonitorEntity> concurrentHashMap = new ConcurrentHashMap<String, MonitorEntity>();
 
