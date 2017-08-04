@@ -6,6 +6,10 @@ import java.util.List;
 /**
  * Created by lixining on 2017/4/5.
  */
+/**
+ * @author xiaohai
+ *
+ */
 public class BuySellContractDTO {
     /**
      * 客户ID
@@ -81,6 +85,12 @@ public class BuySellContractDTO {
      * 合同签署日期
      */
     private String contractDate;
+    
+    
+    /**
+     * 还款日 
+     */
+    private String repaymentDate;
 
     public String getContractNo() {
         return contractNo;
@@ -265,4 +275,15 @@ public class BuySellContractDTO {
     public void setStageEndDay(String stageEndDay) {
         this.stageEndDay = stageEndDay;
     }
+
+    public String getRepaymentDate() {
+        return repaymentDate;
+    }
+
+    public void setRepaymentDate(String repaymentDate) {
+        this.repaymentDate = repaymentDate;
+    }
+    
+    
+    
 }
