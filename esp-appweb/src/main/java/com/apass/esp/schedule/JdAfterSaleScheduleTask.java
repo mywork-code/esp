@@ -65,6 +65,9 @@ public class JdAfterSaleScheduleTask {
     @Autowired
     private ServiceProcessService serviceProcessService;
 
+    @Autowired
+    private OrderRefundRepository orderRefundRepository;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
         //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
@@ -93,7 +96,7 @@ public class JdAfterSaleScheduleTask {
             if (refundInfoEntity == null) {
                 return;
             }
-            process(array, refundInfoEntity.getId());
+            process(array, refundInfoEntity.getId(),orderInfoEntity.getOrderId());
             //该售后单的状态改为进度最慢的子售后单进度
             String refundStatus = getStatus(array);
             Map<String, String> paramMap = new HashMap<>();
@@ -152,7 +155,7 @@ public class JdAfterSaleScheduleTask {
      * @param refundId
      * @return
      */
-    private void process(JSONArray jsonArray, long refundId) {
+    private void process(JSONArray jsonArray, long refundId,String orderId) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
@@ -164,6 +167,12 @@ public class JdAfterSaleScheduleTask {
         if (i == 20 || i == 60) {
             insertProcess(refundId, RefundStatus.REFUND_STATUS06.getCode(), "");
         } else if (i == 33 || i == 34||i == 32||i == 31) {
+            Map<String, String> map = new HashMap<>();
+            map.put("orderId", orderId);
+            map.put("refundId", String.valueOf(refundId));
+            map.put("approvalUser", "jdAdmin");
+            map.put("approvalComments", "同意");
+            orderRefundRepository.agreeRefundByOrderId(map);
             insertProcess(refundId, RefundStatus.REFUND_STATUS02.getCode(), "");
             insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "");
             insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "");
