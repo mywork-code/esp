@@ -62,7 +62,7 @@
 		]]>
 		<where>
 			<![CDATA[
-					orderstatus !='D08'
+					orderstatus !='D08' and ext_parent_id!='-1'
 				 ]]>
  			<include refid="QueryConditionSql" />
 		</where>
@@ -103,7 +103,7 @@
 			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
-		where main_order_id=#{value}
+		where main_order_id=#{value} and ext_parent_id!='-1'
 		]]>
 	</select>
 	
@@ -139,7 +139,7 @@
 			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
-		where 1=1
+		where 1=1 and ext_parent_id!='-1'
 		]]>
 		<if test="orderIdArray != null">
 			AND order_id in
@@ -186,7 +186,7 @@
 			pre_delivery preDelivery
 		FROM
 			t_esp_order_info
-			WHERE 1=1
+			WHERE 1=1 and ext_parent_id!='-1'
 		]]>
 		<if test="userId != null and userId != ''">
 			AND user_id=#{userId}
@@ -241,7 +241,7 @@
 			ext_order_id extOrderId
 		FROM
 			t_esp_order_info
-			WHERE 1=1
+			WHERE 1=1 and ext_parent_id!='-1'
 		]]>
 		<if test="userId != null">
 			AND user_id=#{userId}
@@ -433,7 +433,7 @@
                 ORDERSTATUS         id 
         FROM    t_esp_order_info 
         WHERE   USER_ID = #{value} 
-        AND     ORDERSTATUS IN ('D00','D02','D03')
+        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1'
         GROUP BY ORDERSTATUS
         ]]>
 	</select>
@@ -453,7 +453,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D00'
+			orderstatus = 'D00' and ext_parent_id!='-1'
 		order by create_date asc
 		LIMIT 0,1000
 		]]>
@@ -483,7 +483,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D03'
+			orderstatus = 'D03' and ext_parent_id!='-1'
 		]]>
 	</select>
 	<!-- 根据物流唯一标识 -->
@@ -537,7 +537,7 @@
 					INTERVAL 1 DAY
 				) < NOW()
 			)
-		AND orderstatus = 'D05'
+		AND orderstatus = 'D05' and ext_parent_id!='-1'
 		]]>
 	</select>
 
@@ -556,8 +556,9 @@
 		FROM
 			t_esp_order_info a
 			WHERE a.payType='T02' and 
-			a.payStatus = 'P02' AND 
-			a.user_id = #{value} and 
+			a.payStatus = 'P02' AND
+			a.user_id = #{value}
+			 and ext_parent_id!='-1' and
 			not EXISTS 
             (select b.id from t_esp_cash_refund b where a.order_id=b.order_id and b.status in (2,4))	
 			
@@ -580,7 +581,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D02' and pre_delivery = 'N'
+			orderstatus = 'D02' and pre_delivery = 'N' and ext_parent_id!='-1'
 		]]>
 	</select>
 	
