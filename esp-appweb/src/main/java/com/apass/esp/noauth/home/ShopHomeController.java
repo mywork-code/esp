@@ -521,7 +521,15 @@ public class ShopHomeController {
                           region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
                           flage = false;
                 	}else{
-                        return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                		if(StringUtils.isNotEmpty(townsCode)){
+                			  region.setProvinceId(Integer.parseInt(provinceCode));
+                              region.setCityId(Integer.parseInt(cityCode));
+                              region.setCountyId(Integer.parseInt(districtCode));
+                              region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                              flage = false;
+                		}else{
+                			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                		}
                 	}
                 }
             }
