@@ -22,6 +22,11 @@ public class PurchaseRequestDto {
     
     private BigDecimal price;
     
+    /**
+     * 商品是否支持可配送区域
+     */
+    private boolean unSupportProvince;
+    
     public BigDecimal getPrice() {
         return price;
     }
@@ -52,6 +57,11 @@ public class PurchaseRequestDto {
     public void setBuyNum(Integer buyNum) {
         this.buyNum = buyNum;
     }
-    
+	public boolean isUnSupportProvince() {
+		return unSupportProvince;
+	}
+	public void setUnSupportProvince(boolean unSupportProvince) {
+		this.unSupportProvince = unSupportProvince;
+	}
     
 }
