@@ -467,6 +467,9 @@
 			<if test="newCreatDate != null">
 				newCreat_date = #{newCreatDate, jdbcType=VARCHAR},
 			</if>
+			<if test="attrDesc != null and attrDesc != ''">
+				attr_desc = #{attrDesc, jdbcType=VARCHAR},
+			</if>
 		</set>
 	<![CDATA[
 		WHERE ID =  #{id, jdbcType=BIGINT}
