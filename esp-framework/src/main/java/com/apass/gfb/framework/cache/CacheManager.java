@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -186,51 +185,4 @@ public class CacheManager {
     return null;
   }
 
-  /**
-   * @param lockKey
-   * @param expire  毫秒
-   * @return
-   */
-  public Long lock(String lockKey, long expire) {
-    while (true) {
-      Long timeOut = System.currentTimeMillis() + expire; //锁时间
-      boolean lockFlag = redisTemplate.execute(new RedisCallback<Boolean>() {
-        @Override
-        public Boolean doInRedis(RedisConnection redisConnection) throws DataAccessException {
-          StringRedisSerializer jdkSerializer = new StringRedisSerializer();
-          byte[] value = jdkSerializer.serialize(timeOut.toString());
-          return redisConnection.setNX(lockKey.getBytes(), value);
-        }
-      });
-      if (lockFlag) {
-        redisTemplate.expire(lockKey, expire, TimeUnit.MILLISECONDS); //设置超时时间
-        return timeOut;
-      } else {
-        Long currt_lock_timeout_Str = (Long) redisTemplate.opsForValue().get(lockKey); // redis里的时间
-        if (currt_lock_timeout_Str != null && currt_lock_timeout_Str < System.currentTimeMillis()) { //锁已经失效
-          // 判断是否为空，不为空的情况下，说明已经失效，如果被其他线程设置了值，则第二个条件判断是无法执行
-
-          Long old_lock_timeout_Str = (Long) redisTemplate.opsForValue().getAndSet(lockKey, timeOut);
-          // 获取上一个锁到期时间，并设置现在的锁到期时间
-          if (old_lock_timeout_Str != null && old_lock_timeout_Str.equals(currt_lock_timeout_Str)) {
-            redisTemplate.expire(lockKey, expire, TimeUnit.MILLISECONDS); //设置超时时间，释放内存
-            return timeOut;
-          }
-        }
-      }
-      try {
-        TimeUnit.MILLISECONDS.sleep(100);//睡眠100毫秒
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  public void unlock(String lockKey,long lockvalue){
-    Long currt_lock_timeout_Str = Long.valueOf(getStr(lockKey)); // redis里的时间
-
-    if (currt_lock_timeout_Str != null && currt_lock_timeout_Str == lockvalue) {//如果是加锁者 则删除锁 如果不是则等待自动过期 重新竞争加锁
-      delete(lockKey); //删除键
-    }
-  }
 }

@@ -114,7 +114,7 @@ public class PaymentService {
 	 * @throws BusinessException
 	 */
 
-	@Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
+	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
 	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
 	public String defary(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
 		// 校验订单状态

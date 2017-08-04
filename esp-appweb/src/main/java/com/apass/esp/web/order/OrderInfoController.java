@@ -24,6 +24,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
+import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
@@ -44,6 +45,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,6 +182,35 @@ public class OrderInfoController {
     return Response.success("订单生成成功!", resultMap);
   }
 
+  /**
+   * 下单之前更换地址，然后根据地址的id，验证商品的可支持配送区域
+   *
+   * @param paramMap
+   * @return
+   */
+  @POST
+  @Path("/validateGoodaByAddressId")
+  public Response validateUnSupportByAddressId(Map<String, Object> paramMap) {
+	  
+	  String addressId = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
+	  String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
+	  List<PurchaseRequestDto> purchaseList = null;
+	  try {
+		  ValidateUtils.isNotBlank(addressId, "地址编号不能为空!");
+		  ValidateUtils.isNotBlank(buyInfo, "购买商品信息不能为空!");
+		  purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
+		  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+	  } catch(BusinessException e){
+		  LOGGER.error(e.getErrorDesc());
+	      return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
+	  } catch (Exception e) {
+		  LOGGER.error(e.getMessage(), e);
+	      LOGGER.error("订单取消失败!请稍后再试");
+	      return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
+	  }
+	  return Response.success("验证成功!",purchaseList);
+  }
+  
   /**
    * 取消订单
    *
