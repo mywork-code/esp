@@ -42,6 +42,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import static java.math.BigDecimal.ROUND_HALF_DOWN;
+import static java.math.BigDecimal.ROUND_HALF_UP;
+
 @Service
 public class CashRefundService {
 
@@ -487,9 +490,9 @@ public class CashRefundService {
                 firstAmount = txnInfoEntity.getTxnAmt();
             }
         }
-        BigDecimal scale = firstAmount.divide(txtAmount);
+        BigDecimal scale = firstAmount.divide(txtAmount,2,ROUND_HALF_UP);
         dto.setSfScale(scale);
-        dto.setSfAmt(orderAmt.multiply(scale).setScale(2,BigDecimal.ROUND_HALF_UP));
+        dto.setSfAmt(orderAmt.multiply(scale).setScale(2, ROUND_HALF_UP));
         dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
         return dto;
 
