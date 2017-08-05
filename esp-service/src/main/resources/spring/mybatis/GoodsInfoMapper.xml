@@ -612,7 +612,7 @@
 				) b
 			WHERE
 				a.goods_id = b.goodsId
-			AND a.market_price = b.minprice
+			AND a.goods_price = b.minprice
 			GROUP BY
 				a.goods_id
 		) c 
