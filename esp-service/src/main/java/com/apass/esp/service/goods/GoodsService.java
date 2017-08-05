@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -259,6 +260,47 @@ public class GoodsService {
         }
     	return minPrice;
     }
+    /**
+     * 获取商品最低价所对应的库存id
+     * 
+     * @param goodsId
+     * @return
+     * @throws BusinessException 
+     */
+	public Map<String, Object> getMinPriceGoods(Long goodsId) throws BusinessException {
+		Map<String, Object> map = new HashMap<>();
+		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+		for (GoodsStockInfoEntity goodsStock : goodsStockList) {
+			BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(), goodsStock.getGoodsStockId());
+			goodsStock.setGoodsPrice(price);
+		}
+//		BigDecimal maxPrice = BigDecimal.ZERO;
+		BigDecimal minPrice = BigDecimal.ZERO;
+		Long minPriceStockId = 0L;
+//		Long maxPriceStockId = 0L;
+		if (null != goodsStockList && goodsStockList.size() > 0) {
+			minPrice = goodsStockList.get(0).getGoodsPrice();
+			for (GoodsStockInfoEntity stock : goodsStockList) {
+//				if (stock.getGoodsPrice().compareTo(maxPrice) > 0) {
+//					maxPrice = stock.getGoodsPrice();
+//					maxPriceStockId = stock.getId();
+//				}
+				if (minPrice.compareTo(stock.getGoodsPrice()) > 0) {
+					minPrice = stock.getGoodsPrice();
+					minPriceStockId = stock.getId();
+				}
+			}
+			map.put("minPrice", minPrice);
+			map.put("minPriceStockId", minPriceStockId);
+//			map.put("maxPrice", maxPrice);
+//			map.put("maxPriceStockId", maxPriceStockId);
+		}
+		return map;
+	}
+    
+    
+    
+    
     /**
      * 获取商品详细信息(尺寸规格价格大小等)
      *
