@@ -285,7 +285,7 @@ public class GoodsService {
 //					maxPrice = stock.getGoodsPrice();
 //					maxPriceStockId = stock.getId();
 //				}
-				if (minPrice.compareTo(stock.getGoodsPrice()) > 0) {
+				if (minPrice.compareTo(stock.getGoodsPrice()) >=0) {
 					minPrice = stock.getGoodsPrice();
 					minPriceStockId = stock.getId();
 				}

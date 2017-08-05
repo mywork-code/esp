@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.DictDTO;
@@ -29,11 +30,13 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
+import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
+import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
@@ -98,6 +101,8 @@ public class ShopHomeController {
     private AddressService addressService;
     @Autowired
     private NationService  nationService;
+    @Autowired
+    private ActivityInfoRepository actityInfoDao;
     
     @Value("${esp.image.uri}")
     private String espImageUrl;
@@ -126,11 +131,24 @@ public class ShopHomeController {
             returnMap.put("recommendGoods", recommendGoods.getDataList());
 
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
-                BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
-                        goods.getGoodsStockId());
-                goods.setGoodsPrice(price);
-                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
-
+            	   ActivityInfoEntity param = new ActivityInfoEntity();
+                   param.setGoodsId(goods.getGoodId());
+                   param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                   List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                   Map<String, Object> result=new HashMap<>();
+            	 if(null != activitys && activitys.size() > 0){
+            		result=goodService.getMinPriceGoods(goods.getGoodId());
+            		BigDecimal price=(BigDecimal) result.get("minPrice");
+            		Long minPriceStockId=(Long) result.get("minPriceStockId");
+            		goods.setGoodsPrice(price);
+                    goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+                    goods.setGoodsStockId(minPriceStockId);
+            	 }else{
+            		 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
+                             goods.getGoodsStockId());
+                     goods.setGoodsPrice(price);
+                     goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+            	 }
                 if ("jd".equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
