@@ -113,9 +113,10 @@ public class JdGoodsInfoService {
 		} else {
 			// 查询商品名称
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+			String jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
 //			map.put("goodsName", jdGoods.getName());// 商品名称
 			// java字符串转义,把&lt;&gt;转换成<>等字符
-			String introduction = jdGoods.getIntroduction().replaceAll("width", "width");
+			String introduction = jddetail.replaceAll("width", "width");
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
 		}
 		// 查看商品的邮费
