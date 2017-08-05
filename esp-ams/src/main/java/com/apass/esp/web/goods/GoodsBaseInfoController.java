@@ -590,7 +590,11 @@ public class GoodsBaseInfoController {
             BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
             BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
                     .setScale(4, BigDecimal.ROUND_HALF_UP);
-
+            if ("jd".equals(source)) {
+                String skuId = goodsEntity.getExternalId();
+                String desc = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
+                entity.setAttrDesc(desc);
+            }
             // 商品售价除以成本价小于保本率
             if (dividePoint.compareTo(dividePoint1) == -1) {
                 entity.setId(Long.valueOf(id));

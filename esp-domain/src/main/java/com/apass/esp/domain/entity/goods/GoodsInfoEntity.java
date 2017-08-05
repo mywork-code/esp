@@ -190,6 +190,19 @@ public class GoodsInfoEntity {
     private BigDecimal firstPrice;
 
     /**
+     * 属性描述
+     */
+    private String attrDesc;
+
+    public String getAttrDesc() {
+        return attrDesc;
+    }
+
+    public void setAttrDesc(String attrDesc) {
+        this.attrDesc = attrDesc;
+    }
+
+    /**
      * 起始索引
      */
     private Integer begin;

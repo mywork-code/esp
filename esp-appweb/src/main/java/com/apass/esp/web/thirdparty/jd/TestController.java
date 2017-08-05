@@ -238,7 +238,16 @@ public class TestController {
 		String result=jdGoodsInfoService.getStockBySku("1750526", region);
     	 return Response.success(result);
     }
-
+    /**
+     * 查询商品本身的规格描述
+     */
+    @RequestMapping(value = "/getJdGoodsSimilarSku", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getJdGoodsSimilarSku(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		String result=jdGoodsInfoService.getJdGoodsSimilarSku(Long.parseLong(sku));
+    	 return Response.success(result);
+    }
     /**
      * 查询预付款余额
      *

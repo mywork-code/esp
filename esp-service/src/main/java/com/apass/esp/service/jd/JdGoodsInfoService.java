@@ -373,6 +373,27 @@ public class JdGoodsInfoService {
 		return map;
 	}
 	/**
+	 * 获取京东商品本身的规格描述
+	 * @return
+	 */
+	public String getJdGoodsSimilarSku(Long sku) {
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+		// 京东商品本身的规格参数
+		String jdGoodsSimilarSku = "";
+		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+			List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+			for (JdSaleAttr jdSaleAttr : saleAttrList) {
+				List<String> skuIds = jdSaleAttr.getSkuIds();
+				for (String skuId : skuIds) {
+					if (sku.toString().equals(skuId)) {
+						jdGoodsSimilarSku = jdGoodsSimilarSku+jdSaleAttr.getSaleValue() + " ";
+					}
+				}
+			}
+		}
+		return jdGoodsSimilarSku;
+	}
+	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
 	public JdGoodsBooks getJdGoodsBooksInfoBySku(Long sku) {

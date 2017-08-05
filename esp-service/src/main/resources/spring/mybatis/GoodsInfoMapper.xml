@@ -467,6 +467,9 @@
 			<if test="newCreatDate != null">
 				newCreat_date = #{newCreatDate, jdbcType=VARCHAR},
 			</if>
+			<if test="attrDesc != null and attrDesc != ''">
+				attr_desc = #{attrDesc, jdbcType=VARCHAR},
+			</if>
 		</set>
 	<![CDATA[
 		WHERE ID =  #{id, jdbcType=BIGINT}
@@ -775,7 +778,8 @@
 			goods_model goodsModel,
 			un_support_province unSupportProvince,
 			source     source,
-			external_id   externalId
+			external_id   externalId,
+			attr_desc     attrDesc
 		FROM
 			t_esp_goods_base_info
 		WHERE

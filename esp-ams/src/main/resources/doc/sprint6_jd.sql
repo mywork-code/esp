@@ -46,3 +46,6 @@ ALTER TABLE `t_esp_goods_base_info`
 ADD COLUMN `newCreat_date`  datetime  NOT NULL DEFAULT '1900-01-01 00:00:00' comment '新品创建时间';
 
 ALTER TABLE `t_esp_merchant_info` ADD INDEX idx_merchantCode ( `merchant_code` );
+
+alter table t_esp_goods_base_info add column attr_desc varchar(255) not null default '' comment '属性描述';
+
