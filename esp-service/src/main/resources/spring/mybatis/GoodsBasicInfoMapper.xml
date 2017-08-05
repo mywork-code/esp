@@ -147,8 +147,6 @@
 								MIN(goods_price) minprice
 							FROM
 								t_esp_goods_stock_info
-							WHERE
-								stock_curr_amt != 0
 							GROUP BY
 								goods_id
 						) n
@@ -240,9 +238,7 @@
 									goods_id goodsId,
 									MIN(goods_price) minprice
 								FROM
-									t_esp_goods_stock_info
-								WHERE
-									stock_curr_amt != 0
+									t_esp_goods_stock_info					
 								GROUP BY
 									goods_id
 							) n
