@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdCss;
 import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
@@ -75,8 +77,9 @@ public class JdGoodsInfoService {
 			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
 			//java字符串转义,把&lt;&gt;转换成<>等字符
+			String skuCss = getSkuCss(sku);
             String introduction = jdGoods.getIntroduction().replaceAll("width","width");
-			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
 		}
 		// 查询商品价格
 		Collection<Long> skuPrice = new ArrayList<Long>();
@@ -99,6 +102,7 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 		return map;
 	}
+	
 	/**
 	 * 根据商品编号获取商品需要展示App信息
 	 * @throws BusinessException 
@@ -116,8 +120,9 @@ public class JdGoodsInfoService {
 			String jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
 //			map.put("goodsName", jdGoods.getName());// 商品名称
 			// java字符串转义,把&lt;&gt;转换成<>等字符
+			String skuCss = getSkuCss(sku);
 			String introduction = jddetail.replaceAll("width", "width");
-			map.put("googsDetail", StringEscapeUtils.unescapeXml(introduction));// 商品详情
+			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
 		}
 		// 查看商品的邮费
 		List<Long> goodsIds = new ArrayList<>();
@@ -601,5 +606,23 @@ public class JdGoodsInfoService {
         }else{
         	return "无货";
         }
+    }
+    
+    /**
+     * 根据skuid 获取  商品详情的css
+     * @param skuId
+     * @return
+     */
+    public String getSkuCss(Long sku){
+    	JdApiResponse<JSONObject> jdSimilarResponse = jdProductApiClient.getSkuCss(sku);
+		JdCss jdCss = new JdCss();
+		Gson gson = new Gson();
+		if(StringUtils.equals(jdSimilarResponse.getCode(),"0")){
+			jdCss = gson.fromJson(jdSimilarResponse.getDetail().toString(),  JdCss.class);
+		}
+		if(null != jdCss){
+			return jdCss.getCssContent();
+		}
+		return "";
     }
 }
