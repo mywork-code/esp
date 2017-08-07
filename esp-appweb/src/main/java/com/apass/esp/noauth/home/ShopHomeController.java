@@ -49,7 +49,9 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.nation.NationService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -107,7 +109,9 @@ public class ShopHomeController {
 
     @Autowired
     private ActivityInfoRepository actityInfoDao;
-
+    @Autowired
+    private OrderService orderService;
+    
     @Value("${esp.image.uri}")
     private String espImageUrl;
 
@@ -620,8 +624,17 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if ("jd".equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
+                List<SkuNum> skuNumList=new ArrayList<>();
+                SkuNum skuNum=new SkuNum();
+                skuNum.setNum(1);
+                skuNum.setSkuId(Long.parseLong(externalId));
+                skuNumList.add(skuNum);
+                //验证商品是否可售
+                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+                	goodsInfo.setStatus("G03");//商品下架
+                }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), region3);
 
@@ -656,6 +669,7 @@ public class ShopHomeController {
                 }
                 returnMap.put("source", "jd");
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
+                returnMap.put("status", goodsInfo.getStatus());
             } else {
                 goodService.loadGoodsBasicInfoById(goodsId, returnMap);
             }
