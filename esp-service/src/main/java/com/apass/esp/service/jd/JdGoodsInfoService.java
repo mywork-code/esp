@@ -120,7 +120,7 @@ public class JdGoodsInfoService {
 			String jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
 //			map.put("goodsName", jdGoods.getName());// 商品名称
 			// java字符串转义,把&lt;&gt;转换成<>等字符
-			String skuCss = getSkuCss(sku);
+			String skuCss = getSkuCss(sku).replaceAll("background-image:url\\(//", "background-image:url\\(http://");
 			String introduction = jddetail.replaceAll("width", "width");
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
 		}
@@ -615,9 +615,9 @@ public class JdGoodsInfoService {
      */
     public String getSkuCss(Long sku){
     	JdApiResponse<JSONObject> jdSimilarResponse = jdProductApiClient.getSkuCss(sku);
-		JdCss jdCss = new JdCss();
+		JdCss jdCss = null;
 		Gson gson = new Gson();
-		if(StringUtils.equals(jdSimilarResponse.getCode(),"0")){
+		if(StringUtils.equals(jdSimilarResponse.getCode(),"0") && null != jdSimilarResponse.getDetail()){
 			jdCss = gson.fromJson(jdSimilarResponse.getDetail().toString(),  JdCss.class);
 		}
 		if(null != jdCss){
