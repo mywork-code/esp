@@ -119,7 +119,7 @@ public class AfterSaleController {
             }
 
             if (!RefundReason.isLegal(reason)) {
-                logger.error("退换货原因不合法");
+                logger.error("退换货原因不合法reason{}",reason);
                 return Response.fail("退换货原因不合法");
             }
 
