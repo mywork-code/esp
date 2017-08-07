@@ -573,4 +573,15 @@ public class JdProductApiClient extends JdApiClient {
         return request("jd.biz.product.getSimilarSku", jsonObject, "jd_biz_product_getSimilarSku_response", JSONArray.class);
     }
 
+    /**
+     * 根据skuid 获取  商品详情的css
+     * @param skuId
+     * @return
+     */
+    public JdApiResponse<JSONObject> getSkuCss(Long skuId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("sku", skuId);
+        return request("jd.kpl.open.item.getmobilewarestyleandjsbywareid", jsonObject, "jd_kpl_open_item_getmobilewarestyleandjsbywareid_response", JSONObject.class);
+    }
+    
 }
