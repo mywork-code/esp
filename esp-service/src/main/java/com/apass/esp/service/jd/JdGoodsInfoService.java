@@ -27,6 +27,7 @@ import com.apass.esp.domain.entity.jd.JdGoodStock;
 import com.apass.esp.domain.entity.jd.JdGoods;
 import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdImage;
+import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
@@ -381,7 +382,8 @@ public class JdGoodsInfoService {
 	 * 获取京东商品本身的规格描述
 	 * @return
 	 */
-	public String getJdGoodsSimilarSku(Long sku) {
+	public Map<String,Object> getJdGoodsSimilarSku(Long sku) {
+		Map<String,Object> map=new HashMap<>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
 		// 京东商品本身的规格参数
 		String jdGoodsSimilarSku = "";
@@ -396,7 +398,9 @@ public class JdGoodsInfoService {
 				}
 			}
 		}
-		return jdGoodsSimilarSku;
+		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
+		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		return map;
 	}
 	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
@@ -521,7 +525,28 @@ public class JdGoodsInfoService {
 		}
 		return JdSimilarSkuList;
 	}
-
+	/**
+	 * 判断单个京东商品是否上下架
+	 * @return
+	 */
+	public Boolean jdProductStateQuery(Long sku){
+		Boolean falge=false;
+		Collection<Long> skus=new ArrayList<>();
+		skus.add(sku);
+		JdApiResponse<JSONArray> jdProductStateResponse=jdProductApiClient.productStateQuery(skus);
+		List<JdProductState> JdProductStateList=new ArrayList<>();
+		if (null != jdProductStateResponse && null != jdProductStateResponse.getResult() && jdProductStateResponse.isSuccess()) {
+			for(int i = 0; i < jdProductStateResponse.getResult().size(); i++){
+				JdProductState jps = JSONObject.parseObject(jdProductStateResponse.getResult().getString(i),  new TypeReference<JdProductState>(){});
+				JdProductStateList.add(jps);
+			}
+		}
+		int state=JdProductStateList.get(0).getState();
+		if(1==state){
+			 falge=true;
+		}
+		return falge;
+	}
 	/**
 	 * 查询商品的规格(根据商品sku查询商品本身的规格)
 	 * 例如：("颜色":"金色","版本":"全网通")
