@@ -68,7 +68,10 @@ public class JdAfterSaleScheduleTask {
     @Autowired
     private OrderRefundRepository orderRefundRepository;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    /**
+     * 京东售后状态更新
+     */
+    @Scheduled(cron = "0 0/1 * * * *")
     public void handleJdConfirmPreInventoryTask() {
         //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
@@ -99,12 +102,15 @@ public class JdAfterSaleScheduleTask {
             process(array, refundInfoEntity.getId(),orderInfoEntity.getOrderId());
             //该售后单的状态改为进度最慢的子售后单进度
             String refundStatus = getStatus(array);
-            Map<String, String> paramMap = new HashMap<>();
+            Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("orderId", orderInfoEntity.getOrderId());
             if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())) {
                 //根据状态改变
                 paramMap.put("status", refundStatus);
-                orderRefundDao.updateRefundStatusAndCtimeByOrderId(paramMap);
+                if(refundStatus.equals(RefundStatus.REFUND_STATUS05.getCode())){
+                    paramMap.put("completionTime",new Date());
+                }
+                orderRefundDao.updateRefundStatusJDByOrderId(paramMap);
             }
         }
 
