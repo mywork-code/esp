@@ -517,7 +517,6 @@
 						MIN(goods_price) minprice
 					FROM
 						t_esp_goods_stock_info
-					WHERE stock_curr_amt!=0
 					GROUP BY
 						goods_id
 				) b
@@ -564,7 +563,6 @@
 						MIN(goods_price) minprice
 					FROM
 						t_esp_goods_stock_info
-					WHERE stock_curr_amt!=0
 					GROUP BY
 						goods_id
 				) b
@@ -606,16 +604,15 @@
 				(
 					SELECT
 						goods_id goodsId,
-						MIN(market_price) minprice
+						MIN(goods_price) minprice
 					FROM
 						t_esp_goods_stock_info
-					WHERE stock_curr_amt>0
 					GROUP BY
 						goods_id
 				) b
 			WHERE
 				a.goods_id = b.goodsId
-			AND a.market_price = b.minprice
+			AND a.goods_price = b.minprice
 			GROUP BY
 				a.goods_id
 		) c 

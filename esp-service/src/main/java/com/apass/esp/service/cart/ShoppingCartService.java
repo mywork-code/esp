@@ -29,6 +29,8 @@ import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.YesNo;
@@ -645,8 +647,16 @@ public class ShoppingCartService {
         }
 		if ("jd".equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
+			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
+			//京东商品没有规格情况拼凑数据格式
+            int jdSimilarSkuListSize= (int) jdSimilarSkuInfoMap.get("jdSimilarSkuListSize");
+			if(jdSimilarSkuListSize==0){
+			   jdSimilarSkuToList= getJdSimilarSkuToList(goodsIdVal);
+			}else{
+				jdSimilarSkuToList=(List<JdSimilarSkuTo>) jdSimilarSkuInfoMap.get("JdSimilarSkuToList");
+			}
 			resultMap.put("goodsSource", "jd");
-			resultMap.put("JdSimilarSkuToList", jdSimilarSkuInfoMap.get("JdSimilarSkuToList"));
+			resultMap.put("JdSimilarSkuToList", jdSimilarSkuToList);
 			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
 		} else {
@@ -673,7 +683,31 @@ public class ShoppingCartService {
 		}
         return resultMap;
     }
+    /**
+     *  京东商品没有规格情况拼凑数据格式
+     * @throws BusinessException 
+     */
+	public List<JdSimilarSkuTo> getJdSimilarSkuToList(Long goodsId) throws BusinessException {
+		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsId);
+		List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockDao.loadByGoodsId(goodsId);
+		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
+		JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+		JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+		if (jdGoodsStockInfoList.size() == 1) {
+			BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 
+			jdSimilarSkuVo.setGoodsId(goodsId.toString());
+			jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+			jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+			jdSimilarSkuVo.setPrice(price);
+			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+			jdSimilarSkuVo.setStockDesc("");
+			jdSimilarSkuTo.setSkuIdOrder("");
+			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+			JdSimilarSkuToList.add(jdSimilarSkuTo);
+		}
+		return JdSimilarSkuToList;
+	}
     /**
      * 修改商品规格
      * 

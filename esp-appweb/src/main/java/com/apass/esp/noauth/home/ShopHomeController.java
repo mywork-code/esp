@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.DictDTO;
@@ -29,11 +30,13 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
+import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
+import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
@@ -98,6 +101,8 @@ public class ShopHomeController {
     private AddressService addressService;
     @Autowired
     private NationService  nationService;
+    @Autowired
+    private ActivityInfoRepository actityInfoDao;
     
     @Value("${esp.image.uri}")
     private String espImageUrl;
@@ -126,11 +131,24 @@ public class ShopHomeController {
             returnMap.put("recommendGoods", recommendGoods.getDataList());
 
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
-                BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
-                        goods.getGoodsStockId());
-                goods.setGoodsPrice(price);
-                goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
-
+            	   ActivityInfoEntity param = new ActivityInfoEntity();
+                   param.setGoodsId(goods.getGoodId());
+                   param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                   List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                   Map<String, Object> result=new HashMap<>();
+            	 if(null != activitys && activitys.size() > 0){
+            		result=goodService.getMinPriceGoods(goods.getGoodId());
+            		BigDecimal price=(BigDecimal) result.get("minPrice");
+            		Long minPriceStockId=(Long) result.get("minPriceStockId");
+            		goods.setGoodsPrice(price);
+                    goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+                    goods.setGoodsStockId(minPriceStockId);
+            	 }else{
+            		 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
+                             goods.getGoodsStockId());
+                     goods.setGoodsPrice(price);
+                     goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+            	 }
                 if ("jd".equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
@@ -228,23 +246,37 @@ public class ShopHomeController {
 
             for (GoodsBasicInfoEntity goodsInfo : goodsList) {
                 if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
-                            goodsInfo.getGoodsStockId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-                    // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-                    Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
-                            .getGoodId());
-                    goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+               	 ActivityInfoEntity param = new ActivityInfoEntity();
+                 param.setGoodsId(goodsInfo.getGoodId());
+                 param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                 List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                 Map<String, Object> result=new HashMap<>();
+          	 if(null != activitys && activitys.size() > 0){
+          		result=goodService.getMinPriceGoods(goodsInfo.getGoodId());
+          		BigDecimal price=(BigDecimal) result.get("minPrice");
+          		Long minPriceStockId=(Long) result.get("minPriceStockId");
+          		goodsInfo.setGoodsPrice(price);
+          		goodsInfo.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+          		goodsInfo.setGoodsStockId(minPriceStockId);
+          	 }else{
+          		 BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+          				goodsInfo.getGoodsStockId());
+          		goodsInfo.setGoodsPrice(price);
+          		goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+          	 }              
+                // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+//                Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
+//                        .getGoodId());
+//                goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
 
-                    String logoUrl = goodsInfo.getGoodsLogoUrl();
-                    String siftUrl = goodsInfo.getGoodsSiftUrl();
+                String logoUrl = goodsInfo.getGoodsLogoUrl();
+                String siftUrl = goodsInfo.getGoodsSiftUrl();
 
-                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
-                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
-                    goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
-                }
+                goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+                goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+                goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
+            }
             }
             returnMap.put("goodsList", goodsList);
             return Response.successResponse(returnMap);
