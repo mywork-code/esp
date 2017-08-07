@@ -72,6 +72,17 @@ public class JdLogisticsService {
             logisticInfo.setLogisticCode(entity.getLogisticsNo());
             List<Trace> traces = getSignleTracksByOrderId(entity.getExtOrderId());
             logisticInfo.setTraces(traces);
+            
+            List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderId);
+            Long goodsNum = 0L;
+            for (OrderDetailInfoEntity orderDetail : orderDetailList) {
+                goodsNum += orderDetail.getGoodsNum();
+            }
+            if (null != orderDetailList && orderDetailList.size() > 0) {
+                
+                resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
+            }
+            resultMap.put("goodsNum", goodsNum);
             resultMap.put("logisticInfo", logisticInfo);
             resultMap.put("logisticTel", "400-603-3600");
             resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间

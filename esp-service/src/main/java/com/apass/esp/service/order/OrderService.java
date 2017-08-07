@@ -1390,6 +1390,7 @@ public class OrderService {
         }
 
         orderDetailInfoDto.setOrderCreateDate(order.getCreateDate());
+        orderDetailInfoDto.setOrderCreateDateStr(DateFormatUtil.dateToString(order.getCreateDate(), "yyyy-MM-dd HH:mm"));
         orderDetailInfoDto.setProvince(order.getProvince());
         orderDetailInfoDto.setCity(order.getCity());
         orderDetailInfoDto.setDistrict(order.getDistrict());
