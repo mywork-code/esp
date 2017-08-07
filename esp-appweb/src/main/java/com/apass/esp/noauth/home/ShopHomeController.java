@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 import com.apass.esp.domain.vo.CategoryVo;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -936,19 +937,29 @@ public class ShopHomeController {
 
     }
 
+    /**
+     * 
+     * @param goodsId
+     * @return
+     * @throws BusinessException
+     */
     private BigDecimal getGoodsPrice(Long goodsId) throws BusinessException {
         // 根据goodsid查询库存，找出最低售价显示前端
-        List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsId);
-        if (goodsStocks == null || goodsStocks.size() == 0) {
-            LOGGER.error("数据异常，商品id为:{}无对应库存", goodsId.toString());
-            throw new BusinessException("数据异常");
-        }
-        BigDecimal goodsPrice = goodsStocks.get(0).getGoodsPrice();
-        for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
-            if (goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0) {
-                goodsPrice = goodsStockInfoEntity.getGoodsPrice();
-            }
-        }
+        Map<String, Object> minPriceGoodsMap = goodsService.getMinPriceGoods(goodsId);
+        BigDecimal goodsPrice = (BigDecimal) minPriceGoodsMap.get("minPrice");
+        
+        
+//        List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsId);
+//        if (goodsStocks == null || goodsStocks.size() == 0) {
+//            LOGGER.error("数据异常，商品id为:{}无对应库存", goodsId.toString());
+//            throw new BusinessException("数据异常");
+//        }
+//        BigDecimal goodsPrice = goodsStocks.get(0).getGoodsPrice();
+//        for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
+//            if (goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0) {
+//                goodsPrice = goodsStockInfoEntity.getGoodsPrice();
+//            }
+//        }
 
         return goodsPrice;
     }
