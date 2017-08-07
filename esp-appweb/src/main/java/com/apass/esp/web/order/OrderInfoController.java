@@ -189,7 +189,7 @@ public class OrderInfoController {
    * @return
    */
   @POST
-  @Path("/validateGoodaByAddressId")
+  @Path("/v1/validateGoodaByAddressId")
   public Response validateUnSupportByAddressId(Map<String, Object> paramMap) {
 	  
 	  String addressId = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
