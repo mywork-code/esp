@@ -6,23 +6,22 @@
 	<!-- 查询条件 -->
 	<sql id="QueryConditionSql">
 		<where>
-		    <if test="id != null">
-                and refund.id = #{id}
-            </if>
+			<if test="id != null">
+				and refund.id = #{id}
+			</if>
 			<if test="orderId != null">
 				and refund.order_id = #{orderId}
 			</if>
 			<if test="rlogisticsNo != null and rlogisticsNo != ''">
-                and refund.r_logistics_no = #{rlogisticsNo}
-            </if>
-            <if test="rlogisticsId != null and rlogisticsId != ''">
-                and refund.r_logistics_id = #{rlogisticsId}
-            </if>
+				and refund.r_logistics_no = #{rlogisticsNo}
+			</if>
+			<if test="rlogisticsId != null and rlogisticsId != ''">
+				and refund.r_logistics_id = #{rlogisticsId}
+			</if>
 		</where>
 	</sql>
 
-	<select id="queryRefundInfo" parameterType="Map"
-		resultType="RefundInfoEntity">
+	<select id="queryRefundInfo" parameterType="Map" resultType="RefundInfoEntity">
 		<![CDATA[
 			select  
 		        refund.id                   id,
@@ -102,40 +101,42 @@
 	<!--更新售后状态 -->
 	<update id="updateRefundStatusByOrderId" parameterType="Map">
 		UPDATE
-		  T_ESP_REFUND_INFO
-		SET STATUS          =     #{status},
-		    UPDATE_DATE     =     CURRENT_TIMESTAMP
+		T_ESP_REFUND_INFO
+		SET STATUS = #{status},
+		UPDATE_DATE = CURRENT_TIMESTAMP
 		WHERE ORDER_ID = #{orderId}
 	</update>
-	
+
 	<!--售后完成 -->
 	<update id="updateRefundStatusAndCtimeByOrderId" parameterType="Map">
 		UPDATE
 		T_ESP_REFUND_INFO
-		SET STATUS = #{status}, UPDATE_DATE=now(),completion_time = now() 
+		SET STATUS = #{status},
+		UPDATE_DATE=now(),completion_time = now()
 		WHERE ORDER_ID = #{orderId}
 	</update>
-	
+
 	<!--修改京东订单状态 -->
 	<update id="updateRefundStatusJDByOrderId" parameterType="Map">
 		UPDATE
-			T_ESP_REFUND_INFO
+		T_ESP_REFUND_INFO
 		<set>
-			STATUS = #{status}, 
+			STATUS = #{status},
 			UPDATE_DATE=now(),
 			<if test="completionTime != null">
-				completion_time = #{completionTime} 
-            </if>
+				completion_time = #{completionTime}
+			</if>
 		</set>
 		WHERE ORDER_ID = #{orderId}
 		and STATUS!='RS05'
 	</update>
-	
-	<!--同意售后请求  -->
+
+	<!--同意售后请求 -->
 	<update id="agreeRequestByOrderId" parameterType="Map">
 		update
 		t_esp_refund_info
-		set is_agree=#{is_agree},approval_user=#{approvalUser},
+		set
+		is_agree=#{is_agree},approval_user=#{approvalUser},
 		approval_comments=#{approvalComments}
 		where order_id = #{orderId}
 	</update>
@@ -157,10 +158,10 @@
 		R_LOGISTICS_NAME=#{rlogisticsName},R_LOGISTICS_NO=#{rlogisticsNo}
 		WHERE ORDER_ID = #{orderId}
 	</update>
-	
+
 	<!-- 查询售后完成,订单状态处于售后处理中的数据 -->
 	<select id="queryReturningOrderInfo" parameterType="Map"
-        resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
+		resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
         <![CDATA[
             SELECT
 			    t1.id                    refundId,
@@ -177,10 +178,10 @@
 			AND t1.status = 'RS05'
 			AND t1.completion_time BETWEEN #{startDate} AND #{endDate}          
         ]]>
-    </select>
-    
-    <!-- 查询 商家重新发货物流显示已签收的数据 -->
-    <select id="queryReceiptedInfo" parameterType="Map" resultType="RefundInfoEntity">
+	</select>
+
+	<!-- 查询 商家重新发货物流显示已签收的数据 -->
+	<select id="queryReceiptedInfo" parameterType="Map" resultType="RefundInfoEntity">
         <![CDATA[
             SELECT 
             id id,
@@ -190,19 +191,19 @@
             AND status = 'RS04' 
             AND completion_time BETWEEN #{startDate} AND #{endDate}    
         ]]>
-    </select>
-    
-    <!--更新换货商户发货物流唯一标识 -->
-    <update id="updateRlogisticsIdbyId" parameterType="Map">
-        UPDATE
-        T_ESP_REFUND_INFO 
-        SET R_LOGISTICS_ID = #{rlogisticsId}
-        WHERE ID = #{refundId}
-    </update>
+	</select>
 
-    <!-- 查询订单状态信息为售后服务中，服务状态为失败的数据 -->
+	<!--更新换货商户发货物流唯一标识 -->
+	<update id="updateRlogisticsIdbyId" parameterType="Map">
+		UPDATE
+		T_ESP_REFUND_INFO
+		SET R_LOGISTICS_ID = #{rlogisticsId}
+		WHERE ID = #{refundId}
+	</update>
+
+	<!-- 查询订单状态信息为售后服务中，服务状态为失败的数据 -->
 	<select id="queryReturningOrderRefundInfo" parameterType="Map"
-        resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
+		resultType="com.apass.esp.domain.dto.refund.RefundedOrderInfoDto">
         <![CDATA[
             SELECT
 			    t1.id                    refundId,
@@ -222,10 +223,11 @@
 			AND t1.id = t3.refund_id
 			AND DATE_ADD(t3.create_date,INTERVAL 3 DAY) <= NOW()        
         ]]>
-    </select>
-    
-    <!-- 根据订单ID和退换货类型查询 -->
-    <select id="queryRefundInfoByOrderIdAndRefundType" parameterType="Map" resultType="RefundInfoEntity">
+	</select>
+
+	<!-- 根据订单ID和退换货类型查询 -->
+	<select id="queryRefundInfoByOrderIdAndRefundType"
+		parameterType="Map" resultType="RefundInfoEntity">
         <![CDATA[
 			select  
 		        refund.id                   id,
@@ -252,6 +254,6 @@
 	        from t_esp_refund_info refund 
 		]]>
 		WHERE order_id = #{orderId} and refund_type = #{refundType}
-    </select>
-    
+	</select>
+
 </mapper>
