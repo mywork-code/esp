@@ -35,6 +35,7 @@ import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
@@ -493,7 +494,7 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if ("jd".equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), region3);
@@ -507,7 +508,8 @@ public class ShopHomeController {
                     returnMap.put("goodsPriceFirstPayment",
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
                 }
-                returnMap.put("source", "jd");
+                returnMap.put("source",SourceType.JD.getCode());
+                returnMap.put("status", goodsInfo.getStatus());
             } else {
                 goodService.loadGoodsBasicInfoById(goodsId, returnMap);
             }
