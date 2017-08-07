@@ -72,18 +72,16 @@ public class JdLogisticsService {
             logisticInfo.setLogisticCode(entity.getLogisticsNo());
             List<Trace> traces = getSignleTracksByOrderId(entity.getExtOrderId());
             logisticInfo.setTraces(traces);
-            resultMap.put("logisticInfo", logisticInfo);
-            resultMap.put("logisticTel", "400-603-3600");
             resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
             logisticInfo.setSuccess(true);
         } catch (Exception e) {
-            resultMap.put("logisticInfo", logisticInfo);
-            resultMap.put("logisticTel", "400-603-3600");
             logisticInfo.setSuccess(false);
             LOGGER.error("查询物流信息失败", e);
             LOGGER.error("getSignleTrackings->物流单号:{}查询物流信息失败!",entity.getExtOrderId());
         }
-
+        resultMap.put("logisticInfo", logisticInfo);
+        resultMap.put("logisticTel", "400-603-3600");
+        
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
         if (null == orderInfo) {
             LOGGER.error("loadLogistics orderInfo is null");
