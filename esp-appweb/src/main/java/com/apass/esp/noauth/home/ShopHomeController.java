@@ -99,11 +99,13 @@ public class ShopHomeController {
 
     @Autowired
     private AddressService addressService;
+
     @Autowired
-    private NationService  nationService;
+    private NationService nationService;
+
     @Autowired
     private ActivityInfoRepository actityInfoDao;
-    
+
     @Value("${esp.image.uri}")
     private String espImageUrl;
 
@@ -131,24 +133,24 @@ public class ShopHomeController {
             returnMap.put("recommendGoods", recommendGoods.getDataList());
 
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
-            	   ActivityInfoEntity param = new ActivityInfoEntity();
-                   param.setGoodsId(goods.getGoodId());
-                   param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-                   List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-                   Map<String, Object> result=new HashMap<>();
-            	 if(null != activitys && activitys.size() > 0){
-            		result=goodService.getMinPriceGoods(goods.getGoodId());
-            		BigDecimal price=(BigDecimal) result.get("minPrice");
-            		Long minPriceStockId=(Long) result.get("minPriceStockId");
-            		goods.setGoodsPrice(price);
+                ActivityInfoEntity param = new ActivityInfoEntity();
+                param.setGoodsId(goods.getGoodId());
+                param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                Map<String, Object> result = new HashMap<>();
+                if (null != activitys && activitys.size() > 0) {
+                    result = goodService.getMinPriceGoods(goods.getGoodId());
+                    BigDecimal price = (BigDecimal) result.get("minPrice");
+                    Long minPriceStockId = (Long) result.get("minPriceStockId");
+                    goods.setGoodsPrice(price);
                     goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
                     goods.setGoodsStockId(minPriceStockId);
-            	 }else{
-            		 BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
-                             goods.getGoodsStockId());
-                     goods.setGoodsPrice(price);
-                     goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
-            	 }
+                } else {
+                    BigDecimal price = commonService.calculateGoodsPrice(goods.getGoodId(),
+                            goods.getGoodsStockId());
+                    goods.setGoodsPrice(price);
+                    goods.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+                }
                 if ("jd".equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
@@ -246,37 +248,39 @@ public class ShopHomeController {
 
             for (GoodsBasicInfoEntity goodsInfo : goodsList) {
                 if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
-               	 ActivityInfoEntity param = new ActivityInfoEntity();
-                 param.setGoodsId(goodsInfo.getGoodId());
-                 param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-                 List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-                 Map<String, Object> result=new HashMap<>();
-          	 if(null != activitys && activitys.size() > 0){
-          		result=goodService.getMinPriceGoods(goodsInfo.getGoodId());
-          		BigDecimal price=(BigDecimal) result.get("minPrice");
-          		Long minPriceStockId=(Long) result.get("minPriceStockId");
-          		goodsInfo.setGoodsPrice(price);
-          		goodsInfo.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
-          		goodsInfo.setGoodsStockId(minPriceStockId);
-          	 }else{
-          		 BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
-          				goodsInfo.getGoodsStockId());
-          		goodsInfo.setGoodsPrice(price);
-          		goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-          	 }              
-                // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-//                Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
-//                        .getGoodId());
-//                goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+                    ActivityInfoEntity param = new ActivityInfoEntity();
+                    param.setGoodsId(goodsInfo.getGoodId());
+                    param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                    List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                    Map<String, Object> result = new HashMap<>();
+                    if (null != activitys && activitys.size() > 0) {
+                        result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
+                        BigDecimal price = (BigDecimal) result.get("minPrice");
+                        Long minPriceStockId = (Long) result.get("minPriceStockId");
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+                        goodsInfo.setGoodsStockId(minPriceStockId);
+                    } else {
+                        BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+                                goodsInfo.getGoodsStockId());
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+                    }
+                    // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    // Long marketPrice =
+                    // goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
+                    // .getGoodId());
+                    // goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
 
-                String logoUrl = goodsInfo.getGoodsLogoUrl();
-                String siftUrl = goodsInfo.getGoodsSiftUrl();
+                    String logoUrl = goodsInfo.getGoodsLogoUrl();
+                    String siftUrl = goodsInfo.getGoodsSiftUrl();
 
-                goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
-                goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
-                goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-                goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
-            }
+                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+                    goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
+                }
             }
             returnMap.put("goodsList", goodsList);
             return Response.successResponse(returnMap);
@@ -430,16 +434,16 @@ public class ShopHomeController {
             Region region = new Region();// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
                 if (!CityJdEnums.isContainsCode(provinceCode)) {
-                	List<DictDTO> result=nationService.queryDistrictJd(districtCode);
-                	if(result.size()==0){
-                		  region.setProvinceId(Integer.parseInt(provinceCode));
-                          region.setCityId(Integer.parseInt(cityCode));
-                          region.setCountyId(Integer.parseInt(districtCode));
-                          region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                          flage = false;
-                	}else{
+                    List<DictDTO> result = nationService.queryDistrictJd(districtCode);
+                    if (result.size() == 0) {
+                        region.setProvinceId(Integer.parseInt(provinceCode));
+                        region.setCityId(Integer.parseInt(cityCode));
+                        region.setCountyId(Integer.parseInt(districtCode));
+                        region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                        flage = false;
+                    } else {
                         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                	}
+                    }
                 }
             }
             Region region2 = new Region();
@@ -545,24 +549,24 @@ public class ShopHomeController {
             Region region = new Region();// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
                 if (!CityJdEnums.isContainsCode(provinceCode)) {
-                	List<DictDTO> result=nationService.queryDistrictJd(districtCode);
-                	if(result.size()==0){
-                		  region.setProvinceId(Integer.parseInt(provinceCode));
-                          region.setCityId(Integer.parseInt(cityCode));
-                          region.setCountyId(Integer.parseInt(districtCode));
-                          region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                          flage = false;
-                	}else{
-                		if(StringUtils.isNotEmpty(townsCode)){
-                			  region.setProvinceId(Integer.parseInt(provinceCode));
-                              region.setCityId(Integer.parseInt(cityCode));
-                              region.setCountyId(Integer.parseInt(districtCode));
-                              region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                              flage = false;
-                		}else{
-                			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                		}
-                	}
+                    List<DictDTO> result = nationService.queryDistrictJd(districtCode);
+                    if (result.size() == 0) {
+                        region.setProvinceId(Integer.parseInt(provinceCode));
+                        region.setCityId(Integer.parseInt(cityCode));
+                        region.setCountyId(Integer.parseInt(districtCode));
+                        region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                        flage = false;
+                    } else {
+                        if (StringUtils.isNotEmpty(townsCode)) {
+                            region.setProvinceId(Integer.parseInt(provinceCode));
+                            region.setCityId(Integer.parseInt(cityCode));
+                            region.setCountyId(Integer.parseInt(districtCode));
+                            region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                            flage = false;
+                        } else {
+                            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                        }
+                    }
                 }
             }
             Region region2 = new Region();
@@ -614,9 +618,9 @@ public class ShopHomeController {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), region3);
-                
+
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
-                
+
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
                 if (jdGoodsStockInfoList.size() == 1) {
@@ -625,21 +629,23 @@ public class ShopHomeController {
                     returnMap.put("goodsPrice", price);// 商品价格
                     returnMap.put("goodsPriceFirstPayment",
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
-                    //京东商品没有规格情况拼凑数据格式
-                    int jdSimilarSkuListSize= (int) returnMap.get("jdSimilarSkuListSize");
-                    if(jdSimilarSkuListSize==0){
-                	 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
-        			 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-	       			 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-	       			 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-	       			 jdSimilarSkuVo.setSkuId(externalId);
-	       			 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-	       			 jdSimilarSkuVo.setPrice(price);
-	       			 jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-	       			 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-	       			 jdSimilarSkuTo.setSkuIdOrder("");
-	       			 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-	       			 JdSimilarSkuToList.add(jdSimilarSkuTo);
+                    // 京东商品没有规格情况拼凑数据格式
+                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
+                    if (jdSimilarSkuListSize == 0) {
+                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
+                                .get("JdSimilarSkuToList");
+                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
+                        jdSimilarSkuVo.setSkuId(externalId);
+                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+                        jdSimilarSkuVo.setPrice(price);
+                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));
+                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                        jdSimilarSkuTo.setSkuIdOrder("");
+                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+                        JdSimilarSkuToList.add(jdSimilarSkuTo);
                     }
                 }
                 returnMap.put("source", "jd");
@@ -768,7 +774,7 @@ public class ShopHomeController {
                 goodsIdList = goodsService.getRemainderGoodsNew(0, 50 - list.size());
             }
             if (CollectionUtils.isNotEmpty(goodsIdList)) {
-                //list.removeAll(goodsIdList);
+                // list.removeAll(goodsIdList);
                 list.addAll(goodsIdList);
             }
         }
