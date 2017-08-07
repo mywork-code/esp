@@ -61,17 +61,7 @@ public class JdTokenManager {
 
 
     private JSONObject getToken0() {
-        Properties properties = getProperties();
-        JedisPoolConfig config = new JedisPoolConfig();
-        JedisPool jedisPool = new JedisPool(config,
-                properties.getProperty("spring.redis.host"),
-                Integer.valueOf(properties.getProperty("spring.redis.port")),
-                8000,
-                properties.getProperty("spring.redis.password"),
-                Integer.valueOf(properties.getProperty("spring.redis.database"))
-        );
-        Jedis jedis = jedisPool.getResource();
-        String value = jedis.get(JD_TOKEN_REDIS_KEY);
+        String value =  getSingleton().get(JD_TOKEN_REDIS_KEY);
         // String value = cacheManager.get(JD_TOKEN_REDIS_KEY);
         if (StringUtils.isEmpty(value)) {
             return null;
@@ -80,7 +70,7 @@ public class JdTokenManager {
         return JSONObject.parseObject(value);
     }
 
-    private Properties getProperties() {
+    private static Properties getProperties() {
         Properties prop = null;
         if (propertiesMap.containsKey("redis")) {
             prop = (Properties) propertiesMap.get("redis");
@@ -105,4 +95,29 @@ public class JdTokenManager {
         return prop;
     }
 
+    private static volatile Jedis SINGLETON;
+    public static Jedis getSingleton() {
+        if(SINGLETON==null){
+            synchronized (JdTokenManager.class){
+                if (SINGLETON==null){
+                    try {
+                        Properties properties = getProperties();
+                        JedisPoolConfig config = new JedisPoolConfig();
+                        JedisPool jedisPool = new JedisPool(config,
+                                properties.getProperty("spring.redis.host"),
+                                Integer.valueOf(properties.getProperty("spring.redis.port")),
+                                8000,
+                                properties.getProperty("spring.redis.password"),
+                                Integer.valueOf(properties.getProperty("spring.redis.database"))
+                        );
+                         SINGLETON = jedisPool.getResource();
+                    } catch (Exception var1) {
+                        LOGGER.error("unexpect error", var1);
+                        throw new RuntimeException(var1);
+                    }
+                }
+            }
+        }
+        return SINGLETON;
+    }
 }
