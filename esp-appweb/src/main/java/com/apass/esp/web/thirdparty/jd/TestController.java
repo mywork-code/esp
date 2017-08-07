@@ -245,8 +245,18 @@ public class TestController {
     @ResponseBody
     public Response getJdGoodsSimilarSku(@RequestBody Map<String, Object> paramMap){
 		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
-		String result=jdGoodsInfoService.getJdGoodsSimilarSku(Long.parseLong(sku));
-    	 return Response.success(result);
+		Map<String,Object> result=jdGoodsInfoService.getJdGoodsSimilarSku(Long.parseLong(sku));
+    	 return Response.success("1",result);
+    }
+    /**
+     * 查询商品是否上下架
+     */
+    @RequestMapping(value = "/jdProductStateQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Response jdProductStateQuery(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		Boolean result=jdGoodsInfoService.jdProductStateQuery(Long.parseLong(sku));
+    	 return Response.success("1",result);
     }
     /**
      * 查询预付款余额

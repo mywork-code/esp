@@ -592,11 +592,13 @@ public class GoodsBaseInfoController {
                     .setScale(4, BigDecimal.ROUND_HALF_UP);
             if ("jd".equals(source)) {
                 String skuId = goodsEntity.getExternalId();
-                String desc = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
-                if(StringUtils.isBlank(desc)){
-                	return "该京东商品无规格或无法匹配规格无法上架！";
+                Map<String,Object> descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
+                String jdGoodsSimilarSku=(String) descMap.get("jdGoodsSimilarSku");
+                int jdSimilarSkuListSize=(int) descMap.get("jdSimilarSkuListSize");
+                if(StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize>0){
+                	return "该京东商品无法匹配规格无法上架！";
                 }
-                entity.setAttrDesc(desc);
+                entity.setAttrDesc(jdGoodsSimilarSku);
             }
             // 商品售价除以成本价小于保本率
             if (dividePoint.compareTo(dividePoint1) == -1) {
