@@ -738,6 +738,7 @@ public class ShoppingCartService {
 			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 			goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 			goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));
+			goodsInfoInCart.setGoodsSkuAttr(goodsInfo.getAttrDesc());//商品描述
 		} else {
 			// 查询商品基本信息，返回客户端该商品单条信息
 	        goodsInfo = goodsInfoDao.select(goodsIdVal);
