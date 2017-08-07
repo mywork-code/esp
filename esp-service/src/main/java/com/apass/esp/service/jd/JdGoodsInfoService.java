@@ -208,7 +208,7 @@ public class JdGoodsInfoService {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(price);
-				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
+				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			}
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(sku.toString(), region);
@@ -326,7 +326,7 @@ public class JdGoodsInfoService {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(price);
-				jdSimilarSkuVo.setPriceFirst(new BigDecimal("0.1").multiply(price));
+				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			}
 
 			jdSimilarSkuVo.setSkuId(skuId);
