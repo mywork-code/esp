@@ -5,13 +5,14 @@ import java.util.List;
 import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 
 public class OtherCategoryGoodsVo {
-	/**
-	 * 每个一级类目下的轮播图--固定
-	 */
-	private String banner;
-	/**
-	 * 二级类目Id
-	 */
+    /**
+     * 每个一级类目下的轮播图--固定
+     */
+    private String banner;
+
+    /**
+     * 二级类目Id
+     */
     private Long categoryIdSecond;
     /**
      * 类目名称
