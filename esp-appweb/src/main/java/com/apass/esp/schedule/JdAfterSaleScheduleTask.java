@@ -39,7 +39,7 @@ import java.util.*;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class JdAfterSaleScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdAfterSaleScheduleTask.class);
 
