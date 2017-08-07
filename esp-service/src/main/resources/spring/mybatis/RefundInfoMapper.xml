@@ -112,8 +112,23 @@
 	<update id="updateRefundStatusAndCtimeByOrderId" parameterType="Map">
 		UPDATE
 		T_ESP_REFUND_INFO
-		SET STATUS = #{status},completion_time = now() 
+		SET STATUS = #{status}, UPDATE_DATE=now(),completion_time = now() 
 		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<!--修改京东订单状态 -->
+	<update id="updateRefundStatusJDByOrderId" parameterType="Map">
+		UPDATE
+			T_ESP_REFUND_INFO
+		<set>
+			STATUS = #{status}, 
+			UPDATE_DATE=now(),
+			<if test="completionTime != null">
+				completion_time = #{completionTime} 
+            </if>
+		</set>
+		WHERE ORDER_ID = #{orderId}
+		and STATUS!='RS05'
 	</update>
 	
 	<!--同意售后请求  -->

@@ -1,10 +1,13 @@
 package com.apass.esp.repository.refund;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.dto.refund.RefundedOrderInfoDto;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
@@ -129,4 +132,13 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
     public RefundInfoEntity queryRefundInfoByOrderIdAndRefundType(Map<String, Object> map) {
         return getSqlSession().selectOne(getSQL("queryRefundInfoByOrderIdAndRefundType"), map);
     }
+
+    /**
+     * 修改京东商品售后状态
+     * @param paramMap
+     */
+    public int updateRefundStatusJDByOrderId(Map<String, Object> paramMap) {
+        return getSqlSession().update(getSQL("updateRefundStatusJDByOrderId"), paramMap);
+    }
+    
 }
