@@ -33,10 +33,24 @@ public class JdTokenManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdTokenManager.class);
     private static final String JD_TOKEN_REDIS_KEY = "JD_TOKEN_REDIS_KEY";
 
+    private static JedisPool jedisPool;
+    
     @Autowired
     private CacheManager cacheManager;
 
     private static ConcurrentHashMap<String, Properties> propertiesMap = new ConcurrentHashMap();
+
+    static {
+        Properties properties = getProperties();
+        JedisPoolConfig config = new JedisPoolConfig();
+        jedisPool = new JedisPool(config,
+                properties.getProperty("spring.redis.host"),
+                Integer.valueOf(properties.getProperty("spring.redis.port")),
+                8000,
+                properties.getProperty("spring.redis.password"),
+                Integer.valueOf(properties.getProperty("spring.redis.database"))
+        );
+    }
 
     private JdTokenManager() {
     }
@@ -61,7 +75,7 @@ public class JdTokenManager {
 
 
     private JSONObject getToken0() {
-        String value =getToken1();
+        String value = getToken1();
         // String value = cacheManager.get(JD_TOKEN_REDIS_KEY);
         if (StringUtils.isEmpty(value)) {
             return null;
@@ -95,23 +109,8 @@ public class JdTokenManager {
         return prop;
     }
 
-    //  private static volatile Jedis SINGLETON;
-
     public static String getToken1() {
-//        if(SINGLETON==null){
-//            synchronized (JdTokenManager.class){
-//                if (SINGLETON==null){
-        Jedis jedis = null;
-        Properties properties = getProperties();
-        JedisPoolConfig config = new JedisPoolConfig();
-        JedisPool jedisPool = new JedisPool(config,
-                properties.getProperty("spring.redis.host"),
-                Integer.valueOf(properties.getProperty("spring.redis.port")),
-                8000,
-                properties.getProperty("spring.redis.password"),
-                Integer.valueOf(properties.getProperty("spring.redis.database"))
-        );
-        jedis = jedisPool.getResource();
+        Jedis jedis =  jedisPool.getResource();
         String token = null;
         try {
             token = jedis.get(JD_TOKEN_REDIS_KEY);
