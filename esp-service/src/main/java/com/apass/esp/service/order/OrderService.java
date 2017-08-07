@@ -528,21 +528,8 @@ public class OrderService {
         /**
          * 验证商品是否可售
          */
-        JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(orderReq
-                .getSkuNumList());
-        if (!skuCheckResult.isSuccess()) {
-            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
-            throw new BusinessException("下单失败!");
-        }
-        for (Object o : skuCheckResult.getResult()) {
-            JSONObject jsonObject = (JSONObject) o;
-            int saleState = jsonObject.getIntValue("saleState");
-            if (saleState != 1) {
-                LOGGER.info("sku[{}] could not sell,detail:", jsonObject.getLongValue("skuId"),
-                        jsonObject.toJSONString());
-                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
-                throw new BusinessException("下单失败!");
-            }
+        if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
+        	throw new BusinessException("下单失败!");
         }
         /**
          * 批量获取库存接口
@@ -588,6 +575,28 @@ public class OrderService {
         return jdOrderId;
     }
 
+    /**
+     * 验证商品是否可售
+     */
+    public boolean checkGoodsSalesOrNot(List<SkuNum> skuNumList){
+    	JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(skuNumList);
+        if (!skuCheckResult.isSuccess()) {
+            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
+            return false;
+        }
+        for (Object o : skuCheckResult.getResult()) {
+            JSONObject jsonObject = (JSONObject) o;
+            int saleState = jsonObject.getIntValue("saleState");
+            if (saleState != 1) {
+                LOGGER.info("sku[{}] could not sell,detail:", jsonObject.getLongValue("skuId"),
+                        jsonObject.toJSONString());
+                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public AddressInfo getAddressByOrderId(Long addressId) throws BusinessException {
 
         AddressInfo addressInfo = new AddressInfo();
