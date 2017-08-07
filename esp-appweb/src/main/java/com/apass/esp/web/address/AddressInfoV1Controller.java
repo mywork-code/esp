@@ -154,7 +154,7 @@ public class AddressInfoV1Controller {
       return Response.fail(e.getErrorDesc());
     } catch (Exception e) {
       logger.error("更新地址信息失败，错误原因", e);
-      return Response.fail("更新地址信息失败!");
+      return Response.fail("请将收货地址所在区域填写完整!");
     }
   }
 
