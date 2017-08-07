@@ -29,7 +29,7 @@ public class ContractScheduleTask {
     /**
      * 每天凌晨一点执行，校验活动过期时间
      */
-    @Scheduled(cron = "0 0/2 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     public void handlePSContractPDF() {
         try {
             contractService.schedulePSContractPDF();
