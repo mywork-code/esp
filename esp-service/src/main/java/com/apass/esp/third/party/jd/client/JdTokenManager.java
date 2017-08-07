@@ -1,11 +1,9 @@
 package com.apass.esp.third.party.jd.client;
 
 import com.alibaba.fastjson.JSONObject;
-import com.apass.gfb.framework.cache.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -16,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,8 +31,6 @@ public class JdTokenManager {
 
     private static JedisPool jedisPool;
     
-    @Autowired
-    private CacheManager cacheManager;
 
     private static ConcurrentHashMap<String, Properties> propertiesMap = new ConcurrentHashMap();
 
@@ -76,7 +70,6 @@ public class JdTokenManager {
 
     private JSONObject getToken0() {
         String value = getToken1();
-        // String value = cacheManager.get(JD_TOKEN_REDIS_KEY);
         if (StringUtils.isEmpty(value)) {
             return null;
         }
