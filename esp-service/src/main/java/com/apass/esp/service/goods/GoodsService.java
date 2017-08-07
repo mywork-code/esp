@@ -214,7 +214,8 @@ public class GoodsService {
             BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
                     goodsStock.getGoodsStockId());
             goodsStock.setGoodsPrice(price);
-            goodsStock.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 对接京东后新增字段（商品首付价）
+            goodsStock.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                    BigDecimal.ROUND_DOWN));// 对接京东后新增字段（商品首付价）
             totalCurrentAmt += goodsStock.getStockCurrAmt();
             // 20170322
 
@@ -255,7 +256,8 @@ public class GoodsService {
             returnMap.put("maxPrice", maxPrice);
         }
         // 接入京东商品修改 //计算首付价
-        BigDecimal minPriceFistPayment = new BigDecimal("0.1").multiply(minPrice);
+        BigDecimal minPriceFistPayment = new BigDecimal("0.1").multiply(minPrice).setScale(2,
+                BigDecimal.ROUND_DOWN);
         returnMap.put("minPriceFirstPayment", minPriceFistPayment);
         returnMap.put("source", "notJd");
     }
