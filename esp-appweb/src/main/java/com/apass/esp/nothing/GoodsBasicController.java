@@ -9,6 +9,8 @@ import java.util.Map;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -72,14 +74,35 @@ public class GoodsBasicController {
                         Long.valueOf(externalId).longValue(), region);
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(Long.valueOf(goodsId));
+                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
+
                 if (jdGoodsStockInfoList.size() == 1) {
                     BigDecimal price = commonService.calculateGoodsPrice(Long.valueOf(goodsId), jdGoodsStockInfoList.get(0)
                             .getId());
                     returnMap.put("goodsPrice", price);// 商品价格
                     returnMap.put("goodsPriceFirstPayment",
                             (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+                    // 京东商品没有规格情况拼凑数据格式
+                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
+                    if (jdSimilarSkuListSize == 0) {
+                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
+                                .get("JdSimilarSkuToList");
+                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
+                        jdSimilarSkuVo.setSkuId(externalId);
+                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+                        jdSimilarSkuVo.setPrice(price);
+                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));
+                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                        jdSimilarSkuTo.setSkuIdOrder("");
+                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+                        JdSimilarSkuToList.add(jdSimilarSkuTo);
+                    }
                 }
-                returnMap.put("source", SourceType.JD.getCode());
+                returnMap.put("source", "jd");
+                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
             } else {
                 goodsService.loadGoodsBasicInfoById(Long.valueOf(goodsId), returnMap);
