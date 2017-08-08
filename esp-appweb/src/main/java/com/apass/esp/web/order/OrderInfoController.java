@@ -197,10 +197,14 @@ public class OrderInfoController {
 	  String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
 	  List<PurchaseRequestDto> purchaseList = null;
 	  try {
-		  ValidateUtils.isNotBlank(addressId, "地址编号不能为空!");
 		  ValidateUtils.isNotBlank(buyInfo, "购买商品信息不能为空!");
 		  purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
-		  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+		  /**
+		   * 如果要验证的地址是空的，那么直接返回，购物列表信息
+		   */
+		  if(StringUtils.isNotBlank(addressId)){
+			  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+		  }
 	  } catch(BusinessException e){
 		  LOGGER.error(e.getErrorDesc());
 	      return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());

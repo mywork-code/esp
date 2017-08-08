@@ -558,13 +558,12 @@ public class ShopHomeController {
             Boolean flage = true;
             Region region = new Region();// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
-                if (!CityJdEnums.isContainsCode(provinceCode)) {
                     List<DictDTO> result = nationService.queryDistrictJd(districtCode);
                     if (result.size() == 0) {
                         region.setProvinceId(Integer.parseInt(provinceCode));
                         region.setCityId(Integer.parseInt(cityCode));
                         region.setCountyId(Integer.parseInt(districtCode));
-                        region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+                        region.setTownId(0);
                         flage = false;
                     } else {
                         if (StringUtils.isNotEmpty(townsCode)) {
@@ -577,7 +576,6 @@ public class ShopHomeController {
                             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
                         }
                     }
-                }
             }
             Region region2 = new Region();
             // 查看地址信息

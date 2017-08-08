@@ -158,9 +158,10 @@ public class AddressService {
      * 
      * @param customerInfo
      * @return
+     * @throws BusinessException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public List<AddressInfoEntity> updateAddressInfoV1(AddressInfoEntity addInfo) throws BusinessException {
+    public List<AddressInfoEntity> updateAddressInfoV1(AddressInfoEntity addInfo) throws BusinessException{
         String isDefault = addInfo.getIsDefault();// 是否是默认地址
 
         try {
@@ -183,7 +184,7 @@ public class AddressService {
         	throw new BusinessException(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("更新地址信息失败===>", e);
-            throw new BusinessException("更新地址信息失败！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
+            throw new BusinessException("请将收货地址所在区域填写完整!！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
         }
     }
 
