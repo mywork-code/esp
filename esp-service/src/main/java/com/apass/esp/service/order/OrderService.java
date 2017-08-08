@@ -2015,9 +2015,9 @@ public class OrderService {
                         region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer
                                 .parseInt(address.getTownsCode()));
                     }
-                    String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
-                            purchase.getBuyNum());
-                    if ("无货".equals(jdgoodsStock)) {
+                    List<Long> skus = new ArrayList<Long>();
+                    skus.add(Long.parseLong(goods.getExternalId()));
+                    if (productCheckAreaLimitQuery(skus,region)) {
                         resultMaps.put("unSupportProvince", true);
                         resultMaps.put("message", "抱歉，暂不支持该地区发货！");
                     }
