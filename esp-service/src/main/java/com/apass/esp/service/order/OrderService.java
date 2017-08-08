@@ -906,7 +906,7 @@ public class OrderService {
             	//校验京东商品购买数量
             	if(purchase.getBuyNum()>200){
                     LOG.info(requestId, "生成订单前校验,京东商品最多只能买200件", goodsDetail.getGoodsStockId().toString());
-                    throw new BusinessException(goodsDetail.getGoodsName() + "最多只能买200件哦",BusinessErrorCode.ORDER_JDGOODS_OVERNUMBER);
+                    throw new BusinessException(goodsDetail.getGoodsName() + "最多只能买200件哦");
             	}
                 // 校验地址
                 AddressInfoEntity address1 = addressInfoDao.select(addressId);
