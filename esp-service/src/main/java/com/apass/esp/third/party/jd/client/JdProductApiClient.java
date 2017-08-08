@@ -120,14 +120,14 @@ public class JdProductApiClient extends JdApiClient {
      * @param town
      * @return
      */
-    public JdApiResponse<JSONArray> productCheckAreaLimitQuery(List<Long> skus, int province, int city, int county, int town) {
+    public JdApiResponse<JSONArray> productCheckAreaLimitQuery(List<Long> skus, Region region) {
         String join = StringUtils.join(skus, ",");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("skuIds", join);
-        jsonObject.put("province", province);
-        jsonObject.put("city", city);
-        jsonObject.put("county", county);
-        jsonObject.put("town", town);
+        jsonObject.put("province", region.getProvinceId());
+        jsonObject.put("city", region.getCityId());
+        jsonObject.put("county", region.getCountyId());
+        jsonObject.put("town", region.getTownId());
         return request("biz.product.checkAreaLimit.query", jsonObject, "biz_product_checkAreaLimit_query_response", JSONArray.class);
     }
 

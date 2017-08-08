@@ -597,6 +597,28 @@ public class OrderService {
         return true;
     }
     
+    /**
+     * 验证区域是否受限
+     * @param skus
+     * @param region
+     * @return
+     * @throws BusinessException
+     */
+    public boolean productCheckAreaLimitQuery(List<Long> skus,Region region) throws BusinessException{
+    	JdApiResponse<JSONArray> unSupportAddress = jdProductApiClient.productCheckAreaLimitQuery(skus, region);
+    	if((!unSupportAddress.isSuccess())){
+    		return false;
+    	}
+    	
+    	 for (Object o : unSupportAddress.getResult()) {
+             JSONObject jsonObject = (JSONObject) o;
+             return jsonObject.getBooleanValue("isAreaRestrict");
+    	 }
+    	 
+    	return false;
+    	
+    }
+    
     public AddressInfo getAddressByOrderId(Long addressId) throws BusinessException {
 
         AddressInfo addressInfo = new AddressInfo();
@@ -2032,11 +2054,9 @@ public class OrderService {
                         region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer
                                 .parseInt(address.getTownsCode()));
                     }
-                    String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
-                            purchase.getBuyNum());
-                    if ("无货".equals(jdgoodsStock)) {
-                    	purchase.setUnSupportProvince(true);
-                    }
+                    List<Long> skus = new ArrayList<Long>();
+                    skus.add(Long.parseLong(goods.getExternalId()));
+                    purchase.setUnSupportProvince(productCheckAreaLimitQuery(skus,region));
                 } else {
                     // 校验非京东商品的不可发送区域
                 	Map<String, Object> resultMaps = validateGoodsUnSupportProvince("", addreesId, purchase.getGoodsId());
