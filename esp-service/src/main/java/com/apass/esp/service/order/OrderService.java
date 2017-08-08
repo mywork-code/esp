@@ -1364,7 +1364,8 @@ public class OrderService {
                 goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils
                         .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
             }else{
-                goodsInfoInOrderDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+goodsInfoInOrderDto.getGoodsLogoUrl());
+                goodsInfoInOrderDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+EncodeUtils
+                        .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl()));
             }
 
         }
