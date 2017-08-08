@@ -80,39 +80,62 @@ public class MailStatisScheduleTask {
         String dateBeforeDate = dateBefore.substring(0, 8);
         //当天是1号  发上个月的
         String beginDate = dateBeforeDate + "01";
+        String beginDateb = "2017-03-" + "01";
 
         Integer count1 = orderService.selectOrderCountByStatus("D00", beginDate, currentDate);
+        Integer count1b = orderService.selectOrderCountByStatus("D00", beginDateb, currentDate);
         //待发货
         Integer count2 = orderService.selectOrderCountByStatus("D02", beginDate, currentDate);
+        Integer count2b = orderService.selectOrderCountByStatus("D02", beginDateb, currentDate);
         //待收货
         Integer count3 = orderService.selectOrderCountByStatus("D03", beginDate, currentDate);
+        Integer count3b = orderService.selectOrderCountByStatus("D03", beginDateb, currentDate);
         //订单失效
         Integer count4 = orderService.selectOrderCountByStatus("D07", beginDate, currentDate);
+        Integer count4b = orderService.selectOrderCountByStatus("D07", beginDateb, currentDate);
         //订单删除
         Integer countd = orderService.selectOrderCountByStatus("D08", beginDate, currentDate);
+        Integer countdb = orderService.selectOrderCountByStatus("D08", beginDateb, currentDate);
         //交易完成
         Integer countc = orderService.selectOrderCountByStatus("D04", beginDate, currentDate);
+        Integer countcb = orderService.selectOrderCountByStatus("D04", beginDateb, currentDate);
         //银行卡总额
         Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
+        Integer count5b = orderService.selectSumAmt(beginDateb, currentDate);
         //额度支付
         Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
+        Integer count6b = orderService.selectCreAmt(beginDateb, currentDate);
 
         LOGGER.info(" mailStatisSchedule  beginDate {} currentDate {}", beginDate, currentDate);
         LOGGER.info("mailStatisSchedule  D00 {}  D02 {} D03 {} D07 {} D08 {} D04 {} count5 {} count6 {}", count1, count2, count3, count4, count5, count6);
+        LOGGER.info("mailStatisSchedule  D00 b {}  D02 b {} D03 b {} D07 b {} D08 b {} D04 b {} count5 b {} count6 b {}", count1b, count2b, count3b, count4b, count5b, count6b);
         List<ExportDomain> list = new ArrayList<>();
         ExportDomain exportDomain = new ExportDomain();
+        ExportDomain exportDomain1 = new ExportDomain();
         exportDomain.setDate(beginDate + " ~ " + dateBefore);
+        exportDomain1.setDate(beginDateb + " ~ " + dateBefore);
         exportDomain.setCount1(NumberUtils.nullToZero(count1));
+        exportDomain1.setCount1(NumberUtils.nullToZero(count1b));
         exportDomain.setCount2(NumberUtils.nullToZero(count2));
+        exportDomain1.setCount2(NumberUtils.nullToZero(count2b));
         exportDomain.setCount3(NumberUtils.nullToZero(count3));
+        exportDomain1.setCount3(NumberUtils.nullToZero(count3b));
         exportDomain.setCount4(NumberUtils.nullToZero(count4));
+        exportDomain1.setCount4(NumberUtils.nullToZero(count4b));
         exportDomain.setCount5(NumberUtils.nullToZero(count5));
+        exportDomain1.setCount5(NumberUtils.nullToZero(count5b));
         exportDomain.setCount6(NumberUtils.nullToZero(count6));
+        exportDomain1.setCount6(NumberUtils.nullToZero(count6b));
         exportDomain.setCountd(NumberUtils.nullToZero(countd));
+        exportDomain1.setCountd(NumberUtils.nullToZero(countdb));
         exportDomain.setCountc(NumberUtils.nullToZero(countc));
+        exportDomain1.setCountc(NumberUtils.nullToZero(countcb));
         Integer count7 = NumberUtils.nullToZero(count1) + NumberUtils.nullToZero(count2) + NumberUtils.nullToZero(count3) + NumberUtils.nullToZero(count4) + NumberUtils.nullToZero(countc) + NumberUtils.nullToZero(countd);
+        Integer count7b = NumberUtils.nullToZero(count1b) + NumberUtils.nullToZero(count2b) + NumberUtils.nullToZero(count3b) + NumberUtils.nullToZero(count4b) + NumberUtils.nullToZero(countcb) + NumberUtils.nullToZero(countdb);
         exportDomain.setCount7(NumberUtils.nullToZero(count7));
+        exportDomain1.setCount7(NumberUtils.nullToZero(count7b));
         list.add(exportDomain);
+        list.add(exportDomain1);
         try {
             generateFile(list);
         } catch (IOException e) {
