@@ -541,7 +541,7 @@ public class OrderService {
                 LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
                         stock.getStockStateDesc());
                 LOGGER.info(stock.getSkuId() + "_");
-                throw new BusinessException("下单失败!");
+                throw new BusinessException("商品库存不足");
             }
         }
         /**
