@@ -66,6 +66,8 @@ public enum BusinessErrorCode implements ErrorCode {
   ORDER_REQUEST_REFUND(3025,"退款申请失败！"),
   ORDER_GET_REQUEST_REFUND(3026,"查询退款申请信息失败！"),
   UPDATE_ORDER_FAILED(3027,"修改订单状态失败"),
+  ORDER_JDGOODS_OVERNUMBER(3028,"最多只能购买200件"),
+
 
   //4xxx 与依懒服务相互调用问题
   LOGISTICS_TRACKING_ERROR(4001, "物流跟踪失败"),
