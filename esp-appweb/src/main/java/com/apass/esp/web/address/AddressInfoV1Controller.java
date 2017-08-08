@@ -154,7 +154,7 @@ public class AddressInfoV1Controller {
       return Response.fail(e.getErrorDesc());
     } catch (Exception e) {
       logger.error("更新地址信息失败，错误原因", e);
-      return Response.fail("请将收货地址所在区域填写完整!");
+      return Response.fail("您填写的收货地址所在地址不完整，请重新填写!");
     }
   }
 
@@ -266,12 +266,9 @@ public class AddressInfoV1Controller {
                              String towns, String address, String name, String telephone, String isDefault, boolean isSave)
       throws BusinessException {
     ValidateUtils.isNotBlank(userId, "用户编号不能为空！");
-    ValidateUtils.isNotBlank(province, "请将收货地址所在区域填写完整！");
-    ValidateUtils.isNotBlank(city, "请将收货地址所在区域填写完整！");
-    ValidateUtils.isNotBlank(district, "请将收货地址所在区域填写完整！");
-    /*if (!CityJdEnums.isContains(province)) {
-      ValidateUtils.isNotBlank(towns, "请将收货地址所在区域填写完整！");
-    }*/
+    ValidateUtils.isNotBlank(province, "您填写的收货地址所在地址不完整，请重新填写！");
+    ValidateUtils.isNotBlank(city, "您填写的收货地址所在地址不完整，请重新填写！");
+    ValidateUtils.isNotBlank(district, "您填写的收货地址所在地址不完整，请重新填写！");
     ValidateUtils.isNotBlank(address, "详细收货地址不能为空！");
     ValidateUtils.checkLength(address, 5, 80, "详细收货地址限5~80字！");
     ValidateUtils.isNotBlank(name, "收货人姓名不能为空！");
