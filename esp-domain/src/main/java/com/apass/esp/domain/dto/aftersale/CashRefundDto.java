@@ -14,8 +14,10 @@ public class CashRefundDto {
     private Long id;
 
     private Date createDate;
+    private String createDateStr;
 
     private Date updateDate;
+    private String updateDateStr;
 
     private BigDecimal amt;
 
@@ -36,8 +38,10 @@ public class CashRefundDto {
     private String memo;
 
     private Date agreeD;
+    private String agreeDStr;
 
     private Date systemProcessDate;
+    private String systemProcessDateStr;
 
     public Date getSystemProcessDate() {
         return systemProcessDate;
@@ -48,6 +52,7 @@ public class CashRefundDto {
     }
 
     private Date refundSurplusTime;//剩余退款时间
+    private String refundSurplusTimeStr;//剩余退款时间
 
     public Date getRefundSurplusTime() {
         return refundSurplusTime;
@@ -55,6 +60,46 @@ public class CashRefundDto {
 
     public void setRefundSurplusTime(Date refundSurplusTime) {
         this.refundSurplusTime = refundSurplusTime;
+    }
+
+    public String getUpdateDateStr() {
+        return updateDateStr;
+    }
+
+    public void setUpdateDateStr(String updateDateStr) {
+        this.updateDateStr = updateDateStr;
+    }
+
+    public String getAgreeDStr() {
+        return agreeDStr;
+    }
+
+    public void setAgreeDStr(String agreeDStr) {
+        this.agreeDStr = agreeDStr;
+    }
+
+    public String getSystemProcessDateStr() {
+        return systemProcessDateStr;
+    }
+
+    public void setSystemProcessDateStr(String systemProcessDateStr) {
+        this.systemProcessDateStr = systemProcessDateStr;
+    }
+
+    public String getRefundSurplusTimeStr() {
+        return refundSurplusTimeStr;
+    }
+
+    public void setRefundSurplusTimeStr(String refundSurplusTimeStr) {
+        this.refundSurplusTimeStr = refundSurplusTimeStr;
+    }
+
+    public String getCreateDateStr() {
+        return createDateStr;
+    }
+
+    public void setCreateDateStr(String createDateStr) {
+        this.createDateStr = createDateStr;
     }
 
     public Long getId() {

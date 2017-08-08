@@ -102,6 +102,11 @@ public class CashRefundController {
         if(agreeDate!=null){
             cashRefundDto.setSystemProcessDate(DateFormatUtil.addDMinutes(agreeDate,1));
         }
+        cashRefundDto.setCreateDateStr(DateFormatUtil.dateToString(cashRefundDto.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+        cashRefundDto.setRefundSurplusTimeStr(DateFormatUtil.dateToString(cashRefundDto.getRefundSurplusTime(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+        cashRefundDto.setSystemProcessDateStr(DateFormatUtil.dateToString(cashRefundDto.getSystemProcessDate(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+        cashRefundDto.setAgreeDStr(DateFormatUtil.dateToString(cashRefundDto.getAgreeD(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+        cashRefundDto.setUpdateDateStr(DateFormatUtil.dateToString(cashRefundDto.getUpdateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM));
        // List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByMainOrderId(cashRefundDto.getMainOrderId());
         List<CashRefundTxn> cashRefundTxnList =  cashRefundTxnService.queryCashRefundTxnByCashRefundId(cashRefundDto.getId());
         List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
@@ -126,6 +131,7 @@ public class CashRefundController {
                 }
             //}
         }
+
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
         try {
