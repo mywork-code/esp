@@ -33,6 +33,7 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.JdGoodsImageType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -95,18 +96,12 @@ public class ShoppingCartService {
         
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
         Date date = new Date();
-		if ("jd".equals(goodsInfo.getSource())) {
-			if (null == goodsInfo || goodsInfo.getIsDelete().equals("00") || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
-				LOG.info(requestId, "该商品已下架", goodsStockId);
-				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
-			}
-		} else {
-			if (null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
-					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
-				LOG.info(requestId, "该商品已下架", goodsStockId);
-				throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
-			}
-
+    	if (null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
+				|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+			LOG.info(requestId, "该商品已下架", goodsStockId);
+			throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
+		}
+		if (!SourceType.JD.getCode().equals(goodsInfo.getSource())){
 			// 商品库存如果都为0 则提示商品下架
 			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
 			boolean offShelfFlag = true;
