@@ -207,13 +207,10 @@ public class OrderInfoController {
 		   */
 		  if(StringUtils.isNotBlank(addressId)){
 			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
-			  //如果
-			  if(null != address){
-				  if(StringUtils.isNotBlank(address.getTownsCode())){
-					  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
-				  }else{
-					  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
-				  }
+			  if(StringUtils.isNotBlank(address.getTownsCode())){
+				  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+			  }else{
+				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
 			  }
 		  }
 		  params.put("oldAddress", oldAddress);
