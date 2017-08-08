@@ -63,7 +63,7 @@ public class GoodsBasicController {
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                 Region region = new Region();
                 region.setProvinceId(51975);
                 region.setCityId(2815);
@@ -75,7 +75,6 @@ public class GoodsBasicController {
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(Long.valueOf(goodsId));
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
-
                 if (jdGoodsStockInfoList.size() == 1) {
                     BigDecimal price = commonService.calculateGoodsPrice(Long.valueOf(goodsId), jdGoodsStockInfoList.get(0)
                             .getId());
@@ -104,10 +103,11 @@ public class GoodsBasicController {
                 returnMap.put("source", "jd");
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
+                return Response.success("加载成功", returnMap);
             } else {
                 goodsService.loadGoodsBasicInfoById(Long.valueOf(goodsId), returnMap);
+                return Response.success("加载成功", returnMap);
             }
-            return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
