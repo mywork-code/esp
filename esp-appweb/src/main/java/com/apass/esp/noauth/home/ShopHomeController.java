@@ -629,8 +629,12 @@ public class ShopHomeController {
                 skuNum.setNum(1);
                 skuNum.setSkuId(Long.parseLong(externalId));
                 skuNumList.add(skuNum);
-                //验证商品是否可售
+                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                 if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+                	GoodsInfoEntity goodsEntity=new GoodsInfoEntity();
+                	goodsEntity.setId(Long.valueOf(goodsId));
+                	goodsEntity.setStatus("G03");
+                	goodsService.updateService(goodsEntity);
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
