@@ -724,7 +724,7 @@ function showCategroyName(level) {
 		$(".oneCategory").css("display", "inline");
 		$(".twoCategory").css("display", "none");
 		$(".threeCategory").css("display", "none");
-		$(".threeCategoryAndOneCategoryShow").css("display", "inline");
+		$(".threeCategoryAndOneCategoryShow").css("display", "block");
 	} else if (level == '2') {
 		$(".oneCategory").css("display", "none");
 		$(".twoCategory").css("display", "inline");
@@ -734,7 +734,7 @@ function showCategroyName(level) {
 		$(".oneCategory").css("display", "none");
 		$(".twoCategory").css("display", "none");
 		$(".threeCategory").css("display", "inline");
-		$(".threeCategoryAndOneCategoryShow").css("display", "inline");
+		$(".threeCategoryAndOneCategoryShow").css("display", "block");
 	}
 }
 // 上移下移方法
