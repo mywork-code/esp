@@ -1,6 +1,7 @@
 package com.apass.esp.web.order;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +197,8 @@ public class OrderInfoController {
 	  String addressId = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
 	  String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
 	  List<PurchaseRequestDto> purchaseList = null;
+	  String oldAddress = null;
+	  Map<String,Object> params = Maps.newHashMap();
 	  try {
 		  ValidateUtils.isNotBlank(buyInfo, "购买商品信息不能为空!");
 		  purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
@@ -203,8 +206,15 @@ public class OrderInfoController {
 		   * 如果要验证的地址是空的，那么直接返回，购物列表信息
 		   */
 		  if(StringUtils.isNotBlank(addressId)){
-			  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
+			  if(StringUtils.isNotBlank(address.getTownsCode())){
+				  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+			  }else{
+				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
+			  }
 		  }
+		  params.put("oldAddress", oldAddress);
+		  params.put("purchaseList", purchaseList);
 	  } catch(BusinessException e){
 		  LOGGER.error(e.getErrorDesc());
 	      return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
@@ -213,7 +223,7 @@ public class OrderInfoController {
 	      LOGGER.error("订单取消失败!请稍后再试");
 	      return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
 	  }
-	  return Response.success("验证成功!",purchaseList);
+	  return Response.success("验证成功!",params);
   }
   
   /**

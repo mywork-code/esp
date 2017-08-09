@@ -184,7 +184,7 @@ public class AddressService {
         	throw new BusinessException(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("更新地址信息失败===>", e);
-            throw new BusinessException("请将收货地址所在区域填写完整!！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
+            throw new BusinessException("您填写的收货地址所在地址不完整，请重新填写！", BusinessErrorCode.ADDRESS_UPDATE_FAILED);
         }
     }
 
@@ -284,7 +284,7 @@ public class AddressService {
         List<WorkCityJd> townList = cityJdMapper.selectDateByParentId(district.getCode());
         
         if(!CollectionUtils.isEmpty(townList) && StringUtils.isBlank(address.getTowns())){
-        	throw new BusinessException("请将收货地址所在区域填写完整！");
+        	throw new BusinessException("您填写的收货地址所在地址不完整，请重新填写！");
         }
         
         WorkCityJdDto dto4 = new WorkCityJdDto(address.getTowns(), district.getCode());

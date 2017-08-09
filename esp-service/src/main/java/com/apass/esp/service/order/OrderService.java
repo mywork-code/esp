@@ -541,7 +541,7 @@ public class OrderService {
                 LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
                         stock.getStockStateDesc());
                 LOGGER.info(stock.getSkuId() + "_");
-                throw new BusinessException("商品库存不足");
+                throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
             }
         }
         /**
@@ -906,7 +906,7 @@ public class OrderService {
             	//校验京东商品购买数量
             	if(purchase.getBuyNum()>200){
                     LOG.info(requestId, "生成订单前校验,京东商品最多只能买200件", goodsDetail.getGoodsStockId().toString());
-                    throw new BusinessException(goodsDetail.getGoodsName() + "最多只能买200件哦",BusinessErrorCode.ORDER_JDGOODS_OVERNUMBER);
+                    throw new BusinessException(goodsDetail.getGoodsName() + "商品库存不足\n请修改商品数量");
             	}
                 // 校验地址
                 AddressInfoEntity address1 = addressInfoDao.select(addressId);
@@ -2015,9 +2015,9 @@ public class OrderService {
                         region.setTownId(StringUtils.isEmpty(address.getTownsCode()) ? 0 : Integer
                                 .parseInt(address.getTownsCode()));
                     }
-                    String jdgoodsStock = jdGoodsInfoService.getStockBySkuNum(goods.getExternalId(), region,
-                            purchase.getBuyNum());
-                    if ("无货".equals(jdgoodsStock)) {
+                    List<Long> skus = new ArrayList<Long>();
+                    skus.add(Long.parseLong(goods.getExternalId()));
+                    if (productCheckAreaLimitQuery(skus,region)) {
                         resultMaps.put("unSupportProvince", true);
                         resultMaps.put("message", "抱歉，暂不支持该地区发货！");
                     }
