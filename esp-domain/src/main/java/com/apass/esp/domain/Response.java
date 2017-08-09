@@ -125,6 +125,12 @@ public class Response {
 		return new Response(StatusCode.EXPIRE_CODE.getCode(), msg, null);
 	}
 
+	/**
+	 * 获取data数据，并转成指定对象
+	 * @param response
+	 * @param cls 对象
+	 * @return
+	 */
 	public static <T> T resolveResult(Response response, Class<T> cls){
 		if (response == null) {
 			return null;
