@@ -2161,6 +2161,9 @@ public class OrderService {
         return orderInfoRepository.selectSumAmt(dateBegin, dateEnd);
     }
 
+    public Integer selectAliAmt(String dateBegin, String dateEnd) {
+        return orderInfoRepository.selectAliAmt(dateBegin, dateEnd);
+    }
     public Integer selectCreAmt(String dateBegin, String dateEnd) {
         return orderInfoRepository.selectCreAmt(dateBegin, dateEnd);
     }
