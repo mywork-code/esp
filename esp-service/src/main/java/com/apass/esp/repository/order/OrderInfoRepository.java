@@ -176,6 +176,13 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         param.put("dateEnd", dateEnd);
         return getSqlSession().selectOne("selectSumAmt", param);
     }
+    public  Integer  selectAliAmt(String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectOne("selectAliAmt", param);
+    }
+
 
     public  Integer selectCreAmt(String dateBegin,String dateEnd){
         HashMap<Object, Object> param = new HashMap<>();
