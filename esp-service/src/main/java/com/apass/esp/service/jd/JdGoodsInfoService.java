@@ -212,7 +212,7 @@ public class JdGoodsInfoService {
 				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			}
 			// 查询商品是否有货
-			String jdGoodStock = getStockBySku(sku.toString(), region);
+			String jdGoodStock = getStockBySku(skuId.toString(), region);
 			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);
 			jdSimilarSkuVo.setStockDesc(jdGoodStock);
