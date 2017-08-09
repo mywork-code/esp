@@ -229,9 +229,9 @@ public class BannerController extends BaseController {
             if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
                 file.getInputStream().close();
                 if("index".equals(bannerType)){
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：248px,格式：.jpg,.png");
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
                 }else{
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：230px,格式：.jpg,.png");
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
                 }
             } else if (size > 1024 * 512) {
                 file.getInputStream().close();
