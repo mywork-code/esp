@@ -124,10 +124,13 @@ public class CashRefundController {
                 //支付宝全额支付
                 if (txnInfoDtoList.size() == 1 && TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType())) {
                     cashRefundDto.setSystemProcessDate(cashRefundDto.getAgreeD());
+                    cashRefundDto.setSystemProcessDateStr(DateFormatUtil.dateToString(cashRefundDto.getAgreeD(), DateFormatUtil.YYYY_MM_DD_HH_MM));
+
                 }
                 //支付宝首付
                 if (txnInfoDtoList.size() == 2 && (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(0).getTxnType()) || TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoDtoList.get(1).getTxnType()))) {
                     cashRefundDto.setSystemProcessDate(cashRefundDto.getAgreeD());
+                    cashRefundDto.setSystemProcessDateStr(DateFormatUtil.dateToString(cashRefundDto.getAgreeD(), DateFormatUtil.YYYY_MM_DD_HH_MM));
                 }
             //}
         }
