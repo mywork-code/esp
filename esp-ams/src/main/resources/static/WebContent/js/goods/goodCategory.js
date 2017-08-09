@@ -362,7 +362,6 @@ $(function() {
 
 	// 确认添加
 	$("#addConfirmGoodCategory").click(function() {
-		debugger;
 		var reg;
 		var categoryName = $("#addCategoryName").textbox('getValue');
 		var addCategoryFilePic = $('#addCategoryFilePic').val();
@@ -474,7 +473,6 @@ $(function() {
 	});
 	// 编辑上传图标
 	$("#editUpLogoBtn").click(function() {
-		debugger;
 		var editCategoryFilePic = $('#editCategoryFilePic').val();
 		if (null == editCategoryFilePic || ("") == editCategoryFilePic) {
 			$.messager.alert("提示", "请选择文件！", "info");
