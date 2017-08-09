@@ -800,7 +800,7 @@ public class ShopHomeController {
             goodsList = getSaleVolumeGoods(list);
             CategoryVo v = new CategoryVo();
             v.setCategoryTitle("大小家电 尽在掌握");
-            v.setPictureUrl(espImageUrl + "/static/eshop/other/1501692516414.jpg");
+            v.setPictureUrl(espImageUrl + "/static/eshop/other/1502299101325.jpg");
             resultMap.put("banner", v);
             resultMap.put("goodsList", goodsList);
             if (CollectionUtils.isEmpty(goodsList)) {
