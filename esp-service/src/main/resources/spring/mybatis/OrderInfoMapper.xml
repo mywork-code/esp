@@ -605,6 +605,11 @@
 		select sum(txn_amt) from t_apass_txn_info where txn_type in ('T01','T05') and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
 	</select>
 
+	<select id="selectAliAmt" resultType="java.lang.Integer">
+		select sum(txn_amt) from t_apass_txn_info where txn_type in ('T10','T11') and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
+	</select>
+
+
 	<select id="selectCreAmt" resultType="java.lang.Integer">
 		select sum(txn_amt) from t_apass_txn_info where txn_type = 'T02' and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
 	</select>

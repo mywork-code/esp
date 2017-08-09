@@ -18,6 +18,15 @@ public class ExportDomain {
     private int count7;
     private int  countd;
     private int countc;
+    private int countali;
+
+    public int getCountali() {
+        return countali;
+    }
+
+    public void setCountali(int countali) {
+        this.countali = countali;
+    }
 
     public int getCountc() {
         return countc;

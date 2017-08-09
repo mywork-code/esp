@@ -101,7 +101,9 @@ public class MailStatisScheduleTask {
         Integer countcb = orderService.selectOrderCountByStatus("D04", beginDateb, currentDate);
         //银行卡总额
         Integer count5 = orderService.selectSumAmt(beginDate, currentDate);
+        Integer countali = orderService.selectAliAmt(beginDate, currentDate);
         Integer count5b = orderService.selectSumAmt(beginDateb, currentDate);
+        Integer countalib = orderService.selectAliAmt(beginDateb, currentDate);
         //额度支付
         Integer count6 = orderService.selectCreAmt(beginDate, currentDate);
         Integer count6b = orderService.selectCreAmt(beginDateb, currentDate);
@@ -129,7 +131,9 @@ public class MailStatisScheduleTask {
         exportDomain.setCountd(NumberUtils.nullToZero(countd));
         exportDomain1.setCountd(NumberUtils.nullToZero(countdb));
         exportDomain.setCountc(NumberUtils.nullToZero(countc));
+        exportDomain.setCountali(NumberUtils.nullToZero(countali));
         exportDomain1.setCountc(NumberUtils.nullToZero(countcb));
+        exportDomain1.setCountali(NumberUtils.nullToZero(countalib));
         Integer count7 = NumberUtils.nullToZero(count1) + NumberUtils.nullToZero(count2) + NumberUtils.nullToZero(count3) + NumberUtils.nullToZero(count4) + NumberUtils.nullToZero(countc) + NumberUtils.nullToZero(countd);
         Integer count7b = NumberUtils.nullToZero(count1b) + NumberUtils.nullToZero(count2b) + NumberUtils.nullToZero(count3b) + NumberUtils.nullToZero(count4b) + NumberUtils.nullToZero(countcb) + NumberUtils.nullToZero(countdb);
         exportDomain.setCount7(NumberUtils.nullToZero(count7));
@@ -183,8 +187,8 @@ public class MailStatisScheduleTask {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
-        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效", "删除订单", "交易完成", "银行卡支付总额", "额度支付总额", "总计"};
-        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd", "countc", "count5", "count6", "count7"};
+        String[] rowHeadArr = {"统计日期", "待付款", "待发货", "待收货", "订单失效", "删除订单", "交易完成", "银行卡支付总额","支付宝支付总额", "额度支付总额", "总计"};
+        String[] headKeyArr = {"date", "count1", "count2", "count3", "count4", "countd", "countc", "count5","countali", "count6", "count7"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
