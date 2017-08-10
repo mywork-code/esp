@@ -89,7 +89,7 @@ public class JdGoodsService {
             entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
             entity.setGoodsName(jdGoods.getName());
             entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            entity.setMerchantCode("0000103");
+            entity.setMerchantCode("0000097");
             entity.setStatus(GoodStatus.GOOD_NEW.getCode());
             entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
             entity.setListTime(null);
