@@ -666,14 +666,20 @@ $.refundDetails = function (orderId) {
             nowrap: false,
             columns: [
                 [
+//                    {
+//                        title: '退款申请时间',
+//                        field: 'createDate',
+//                        width: 160,
+//                        align: 'center',
+//                        formatter: function (value, row, index) {
+//                            return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+//                        }
+//                    },
                     {
-                        title: '退款申请时间',
-                        field: 'createDate',
-                        width: 160,
-                        align: 'center',
-                        formatter: function (value, row, index) {
-                            return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                        }
+                    	title: '退款申请时间',
+                    	field: 'createDateStr',
+                    	width: 160,
+                    	align: 'center'
                     },
                     {
                         title: '退款原因',
