@@ -302,7 +302,7 @@ $(function() {
 	                        success(resp.data);
 	                    });
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
-	                		stime = window.setInterval("start()", 10000);
+	                		stime = window.setInterval("start()", 15000);
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
