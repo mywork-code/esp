@@ -3,16 +3,15 @@ package com.apass.esp.service.jd;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -29,9 +28,6 @@ import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
-
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -54,6 +50,9 @@ public class JdGoodsService {
 
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
+    
+//    @Autowired
+//    private UsersService usersService;
 
     /**
      * 关联京东类目
@@ -89,7 +88,7 @@ public class JdGoodsService {
             entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
             entity.setGoodsName(jdGoods.getName());
             entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            entity.setMerchantCode("0000103");
+            entity.setMerchantCode("0000097");//usersService.loadBasicInfo().getMerchantCode()
             entity.setStatus(GoodStatus.GOOD_NEW.getCode());
             entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
             entity.setListTime(null);
