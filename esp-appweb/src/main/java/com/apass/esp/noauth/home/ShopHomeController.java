@@ -1,24 +1,5 @@
 package com.apass.esp.noauth.home;
 
-import java.math.BigDecimal;
-import java.util.*;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
-import com.apass.esp.domain.vo.CategoryVo;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
@@ -37,6 +18,7 @@ import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -58,6 +40,24 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 首页
@@ -717,7 +717,7 @@ public class ShopHomeController {
             goodsList = getSaleVolumeGoods(list);
             CategoryVo v = new CategoryVo();
             v.setCategoryTitle("大小家电 尽在掌握");
-            v.setPictureUrl(espImageUrl + "/static/eshop/other/1502299101325.jpg");
+            v.setPictureUrl(espImageUrl + "/static/eshop/other/1502349644763.jpg");
             resultMap.put("banner", v);
             resultMap.put("goodsList", goodsList);
             if (CollectionUtils.isEmpty(goodsList)) {
