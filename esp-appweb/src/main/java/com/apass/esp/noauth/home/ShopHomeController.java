@@ -358,12 +358,27 @@ public class ShopHomeController {
 
             for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
                 if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
-                            goodsInfo.getGoodsStockId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                            BigDecimal.ROUND_DOWN));// 商品首付价
-
+                    ActivityInfoEntity param = new ActivityInfoEntity();
+                    param.setGoodsId(goodsInfo.getGoodId());
+                    param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                    List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                    Map<String, Object> result = new HashMap<>();
+                    if (null != activitys && activitys.size() > 0) {
+                        result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
+                        BigDecimal price = (BigDecimal) result.get("minPrice");
+                        Long minPriceStockId = (Long) result.get("minPriceStockId");
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+                        goodsInfo.setGoodsStockId(minPriceStockId);
+                    } else {
+                        BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+                                goodsInfo.getGoodsStockId());
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+                    }
+                    
                     if ("jd".equals(goodsInfo.getSource())) {// 京东图片
                         String logoUrl = goodsInfo.getGoodsLogoUrl();
                         goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + logoUrl);
