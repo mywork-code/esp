@@ -2035,6 +2035,22 @@ public class OrderService {
     }
     
     /**
+     * 验证purchase中是否存在京东商品
+     * @param purchaseList
+     * @return
+     */
+    public boolean validatePurchaseExistJdGoods(List<PurchaseRequestDto> purchaseList){
+    	for (PurchaseRequestDto purchase : purchaseList) {
+            GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+            if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
+            	return true;
+            }
+    	}
+    	return false;
+    }
+    
+    
+    /**
      * 验证商品是否支持配送区域
      * @param addreesId
      * @param purchaseList
