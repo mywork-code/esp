@@ -114,6 +114,11 @@ public class JdGoodsService {
             stockEntity.setGoodsCostPrice(jdGoods.getPrice());
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
+            //查询数据库是否已经存在此商品
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(jdGoods.getSkuId().toString());
+            if(goodsInfoEntity != null){
+                continue;
+            }
             goodsStockInfoService.insert(stockEntity);
         }
 

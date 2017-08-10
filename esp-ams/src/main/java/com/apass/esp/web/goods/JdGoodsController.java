@@ -35,7 +35,7 @@ public class JdGoodsController {
 
     @Autowired
     private JdGoodsService jdGoodsService;
-    
+
     @RequestMapping("/page")
     public ModelAndView page() {
         return new ModelAndView("goods/jdGoodsCategory");
@@ -62,13 +62,12 @@ public class JdGoodsController {
 
             // 关联京东类目
             jdGoodsService.relevanceJdCategory(paramMap);
-			 
+
         } catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (BusinessException e) {
+            e.printStackTrace();
+        } catch (BusinessException e) {
             LOGGER.error("关联京东类目失败！", e.getErrorCode());
-            return Response.fail("关联京东类目失败！",e.getErrorCode());
+            return Response.fail("关联京东类目失败！", e.getErrorCode());
         }
 
         return Response.success("关联京东类目成功！");
@@ -86,6 +85,7 @@ public class JdGoodsController {
 
         return Response.success("");
     }
+
     /**
      * 取消关联商品
      * 
