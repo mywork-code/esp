@@ -23,6 +23,7 @@ public class CashRefundDtoVo {
     private Long id;
 
     private Date createDate;
+    private String createDateStr;
 
     private Date updateDate;
 
@@ -45,6 +46,15 @@ public class CashRefundDtoVo {
     private String memo;
 
     private Date agreeD;
+
+    
+    public String getCreateDateStr() {
+        return createDateStr;
+    }
+
+    public void setCreateDateStr(String createDateStr) {
+        this.createDateStr = createDateStr;
+    }
 
     public Long getId() {
         return id;

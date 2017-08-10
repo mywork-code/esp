@@ -24,7 +24,7 @@ import java.util.Date;
  * @version $Id: OrderSubInfoEntity.java, v 0.1 2017年2月18日 上午11:39:12 dell Exp $
  */
 /**
- * @description 
+ * @description
  *
  * @author xiaohai
  * @version $Id: OrderSubInfoEntity.java, v 0.1 2017年3月15日 下午7:29:26 xiaohai Exp $
@@ -34,12 +34,12 @@ public class OrderSubInfoEntity {
     /**
      * id
      */
-    private Long       id;
+    private Long id;
 
     /**
      * 用户id
      */
-    private Long       userId;
+    private Long userId;
 
     /**
      * 订单金额
@@ -49,23 +49,24 @@ public class OrderSubInfoEntity {
     /**
      * 订单编号
      */
-    private String     orderId;
+    private String orderId;
 
     /**
      * 支付类型
      */
-    private String     payType;
+    private String payType;
+
     /**
      * 支付时间
      */
-    private String    payDate;
+    private String payDate;
 
     public String getPayDate() {
         return payDate;
     }
 
     public void setPayDate(Date payDate) {
-        this.payDate = DateFormatUtil.datetime2String(payDate);
+        this.payDate = DateFormatUtil.dateToString(payDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
     }
 
     /**
@@ -92,17 +93,17 @@ public class OrderSubInfoEntity {
      * 售后Id
      */
     private String refundId;
-    
+
     /**
      * 售后类型
      */
     private String refundType;
-    
+
     /**
      * 订单来源(如：京东（jd）)
      */
     private String source = "";
-    
+
     /**
      * 订单的外部Id（如：京东 订单Id）
      */
@@ -160,20 +161,21 @@ public class OrderSubInfoEntity {
      * 物流厂商
      */
     private String logisticsName;
+
     private String logisticsNameDes;
 
-    
     /**
      * 商户是否发货
+     * 
      * @return
      */
     private String preDelivery;
-    
+
     /**
      * 商户是否发货详细信息
      */
     private String preDeliveryMsg;
-    
+
     public String getLogisticsNameDes() {
         return logisticsNameDes;
     }
@@ -198,15 +200,15 @@ public class OrderSubInfoEntity {
 
     public void setLogisticsStatus(String logisticsStatus) {
         // 对物流状态进行翻译 ，前段展示统一显示中文
-        //        String content = "";
-        //        TrackingmoreStatus[] trackingmoreStatusArray = TrackingmoreStatus.values();
-        //        for (TrackingmoreStatus trackingmoreStatus : trackingmoreStatusArray) {
-        //            if (trackingmoreStatus.getCode().equals(logisticsStatus)) {
-        //                content = trackingmoreStatus.getMessage();
-        //            }
-        //        }
+        // String content = "";
+        // TrackingmoreStatus[] trackingmoreStatusArray = TrackingmoreStatus.values();
+        // for (TrackingmoreStatus trackingmoreStatus : trackingmoreStatusArray) {
+        // if (trackingmoreStatus.getCode().equals(logisticsStatus)) {
+        // content = trackingmoreStatus.getMessage();
+        // }
+        // }
         //
-        //        this.logisticsStatus = content;
+        // this.logisticsStatus = content;
         this.logisticsStatus = logisticsStatus;
     }
 
@@ -227,105 +229,114 @@ public class OrderSubInfoEntity {
      * 商户名称
      */
     private String merchantName;
+
     /**
      * 商户编码
      */
     private String merchantCode;
 
-    //商品编号，商品名称，商品类型，商品型号，商品规格，购买量，价格
+    // 商品编号，商品名称，商品类型，商品型号，商品规格，购买量，价格
     private String goodsId;
+
     private String goodsName;
+
     private String goodsType;
+
     private String goodsTypeDesc;
+
     private String goodsModel;
+
     private String goodsSkuType;
+
     private String goodsNum;
+
     private String goodsSkuAttr;
+
     private String goodsPrice;
-    
-    
-    
-    
-    
-    
-    //退款金额 退款状态 审核人 审核日期
+
+    // 退款金额 退款状态 审核人 审核日期
     private BigDecimal txnAmt;
+
     private String refundStatus;
+
     private String auditorName;
+
     private Date auditorDate;
-    
-    //用户名  姓名  银行卡号  所属银行
+
+    // 用户名 姓名 银行卡号 所属银行
     private String userName;
+
     private String realName;
+
     private String cardNo;
+
     private String cardBank;
-    
-    
+
     public String getUserName() {
-		return userName;
-	}
+        return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public String getRealName() {
-		return realName;
-	}
+    public String getRealName() {
+        return realName;
+    }
 
-	public void setRealName(String realName) {
-		this.realName = realName;
-	}
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
 
-	public String getCardNo() {
-		return cardNo;
-	}
+    public String getCardNo() {
+        return cardNo;
+    }
 
-	public void setCardNo(String cardNo) {
-		this.cardNo = cardNo;
-	}
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
 
-	public String getCardBank() {
-		return cardBank;
-	}
+    public String getCardBank() {
+        return cardBank;
+    }
 
-	public void setCardBank(String cardBank) {
-		this.cardBank = cardBank;
-	}
+    public void setCardBank(String cardBank) {
+        this.cardBank = cardBank;
+    }
 
-	public BigDecimal getTxnAmt() {
-		return txnAmt;
-	}
+    public BigDecimal getTxnAmt() {
+        return txnAmt;
+    }
 
-	public void setTxnAmt(BigDecimal txnAmt) {
-		this.txnAmt = txnAmt;
-	}
+    public void setTxnAmt(BigDecimal txnAmt) {
+        this.txnAmt = txnAmt;
+    }
 
-	public String getRefundStatus() {
-		return refundStatus;
-	}
+    public String getRefundStatus() {
+        return refundStatus;
+    }
 
-	public void setRefundStatus(String refundStatus) {
-		this.refundStatus = refundStatus;
-	}
+    public void setRefundStatus(String refundStatus) {
+        this.refundStatus = refundStatus;
+    }
 
-	public String getAuditorName() {
-		return auditorName;
-	}
+    public String getAuditorName() {
+        return auditorName;
+    }
 
-	public void setAuditorName(String auditorName) {
-		this.auditorName = auditorName;
-	}
+    public void setAuditorName(String auditorName) {
+        this.auditorName = auditorName;
+    }
 
-	public Date getAuditorDate() {
-		return DateFormatUtil.emptyDate(auditorDate);
-	}
+    public Date getAuditorDate() {
+        return DateFormatUtil.emptyDate(auditorDate);
+    }
 
-	public void setAuditorDate(Date auditorDate) {
-		this.auditorDate = auditorDate;
-	}
+    public void setAuditorDate(Date auditorDate) {
+        this.auditorDate = auditorDate;
+    }
 
-	public String getGoodsSkuAttr() {
+    public String getGoodsSkuAttr() {
         return goodsSkuAttr;
     }
 
@@ -390,14 +401,14 @@ public class OrderSubInfoEntity {
     }
 
     public String getGoodsPrice() {
-		return goodsPrice;
-	}
+        return goodsPrice;
+    }
 
-	public void setGoodsPrice(String goodsPrice) {
-		this.goodsPrice = goodsPrice;
-	}
+    public void setGoodsPrice(String goodsPrice) {
+        this.goodsPrice = goodsPrice;
+    }
 
-	/**
+    /**
      * 创建日期
      */
     private String createDate;
@@ -464,11 +475,11 @@ public class OrderSubInfoEntity {
         String content = "";
         PaymentType[] paymentTypeArray = PaymentType.values();
         for (PaymentType paymentType : paymentTypeArray) {
-            if(payType.equals(paymentType.getCode())){
+            if (payType.equals(paymentType.getCode())) {
                 content = paymentType.getMessage();
             }
         }
-        
+
         this.payType = content;
     }
 
@@ -613,7 +624,7 @@ public class OrderSubInfoEntity {
     }
 
     public void setCreateDate(Date createDate) {
-        this.createDate = DateFormatUtil.datetime2String(createDate);
+        this.createDate = DateFormatUtil.dateToString(createDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
     }
 
     public String getUpdateDate() {
@@ -624,20 +635,20 @@ public class OrderSubInfoEntity {
         this.updateDate = DateFormatUtil.datetime2String(updateDate);
     }
 
-	public String getPreDelivery() {
-		return preDelivery;
-	}
+    public String getPreDelivery() {
+        return preDelivery;
+    }
 
-	public void setPreDelivery(String preDelivery) {
-		this.preDelivery = preDelivery;
-	}
+    public void setPreDelivery(String preDelivery) {
+        this.preDelivery = preDelivery;
+    }
 
-	public String getPreDeliveryMsg() {
-		return preDeliveryMsg;
-	}
+    public String getPreDeliveryMsg() {
+        return preDeliveryMsg;
+    }
 
-	public void setPreDeliveryMsg(String preDeliveryMsg) {
-		 // 对订单状态进行翻译 ，前段展示统一显示中文
+    public void setPreDeliveryMsg(String preDeliveryMsg) {
+        // 对订单状态进行翻译 ，前段展示统一显示中文
         String content = "";
         PreDeliveryType[] preDeliveryArray = PreDeliveryType.values();
         for (PreDeliveryType preDeliveryEnum : preDeliveryArray) {
@@ -646,22 +657,22 @@ public class OrderSubInfoEntity {
             }
         }
         this.preDeliveryMsg = content;
-	}
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public String getSource() {
+        return source;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public String getExtOrderId() {
-		return extOrderId;
-	}
+    public String getExtOrderId() {
+        return extOrderId;
+    }
 
-	public void setExtOrderId(String extOrderId) {
-		this.extOrderId = extOrderId;
-	}
-	
+    public void setExtOrderId(String extOrderId) {
+        this.extOrderId = extOrderId;
+    }
+
 }

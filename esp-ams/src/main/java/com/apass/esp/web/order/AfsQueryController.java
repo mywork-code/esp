@@ -7,7 +7,9 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
 import com.apass.esp.utils.BeanUtils;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +54,7 @@ public class AfsQueryController {
         if(cashRefundDto != null) {
             CashRefundDtoVo cashRefundDtoVo = new CashRefundDtoVo();
             BeanUtils.copyProperties(cashRefundDtoVo, cashRefundDto);
+            cashRefundDtoVo.setCreateDateStr(DateFormatUtil.dateToString(cashRefundDtoVo.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
             try {
                 OrderDetailInfoDto orderDetailInfoDto = orderService.getOrderDetailInfoDto("", orderId);
                 cashRefundDtoVo.setTotalNum(orderDetailInfoDto.getGoodsNumSum());
