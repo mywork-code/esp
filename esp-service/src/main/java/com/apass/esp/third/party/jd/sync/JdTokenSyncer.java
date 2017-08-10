@@ -1,11 +1,9 @@
 package com.apass.esp.third.party.jd.sync;
 
-import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,10 +31,10 @@ public class JdTokenSyncer extends AbstractSyncer {
 
     @Override
     public void run() {
-        if(systemEnvConfig.isPROD()){
-            JSONObject jsonObject = jdTokenClient.getToken();
-            cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
-        }
+//        if(systemEnvConfig.isPROD()){
+//            JSONObject jsonObject = jdTokenClient.getToken();
+//            cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
+//        }
     }
 
     @Override
