@@ -25,6 +25,7 @@ import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
@@ -205,12 +206,16 @@ public class OrderInfoController {
 		  /**
 		   * 如果要验证的地址是空的，那么直接返回，购物列表信息
 		   */
+		  boolean exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
+		  
 		  if(StringUtils.isNotBlank(addressId)){
 			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
 			  if(StringUtils.isNotBlank(address.getTownsCode())){
 				  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
 			  }else{
-				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
+				  if(exitstJDGood){
+					  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
+				  }
 			  }
 		  }
 		  params.put("oldAddress", oldAddress);
