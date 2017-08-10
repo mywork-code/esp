@@ -5,6 +5,7 @@ import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdMessager;
 import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,15 @@ public class JDMessageScheduleTask {
     @Autowired
     private JDTaskAmqpAccess jdTaskAmqpAccess;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJDMessageScheduleTask() {
-        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(),JdMessageEnum.DELETEADD_SKU.getType());
+        if (!systemEnvConfig.isPROD()) {
+            return;
+        }
+        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(), JdMessageEnum.DELETEADD_SKU.getType());
         for (JdApiMessage jdApiMessage : jdApiMessageList
                 ) {
             try {
