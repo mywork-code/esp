@@ -1,5 +1,6 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.domain.dto.statement.Filter;
 import com.apass.esp.domain.dto.statement.TalkingDataDto;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import org.slf4j.Logger;
@@ -32,11 +33,12 @@ public class TalkingDateScheduleTask {
 
     private CommonHttpClient commonHttpClient;
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void TalkingDateSchedule() {
         TalkingDataDto talkingDataDto = new TalkingDataDto();
         ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add("newuser");
+        talkingDataDto.setFilter(new Filter());
         talkingDataDto.setMetrics(arrayList);
         String str = commonHttpClient.talkingData(talkingDataDto);
         LOGGER.info("response {}", str);

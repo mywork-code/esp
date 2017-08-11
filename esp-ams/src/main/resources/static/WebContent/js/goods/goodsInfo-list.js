@@ -973,12 +973,14 @@ $(function() {
 		if(externalsource == 'jd' && newGoodsCreatDate==editNewCreatDate){
 			editNewCreatDate=time;
 		}
+		
 		//提交表单
 		//from重组
 		var formObj = $("<form></form>").attr("method","post");
 		formObj.append("<input type='text' name='id' value='"+id+"'/>");
 		formObj.append("<input type='text' name='goodsModel' value='"+goodsModel+"'/>");
-	 	formObj.append("<input type='text' name='goodsName' value='"+goodsName+"'/>");
+	 	formObj.append('<input type="text" name="goodsName" value="'+goodsName+'"/>');//htmlspecialchars
+	 	
 	 	formObj.append("<input type='text' name='goodsTitle' value='"+goodsTitle+"'/>");
 	 	formObj.append("<input type='text' name='listTime'  dataType='Require' value='"+listTime+"'/>");
 		formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
@@ -2595,6 +2597,14 @@ function secondClickCategoryEdit(indexSecondEd,rowSecondEd){
 	 });
 }
 
+function htmlspecialchars (string) {  
+    string = string.replace(/&/g, '&amp;');//这个就是双引号  
+    string = string.replace(/"/g, '"');  
+    string = string.replace(/'/g, "'");  
+    string = string.replace(/</g, '<');  
+    string = string.replace(/>/g, '>');  
+    return string;  
+}  
 
 
 

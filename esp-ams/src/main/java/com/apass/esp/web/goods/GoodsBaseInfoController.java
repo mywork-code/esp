@@ -1,9 +1,11 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -355,6 +357,7 @@ public class GoodsBaseInfoController {
             return Response.fail(message);
         }
         try {
+            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(),"UTF-8");
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
             goodsService.updateService(pageModelEdit);
         } catch (Exception e) {
@@ -592,7 +595,12 @@ public class GoodsBaseInfoController {
                     .setScale(4, BigDecimal.ROUND_HALF_UP);
             if ("jd".equals(source)) {
                 String skuId = goodsEntity.getExternalId();
-                Map<String,Object> descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
+                Map<String,Object> descMap = new HashMap<String, Object>();
+                try{
+                    descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
+                }catch(Exception e){
+                    return "京东接口报错";
+                }
                 String jdGoodsSimilarSku=(String) descMap.get("jdGoodsSimilarSku");
                 int jdSimilarSkuListSize=(int) descMap.get("jdSimilarSkuListSize");
                 if(StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize>0){

@@ -151,12 +151,40 @@ public class GoodsService {
     }
 
     /**
+     * 搜索商品
+     * @param goodsInfoEntity
+     * @param page
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> searchPage(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
+            String limit) {
+    	Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
+        goodsBasicInfoEntity.setRows(limitInteger);
+         return goodsBasicRepository.searchList(goodsBasicInfoEntity);
+    }
+    /**
      * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)(数量)
      */
     public Integer loadGoodsByParamCount(GoodsBasicInfoEntity gbinfoty) {
         return goodsBasicRepository.loadGoodsByParamCount(gbinfoty);
     }
-
+    /**
+     * 搜索商品
+     */
+    public Integer searchGoodsListCount(GoodsBasicInfoEntity gbinfoty) {
+        return goodsBasicRepository.searchGoodsListCount(gbinfoty);
+    }
+    public GoodsBasicInfoEntity serchGoodsByGoodsId(String goodsId) {
+        return goodsBasicRepository.serchGoodsByGoodsId(goodsId);
+    }
     /**
      *
      * 加载商品列表
@@ -704,20 +732,6 @@ public class GoodsService {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
     
-    /**
-     * 搜索商品
-     * @param goodsInfoEntity
-     * @param page
-     * @return
-     */
-    public PaginationManage<GoodsInfoEntity> searchPage(GoodsInfoEntity goodsInfoEntity, Page page) {
-        PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
-        Pagination<GoodsInfoEntity> response = goodsDao.searchList(goodsInfoEntity, page);
-
-        result.setDataList(response.getDataList());
-        result.setPageInfo(page.getPageNo(), page.getPageSize());
-        result.setTotalCount(response.getTotalCount());
-        return result;
-    }
+  
 
 }
