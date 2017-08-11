@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class JdTokenSyncer extends AbstractSyncer {
             JSONObject jsonObject = JSONObject.parseObject(json);
             String time = jsonObject.getString("time");
             long interVal = System.currentTimeMillis() - Long.valueOf(time);
-            if (3600 * 24 * 7 <= interVal) {
+            if (3600 * 24 * 7 * 1000 <= interVal) {
                 JSONObject jsonObject1 = jdTokenClient.getToken();
                 cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject1.toJSONString());
             }
