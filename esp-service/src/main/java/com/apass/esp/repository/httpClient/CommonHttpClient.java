@@ -2,6 +2,7 @@ package com.apass.esp.repository.httpClient;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.statement.TalkingDataDto;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -166,4 +167,26 @@ public class CommonHttpClient {
     }
 
 
+
+    public String talkingData(TalkingDataDto talkingDataDto) {
+        try {
+            String requestUrl = "https://api.talkingdata.com/metrics/app/v1";
+            String requestJson = GsonUtils.toJson(talkingDataDto);
+
+            Map<String, String> headerparams = new HashMap<String, String>();
+            headerparams.put("Content-Type", "application/json");
+            StringEntity stringEntity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+            LOGGER.info( "talkingData返回数据:requestUrl {} stringEntity {}",requestUrl,stringEntity);
+            String responseJson = HttpClientUtils.getMethodPostContent(requestUrl, stringEntity, headerparams);
+            LOGGER.info( "talkingData返回数据:requestUrl {} responseJson {}",requestUrl, responseJson);
+//            Response response = GsonUtils.convertObj(responseJson, Response.class);
+//            if (response == null ) {
+//                return Response.fail("talkingData服务异常",BusinessErrorCode.CUSTOMER_UPDATE_AMOUNT_EXCEPTION);
+//            }
+            return responseJson;
+        } catch (Exception e) {
+            LOGGER.error("talkingData返回数据",  e);
+            return null;
+        }
+    }
 }
