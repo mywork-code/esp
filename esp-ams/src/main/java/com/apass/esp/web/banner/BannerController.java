@@ -203,9 +203,9 @@ public class BannerController extends BaseController {
             	}else if("goodId".equals(activityName)){
             		GoodsInfoEntity goodsInfo=goodsService.selectByGoodsId(Long.parseLong(activityUrl));
             		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
-            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"?source=jd";
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=jd";
             		}else{
-            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"?source=notJd";
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=notJd";
             		}
             		
             	}
