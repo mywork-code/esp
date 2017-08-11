@@ -89,7 +89,7 @@ public class JdGoodsService {
             entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
             entity.setGoodsName(jdGoods.getName());
             entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            entity.setMerchantCode("0000103");
+            entity.setMerchantCode("0000097");
             entity.setStatus(GoodStatus.GOOD_NEW.getCode());
             entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
             entity.setListTime(null);
@@ -101,6 +101,11 @@ public class JdGoodsService {
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
             entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+            //查询数据库是否已经存在此商品
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(jdGoods.getSkuId().toString());
+            if(goodsInfoEntity != null){
+                continue;
+            }
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 
             // 往t_esp_goods_stock_info表插数据
@@ -114,6 +119,7 @@ public class JdGoodsService {
             stockEntity.setGoodsCostPrice(jdGoods.getPrice());
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
+            
             goodsStockInfoService.insert(stockEntity);
         }
 

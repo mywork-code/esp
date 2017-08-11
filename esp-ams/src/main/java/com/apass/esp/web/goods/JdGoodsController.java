@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.service.UsersService;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -61,13 +62,12 @@ public class JdGoodsController {
 
             // 关联京东类目
             jdGoodsService.relevanceJdCategory(paramMap);
-			 
+
         } catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch (BusinessException e) {
+            e.printStackTrace();
+        } catch (BusinessException e) {
             LOGGER.error("关联京东类目失败！", e.getErrorCode());
-            return Response.fail("关联京东类目失败！",e.getErrorCode());
+            return Response.fail("关联京东类目失败！", e.getErrorCode());
         }
 
         return Response.success("关联京东类目成功！");
@@ -85,6 +85,7 @@ public class JdGoodsController {
 
         return Response.success("");
     }
+
     /**
      * 取消关联商品
      * 

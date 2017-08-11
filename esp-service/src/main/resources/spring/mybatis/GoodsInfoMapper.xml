@@ -985,7 +985,7 @@
 				t.status = 'G02' and
 				t.category_id2 = #{categoryId}
 			ORDER BY
-				list_time
+				list_time desc
 			LIMIT 0,10
 	</select>
 	

@@ -511,21 +511,22 @@ public class CategoryInfoService {
      */
     private GoodsCategoryDto convertToGoodsCategoryDto(GoodsInfoEntity goodsInfoEntity)
             throws BusinessException {
+        Map<String, Object> result = goodsService.getMinPriceGoods(goodsInfoEntity.getId());
         // 根据goodsid查询库存，找出最低售价显示前端
-        List<GoodsStockInfoEntity> goodsStocks = goodsService
-                .loadDetailInfoByGoodsId(goodsInfoEntity.getId());
-        BigDecimal goodsPrice = null;
-        if (!CollectionUtils.isEmpty(goodsStocks)) {
-            goodsPrice = goodsStocks.get(0).getGoodsPrice();
-            for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
-                if (goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0) {
-                    goodsPrice = goodsStockInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_FLOOR);
-                }
-            }
-        } else {
-            LOGGER.error("数据有误，{}商品无对应库存", goodsInfoEntity.getId().toString());
-            throw new BusinessException("数据有误！" + goodsInfoEntity.getId().toString() + "商品无对应库存");
-        }
+//        List<GoodsStockInfoEntity> goodsStocks = goodsService
+//                .loadDetailInfoByGoodsId(goodsInfoEntity.getId());
+//        BigDecimal goodsPrice = null;
+//        if (!CollectionUtils.isEmpty(goodsStocks)) {
+//            goodsPrice = goodsStocks.get(0).getGoodsPrice();
+//            for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStocks) {
+//                if (goodsPrice.compareTo(goodsStockInfoEntity.getGoodsPrice()) > 0) {
+//                    goodsPrice = goodsStockInfoEntity.getGoodsPrice().setScale(2, BigDecimal.ROUND_FLOOR);
+//                }
+//            }
+//        } else {
+//            LOGGER.error("数据有误，{}商品无对应库存", goodsInfoEntity.getId().toString());
+//            throw new BusinessException("数据有误！" + goodsInfoEntity.getId().toString() + "商品无对应库存");
+//        }
         GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
         if ("jd".equals(goodsInfoEntity.getSource())) {
             goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"
@@ -537,8 +538,8 @@ public class CategoryInfoService {
         goodsCategoryDto.setGoodId(goodsInfoEntity.getId());
         goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
         goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
-        goodsCategoryDto.setGoodsPrice(goodsPrice);
-        goodsCategoryDto.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2,
+        goodsCategoryDto.setGoodsPrice((BigDecimal) result.get("minPrice"));
+        goodsCategoryDto.setFirstPrice(((BigDecimal) result.get("minPrice")).divide(new BigDecimal(10)).setScale(2,
                 BigDecimal.ROUND_FLOOR));
         goodsCategoryDto.setSource(goodsInfoEntity.getSource());
 
