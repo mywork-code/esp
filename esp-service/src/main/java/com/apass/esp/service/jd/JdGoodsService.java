@@ -63,7 +63,6 @@ public class JdGoodsService {
      * @throws ParseException 
      */
     @Transactional(rollbackFor = Exception.class)
-   
     public synchronized void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
         // 往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
         String cateId = paramMap.get("cateId");// 京东类目id
