@@ -712,7 +712,7 @@ public class GoodsService {
      */
     public PaginationManage<GoodsInfoEntity> searchPage(GoodsInfoEntity goodsInfoEntity, Page page) {
         PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
-        Pagination<GoodsInfoEntity> response = goodsDao.pageForSiftList(goodsInfoEntity, page);
+        Pagination<GoodsInfoEntity> response = goodsDao.searchList(goodsInfoEntity, page);
 
         result.setDataList(response.getDataList());
         result.setPageInfo(page.getPageNo(), page.getPageSize());
