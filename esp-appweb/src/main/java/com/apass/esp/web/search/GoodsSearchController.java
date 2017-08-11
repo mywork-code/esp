@@ -1,5 +1,6 @@
 package com.apass.esp.web.search;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -21,15 +22,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.SearchKeys;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.noauth.home.ShopHomeController;
 import com.apass.esp.search.condition.GoodTestSearchCondition;
 import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.search.SearchKeyService;
+import com.apass.esp.utils.ValidateUtils;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.google.common.collect.Maps;
 
 /**
  * 商品搜索类
@@ -43,6 +49,9 @@ public class GoodsSearchController {
 	@Autowired
 	private GoodsService goodsservice;
 	
+	@Autowired
+	private SearchKeyService searchKeyService;
+	
 	/**
      * 查询
      *
@@ -50,7 +59,7 @@ public class GoodsSearchController {
      * @return
      */
     @POST
-    @Path(value = "search")
+    @Path(value = "/search")
     public Response search(Map<String, Object> paramMap) {
        
     	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
@@ -78,5 +87,66 @@ public class GoodsSearchController {
     	goodsservice.searchPage(new GoodsInfoEntity(), new Page());
     	
         return Response.successResponse();
+    }
+    
+    @POST
+    @Path(value = "/addCommon")
+    public Response addCommonSearchKeys(Map<String, Object> paramMap){
+    	
+    	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	if(!StringUtils.isBlank(searchValue)){
+    		searchKeyService.addCommonSearchKeys(searchValue,userId);
+    	}
+    	return Response.success("添加成功!");
+    }
+    
+    @POST
+    @Path(value = "/addHot")
+    public Response addHotSearchKeys(Map<String, Object> paramMap){
+    	
+    	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	if(!StringUtils.isBlank(searchValue)){
+    		searchKeyService.addHotSearchKeys(searchValue,userId);
+    	}
+    	return Response.success("添加成功!");
+    }
+    
+    @POST
+    @Path(value = "/delete")
+    public Response delteSearchKeys(Map<String,Object> paramMap){
+    	
+    	String keyId = CommonUtils.getValue(paramMap, "keyId");
+    	try {
+    		ValidateUtils.isNotBlank(keyId, "编号不能为空！");
+    		searchKeyService.deleteSearchKeys(Long.parseLong(keyId));
+		}catch(BusinessException e){
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			return Response.fail(e.getMessage());
+		}
+    	
+    	return Response.success("删除成功!");
+    }
+    
+    @POST
+    @Path(value = "/searchKeys")
+    public Response getSearchKeys(Map<String,Object> paramMap){
+    	
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	Map<String,Object> param = Maps.newHashMap();
+    	try {
+    		ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
+    		List<SearchKeys> common = searchKeyService.commonSearch(userId);
+    		List<SearchKeys> hot = searchKeyService.hotSearch();
+    		param.put("common", common);
+    		param.put("hot",hot);
+		} catch(BusinessException e){
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			return Response.fail(e.getMessage());
+		}
+    	return Response.success("查询成功!", param);
     }
 }
