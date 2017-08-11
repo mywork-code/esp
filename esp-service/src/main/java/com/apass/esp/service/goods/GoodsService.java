@@ -703,5 +703,21 @@ public class GoodsService {
     public List<String> getRemainderGoodsNew(int pageIndex, int pageSize) {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
+    
+    /**
+     * 搜索商品
+     * @param goodsInfoEntity
+     * @param page
+     * @return
+     */
+    public PaginationManage<GoodsInfoEntity> searchPage(GoodsInfoEntity goodsInfoEntity, Page page) {
+        PaginationManage<GoodsInfoEntity> result = new PaginationManage<GoodsInfoEntity>();
+        Pagination<GoodsInfoEntity> response = goodsDao.pageForSiftList(goodsInfoEntity, page);
+
+        result.setDataList(response.getDataList());
+        result.setPageInfo(page.getPageNo(), page.getPageSize());
+        result.setTotalCount(response.getTotalCount());
+        return result;
+    }
 
 }
