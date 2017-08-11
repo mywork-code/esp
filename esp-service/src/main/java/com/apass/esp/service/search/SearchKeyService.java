@@ -20,7 +20,7 @@ public class SearchKeyService {
 	private SearchKeysMapper keysMapper;
 	
 	public void addCommonSearchKeys(String keyValue,String userId){
-		LOGGER.info("addSearchKeys is come in,params:",keyValue+"XXXX"+userId);
+		LOGGER.info("addCommonSearchKeys is come in,params:",keyValue+"XXXX"+userId);
 		SearchKeys record = new SearchKeys();
 		record.setKeyValue(keyValue);
 		record.setUserId(userId);
@@ -30,7 +30,7 @@ public class SearchKeyService {
 	}
 	
 	public void addHotSearchKeys(String keyValue,String userId){
-		LOGGER.info("addSearchKeys is come in,params:",keyValue+"XXXX"+userId);
+		LOGGER.info("addHotSearchKeys is come in,params:",keyValue+"XXXX"+userId);
 		SearchKeys record = new SearchKeys();
 		record.setKeyValue(keyValue);
 		record.setUserId(userId);
