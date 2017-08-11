@@ -148,7 +148,8 @@ public class TestController {
     @RequestMapping(value = "/productDetailQuery", method = RequestMethod.POST)
     @ResponseBody
     public Response productDetailQuery(@RequestBody Map<String, Object> paramMap) {
-        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(2403211l);
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(Long.parseLong(sku));
         return Response.success("1", jdApiResponse);
     }
     /**
