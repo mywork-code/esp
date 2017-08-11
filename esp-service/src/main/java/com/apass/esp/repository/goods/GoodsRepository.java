@@ -69,6 +69,13 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         return this.pageBykey(domain, page, "goodsPageList");
 
     }
+    
+    /**
+     * 搜索商品
+     */
+    public Pagination<GoodsInfoEntity> searchList(GoodsInfoEntity domain, Page page){
+    	return this.pageBykey(domain, page,"searchGoodsList");
+    }
 
     /**
      * 商品信息列表

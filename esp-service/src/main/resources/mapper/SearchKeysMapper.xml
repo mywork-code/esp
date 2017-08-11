@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.SearchKeysMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.SearchKeys" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="KEY_TYPE" property="keyType" jdbcType="BIT" />
+    <result column="KEY_VALUE" property="keyValue" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="KEY_STATUS" property="keyStatus" jdbcType="BIT" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, KEY_TYPE, KEY_VALUE, USER_ID, KEY_STATUS, CREATE_DATE, UPDATE_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_search_keys
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_search_keys
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.SearchKeys" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_search_keys (KEY_TYPE, KEY_VALUE, USER_ID, 
+      KEY_STATUS, CREATE_DATE, UPDATE_DATE
+      )
+    values (#{keyType,jdbcType=BIT}, #{keyValue,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{keyStatus,jdbcType=BIT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.SearchKeys" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_search_keys
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="keyType != null" >
+        KEY_TYPE,
+      </if>
+      <if test="keyValue != null" >
+        KEY_VALUE,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="keyStatus != null" >
+        KEY_STATUS,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="keyType != null" >
+        #{keyType,jdbcType=BIT},
+      </if>
+      <if test="keyValue != null" >
+        #{keyValue,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyStatus != null" >
+        #{keyStatus,jdbcType=BIT},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.SearchKeys" >
+    update t_esp_search_keys
+    <set >
+      <if test="keyType != null" >
+        KEY_TYPE = #{keyType,jdbcType=BIT},
+      </if>
+      <if test="keyValue != null" >
+        KEY_VALUE = #{keyValue,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyStatus != null" >
+        KEY_STATUS = #{keyStatus,jdbcType=BIT},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.SearchKeys" >
+    update t_esp_search_keys
+    set KEY_TYPE = #{keyType,jdbcType=BIT},
+      KEY_VALUE = #{keyValue,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      KEY_STATUS = #{keyStatus,jdbcType=BIT},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

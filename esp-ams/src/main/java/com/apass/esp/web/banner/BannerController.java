@@ -25,7 +25,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.service.banner.BannerInfoService;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
@@ -51,7 +53,9 @@ public class BannerController extends BaseController {
     // private static final String FILE_NAME_SUFFIX = ".jpg";// 上传文件名后缀
     @Autowired
     private BannerInfoService   bannerInfoService;
-
+    @Autowired
+    private GoodsService  goodsService;
+    
     private static final String BANNER_TYPE            = "bannerType";
     /**
      * 图片服务器地址
@@ -197,7 +201,13 @@ public class BannerController extends BaseController {
             	if("activity".equals(activityName)){
             		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
             	}else if("goodId".equals(activityName)){
-            		activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl;
+            		GoodsInfoEntity goodsInfo=goodsService.selectByGoodsId(Long.parseLong(activityUrl));
+            		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=jd";
+            		}else{
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=notJd";
+            		}
+            		
             	}
             }
             
