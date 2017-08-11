@@ -33,7 +33,7 @@ public class TalkingDateScheduleTask {
 
     private CommonHttpClient commonHttpClient;
 
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void TalkingDateSchedule() {
         TalkingDataDto talkingDataDto = new TalkingDataDto();
         ArrayList<String> arrayList = new ArrayList<String>();
