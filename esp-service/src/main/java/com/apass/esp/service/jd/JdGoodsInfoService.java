@@ -101,6 +101,7 @@ public class JdGoodsInfoService {
 		map.put("skuId",String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
 		return map;
 	}
 	
