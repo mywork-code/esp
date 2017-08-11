@@ -27,10 +27,12 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -54,7 +56,9 @@ public class JdGoodsService {
 
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
-
+    
+    @Autowired
+    private CacheManager cacheManager;
     /**
      * 关联京东类目
      * 

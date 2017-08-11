@@ -23,7 +23,7 @@
 			AND t.merchant_code = #{merchantCode}
 		</if>
 		<if test="goodsName != null and goodsName != ''">
-			AND t.goods_name LIKE '%${goodsName}%'
+			AND t.goods_name LIKE concat("%" #{goodsName} "%")
 		</if>
 		<if test="goodsTitle != null and goodsTitle != ''">
 			AND t.goods_title = #{goodsTitle}
