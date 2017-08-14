@@ -611,7 +611,7 @@
         AND teg.is_delete='01'
         AND CURRENT_TIMESTAMP > teg.list_time
         AND CURRENT_TIMESTAMP < teg.delist_time
-        limit #{count}
+        limit #{begin},#{count}
         ]]>
 	</select>
 
