@@ -1,6 +1,7 @@
 package com.apass.esp.web.search;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,35 +12,25 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.CategorySort;
-import com.apass.esp.noauth.home.ShopHomeController;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
-import com.apass.esp.search.condition.GoodTestSearchCondition;
-import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 
@@ -50,27 +41,23 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class GoodsSearchController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsSearchController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GoodsSearchController.class);
 
 	@Autowired
 	private GoodsService goodsservice;
-    @Autowired
-    private ActivityInfoRepository actityInfoDao;
-    @Autowired
-    private CommonService commonService;
-    @Autowired
-    private GoodsStockInfoRepository goodsStockInfoRepository;
-    @Autowired
-    private ImageService imageService;
+	@Autowired
+	private ActivityInfoRepository actityInfoDao;
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private GoodsStockInfoRepository goodsStockInfoRepository;
+	@Autowired
+	private ImageService imageService;
 	/**
-     * 查询
-     *
-     * @param paramMap
-     * @return
-	 * @throws BusinessException 
-     */
+	 * 查询
+	 */
 	@POST
-	@Path(value = "search")
+	@Path(value = "/search")
 	public Response search(Map<String, Object> paramMap) {
 		try {
 			String searchValue = CommonUtils.getValue(paramMap, "searchValue");
@@ -88,18 +75,30 @@ public class GoodsSearchController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 
 			GoodsBasicInfoEntity goodsInfoEntity = new GoodsBasicInfoEntity();
+			goodsInfoEntity.setGoodsName(searchValue);
+
 			List<GoodsBasicInfoEntity> goodsBasicInfoList = null;
 			Boolean falgePrice = false;
 			// 排序
 			if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {// 销量
+				goodsInfoEntity.setSort("amount");
+				goodsBasicInfoList = goodsservice.searchGoodsListAmount(goodsInfoEntity, page, rows);
 			} else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
+				goodsInfoEntity.setSort("new");
+				goodsInfoEntity.setOrder(order);// 升序或降序
+				goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
 			} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
+				falgePrice = true;
+				goodsInfoEntity.setSort("price");
+				goodsInfoEntity.setOrder(order);// 升序或降序
+				goodsBasicInfoList = goodsservice.searchGoodsListPrice(goodsInfoEntity, page, rows);
 			} else {// 默认（商品上架时间降序）
 				goodsInfoEntity.setSort("default");
 				goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
 			}
 			Integer totalCount = goodsservice.searchGoodsListCount(goodsInfoEntity);
 			returnMap.put("totalCount", totalCount);
+			List<GoodsBasicInfoEntity> goodsBasicInfoList2 = new ArrayList<>();
 			for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
 				goodsInfo = goodsservice.serchGoodsByGoodsId(goodsInfo.getGoodId().toString());
 				if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
@@ -142,8 +141,55 @@ public class GoodsSearchController {
 					}
 
 				}
+				goodsBasicInfoList2.add(goodsInfo);
 			}
-			returnMap.put("goodsList", goodsBasicInfoList);
+
+			if (falgePrice && "DESC".equalsIgnoreCase(order)) {// 按售价排序(降序)
+				GoodsBasicInfoEntity temp = new GoodsBasicInfoEntity();
+				for (int i = 0; i < goodsBasicInfoList2.size() - 1; i++) {
+					for (int j = i + 1; j < goodsBasicInfoList2.size(); j++) {
+						if (goodsBasicInfoList2.get(i).getGoodsPrice()
+								.compareTo(goodsBasicInfoList2.get(j).getGoodsPrice()) < 0) {
+							temp = goodsBasicInfoList2.get(i);
+							goodsBasicInfoList2.set(i, goodsBasicInfoList2.get(j));
+							goodsBasicInfoList2.set(j, temp);
+						}
+					}
+				}
+			} else if (falgePrice) {
+				GoodsBasicInfoEntity temp = new GoodsBasicInfoEntity();
+				for (int i = 0; i < goodsBasicInfoList2.size() - 1; i++) {
+					for (int j = i + 1; j < goodsBasicInfoList2.size(); j++) {
+						if (goodsBasicInfoList2.get(j).getGoodsPrice()
+								.compareTo(goodsBasicInfoList2.get(i).getGoodsPrice()) < 0) {
+							temp = goodsBasicInfoList2.get(i);
+							goodsBasicInfoList2.set(i, goodsBasicInfoList2.get(j));
+							goodsBasicInfoList2.set(j, temp);
+						}
+					}
+				}
+			}
+			// 当查询结果为空时，返回热卖单品
+			List<String> list = goodsservice.popularGoods(0, 50);
+			List<GoodsInfoEntity> goodsList = new ArrayList<>();
+			List<String> goodsIdList = new ArrayList<>();
+			if (goodsBasicInfoList2.size() == 0) {
+				if (CollectionUtils.isEmpty(list) || list.size() < 50) {
+					if (CollectionUtils.isEmpty(list)) {
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 50);
+					} else {
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 50 - list.size());
+					}
+					if (CollectionUtils.isNotEmpty(goodsIdList)) {
+						// list.removeAll(goodsIdList);
+						list.addAll(goodsIdList);
+					}
+				}
+				goodsList = getSaleVolumeGoods(list);
+				returnMap.put("goodsList", goodsList);
+			} else {
+				returnMap.put("goodsList", goodsBasicInfoList2);
+			}
 			return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			LOGGER.error("ShopHomeController loadGoodsList fail", e);
@@ -151,20 +197,45 @@ public class GoodsSearchController {
 			return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
 		}
 	}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	/**
+	 * 获取商品价格
+	 * 
+	 * @param goodsIds
+	 * @return
+	 * @throws BusinessException
+	 */
+	private List<GoodsInfoEntity> getSaleVolumeGoods(List<String> goodsIds) throws BusinessException {
+		List<GoodsInfoEntity> goodsList = new ArrayList<>();
+		for (String goodsId : goodsIds) {
+			GoodsInfoEntity goodsInfoEntity = goodsservice.selectByGoodsId(Long.valueOf(goodsId));
+			if (goodsInfoEntity == null) {
+				LOGGER.error("热销商品id:{}在商品表中无对应商品", goodsId);
+				throw new BusinessException("数据异常");
+			}
+			if (StringUtils.isEmpty(goodsInfoEntity.getSource())) {
+				goodsInfoEntity.setGoodsLogoUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsLogoUrl()));// 非京东
+				goodsInfoEntity.setGoodsSiftUrlNew(imageService.getImageUrl(goodsInfoEntity.getGoodsSiftUrl()));
+			} else {
+				goodsInfoEntity
+						.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goodsInfoEntity.getGoodsLogoUrl());
+				goodsInfoEntity
+						.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/" + goodsInfoEntity.getGoodsSiftUrl());
+				goodsInfoEntity.setSource("jd");
+			}
+			goodsInfoEntity.setGoogsDetail("");
+			Map<String, Object> minPriceGoodsMap = goodsservice.getMinPriceGoods(Long.parseLong(goodsId));
+			BigDecimal goodsPrice = (BigDecimal) minPriceGoodsMap.get("minPrice");
+			if (goodsPrice != null) {
+				goodsInfoEntity.setGoodsPrice(goodsPrice.setScale(2, BigDecimal.ROUND_FLOOR));
+				goodsInfoEntity
+						.setFirstPrice(goodsPrice.divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_FLOOR));
+			}
+
+			goodsList.add(goodsInfoEntity);
+		}
+
+		return goodsList;
+	}
+
 }
