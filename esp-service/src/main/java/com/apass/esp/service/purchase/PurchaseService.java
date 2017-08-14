@@ -33,7 +33,7 @@ public class PurchaseService {
         AddressInfoEntity addressInfo = addressService.queryDefaultByUserId(userId);
         returnMap.put("addressInfo", addressInfo);
         //查询商品商户详情
-        GoodsDetailInfoEntity goodsDetail= goodsService.loadContainGoodsAndGoodsStockAndMerchant(goodsId,goodsStockId);
+        GoodsDetailInfoEntity goodsDetail= goodsService.loadContainGoodsAndGoodsStockAndMerchant(goodsStockId);
         returnMap.put("goodsDetail", goodsDetail);
     }
 

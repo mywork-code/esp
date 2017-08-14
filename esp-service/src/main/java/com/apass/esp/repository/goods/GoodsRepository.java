@@ -7,11 +7,13 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -29,6 +31,9 @@ import com.google.common.collect.Maps;
 @MyBatisRepository
 public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GoodsRepository.class);
+    
+    @Autowired
+    public GoodsStockInfoRepository stockRepository;
 
     public Pagination<GoodsBasicInfoEntity> loadRecommendGoods(int pageIndex, int pageSize) {
         HashMap<String, Object> param = new HashMap<>();
@@ -109,9 +114,14 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
      * @param goodsStockId
      * @return
      */
-    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsId, Long goodsStockId) {
-        HashMap<String, Object> param = new HashMap<>();
-        param.put("goodsId", goodsId);
+    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsStockId) {
+        
+    	/**
+    	 * 根据stockId获取goodsId
+    	 */
+    	GoodsStockInfoEntity stock =  stockRepository.select(goodsStockId);
+    	HashMap<String, Object> param = new HashMap<>();
+        param.put("goodsId", stock.getGoodsId());
         param.put("goodsStockId", goodsStockId);
         return this.getSqlSession().selectOne("loadContainGoodsAndGoodsStockAndMerchant", param);
     }
