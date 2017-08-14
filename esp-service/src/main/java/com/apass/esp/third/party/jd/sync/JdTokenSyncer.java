@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JdTokenSyncer extends AbstractSyncer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdTokenSyncer.class);
     private static final String JD_TOKEN_REDIS_KEY = "JD_TOKEN_REDIS_KEY";
 
     @Autowired
@@ -33,6 +36,7 @@ public class JdTokenSyncer extends AbstractSyncer {
     @Override
     public void run() {
         if (systemEnvConfig.isPROD()) {
+            LOGGER.info(getName() + "  sync exec....................................");
             String json = cacheManager.get(JD_TOKEN_REDIS_KEY);
             JSONObject jsonObject = JSONObject.parseObject(json);
             String time = jsonObject.getString("time");
