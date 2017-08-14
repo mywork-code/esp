@@ -695,7 +695,7 @@ public class GoodsService {
         }
         // 热卖单品大于50，小于170时
         // 部分数据可能从热卖单品中取
-        if (totalConut > 50 && totalConut < 170) {
+        if (totalConut >= 50 && totalConut < 170) {
             List<String> list = goodsBasicRepository.popularGoods(50 + pageBegin, pageSize);
             if (CollectionUtils.isEmpty(list) || list.size() != 20) {
                 List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
