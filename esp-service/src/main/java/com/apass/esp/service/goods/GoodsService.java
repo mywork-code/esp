@@ -365,8 +365,8 @@ public class GoodsService {
      * @param goodsStockId
      * @return
      */
-    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsId, Long goodsStockId) {
-        return goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsId, goodsStockId);
+    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsStockId) {
+        return goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsStockId);
     }
 
     /**
