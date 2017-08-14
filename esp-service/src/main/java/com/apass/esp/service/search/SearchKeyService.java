@@ -44,8 +44,8 @@ public class SearchKeyService {
 		keysMapper.deleteSearchKey(keyId);
 	}
 	
-	public List<SearchKeys> hotSearch(){
-		return keysMapper.hotSearch();
+	public List<SearchKeys> hotSearch(String startDate1,String startDate2){
+		return keysMapper.hotSearch(startDate1,startDate2);
 	}
 	
 	public List<SearchKeys> commonSearch(String userId){

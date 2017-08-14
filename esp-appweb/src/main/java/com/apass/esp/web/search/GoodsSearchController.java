@@ -1,6 +1,8 @@
 package com.apass.esp.web.search;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import com.apass.esp.service.search.SearchKeyService;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Maps;
 
@@ -110,7 +113,10 @@ public class GoodsSearchController {
     	try {
     		ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
     		List<SearchKeys> common = searchKeyService.commonSearch(userId);
-    		List<SearchKeys> hot = searchKeyService.hotSearch();
+    		
+    		Calendar cal = Calendar.getInstance();
+    		cal.add(cal.DATE, -10);
+    		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
     		param.put("common", common);
     		param.put("hot",hot);
 		} catch(BusinessException e){
