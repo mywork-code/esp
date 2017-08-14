@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>esp-task 任务</name>
     <artifactId>esp-task</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <dependencies>
         <dependency>
             <groupId>com.apass.esp</groupId>
