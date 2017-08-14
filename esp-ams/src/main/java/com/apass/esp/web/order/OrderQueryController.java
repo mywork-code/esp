@@ -249,7 +249,7 @@ public class OrderQueryController {
                 respBody.setRows(list);
                 respBody.setStatus(CommonCode.SUCCESS_CODE);
             }else{
-                respBody.setMsg("物流单号和物流厂商不匹配！");
+                respBody.setMsg("暂未查到物流信息！");
             }
             
         }catch(Exception e){
