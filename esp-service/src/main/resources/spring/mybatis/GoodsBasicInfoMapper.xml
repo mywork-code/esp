@@ -530,7 +530,7 @@
         AND CURRENT_TIMESTAMP > teg.list_time
         AND CURRENT_TIMESTAMP < teg.delist_time
         )
-        order by teg.update_date desc
+        order by teg.update_date desc,teg.list_time desc
         limit #{pageBegin},#{count}
         ]]>
     </select>
