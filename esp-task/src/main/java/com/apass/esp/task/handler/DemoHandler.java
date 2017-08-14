@@ -1,4 +1,4 @@
-package com.apass.esp;
+package com.apass.esp.task.handler;
 
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * type: class
  *
  * @author xianzhi.wang
- * @date 2017/8/10
+ * @date 2017/8/14
  * @see
  * @since JDK 1.8
  */

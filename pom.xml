@@ -56,6 +56,7 @@
 		<!-- Web Jars -->
 		<bootstrap.version>3.3.4</bootstrap.version>
 		<extjs.version>5.1.1</extjs.version>
+		<jetty-server.version>9.2.22.v20170606</jetty-server.version>
 	</properties>
 
 	<!-- 设定除中央仓库 (repo1.maven.org/maven2/)外的其他仓库,按设定顺序进行查询，如有Nexus私服, 取消注释并指向正确的服务器地址 -->
