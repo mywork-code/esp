@@ -357,7 +357,7 @@ public class GoodsBaseInfoController {
             return Response.fail(message);
         }
         try {
-            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(),"UTF-8");
+            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
             goodsService.updateService(pageModelEdit);
         } catch (Exception e) {
@@ -595,16 +595,16 @@ public class GoodsBaseInfoController {
                     .setScale(4, BigDecimal.ROUND_HALF_UP);
             if ("jd".equals(source)) {
                 String skuId = goodsEntity.getExternalId();
-                Map<String,Object> descMap = new HashMap<String, Object>();
-                try{
+                Map<String, Object> descMap = new HashMap<String, Object>();
+                try {
                     descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
-                }catch(Exception e){
+                } catch (Exception e) {
                     return "京东接口报错";
                 }
-                String jdGoodsSimilarSku=(String) descMap.get("jdGoodsSimilarSku");
-                int jdSimilarSkuListSize=(int) descMap.get("jdSimilarSkuListSize");
-                if(StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize>0){
-                	return "该京东商品无法匹配规格无法上架！";
+                String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
+                int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
+                if (StringUtils.isBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
+                    return "该京东商品无法匹配规格无法上架！";
                 }
                 entity.setAttrDesc(jdGoodsSimilarSku);
             }
