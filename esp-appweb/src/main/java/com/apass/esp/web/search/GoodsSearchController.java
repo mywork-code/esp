@@ -2,6 +2,8 @@ package com.apass.esp.web.search;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.SearchKeys;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -30,10 +33,13 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.search.SearchKeyService;
+import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
-
+import com.google.common.collect.Maps;
 /**
  * 商品搜索类
  */
@@ -46,16 +52,80 @@ public class GoodsSearchController {
 	@Autowired
 	private GoodsService goodsservice;
 	@Autowired
-	private ActivityInfoRepository actityInfoDao;
-	@Autowired
-	private CommonService commonService;
-	@Autowired
-	private GoodsStockInfoRepository goodsStockInfoRepository;
-	@Autowired
-	private ImageService imageService;
-	/**
-	 * 查询
-	 */
+	private SearchKeyService searchKeyService;
+    @Autowired
+    private ActivityInfoRepository actityInfoDao;
+    @Autowired
+    private CommonService commonService;
+    @Autowired
+    private GoodsStockInfoRepository goodsStockInfoRepository;
+    @Autowired
+    private ImageService imageService;
+	
+    @POST
+    @Path(value = "/addCommon")
+    public Response addCommonSearchKeys(Map<String, Object> paramMap){
+    	
+    	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	if(!StringUtils.isBlank(searchValue)){
+    		searchKeyService.addCommonSearchKeys(searchValue,userId);
+    	}
+    	return Response.success("添加成功!");
+    }
+    
+    @POST
+    @Path(value = "/addHot")
+    public Response addHotSearchKeys(Map<String, Object> paramMap){
+    	
+    	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	if(!StringUtils.isBlank(searchValue)){
+    		searchKeyService.addHotSearchKeys(searchValue,userId);
+    	}
+    	return Response.success("添加成功!");
+    }
+    
+    @POST
+    @Path(value = "/delete")
+    public Response delteSearchKeys(Map<String,Object> paramMap){
+    	
+    	String keyId = CommonUtils.getValue(paramMap, "keyId");
+    	try {
+    		ValidateUtils.isNotBlank(keyId, "编号不能为空！");
+    		searchKeyService.deleteSearchKeys(Long.parseLong(keyId));
+		}catch(BusinessException e){
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			return Response.fail(e.getMessage());
+		}
+    	
+    	return Response.success("删除成功!");
+    }
+    
+    @POST
+    @Path(value = "/searchKeys")
+    public Response getSearchKeys(Map<String,Object> paramMap){
+    	
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	Map<String,Object> param = Maps.newHashMap();
+    	try {
+    		ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
+    		List<SearchKeys> common = searchKeyService.commonSearch(userId);
+    		
+    		Calendar cal = Calendar.getInstance();
+    		cal.add(cal.DATE, -10);
+    		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
+    		param.put("common", common);
+    		param.put("hot",hot);
+		} catch(BusinessException e){
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			return Response.fail(e.getMessage());
+		}
+    	return Response.success("查询成功!", param);
+    }
+    
 	@POST
 	@Path(value = "/search")
 	public Response search(Map<String, Object> paramMap) {
@@ -197,7 +267,6 @@ public class GoodsSearchController {
 			return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
 		}
 	}
-
 	/**
 	 * 获取商品价格
 	 * 

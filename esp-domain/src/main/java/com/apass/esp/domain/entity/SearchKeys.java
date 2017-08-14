@@ -16,6 +16,8 @@ public class SearchKeys {
     private Date createDate;
 
     private Date updateDate;
+    
+    private int count;
 
     public Long getId() {
         return id;
@@ -72,4 +74,13 @@ public class SearchKeys {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+    
 }
