@@ -240,15 +240,15 @@ public class GoodsSearchController {
 				}
 			}
 			// 当查询结果为空时，返回热卖单品
-			List<String> list = goodsservice.popularGoods(0, 50);
+			List<String> list = goodsservice.popularGoods(0, 20);
 			List<GoodsInfoEntity> goodsList = new ArrayList<>();
 			List<String> goodsIdList = new ArrayList<>();
 			if (goodsBasicInfoList2.size() == 0) {
-				if (CollectionUtils.isEmpty(list) || list.size() < 50) {
+				if (CollectionUtils.isEmpty(list) || list.size() < 20) {
 					if (CollectionUtils.isEmpty(list)) {
-						goodsIdList = goodsservice.getRemainderGoodsNew(0, 50);
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 20);
 					} else {
-						goodsIdList = goodsservice.getRemainderGoodsNew(0, 50 - list.size());
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 20 - list.size());
 					}
 					if (CollectionUtils.isNotEmpty(goodsIdList)) {
 						// list.removeAll(goodsIdList);
@@ -256,10 +256,9 @@ public class GoodsSearchController {
 					}
 				}
 				goodsList = getSaleVolumeGoods(list);
-				returnMap.put("goodsList", goodsList);
-			} else {
-				returnMap.put("goodsList", goodsBasicInfoList2);
 			}
+			returnMap.put("goodsList", goodsList);
+			returnMap.put("goodsBasicInfoList", goodsBasicInfoList2);
 			return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			LOGGER.error("ShopHomeController loadGoodsList fail", e);
