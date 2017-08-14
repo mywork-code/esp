@@ -32,10 +32,22 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 		return getSqlSession().selectOne("loadGoodsByParamCount", param);
 	}
 	/**
-     * 搜索商品
+     * 搜索商品(新品，默认)
      */
     public List<GoodsBasicInfoEntity> searchList(GoodsBasicInfoEntity domain){
     	return getSqlSession().selectList("searchGoodsList",domain);
+    }
+	/**
+     * 搜索商品(销量)
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListAmount(GoodsBasicInfoEntity domain){
+    	return getSqlSession().selectList("searchGoodsListAmount",domain);
+    }
+    /**
+     * 搜索商品(价格)
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListPrice(GoodsBasicInfoEntity domain){
+    	return getSqlSession().selectList("searchGoodsListPrice",domain);
     }
 	// 搜索商品(共多少商品)
 	public Integer searchGoodsListCount(GoodsBasicInfoEntity domain){

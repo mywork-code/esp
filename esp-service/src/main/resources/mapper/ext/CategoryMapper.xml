@@ -24,8 +24,7 @@
     from t_esp_category
     where status = '0'
     and parent_id = #{value}
-    order by update_date desc
-	
+    order by sort_order asc
   </select>
   
   <select id="selectByCategoryName" resultMap="BaseResultMap">
