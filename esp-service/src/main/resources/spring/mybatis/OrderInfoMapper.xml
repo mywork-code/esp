@@ -238,7 +238,8 @@
 			update_date updateDate,
 			pre_delivery preDelivery,
 			source source,
-			ext_order_id extOrderId
+			ext_order_id extOrderId,
+			ext_parent_id extParentId
 		FROM
 			t_esp_order_info
 			WHERE 1=1 and ext_parent_id!='-1'
