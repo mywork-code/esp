@@ -731,6 +731,11 @@ public class GoodsService {
     public List<String> getRemainderGoodsNew(int pageIndex, int pageSize) {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
+
+    public List pageListForExport(GoodsInfoEntity goodsInfoEntity) {
+        
+        return goodsDao.pageListForExport(goodsInfoEntity);
+    }
     
   
 

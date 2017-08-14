@@ -836,7 +836,7 @@ public class ExportFileController {
         } else if (busCode.equals(ExportBusConfig.BUS_GOODS.getCode())) {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             BeanUtils.populate(goodsInfoEntity, map);
-            list = goodsService.pageList(goodsInfoEntity);
+            list = goodsService.pageListForExport(goodsInfoEntity);
             if(!CollectionUtils.isEmpty(list)){
             	for (Object g : list) {
             		GoodsInfoEntity b = (GoodsInfoEntity)g;

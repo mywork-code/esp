@@ -36,211 +36,207 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
  */
 public class BaseMybatisRepository<T, ID extends Serializable> extends SqlSessionDaoSupport {
 
-	protected String entityClassName; // 类名
-	private Class<?> entityClass; // 类Class
+    protected String entityClassName; // 类名
 
-	private String insert; // 插入
-	private String select; // 查询
-	private String selectByPK;
-	private String count; // 计数
-	private String update; // 更新
-	private String updateAll; // 更新所有属性
-	private String delete; // 删除
+    private Class<?> entityClass; // 类Class
 
-	/**
-	 * @see org.springframework.dao.support.DaoSupport#initDao()
-	 */
-	public void initDao() throws Exception {
-		Type type = super.getClass().getGenericSuperclass();
-		if (type != null && type instanceof ParameterizedType) {
-			ParameterizedType parameterType = (ParameterizedType) type;
-			this.entityClass = (Class<?>) parameterType.getActualTypeArguments()[0];
-		}
-		if (this.entityClass != null) {
-			this.entityClassName = entityClass.getSimpleName();
-		}
-		this.insert = MessageFormat.format("{0}.insert", entityClassName);
-		this.select = MessageFormat.format("{0}.select", entityClassName);
-		this.selectByPK = MessageFormat.format("{0}.selectByPK", entityClassName);
-		this.count = MessageFormat.format("{0}.count", entityClassName);
-		this.delete = MessageFormat.format("{0}.delete", entityClassName);
-		this.update = MessageFormat.format("{0}.update", entityClassName);
-		this.updateAll = MessageFormat.format("{0}.updateAll", entityClassName);
-	}
+    private String insert; // 插入
 
-	/**
-	 * 
-	 * @see org.mybatis.spring.support.SqlSessionDaoSupport#setSqlSessionFactory(org.apache.ibatis.session.SqlSessionFactory)
-	 */
-	@Autowired
-	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
-		super.setSqlSessionFactory(sqlSessionFactory);
-	}
+    private String select; // 查询
 
-	/**
-	 * Insert
-	 */
-	public Integer insert(T domain) {
-		return getSqlSession().insert(this.insert, domain);
-	}
+    private String selectByPK;
 
-	/**
-	 * delete
-	 */
-	public Integer delete(ID id) {
-		return getSqlSession().delete(this.delete, id);
-	}
+    private String count; // 计数
 
-	/**
-	 * select
-	 */
-	public T select(ID id) {
-		return getSqlSession().selectOne(this.selectByPK, id);
-	}
+    private String update; // 更新
 
-	/**
-	 * update
-	 */
-	public Integer update(T domain) {
-		return getSqlSession().update(this.update, domain);
-	}
+    private String updateAll; // 更新所有属性
 
-	/**
-	 * updateBymap
-	 */
-	public Integer updateBymap(Map map, String sqlkey) {
-		return getSqlSession().update(sqlkey, map);
-	}
+    private String delete; // 删除
 
-	/**
-	 * updateAll
-	 */
-	public Integer updateAll(T domain) {
-		return getSqlSession().update(this.updateAll, domain);
-	}
+    /**
+     * @see org.springframework.dao.support.DaoSupport#initDao()
+     */
+    public void initDao() throws Exception {
+        Type type = super.getClass().getGenericSuperclass();
+        if (type != null && type instanceof ParameterizedType) {
+            ParameterizedType parameterType = (ParameterizedType) type;
+            this.entityClass = (Class<?>) parameterType.getActualTypeArguments()[0];
+        }
+        if (this.entityClass != null) {
+            this.entityClassName = entityClass.getSimpleName();
+        }
+        this.insert = MessageFormat.format("{0}.insert", entityClassName);
+        this.select = MessageFormat.format("{0}.select", entityClassName);
+        this.selectByPK = MessageFormat.format("{0}.selectByPK", entityClassName);
+        this.count = MessageFormat.format("{0}.count", entityClassName);
+        this.delete = MessageFormat.format("{0}.delete", entityClassName);
+        this.update = MessageFormat.format("{0}.update", entityClassName);
+        this.updateAll = MessageFormat.format("{0}.updateAll", entityClassName);
+    }
 
-	/**
-	 * filter
-	 */
-	public List<T> filter(T domain) {
-		return getSqlSession().selectList(this.select, domain);
-	}
+    /**
+     * 
+     * @see org.mybatis.spring.support.SqlSessionDaoSupport#setSqlSessionFactory(org.apache.ibatis.session.SqlSessionFactory)
+     */
+    @Autowired
+    public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+        super.setSqlSessionFactory(sqlSessionFactory);
+    }
 
-	/**
-	 * 分页查询
-	 * 
-	 * @param domain
-	 *            查询条件
-	 * @param pageNo
-	 *            分页信息
-	 * @return
-	 */
-	public Pagination<T> page(T domain, Page page) {
-		Integer offSet = (page.getPage() - 1) * page.getLimit();
-		Integer maxRow = page.getLimit();
-		List<T> dataList = getSqlSession().selectList(this.select, domain, new RowBounds(offSet, maxRow));
+    /**
+     * Insert
+     */
+    public Integer insert(T domain) {
+        return getSqlSession().insert(this.insert, domain);
+    }
 
-		Pagination<T> pageResult = new Pagination<T>();
-		pageResult.setTotalCount(count(domain));
-		pageResult.setDataList(dataList);
-		return pageResult;
-	}
+    /**
+     * delete
+     */
+    public Integer delete(ID id) {
+        return getSqlSession().delete(this.delete, id);
+    }
 
-	/**
-	 * 分页查询
-	 * 
-	 * @param domain
-	 *            查询条件
-	 * @param pageNo
-	 *            查询页码
-	 * @param pageSize
-	 *            查询页大小
-	 * @return
-	 */
-	public Pagination<T> page(T domain, Integer pageNo, Integer pageSize) {
-		Integer offSet = (pageNo - 1) * pageSize;
-		Integer maxRow = pageSize;
-		List<T> dataList = getSqlSession().selectList(this.select, domain, new RowBounds(offSet, maxRow));
+    /**
+     * select
+     */
+    public T select(ID id) {
+        return getSqlSession().selectOne(this.selectByPK, id);
+    }
 
-		Pagination<T> pageResult = new Pagination<T>();
-		pageResult.setTotalCount(count(domain));
-		pageResult.setDataList(dataList);
-		return pageResult;
-	}
+    /**
+     * update
+     */
+    public Integer update(T domain) {
+        return getSqlSession().update(this.update, domain);
+    }
 
-	/**
-	 * 分页查询
-	 * 
-	 * @param domain
-	 *            查询条件
-	 * @param page
-	 *            分页信息
-	 * @param sqlKey
-	 *            执行sql的id
-	 * @return
-	 */
-	public Pagination<T> pageBykey(T domain, Page page, String sqlKey) {
-		Integer offSet = (page.getPage() - 1) * page.getLimit();
-		Integer maxRow = page.getLimit();
-		List<T> dataList = getSqlSession().selectList(sqlKey, domain, new RowBounds(offSet, maxRow));
+    /**
+     * updateBymap
+     */
+    public Integer updateBymap(Map map, String sqlkey) {
+        return getSqlSession().update(sqlkey, map);
+    }
 
-		Pagination<T> pageResult = new Pagination<T>();
-		pageResult.setTotalCount(countByKey(domain, sqlKey));
-		pageResult.setDataList(dataList);
-		return pageResult;
-	}
+    /**
+     * updateAll
+     */
+    public Integer updateAll(T domain) {
+        return getSqlSession().update(this.updateAll, domain);
+    }
 
-	/**
-	 * 分页查询
-	 * 
-	 * @param map
-	 *            查询条件
-	 * @param page
-	 *            分页信息
-	 * @param sqlKey
-	 *            执行sql的id
-	 * @return
-	 */
-	public Pagination<T> page(Map map, Page page, String sqlKey) {
+    /**
+     * filter
+     */
+    public List<T> filter(T domain) {
+        return getSqlSession().selectList(this.select, domain);
+    }
 
-		Pagination<T> pageResult = new Pagination<T>();
-		List<T> dataList = new ArrayList<T>();
-		if (page.getPage() != null && page.getLimit() != null) {
-			Integer offSet = (page.getPage() - 1) * page.getLimit();
-			Integer maxRow = page.getLimit();
-			dataList = getSqlSession().selectList(sqlKey, map, new RowBounds(offSet, maxRow));
-		} else {
-			dataList = getSqlSession().selectList(sqlKey, map);
+    /**
+     * 分页查询
+     * 
+     * @param domain 查询条件
+     * @param pageNo 分页信息
+     * @return
+     */
+    public Pagination<T> page(T domain, Page page) {
+        Integer offSet = (page.getPage() - 1) * page.getLimit();
+        Integer maxRow = page.getLimit();
+        List<T> dataList = getSqlSession().selectList(this.select, domain, new RowBounds(offSet, maxRow));
 
-		}
-		// 总记录数
-		pageResult.setTotalCount(countByMap(map, sqlKey));
-		pageResult.setDataList(dataList);
-		return pageResult;
-	}
+        Pagination<T> pageResult = new Pagination<T>();
+        pageResult.setTotalCount(count(domain));
+        pageResult.setDataList(dataList);
+        return pageResult;
+    }
 
-	/**
-	 * countByKey
-	 */
-	public Integer countByKey(T domain, String sqlKey) {
-		return getSqlSession().selectOne(sqlKey + "Count", domain);
-	}
+    /**
+     * 分页查询
+     * 
+     * @param domain 查询条件
+     * @param pageNo 查询页码
+     * @param pageSize 查询页大小
+     * @return
+     */
+    public Pagination<T> page(T domain, Integer pageNo, Integer pageSize) {
+        Integer offSet = (pageNo - 1) * pageSize;
+        Integer maxRow = pageSize;
+        List<T> dataList = getSqlSession().selectList(this.select, domain, new RowBounds(offSet, maxRow));
 
-	/**
-	 * count
-	 */
-	public Integer count(T domain) {
-		return getSqlSession().selectOne(this.count, domain);
-	}
+        Pagination<T> pageResult = new Pagination<T>();
+        pageResult.setTotalCount(count(domain));
+        pageResult.setDataList(dataList);
+        return pageResult;
+    }
 
-	/**
-	 * countByMap
-	 */
-	public Integer countByMap(Map map, String sqlKey) {
-		return getSqlSession().selectOne(sqlKey + "Count", map);
-	}
+    /**
+     * 分页查询
+     * 
+     * @param domain 查询条件
+     * @param page 分页信息
+     * @param sqlKey 执行sql的id
+     * @return
+     */
+    public Pagination<T> pageBykey(T domain, Page page, String sqlKey) {
+        Integer offSet = (page.getPage() - 1) * page.getLimit();
+        Integer maxRow = page.getLimit();
+        List<T> dataList = getSqlSession().selectList(sqlKey, domain, new RowBounds(offSet, maxRow));
 
-	protected String getSQL(String format) {
-		return MessageFormat.format("{0}." + format, entityClassName);
-	}
+        Pagination<T> pageResult = new Pagination<T>();
+        pageResult.setTotalCount(countByKey(domain, sqlKey));
+        pageResult.setDataList(dataList);
+        return pageResult;
+    }
+
+    /**
+     * 分页查询
+     * 
+     * @param map 查询条件
+     * @param page 分页信息
+     * @param sqlKey 执行sql的id
+     * @return
+     */
+    public Pagination<T> page(Map map, Page page, String sqlKey) {
+
+        Pagination<T> pageResult = new Pagination<T>();
+        List<T> dataList = new ArrayList<T>();
+        if (page.getPage() != null && page.getLimit() != null) {
+            Integer offSet = (page.getPage() - 1) * page.getLimit();
+            Integer maxRow = page.getLimit();
+            dataList = getSqlSession().selectList(sqlKey, map, new RowBounds(offSet, maxRow));
+        } else {
+            dataList = getSqlSession().selectList(sqlKey, map);
+
+        }
+        // 总记录数
+        pageResult.setTotalCount(countByMap(map, sqlKey));
+        pageResult.setDataList(dataList);
+        return pageResult;
+    }
+
+    /**
+     * countByKey
+     */
+    public Integer countByKey(T domain, String sqlKey) {
+        return getSqlSession().selectOne(sqlKey + "Count", domain);
+    }
+
+    /**
+     * count
+     */
+    public Integer count(T domain) {
+        return getSqlSession().selectOne(this.count, domain);
+    }
+
+    /**
+     * countByMap
+     */
+    public Integer countByMap(Map map, String sqlKey) {
+        return getSqlSession().selectOne(sqlKey + "Count", map);
+    }
+
+    protected String getSQL(String format) {
+        return MessageFormat.format("{0}." + format, entityClassName);
+    }
 }
