@@ -67,7 +67,7 @@ public class JdGoodsService {
      * @throws ParseException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public synchronized void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
+    public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
         // 往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
         String cateId = paramMap.get("cateId");// 京东类目id
         String username = paramMap.get("username");// 当前用户
@@ -106,10 +106,6 @@ public class JdGoodsService {
             entity.setExternalId(jdGoods.getSkuId().toString());
             entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
             //查询数据库是否已经存在此商品
-            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(jdGoods.getSkuId().toString());
-            if(goodsInfoEntity != null){
-                continue;
-            }
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 
             // 往t_esp_goods_stock_info表插数据
