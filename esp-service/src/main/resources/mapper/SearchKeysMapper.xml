@@ -3,15 +3,16 @@
 <mapper namespace="com.apass.esp.mapper.SearchKeysMapper" >
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.SearchKeys" >
     <id column="ID" property="id" jdbcType="BIGINT" />
-    <result column="KEY_TYPE" property="keyType" jdbcType="BIT" />
+    <result column="KEY_TYPE" property="keyType" jdbcType="VARCHAR" />
     <result column="KEY_VALUE" property="keyValue" jdbcType="VARCHAR" />
     <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
-    <result column="KEY_STATUS" property="keyStatus" jdbcType="BIT" />
+    <result column="KEY_STATUS" property="keyStatus" jdbcType="VARCHAR" />
     <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
     <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="DEVICE_ID" property="deviceId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    ID, KEY_TYPE, KEY_VALUE, USER_ID, KEY_STATUS, CREATE_DATE, UPDATE_DATE
+    ID, KEY_TYPE, KEY_VALUE, USER_ID, KEY_STATUS, CREATE_DATE, UPDATE_DATE, DEVICE_ID
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -25,11 +26,11 @@
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.SearchKeys" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_search_keys (KEY_TYPE, KEY_VALUE, USER_ID, 
-      KEY_STATUS, CREATE_DATE, UPDATE_DATE
-      )
-    values (#{keyType,jdbcType=BIT}, #{keyValue,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
-      #{keyStatus,jdbcType=BIT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
-      )
+      KEY_STATUS, CREATE_DATE, UPDATE_DATE, 
+      DEVICE_ID)
+    values (#{keyType,jdbcType=VARCHAR}, #{keyValue,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{keyStatus,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{deviceId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.SearchKeys" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_search_keys
@@ -52,10 +53,13 @@
       <if test="updateDate != null" >
         UPDATE_DATE,
       </if>
+      <if test="deviceId != null" >
+        DEVICE_ID,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="keyType != null" >
-        #{keyType,jdbcType=BIT},
+        #{keyType,jdbcType=VARCHAR},
       </if>
       <if test="keyValue != null" >
         #{keyValue,jdbcType=VARCHAR},
@@ -64,7 +68,7 @@
         #{userId,jdbcType=VARCHAR},
       </if>
       <if test="keyStatus != null" >
-        #{keyStatus,jdbcType=BIT},
+        #{keyStatus,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null" >
         #{createDate,jdbcType=TIMESTAMP},
@@ -72,13 +76,16 @@
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.SearchKeys" >
     update t_esp_search_keys
     <set >
       <if test="keyType != null" >
-        KEY_TYPE = #{keyType,jdbcType=BIT},
+        KEY_TYPE = #{keyType,jdbcType=VARCHAR},
       </if>
       <if test="keyValue != null" >
         KEY_VALUE = #{keyValue,jdbcType=VARCHAR},
@@ -87,7 +94,7 @@
         USER_ID = #{userId,jdbcType=VARCHAR},
       </if>
       <if test="keyStatus != null" >
-        KEY_STATUS = #{keyStatus,jdbcType=BIT},
+        KEY_STATUS = #{keyStatus,jdbcType=VARCHAR},
       </if>
       <if test="createDate != null" >
         CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
@@ -95,17 +102,21 @@
       <if test="updateDate != null" >
         UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="deviceId != null" >
+        DEVICE_ID = #{deviceId,jdbcType=VARCHAR},
+      </if>
     </set>
     where ID = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.SearchKeys" >
     update t_esp_search_keys
-    set KEY_TYPE = #{keyType,jdbcType=BIT},
+    set KEY_TYPE = #{keyType,jdbcType=VARCHAR},
       KEY_VALUE = #{keyValue,jdbcType=VARCHAR},
       USER_ID = #{userId,jdbcType=VARCHAR},
-      KEY_STATUS = #{keyStatus,jdbcType=BIT},
+      KEY_STATUS = #{keyStatus,jdbcType=VARCHAR},
       CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
-      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP}
+      UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      DEVICE_ID = #{deviceId,jdbcType=VARCHAR}
     where ID = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

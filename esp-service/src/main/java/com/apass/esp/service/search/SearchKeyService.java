@@ -3,6 +3,7 @@ package com.apass.esp.service.search;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,16 @@ public class SearchKeyService {
 	@Autowired
 	private SearchKeysMapper keysMapper;
 	
-	public void addCommonSearchKeys(String keyValue,String userId){
-		LOGGER.info("addCommonSearchKeys is come in,params:",keyValue+"XXXX"+userId);
+	public void addCommonSearchKeys(String keyValue,String userId,String deviceId){
+		LOGGER.info("addCommonSearchKeys is come in,params:",keyValue+"XXXX"+userId+"XXXX"+deviceId);
 		SearchKeys record = new SearchKeys();
 		record.setKeyValue(keyValue);
-		record.setUserId(userId);
+		if(StringUtils.isNotBlank(userId)){
+			record.setUserId(userId);
+		}
+		if(StringUtils.isNotBlank(deviceId)){
+			record.setDeviceId(deviceId);
+		}
 		record.setCreateDate(new Date());
 		record.setUpdateDate(new Date());
 		keysMapper.insertSelective(record);
@@ -34,7 +40,7 @@ public class SearchKeyService {
 		SearchKeys record = new SearchKeys();
 		record.setKeyValue(keyValue);
 		record.setUserId(userId);
-		record.setKeyType(true);
+		record.setKeyType("1");
 		record.setCreateDate(new Date());
 		record.setUpdateDate(new Date());
 		keysMapper.insertSelective(record);
