@@ -29,6 +29,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.vo.SearchKesVo;
+import com.apass.esp.domain.vo.SearchSort;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -113,13 +114,13 @@ public class GoodsSearchController {
     	Map<String,Object> param = Maps.newHashMap();
     	try {
     		//ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
-    		List<SearchKeys> common = searchKeyService.commonSearch(userId);
+    		//List<SearchKeys> common = searchKeyService.commonSearch(userId);
     		Calendar cal = Calendar.getInstance();
     		cal.add(cal.DATE, -10);
     		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
-    		param.put("recent", keysToVoList(common));
-    		param.put("hot",hotList(hot));
-    		param.put("sort",getClassification());
+    		//param.put("recent", keysToVoList(common));
+    		param.put("hot", new SearchSort("热门搜索", hotList(hot)));
+    		param.put("sort",new SearchSort("常用分类", getClassification()));
 		} //catch(BusinessException e){
 			//return Response.fail(e.getErrorDesc());
 		//}
