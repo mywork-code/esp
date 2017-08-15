@@ -48,7 +48,7 @@ public class IndexManager<T> {
     public <GoodsTest> Pagination<GoodsTest> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
-        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getFixName()));
+        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getName()));
         return search(boolQueryBuilder, IndexType.GOODSTEST, sortField, desc, from, size);
     }
 
