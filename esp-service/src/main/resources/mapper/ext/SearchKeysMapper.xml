@@ -4,7 +4,7 @@
   
   <select id="hotSearch" resultMap="BaseResultMap">
     select 
-    KEY_VALUE keyValue
+    <include refid="Base_Column_List" />
     ,count(key_value) as count
     from t_esp_search_keys
     where  key_status = 0
@@ -16,9 +16,9 @@
   
   <select id="commonSearch" resultMap="BaseResultMap" parameterType="java.lang.String">
     select 
-    KEY_VALUE keyValue
+    DISTINCT(KEY_VALUE) keyValue
     from t_esp_search_keys
-    where key_type = 0 and key_status = 0 and user_id = #{userId}
+    where key_status = 0 and user_id = #{userId}
     order by CREATE_DATE desc
     limit 10
   </select>
