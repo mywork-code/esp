@@ -36,12 +36,12 @@ public class JdTokenSyncer extends AbstractSyncer {
     @Override
     public void run() {
         if (systemEnvConfig.isPROD()) {
-            LOGGER.info(getName() + "  sync exec....................................");
             String json = cacheManager.get(JD_TOKEN_REDIS_KEY);
             JSONObject jsonObject = JSONObject.parseObject(json);
             String time = jsonObject.getString("time");
             long interVal = System.currentTimeMillis() - Long.valueOf(time);
             if (3600 * 24 * 7 * 1000 <= interVal) {
+              LOGGER.info(getName() + "  sync exec....................................");
                 JSONObject jsonObject1 = jdTokenClient.getToken();
                 cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject1.toJSONString());
             }
