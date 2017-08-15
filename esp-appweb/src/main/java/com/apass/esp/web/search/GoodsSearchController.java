@@ -176,17 +176,30 @@ public class GoodsSearchController {
     public List<SearchKesVo> hotList(List<SearchKeys> hotList){
     	List<SearchKesVo> vList = keysToVoList(hotList);
     	if(CollectionUtils.isEmpty(hotList)){
-    		SearchKesVo v1 = new SearchKesVo("华为");vList.add(v1);
-        	SearchKesVo v2 = new SearchKesVo("口红");vList.add(v2);
-        	SearchKesVo v3 = new SearchKesVo("洗衣机");vList.add(v3);
-        	SearchKesVo v4 = new SearchKesVo("手机");vList.add(v4);
-        	SearchKesVo v5 = new SearchKesVo("电视");vList.add(v5);
-        	SearchKesVo v6 = new SearchKesVo("剃须刀");vList.add(v6);
-        	SearchKesVo v7 = new SearchKesVo("笔记本");vList.add(v7);
-        	SearchKesVo v8 = new SearchKesVo("香水");vList.add(v8);
-        	SearchKesVo v9 = new SearchKesVo("苹果");vList.add(v9);
-        	SearchKesVo v10 = new SearchKesVo("面膜");vList.add(v10);
+    		vList = hotInitList();
     	}
+    	if(vList.size()<10){
+    		int vSize = vList.size();
+    		for (int i = 0; i < (10 - vSize);i++) {
+				vList.add(hotInitList().get(i));
+			}
+    		
+    	}
+    	return vList;
+    }
+    
+    public List<SearchKesVo> hotInitList(){
+    	List<SearchKesVo> vList = new ArrayList<SearchKesVo>();
+    	SearchKesVo v1 = new SearchKesVo("华为");vList.add(v1);
+    	SearchKesVo v2 = new SearchKesVo("口红");vList.add(v2);
+    	SearchKesVo v3 = new SearchKesVo("洗衣机");vList.add(v3);
+    	SearchKesVo v4 = new SearchKesVo("手机");vList.add(v4);
+    	SearchKesVo v5 = new SearchKesVo("电视");vList.add(v5);
+    	SearchKesVo v6 = new SearchKesVo("剃须刀");vList.add(v6);
+    	SearchKesVo v7 = new SearchKesVo("笔记本");vList.add(v7);
+    	SearchKesVo v8 = new SearchKesVo("香水");vList.add(v8);
+    	SearchKesVo v9 = new SearchKesVo("苹果");vList.add(v9);
+    	SearchKesVo v10 = new SearchKesVo("面膜");vList.add(v10);
     	return vList;
     }
     
