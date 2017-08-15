@@ -194,6 +194,8 @@ public class GoodsSearchController {
 	@Path(value = "/search")
 	public Response search(Map<String, Object> paramMap) {
 		try {
+	    	String deviceId = CommonUtils.getValue(paramMap, "deviceId");//设备号
+	    	String userId = CommonUtils.getValue(paramMap, "userId");//用户号
 			String searchValue = CommonUtils.getValue(paramMap, "searchValue");
 			String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段(default:默认;amount:销量;new:新品;price：价格)
 			String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
@@ -206,6 +208,9 @@ public class GoodsSearchController {
 			if (StringUtils.isEmpty(order)) {
 				order = "DESC";// 降序
 			}
+			//插入数据
+			searchKeyService.addCommonSearchKeys(searchValue, userId, deviceId);
+			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 
 			GoodsBasicInfoEntity goodsInfoEntity = new GoodsBasicInfoEntity();
