@@ -341,6 +341,7 @@ public class GoodsSearchController {
 			}
 			returnMap.put("goodsList", goodsList);
 			returnMap.put("goodsBasicInfoList", goodsBasicInfoList2);
+			returnMap.put("title", "热卖单品");
 			return Response.successResponse(returnMap);
 		} catch (Exception e) {
 			LOGGER.error("ShopHomeController loadGoodsList fail", e);
