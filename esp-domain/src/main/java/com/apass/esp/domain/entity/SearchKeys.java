@@ -18,7 +18,7 @@ public class SearchKeys {
     private Date updateDate;
 
     private String deviceId;
-
+    
     public Long getId() {
         return id;
     }
@@ -82,4 +82,5 @@ public class SearchKeys {
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
+    
 }
