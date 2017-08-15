@@ -28,6 +28,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.CategorySort;
+import com.apass.esp.domain.vo.SearchKesVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
@@ -111,20 +112,82 @@ public class GoodsSearchController {
     	String userId = CommonUtils.getValue(paramMap, "userId");
     	Map<String,Object> param = Maps.newHashMap();
     	try {
-    		ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
+    		//ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
     		List<SearchKeys> common = searchKeyService.commonSearch(userId);
-    		
     		Calendar cal = Calendar.getInstance();
     		cal.add(cal.DATE, -10);
     		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
-    		param.put("common", common);
-    		param.put("hot",hot);
-		} catch(BusinessException e){
-			return Response.fail(e.getErrorDesc());
-		}catch (Exception e) {
+    		param.put("recent", keysToVoList(common));
+    		param.put("hot",hotList(hot));
+    		param.put("sort",getClassification());
+		} //catch(BusinessException e){
+			//return Response.fail(e.getErrorDesc());
+		//}
+    	catch (Exception e) {
 			return Response.fail(e.getMessage());
 		}
     	return Response.success("查询成功!", param);
+    }
+    
+    /**
+     * 获取常用分类
+     * @return
+     */
+    public List<SearchKesVo> getClassification(){
+    	List<SearchKesVo> classiList = new ArrayList<SearchKesVo>();
+    	SearchKesVo v1 = new SearchKesVo("手机通讯");classiList.add(v1);
+    	SearchKesVo v2 = new SearchKesVo("香水彩妆");classiList.add(v2);
+    	SearchKesVo v3 = new SearchKesVo("电脑整机");classiList.add(v3);
+    	SearchKesVo v4 = new SearchKesVo("电视");classiList.add(v4);
+    	SearchKesVo v5 = new SearchKesVo("厨卫小电");classiList.add(v5);
+    	SearchKesVo v6 = new SearchKesVo("厨房百货");classiList.add(v6);
+    	SearchKesVo v7 = new SearchKesVo("洗衣机");classiList.add(v7);
+    	SearchKesVo v8 = new SearchKesVo("洗发沐浴");classiList.add(v8);
+    	SearchKesVo v9 = new SearchKesVo("面部护理");classiList.add(v9);
+    	SearchKesVo v10 = new SearchKesVo("家庭影院");classiList.add(v10);
+    	return classiList;
+    }
+    
+    /**
+     * po to vo
+     * @param keys
+     * @return
+     */
+    public SearchKesVo SearchKesToSearchKeyVo(SearchKeys keys){
+    	SearchKesVo vo = new SearchKesVo();
+    	vo.setKeyValue(keys.getKeyValue());
+    	return vo;
+    }
+    
+    /**
+     * List po to vo
+     * @param keyList
+     * @return
+     */
+    public List<SearchKesVo> keysToVoList(List<SearchKeys> keyList){
+    	List<SearchKesVo> vList = new ArrayList<SearchKesVo>();
+    	for (SearchKeys key : keyList) {
+    		SearchKesVo v = new SearchKesVo(key.getKeyValue());
+    		vList.add(v);
+		}
+    	return vList;
+    }
+    
+    public List<SearchKesVo> hotList(List<SearchKeys> hotList){
+    	List<SearchKesVo> vList = keysToVoList(hotList);
+    	if(CollectionUtils.isEmpty(hotList)){
+    		SearchKesVo v1 = new SearchKesVo("华为");vList.add(v1);
+        	SearchKesVo v2 = new SearchKesVo("口红");vList.add(v2);
+        	SearchKesVo v3 = new SearchKesVo("洗衣机");vList.add(v3);
+        	SearchKesVo v4 = new SearchKesVo("手机");vList.add(v4);
+        	SearchKesVo v5 = new SearchKesVo("电视");vList.add(v5);
+        	SearchKesVo v6 = new SearchKesVo("剃须刀");vList.add(v6);
+        	SearchKesVo v7 = new SearchKesVo("笔记本");vList.add(v7);
+        	SearchKesVo v8 = new SearchKesVo("香水");vList.add(v8);
+        	SearchKesVo v9 = new SearchKesVo("苹果");vList.add(v9);
+        	SearchKesVo v10 = new SearchKesVo("面膜");vList.add(v10);
+    	}
+    	return vList;
     }
     
 	@POST
