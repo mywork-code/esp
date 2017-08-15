@@ -8,6 +8,7 @@ import com.apass.esp.mapper.ServiceErrorMapper;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -48,9 +49,14 @@ public class JdConfirmPreInventoryTask {
     @Autowired
     private ServiceErrorMapper serviceErrorMapper;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
-
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
         List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
         if (CollectionUtils.isEmpty(orderInfoEntityList)) {
             return;
@@ -88,7 +94,7 @@ public class JdConfirmPreInventoryTask {
                 serviceErrorMapper.insertSelective(serviceError);
                 LOGGER.info("confirm order jdOrderIdp {}  error confirmResponse: {}", jdOrderIdp, confirmResponse);
             }
-            }
         }
-
     }
+
+}
