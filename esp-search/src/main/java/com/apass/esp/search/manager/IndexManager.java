@@ -8,6 +8,7 @@ import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.esp.search.utils.Esprop;
 import com.apass.esp.search.utils.PropertiesUtils;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -58,14 +60,26 @@ public class IndexManager<T> {
     /**
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
-    public static  <GoodsTest> Pagination<GoodsTest> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
+    public static  <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
         boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getName()));
-        return search(boolQueryBuilder, IndexType.GOODSTEST, sortField, desc, from, size);
+        return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 
 
+    /**
+     * 更新索引，如果新增的时候index存在，就是更新操作
+     *
+     * @param index
+     * @param type
+     * @param data
+     * @throws UnknownHostException
+     * @throws JsonProcessingException
+     */
+    public static <T extends IdAble> void updateDocument(String index, IndexType type, T data) {
+        addDocument(index, type, data);
+    }
     /**
      * 创建索引
      *

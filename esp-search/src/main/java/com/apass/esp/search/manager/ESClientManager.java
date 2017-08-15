@@ -2,7 +2,6 @@ package com.apass.esp.search.manager;
 
 
 import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.utils.Configs;
 import com.apass.esp.search.utils.Esprop;
 import com.apass.esp.search.utils.PropertiesUtils;
 import com.google.common.base.Preconditions;
@@ -18,9 +17,6 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -66,9 +62,7 @@ public class ESClientManager {
                                 .put("client.transport.ignore_cluster_name", true)
                                 .put("client.transport.sniff", true).build();
                         client = new PreBuiltTransportClient(settings);
-
                         client = client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esprop.getHost()), esprop.getPort()));
-
                         int nodeSize = client.connectedNodes().size();
                         LOGGER.info("nodeSize {}", nodeSize);
                         Preconditions.checkArgument(nodeSize >= 1, "this is no available node");

@@ -4,7 +4,6 @@ import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.ESClientManager;
 import com.apass.esp.search.manager.IndexManager;
@@ -12,7 +11,6 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +32,6 @@ public class ESClientController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
 
-
     /**
      * 得到连接
      *
@@ -44,9 +41,7 @@ public class ESClientController {
     @RequestMapping(value = "/getClient", method = RequestMethod.POST)
     @ResponseBody
     public Response getClient(@RequestBody Map<String, Object> paramMap) {
-
         Client client = ESClientManager.getClient();
-
         return Response.successResponse(JsonUtil.toJsonString(client));
     }
 
@@ -69,7 +64,7 @@ public class ESClientController {
             goods.setGoodsSellPt(i+"_ _");
             list.add(goods);
         }
-        IndexManager.createIndex(list, IndexType.GOODSTEST);
+        IndexManager.createIndex(list, IndexType.GOODS);
         return Response.successResponse(JsonUtil.toJsonString(list));
     }
 
@@ -85,7 +80,7 @@ public class ESClientController {
         GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
         //goodsSearchCondition.setFixName("goodsName");
         goodsSearchCondition.setName("goods");
-        Pagination <GoodsTest> pagination = IndexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
+        Pagination <Goods> pagination = IndexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
         return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
 

@@ -1,36 +1,59 @@
 package com.apass.esp.search.condition;
 
+import com.apass.esp.search.enums.SortMode;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+
 import java.util.Date;
 
 /**
  * Created by xianzhi.wang on 2017/5/23.
  */
 public class GoodsSearchCondition {
+
     private String name;//商品名称模糊
 
-    private String cateGateName;//分类名称模糊
+    private String cateGoryName;//分类名称模糊
 
-    private SortCondition sortCondition;//排序字段
+    private Date timeStart; //开始时间
 
-    //开始时间
-    private Date timeStart;
-    //结束时间
-    private Date timeEnd;
+    private Date timeEnd;//结束时间
 
-    public String getCateGateName() {
-        return cateGateName;
+    private SortMode sortMode;//排序字段
+
+    private Integer offset = (Pagination.DEFAULT_PAGE_NUM - 1) * Pagination.DEFAULT_PAGE_SIZE; // 开始条数
+    
+    private Integer pageSize = Pagination.DEFAULT_PAGE_SIZE;// 多少条
+
+    public Integer getOffset() {
+        return offset;
     }
 
-    public void setCateGateName(String cateGateName) {
-        this.cateGateName = cateGateName;
+    public void setOffset(Integer offset) {
+        this.offset = offset;
     }
 
-    public SortCondition getSortCondition() {
-        return sortCondition;
+    public Integer getPageSize() {
+        return pageSize;
     }
 
-    public void setSortCondition(SortCondition sortCondition) {
-        this.sortCondition = sortCondition;
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public SortMode getSortMode() {
+        return sortMode;
+    }
+
+    public void setSortMode(SortMode sortMode) {
+        this.sortMode = sortMode;
+    }
+
+    public String getCateGoryName() {
+        return cateGoryName;
+    }
+
+    public void setCateGoryName(String cateGoryName) {
+        this.cateGoryName = cateGoryName;
     }
 
     public Date getTimeStart() {
