@@ -111,23 +111,19 @@ public class GoodsSearchController {
     public Response getSearchKeys(Map<String,Object> paramMap){
     	
     	String userId = CommonUtils.getValue(paramMap, "userId");
-    	Map<String,Object> param = Maps.newHashMap();
+    	List<SearchSort> sort = new ArrayList<SearchSort>();
     	try {
-    		//ValidateUtils.isNotBlank(userId, "用户编号不能为空!");
     		//List<SearchKeys> common = searchKeyService.commonSearch(userId);
     		Calendar cal = Calendar.getInstance();
     		cal.add(cal.DATE, -10);
     		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
-    		//param.put("recent", keysToVoList(common));
-    		param.put("hot", new SearchSort("热门搜索", hotList(hot)));
-    		param.put("sort",new SearchSort("常用分类", getClassification()));
-		} //catch(BusinessException e){
-			//return Response.fail(e.getErrorDesc());
-		//}
+    		sort.add(new SearchSort("热门搜索", hotList(hot)));
+    		sort.add(new SearchSort("常用分类", getClassification()));
+		}
     	catch (Exception e) {
 			return Response.fail(e.getMessage());
 		}
-    	return Response.success("查询成功!", param);
+    	return Response.success("查询成功!", sort);
     }
     
     /**
