@@ -35,9 +35,6 @@ public class ESClientController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
 
 
-    @Autowired
-    public IndexManager indexManager;
-
     /**
      * 得到连接
      *
@@ -72,7 +69,7 @@ public class ESClientController {
             goods.setGoodsSellPt(i+"_ _");
             list.add(goods);
         }
-        indexManager.createIndex(list, IndexType.GOODSTEST);
+        IndexManager.createIndex(list, IndexType.GOODSTEST);
         return Response.successResponse(JsonUtil.toJsonString(list));
     }
 
@@ -88,7 +85,7 @@ public class ESClientController {
         GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
         //goodsSearchCondition.setFixName("goodsName");
         goodsSearchCondition.setName("goods");
-        Pagination <GoodsTest> pagination = indexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
+        Pagination <GoodsTest> pagination = IndexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
         return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
 
