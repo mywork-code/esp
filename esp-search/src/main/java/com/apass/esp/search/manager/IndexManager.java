@@ -1,7 +1,7 @@
 package com.apass.esp.search.manager;
 
 
-import com.apass.esp.search.condition.GoodTestSearchCondition;
+import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
@@ -45,7 +45,7 @@ public class IndexManager<T> {
     /**
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
-    public <GoodsTest> Pagination<GoodsTest> goodSearch(GoodTestSearchCondition condition, String sortField, boolean desc, int from, int size) {
+    public <GoodsTest> Pagination<GoodsTest> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
         boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getFixName()));

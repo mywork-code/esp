@@ -2,7 +2,7 @@ package com.apass.esp.web.search;
 
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
-import com.apass.esp.search.condition.GoodTestSearchCondition;
+import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.ESClientManager;
@@ -85,10 +85,10 @@ public class ESClientController {
     @RequestMapping(value = "search", method = RequestMethod.POST)
     @ResponseBody
     public Response search(@RequestBody Map<String, Object> paramMap) {
-        GoodTestSearchCondition goodTestSearchCondition = new GoodTestSearchCondition();
-        goodTestSearchCondition.setFixName("goodsName");
-        goodTestSearchCondition.setName("goods");
-        Pagination <GoodsTest> pagination = indexManager.goodSearch(goodTestSearchCondition, null, true, 0, 10);
+        GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
+        //goodsSearchCondition.setFixName("goodsName");
+        goodsSearchCondition.setName("goods");
+        Pagination <GoodsTest> pagination = indexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
         return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
 

@@ -5,13 +5,13 @@ import java.util.Date;
 /**
  * Created by xianzhi.wang on 2017/5/23.
  */
-public class GoodTestSearchCondition {
+public class GoodsSearchCondition {
     private String name;//商品名称模糊
 
     private String cateGateName;//分类名称模糊
 
     private SortCondition sortCondition;//排序字段
-    
+
     //开始时间
     private Date timeStart;
     //结束时间
