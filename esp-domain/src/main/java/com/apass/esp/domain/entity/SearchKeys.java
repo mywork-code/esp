@@ -5,19 +5,19 @@ import java.util.Date;
 public class SearchKeys {
     private Long id;
 
-    private Boolean keyType;
+    private String keyType;
 
     private String keyValue;
 
     private String userId;
 
-    private Boolean keyStatus;
+    private String keyStatus;
 
     private Date createDate;
 
     private Date updateDate;
-    
-    private int count;
+
+    private String deviceId;
 
     public Long getId() {
         return id;
@@ -27,11 +27,11 @@ public class SearchKeys {
         this.id = id;
     }
 
-    public Boolean getKeyType() {
+    public String getKeyType() {
         return keyType;
     }
 
-    public void setKeyType(Boolean keyType) {
+    public void setKeyType(String keyType) {
         this.keyType = keyType;
     }
 
@@ -51,11 +51,11 @@ public class SearchKeys {
         this.userId = userId;
     }
 
-    public Boolean getKeyStatus() {
+    public String getKeyStatus() {
         return keyStatus;
     }
 
-    public void setKeyStatus(Boolean keyStatus) {
+    public void setKeyStatus(String keyStatus) {
         this.keyStatus = keyStatus;
     }
 
@@ -75,12 +75,11 @@ public class SearchKeys {
         this.updateDate = updateDate;
     }
 
-	public int getCount() {
-		return count;
-	}
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-	public void setCount(int count) {
-		this.count = count;
-	}
-    
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 }
