@@ -3,6 +3,7 @@ package com.apass.esp.web.search;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.ESClientManager;
@@ -12,6 +13,7 @@ import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,14 +28,12 @@ import java.util.Map;
  * 暂时用不到，先注释掉
  */
 
-//@Controller
-//@RequestMapping("es")
+@Controller
+@RequestMapping("es")
 public class ESClientController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
 
-    @Autowired
-    public ESClientManager eSClientManager;
 
     @Autowired
     public IndexManager indexManager;
@@ -48,7 +48,7 @@ public class ESClientController {
     @ResponseBody
     public Response getClient(@RequestBody Map<String, Object> paramMap) {
 
-        Client client = eSClientManager.getClient();
+        Client client = ESClientManager.getClient();
 
         return Response.successResponse(JsonUtil.toJsonString(client));
     }
@@ -63,14 +63,14 @@ public class ESClientController {
     @RequestMapping(value = "addData", method = RequestMethod.POST)
     @ResponseBody
     public Response addData(@RequestBody Map<String, Object> paramMap) {
-        List<GoodsTest> list = new ArrayList<>();
+        List<Goods> list = new ArrayList<>();
         for (Integer i = 1; i < 10; i++
                 ) {
-            GoodsTest goodsTest = new GoodsTest();
-            goodsTest.setGoodsName("goodsName" + i);
-            goodsTest.setGoodsFixName("goodsFixName" + i);
-            goodsTest.setId(i);
-            list.add(goodsTest);
+            Goods goods = new Goods();
+            goods.setGoodId(Long.valueOf(i));
+            goods.setCategoryCode(i+"_");
+            goods.setGoodsSellPt(i+"_ _");
+            list.add(goods);
         }
         indexManager.createIndex(list, IndexType.GOODSTEST);
         return Response.successResponse(JsonUtil.toJsonString(list));

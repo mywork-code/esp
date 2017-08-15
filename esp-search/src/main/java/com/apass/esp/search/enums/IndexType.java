@@ -4,6 +4,7 @@ package com.apass.esp.search.enums;
  * Created by Administrator on 2017/5/23.
  */
 
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsTest;
 import com.apass.esp.search.entity.IdAble;
 
@@ -11,18 +12,18 @@ import com.apass.esp.search.entity.IdAble;
  * Created by xianzhi.wang on 2017/5/22.
  */
 public enum IndexType {
-//    GOODS("goods") {
-//        @Override
-//        public String getMapper() {
-//            return "/esmapper/goodsMapper.txt";
-//        }
-//
-//        @Override
-//        public Class<? extends IdAble> getTypeClass() {
-//            return Goods.class;
-//        }
-//
-//    },
+    GOODS("goods") {
+        @Override
+        public String getMapper() {
+            return "/esmapper/goodsMapper.txt";
+        }
+
+        @Override
+        public Class<? extends IdAble> getTypeClass() {
+            return Goods.class;
+        }
+
+    },
     GOODSTEST("goodstest") {
         @Override
         public String getMapper() {

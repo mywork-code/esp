@@ -5,7 +5,10 @@ import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.PropertiesUtils;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -24,28 +27,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
- * 暂时用不到，先注释掉
  */
-//@Service
+
 public class IndexManager<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexManager.class);
 
-    @Value("${es.indice}")
-    private String indice;
+    private static Esprop esprop = new Esprop();
 
-    @Autowired
-    private ESClientManager esClientManager;
+    static {
+        InputStream esIn = ESClientManager.class.getClassLoader().getResourceAsStream("esmapper/es.properties");
+        try {
+            Properties properties = PropertiesUtils.readFromText(IOUtils.toString(esIn).trim());
+            esprop.setIndice(properties.getProperty("esIndice"));
+        } catch (IOException e) {
+            LOGGER.error("get es config error ...");
+        }
+    }
+
 
     /**
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
-    public <GoodsTest> Pagination<GoodsTest> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
+    public static  <GoodsTest> Pagination<GoodsTest> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
         boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getName()));
@@ -59,13 +72,13 @@ public class IndexManager<T> {
      * @param datas
      * @param indexType
      */
-    public <T extends IdAble> void createIndex(List<T> datas, IndexType indexType) {
+    public static <T extends IdAble> void createIndex(List<T> datas, IndexType indexType) {
         // 批量处理request
-        BulkRequestBuilder bulkRequest = esClientManager.getClient().prepareBulk();
+        BulkRequestBuilder bulkRequest = ESClientManager.getClient().prepareBulk();
         byte[] json;
         for (T t : datas) {
             json = ESDataUtil.toBytes(t);
-            bulkRequest.add(new IndexRequest(indice, indexType.getDataName(), t.getId() + "").source(json));
+            bulkRequest.add(new IndexRequest(esprop.getIndice(), indexType.getDataName(), t.getId() + "").source(json));
         }
         // 执行批量处理request
         BulkResponse bulkResponse = bulkRequest.get();
@@ -88,9 +101,9 @@ public class IndexManager<T> {
      * @param type
      * @param data
      */
-    public <T extends IdAble> void addDocument(String index, IndexType type, T data) {
+    public static <T extends IdAble> void addDocument(String index, IndexType type, T data) {
         byte[] json = ESDataUtil.toBytes(data);
-        esClientManager.getClient().prepareIndex(index, type.getDataName(), String.valueOf(data.getId())).setSource(json).get();
+        ESClientManager.getClient().prepareIndex(index, type.getDataName(), String.valueOf(data.getId())).setSource(json).get();
     }
 
     /**
@@ -100,13 +113,13 @@ public class IndexManager<T> {
      * @param type
      * @param id
      */
-    public void deleteDocument(String index, IndexType type, Integer id) {
-        esClientManager.getClient().prepareDelete(index, type.getDataName(), String.valueOf(id)).get();
+    public static void deleteDocument(String index, IndexType type, Integer id) {
+        ESClientManager.getClient().prepareDelete(index, type.getDataName(), String.valueOf(id)).get();
     }
 
 
-    public <T> T getDocument(String index, IndexType type, Integer id) {
-        GetResponse getResponse = esClientManager.getClient().prepareGet(index, type.getDataName(), String.valueOf(id)).get();
+    public static <T> T getDocument(String index, IndexType type, Integer id) {
+        GetResponse getResponse = ESClientManager.getClient().prepareGet(index, type.getDataName(), String.valueOf(id)).get();
         if (getResponse != null && getResponse.isExists()) {
             Object value = ESDataUtil.readValue(getResponse.getSourceAsBytes(), type.getTypeClass());
             return (T) value;
@@ -126,9 +139,9 @@ public class IndexManager<T> {
      * @param size         页面大小
      * @return
      */
-    private <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, String sortField, boolean desc, int from, int size) {
+    private static <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, String sortField, boolean desc, int from, int size) {
         List<T> results = new ArrayList<>();
-        SearchRequestBuilder serachBuilder = esClientManager.getClient().prepareSearch(indice)//不同的索引 变量 代码通用
+        SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
                 .setQuery(queryBuilder);
         if (!StringUtils.isEmpty(sortField)) {
