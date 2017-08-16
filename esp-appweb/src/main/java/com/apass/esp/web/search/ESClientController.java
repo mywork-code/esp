@@ -7,10 +7,12 @@ import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.ESClientManager;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,9 @@ import java.util.Map;
 public class ESClientController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
+
+    @Autowired
+    private GoodsService goodsService;
 
     /**
      * 得到连接

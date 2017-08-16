@@ -21,7 +21,7 @@ public class GoodsSearchCondition {
     private SortMode sortMode;//排序字段
 
     private Integer offset = (Pagination.DEFAULT_PAGE_NUM - 1) * Pagination.DEFAULT_PAGE_SIZE; // 开始条数
-    
+
     private Integer pageSize = Pagination.DEFAULT_PAGE_SIZE;// 多少条
 
     public Integer getOffset() {
