@@ -53,7 +53,7 @@ public class MonitorScheduleTask {
     @Value("${monitor.env}")
     public String env;
 
-    @Scheduled(cron = "* 0/5 * * * *")
+    @Scheduled(cron = "* 0/30 * * * *")
     public void monitorSchedule() {
         String time = cacheManager.get("monitor_time");//间隔时间
         String times = cacheManager.get("monitor_times");//该时间的次数

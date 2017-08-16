@@ -79,7 +79,7 @@ public class JdGoodsInfoService {
 			map.put("goodsName", jdGoods.getName());// 商品名称
 			//java字符串转义,把&lt;&gt;转换成<>等字符
 			String skuCss = getSkuCss(sku);
-            String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+			String introduction = jdGoods.getIntroduction().replaceAll("width","width");
 			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
 		}
 		// 查询商品价格
@@ -101,6 +101,7 @@ public class JdGoodsInfoService {
 		map.put("skuId",String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
 		return map;
 	}
 	

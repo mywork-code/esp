@@ -16,6 +16,9 @@ public class Pagination<T> {
 	 */
 	private Integer totalCount = 0;
 
+	public static final int DEFAULT_PAGE_NUM = 1;
+	public static final int DEFAULT_PAGE_SIZE = 20;
+
 	/**
 	 * 列表记录
 	 */

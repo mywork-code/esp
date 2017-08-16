@@ -2,13 +2,18 @@ package com.apass.esp.third.party.jd.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.order.OrderReq;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
-import org.apache.commons.lang3.StringUtils;
+import com.apass.esp.third.party.jd.entity.person.AddressInfo;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * type: class
@@ -19,6 +24,10 @@ import java.util.*;
  */
 @Service
 public class JdOrderApiClient extends JdApiClient {
+
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     /**
      * 统一下单接口
      *
@@ -60,8 +69,13 @@ public class JdOrderApiClient extends JdApiClient {
         jsonObject.put("selectedInvoiceTitle", 5);//4个人，5单位
         jsonObject.put("companyName", "上海奥派数据科技有限公司");
         jsonObject.put("invoiceContent", 1);//1:明细，3：电脑配件，19:耗材，22：办公用品  备注:若增值发票则只能选1 明细
-        jsonObject.put("paymentType", 4);//1：货到付款，2：邮局付款，4：在线支付（余额支付），5：公司转账，6：银行转账，7：网银钱包， 101：金采支付
-        jsonObject.put("isUseBalance", 1);//预存款【即在线支付（余额支付）】下单固定1 使用余额 非预存款下单固定0 不使用余额
+        if(systemEnvConfig.isPROD()){
+            jsonObject.put("paymentType", 101);
+            jsonObject.put("isUseBalance", 0);
+        }else{
+            jsonObject.put("paymentType", 4);//1：货到付款，2：邮局付款，4：在线支付（余额支付），5：公司转账，6：银行转账，7：网银钱包， 101：金采支付
+            jsonObject.put("isUseBalance", 1);//预存款【即在线支付（余额支付）】下单固定1 使用余额 非预存款下单固定0 不使用余额
+        }
 
         jsonObject.put("submitState", 0);//是否预占库存，0是预占库存（需要调用确认订单接口），1是不预占库存
         jsonObject.put("invoiceName", "");

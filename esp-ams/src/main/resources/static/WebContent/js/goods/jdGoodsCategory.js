@@ -302,27 +302,26 @@ $(function() {
 	                        success(resp.data);
 	                    });
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
-	                		stime = window.setInterval("start()", 10000);
+//	                		stime = window.setInterval("start()", 15000);
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
+	                		debugger;
 	                		$(".border-circle").addClass('disabled');
 	                		var $that = $(this).find('.switch-circle');
 	                		
 	                		var rowData = JSON.parse(decodeURI($that.attr('data-sku')));
 	                		var param = {
-	                				"jdCategoryId":rowData.id,
-	                				"cateId":rowData.cateId,
-	                				"catClass":rowData.catClass,
-	                				"categoryId1":categoryId1,
-	                				"categoryId2":categoryId2,
-	                				"categoryId3":categoryId3
+                				"jdCategoryId":rowData.id,
+                				"cateId":rowData.cateId,
+                				"catClass":rowData.catClass,
+                				"categoryId1":categoryId1,
+                				"categoryId2":categoryId2,
+                				"categoryId3":categoryId3
 	                		};
 	                		
 	                		if($that.css('left')=='0px') {
-	                			debugger;
 	                			if(rowData.flag){
-	                				debugger
                                     $.ajax({
                                         url : ctx + '/application/jd/category/disrelevance1',
                                         data : {'param':JSON.stringify(param)},
@@ -340,6 +339,7 @@ $(function() {
                                                             dateType:"json",
                                                             success : function(data) {
                                                                 ifLogout(data);
+                                                                $(".border-circle").removeClass("disabled");
                                                                 if(data.status=="1"){
                                                                     $.messager.alert("提示",data.msg,'info');
                                                                     $that.animate({left:"54px"},50)
@@ -365,6 +365,7 @@ $(function() {
 		                				dateType:"json",
 		                				success : function(data) {
 		                					ifLogout(data);
+		                					$(".border-circle").removeClass("disabled");
 		                					if(data.status=="1"){
 		                						$.messager.alert("提示",data.msg,'info');  
 		                						$that.animate({left:"54px"},50)
@@ -386,6 +387,7 @@ $(function() {
 	    	        	        			dateType:"json",
 	    	        	        			success : function(data) {
 	    	        	        				ifLogout(data);
+	    	        	        				$(".border-circle").removeClass("disabled");
 	    	        	        				if(data.status=="1"){
 	    	        	                    		$.messager.alert("提示",data.msg,'info');  
 	    	        	                    		$that.animate({left:"0px"},50)
@@ -447,9 +449,9 @@ function regExp_pattern(str, pattern) {
     
 }
 
-var stime;
-function start() {
-   $(".border-circle").removeClass("disabled");
-   window.clearInterval(stime);
-}
+//var stime;
+//function start() {
+//   $(".border-circle").removeClass("disabled");
+//   window.clearInterval(stime);
+//}
 

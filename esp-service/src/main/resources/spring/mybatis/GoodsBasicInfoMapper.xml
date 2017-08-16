@@ -162,16 +162,6 @@
 				AND CURRENT_TIMESTAMP > a.list_time
 				AND CURRENT_TIMESTAMP < a.delist_time
 	]]>
-        <!-- 添加商品类目查询条件 -->
-        <if test="categoryId1 != null and categoryId1 != ''">
-            AND a.category_id1 = #{categoryId1, jdbcType=BIGINT}
-        </if>
-        <if test="categoryId2 != null and categoryId2 != ''">
-            AND a.category_id2 = #{categoryId2, jdbcType=BIGINT}
-        </if>
-        <if test="categoryId3 != null and categoryId3 != ''">
-            AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
-        </if>
         <!-- 按商品上架时间降序排列 （默认）（sort不传值时默认default）-->
         <!-- 添加商品类目查询条件 -->
         <if test="categoryId1 != null and categoryId1 != ''">
@@ -266,7 +256,227 @@
             AND a.category_id3 = #{categoryId3, jdbcType=BIGINT}
         </if>
     </select>
-
+     <!-- 商品搜索列表 (新品，默认)-->
+	<select id="searchGoodsList" parameterType="GoodsBasicInfoEntity" resultType="GoodsBasicInfoEntity">
+		  <![CDATA[ 
+		     SELECT DISTINCT
+								(t.ID) goodId
+						FROM
+								t_esp_goods_base_info t
+					 LEFT JOIN  t_esp_category        c 
+					     ON (
+								t.category_id1 = c.id
+								OR t.category_id2 = c.id
+								OR t.category_id3 = c.id
+							)
+						WHERE
+								(
+									t.goods_name LIKE '%${goodsName}%'
+									OR c.category_name LIKE '%${goodsName}%'
+								)
+							AND t.`status` = 'G02'
+							AND t.is_delete = '01'
+							AND CURRENT_TIMESTAMP > t.list_time
+							AND CURRENT_TIMESTAMP < t.delist_time
+			       
+		 ]]>
+	     <!-- 按商品上架时间降序排列 （默认）（sort不传值时默认default）-->
+        <if test="sort ==null or sort =='' or sort=='default'">
+            ORDER BY t.list_time DESC
+        </if>
+        <!-- 按商品创建时间排序  （新品）DESC 降序，ASC 升序-->
+        <if test="sort !=null and sort !='' and sort=='new' and order !=null and order !='' and order=='DESC'">
+            ORDER BY t.newCreat_date DESC
+        </if>
+        <if test="sort !=null and sort !='' and sort=='new' and order !=null and order !='' and order=='ASC'">
+            ORDER BY t.newCreat_date ASC
+        </if>
+        <if test="1==1">
+            limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+        </if>
+	</select>
+	<!-- 商品搜索列表 商品数量-->
+	<select id="searchGoodsListCount" parameterType="GoodsBasicInfoEntity" resultType="Integer">
+		  <![CDATA[ 
+		     SELECT     COUNT(DISTINCT t.ID)
+						FROM
+								t_esp_goods_base_info t
+					 LEFT JOIN  t_esp_category        c 
+					     ON (
+								t.category_id1 = c.id
+								OR t.category_id2 = c.id
+								OR t.category_id3 = c.id
+							)
+						WHERE
+								(
+									t.goods_name LIKE '%${goodsName}%'
+									OR c.category_name LIKE '%${goodsName}%'
+								)
+							AND t.`status` = 'G02'
+							AND t.is_delete = '01'
+							AND CURRENT_TIMESTAMP > t.list_time
+							AND CURRENT_TIMESTAMP < t.delist_time
+			       
+		 ]]>
+	</select>
+	  <!-- 商品搜索列表 (销量)-->
+	<select id="searchGoodsListAmount" parameterType="GoodsBasicInfoEntity" resultType="GoodsBasicInfoEntity">
+		  <![CDATA[ 
+		     SELECT DISTINCT
+								(t.ID) goodId
+						FROM
+								t_esp_goods_base_info t
+					 LEFT JOIN  t_esp_category        c 
+					     ON (
+								t.category_id1 = c.id
+								OR t.category_id2 = c.id
+								OR t.category_id3 = c.id
+							)
+					LEFT JOIN (
+								SELECT
+									id id,
+									goods_id goods_id,
+									SUM(sales_num) sales_num
+								FROM
+									t_esp_goods_sales_volume
+								GROUP BY
+									goods_id
+					          ) s ON t.id = s.goods_id
+					WHERE
+								(
+									t.goods_name LIKE '%${goodsName}%'
+									OR c.category_name LIKE '%${goodsName}%'
+								)
+							AND t.`status` = 'G02'
+							AND t.is_delete = '01'
+							AND CURRENT_TIMESTAMP > t.list_time
+							AND CURRENT_TIMESTAMP < t.delist_time
+			       
+		 ]]>
+	     <!-- 按商品销量降序排列(销量) -->
+        <if test="sort !=null and sort !='' and sort=='amount'">
+            ORDER BY s.sales_num DESC
+        </if>
+        <if test="1==1">
+            limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+        </if>
+	</select>
+	  <!-- 商品搜索列表 (价格)-->
+	<select id="searchGoodsListPrice" parameterType="GoodsBasicInfoEntity" resultType="GoodsBasicInfoEntity">
+		  <![CDATA[ 
+		     SELECT DISTINCT
+								(t.ID) goodId
+						FROM
+								t_esp_goods_base_info t
+					 LEFT JOIN  t_esp_category        c 
+					     ON (
+								t.category_id1 = c.id
+								OR t.category_id2 = c.id
+								OR t.category_id3 = c.id
+							)
+					LEFT JOIN (
+								SELECT
+									id id,
+									goods_id goods_id,
+									SUM(sales_num) sales_num
+								FROM
+									t_esp_goods_sales_volume
+								GROUP BY
+									goods_id
+					          ) s ON t.id = s.goods_id
+					LEFT JOIN (
+						SELECT
+							m.goods_id goods_id,
+							m.id id,
+							n.minprice goods_price
+						FROM
+							t_esp_goods_stock_info m,
+							(
+								SELECT
+									goods_id goodsId,
+									MIN(goods_price) minprice
+								FROM
+									t_esp_goods_stock_info					
+								GROUP BY
+									goods_id
+							) n
+						WHERE
+							m.goods_id = n.goodsId
+						AND m.goods_price = n.minprice
+						GROUP BY
+							m.goods_id
+					) b ON t.id = b.goods_id
+					WHERE
+								(
+									t.goods_name LIKE '%${goodsName}%'
+									OR c.category_name LIKE '%${goodsName}%'
+								)
+							AND t.`status` = 'G02'
+							AND t.is_delete = '01'
+							AND CURRENT_TIMESTAMP > t.list_time
+							AND CURRENT_TIMESTAMP < t.delist_time
+			       
+		 ]]>
+	    <!-- 按商品售价排序  DESC 降序，ASC 升序-->
+        <if test="sort !=null and sort !='' and sort=='price' and order !=null and order !='' and order=='DESC'">
+            ORDER BY b.goods_price DESC
+        </if>
+        <if test="sort !=null and sort !='' and sort=='price' and order !=null and order !='' and order=='ASC'">
+            ORDER BY b.goods_price ASC
+        </if>
+        <if test="1==1">
+            limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
+        </if>
+	</select>
+	<!-- 搜索商品 根据goodsId查询商品详情  -->
+	 <select id="serchGoodsByGoodsId" parameterType="java.lang.String" resultType="GoodsBasicInfoEntity">
+        <![CDATA[
+			SELECT
+					a.id goodId,
+					b.id goodsStockId,
+					a.goods_name goodsName,
+					a.goods_title goodsTitle,
+					a.goods_logo_url goodsLogoUrl,
+					a.source source
+				FROM
+					t_esp_goods_base_info a
+				LEFT JOIN (
+					SELECT
+						id id,
+						goods_id goods_id,
+						SUM(sales_num) sales_num
+					FROM
+						t_esp_goods_sales_volume
+					GROUP BY
+						goods_id
+				) c ON a.id = c.goods_id
+				LEFT JOIN (
+					SELECT
+						m.goods_id goods_id,
+						m.id id,
+						n.minprice goods_price
+					FROM
+						t_esp_goods_stock_info m,
+						(
+							SELECT
+								goods_id goodsId,
+								MIN(goods_price) minprice
+							FROM
+								t_esp_goods_stock_info
+							GROUP BY
+								goods_id
+						) n
+					WHERE
+						m.goods_id = n.goodsId
+					AND m.goods_price = n.minprice
+					GROUP BY
+						m.goods_id
+				) b ON a.id = b.goods_id
+				WHERE  a.id=#{value}
+						
+	]]>
+    </select>
+    
     <select id="getRemainderGoods" resultType="java.lang.String">
 		select id from t_esp_goods_base_info
 		where status='G02'
@@ -320,7 +530,7 @@
         AND CURRENT_TIMESTAMP > teg.list_time
         AND CURRENT_TIMESTAMP < teg.delist_time
         )
-        order by teg.update_date desc
+        order by teg.update_date desc,teg.list_time desc
         limit #{pageBegin},#{count}
         ]]>
     </select>
@@ -401,7 +611,7 @@
         AND teg.is_delete='01'
         AND CURRENT_TIMESTAMP > teg.list_time
         AND CURRENT_TIMESTAMP < teg.delist_time
-        limit #{count}
+        limit #{begin},#{count}
         ]]>
 	</select>
 

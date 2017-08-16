@@ -1,6 +1,7 @@
 package com.apass.esp.repository.goods;
 
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
@@ -30,7 +31,32 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
 	public Integer loadGoodsByParamCount(GoodsBasicInfoEntity param){
 		return getSqlSession().selectOne("loadGoodsByParamCount", param);
 	}
-
+	/**
+     * 搜索商品(新品，默认)
+     */
+    public List<GoodsBasicInfoEntity> searchList(GoodsBasicInfoEntity domain){
+    	return getSqlSession().selectList("searchGoodsList",domain);
+    }
+	/**
+     * 搜索商品(销量)
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListAmount(GoodsBasicInfoEntity domain){
+    	return getSqlSession().selectList("searchGoodsListAmount",domain);
+    }
+    /**
+     * 搜索商品(价格)
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListPrice(GoodsBasicInfoEntity domain){
+    	return getSqlSession().selectList("searchGoodsListPrice",domain);
+    }
+	// 搜索商品(共多少商品)
+	public Integer searchGoodsListCount(GoodsBasicInfoEntity domain){
+		return getSqlSession().selectOne("searchGoodsListCount",domain);
+	}
+	// 搜索商品 根据goodsId查询商品详情 
+	public GoodsBasicInfoEntity serchGoodsByGoodsId(String goodsId){
+		return getSqlSession().selectOne("serchGoodsByGoodsId",goodsId);
+	}
 	/**
 	 * 热卖单品(新)
 	 * @return

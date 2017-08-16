@@ -151,12 +151,84 @@ public class GoodsService {
     }
 
     /**
+     * 搜索商品（新品，默认）
+     * @param goodsInfoEntity
+     * @param page
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> searchPage(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
+            String limit) {
+    	Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
+        goodsBasicInfoEntity.setRows(limitInteger);
+         return goodsBasicRepository.searchList(goodsBasicInfoEntity);
+    }
+    /**
+     * 搜索商品（销量）
+     * @param goodsInfoEntity
+     * @param page
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListAmount(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
+            String limit) {
+    	Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
+        goodsBasicInfoEntity.setRows(limitInteger);
+         return goodsBasicRepository.searchGoodsListAmount(goodsBasicInfoEntity);
+    }
+    /**
+     * 搜索商品（价格）
+     * @param goodsInfoEntity
+     * @param page
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> searchGoodsListPrice(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
+            String limit) {
+    	Integer limitInteger = null;
+        Integer pageInteger = null;
+        if (StringUtils.isNotEmpty(limit)) {
+            limitInteger = Integer.valueOf(limit);
+        } else {
+            limitInteger = 20;
+        }
+        pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
+        goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
+        goodsBasicInfoEntity.setRows(limitInteger);
+         return goodsBasicRepository.searchGoodsListPrice(goodsBasicInfoEntity);
+    }
+    /**
      * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)(数量)
      */
     public Integer loadGoodsByParamCount(GoodsBasicInfoEntity gbinfoty) {
         return goodsBasicRepository.loadGoodsByParamCount(gbinfoty);
     }
+    /**
+     * 搜索商品
+     */
+    public Integer searchGoodsListCount(GoodsBasicInfoEntity gbinfoty) {
+        return goodsBasicRepository.searchGoodsListCount(gbinfoty);
+    }
 
+    /**
+     * 搜索商品根据goodsId查询商品详情
+     */
+    public GoodsBasicInfoEntity serchGoodsByGoodsId(String goodsId) {
+        return goodsBasicRepository.serchGoodsByGoodsId(goodsId);
+    }
     /**
      *
      * 加载商品列表
@@ -337,8 +409,8 @@ public class GoodsService {
      * @param goodsStockId
      * @return
      */
-    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsId, Long goodsStockId) {
-        return goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsId, goodsStockId);
+    public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsStockId) {
+        return goodsDao.loadContainGoodsAndGoodsStockAndMerchant(goodsStockId);
     }
 
     /**
@@ -623,10 +695,10 @@ public class GoodsService {
         }
         // 热卖单品大于50，小于170时
         // 部分数据可能从热卖单品中取
-        if (totalConut > 50 && totalConut < 170) {
+        if (totalConut >= 50 && totalConut < 170) {
             List<String> list = goodsBasicRepository.popularGoods(50 + pageBegin, pageSize);
             if (CollectionUtils.isEmpty(list) || list.size() != 20) {
-                List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, 20 - pageSize);
+                List<String> s = goodsBasicRepository.getRemainderGoodsNew(pageBegin, pageSize);
                 pagination.setDataList(s);
             } else {
                 pagination.setDataList(list);
@@ -703,5 +775,12 @@ public class GoodsService {
     public List<String> getRemainderGoodsNew(int pageIndex, int pageSize) {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
+
+    public List pageListForExport(GoodsInfoEntity goodsInfoEntity) {
+        
+        return goodsDao.pageListForExport(goodsInfoEntity);
+    }
+    
+  
 
 }

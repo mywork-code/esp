@@ -4,7 +4,20 @@
             "goodsName": {
                 "type": "text"
             },
+
             "goodsFixName": {
+                "type": "text"
+            },
+
+            "goodsCode": {
+                "type": "text"
+            },
+
+            "categoryCode": {
+                "type": "text"
+            },
+
+            "goodsSellPt": {
                 "type": "text"
             }
         }

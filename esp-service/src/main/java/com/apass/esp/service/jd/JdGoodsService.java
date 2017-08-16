@@ -26,6 +26,7 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 
@@ -54,6 +55,8 @@ public class JdGoodsService {
 //    @Autowired
 //    private UsersService usersService;
 
+    @Autowired
+    private CacheManager cacheManager;
     /**
      * 关联京东类目
      * 
@@ -100,6 +103,7 @@ public class JdGoodsService {
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
             entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+            //查询数据库是否已经存在此商品
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
 
             // 往t_esp_goods_stock_info表插数据
@@ -113,6 +117,7 @@ public class JdGoodsService {
             stockEntity.setGoodsCostPrice(jdGoods.getPrice());
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
+            
             goodsStockInfoService.insert(stockEntity);
         }
 
