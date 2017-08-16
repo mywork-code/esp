@@ -345,7 +345,7 @@ public class LogisticsService {
         }
         LOGGER.info("trackingmore回调推送->webHook->logisticsId:{}->status:{}->orderStatus:{}", trackData.getId(),
             trackData.getStatus(), orderInfo.getStatus());
-        if (null != orderInfo && OrderStatus.ORDER_SEND.getCode().equals(orderInfo.getStatus())) {
+        if (null != orderInfo && null == orderInfo.getLastAcceptGoodsDate()) {
             Date now = new Date();
             Integer delayDateNum = 0;
             if (orderInfo.getExtendAcceptGoodsNum() > 0) {
