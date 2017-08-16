@@ -16,8 +16,12 @@ public class Goods implements IdAble{
     private Long goodsStockId;
     /** 商品名称 **/
     private String goodsName;
+    /**商品名称拼音**/
+    private String goodsNamePinyin; 
     /** 商品小标题 **/
     private String goodsTitle;
+    /** 商品小标题拼音 **/
+    private String goodsTitlePinyin;
     /** 商品logo地址 **/
     private String goodsLogoUrl;
     /** 商品logo地址 (新) **/
@@ -41,14 +45,23 @@ public class Goods implements IdAble{
     private Long categoryId1;
     /** 商品一级分类名称 */
     private String categoryName1;
+    /** 商品一级分类名称拼音 */
+    private String categoryName1Pinyin;
+
     /** 商品二级分类 */
     private Long categoryId2;
-    /** 商品二级分类名称 */
+    /** 商品二级分类名称拼音 */
     private String categoryName2;
+    /** 商品二级分类名称 */
+    private String categoryName2Pinyin;
+
     /** 商品三级分类 */
     private Long categoryId3;
     /** 商品三级分类名称 */
     private String categoryName3;
+    /** 商品三级分类名称拼音 */
+    private String categoryName3Pinyin;
+
     /**
      * 商品价格
      */
@@ -75,8 +88,73 @@ public class Goods implements IdAble{
      * 近30天销量
      */
     private int saleNumFor30;
+    
+    /**
+     * 商品规格
+     */
+    private String goodsSkuAttr;
+    /**
+     * 商品规格拼音
+     */
+    private String goodsSkuAttrPinyin;
+    
+    
+	public String getGoodsTitlePinyin() {
+		return goodsTitlePinyin;
+	}
 
-   
+	public void setGoodsTitlePinyin(String goodsTitlePinyin) {
+		this.goodsTitlePinyin = goodsTitlePinyin;
+	}
+
+	public String getGoodsNamePinyin() {
+		return goodsNamePinyin;
+	}
+
+	public void setGoodsNamePinyin(String goodsNamePinyin) {
+		this.goodsNamePinyin = goodsNamePinyin;
+	}
+
+	public String getCategoryName1Pinyin() {
+		return categoryName1Pinyin;
+	}
+
+	public void setCategoryName1Pinyin(String categoryName1Pinyin) {
+		this.categoryName1Pinyin = categoryName1Pinyin;
+	}
+
+	public String getCategoryName2Pinyin() {
+		return categoryName2Pinyin;
+	}
+
+	public void setCategoryName2Pinyin(String categoryName2Pinyin) {
+		this.categoryName2Pinyin = categoryName2Pinyin;
+	}
+
+	public String getCategoryName3Pinyin() {
+		return categoryName3Pinyin;
+	}
+
+	public void setCategoryName3Pinyin(String categoryName3Pinyin) {
+		this.categoryName3Pinyin = categoryName3Pinyin;
+	}
+
+	public String getGoodsSkuAttrPinyin() {
+		return goodsSkuAttrPinyin;
+	}
+
+	public void setGoodsSkuAttrPinyin(String goodsSkuAttrPinyin) {
+		this.goodsSkuAttrPinyin = goodsSkuAttrPinyin;
+	}
+
+	public String getGoodsSkuAttr() {
+		return goodsSkuAttr;
+	}
+
+	public void setGoodsSkuAttr(String goodsSkuAttr) {
+		this.goodsSkuAttr = goodsSkuAttr;
+	}
+
 	public Long getGoodId() {
 		return goodId;
 	}

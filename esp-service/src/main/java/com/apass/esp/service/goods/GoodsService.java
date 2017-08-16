@@ -370,6 +370,7 @@ public class GoodsService {
         }
         // BigDecimal maxPrice = BigDecimal.ZERO;
         BigDecimal minPrice = BigDecimal.ZERO;
+        String skuAttr = null;
         Long minPriceStockId = 0L;
         // Long maxPriceStockId = 0L;
         if (null != goodsStockList && goodsStockList.size() > 0) {
@@ -382,10 +383,12 @@ public class GoodsService {
                 if (minPrice.compareTo(stock.getGoodsPrice()) >= 0) {
                     minPrice = stock.getGoodsPrice();
                     minPriceStockId = stock.getId();
+                    skuAttr = stock.getGoodsSkuAttr();
                 }
             }
             map.put("minPrice", minPrice);
             map.put("minPriceStockId", minPriceStockId);
+            map.put("minSkuAttr", skuAttr);
             // map.put("maxPrice", maxPrice);
             // map.put("maxPriceStockId", maxPriceStockId);
         }
@@ -781,6 +784,12 @@ public class GoodsService {
         return goodsDao.pageListForExport(goodsInfoEntity);
     }
     
-  
+    /**
+     * 获取上架的商品 <br/>  2017-08-16
+     * @return
+     */
+    public List<GoodsInfoEntity> selectUpGoods(){
+    	return goodsDao.selectUpGoods();
+    }
 
 }
