@@ -20,4 +20,12 @@ public class SearchKesVo {
 	public SearchKesVo() {
 		super();
 	}
+	
+	public boolean equals(Object obj) {   
+        if (obj instanceof SearchKesVo) {   
+        	SearchKesVo u = (SearchKesVo) obj;   
+            return this.getKeyValue().equals(u.keyValue);   
+        }   
+        return super.equals(obj);
+    }
 }
