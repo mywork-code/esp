@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -218,22 +220,19 @@ public class GoodsSearchController {
 			String page = CommonUtils.getValue(paramMap, "page");
 			String rows = CommonUtils.getValue(paramMap, "rows");
 			
-			Boolean falge=EmojiFilter.containsEmoji(searchValue);
-			String searchValue2="";
-			if(falge){
-				searchValue2=EmojiFilter.filterEmoji(searchValue);
-			}else{
+			String regex="^[a-zA-Z0-9\u4e00-\u9fa5]+$";
+			Pattern pattern = Pattern.compile(regex); 
+			Matcher matcher = pattern.matcher(searchValue); 
+			String searchValue2="*&$#";
+			if(matcher.matches()){
 				searchValue2=searchValue;
-			}
-			if (StringUtils.isEmpty(searchValue2)) {
-				LOGGER.error("搜索内容不能为空！");
-				return Response.fail("抱歉，没有找到商品额~");
+				//插入数据
+				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
 			}
 			if (StringUtils.isEmpty(order)) {
 				order = "DESC";// 降序
 			}
-			//插入数据
-			searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
+		
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 
