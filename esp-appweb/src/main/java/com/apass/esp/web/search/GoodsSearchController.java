@@ -37,6 +37,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.search.SearchKeyService;
 import com.apass.esp.utils.ValidateUtils;
+import com.apass.esp.web.feedback.EmojiFilter;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -215,20 +216,28 @@ public class GoodsSearchController {
 			String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
 			String page = CommonUtils.getValue(paramMap, "page");
 			String rows = CommonUtils.getValue(paramMap, "rows");
-			if (StringUtils.isEmpty(searchValue)) {
+			
+			Boolean falge=EmojiFilter.containsEmoji(searchValue);
+			String searchValue2="";
+			if(falge){
+				searchValue2=EmojiFilter.filterEmoji(searchValue);
+			}else{
+				searchValue2=searchValue;
+			}
+			if (StringUtils.isEmpty(searchValue2)) {
 				LOGGER.error("搜索内容不能为空！");
-				return Response.fail("搜索内容不能为空!");
+				return Response.fail("抱歉，没有找到商品额~");
 			}
 			if (StringUtils.isEmpty(order)) {
 				order = "DESC";// 降序
 			}
 			//插入数据
-			searchKeyService.addCommonSearchKeys(searchValue, userId, deviceId);
+			searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 
 			GoodsBasicInfoEntity goodsInfoEntity = new GoodsBasicInfoEntity();
-			goodsInfoEntity.setGoodsName(searchValue);
+			goodsInfoEntity.setGoodsName(searchValue2);
 
 			List<GoodsBasicInfoEntity> goodsBasicInfoList = null;
 			Boolean falgePrice = false;
