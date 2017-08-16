@@ -213,7 +213,7 @@ public class GoodsSearchController {
 			String rows = CommonUtils.getValue(paramMap, "rows");
 			if (StringUtils.isEmpty(searchValue)) {
 				LOGGER.error("搜索内容不能为空！");
-				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+				return Response.fail("搜索内容不能为空!");
 			}
 			if (StringUtils.isEmpty(order)) {
 				order = "DESC";// 降序
