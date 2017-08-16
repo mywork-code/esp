@@ -11,7 +11,7 @@
     <if test="startDate !=null"><![CDATA[ and CREATE_DATE > #{startDate}]]></if>
 	<if test="endDate !=null"><![CDATA[and CREATE_DATE <= #{endDate}]]></if>
     group by KEY_VALUE
-    order by count(key_value) desc limit 10
+    order by count(key_value) desc,key_value limit 10
   </select>
   
   <select id="commonSearch" resultMap="BaseResultMap" parameterType="java.lang.String">
