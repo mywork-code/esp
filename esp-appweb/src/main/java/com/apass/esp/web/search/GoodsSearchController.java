@@ -42,7 +42,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
-import com.google.common.collect.Maps;
 /**
  * 商品搜索类
  */
@@ -176,12 +175,14 @@ public class GoodsSearchController {
     	if(CollectionUtils.isEmpty(hotList)){
     		vList = hotInitList();
     	}
-    	if(vList.size()<10){
-    		int vSize = vList.size();
-    		for (int i = 0; i < (10 - vSize);i++) {
+    	if(vList.size() < 10){
+    		for (int i = 0; i < 10;i++) {
     			SearchKesVo keyVo = hotInitList().get(i);
     			if(vList.contains(keyVo)){
     				continue;
+    			}
+    			if(vList.size() == 10){
+    				break;
     			}
 				vList.add(keyVo);
 			}
