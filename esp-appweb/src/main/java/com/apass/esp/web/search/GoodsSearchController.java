@@ -178,7 +178,11 @@ public class GoodsSearchController {
     	if(vList.size()<10){
     		int vSize = vList.size();
     		for (int i = 0; i < (10 - vSize);i++) {
-				vList.add(hotInitList().get(i));
+    			SearchKesVo keyVo = hotInitList().get(i);
+    			if(vList.contains(keyVo)){
+    				continue;
+    			}
+				vList.add(keyVo);
 			}
     		
     	}
