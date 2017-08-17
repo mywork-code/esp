@@ -3,8 +3,6 @@ package com.apass.esp.search.condition;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 
-import java.util.Date;
-
 /**
  * Created by xianzhi.wang on 2017/5/23.
  */
