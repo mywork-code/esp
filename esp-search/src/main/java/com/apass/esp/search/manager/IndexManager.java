@@ -6,7 +6,9 @@ import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.IOUtils;
@@ -62,8 +64,24 @@ public class IndexManager<T> {
      */
     public static  <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
-        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getName()));
+        
+        if(StringUtils.isBlank(condition.getGoodsName())){
+        	condition.setGoodsName("手机");
+        }
+        if(!Pinyin4jUtil.isContainChinese(condition.getGoodsName())){
+        	boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsNamePinyin", condition.getGoodsName()))
+            .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", condition.getSkuAttr()));
+        }else{
+        	boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsName", condition.getGoodsName()))
+            .should(QueryBuilders.wildcardQuery("categoryName1", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("categoryName2", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("categoryName3", condition.getCateGoryName()))
+            .should(QueryBuilders.wildcardQuery("goodsSkuAttr", condition.getSkuAttr()));
+        }
+        
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 

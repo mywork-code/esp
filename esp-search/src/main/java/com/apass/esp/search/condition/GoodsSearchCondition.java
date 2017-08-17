@@ -10,13 +10,11 @@ import java.util.Date;
  */
 public class GoodsSearchCondition {
 
-    private String name;//商品名称模糊
-
+    private String goodsName;//商品名称模糊
+    
     private String cateGoryName;//分类名称模糊
-
-    private Date timeStart; //开始时间
-
-    private Date timeEnd;//结束时间
+    
+    private String skuAttr;//规格模糊
 
     private SortMode sortMode;//排序字段
 
@@ -49,35 +47,27 @@ public class GoodsSearchCondition {
     }
 
     public String getCateGoryName() {
-        return cateGoryName;
+        return "*"+cateGoryName+"*";
     }
 
     public void setCateGoryName(String cateGoryName) {
         this.cateGoryName = cateGoryName;
     }
 
-    public Date getTimeStart() {
-        return timeStart;
-    }
+    public String getGoodsName() {
+		return "*"+goodsName+"*";
+	}
 
-    public void setTimeStart(Date timeStart) {
-        this.timeStart = timeStart;
-    }
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
 
-    public Date getTimeEnd() {
-        return timeEnd;
-    }
+	public String getSkuAttr() {
+		return "*"+skuAttr+"*";
+	}
 
-    public void setTimeEnd(Date timeEnd) {
-        this.timeEnd = timeEnd;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+	public void setSkuAttr(String skuAttr) {
+		this.skuAttr = skuAttr;
+	}
+    
 }

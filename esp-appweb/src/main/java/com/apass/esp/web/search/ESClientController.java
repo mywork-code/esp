@@ -18,17 +18,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.ESClientManager;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.search.utils.Pinyin4jUtil;
@@ -37,6 +40,7 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 /**
@@ -64,20 +68,6 @@ public class ESClientController {
     
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
-    
-    /**
-     * 得到连接
-     *
-     * @param paramMap
-     * @return
-     */
-    @RequestMapping(value = "/getClient", method = RequestMethod.POST)
-    @ResponseBody
-    public Response getClient(@RequestBody Map<String, Object> paramMap) {
-        Client client = ESClientManager.getClient();
-        return Response.successResponse(JsonUtil.toJsonString(client));
-    }
-
 
     /**
      * 添加数据
@@ -191,6 +181,7 @@ public class ESClientController {
         	}else{
         		goods.setGoodsSkuAttr(String.valueOf(params.get("minSkuAttr")));
         	}
+        	goods.setGoodsSkuAttrPinyin(Pinyin4jUtil.converterToSpell(goods.getGoodsSkuAttr()));
 		} catch (Exception e) {
 			return null;
 		}
@@ -207,10 +198,62 @@ public class ESClientController {
     @ResponseBody
     public Response search(@RequestBody Map<String, Object> paramMap) {
         GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
-        //goodsSearchCondition.setFixName("goodsName");
-        goodsSearchCondition.setName("goods");
-        Pagination <Goods> pagination = IndexManager.goodSearch(goodsSearchCondition, null, true, 0, 10);
+        
+        String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+		String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段(default:默认;amount:销量;new:新品;price：价格)
+		String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
+		String page = CommonUtils.getValue(paramMap, "page");
+		String rows = CommonUtils.getValue(paramMap, "rows");
+		
+		
+        if (StringUtils.isEmpty(searchValue)) {
+			LOGGER.error("搜索内容不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		}
+        
+		if(!StringUtils.equalsIgnoreCase("ASC", order) && !StringUtils.equalsIgnoreCase("DESC", order)){
+			order = "DESC";// 降序
+    	}
+		
+        
+        
+        int pages = Integer.parseInt(page);
+        int row = Integer.parseInt(rows);
+        
+        if(CategorySort.CATEGORY_SortA.getCode().equals(sort)){
+        	if(StringUtils.equalsIgnoreCase("DESC", order)){
+        		goodsSearchCondition.setSortMode(SortMode.SALEVALUE_DESC);
+        	}else{
+        		goodsSearchCondition.setSortMode(SortMode.SALEVALUE_ASC);
+        	}
+        } else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
+        	if(StringUtils.equalsIgnoreCase("DESC", order)){
+        		goodsSearchCondition.setSortMode(SortMode.TIMECREATED_DESC);
+        	}else{
+        		goodsSearchCondition.setSortMode(SortMode.TIMECREATED_ASC);
+        	}
+		} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
+			if(StringUtils.equalsIgnoreCase("DESC", order)){
+        		goodsSearchCondition.setSortMode(SortMode.PRICE_DESC);
+        	}else{
+        		goodsSearchCondition.setSortMode(SortMode.PRICE_ASC);
+        	}
+		}else{
+			if(StringUtils.equalsIgnoreCase("DESC", order)){
+        		goodsSearchCondition.setSortMode(SortMode.ORDERVALUE_DESC);
+        	}else{
+        		goodsSearchCondition.setSortMode(SortMode.ORDERVALUE_ASC);
+        	}
+		}
+        
+        goodsSearchCondition.setGoodsName(searchValue);
+        goodsSearchCondition.setCateGoryName(searchValue);
+        goodsSearchCondition.setCateGoryName(searchValue);
+        goodsSearchCondition.setSkuAttr(searchValue);
+        long before = System.currentTimeMillis();
+        Pagination <Goods> pagination = IndexManager.goodSearch(goodsSearchCondition, goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(), (pages-1)*row, row);
+        long after = System.currentTimeMillis();
+        System.out.println("用时："+(after - before));
         return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
-
 }
