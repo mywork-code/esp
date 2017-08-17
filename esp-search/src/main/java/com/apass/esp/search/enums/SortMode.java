@@ -16,10 +16,12 @@ public enum SortMode implements Serializable {
     ID_DESC("id", true),
     SALEVALUE_ASC("saleNum", false),//销量
     SALEVALUE_DESC("saleNum", true),
-    ORDERVALUE_ASC("listDate", false),//上架时间
-    ORDERVALUE_DESC("listDate", true),
+    ORDERVALUE_ASC("listTime", false),//上架时间
+    ORDERVALUE_DESC("listTime", true),
     TIMECREATED_ASC("createDate", false),//创建时间
-    TIMECREATED_DESC("createDate", true);
+    TIMECREATED_DESC("createDate", true),
+    PRICE_ASC("goodsPrice", false),//创建时间
+    PRICE_DESC("goodsPrice", true);
 
     private final String sortField;
     private final boolean desc;

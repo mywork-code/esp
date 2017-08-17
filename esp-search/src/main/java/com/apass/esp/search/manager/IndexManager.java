@@ -6,7 +6,9 @@ import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.IOUtils;
@@ -60,10 +62,28 @@ public class IndexManager<T> {
     /**
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
-    public static  <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
+    public static <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        boolQueryBuilder.must(QueryBuilders.prefixQuery("goodsName", condition.getName()));
-        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsFixName", condition.getName()));
+
+        if (StringUtils.isBlank(condition.getGoodsName())) {
+            condition.setGoodsName("手机");
+        }
+        String value = condition.getGoodsName();
+        if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())) {
+            value = Pinyin4jUtil.converterToSpell(condition.getGoodsName());
+        }
+        boolQueryBuilder
+                .should(QueryBuilders.wildcardQuery("goodsNamePinyin", "*" + value + "*"))
+                .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", "*" + value + "*"))
+                .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*" + value + "*"))
+                .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*" + value + "*"))
+                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*" + value + "*"))
+                .should(QueryBuilders.termQuery("goodsNamePinyin",  value ))
+                .should(QueryBuilders.termQuery("categoryName1Pinyin",  value))
+                .should(QueryBuilders.termQuery("categoryName2Pinyin",  value ))
+                .should(QueryBuilders.termQuery("categoryName3Pinyin",  value))
+                .should(QueryBuilders.termQuery("goodsSkuAttrPinyin",  value ));
+
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 
@@ -80,6 +100,7 @@ public class IndexManager<T> {
     public static <T extends IdAble> void updateDocument(String index, IndexType type, T data) {
         addDocument(index, type, data);
     }
+
     /**
      * 创建索引
      *

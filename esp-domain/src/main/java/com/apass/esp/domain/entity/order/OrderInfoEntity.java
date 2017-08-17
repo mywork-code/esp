@@ -498,7 +498,7 @@ public class OrderInfoEntity {
     }
 
     public String getExtParentId() {
-        if(StringUtils.isBlank(extOrderId)){
+        if(StringUtils.isBlank(extParentId)){
             return "";
         }
         return extParentId;

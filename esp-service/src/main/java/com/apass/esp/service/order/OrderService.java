@@ -893,7 +893,6 @@ public class OrderService {
         	GoodsStockInfoEntity stockEntity = goodsStockDao.select(purchase.getGoodsStockId());
         	GoodsInfoEntity goodsInfo = goodsDao.select(stockEntity.getGoodsId());
             if (StringUtils.isBlank(goodsInfo.getSource())) {
-            	GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsStockId());
                 if (stockEntity.getStockCurrAmt() < purchase.getBuyNum()) {
                     LOG.info(requestId, "生成订单前校验,商品库存不足", stockEntity.getGoodsStockId().toString());
                     throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
