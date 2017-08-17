@@ -67,10 +67,22 @@ public class IndexManager<T> {
         }
         String value = condition.getGoodsName();
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())) {
-            value = Pinyin4jUtil.converterToSpell(condition.getGoodsName());
-            value = StringUtils.lowerCase(value);
-        }
-        boolQueryBuilder
+//            value = Pinyin4jUtil.converterToSpell(condition.getGoodsName());
+//            value = StringUtils.lowerCase(value);
+        	boolQueryBuilder
+            .should(QueryBuilders.wildcardQuery("goodsName", "*" + value + "*"))
+            .should(QueryBuilders.wildcardQuery("categoryName1", "*" + value + "*"))
+            .should(QueryBuilders.wildcardQuery("categoryName2", "*" + value + "*"))
+            .should(QueryBuilders.wildcardQuery("categoryName3", "*" + value + "*"))
+            .should(QueryBuilders.wildcardQuery("goodsSkuAttr", "*" + value + "*"))
+            .should(QueryBuilders.termQuery("goodsName",  value ))
+            .should(QueryBuilders.termQuery("categoryName1",  value))
+            .should(QueryBuilders.termQuery("categoryName2",  value ))
+            .should(QueryBuilders.termQuery("categoryName3",  value))
+            .should(QueryBuilders.termQuery("goodsSkuAttr",  value ));
+        	
+        }else{
+               boolQueryBuilder
                 .should(QueryBuilders.wildcardQuery("goodsNamePinyin", "*" + value + "*"))
                 .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", "*" + value + "*"))
                 .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*" + value + "*"))
@@ -81,6 +93,7 @@ public class IndexManager<T> {
                 .should(QueryBuilders.termQuery("categoryName2Pinyin",  value ))
                 .should(QueryBuilders.termQuery("categoryName3Pinyin",  value))
                 .should(QueryBuilders.termQuery("goodsSkuAttrPinyin",  value ));
+        }
 
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
