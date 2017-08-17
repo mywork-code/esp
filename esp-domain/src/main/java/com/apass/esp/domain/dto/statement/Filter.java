@@ -1,6 +1,9 @@
 package com.apass.esp.domain.dto.statement;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 /**
  * type: class
@@ -11,8 +14,8 @@ import java.util.ArrayList;
  * @since JDK 1.8
  */
 public class Filter {
-    private String start="2017-04-14";
-    private String end = "2017-07-14";
+    private String end = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+    private String start=DateFormatUtil.dateToString(DateFormatUtil.addMonth(new Date(), -1), DateFormatUtil.YYYY_MM_DD);
     private ArrayList<Integer> platformids;
     private ArrayList<String> versions;
     private ArrayList<Integer> channelids;

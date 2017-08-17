@@ -3,9 +3,7 @@
         "properties": {
             "goodsName": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index":"not_analyzed"
             },
             "goodsNamePinyin": {
                 "type": "text",
@@ -15,9 +13,7 @@
             },
             "goodsTitle": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "goodsTitlePinyin": {
                 "type": "text",
@@ -27,15 +23,11 @@
             },
             "categoryName1": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "categoryName2": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "categoryName3": {
                 "type": "text",
@@ -45,9 +37,7 @@
             },
             "categoryName1Pinyin": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "categoryName2Pinyin": {
                 "type": "text",
@@ -63,9 +53,7 @@
             },
             "goodsSkuAttr": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "goodsSkuAttrPinyin": {
                 "type": "text",
