@@ -90,6 +90,7 @@ public class ESClientController {
         	goodsList.add(goods);
 		}
         IndexManager.createIndex(goodsList, IndexType.GOODS);
+		LOGGER.info("goodsList add goodsId {} ...",goodsList.size());
         return Response.successResponse(JsonUtil.toJsonString(goodsList));
     }
     
