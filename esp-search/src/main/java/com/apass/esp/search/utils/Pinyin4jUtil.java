@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 
+ */
 public class Pinyin4jUtil {
     /**
      * 汉字转换位汉语拼音首字母，英文字符不变，特殊字符丢失 支持多音字，生成方式如（长沙市长:cssc,zssz,zssc,cssz）
@@ -179,15 +182,5 @@ public class Pinyin4jUtil {
         Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
         Matcher m = p.matcher(str);
         return m.find();
-    }
-
-    public static void main(String[] args) {
-        String str = "ddddddaaaa长沙市长";
-        System.out.println(isContainChinese(str));
-        String pinyin = Pinyin4jUtil.converterToSpell(str);
-        System.out.println(str + " pin yin ：" + pinyin);
-        System.out.println(pinyin.contains("ddddddaaaachangshashichang"));
-        pinyin = Pinyin4jUtil.converterToFirstSpell(str);
-        System.out.println(str + " short pin yin ：" + pinyin);
     }
 }
