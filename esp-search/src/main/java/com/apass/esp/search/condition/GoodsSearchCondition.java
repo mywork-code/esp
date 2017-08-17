@@ -47,7 +47,7 @@ public class GoodsSearchCondition {
     }
 
     public String getCateGoryName() {
-        return "*"+cateGoryName;
+        return cateGoryName;
     }
 
     public void setCateGoryName(String cateGoryName) {
@@ -55,7 +55,7 @@ public class GoodsSearchCondition {
     }
 
     public String getGoodsName() {
-		return "*"+goodsName;
+		return goodsName;
 	}
 
 	public void setGoodsName(String goodsName) {
@@ -63,7 +63,7 @@ public class GoodsSearchCondition {
 	}
 
 	public String getSkuAttr() {
-		return "*"+skuAttr;
+		return skuAttr;
 	}
 
 	public void setSkuAttr(String skuAttr) {
