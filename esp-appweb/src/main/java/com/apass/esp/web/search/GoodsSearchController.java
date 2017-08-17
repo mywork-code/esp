@@ -220,7 +220,8 @@ public class GoodsSearchController {
 			String page = CommonUtils.getValue(paramMap, "page");
 			String rows = CommonUtils.getValue(paramMap, "rows");
 			
-			String regex="^[a-zA-Z0-9\u4e00-\u9fa5]+$";
+//			String regex="^[a-zA-Z0-9\u4e00-\u9fa5]+$";
+			String regex="^[a-zA-Z0-9\\u4e00-\\u9fa5][a-zA-Z0-9\\u4e00-\\u9fa5\\ +()]*[a-zA-Z0-9\\u4e00-\\u9fa5\\ ]$";
 			Pattern pattern = Pattern.compile(regex); 
 			Matcher matcher = pattern.matcher(searchValue); 
 			String searchValue2 = "";
