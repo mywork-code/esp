@@ -33,8 +33,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.apass.esp.common.utils.NumberUtils;
-import com.apass.esp.domain.dto.common.ExportDomain;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.utils.ExportDomain;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.esp.web.commons.JsonDateValueProcessor;
