@@ -68,19 +68,15 @@ public class IndexManager<T> {
         if(StringUtils.isBlank(condition.getGoodsName())){
         	condition.setGoodsName("手机");
         }
-        if(!Pinyin4jUtil.isContainChinese(condition.getGoodsName())){
-        	boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsNamePinyin", condition.getGoodsName()))
-            .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", condition.getSkuAttr()));
-        }else{
-        	boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsName", condition.getGoodsName()))
-            .should(QueryBuilders.wildcardQuery("categoryName1", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("categoryName2", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("categoryName3", condition.getCateGoryName()))
-            .should(QueryBuilders.wildcardQuery("goodsSkuAttr", condition.getSkuAttr()));
+        String value = condition.getGoodsName();
+        if(Pinyin4jUtil.isContainChinese(condition.getGoodsName())){
+        	 value = Pinyin4jUtil.converterToSpell(condition.getGoodsName());
         }
+        boolQueryBuilder.should(QueryBuilders.wildcardQuery("goodsNamePinyin", value))
+        .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", value))
+        .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", value))
+        .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", value))
+        .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", value));
         
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
