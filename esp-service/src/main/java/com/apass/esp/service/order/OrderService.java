@@ -1,9 +1,25 @@
 package com.apass.esp.service.order;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.common.code.ErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -18,7 +34,6 @@ import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -27,8 +42,6 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
-import com.apass.esp.domain.enums.*;
-import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.CashRefundStatus;
@@ -36,8 +49,10 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
 import com.apass.esp.domain.enums.PreDeliveryType;
-import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.domain.enums.PreStockStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
@@ -49,7 +64,6 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockLogRepository;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
-import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.logistics.LogisticsHttpClient;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
@@ -65,6 +79,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -74,7 +89,6 @@ import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.Stock;
-import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -83,25 +97,6 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import net.logstash.logback.encoder.com.lmax.disruptor.BusySpinWaitStrategy;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
