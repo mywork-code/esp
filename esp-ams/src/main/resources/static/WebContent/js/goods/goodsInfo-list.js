@@ -1896,15 +1896,42 @@ $(function() {
 //	    }  
 //	});
 	
-	// 导出订单
+	// 导出商品列表
 	$ (".export-btn").click (function (){
+		debugger;
 		$.messager.confirm ('商品信息', '确定要导出吗？', function (r)
 		{
 			if (r)
 			{
+				debugger;
 				var params = {};
-				params['goodsName'] = $ ("#goodsNames").textbox ('getValue');
-				params['goodsType'] = $ ("#goodsTypes").combobox ('getValue');
+				params['merchantName'] = $("#merchantName").textbox('getValue');
+		        params['merchantType'] = $("#merchantType").combobox('getValue');
+		        params['goodsName'] = $("#goodsNames").textbox('getValue');
+		        params['goodsType'] = $("#goodsTypes").combobox('getValue');
+		        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+		        if("请选择"==goodsCategoryCombo){
+		        	goodsCategoryCombo="";
+		        }
+		        
+		        var arry = goodsCategoryCombo.split("_");
+		        var level = arry[0];
+		        var id = arry[1];
+		        var categoryId1 = '';
+		        var categoryId2 = '';
+		        var categoryId3 = '';
+		        if(level == '1'){
+		        	categoryId1 = id;
+		        }else if(level == '2'){
+		        	categoryId2 = id;
+		        }else if(level == '3'){
+		        	categoryId3 = id;
+		        }
+		        
+		        params['categoryId1']=categoryId1;
+		        params['categoryId2']=categoryId2;
+		        params['categoryId3']=categoryId3;
+				
 				params['isAll'] = 'f';// t: 是 f: 否 是否导出全部订单信息
 				params['busCode'] = 'E002';// 订单导出code
 				exportFile ("tablelist", "商品信息", params);
