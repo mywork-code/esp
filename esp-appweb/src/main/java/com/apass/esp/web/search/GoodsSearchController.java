@@ -223,8 +223,10 @@ public class GoodsSearchController {
 			String regex="^[a-zA-Z0-9\u4e00-\u9fa5]+$";
 			Pattern pattern = Pattern.compile(regex); 
 			Matcher matcher = pattern.matcher(searchValue); 
-			String searchValue2="*&$#";
+			String searchValue2 = "";
+			Boolean searchValueFalge=false;
 			if(matcher.matches()){
+				searchValueFalge=true;
 				searchValue2=searchValue;
 				//插入数据
 				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
@@ -239,27 +241,29 @@ public class GoodsSearchController {
 			GoodsBasicInfoEntity goodsInfoEntity = new GoodsBasicInfoEntity();
 			goodsInfoEntity.setGoodsName(searchValue2);
 
-			List<GoodsBasicInfoEntity> goodsBasicInfoList = null;
+			List<GoodsBasicInfoEntity> goodsBasicInfoList = new ArrayList<>();
 			Boolean falgePrice = false;
-			// 排序
-			if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {// 销量
-				goodsInfoEntity.setSort("amount");
-				goodsBasicInfoList = goodsservice.searchGoodsListAmount(goodsInfoEntity, page, rows);
-			} else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
-				goodsInfoEntity.setSort("new");
-				goodsInfoEntity.setOrder(order);// 升序或降序
-				goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
-			} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
-				falgePrice = true;
-				goodsInfoEntity.setSort("price");
-				goodsInfoEntity.setOrder(order);// 升序或降序
-				goodsBasicInfoList = goodsservice.searchGoodsListPrice(goodsInfoEntity, page, rows);
-			} else {// 默认（商品上架时间降序）
-				goodsInfoEntity.setSort("default");
-				goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
+			if (searchValueFalge) {
+				// 排序
+				if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {// 销量
+					goodsInfoEntity.setSort("amount");
+					goodsBasicInfoList = goodsservice.searchGoodsListAmount(goodsInfoEntity, page, rows);
+				} else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
+					goodsInfoEntity.setSort("new");
+					goodsInfoEntity.setOrder(order);// 升序或降序
+					goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
+				} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
+					falgePrice = true;
+					goodsInfoEntity.setSort("price");
+					goodsInfoEntity.setOrder(order);// 升序或降序
+					goodsBasicInfoList = goodsservice.searchGoodsListPrice(goodsInfoEntity, page, rows);
+				} else {// 默认（商品上架时间降序）
+					goodsInfoEntity.setSort("default");
+					goodsBasicInfoList = goodsservice.searchPage(goodsInfoEntity, page, rows);
+				}
+				Integer totalCount = goodsservice.searchGoodsListCount(goodsInfoEntity);
+				returnMap.put("totalCount", totalCount);
 			}
-			Integer totalCount = goodsservice.searchGoodsListCount(goodsInfoEntity);
-			returnMap.put("totalCount", totalCount);
 			List<GoodsBasicInfoEntity> goodsBasicInfoList2 = new ArrayList<>();
 			for (GoodsBasicInfoEntity goodsInfo : goodsBasicInfoList) {
 				goodsInfo = goodsservice.serchGoodsByGoodsId(goodsInfo.getGoodId().toString());
