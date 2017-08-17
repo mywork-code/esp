@@ -30,6 +30,7 @@ import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.ESClientManager;
@@ -252,8 +253,29 @@ public class ESClientController {
         goodsSearchCondition.setSkuAttr(searchValue);
         long before = System.currentTimeMillis();
         Pagination <Goods> pagination = IndexManager.goodSearch(goodsSearchCondition, goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(), (pages-1)*row, row);
+        
+        List<GoodsVo> list = new ArrayList<GoodsVo>();
+        for (Goods goods : pagination.getDataList()) {
+        	list.add(goodsToGoodVo(goods));
+		}
         long after = System.currentTimeMillis();
         System.out.println("用时："+(after - before));
-        return Response.successResponse(JsonUtil.toJsonString(pagination));
+        return Response.successResponse(JsonUtil.toJsonString(list));
     }
+    
+    public GoodsVo goodsToGoodVo(Goods goods){
+    	GoodsVo vo = new GoodsVo();
+    	vo.setFirstPrice(goods.getFirstPrice());
+    	vo.setGoodId(goods.getGoodId());
+    	vo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
+    	vo.setGoodsLogoUrlNew(goods.getGoodsLogoUrlNew());
+    	vo.setGoodsName(goods.getGoodsName());
+    	vo.setGoodsPrice(goods.getGoodsPrice());
+    	vo.setGoodsStockId(goods.getGoodsStockId());
+    	vo.setGoodsTitle(goods.getGoodsTitle());
+    	vo.setId(goods.getId());
+    	vo.setSource(goods.getSource());
+    	return vo;
+    }
+    
 }

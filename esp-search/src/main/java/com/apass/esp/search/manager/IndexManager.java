@@ -1,16 +1,13 @@
 package com.apass.esp.search.manager;
 
 
-import com.apass.esp.search.condition.GoodsSearchCondition;
-import com.apass.esp.search.entity.IdAble;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.utils.ESDataUtil;
-import com.apass.esp.search.utils.Esprop;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.search.utils.PropertiesUtils;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -28,16 +25,16 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
@@ -71,6 +68,7 @@ public class IndexManager<T> {
         String value = condition.getGoodsName();
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())) {
             value = Pinyin4jUtil.converterToSpell(condition.getGoodsName());
+            value = StringUtils.lowerCase(value);
         }
         boolQueryBuilder
                 .should(QueryBuilders.wildcardQuery("goodsNamePinyin", "*" + value + "*"))

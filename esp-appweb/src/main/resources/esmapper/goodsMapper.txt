@@ -7,19 +7,14 @@
             },
             "goodsNamePinyin": {
                 "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "index": "not_analyzed"
             },
             "goodsTitle": {
                 "type": "text",
                 "index": "not_analyzed"
             },
             "goodsTitlePinyin": {
-                "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "type": "text"
             },
             "categoryName1": {
                 "type": "text",
@@ -30,36 +25,24 @@
                 "index": "not_analyzed"
             },
             "categoryName3": {
-                "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "type": "text"
             },
             "categoryName1Pinyin": {
                 "type": "text",
                 "index": "not_analyzed"
             },
             "categoryName2Pinyin": {
-                "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "type": "text"
             },
             "categoryName3Pinyin": {
-                "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "type": "text"
             },
             "goodsSkuAttr": {
                 "type": "text",
                 "index": "not_analyzed"
             },
             "goodsSkuAttrPinyin": {
-                "type": "text",
-                "index": "analyzed",
-				"analyzer": "standard",
-				"search_analyzer": "standard"
+                "type": "text"
             }
         }
     }
