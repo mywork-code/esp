@@ -4,7 +4,7 @@
   
   <select id="hotSearch" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
+    key_value
     ,count(key_value) as count
     from t_esp_search_keys
     where  key_status = 0
