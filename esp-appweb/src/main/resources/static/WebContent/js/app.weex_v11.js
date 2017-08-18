@@ -6504,10 +6504,45 @@
 
 	var _ccButton2 = _interopRequireDefault(_ccButton);
 
+	var _ccCells = __webpack_require__(212);
+
+	var _ccCells2 = _interopRequireDefault(_ccCells);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
 	exports.default = {
-	    components: { authHeader: _authHeader2.default, ccImage: _ccImage2.default, ccButton: _ccButton2.default },
+	    components: { authHeader: _authHeader2.default, ccImage: _ccImage2.default, ccButton: _ccButton2.default, ccCells: _ccCells2.default },
 	    data: function data() {
 	        return {
 	            authHeaderItems: [{ img: 'WXLocal/wx_idauth_light', title: '身份认证', class: '' }, { img: 'WXLocal/wx_infoauth_light', title: '信息认证', class: '' }, { img: 'WXLocal/wx_bankauth_light', title: '银行卡认证', class: '' }],
@@ -6535,30 +6570,16 @@
 	        }
 	    },
 	    computed: {
-	        resultStatus: function resultStatus() {
-	            //                if (this.$store.state.local.)
+	        resultStatus: function resultStatus() {},
+	        productList: function productList() {
+	            return this.$store.state.auth.state.productList;
 	        }
 	    },
-	    created: function created() {}
-	}; //
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
+	    created: function created() {},
+	    mounted: function mounted() {
+	        this.$store.dispatch('RESULT_LOAD_PRODUCT_LIST', { callback: function callback() {} });
+	    }
+	};
 
 /***/ }),
 /* 74 */
@@ -6567,7 +6588,13 @@
 	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
 	  return _c('div', {
 	    staticClass: ["wrapper"]
-	  }, [_c('authHeader', {
+	  }, [_c('ccCells', {
+	    attrs: {
+	      "types": 'normal',
+	      "title": '渠道名称',
+	      "desc": '渠道名称'
+	    }
+	  }), _c('authHeader', {
 	    staticClass: ["header"],
 	    attrs: {
 	      "items": _vm.authHeaderItems
@@ -6599,7 +6626,7 @@
 	  }, [_vm._v(_vm._s(_vm.resultItems.applying.desc))])], 1), _c('ccButton', {
 	    staticClass: ["btn-commit"],
 	    attrs: {
-	      "title": '提交',
+	      "title": '刷新',
 	      "onClick": _vm.clickCommit,
 	      "isClick": _vm.isClick
 	    }
@@ -8756,7 +8783,7 @@
 	    staticClass: ["tip_text"]
 	  }, [_vm._v("您含有未结清贷款，暂不提供服务")]), _c('text', {
 	    staticClass: ["tip_text"]
-	  }, [_vm._v("需结清后才可以使用佣金分期哦")])]) : _vm._e(), (_vm.judgeState == '1') ? _c('div', {
+	  }, [_vm._v("需结清后才可以使用佣金分期哦")])]) : _vm._e(), (_vm.judgeState == '1' || _vm.state == '301') ? _c('div', {
 	    staticClass: ["tip"]
 	  }, [_c('text', {
 	    staticClass: ["tip_text"]
@@ -16658,7 +16685,7 @@
 
 	        ageCondition: '', // 用户的年龄是否符合提现（0为不符合，1为符合）
 	        applyCreditDate: '', // 额度申请日期
-	        auditStatus: '',
+	        auditStatus: '', // ???
 	        availableAmount: '', // 可用额度
 	        billDay: '',
 	        creditRejRemainDate: '', // 激活额度锁单天数
@@ -16725,9 +16752,16 @@
 	        cardNo: '',
 	        cardType: 'CR',
 
-	        bankMobile: '' // 银行卡预留电话
+	        bankMobile: '', // 银行卡预留电话
 
-
+	        // ---------- 反导流产品
+	        productList: []
+	        // id	        String	产品Id
+	        // productName	String	产品名称
+	        // productLogo	String	产品logo
+	        // productUrl	String	产品url
+	        // producDesc	String	产品描述
+	        // displayOrder	String	产品排序 小在前
 	    }
 	};
 
@@ -16861,6 +16895,7 @@
 	exports.INFOAUTH_ZMAUTH = INFOAUTH_ZMAUTH;
 	exports.BANKCARD_INIT = BANKCARD_INIT;
 	exports.BANKCARD_SAVE = BANKCARD_SAVE;
+	exports.RESULT_LOAD_PRODUCT_LIST = RESULT_LOAD_PRODUCT_LIST;
 	/**
 	 * Created by x298017064010 on 17/7/26.
 	 */
@@ -16953,7 +16988,7 @@
 	            console.log('status: ', state.status);
 	            console.log('mobileAuthStatus: ', state.mobileAuthStatus // 手机实名状态 0:未认证 1:认证中 2:已认证 3:重新认证',
 
-	            );seconedStep();
+	            );endStep();
 	            return;
 
 	            // 2.跳转页面
@@ -17334,6 +17369,29 @@
 	            } else {
 	                Vue.NaviHelper.push('pop');
 	            }
+	        } else {
+	            Vue.TipHelper.showHub('1', res.msg);
+	        }
+	    });
+	}
+
+	// 反导流产品
+	function RESULT_LOAD_PRODUCT_LIST(_ref9, payload) {
+	    var commit = _ref9.commit,
+	        state = _ref9.state,
+	        rootState = _ref9.rootState;
+
+
+	    Vue.TipHelper.showHub(0);
+
+	    Vue.HttpHelper.get(Vue.UrlMacro.RESULT_LOAD_PRODUCT_LIST, function (res) {
+	        Vue.TipHelper.dismisHub();
+
+	        if (res.status == 1) {
+	            // 存数据
+	            state.productList = res.data.productList;
+	            // 回调(可选)
+	            // payload.callback(res.data.productList)
 	        } else {
 	            Vue.TipHelper.showHub('1', res.msg);
 	        }
@@ -17915,7 +17973,6 @@
 	            if (res.code == '0000') {
 	                payload.succ(res);
 	            } else if (res.code == '2001') {
-	                Vue.TipHelper.showHub('1', res.msg);
 	                payload.fail(res);
 	            } else {
 	                Vue.TipHelper.showHub('1', res.msg);
@@ -17953,7 +18010,6 @@
 	            if (res.code == '0000') {
 	                payload.succ(res);
 	            } else if (res.code == '2001') {
-	                Vue.TipHelper.showHub('1', res.msg);
 	                payload.fail(res);
 	            } else {
 	                Vue.TipHelper.showHub('1', res.msg);
@@ -18773,6 +18829,8 @@
 	var BANKCARD_INIT = "/customer/initInformationBank";
 	var BANKCARD_SAVE = "/customer/saveInformationBank";
 
+	var RESULT_LOAD_PRODUCT_LIST = '/reverse/loadProductList';
+
 	var LINKMAN_SAVE = "/customer/saveContactInfo";
 	var COMMISSION_INIT = "/commission/initData";
 	var COMMISSION_JUDGE = "/commission/judgeSubmit";
@@ -18815,6 +18873,8 @@
 
 	    BANKCARD_INIT: BANKCARD_INIT, // 银行卡认证初始化
 	    BANKCARD_SAVE: BANKCARD_SAVE, // 银行卡认证完成提交
+
+	    RESULT_LOAD_PRODUCT_LIST: RESULT_LOAD_PRODUCT_LIST, // 反导流
 
 	    LINKMAN_SAVE: LINKMAN_SAVE, // 添加联系人保存
 	    PROVID_CITY_INIT: PROVID_CITY_INIT, // 公积金查询 城市初始化
@@ -18871,7 +18931,7 @@
 	var httpHelper = {
 	    // GET 请求不支持 body 方式传递参数，请使用 url 传参。
 	    get: function get(repo, callback) {
-	        console.log(Vue.UrlMacro);
+
 	        return stream.fetch({
 	            method: 'GET',
 	            type: 'json',
@@ -19137,6 +19197,144 @@
 	};
 
 	exports.default = TipHelper;
+
+/***/ }),
+/* 212 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __vue_exports__, __vue_options__
+	var __vue_styles__ = []
+
+	/* styles */
+	__vue_styles__.push(__webpack_require__(213)
+	)
+
+	/* script */
+	__vue_exports__ = __webpack_require__(214)
+
+	/* template */
+	var __vue_template__ = __webpack_require__(215)
+	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+	if (
+	  typeof __vue_exports__.default === "object" ||
+	  typeof __vue_exports__.default === "function"
+	) {
+	if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+	__vue_options__ = __vue_exports__ = __vue_exports__.default
+	}
+	if (typeof __vue_options__ === "function") {
+	  __vue_options__ = __vue_options__.options
+	}
+	__vue_options__.__file = "/Users/x298017064010/Desktop/aopai/proj/ajqh_weex/ajqh_weex/src/components/common/ccCells.vue"
+	__vue_options__.render = __vue_template__.render
+	__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+	__vue_options__._scopeId = "data-v-644ac08c"
+	__vue_options__.style = __vue_options__.style || {}
+	__vue_styles__.forEach(function (module) {
+	  for (var name in module) {
+	    __vue_options__.style[name] = module[name]
+	  }
+	})
+	if (typeof __register_static_styles__ === "function") {
+	  __register_static_styles__(__vue_options__._scopeId, __vue_styles__)
+	}
+
+	module.exports = __vue_exports__
+
+
+/***/ }),
+/* 213 */
+/***/ (function(module, exports) {
+
+	module.exports = {
+	  "normal": {
+	    "backgroundColor": "#FFA500",
+	    "flexDirection": "row"
+	  },
+	  "left": {
+	    "backgroundColor": "#FF0000",
+	    "flex": 1
+	  },
+	  "right": {
+	    "backgroundColor": "#008000",
+	    "flex": 3
+	  }
+	}
+
+/***/ }),
+/* 214 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _ccImage = __webpack_require__(14);
+
+	var _ccImage2 = _interopRequireDefault(_ccImage);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    components: { ccImage: _ccImage2.default },
+	    props: {
+	        // 区分不同的cell
+	        types: {
+	            required: true,
+	            type: String,
+	            default: ''
+	        },
+	        title: {
+	            type: String,
+	            default: ''
+	        },
+	        desc: {
+	            type: String,
+	            default: ''
+	        }
+	    },
+	    data: function data() {
+	        return {};
+	    },
+
+	    methods: {},
+	    created: function created() {}
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+/***/ }),
+/* 215 */
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return (_vm.types == 'normal') ? _c('div', {
+	    staticClass: ["normal"]
+	  }, [_c('ccImage', {
+	    staticClass: ["left"],
+	    attrs: {
+	      "src": 'WXLocal/ic_bank_icbc'
+	    }
+	  }), _c('div', {
+	    staticClass: ["right"]
+	  }, [_c('text', {
+	    staticClass: ["text-title"]
+	  }, [_vm._v(_vm._s(_vm.title))]), _c('text', {
+	    staticClass: ["text-desc"]
+	  }, [_vm._v(_vm._s(_vm.desc))])])], 1) : _vm._e()
+	},staticRenderFns: []}
+	module.exports.render._withStripped = true
 
 /***/ })
 /******/ ]);
