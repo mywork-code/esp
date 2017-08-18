@@ -39,7 +39,6 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.search.SearchKeyService;
 import com.apass.esp.utils.ValidateUtils;
-import com.apass.esp.web.feedback.EmojiFilter;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -116,10 +115,10 @@ public class GoodsSearchController {
     	List<SearchSort> sort = new ArrayList<SearchSort>();
     	try {
     		//List<SearchKeys> common = searchKeyService.commonSearch(userId);
-    		Calendar cal = Calendar.getInstance();
-    		cal.add(cal.DATE, -10);
-    		List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
-    		sort.add(new SearchSort("热门搜索", hotList(hot)));
+    		//Calendar cal = Calendar.getInstance();
+    		//cal.add(cal.DATE, -10);
+    		//List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
+    		sort.add(new SearchSort("热门搜索", hotList(new ArrayList<SearchKeys>())));
     		sort.add(new SearchSort("常用分类", getClassification()));
 		}
     	catch (Exception e) {
