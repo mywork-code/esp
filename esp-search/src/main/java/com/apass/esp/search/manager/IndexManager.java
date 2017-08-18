@@ -61,24 +61,18 @@ public class IndexManager<T> {
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
     public static <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
-        if (StringUtils.isBlank(condition.getGoodsName())) {
-            condition.setGoodsName("手机");
-        }
         String value = condition.getGoodsName();
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())) {
             MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
                     "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
             Pagination<Goods> goodsPagination =
                     search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
-            if (CollectionUtils.isEmpty(goodsPagination.getDataList())) {
-                value = StringUtils.lowerCase(Pinyin4jUtil.converterToSpell(condition.getGoodsName()));
-                return boolSearch(sortField, desc, from, size, value);
-            } else {
+            if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
                 return goodsPagination;
             }
-        } else {
-            return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(value));
-        }
+        } 
+        return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(value));
+        
     }
 
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {

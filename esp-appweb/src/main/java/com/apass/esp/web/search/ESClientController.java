@@ -132,7 +132,7 @@ public class ESClientController {
     		try {
 				goods.setGoodsLogoUrlNew(imageService.getImageUrl(g.getGoodsLogoUrl()));
 			} catch (BusinessException e) {
-
+				e.getStackTrace();
 			}
     	}
 
@@ -185,7 +185,8 @@ public class ESClientController {
         	}
         	goods.setGoodsSkuAttrPinyin(Pinyin4jUtil.converterToSpell(goods.getGoodsSkuAttr()));
 		} catch (Exception e) {
-			return null;
+			 e.getStackTrace();
+			 return null;
 		}
     	return goods;
     }
@@ -261,7 +262,7 @@ public class ESClientController {
 		}
         long after = System.currentTimeMillis();
         System.out.println("用时："+(after - before));
-        return Response.successResponse(JsonUtil.toJsonString(list));
+        return Response.successResponse(JsonUtil.toJsonString(pagination));
     }
 
     public GoodsVo goodsToGoodVo(Goods goods){
