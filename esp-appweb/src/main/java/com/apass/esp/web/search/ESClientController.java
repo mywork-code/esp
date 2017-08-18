@@ -57,16 +57,16 @@ public class ESClientController {
 
     @Autowired
     private GoodsService goodsService;
-    
+
     @Autowired
     private CategoryMapper categoryMapper;
-    
+
     @Autowired
     private JdGoodSalesVolumeMapper jdGoodSalesVolumeMapper;
-    
+
     @Autowired
     private ImageService imageService;
-    
+
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
 
@@ -88,13 +88,13 @@ public class ESClientController {
         	}
         	LOGGER.info("goodsList add goodsId {} ...",goods.getId());
         	goodsList.add(goods);
-		}
+        }
         IndexManager.createIndex(goodsList, IndexType.GOODS);
 		LOGGER.info("goodsList add goodsId {} ...",goodsList.size());
         return Response.successResponse(JsonUtil.toJsonString(goodsList));
     }
-    
-    
+
+
     public Goods GoodsInfoToGoods(GoodsInfoEntity g){
     	Goods goods = new Goods();
     	goods.setId(Integer.valueOf(g.getId()+""));
@@ -132,10 +132,10 @@ public class ESClientController {
     		try {
 				goods.setGoodsLogoUrlNew(imageService.getImageUrl(g.getGoodsLogoUrl()));
 			} catch (BusinessException e) {
-				
+
 			}
     	}
-    	
+
     	goods.setSource(g.getSource());
     	goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(),""));
     	goods.setCreateDate(g.getCreateDate());
@@ -145,10 +145,10 @@ public class ESClientController {
     	goods.setListTimeString(DateFormatUtil.dateToString(g.getListTime(),""));
     	goods.setNewCreatDate(g.getNewCreatDate());
     	goods.setUpdateDate(g.getUpdateDate());
-    	
-    	List<JdGoodSalesVolume> getJdGoodSalesVolume = 
+
+    	List<JdGoodSalesVolume> getJdGoodSalesVolume =
     			jdGoodSalesVolumeMapper.getJdGoodSalesVolumeByGoodsId(g.getGoodId());
-    	
+
     	int goodsSum = 0;
     	int goodsSum30 = 0;
     	Date date = new Date();
@@ -166,7 +166,7 @@ public class ESClientController {
         		return null;
         	}
     		goods.setGoodsPrice(new BigDecimal(String.valueOf(params.get("minPrice"))));
-        	goods.setFirstPrice(new BigDecimal(String.valueOf(params.get("minPrice"))).multiply(new BigDecimal(0.1)));
+        	goods.setFirstPrice(new BigDecimal(String.valueOf(params.get("minPrice"))).multiply(new BigDecimal(0.1)) .setScale(2, BigDecimal.ROUND_CEILING));
         	goods.setGoodsStockId(Long.valueOf(String.valueOf(params.get("minPriceStockId"))));
         	if(StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
         		Map<String, Object> descMap = new HashMap<String, Object>();
@@ -179,7 +179,7 @@ public class ESClientController {
                 if (StringUtils.isNotBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
                 	goods.setGoodsSkuAttr(jdGoodsSimilarSku);
                 }
-                
+
         	}else{
         		goods.setGoodsSkuAttr(String.valueOf(params.get("minSkuAttr")));
         	}
@@ -200,28 +200,28 @@ public class ESClientController {
     @ResponseBody
     public Response search(@RequestBody Map<String, Object> paramMap) {
         GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
-        
+
         String searchValue = CommonUtils.getValue(paramMap, "searchValue");
 		String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段(default:默认;amount:销量;new:新品;price：价格)
 		String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
 		String page = CommonUtils.getValue(paramMap, "page");
 		String rows = CommonUtils.getValue(paramMap, "rows");
-		
-		
+
+
         if (StringUtils.isEmpty(searchValue)) {
 			LOGGER.error("搜索内容不能为空！");
 			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 		}
-        
+
 		if(!StringUtils.equalsIgnoreCase("ASC", order) && !StringUtils.equalsIgnoreCase("DESC", order)){
 			order = "DESC";// 降序
     	}
-		
-        
-        
+
+
+
         int pages = Integer.parseInt(page);
         int row = Integer.parseInt(rows);
-        
+
         if(CategorySort.CATEGORY_SortA.getCode().equals(sort)){
         	if(StringUtils.equalsIgnoreCase("DESC", order)){
         		goodsSearchCondition.setSortMode(SortMode.SALEVALUE_DESC);
@@ -247,14 +247,14 @@ public class ESClientController {
         		goodsSearchCondition.setSortMode(SortMode.ORDERVALUE_ASC);
         	}
 		}
-        
+
         goodsSearchCondition.setGoodsName(searchValue);
         goodsSearchCondition.setCateGoryName(searchValue);
         goodsSearchCondition.setCateGoryName(searchValue);
         goodsSearchCondition.setSkuAttr(searchValue);
         long before = System.currentTimeMillis();
         Pagination <Goods> pagination = IndexManager.goodSearch(goodsSearchCondition, goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(), (pages-1)*row, row);
-        
+
         List<GoodsVo> list = new ArrayList<GoodsVo>();
         for (Goods goods : pagination.getDataList()) {
         	list.add(goodsToGoodVo(goods));
@@ -263,7 +263,7 @@ public class ESClientController {
         System.out.println("用时："+(after - before));
         return Response.successResponse(JsonUtil.toJsonString(list));
     }
-    
+
     public GoodsVo goodsToGoodVo(Goods goods){
     	GoodsVo vo = new GoodsVo();
     	vo.setFirstPrice(goods.getFirstPrice());
@@ -278,5 +278,5 @@ public class ESClientController {
     	vo.setSource(goods.getSource());
     	return vo;
     }
-    
+
 }

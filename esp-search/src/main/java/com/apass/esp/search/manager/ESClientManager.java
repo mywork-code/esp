@@ -84,23 +84,23 @@ public class ESClientManager {
      */
     private static void initIndex() throws Exception {
         String indice = esprop.getIndice();
+        IndicesAdminClient c = client.admin().indices();
         //创建一个空的
-        boolean a = client.admin().indices().prepareExists(indice).get().isExists();
-        LOGGER.info("index isExists  {}", a);
-        if (!client.admin().indices().prepareExists(indice).get().isExists()) {
-            CreateIndexResponse createIndexResponse = client.admin().indices().prepareCreate(indice).get();
+        boolean a = c.prepareExists(indice).get().isExists();
+        LOGGER.info("index {} isExists  {}",indice, a);
+        if (!c.prepareExists(indice).get().isExists()) {
+            CreateIndexResponse createIndexResponse =c.prepareCreate(indice).get();
             LOGGER.info("create index {}", createIndexResponse);
         }
         for (IndexType type : IndexType.values()) {
-            TypesExistsResponse typesExistsResponse = client.admin().indices().typesExists(new TypesExistsRequest(new String[]{indice}, type.getDataName())).get();
+            TypesExistsResponse typesExistsResponse = c.typesExists(new TypesExistsRequest(new String[]{indice}, type.getDataName())).get();
             if (typesExistsResponse.isExists()) {
                 continue;
             }
             String esMapper = type.getMapper();
             InputStream in = ESClientManager.class.getResourceAsStream(esMapper);
             String mappingStr = IOUtils.toString(in).trim();
-            IndicesAdminClient c = client.admin().indices();
-            client.admin().indices().preparePutMapping(indice).setType(type.getDataName()).setSource(mappingStr).get();
+            c.preparePutMapping(indice).setType(type.getDataName()).setSource(mappingStr).get();
         }
     }
 
