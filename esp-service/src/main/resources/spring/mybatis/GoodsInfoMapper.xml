@@ -1122,7 +1122,7 @@
 	</select>
 	
 	
-	<select id="selectUpGoods" resultType="GoodsInfoEntity">
+	<select id="selectUpGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
 		<![CDATA[
 		SELECT
 				t.ID goodId,
