@@ -2,7 +2,6 @@ package com.apass.esp.repository.goods;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
-import com.google.common.collect.Maps;
 
 /**
  * 
@@ -227,8 +225,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         return this.getSqlSession().selectList("selectByCategoryId2", categoryId);
     }
 
-    public List<GoodsInfoEntity> selectByCategoryId3(Long categoryId) {
-        return this.getSqlSession().selectList("selectByCategoryId3", categoryId);
+    public GoodsInfoEntity selectGoodsByExternalIdAndStatus(Long skuId) {
+        return this.getSqlSession().selectOne("selectGoodsByExternalIdAndStatus", skuId);
     }
 
     // 根据京东skuid查询数据库中是否已经插入数据
@@ -255,4 +253,5 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         param.put("size", size);
     	return getSqlSession().selectList("selectUpGoods",param);
     }
+
 }

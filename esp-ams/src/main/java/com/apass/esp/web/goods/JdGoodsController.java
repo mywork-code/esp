@@ -106,7 +106,7 @@ public class JdGoodsController {
             String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
             paramMap.put("username", username);
 
-            // 关联京东类目
+            //取消关联京东类目
             jdGoodsService.disRelevanceJdCategory(paramMap);
 
         } catch (BusinessException e) {
