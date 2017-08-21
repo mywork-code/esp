@@ -9,8 +9,6 @@ import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.search.utils.HanyuPinyinHelper;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
