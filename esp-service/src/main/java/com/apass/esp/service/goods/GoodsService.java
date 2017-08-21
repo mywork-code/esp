@@ -528,6 +528,7 @@ public class GoodsService {
                 sb.append(random);
                 entity.setGoodsCode(sb.toString());
                 goodsDao.updateGoods(entity);
+                
             }
         }
 
@@ -828,6 +829,7 @@ public class GoodsService {
             LOGGER.info("goodsList add goodsId {} ...", goods.getId());
             goodsList.add(goods);
         }
+        LOGGER.info("goodsList add goodsId {} ...", goodsList.size());
         return goodsList;
     }
 
