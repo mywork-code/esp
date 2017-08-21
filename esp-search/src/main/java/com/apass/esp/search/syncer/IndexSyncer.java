@@ -107,6 +107,7 @@ public class IndexSyncer {
             try {
                 updated = indexType.takeQueue();
             } catch (InterruptedException e) {
+                LOGGER.error("index sync take queue error ...");
                 continue;
             }
             try {
