@@ -4,21 +4,21 @@
   
   <select id="hotSearch" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
+    key_value
     ,count(key_value) as count
     from t_esp_search_keys
-    where key_type = 1 and key_status = 0
+    where  key_status = 0
     <if test="startDate !=null"><![CDATA[ and CREATE_DATE > #{startDate}]]></if>
 	<if test="endDate !=null"><![CDATA[and CREATE_DATE <= #{endDate}]]></if>
     group by KEY_VALUE
-    order by count(key_value) desc limit 10
+    order by count(key_value) desc,convert(key_value USING gbk) COLLATE gbk_chinese_ci asc limit 10
   </select>
   
   <select id="commonSearch" resultMap="BaseResultMap" parameterType="java.lang.String">
     select 
-    <include refid="Base_Column_List" />
+    DISTINCT(KEY_VALUE) keyValue
     from t_esp_search_keys
-    where key_type = 0 and key_status = 0 and user_id = #{userId}
+    where key_status = 0 and user_id = #{userId}
     order by CREATE_DATE desc
     limit 10
   </select>

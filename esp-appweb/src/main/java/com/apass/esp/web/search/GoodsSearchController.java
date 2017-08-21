@@ -77,8 +77,9 @@ public class GoodsSearchController {
     	
     	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
     	String userId = CommonUtils.getValue(paramMap, "userId");
+    	String deviceId = CommonUtils.getValue(paramMap, "deviceId");
     	if(!StringUtils.isBlank(searchValue)){
-    		searchKeyService.addCommonSearchKeys(searchValue,userId);
+    		searchKeyService.addCommonSearchKeys(searchValue,userId,deviceId);
     	}
     	return Response.success("添加成功!");
     }
