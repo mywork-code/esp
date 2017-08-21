@@ -501,6 +501,7 @@ public class GoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+        
         if (entity.getGoodId() != null) {
             entity.setId(entity.getGoodId());
             updateService(entity);
