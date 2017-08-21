@@ -5,6 +5,8 @@ import com.apass.esp.search.entity.UpdatedObject;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.enums.OperatorType;
 
+import java.util.List;
+
 /**
  * type: class
  *
@@ -31,4 +33,5 @@ public class GoodsEsDao implements EsBaseDao<Goods> {
         UpdatedObject<Goods> object = new UpdatedObject<>(goods, OperatorType.DELETE);
         return IndexType.GOODS.offerQueue(object);
     }
+
 }
