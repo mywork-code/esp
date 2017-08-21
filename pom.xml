@@ -23,7 +23,7 @@
         <module>esp-common</module>
         <module>apass-monitor</module>
         <module>esp-search</module>
-		<module>esp-task</module>
+		<!--<module>esp-task</module>-->
     </modules>
 
 	<!-- *********** Params Settings ************ -->
