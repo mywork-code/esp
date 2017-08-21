@@ -2460,5 +2460,46 @@ public class OrderService {
         }
 
     }
+
+    /**
+     * 下单买家数
+     * @param beginDate
+     * @param endDate 
+     * @return
+     */
+    public Integer getConfirmOrderCount(Date beginDate, Date endDate) {
+        return orderInfoRepository.getConfirmOrderCount(beginDate,endDate);
+    }
+
+    /**
+     * 支付买家数
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public Integer getConfirmPayCount(Date beginDate, Date endDate) {
+        return orderInfoRepository.getConfirmPayCount(beginDate,endDate);
+    }
+
+    /**
+     * 获取所有下单金额
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public BigDecimal getSumOrderamt(Date beginDate, Date endDate) {
+        return orderInfoRepository.getSumOrderamt(beginDate,endDate);
+    }
+
+    /**
+     * 获取所有支付成功金额
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public BigDecimal getSumOrderamtForPaySuccess(Date beginDate, Date endDate) {
+        return orderInfoRepository.getSumOrderamtForPaySuccess(beginDate,endDate);
+    }
+
     
 }

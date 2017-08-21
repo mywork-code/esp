@@ -1,5 +1,7 @@
 package com.apass.esp.task.handler;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +32,11 @@ public class DemoHandler extends IJobHandler {
     public ReturnT<String> execute(String... params) throws Exception {
         XxlJobLogger.log("XXL-JOB, Hello World.");
 
+        for (int i = 0; i < 3; i++) {
+            XxlJobLogger.log("beat at:" + i);
+            TimeUnit.SECONDS.sleep(2);
+        }
         
-        
-               
         return ReturnT.SUCCESS;
     }
     

@@ -14,8 +14,8 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
  * @since JDK 1.8
  */
 public class Filter {
-    private String end = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
-    private String start=DateFormatUtil.dateToString(DateFormatUtil.addMonth(new Date(), -1), DateFormatUtil.YYYY_MM_DD);
+    private String end;// = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+    private String start;//=DateFormatUtil.dateToString(DateFormatUtil.addMonth(new Date(), -1), DateFormatUtil.YYYY_MM_DD);
     private ArrayList<Integer> platformids;
     private ArrayList<String> versions;
     private ArrayList<Integer> channelids;
