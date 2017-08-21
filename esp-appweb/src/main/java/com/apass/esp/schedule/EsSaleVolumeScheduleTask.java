@@ -47,7 +47,7 @@ public class EsSaleVolumeScheduleTask {
     private GoodsEsDao goodsEsDao;
 
 
-    @Scheduled(cron = "0 0 1 * * ?")
+   // @Scheduled(cron = "0 0/1 * * * ?")
     public void esSaleVolumeScheduleTask() {
         List<String> goodsIds = jdGoodSalesVolumeMapper.getGoodSaleVolumeGroup();
         if (CollectionUtils.isEmpty(goodsIds)) {

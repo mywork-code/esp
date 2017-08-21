@@ -820,7 +820,7 @@ public class GoodsService {
     public List<Goods> getGoodsList(List<GoodsInfoEntity> selectByCategoryId2) {
         List<Goods> goodsList = new ArrayList<>();
         for (GoodsInfoEntity g : selectByCategoryId2) {
-            Goods goods = GoodsInfoToGoods(g);
+            Goods goods = goodsInfoToGoods(g);
             if (null == goods) {
                 continue;
             }
@@ -830,7 +830,7 @@ public class GoodsService {
         return goodsList;
     }
 
-    private Goods GoodsInfoToGoods(GoodsInfoEntity g) {
+    private Goods goodsInfoToGoods(GoodsInfoEntity g) {
         if (g == null) {
             return null;
         }
