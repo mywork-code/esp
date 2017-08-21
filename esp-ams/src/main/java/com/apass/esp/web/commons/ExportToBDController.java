@@ -1,7 +1,5 @@
 package com.apass.esp.web.commons;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -10,13 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,12 +20,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -43,8 +28,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.esp.utils.ExportDomainForBD;
-import com.apass.esp.utils.mailUtils.MailSenderInfo;
-import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Lists;
 
@@ -72,7 +55,7 @@ public class ExportToBDController {
         // 获取要导出的数据(15天内)
         List<ExportDomainForBD> lists = Lists.newArrayList();
 
-        for (int i = -2; i < 0; i++) {
+        for (int i = -15; i < 0; i++) {
             try {
                 // 去talkingDate中获取UV(查询活跃用户数)
                 Date beginDate = DateFormatUtil.addDays(new Date(), i);
@@ -137,35 +120,12 @@ public class ExportToBDController {
                 e.printStackTrace();
             }
         }
-        ServletOutputStream out = null;
-        FileInputStream in = null;
+        
         // 导出
         try {
             generateFile(lists);
-            //导出到客户端
-            out = response.getOutputStream();
-            in = new FileInputStream(new File("/percentConversion.xls"));
-            
-            byte[] b = new byte[1024];
-            int i = 0;
-            while ((i = in.read(b)) > 0) {
-                out.write(b, 0, i);
-            }
-            // 文件流刷新到客户端
-            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally{
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭资源失败。", e);
-            }
         }
         
 
