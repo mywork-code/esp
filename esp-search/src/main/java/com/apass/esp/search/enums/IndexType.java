@@ -40,6 +40,9 @@ public enum IndexType {
 
     abstract public Class getTypeClass();
 
+    /**
+     * 生产者会一直阻塞直到所添加到队列的元素被某一个消费者所消费
+     */
     private TransferQueue<UpdatedObject<? extends IdAble>> transferQueue = new LinkedTransferQueue<>();
 
     public UpdatedObject<? extends IdAble> takeQueue() throws InterruptedException {
