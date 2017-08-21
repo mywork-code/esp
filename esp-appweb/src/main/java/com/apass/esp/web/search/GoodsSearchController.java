@@ -376,7 +376,6 @@ public class GoodsSearchController {
 
 			goodsSearchCondition.setGoodsName(searchValue);
 			goodsSearchCondition.setCateGoryName(searchValue);
-			goodsSearchCondition.setCateGoryName(searchValue);
 			goodsSearchCondition.setSkuAttr(searchValue);
 
 			Map<String, Object> returnMap = new HashMap<String, Object>();
