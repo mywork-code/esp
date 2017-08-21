@@ -1,17 +1,12 @@
 package com.apass.esp.task.handler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import net.sf.json.JsonConfig;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -24,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.common.jsonfast.JsonDateValueProcessor;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.esp.task.domain.ExportDomainForBD;
@@ -54,7 +48,7 @@ public class ExportToBDScheduleTask extends IJobHandler {
         // 获取要导出的数据(15天内)
         List<ExportDomainForBD> lists = Lists.newArrayList();
 
-        for (int i = -1; i < 0; i++) {
+        for (int i = -15; i < 0; i++) {
             try {
                 // 去talkingDate中获取UV(查询活跃用户数)
                 Date beginDate = DateFormatUtil.addDays(new Date(), i);
