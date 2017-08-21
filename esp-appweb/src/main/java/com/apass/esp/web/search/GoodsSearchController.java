@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -30,12 +33,18 @@ import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.entity.GoodsVo;
+import com.apass.esp.search.enums.SortMode;
+import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.search.SearchKeyService;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
@@ -127,7 +136,7 @@ public class GoodsSearchController {
     	return Response.success("查询成功!", param);
     }
     
-	@POST
+    @POST
 	@Path(value = "/search")
 	public Response search(Map<String, Object> paramMap) {
 		try {
@@ -306,5 +315,142 @@ public class GoodsSearchController {
 
 		return goodsList;
 	}
+	
+	  /**
+     * 查询
+     *
+     * @param paramMap
+     * @return
+     */
+	@POST
+	@Path(value = "/search2")
+	public Response search2(@RequestBody Map<String, Object> paramMap) {
+		try {
+			GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
+			
+			String deviceId = CommonUtils.getValue(paramMap, "deviceId");//设备号
+	    	String userId = CommonUtils.getValue(paramMap, "userId");//用户号
+			String searchValue = CommonUtils.getValue(paramMap, "searchValue");
+			String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段(default:默认;amount:销量;new:新品;price：价格)
+			String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
+			String page = CommonUtils.getValue(paramMap, "page");
+			String rows = CommonUtils.getValue(paramMap, "rows");
+			
+			String regex="^[a-zA-Z0-9\\u4e00-\\u9fa5\\ ()]+$";
+			Pattern pattern = Pattern.compile(regex); 
+			Matcher matcher = pattern.matcher(searchValue); 
+			String searchValue2 = "";
+			Boolean searchValueFalge=false;
+			if(matcher.matches()){
+				searchValueFalge=true;
+				searchValue2=searchValue;
+				//插入数据
+//				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
+			}
+			
+			if (StringUtils.isEmpty(searchValue)) {
+				LOGGER.error("搜索内容不能为空！");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
 
+			if (!StringUtils.equalsIgnoreCase("ASC", order) && !StringUtils.equalsIgnoreCase("DESC", order)) {
+				order = "DESC";// 降序
+			}
+
+			int pages = Integer.parseInt(page);
+			int row = Integer.parseInt(rows);
+
+			if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {
+				if (StringUtils.equalsIgnoreCase("DESC", order)) {
+					goodsSearchCondition.setSortMode(SortMode.SALEVALUE_DESC);
+				} else {
+					goodsSearchCondition.setSortMode(SortMode.SALEVALUE_ASC);
+				}
+			} else if (CategorySort.CATEGORY_SortN.getCode().equals(sort)) {// 新品(商品的创建时间)
+				if (StringUtils.equalsIgnoreCase("DESC", order)) {
+					goodsSearchCondition.setSortMode(SortMode.TIMECREATED_DESC);
+				} else {
+					goodsSearchCondition.setSortMode(SortMode.TIMECREATED_ASC);
+				}
+			} else if (CategorySort.CATEGORY_SortP.getCode().equals(sort)) {// 价格
+				if (StringUtils.equalsIgnoreCase("DESC", order)) {
+					goodsSearchCondition.setSortMode(SortMode.PRICE_DESC);
+				} else {
+					goodsSearchCondition.setSortMode(SortMode.PRICE_ASC);
+				}
+			} else {
+				if (StringUtils.equalsIgnoreCase("DESC", order)) {
+					goodsSearchCondition.setSortMode(SortMode.ORDERVALUE_DESC);
+				} else {
+					goodsSearchCondition.setSortMode(SortMode.ORDERVALUE_ASC);
+				}
+			}
+
+			goodsSearchCondition.setGoodsName(searchValue);
+			goodsSearchCondition.setCateGoryName(searchValue);
+			goodsSearchCondition.setCateGoryName(searchValue);
+			goodsSearchCondition.setSkuAttr(searchValue);
+
+			Map<String, Object> returnMap = new HashMap<String, Object>();
+
+			long before = System.currentTimeMillis();
+			Pagination<Goods> pagination = new Pagination<>();
+			if (searchValueFalge) {
+				pagination = IndexManager.goodSearch(goodsSearchCondition,
+						goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),
+						(pages - 1) * row, row);
+			}
+			List<GoodsVo> list = new ArrayList<GoodsVo>();
+			for (Goods goods : pagination.getDataList()) {
+				list.add(goodsToGoodVo(goods));
+			}
+			long after = System.currentTimeMillis();
+			System.out.println("用时：" + (after - before));
+			Integer totalCount = pagination.getTotalCount();
+			returnMap.put("totalCount", totalCount);
+			// 当查询结果为空时，返回热卖单品
+
+			List<String> listActity = goodsservice.popularGoods(0, 20);
+			List<GoodsInfoEntity> goodsList = new ArrayList<>();
+			List<String> goodsIdList = new ArrayList<>();
+			if (list.size() == 0) {
+				if (CollectionUtils.isEmpty(listActity) || listActity.size() < 20) {
+					if (CollectionUtils.isEmpty(listActity)) {
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 20);
+					} else {
+						goodsIdList = goodsservice.getRemainderGoodsNew(0, 20 - listActity.size());
+					}
+					if (CollectionUtils.isNotEmpty(goodsIdList)) {
+						// list.removeAll(goodsIdList);
+						listActity.addAll(goodsIdList);
+					}
+				}
+				goodsList = getSaleVolumeGoods(listActity);
+			}
+			returnMap.put("goodsList", goodsList);
+			returnMap.put("goodsBasicInfoList", list);
+			return Response.successResponse(returnMap);
+		}catch (Exception e) {
+			LOGGER.error("ShopHomeController loadGoodsList fail", e);
+			LOGGER.error("加载商品列表失败！");
+			return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+		}
+	}
+
+    public GoodsVo goodsToGoodVo(Goods goods){
+    	GoodsVo vo = new GoodsVo();
+    	vo.setFirstPrice(goods.getFirstPrice());
+    	vo.setGoodId(goods.getGoodId());
+    	vo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
+    	vo.setGoodsLogoUrlNew(goods.getGoodsLogoUrlNew());
+    	vo.setGoodsName(goods.getGoodsName());
+    	vo.setGoodsPrice(goods.getGoodsPrice());
+    	vo.setGoodsStockId(goods.getGoodsStockId());
+    	vo.setGoodsTitle(goods.getGoodsTitle());
+    	vo.setId(goods.getId());
+    	vo.setSource(goods.getSource());
+    	return vo;
+    }
+    
+    
 }

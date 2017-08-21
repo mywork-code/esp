@@ -20,4 +20,6 @@ public interface JdGoodSalesVolumeMapper extends GenericMapper<JdGoodSalesVolume
 
     int jdGoodSalesVolumeCount();
 
+    List<String>  getGoodSaleVolumeGroup();
+
 }

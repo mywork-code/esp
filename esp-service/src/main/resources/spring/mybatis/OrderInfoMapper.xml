@@ -785,4 +785,51 @@
 		source = 'jd'
 		and orderstatus=#{orderStatus}
 	</select>
+	
+	<select id="getConfirmOrderCount" resultType="java.lang.Integer">
+		SELECT
+			count(user_id)
+		FROM
+			(
+				SELECT
+					user_id
+				FROM
+					t_esp_order_info
+				where create_date BETWEEN #{beginDate} AND #{endDate}
+				GROUP BY
+					user_id
+				ORDER BY create_date
+		) temp
+	</select>
+	
+	<select id="getConfirmPayCount" resultType="java.lang.Integer">
+		SELECT
+			count(user_id)
+		FROM
+			(
+				SELECT
+					user_id
+				FROM
+					t_esp_order_info
+				where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus in('P02')
+				GROUP BY
+					user_id
+				ORDER BY create_date
+		) temp
+	</select>
+	
+	
+	<select id="getSumOrderamt" resultType="java.math.BigDecimal">
+		SELECT 
+			SUM(order_amt) 
+		from t_esp_order_info
+		where create_date BETWEEN #{beginDate} AND #{endDate}
+	</select>
+	<select id="getSumOrderamtForPaySuccess" resultType="java.math.BigDecimal">
+		SELECT 
+			SUM(order_amt) 
+		from t_esp_order_info
+		where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus = 'P02'
+	</select>
+	
 </mapper>
