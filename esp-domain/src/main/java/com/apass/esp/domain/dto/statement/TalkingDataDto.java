@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class TalkingDataDto {
     private String accesskey="4f08d84512d1347a3574e1833486163f";
     private ArrayList<String> metrics;
-    private String groupby="daily";
+    private String groupby;//="daily";
     private Filter filter;
     private String order = "desc";
     private Integer limit = 1000;

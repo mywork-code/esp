@@ -1,407 +1,369 @@
 package com.apass.esp.search.entity;
 
 
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.GoodsType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
  */
 public class Goods implements IdAble{
-
+	
+	private Integer id;
+	/**商品ID*/
     private Long goodId;
-    //商品编号
-    private String goodsCode;
-
-    public String getGoodsCode() {
-        return goodsCode;
-    }
-
-    public void setGoodsCode(String goodsCode) {
-        this.goodsCode = goodsCode;
-    }
-
-    /** 商品类目编码 **/
-    private String categoryCode;
-
+    /**商品库存ID*/
+    private Long goodsStockId;
     /** 商品名称 **/
     private String goodsName;
-
+    /**商品名称拼音**/
+    private String goodsNamePinyin; 
     /** 商品小标题 **/
     private String goodsTitle;
-
-    /** 商品卖点 **/
-    private String goodsSellPt;
-
-    /** 商品类型 -1：正常，精选**/
-    private String goodsType;
-
-    /** 商品类型描述 **/
-    private String goodsTypeDesc;
-
+    /** 商品小标题拼音 **/
+    private String goodsTitlePinyin;
     /** 商品logo地址 **/
     private String goodsLogoUrl;
-
-    /** 商品logo地址 (新)**/
+    /** 商品logo地址 (新) **/
     private String goodsLogoUrlNew;
-
-    /** 精选商品地址 **/
-    private String goodsSiftUrl;
-
-    /** 精选商品地址 (新)**/
-    private String goodsSiftUrlNew;
-
-    public String getGoodsSiftUrlNew() {
-        return goodsSiftUrlNew;
-    }
-
-    public void setGoodsSiftUrlNew(String goodsSiftUrlNew) {
-        this.goodsSiftUrlNew = goodsSiftUrlNew;
-    }
 
     /** 商品上架时间 **/
     private Date listTime;
-
+    private String listTimeString;
     /** 商品下架时间 **/
     private Date delistTime;
-
-    /** 商品生产日期 **/
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date proDate;
-
-    /** 商品保质期多少月 **/
-    private String keepDate;
-
-    /** 生产厂家 **/
-    private String supNo;
-
-    /** 创建人 **/
-    private String createUser;
-
-    /** 修改人 **/
-    private String updateUser;
-
+    private String delistTimeString;
+    /** 商品新建时间 **/
+    private String newCreatDate = "1900-01-01 00:00:00";
+    
     /** 创建时间 **/
     private Date createDate;
-
     /** 修改时间 **/
     private Date updateDate;
+  
+    /** 商品一级分类 */
+    private Long categoryId1;
+    /** 商品一级分类名称 */
+    private String categoryName1;
+    /** 商品一级分类名称拼音 */
+    private String categoryName1Pinyin;
 
-    /** 商户号 **/
-    private String merchantCode;
+    /** 商品二级分类 */
+    private Long categoryId2;
+    /** 商品二级分类名称拼音 */
+    private String categoryName2;
+    /** 商品二级分类名称 */
+    private String categoryName2Pinyin;
 
-    /** 备注 **/
-    private String remark;
-
-    /** 是否删除 **/
-    private String isDelete;
-
-    /** 商品状态 **/
-    private String status;
-
-    /** 商品状态描述 **/
-    private String statusDesc;
-
-    /** 商品详情 **/
-    private String googsDetail;
-    /**
-     * 商品最小单元分类-规格类型(颜色，尺寸等)
-     */
-    private String goodsSkuType;
-    /**
-     * 商品型号
-     */
-    private String goodsModel;
-    /**
-     * 商户名称
-     */
-    private String merchantName;
-    /**
-     * 商户类型（个人、企业）
-     */
-    private String merchantType;
-
-    public String getColFalgt() {
-        return colFalgt;
-    }
-
-    public void setColFalgt(String colFalgt) {
-        this.colFalgt = colFalgt;
-    }
-
-    private String colFalgt;// 标识
+    /** 商品三级分类 */
+    private Long categoryId3;
+    /** 商品三级分类名称 */
+    private String categoryName3;
+    /** 商品三级分类名称拼音 */
+    private String categoryName3Pinyin;
 
     /**
-     * 商品排序
+     * 商品价格
      */
-    private Integer sordNo;
+    private BigDecimal goodsPrice;
+    /**
+     * 首付价
+     */
+    private BigDecimal firstPrice;
+    
+    /**
+     * 市场价
+     */
+    private BigDecimal marketPrice;
+    /**
+     * 来源（京东或非京东）
+     * @return
+     */
+    private String source="";
+    /**
+     * 总销量
+     */
+    private int saleNum;
+    /**
+     * 近30天销量
+     */
+    private int saleNumFor30;
+    
+    /**
+     * 商品规格
+     */
+    private String goodsSkuAttr;
+    /**
+     * 商品规格拼音
+     */
+    private String goodsSkuAttrPinyin;
+    
+    
+	public String getGoodsTitlePinyin() {
+		return goodsTitlePinyin;
+	}
 
-    public Long getGoodId() {
-        return goodId;
-    }
+	public void setGoodsTitlePinyin(String goodsTitlePinyin) {
+		this.goodsTitlePinyin = goodsTitlePinyin;
+	}
 
-    public void setGoodId(Long goodId) {
-        this.goodId = goodId;
-    }
+	public String getGoodsNamePinyin() {
+		return goodsNamePinyin;
+	}
 
-    public Integer getSordNo() {
-        return sordNo;
-    }
+	public void setGoodsNamePinyin(String goodsNamePinyin) {
+		this.goodsNamePinyin = goodsNamePinyin;
+	}
 
-    public void setSordNo(Integer sordNo) {
-        this.sordNo = sordNo;
-    }
+	public String getCategoryName1Pinyin() {
+		return categoryName1Pinyin;
+	}
 
-    public String getMerchantName() {
-        return merchantName;
-    }
+	public void setCategoryName1Pinyin(String categoryName1Pinyin) {
+		this.categoryName1Pinyin = categoryName1Pinyin;
+	}
 
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
+	public String getCategoryName2Pinyin() {
+		return categoryName2Pinyin;
+	}
 
-    public String getGoodsModel() {
-        return goodsModel;
-    }
+	public void setCategoryName2Pinyin(String categoryName2Pinyin) {
+		this.categoryName2Pinyin = categoryName2Pinyin;
+	}
 
-    public void setGoodsModel(String goodsModel) {
-        this.goodsModel = goodsModel;
-    }
+	public String getCategoryName3Pinyin() {
+		return categoryName3Pinyin;
+	}
 
-    public String getGoodsSkuType() {
-        return goodsSkuType;
-    }
+	public void setCategoryName3Pinyin(String categoryName3Pinyin) {
+		this.categoryName3Pinyin = categoryName3Pinyin;
+	}
 
-    public void setGoodsSkuType(String goodsSkuType) {
-        this.goodsSkuType = goodsSkuType;
-    }
+	public String getGoodsSkuAttrPinyin() {
+		return goodsSkuAttrPinyin;
+	}
 
-    public String getCategoryCode() {
-        return categoryCode;
-    }
+	public void setGoodsSkuAttrPinyin(String goodsSkuAttrPinyin) {
+		this.goodsSkuAttrPinyin = goodsSkuAttrPinyin;
+	}
 
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
-    }
+	public String getGoodsSkuAttr() {
+		return goodsSkuAttr;
+	}
 
-    public String getGoodsName() {
-        return goodsName;
-    }
+	public void setGoodsSkuAttr(String goodsSkuAttr) {
+		this.goodsSkuAttr = goodsSkuAttr;
+	}
 
-    public void setGoodsName(String goodsName) {
-        this.goodsName = goodsName;
-    }
+	public Long getGoodId() {
+		return goodId;
+	}
 
-    public String getGoodsTitle() {
-        return goodsTitle;
-    }
+	public void setGoodId(Long goodId) {
+		this.goodId = goodId;
+	}
 
-    public void setGoodsTitle(String goodsTitle) {
-        this.goodsTitle = goodsTitle;
-    }
+	public Long getGoodsStockId() {
+		return goodsStockId;
+	}
 
-    public String getGoodsSellPt() {
-        return goodsSellPt;
-    }
+	public void setGoodsStockId(Long goodsStockId) {
+		this.goodsStockId = goodsStockId;
+	}
 
-    public void setGoodsSellPt(String goodsSellPt) {
-        this.goodsSellPt = goodsSellPt;
-    }
+	public String getGoodsName() {
+		return goodsName;
+	}
 
-    public String getGoodsType() {
-        return goodsType;
-    }
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
 
-    public void setGoodsType(String goodsType) {
-        this.goodsType = goodsType;
-    }
+	public String getGoodsTitle() {
+		return goodsTitle;
+	}
 
-    public String getGoodsTypeDesc() {
-        return goodsTypeDesc;
-    }
+	public void setGoodsTitle(String goodsTitle) {
+		this.goodsTitle = goodsTitle;
+	}
 
-    public void setGoodsTypeDesc(String goodsTypeDesc) {
-        // 对商品类型进行翻译 ，前段展示统一显示中文
-        String content = "";
-        GoodsType[] goodsType = GoodsType.values();
-        for (GoodsType goodType : goodsType) {
-            if (goodType.getCode().equals(goodsTypeDesc)) {
-                content = goodType.getMessage();
-            }
-        }
-        this.goodsTypeDesc = content;
-    }
+	public String getGoodsLogoUrl() {
+		return goodsLogoUrl;
+	}
 
-    public String getGoodsLogoUrl() {
-        return goodsLogoUrl;
-    }
+	public void setGoodsLogoUrl(String goodsLogoUrl) {
+		this.goodsLogoUrl = goodsLogoUrl;
+	}
 
-    public void setGoodsLogoUrl(String goodsLogoUrl) {
-        this.goodsLogoUrl = goodsLogoUrl;
-    }
+	public String getGoodsLogoUrlNew() {
+		return goodsLogoUrlNew;
+	}
 
-    public String getGoodsLogoUrlNew() {
-        return goodsLogoUrlNew;
-    }
+	public void setGoodsLogoUrlNew(String goodsLogoUrlNew) {
+		this.goodsLogoUrlNew = goodsLogoUrlNew;
+	}
 
-    public void setGoodsLogoUrlNew(String goodsLogoUrlNew) {
-        this.goodsLogoUrlNew = goodsLogoUrlNew;
-    }
+	public Date getListTime() {
+		return listTime;
+	}
 
-    public String getGoodsSiftUrl() {
-        return goodsSiftUrl;
-    }
+	public void setListTime(Date listTime) {
+		this.listTime = listTime;
+	}
 
-    public void setGoodsSiftUrl(String goodsSiftUrl) {
-        this.goodsSiftUrl = goodsSiftUrl;
-    }
+	public String getListTimeString() {
+		return listTimeString;
+	}
 
-    public Date getListTime() {
-        return listTime;
-    }
+	public void setListTimeString(String listTimeString) {
+		this.listTimeString = listTimeString;
+	}
 
-    public void setListTime(Date listTime) {
-        this.listTime = listTime;
-    }
+	public Date getDelistTime() {
+		return delistTime;
+	}
 
-    public Date getDelistTime() {
-        return delistTime;
-    }
+	public void setDelistTime(Date delistTime) {
+		this.delistTime = delistTime;
+	}
 
-    public void setDelistTime(Date delistTime) {
-        this.delistTime = delistTime;
-    }
+	public String getDelistTimeString() {
+		return delistTimeString;
+	}
 
-    public Date getProDate() {
-        return proDate;
-    }
+	public void setDelistTimeString(String delistTimeString) {
+		this.delistTimeString = delistTimeString;
+	}
 
-    public void setProDate(Date proDate) {
-        this.proDate = proDate;
-    }
+	public String getNewCreatDate() {
+		return newCreatDate;
+	}
 
-    public String getKeepDate() {
-        return keepDate;
-    }
+	public void setNewCreatDate(String newCreatDate) {
+		this.newCreatDate = newCreatDate;
+	}
 
-    public void setKeepDate(String keepDate) {
-        this.keepDate = keepDate;
-    }
+	public Date getCreateDate() {
+		return createDate;
+	}
 
-    public String getSupNo() {
-        return supNo;
-    }
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
-    public void setSupNo(String supNo) {
-        this.supNo = supNo;
-    }
+	public Date getUpdateDate() {
+		return updateDate;
+	}
 
-    public String getCreateUser() {
-        return createUser;
-    }
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
+	public Long getCategoryId1() {
+		return categoryId1;
+	}
 
-    public String getUpdateUser() {
-        return updateUser;
-    }
+	public void setCategoryId1(Long categoryId1) {
+		this.categoryId1 = categoryId1;
+	}
 
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser;
-    }
+	public String getCategoryName1() {
+		return categoryName1;
+	}
 
-    public Date getCreateDate() {
-        return createDate;
-    }
+	public void setCategoryName1(String categoryName1) {
+		this.categoryName1 = categoryName1;
+	}
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
+	public Long getCategoryId2() {
+		return categoryId2;
+	}
 
-    public Date getUpdateDate() {
-        return updateDate;
-    }
+	public void setCategoryId2(Long categoryId2) {
+		this.categoryId2 = categoryId2;
+	}
 
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
+	public String getCategoryName2() {
+		return categoryName2;
+	}
 
-    public String getMerchantCode() {
-        return merchantCode;
-    }
+	public void setCategoryName2(String categoryName2) {
+		this.categoryName2 = categoryName2;
+	}
 
-    public void setMerchantCode(String merchantCode) {
-        this.merchantCode = merchantCode;
-    }
+	public Long getCategoryId3() {
+		return categoryId3;
+	}
 
-    public String getRemark() {
-        return remark;
-    }
+	public void setCategoryId3(Long categoryId3) {
+		this.categoryId3 = categoryId3;
+	}
 
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
+	public String getCategoryName3() {
+		return categoryName3;
+	}
 
-    public String getIsDelete() {
-        return isDelete;
-    }
+	public void setCategoryName3(String categoryName3) {
+		this.categoryName3 = categoryName3;
+	}
 
-    public void setIsDelete(String isDelete) {
-        this.isDelete = isDelete;
-    }
+	public BigDecimal getGoodsPrice() {
+		return goodsPrice;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setGoodsPrice(BigDecimal goodsPrice) {
+		this.goodsPrice = goodsPrice;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public BigDecimal getFirstPrice() {
+		return firstPrice;
+	}
 
-    public String getStatusDesc() {
-        return statusDesc;
-    }
+	public void setFirstPrice(BigDecimal firstPrice) {
+		this.firstPrice = firstPrice;
+	}
 
-    public void setStatusDesc(String statusDesc) {
-        // 对商品状态进行翻译 ，前段展示统一显示中文
-        String content = "";
-        GoodStatus[] goodsStatus = GoodStatus.values();
-        for (GoodStatus goodStatus : goodsStatus) {
-            if (goodStatus.getCode().equals(statusDesc)) {
-                content = goodStatus.getMessage();
-            }
-        }
-        this.statusDesc = content;
-    }
+	public BigDecimal getMarketPrice() {
+		return marketPrice;
+	}
 
-    public String getGoogsDetail() {
-        return googsDetail;
-    }
+	public void setMarketPrice(BigDecimal marketPrice) {
+		this.marketPrice = marketPrice;
+	}
 
-    public void setGoogsDetail(String googsDetail) {
-        this.googsDetail = googsDetail;
-    }
+	public String getSource() {
+		return source;
+	}
 
-    public String getMerchantType() {
-        return merchantType;
-    }
+	public void setSource(String source) {
+		this.source = source;
+	}
 
-    public void setMerchantType(String merchantType) {
-        this.merchantType = merchantType;
-    }
+	public int getSaleNum() {
+		return saleNum;
+	}
 
-    @Override
+	public void setSaleNum(int saleNum) {
+		this.saleNum = saleNum;
+	}
+
+	public int getSaleNumFor30() {
+		return saleNumFor30;
+	}
+
+	public void setSaleNumFor30(int saleNumFor30) {
+		this.saleNumFor30 = saleNumFor30;
+	}
+
+	@Override
     public Integer getId() {
-        return null;
+        return id;
     }
 
     @Override
     public void setId(Integer id) {
-
+    	this.id = id;
     }
+    
+    
 }

@@ -19,7 +19,11 @@
 			<artifactId>apass-monitor</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.apass.esp</groupId>
+			<artifactId>esp-search</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<!--<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>

@@ -19,7 +19,7 @@ public class SearchKeyService {
 	
 	@Autowired
 	private SearchKeysMapper keysMapper;
-	
+
 	public void addCommonSearchKeys(String keyValue,String userId,String deviceId){
 		LOGGER.info("addCommonSearchKeys is come in,params:",keyValue+"XXXX"+userId+"XXXX"+deviceId);
 		SearchKeys record = new SearchKeys();
@@ -35,17 +35,7 @@ public class SearchKeyService {
 		keysMapper.insertSelective(record);
 	}
 	
-	public void addHotSearchKeys(String keyValue,String userId){
-		LOGGER.info("addHotSearchKeys is come in,params:",keyValue+"XXXX"+userId);
-		SearchKeys record = new SearchKeys();
-		record.setKeyValue(keyValue);
-		record.setUserId(userId);
-		record.setKeyType("1");
-		record.setCreateDate(new Date());
-		record.setUpdateDate(new Date());
-		keysMapper.insertSelective(record);
-	}
-	
+
 	public void deleteSearchKeys(Long keyId){
 		keysMapper.deleteSearchKey(keyId);
 	}

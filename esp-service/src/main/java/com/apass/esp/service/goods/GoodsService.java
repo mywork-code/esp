@@ -2,12 +2,16 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.utils.HanyuPinyinHelper;
+import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -75,6 +79,12 @@ public class GoodsService {
     @Autowired
     private JdCategoryMapper jdCategoryMapper;
 
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
     /**
      * app 首页加载精品推荐商品
      *
@@ -86,7 +96,7 @@ public class GoodsService {
 
     /**
      * app 加载精品推荐商品列表
-     * 
+     *
      * @return
      */
     public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
@@ -94,7 +104,6 @@ public class GoodsService {
     }
 
     /**
-     *
      * 加载商品列表[分页]
      *
      * @param page
@@ -119,7 +128,7 @@ public class GoodsService {
      * 通过类目id查询商品[客户端分页]
      */
     public Pagination<GoodsBasicInfoEntity> loadGoodsByCategoryId(GoodsBasicInfoEntity param, String page,
-            String limit) {
+                                                                  String limit) {
         Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
@@ -136,7 +145,7 @@ public class GoodsService {
      * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)
      */
     public List<GoodsBasicInfoEntity> loadGoodsByParam(GoodsBasicInfoEntity gbinfoty, String page,
-            String limit) {
+                                                       String limit) {
         Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
@@ -152,13 +161,14 @@ public class GoodsService {
 
     /**
      * 搜索商品（新品，默认）
+     *
      * @param goodsInfoEntity
      * @param page
      * @return
      */
-    public List<GoodsBasicInfoEntity> searchPage(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
-            String limit) {
-    	Integer limitInteger = null;
+    public List<GoodsBasicInfoEntity> searchPage(GoodsBasicInfoEntity goodsBasicInfoEntity, String page,
+                                                 String limit) {
+        Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
             limitInteger = Integer.valueOf(limit);
@@ -168,17 +178,19 @@ public class GoodsService {
         pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
         goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
         goodsBasicInfoEntity.setRows(limitInteger);
-         return goodsBasicRepository.searchList(goodsBasicInfoEntity);
+        return goodsBasicRepository.searchList(goodsBasicInfoEntity);
     }
+
     /**
      * 搜索商品（销量）
+     *
      * @param goodsInfoEntity
      * @param page
      * @return
      */
-    public List<GoodsBasicInfoEntity> searchGoodsListAmount(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
-            String limit) {
-    	Integer limitInteger = null;
+    public List<GoodsBasicInfoEntity> searchGoodsListAmount(GoodsBasicInfoEntity goodsBasicInfoEntity, String page,
+                                                            String limit) {
+        Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
             limitInteger = Integer.valueOf(limit);
@@ -188,17 +200,19 @@ public class GoodsService {
         pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
         goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
         goodsBasicInfoEntity.setRows(limitInteger);
-         return goodsBasicRepository.searchGoodsListAmount(goodsBasicInfoEntity);
+        return goodsBasicRepository.searchGoodsListAmount(goodsBasicInfoEntity);
     }
+
     /**
      * 搜索商品（价格）
+     *
      * @param goodsInfoEntity
      * @param page
      * @return
      */
-    public List<GoodsBasicInfoEntity> searchGoodsListPrice(GoodsBasicInfoEntity goodsBasicInfoEntity,String page,
-            String limit) {
-    	Integer limitInteger = null;
+    public List<GoodsBasicInfoEntity> searchGoodsListPrice(GoodsBasicInfoEntity goodsBasicInfoEntity, String page,
+                                                           String limit) {
+        Integer limitInteger = null;
         Integer pageInteger = null;
         if (StringUtils.isNotEmpty(limit)) {
             limitInteger = Integer.valueOf(limit);
@@ -208,14 +222,16 @@ public class GoodsService {
         pageInteger = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
         goodsBasicInfoEntity.setPage((pageInteger - 1) * limitInteger);
         goodsBasicInfoEntity.setRows(limitInteger);
-         return goodsBasicRepository.searchGoodsListPrice(goodsBasicInfoEntity);
+        return goodsBasicRepository.searchGoodsListPrice(goodsBasicInfoEntity);
     }
+
     /**
      * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)(数量)
      */
     public Integer loadGoodsByParamCount(GoodsBasicInfoEntity gbinfoty) {
         return goodsBasicRepository.loadGoodsByParamCount(gbinfoty);
     }
+
     /**
      * 搜索商品
      */
@@ -229,8 +245,8 @@ public class GoodsService {
     public GoodsBasicInfoEntity serchGoodsByGoodsId(String goodsId) {
         return goodsBasicRepository.serchGoodsByGoodsId(goodsId);
     }
+
     /**
-     *
      * 加载商品列表
      *
      * @param page
@@ -355,7 +371,7 @@ public class GoodsService {
 
     /**
      * 获取商品最低价所对应的库存id
-     * 
+     *
      * @param goodsId
      * @return
      * @throws BusinessException
@@ -370,6 +386,7 @@ public class GoodsService {
         }
         // BigDecimal maxPrice = BigDecimal.ZERO;
         BigDecimal minPrice = BigDecimal.ZERO;
+        String skuAttr = null;
         Long minPriceStockId = 0L;
         // Long maxPriceStockId = 0L;
         if (null != goodsStockList && goodsStockList.size() > 0) {
@@ -382,10 +399,12 @@ public class GoodsService {
                 if (minPrice.compareTo(stock.getGoodsPrice()) >= 0) {
                     minPrice = stock.getGoodsPrice();
                     minPriceStockId = stock.getId();
+                    skuAttr = stock.getGoodsSkuAttr();
                 }
             }
             map.put("minPrice", minPrice);
             map.put("minPriceStockId", minPriceStockId);
+            map.put("minSkuAttr", skuAttr);
             // map.put("maxPrice", maxPrice);
             // map.put("maxPriceStockId", maxPriceStockId);
         }
@@ -432,7 +451,7 @@ public class GoodsService {
      * @return
      */
     public PaginationManage<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity, String pageNo,
-            String pageSize) {
+                                                      String pageSize) {
         Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
         Integer pageSiz = Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize);
         Integer begin = (pageNum - 1) * pageSiz;
@@ -482,6 +501,7 @@ public class GoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+        
         if (entity.getGoodId() != null) {
             entity.setId(entity.getGoodId());
             updateService(entity);
@@ -508,6 +528,7 @@ public class GoodsService {
                 sb.append(random);
                 entity.setGoodsCode(sb.toString());
                 goodsDao.updateGoods(entity);
+                
             }
         }
 
@@ -556,9 +577,9 @@ public class GoodsService {
     /**
      * 说明：查询商品精选数量
      *
+     * @param goodsType
      * @return
      * @author xiaohai
-     * @param goodsType
      * @time：2016年12月27日 下午3:55:45
      */
     public Integer goodsPageListCount() {
@@ -605,7 +626,7 @@ public class GoodsService {
 
     /**
      * 查询所属分类下属的商品的数量（status!=G03 并且 is_delete !='00'）
-     * 
+     *
      * @return
      */
     public int getBelongCategoryGoodsNumber(long categoryId) {
@@ -618,7 +639,7 @@ public class GoodsService {
 
     /**
      * 根据类目id查询其类目下所有已经下架了的商品信息
-     * 
+     *
      * @param id
      * @return
      */
@@ -628,7 +649,7 @@ public class GoodsService {
 
     /**
      * 更新已经下架商品的类目
-     * 
+     *
      * @param id
      */
     public void updateGoodsCategoryStatus(Long id) {
@@ -637,7 +658,7 @@ public class GoodsService {
 
     /**
      * 京东商品
-     * 
+     *
      * @param entityList
      * @return
      */
@@ -656,7 +677,7 @@ public class GoodsService {
 
     /**
      * 根据external_id查询商品
-     * 
+     *
      * @param string
      * @return
      * @throws BusinessException
@@ -714,7 +735,7 @@ public class GoodsService {
 
     /**
      * 根据二级类目id查询所有商品
-     * 
+     *
      * @param categoryId
      * @return
      */
@@ -724,7 +745,7 @@ public class GoodsService {
 
     /**
      * 判断该类目下京东是否存在已上架待审核状态商品
-     * 
+     *
      * @param cateId:京东的三级类目，状态在sql语句中写死(G01,G02,G04)
      * @return
      */
@@ -735,7 +756,7 @@ public class GoodsService {
 
     /**
      * 获取单个商品或订单的邮费
-     * 
+     *
      * @param goodsIds 商品id列表
      * @return postage为0时免运费
      * @throws BusinessException
@@ -777,10 +798,137 @@ public class GoodsService {
     }
 
     public List pageListForExport(GoodsInfoEntity goodsInfoEntity) {
-        
+
         return goodsDao.pageListForExport(goodsInfoEntity);
     }
-    
-  
 
+    /**
+     * 获取上架的商品 <br/>  2017-08-16
+     *
+     * @return
+     */
+    public List<GoodsInfoEntity> selectUpGoods(int index, int size) {
+        return goodsDao.selectUpGoods(index, size);
+    }
+
+    public List<Goods> esInit(int index, int size) {
+        List<GoodsInfoEntity> selectByCategoryId2 = selectUpGoods(index, size);
+        if (CollectionUtils.isEmpty(selectByCategoryId2)) {
+            return Collections.EMPTY_LIST;
+        }
+        return getGoodsList(selectByCategoryId2);
+    }
+
+    public List<Goods> getGoodsList(List<GoodsInfoEntity> selectByCategoryId2) {
+        List<Goods> goodsList = new ArrayList<>();
+        for (GoodsInfoEntity g : selectByCategoryId2) {
+            Goods goods = goodsInfoToGoods(g);
+            if (null == goods) {
+                continue;
+            }
+            LOGGER.info("goodsList add goodsId {} ...", goods.getId());
+            goodsList.add(goods);
+        }
+        LOGGER.info("goodsList add goodsId {} ...", goodsList.size());
+        return goodsList;
+    }
+
+    private Goods goodsInfoToGoods(GoodsInfoEntity g) {
+        if (g == null) {
+            return null;
+        }
+        Goods goods = new Goods();
+        goods.setId(Integer.valueOf(g.getId() + ""));
+        goods.setGoodId(g.getGoodId());
+        goods.setCategoryId1(g.getCategoryId1());
+        Category cate1 = categoryMapper.selectByPrimaryKey(g.getCategoryId1());
+        if (null == cate1) {
+            return null;
+        }
+        goods.setCategoryName1(cate1.getCategoryName());
+        goods.setCategoryId1(g.getCategoryId1());
+        goods.setCategoryName1Pinyin(HanyuPinyinHelper.getPinyinString(cate1.getCategoryName()));
+
+        Category cate2 = categoryMapper.selectByPrimaryKey(g.getCategoryId2());
+        if (null == cate2) {
+            return null;
+        }
+        goods.setCategoryName2(cate2.getCategoryName());
+        goods.setCategoryName2Pinyin(HanyuPinyinHelper.getPinyinString(cate2.getCategoryName()));
+        goods.setCategoryId3(g.getCategoryId3());
+        Category cate3 = categoryMapper.selectByPrimaryKey(g.getCategoryId3());
+        if (null == cate3) {
+            return null;
+        }
+        goods.setCategoryName3(cate3.getCategoryName());
+        goods.setCategoryName3Pinyin(HanyuPinyinHelper.getPinyinString(cate3.getCategoryName()));
+
+        goods.setGoodsName(g.getGoodsName());
+        goods.setGoodsNamePinyin(HanyuPinyinHelper.getPinyinString(g.getGoodsName()));
+        goods.setDelistTime(g.getDelistTime());
+        goods.setGoodsLogoUrl(g.getGoodsLogoUrl());
+        if (StringUtils.equals(g.getSource(), SourceType.JD.getCode())) {
+            goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + g.getGoodsLogoUrl());
+        } else {
+            try {
+                goods.setGoodsLogoUrlNew(imageService.getImageUrl(g.getGoodsLogoUrl()));
+            } catch (BusinessException e) {
+                e.getStackTrace();
+            }
+        }
+
+        goods.setSource(g.getSource());
+        goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
+        goods.setCreateDate(g.getCreateDate());
+        goods.setGoodsTitle(g.getGoodsTitle());
+        goods.setGoodsTitlePinyin(HanyuPinyinHelper.getPinyinString(g.getGoodsTitle()));
+        goods.setListTime(g.getListTime());
+        goods.setListTimeString(DateFormatUtil.dateToString(g.getListTime(), ""));
+        goods.setNewCreatDate(g.getNewCreatDate());
+        goods.setUpdateDate(g.getUpdateDate());
+
+        List<JdGoodSalesVolume> getJdGoodSalesVolume =
+                jdGoodSalesVolumeMapper.getJdGoodSalesVolumeByGoodsId(g.getGoodId());
+
+        int goodsSum = 0;
+        int goodsSum30 = 0;
+        Date date = new Date();
+        for (JdGoodSalesVolume jd : getJdGoodSalesVolume) {
+            goodsSum += jd.getSalesNum();
+            if (jd.getCreateDate().before(date) && jd.getCreateDate().after(DateFormatUtil.addDays(date, -30))) {
+                goodsSum30 += jd.getSalesNum();
+            }
+        }
+        goods.setSaleNum(goodsSum);
+        goods.setSaleNumFor30(goodsSum30);
+        try {
+            Map<String, Object> params = getMinPriceGoods(g.getGoodId());
+            if (params.isEmpty()) {
+                return null;
+            }
+            goods.setGoodsPrice(new BigDecimal(String.valueOf(params.get("minPrice"))));
+            goods.setFirstPrice(new BigDecimal(String.valueOf(params.get("minPrice"))).multiply(new BigDecimal(0.1)).setScale(2, BigDecimal.ROUND_CEILING));
+            goods.setGoodsStockId(Long.valueOf(String.valueOf(params.get("minPriceStockId"))));
+            if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                Map<String, Object> descMap = new HashMap<String, Object>();
+                try {
+                    descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(g.getExternalId()));
+                } catch (Exception e) {
+                }
+                String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
+                int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
+                if (StringUtils.isNotBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
+                    goods.setGoodsSkuAttr(jdGoodsSimilarSku);
+                }
+
+            } else {
+                goods.setGoodsSkuAttr(String.valueOf(params.get("minSkuAttr")));
+            }
+            goods.setGoodsSkuAttrPinyin(HanyuPinyinHelper.getPinyinString(goods.getGoodsSkuAttr()));
+        } catch (Exception e) {
+            e.getStackTrace();
+            return null;
+        }
+        return goods;
+    }
 }
