@@ -1,4 +1,4 @@
-package com.apass.esp.schedule;
+package com.apass.esp.web.commons;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -17,10 +20,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -30,20 +31,24 @@ import com.apass.esp.utils.ExportDomainForBD;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Lists;
 
-@Component
-@Configurable
-@EnableScheduling
-@Profile("Schedule")
-public class ExportToBDScheduleTask {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExportToBDScheduleTask.class);
+@Controller
+@RequestMapping("application/export")
+public class ExportToBDController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportToBDController.class);
+    
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private TalkDataService talkingDataService;
     
-    
-    public void task(){
+    /**
+     * 导出转化率
+     * @param request
+     * @param response
+     */
+    @RequestMapping("/percentConversion")
+    public void percentConversion(HttpServletRequest request, HttpServletResponse response) {
+        LOGGER.info("15天内转化率导出开始执行....");
         String metrics = "activeuser";
         String groupby = "daily";
 
@@ -60,60 +65,71 @@ public class ExportToBDScheduleTask {
                 JSONObject jObj = (JSONObject) JSONArray.parseArray(
                         JSONObject.parseObject(str).getString("result")).get(0);
                 Integer uv = Integer.valueOf(jObj.getString(metrics));// talkingData返回的uv数.
-                LOGGER.info(DateFormatUtil.date2timestamp(beginDate)+"~"+DateFormatUtil.date2timestamp(endDate)+"号活跃用户数："+uv);
-                
+                LOGGER.info(DateFormatUtil.dateToString(beginDate,"") + "~"
+                        + DateFormatUtil.dateToString(endDate,"") + "号活跃用户数：" + uv);
+
                 ExportDomainForBD exportDomainForBD = new ExportDomainForBD();
-                if(uv == 0){
-                    exportDomainForBD.setConfirmOrderRate(new BigDecimal(0)); 
-                    exportDomainForBD.setConfirmPayRate(new BigDecimal(0));
-                }
+               
                 // 日期
-                exportDomainForBD.setDate(DateFormatUtil.dateToString(beginDate, "")+"~"+DateFormatUtil.dateToString(endDate, ""));
+                exportDomainForBD.setDate(DateFormatUtil.dateToString(beginDate, "") + "~"
+                        + DateFormatUtil.dateToString(endDate, ""));
                 // 浏览下单转化率(下单买家数/活跃用户数)
                 Integer confirmCount = orderService.getConfirmOrderCount(beginDate, endDate);// 下单买家数
-                BigDecimal confirmCountRate = new BigDecimal(confirmCount).divide(new BigDecimal(uv),8,BigDecimal.ROUND_HALF_UP);
-                exportDomainForBD.setConfirmOrderRate(confirmCountRate);
                 // 浏览-支付买家转化率（支付成功买家数/活跃用户数）
                 Integer confirmPayCount = orderService.getConfirmPayCount(beginDate, endDate);// 支付成功买家数
-                BigDecimal confirmPayRate = new BigDecimal(confirmPayCount).divide(new BigDecimal(uv),8,BigDecimal.ROUND_HALF_UP);
-                exportDomainForBD.setConfirmPayRate(confirmPayRate);
+                if (uv != 0) {
+                    BigDecimal confirmCountRate = new BigDecimal(confirmCount).divide(new BigDecimal(uv), 8,
+                            BigDecimal.ROUND_HALF_UP);
+                    exportDomainForBD.setConfirmOrderRate(confirmCountRate);
+                    BigDecimal confirmPayRate = new BigDecimal(confirmPayCount).divide(new BigDecimal(uv), 8,
+                            BigDecimal.ROUND_HALF_UP);
+                    exportDomainForBD.setConfirmPayRate(confirmPayRate);
+                }else{
+                    exportDomainForBD.setConfirmOrderRate(new BigDecimal(0));
+                    exportDomainForBD.setConfirmPayRate(new BigDecimal(0));
+                }
+                
+                
                 // 下单-支付金额转化率(支付成功金额/下单金额)
                 BigDecimal orderAmtAll = orderService.getSumOrderamt(beginDate, endDate);// 下单金额
-                if(orderAmtAll.compareTo(new BigDecimal(0)) == 0 || orderAmtAll == null){
+                BigDecimal orderAmtForPaySuccess = orderService.getSumOrderamtForPaySuccess(beginDate,
+                        endDate);// 支付成功金额
+                if (orderAmtAll == null || orderAmtAll.compareTo(new BigDecimal(0)) == 0) {
                     exportDomainForBD.setOrderAmtAndPayAmtRate(new BigDecimal(0));
-                    continue;
+                }else{
+                    if (orderAmtForPaySuccess == null || orderAmtForPaySuccess.compareTo(new BigDecimal(0)) == 0) {
+                        exportDomainForBD.setOrderAmtAndPayAmtRate(new BigDecimal(0));
+                    }else{
+                        BigDecimal orderAmtAndPayAmtRate = orderAmtForPaySuccess.divide(orderAmtAll, 8,
+                                BigDecimal.ROUND_HALF_UP);
+                        exportDomainForBD.setOrderAmtAndPayAmtRate(orderAmtAndPayAmtRate);
+                    }
                 }
-                BigDecimal orderAmtForPaySuccess = orderService.getSumOrderamtForPaySuccess(beginDate, endDate);// 支付成功金额
-                if(orderAmtForPaySuccess == null || orderAmtForPaySuccess.compareTo(new BigDecimal(0))==0){
-                    exportDomainForBD.setOrderAmtAndPayAmtRate(new BigDecimal(0));
-                    continue;
-                }
-                BigDecimal orderAmtAndPayAmtRate = orderAmtForPaySuccess.divide(orderAmtAll,8,BigDecimal.ROUND_HALF_UP);
-                exportDomainForBD.setOrderAmtAndPayAmtRate(orderAmtAndPayAmtRate);
-                
+
                 // 下单-支付买家数转化率（支付成功买家数/下单买家数）
-                if(confirmCount == 0 || confirmCount == null){
+                if (confirmCount == 0 || confirmCount == null) {
                     exportDomainForBD.setOrderCountAndPayCountRate(new BigDecimal(0));
-                    continue;
+                }else{
+                    BigDecimal orderCountAndPayCountRate = new BigDecimal(confirmPayCount).divide(new BigDecimal(
+                            confirmCount), 8, BigDecimal.ROUND_HALF_UP);
+                    exportDomainForBD.setOrderCountAndPayCountRate(orderCountAndPayCountRate);
                 }
-                BigDecimal orderCountAndPayCountRate = new BigDecimal(confirmPayCount).divide(new BigDecimal(
-                        confirmCount),8,BigDecimal.ROUND_HALF_UP);
-                exportDomainForBD.setOrderCountAndPayCountRate(orderCountAndPayCountRate);
-                
+
                 lists.add(exportDomainForBD);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
+        
         // 导出
         try {
             generateFile(lists);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+        
 
+    }
 
     private void generateFile(List<ExportDomainForBD> dataList) throws IOException {
         // 第一步：声明一个工作薄
@@ -122,9 +138,11 @@ public class ExportToBDScheduleTask {
         HSSFSheet sheet = wb.createSheet("sheet");
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
-        String[] headArr = {"日期","浏览下单转化率(下单买家数/活跃用户数)","浏览-支付买家转化率（支付成功买家数/活跃用户数）","下单-支付金额转化率(支付成功金额/下单金额)","下单-支付买家数转化率（支付成功买家数/下单买家数）"}; 
-        String[] countKeyArr = {"date", "confirmOrderRate", "confirmPayRate", "orderAmtAndPayAmtRate", "orderCountAndPayCountRate"};
-        // 第三步：创建第一行（也可以称为表头）       
+        String[] headArr = { "日期", "浏览下单转化率(下单买家数/活跃用户数)", "浏览-支付买家转化率（支付成功买家数/活跃用户数）",
+                "下单-支付金额转化率(支付成功金额/下单金额)", "下单-支付买家数转化率（支付成功买家数/下单买家数）" };
+        String[] countKeyArr = { "date", "confirmOrderRate", "confirmPayRate", "orderAmtAndPayAmtRate",
+                "orderCountAndPayCountRate" };
+        // 第三步：创建第一行（也可以称为表头）
         HSSFRow row = sheet.createRow(0);
 
         for (int i = 0; i < headArr.length; i++) {
@@ -133,7 +151,7 @@ public class ExportToBDScheduleTask {
             cell.setCellStyle(hssfCellStyle.get(0));
             cell.setCellValue(headArr[i]);
         }
-        
+
         // 向单元格里填充数据
         for (int i = 0; i < dataList.size(); i++) {
             row = sheet.createRow(i + 1);
@@ -142,7 +160,7 @@ public class ExportToBDScheduleTask {
             for (int j = 0; j < countKeyArr.length; j++) {
                 HSSFCell cellContent = row.createCell(j);
                 cellContent.setCellStyle(hssfCellStyle.get(1));
-                if(i == 1){
+                if (i == 1) {
                     sheet.autoSizeColumn(j, true);
                 }
                 cellContent.setCellValue(jsonObject.get(countKeyArr[j]) + "");
@@ -151,7 +169,7 @@ public class ExportToBDScheduleTask {
         }
 
         // 判断文件是否存在 ,没有创建文件
-        FileOutputStream out = new FileOutputStream("/转化率.xls");
+        FileOutputStream out = new FileOutputStream("/percentConversion.xls");
         wb.write(out);
         out.flush();
         out.close();
