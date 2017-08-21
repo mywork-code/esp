@@ -6,6 +6,8 @@ import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -242,4 +244,57 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<OrderInfoEntity>  getJdOrderByOrderStatus(String orderStatus){
         return getSqlSession().selectList("getJdOrderByOrderStatus",orderStatus);
     }
+
+    /**
+     * 下单买家数
+     * @param beginDate
+     * @param endDate 
+     * @return
+     */
+    public Integer getConfirmOrderCount(Date beginDate, Date endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectOne("getConfirmOrderCount",param);
+    }
+
+    /**
+     * 支付买家数
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public Integer getConfirmPayCount(Date beginDate, Date endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectOne("getConfirmPayCount",param);
+    }
+
+    /**
+     * 获取所有下单金额
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public BigDecimal getSumOrderamt(Date beginDate, Date endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectOne("getSumOrderamt",param);
+    }
+
+    /**
+     * 获取所有支付成功金额
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public BigDecimal getSumOrderamtForPaySuccess(Date beginDate, Date endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectOne("getSumOrderamtForPaySuccess",param);
+    }
+    
 }
