@@ -543,6 +543,12 @@ $(function () {
 			                field : 'logisticsStatus',
 			                width : 100,
 			                align : 'center'
+			            },
+			            {
+			                title : '时间',
+			                field : 'signTime',
+			                width : 150,
+			                align : 'center'
 			            }
 			    ]
 		    ],

@@ -2,6 +2,8 @@ package com.apass.esp.service.logistics;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -220,7 +222,7 @@ public class LogisticsService {
                 logisticInfo.setTraces(traces);
                 resultMap.put("logisticInfo", logisticInfo);
                 resultMap.put("logisticTel", originInfo.getPhone());
-                resultMap.put("signTime", traces.get(traces.size() - 1).getAcceptTime());//签收时间
+                resultMap.put("signTime", traces.get(0).getAcceptTime());//签收时间
             }
             logisticInfo.setSuccess(true);
         } catch (Exception e) {
@@ -310,7 +312,7 @@ public class LogisticsService {
         } else if (TrackingmoreStatus.EXCEPTION.getCode().equals(status)) {
             statusDesc = TrackingmoreStatus.EXCEPTION.getMessage();
         } else {
-            statusDesc = TrackingmoreStatus.EXCEPTION.getMessage();
+            statusDesc = TrackingmoreStatus.EXPIRED.getMessage();
         }
         return statusDesc;
     }

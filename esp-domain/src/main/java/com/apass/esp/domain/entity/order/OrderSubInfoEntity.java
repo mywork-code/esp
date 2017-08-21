@@ -417,8 +417,18 @@ public class OrderSubInfoEntity {
      * 更新日期
      */
     private String updateDate;
+    
+    private String signTime;
+    
+    public String getSignTime() {
+		return signTime;
+	}
 
-    public Long getId() {
+	public void setSignTime(String signTime) {
+		this.signTime = signTime;
+	}
+
+	public Long getId() {
         return id;
     }
 
