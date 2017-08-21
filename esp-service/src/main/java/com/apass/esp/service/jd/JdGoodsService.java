@@ -66,6 +66,7 @@ public class JdGoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
+        LOGGER.info("关联京东类目，参数：{}",GsonUtils.toJson(paramMap));
         // 往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
         String cateId = paramMap.get("cateId");// 京东类目id
         String username = paramMap.get("username");// 当前用户
@@ -134,9 +135,8 @@ public class JdGoodsService {
     @Transactional(rollbackFor = Exception.class)
     public List<JdGoods> disRelevanceValidate(Map<String, String> paramMap) throws BusinessException {
         String cateId = paramMap.get("cateId");// 京东类目id
-        List<GoodsInfoEntity> goodsInfos = goodsService.selectByCategoryId3(cateId);
-        if (goodsInfos.size() > 0) {
-            LOGGER.info("上架或待审核商品：{}",GsonUtils.toJson(goodsInfos));
+        boolean b = goodsService.selectGoodsByCatId(cateId);
+        if (b) {
             throw new BusinessException("该分类下有上架或待审核商品，请先将商品下架或驳回。");
         }
 
@@ -198,6 +198,7 @@ public class JdGoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void disRelevanceJdCategory(Map<String, String> paramMap) throws BusinessException {
+        LOGGER.info("取消关联京东类目，参数：{}",GsonUtils.toJson(paramMap));
         List<JdGoods> JdGoodsList = disRelevanceValidate(paramMap);
         List<String> idsGoods = new ArrayList<String>();// 商品表id
         List<Long> idsStock = new ArrayList<Long>();// 库存表id
