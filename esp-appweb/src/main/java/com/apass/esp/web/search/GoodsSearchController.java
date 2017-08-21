@@ -85,18 +85,6 @@ public class GoodsSearchController {
     }
     
     @POST
-    @Path(value = "/addHot")
-    public Response addHotSearchKeys(Map<String, Object> paramMap){
-    	
-    	String searchValue = CommonUtils.getValue(paramMap, "searchValue");
-    	String userId = CommonUtils.getValue(paramMap, "userId");
-    	if(!StringUtils.isBlank(searchValue)){
-    		searchKeyService.addHotSearchKeys(searchValue,userId);
-    	}
-    	return Response.success("添加成功!");
-    }
-    
-    @POST
     @Path(value = "/delete")
     public Response delteSearchKeys(Map<String,Object> paramMap){
     	
@@ -345,7 +333,7 @@ public class GoodsSearchController {
 				searchValueFalge=true;
 				searchValue2=searchValue;
 				//插入数据
-//				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
+				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
 			}
 			
 			if (StringUtils.isEmpty(searchValue)) {
