@@ -1164,6 +1164,7 @@
 			AND t.category_id1 is not null
 			AND	t.category_id2 is not null
 		    AND	t.category_id3 is not null
+		    limit #{index},#{size}
 	  ]]>
 	</select>
 

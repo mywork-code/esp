@@ -86,7 +86,7 @@ public class IndexSyncer {
 
                     LOGGER.info(name + "  sync start....................................");
                     try {
-                        IndexSyncer.this.loadByModifiedTime();
+                        IndexSyncer.this.loadInit();
                     } catch (Exception e) {
                         LOGGER.error(name + " sync error", e);
                     }
@@ -97,7 +97,8 @@ public class IndexSyncer {
         });
     }
 
-    private void loadByModifiedTime() {
+    private void loadInit() {
+
     }
 
     private void loadByUpdate() {

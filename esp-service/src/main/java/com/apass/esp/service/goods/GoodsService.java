@@ -800,13 +800,20 @@ public class GoodsService {
      * 获取上架的商品 <br/>  2017-08-16
      * @return
      */
-    public List<GoodsInfoEntity> selectUpGoods(){
-    	return goodsDao.selectUpGoods();
+    public List<GoodsInfoEntity> selectUpGoods(int index,int size){
+    	return goodsDao.selectUpGoods(index,size);
     }
 
-    public void esInit(){
+    public List<Goods> esInit(int index ,int size){
+        List<GoodsInfoEntity> selectByCategoryId2 = selectUpGoods(index ,size);
+        if(CollectionUtils.isEmpty(selectByCategoryId2)){
+            return Collections.EMPTY_LIST;
+        }
+        return getGoodsList(selectByCategoryId2);
+    }
+
+    public List<Goods> getGoodsList(List<GoodsInfoEntity>selectByCategoryId2){
         List<Goods> goodsList = new ArrayList<>();
-        List<GoodsInfoEntity> selectByCategoryId2 = selectUpGoods();
         for (GoodsInfoEntity g : selectByCategoryId2) {
             Goods goods = GoodsInfoToGoods(g);
             if(null == goods){
@@ -815,8 +822,8 @@ public class GoodsService {
             LOGGER.info("goodsList add goodsId {} ...",goods.getId());
             goodsList.add(goods);
         }
-        IndexManager.createIndex(goodsList, IndexType.GOODS);
         LOGGER.info("goodsList add goodsId {} ...",goodsList.size());
+        return goodsList;
     }
 
     private Goods GoodsInfoToGoods(GoodsInfoEntity g){
