@@ -1,5 +1,6 @@
 package com.apass.esp.schedule;
 
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
@@ -39,16 +40,18 @@ public class EsInitScheduleTask {
     /**
      * 0 0 12 ? * WED 表示每个星期三中午12点
      */
+    //@Scheduled(cron = "0 0/1 * * * ?")
     @Scheduled(cron = "0 0 12 ? * WED")
     public void esInitScheduleTask() {
         int index = 0;
         final int BACH_SIZE = 500;
         while (true) {
-            List<Goods> list = goodsService.esInit(index, BACH_SIZE);
-            if (CollectionUtils.isEmpty(list)) {
+            List<GoodsInfoEntity> selectByCategoryId2 = goodsService.selectUpGoods(index, BACH_SIZE);
+            if (CollectionUtils.isEmpty(selectByCategoryId2)) {
                 break;
             }
-            index += list.size();
+            List<Goods> list = goodsService.getGoodsList(selectByCategoryId2);
+            index += selectByCategoryId2.size();
             IndexManager.createIndex(list, IndexType.GOODS);
         }
     }

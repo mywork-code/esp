@@ -821,18 +821,17 @@ public class GoodsService {
     public List<Goods> getGoodsList(List<GoodsInfoEntity> selectByCategoryId2) {
         List<Goods> goodsList = new ArrayList<>();
         for (GoodsInfoEntity g : selectByCategoryId2) {
-            Goods goods = GoodsInfoToGoods(g);
+            Goods goods = goodsInfoToGoods(g);
             if (null == goods) {
                 continue;
             }
             LOGGER.info("goodsList add goodsId {} ...", goods.getId());
             goodsList.add(goods);
         }
-        LOGGER.info("goodsList add goodsId {} ...", goodsList.size());
         return goodsList;
     }
 
-    private Goods GoodsInfoToGoods(GoodsInfoEntity g) {
+    private Goods goodsInfoToGoods(GoodsInfoEntity g) {
         if (g == null) {
             return null;
         }
