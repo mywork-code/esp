@@ -55,13 +55,7 @@ public class EsSaleVolumeScheduleTask {
         }
         List<GoodsInfoEntity> goodsInfoEntityList = new ArrayList<>();
         for (String goodsId : goodsIds) {
-            GoodsBasicInfoEntity goodsBasicInfoEntity = goodsService.serchGoodsByGoodsId(goodsId);
-            GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
-            BeanCopier beanCopier = BeanCopier.create(goodsInfoEntity.getClass(), goodsBasicInfoEntity.getClass(), false);
-            try {
-                beanCopier.copy(goodsInfoEntity, goodsBasicInfoEntity, null);
-            } catch (Exception e) {
-            }
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             goodsInfoEntityList.add(goodsInfoEntity);
         }
         List<Goods> goods = goodsService.getGoodsList(goodsInfoEntityList);
