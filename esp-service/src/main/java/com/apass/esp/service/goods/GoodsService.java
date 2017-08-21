@@ -952,6 +952,9 @@ public class GoodsService {
             } else {
                 goods.setGoodsSkuAttr(String.valueOf(params.get("minSkuAttr")));
             }
+            if(StringUtils.isBlank(goods.getGoodsSkuAttr())){
+            	goods.setGoodsSkuAttr("");
+            }
             goods.setGoodsSkuAttrPinyin(HanyuPinyinHelper.getPinyinString(goods.getGoodsSkuAttr()));
         } catch (Exception e) {
             e.getStackTrace();

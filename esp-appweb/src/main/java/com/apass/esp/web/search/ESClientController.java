@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +18,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsVo;
+import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 
@@ -34,6 +39,31 @@ import com.apass.gfb.framework.utils.CommonUtils;
 @RequestMapping("es")
 public class ESClientController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ESClientController.class);
+    
+    @Autowired
+    private GoodsService goodsService;
+    
+    @RequestMapping(value = "addData", method = RequestMethod.POST)
+    @ResponseBody
+    public Response addData(@RequestBody Map<String, Object> paramMap) {
+        int index = 0;
+        final int BACH_SIZE = 500;
+        try {
+	        while (true) {
+	            List<GoodsInfoEntity> goodsList = goodsService.selectUpGoods(index, BACH_SIZE);
+	            if (CollectionUtils.isEmpty(goodsList)) {
+	                break;
+	            }
+	            List<Goods> list = goodsService.getGoodsList(goodsList);
+	            index += goodsList.size();
+	            IndexManager.createIndex(list, IndexType.GOODS);
+	        }
+        }catch(Exception e){
+        	LOGGER.error("----------addData----------", e);
+        	return Response.fail(e.getMessage()+"xxxxxx");
+        }
+        return Response.successResponse();
+    }
 
     /**
      * 查询
