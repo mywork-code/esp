@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -20,9 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -327,13 +326,27 @@ public class GoodsSearchController {
 	public Response search2(@RequestBody Map<String, Object> paramMap) {
 		try {
 			GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
-
+			
+			String deviceId = CommonUtils.getValue(paramMap, "deviceId");//设备号
+	    	String userId = CommonUtils.getValue(paramMap, "userId");//用户号
 			String searchValue = CommonUtils.getValue(paramMap, "searchValue");
 			String sort = CommonUtils.getValue(paramMap, "sort");// 排序字段(default:默认;amount:销量;new:新品;price：价格)
 			String order = CommonUtils.getValue(paramMap, "order");// 顺序(desc（降序），asc（升序）)
 			String page = CommonUtils.getValue(paramMap, "page");
 			String rows = CommonUtils.getValue(paramMap, "rows");
-
+			
+			String regex="^[a-zA-Z0-9\\u4e00-\\u9fa5\\ ()]+$";
+			Pattern pattern = Pattern.compile(regex); 
+			Matcher matcher = pattern.matcher(searchValue); 
+			String searchValue2 = "";
+			Boolean searchValueFalge=false;
+			if(matcher.matches()){
+				searchValueFalge=true;
+				searchValue2=searchValue;
+				//插入数据
+//				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
+			}
+			
 			if (StringUtils.isEmpty(searchValue)) {
 				LOGGER.error("搜索内容不能为空！");
 				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -380,9 +393,12 @@ public class GoodsSearchController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 
 			long before = System.currentTimeMillis();
-			Pagination<Goods> pagination = IndexManager.goodSearch(goodsSearchCondition,
-					goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),
-					(pages - 1) * row, row);
+			Pagination<Goods> pagination = new Pagination<>();
+			if (searchValueFalge) {
+				pagination = IndexManager.goodSearch(goodsSearchCondition,
+						goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),
+						(pages - 1) * row, row);
+			}
 			List<GoodsVo> list = new ArrayList<GoodsVo>();
 			for (Goods goods : pagination.getDataList()) {
 				list.add(goodsToGoodVo(goods));
