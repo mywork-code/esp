@@ -237,6 +237,8 @@ public class OrderQueryController {
                     LogisticsResponseDto logisticsResponseDto = (LogisticsResponseDto) signleTrackingsMap
                         .get("logisticInfo");
                     orderSubInfoEntity.setLogisticsStatus(logisticsResponseDto.getState());
+                    String signTime = String.valueOf(signleTrackingsMap.get("signTime"));
+                    orderSubInfoEntity.setSignTime(StringUtils.isBlank(signTime)?"":signTime);
                     logisticsFlag = logisticsResponseDto.isSuccess();
                 }
             } catch (BusinessException e) {
