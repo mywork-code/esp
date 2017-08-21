@@ -827,7 +827,6 @@ public class GoodsService {
             LOGGER.info("goodsList add goodsId {} ...", goods.getId());
             goodsList.add(goods);
         }
-        LOGGER.info("goodsList add goodsId {} ...", goodsList.size());
         return goodsList;
     }
 

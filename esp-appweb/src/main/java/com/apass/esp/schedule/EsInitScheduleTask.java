@@ -40,12 +40,12 @@ public class EsInitScheduleTask {
     /**
      * 0 0 12 ? * WED 表示每个星期三中午12点
      */
+    //@Scheduled(cron = "0 0/1 * * * ?")
     @Scheduled(cron = "0 0 12 ? * WED")
     public void esInitScheduleTask() {
         int index = 0;
         final int BACH_SIZE = 500;
         while (true) {
-
             List<GoodsInfoEntity> selectByCategoryId2 = goodsService.selectUpGoods(index, BACH_SIZE);
             if (CollectionUtils.isEmpty(selectByCategoryId2)) {
                 break;
