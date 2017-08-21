@@ -125,7 +125,7 @@ public class GoodsSearchController {
     }
     
     @POST
-	@Path(value = "/search")
+	@Path(value = "/search2")
 	public Response search(Map<String, Object> paramMap) {
 		try {
 			String searchValue = CommonUtils.getValue(paramMap, "searchValue");
@@ -311,7 +311,7 @@ public class GoodsSearchController {
      * @return
      */
 	@POST
-	@Path(value = "/search2")
+	@Path(value = "/search")
 	public Response search2(@RequestBody Map<String, Object> paramMap) {
 		try {
 			GoodsSearchCondition goodsSearchCondition = new GoodsSearchCondition();
