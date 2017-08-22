@@ -135,7 +135,7 @@ public class ESClientController {
         }
         long after = System.currentTimeMillis();
         System.out.println("用时：" + (after - before));
-        return Response.successResponse(JsonUtil.toJsonString(pagination));
+        return Response.successResponse(JsonUtil.toJsonString(list));
     }
 
     public GoodsVo goodsToGoodVo(Goods goods) {

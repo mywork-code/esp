@@ -2,17 +2,12 @@ package com.apass.esp.service.goods;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
-
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.esp.search.dao.GoodsEsDao;
-import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.utils.HanyuPinyinHelper;
-import com.apass.esp.service.jd.JdGoodsInfoService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -30,6 +27,8 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
@@ -37,8 +36,12 @@ import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.utils.Pinyin4jUtils;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
@@ -47,10 +50,10 @@ import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
-import com.google.common.collect.Lists;
 
 @Service
 public class GoodsService {
@@ -873,24 +876,24 @@ public class GoodsService {
         }
         goods.setCategoryName1(cate1.getCategoryName());
         goods.setCategoryId1(g.getCategoryId1());
-        goods.setCategoryName1Pinyin(HanyuPinyinHelper.getPinyinString(cate1.getCategoryName()));
+        goods.setCategoryName1Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate1.getCategoryName()));
 
         Category cate2 = categoryMapper.selectByPrimaryKey(g.getCategoryId2());
         if (null == cate2) {
             return null;
         }
         goods.setCategoryName2(cate2.getCategoryName());
-        goods.setCategoryName2Pinyin(HanyuPinyinHelper.getPinyinString(cate2.getCategoryName()));
+        goods.setCategoryName2Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate2.getCategoryName()));
         goods.setCategoryId3(g.getCategoryId3());
         Category cate3 = categoryMapper.selectByPrimaryKey(g.getCategoryId3());
         if (null == cate3) {
             return null;
         }
         goods.setCategoryName3(cate3.getCategoryName());
-        goods.setCategoryName3Pinyin(HanyuPinyinHelper.getPinyinString(cate3.getCategoryName()));
+        goods.setCategoryName3Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate3.getCategoryName()));
 
         goods.setGoodsName(g.getGoodsName());
-        goods.setGoodsNamePinyin(HanyuPinyinHelper.getPinyinString(g.getGoodsName()));
+        goods.setGoodsNamePinyin(Pinyin4jUtils.getPinyinToLowerCase(g.getGoodsName()));
         goods.setDelistTime(g.getDelistTime());
         goods.setGoodsLogoUrl(g.getGoodsLogoUrl());
         if (StringUtils.equals(g.getSource(), SourceType.JD.getCode())) {
@@ -907,7 +910,7 @@ public class GoodsService {
         goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
         goods.setCreateDate(g.getCreateDate());
         goods.setGoodsTitle(g.getGoodsTitle());
-        goods.setGoodsTitlePinyin(HanyuPinyinHelper.getPinyinString(g.getGoodsTitle()));
+        goods.setGoodsTitlePinyin(Pinyin4jUtils.getPinyinToLowerCase(g.getGoodsTitle()));
         goods.setListTime(g.getListTime());
         goods.setListTimeString(DateFormatUtil.dateToString(g.getListTime(), ""));
         goods.setNewCreatDate(g.getNewCreatDate());
@@ -955,7 +958,7 @@ public class GoodsService {
             if(StringUtils.isBlank(goods.getGoodsSkuAttr())){
             	goods.setGoodsSkuAttr("");
             }
-            goods.setGoodsSkuAttrPinyin(HanyuPinyinHelper.getPinyinString(goods.getGoodsSkuAttr()));
+            goods.setGoodsSkuAttrPinyin(Pinyin4jUtils.getPinyinToLowerCase(goods.getGoodsSkuAttr()));
         } catch (Exception e) {
             e.getStackTrace();
             return null;
