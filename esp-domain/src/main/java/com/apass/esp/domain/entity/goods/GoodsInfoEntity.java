@@ -3,16 +3,15 @@
  */
 package com.apass.esp.domain.entity.goods;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @description
@@ -172,12 +171,12 @@ public class GoodsInfoEntity {
     /**
      * 商品来源标识(如：jd)
      */
-    private String source = "";
+    private String source;
 
     /**
      * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
      */
-    private String externalId = "";
+    private String externalId;
 
     /**
      * 商品价格

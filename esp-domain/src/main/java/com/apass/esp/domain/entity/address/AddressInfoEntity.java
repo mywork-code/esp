@@ -21,21 +21,21 @@ public class AddressInfoEntity {
 
     private Long userId;
 
-    private String provinceCode = "";
+    private String provinceCode ;
 
     private String province;
 
-    private String cityCode = "";
+    private String cityCode ;
 
     private String city;
 
-    private String districtCode = "";
+    private String districtCode ;
 
     private String district;
 
-    private String townsCode = "";
+    private String townsCode ;
 
-    private String towns = "";
+    private String towns ;
 
     private String address;
 

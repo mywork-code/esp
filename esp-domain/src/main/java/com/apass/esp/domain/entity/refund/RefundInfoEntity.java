@@ -1,11 +1,10 @@
 package com.apass.esp.domain.entity.refund;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.apass.gfb.framework.annotation.MyBatisEntity;
 import org.apache.commons.lang3.StringUtils;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 退货信息实体
@@ -112,7 +111,7 @@ public class RefundInfoEntity {
     /**
      * 京东退换货返回方式
      */
-    private String jdReturnType = "";
+    private String jdReturnType ;
 
     public String getJdReturnType() {
         if(StringUtils.isBlank(jdReturnType)){

@@ -1,10 +1,9 @@
 package com.apass.esp.domain.entity.refund;
 
-import java.math.BigDecimal;
-
+import com.apass.gfb.framework.annotation.MyBatisEntity;
 import org.apache.commons.lang3.StringUtils;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
+import java.math.BigDecimal;
 
 /**
  * 退货详情表
@@ -37,12 +36,12 @@ public class RefundDetailInfoEntity {
     /**
      * 来源
      */
-    private String source = "";
+    private String source ;
 
     /**
      * 售后状态
      */
-    private String status = "";
+    private String status ;
 
     /**
      * 商品id
