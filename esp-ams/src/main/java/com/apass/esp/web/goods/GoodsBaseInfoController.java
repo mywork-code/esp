@@ -356,6 +356,7 @@ public class GoodsBaseInfoController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
             HttpServletRequest request) {
+        LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
         String message = SUCCESS;
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
                 || pageModelEdit.getListTime().equals("") || pageModelEdit.getDelistTime().equals("")) {
@@ -363,7 +364,7 @@ public class GoodsBaseInfoController {
             return Response.fail(message);
         }
         try {
-            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
+//            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
             goodsService.updateService(pageModelEdit);
         } catch (Exception e) {
