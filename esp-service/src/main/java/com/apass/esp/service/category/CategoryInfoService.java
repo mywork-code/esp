@@ -539,8 +539,8 @@ public class CategoryInfoService {
         goodsCategoryDto.setGoodsName(goodsInfoEntity.getGoodsName());
         goodsCategoryDto.setGoodsTitle(goodsInfoEntity.getGoodsTitle());
         goodsCategoryDto.setGoodsPrice((BigDecimal) result.get("minPrice"));
-        goodsCategoryDto.setFirstPrice(((BigDecimal) result.get("minPrice")).divide(new BigDecimal(10)).setScale(2,
-                BigDecimal.ROUND_FLOOR));
+        goodsCategoryDto.setFirstPrice(((BigDecimal) result.get("minPrice")).multiply(new BigDecimal("0.1")).setScale(2,
+                BigDecimal.ROUND_DOWN));
         goodsCategoryDto.setSource(goodsInfoEntity.getSource());
 
         return goodsCategoryDto;
