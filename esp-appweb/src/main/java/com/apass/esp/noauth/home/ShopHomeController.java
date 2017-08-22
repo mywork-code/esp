@@ -254,43 +254,46 @@ public class ShopHomeController {
                 returnMap.put("banners", banners);
             }
 
-            for (GoodsBasicInfoEntity goodsInfo : goodsList) {
-                if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
-                    ActivityInfoEntity param = new ActivityInfoEntity();
-                    param.setGoodsId(goodsInfo.getGoodId());
-                    param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-                    List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-                    Map<String, Object> result = new HashMap<>();
-                    if (null != activitys && activitys.size() > 0) {
-                        result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
-                        BigDecimal price = (BigDecimal) result.get("minPrice");
-                        Long minPriceStockId = (Long) result.get("minPriceStockId");
-                        goodsInfo.setGoodsPrice(price);
-                        goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-                        goodsInfo.setGoodsStockId(minPriceStockId);
-                    } else {
-                        BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
-                                goodsInfo.getGoodsStockId());
-                        goodsInfo.setGoodsPrice(price);
-                        goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-                    }
-                    // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-                    // Long marketPrice =
-                    // goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
-                    // .getGoodId());
-                    // goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-
-                    String logoUrl = goodsInfo.getGoodsLogoUrl();
-                    String siftUrl = goodsInfo.getGoodsSiftUrl();
-
-                    goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
-                    goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
-                    goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-                    goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
-                }
-            }
+			for (GoodsBasicInfoEntity goodsInfo : goodsList) {
+				if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
+					ActivityInfoEntity param = new ActivityInfoEntity();
+					param.setGoodsId(goodsInfo.getGoodId());
+					param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+					List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+					Map<String, Object> result = new HashMap<>();
+					if (null != activitys && activitys.size() > 0) {
+						result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
+						BigDecimal price = (BigDecimal) result.get("minPrice");
+						Long minPriceStockId = (Long) result.get("minPriceStockId");
+						goodsInfo.setGoodsPrice(price);
+						goodsInfo.setGoodsPriceFirst(
+								(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+						goodsInfo.setGoodsStockId(minPriceStockId);
+					} else {
+						BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+								goodsInfo.getGoodsStockId());
+						goodsInfo.setGoodsPrice(price);
+						goodsInfo.setGoodsPriceFirst(
+								(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+					}
+					// 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+					// Long marketPrice =
+					// goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
+					// .getGoodId());
+					// goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+					String logoUrl = goodsInfo.getGoodsLogoUrl();
+					String siftUrl = goodsInfo.getGoodsSiftUrl();
+					if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
+						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+					} else {
+						goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+						goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+					}
+					goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+					goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
+				}
+			}
             returnMap.put("goodsList", goodsList);
             return Response.successResponse(returnMap);
         } catch (Exception e) {

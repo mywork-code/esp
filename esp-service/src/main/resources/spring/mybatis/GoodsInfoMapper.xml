@@ -638,7 +638,8 @@
 			a.goods_title goodsTitle,
 			a.goods_sell_pt goodsSellPt,
 			a.goods_logo_url goodsLogoUrl,
-			c.minPrice goodsPrice
+			c.minPrice goodsPrice,
+			a.source   source
 		FROM
 			t_esp_goods_base_info a,
 		 (
@@ -749,7 +750,8 @@
 			a.goods_title goodsTitle,
 			a.goods_sell_pt goodsSellPt,
 			a.goods_logo_url goodsLogoUrl,
-			c.minPrice marketPrice
+			c.minPrice marketPrice,
+			a.source    source
 		FROM
 			t_esp_goods_base_info a,
 			(
