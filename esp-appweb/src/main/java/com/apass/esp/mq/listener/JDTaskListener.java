@@ -9,6 +9,8 @@ import com.apass.esp.domain.enums.*;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.order.OrderService;
@@ -19,6 +21,7 @@ import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -59,6 +62,9 @@ public class JDTaskListener implements MessageListener {
 
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
+    
+    @Autowired
+    private GoodsEsDao goodsEsDao;
 
     @Override
     public void onMessage(Message message) {
@@ -87,8 +93,12 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setDelistTime(new Date());
                     goodsInfoEntity.setUpdateUser("jdAdmin");
                     try {
+                        Integer count = goodsService.updateService(goodsInfoEntity);
                         //TODO
-                        goodsService.updateService(goodsInfoEntity);
+                        if(count == 1){
+                            Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
+                            goodsEsDao.delete(goods);
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -268,7 +278,11 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
                     //TODO
-                    goodsService.updateService(goodsInfoEntity);
+                    Integer count = goodsService.updateService(goodsInfoEntity);
+                    if(count == 1){
+                        Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
+                        goodsEsDao.delete(goods);
+                    }
                 } catch (Exception e) {
                    // throw new RuntimeException(e);
                 }

@@ -42,6 +42,6 @@ public enum OperatorType {
         return name;
     }
 
-    abstract public <T extends IdAble> void operator(String index, IndexType type, T data);
 
+    abstract public <T extends IdAble> void operator(String index, IndexType type, T data);
 }
