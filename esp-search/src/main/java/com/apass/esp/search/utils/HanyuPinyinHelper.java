@@ -125,7 +125,7 @@ public class HanyuPinyinHelper {
     }
     
     public static void main(String[] args) {
-        HanyuPinyinHelper hanyuPinyinHelper = new HanyuPinyinHelper() ;
-        System.out.println(hanyuPinyinHelper.toHanyuPinyin("不见不散（See me here） BV350 户外骑行无线蓝牙音箱 自行车单车防水低音炮便携式插卡音响 绿色"));
+    	
+    	System.out.println(getPinyinString(""));
     }
 }

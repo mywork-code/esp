@@ -87,6 +87,7 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setDelistTime(new Date());
                     goodsInfoEntity.setUpdateUser("jdAdmin");
                     try {
+                        //TODO
                         goodsService.updateService(goodsInfoEntity);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -266,6 +267,7 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
+                    //TODO
                     goodsService.updateService(goodsInfoEntity);
                 } catch (Exception e) {
                    // throw new RuntimeException(e);
