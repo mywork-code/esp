@@ -431,17 +431,18 @@ public class GoodsSearchController {
 				searchKeyService.addCommonSearchKeys(searchValue2, userId, deviceId);
 			}
 
-			if (StringUtils.isEmpty(searchValue)) {
-				LOGGER.error("搜索内容不能为空！");
-				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-			}
 
 			if (!StringUtils.equalsIgnoreCase("ASC", order) && !StringUtils.equalsIgnoreCase("DESC", order)) {
 				order = "DESC";// 降序
 			}
-
-			int pages = Integer.parseInt(page);
-			int row = Integer.parseInt(rows);
+			Integer pages = null;
+			Integer row = null;
+			if (StringUtils.isNotEmpty(rows)) {
+				row = Integer.valueOf(rows);
+			} else {
+				row = 20;
+			}
+			pages = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
 
 			if (CategorySort.CATEGORY_SortA.getCode().equals(sort)) {
 				if (StringUtils.equalsIgnoreCase("DESC", order)) {
