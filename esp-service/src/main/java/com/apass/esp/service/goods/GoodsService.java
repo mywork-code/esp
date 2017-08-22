@@ -938,7 +938,7 @@ public class GoodsService {
             }
             goods.setGoodsPrice(new BigDecimal(String.valueOf(params.get("minPrice"))));
             goods.setFirstPrice(new BigDecimal(String.valueOf(params.get("minPrice"))).multiply(
-                    new BigDecimal(0.1)).setScale(2, BigDecimal.ROUND_CEILING));
+                    new BigDecimal(0.1)).setScale(2, BigDecimal.ROUND_DOWN));
             goods.setGoodsStockId(Long.valueOf(String.valueOf(params.get("minPriceStockId"))));
             if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                 Map<String, Object> descMap = new HashMap<String, Object>();
