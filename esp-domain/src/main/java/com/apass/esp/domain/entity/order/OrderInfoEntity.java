@@ -1,11 +1,10 @@
 package com.apass.esp.domain.entity.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.apass.gfb.framework.annotation.MyBatisEntity;
 import org.apache.commons.lang3.StringUtils;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商品订单实体
@@ -183,22 +182,22 @@ public class OrderInfoEntity {
     /**
      * 订单来源(如：京东（jd）)
      */
-    private String source = "";
+    private String source ;
 
     /**
      * 订单的外部Id（如：京东 订单Id）
      */
-    private String extOrderId = "";
+    private String extOrderId ;
 
     /**
      * 预占库存状态
      */
-    private String preStockStatus = "";
+    private String preStockStatus ;
 
     /**
      * 是否为京东父Id
      */
-    private String extParentId = "";
+    private String extParentId ;
 
     public String getDeviceType() {
         return deviceType;

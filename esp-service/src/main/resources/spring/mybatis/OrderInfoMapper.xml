@@ -404,7 +404,7 @@
             <if test="telephone != null and telephone !='' ">
                 telephone = #{telephone, jdbcType=VARCHAR},
             </if>
-            <if test="addressId != null">
+            <if test="addressId != null and addressId !=''">
                 addressId = #{addressId, jdbcType=BIGINT},
             </if>
             <if test="logisticsId != null and logisticsId!=''">
@@ -413,10 +413,10 @@
 			<if test="logisticsSignDate != null ">
 				logistics_sign_time = #{logisticsSignDate, jdbcType=TIMESTAMP},
 			</if>
-			<if test="mainOrderId != null ">
+			<if test="mainOrderId != null and mainOrderId !=''">
                 main_order_id = #{mainOrderId, jdbcType=VARCHAR},
             </if>
-			<if test="extParentId != null ">
+			<if test="extParentId != null and extParentId !=''">
 				ext_parent_id = #{extParentId, jdbcType=VARCHAR},
 			</if>
         </set>
