@@ -124,8 +124,4 @@ public class HanyuPinyinHelper {
         return hanyupinyin;
     }
     
-    public static void main(String[] args) {
-    	
-    	System.out.println(getPinyinString(""));
-    }
 }
