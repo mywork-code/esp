@@ -80,11 +80,11 @@ public class IndexManager<T> {
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder
-                .should(QueryBuilders.termQuery("goodsNamePinyin",  value ))
-                .should(QueryBuilders.termQuery("categoryName1Pinyin",  value))
-                .should(QueryBuilders.termQuery("categoryName2Pinyin",  value ))
-                .should(QueryBuilders.termQuery("categoryName3Pinyin",  value))
-                .should(QueryBuilders.termQuery("goodsSkuAttrPinyin",  value ));
+                .should(QueryBuilders.wildcardQuery("goodsNamePinyin",  "*"+value+"*" ))
+                .should(QueryBuilders.wildcardQuery("categoryName1Pinyin",  "*"+value+"*"))
+                .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*"+ value+"*" ))
+                .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*"+ value+"*"))
+                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*"+ value+"*" ));
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 
