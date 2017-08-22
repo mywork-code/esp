@@ -113,8 +113,8 @@ public class IndexSyncer {
             try {
                 updated.getType().operator(esprop.getIndice(), indexType, updated.getObject());
             } catch (Exception e) {
-                LOGGER.error("in " + name + "update index error");
-                indexType.offerQueue(updated);
+                LOGGER.error("in " + name + "update index error",e);
+                //indexType.offerQueue(updated);
             }
         }
     }

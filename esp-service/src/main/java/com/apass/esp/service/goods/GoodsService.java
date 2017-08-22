@@ -859,7 +859,7 @@ public class GoodsService {
         return goodsList;
     }
 
-    private Goods goodsInfoToGoods(GoodsInfoEntity g) {
+    public Goods goodsInfoToGoods(GoodsInfoEntity g) {
         if (g == null) {
             return null;
         }

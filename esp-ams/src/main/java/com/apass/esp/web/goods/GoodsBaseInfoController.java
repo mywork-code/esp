@@ -41,6 +41,8 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -56,6 +58,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -99,6 +102,9 @@ public class GoodsBaseInfoController {
 
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    
+    @Autowired
+    private GoodsEsDao goodsEsDao;
 
     /**
      * 图片服务器地址
@@ -641,7 +647,13 @@ public class GoodsBaseInfoController {
         entity.setId(Long.valueOf(id));
         entity.setStatus(GoodStatus.GOOD_DOWN.getCode());
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-        goodsService.updateService(entity);
+        Integer count = goodsService.updateService(entity);
+        if(count == 1){
+            //TODO
+            GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
+            Goods goods = goodsService.goodsInfoToGoods(entity2);
+            goodsEsDao.delete(goods);
+        }
         return SUCCESS;
     }
 
@@ -672,7 +684,18 @@ public class GoodsBaseInfoController {
                     }
                     entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                     entity.setRemark(message);
-                    goodsService.updateService(entity);
+                    Integer count = goodsService.updateService(entity);
+                    if(count == 1){
+                        //TODO
+                        GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
+                        Goods goods = goodsService.goodsInfoToGoods(entity2);
+                        goodsEsDao.add(goods);
+//                        if(add){
+//                            LOGGER.info("添加索引成功，添加内容:{}",GsonUtils.toJson(goods));
+//                        }else{
+//                            LOGGER.info("添加索引失败，失败内容:{}",GsonUtils.toJson(goods));
+//                        }
+                    }
                 }
             }
         }
