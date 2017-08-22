@@ -84,7 +84,13 @@ public class IndexManager<T> {
                 .should(QueryBuilders.wildcardQuery("categoryName1Pinyin",  "*"+value+"*"))
                 .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*"+ value+"*" ))
                 .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*"+ value+"*"))
-                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*"+ value+"*" ));
+                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*"+ value+"*" ))
+                .should(QueryBuilders.queryStringQuery(value).field("goodsNamePinyin").field("categoryName1Pinyin").field("categoryName2Pinyin").field("categoryName3Pinyin").field("goodsSkuAttrPinyin"))
+                .should(QueryBuilders.termQuery("goodsNamePinyin",  value ))
+                .should(QueryBuilders.termQuery("categoryName1Pinyin",  value))
+                .should(QueryBuilders.termQuery("categoryName2Pinyin",  value ))
+                .should(QueryBuilders.termQuery("categoryName3Pinyin",  value))
+                .should(QueryBuilders.termQuery("goodsSkuAttrPinyin",  value ));
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 
