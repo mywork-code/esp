@@ -100,6 +100,7 @@ public class ESClientManager {
             String esMapper = type.getMapper();
             InputStream in = ESClientManager.class.getResourceAsStream(esMapper);
             String mappingStr = IOUtils.toString(in).trim();
+            IOUtils.closeQuietly(in);
             c.preparePutMapping(indice).setType(type.getDataName()).setSource(mappingStr).get();
         }
     }

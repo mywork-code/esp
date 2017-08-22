@@ -63,6 +63,9 @@ public class Configs {
             fos.close();
         } catch (IOException e) {
             LOGGER.error("get config error ...");
+        }finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(esIn);
         }
         try {
             new IndexSyncer(IndexType.GOODS).start();

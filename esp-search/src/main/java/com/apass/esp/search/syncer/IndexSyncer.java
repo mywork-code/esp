@@ -40,6 +40,8 @@ public class IndexSyncer {
             esprop.setIndice(properties.getProperty("esIndice"));
         } catch (IOException e) {
             LOGGER.error("get es config error ...");
+        }finally {
+            IOUtils.closeQuietly(esIn);
         }
     }
 
