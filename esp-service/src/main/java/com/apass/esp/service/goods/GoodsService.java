@@ -958,7 +958,12 @@ public class GoodsService {
             if(StringUtils.isBlank(goods.getGoodsSkuAttr())){
             	goods.setGoodsSkuAttr("");
             }
-            goods.setGoodsSkuAttrPinyin(Pinyin4jUtils.getPinyinToLowerCase(goods.getGoodsSkuAttr()));
+            if(StringUtils.isNotEmpty(goods.getGoodsSkuAttr())){
+                goods.setGoodsSkuAttrPinyin(Pinyin4jUtils.getPinyinToLowerCase(goods.getGoodsSkuAttr()));
+            }else{
+                goods.setGoodsSkuAttrPinyin("");
+
+            }
         } catch (Exception e) {
             e.getStackTrace();
             return null;
