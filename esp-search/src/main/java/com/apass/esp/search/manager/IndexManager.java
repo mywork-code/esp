@@ -1,13 +1,15 @@
 package com.apass.esp.search.manager;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,15 +30,12 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.apass.esp.search.condition.GoodsSearchCondition;
-import com.apass.esp.search.entity.IdAble;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.utils.ESDataUtil;
-import com.apass.esp.search.utils.Esprop;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.search.utils.PropertiesUtils;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
@@ -67,10 +66,10 @@ public class IndexManager<T> {
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())||Pinyin4jUtil.isContainSpecial(condition.getGoodsName())) {
             MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
                     "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
-            multiMatchQueryBuilder.field("categoryName1", 2f);
+            multiMatchQueryBuilder.field("categoryName1", 0.8f);
             multiMatchQueryBuilder.field("categoryName2", 1f);
             multiMatchQueryBuilder.field("categoryName3", 1.5f);
-            multiMatchQueryBuilder.field("goodsName", 1f);
+            multiMatchQueryBuilder.field("goodsName", 2f);
             multiMatchQueryBuilder.field("goodsSkuAttr", 0.8f);
             Pagination<Goods> goodsPagination =
                     search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
@@ -90,8 +89,8 @@ public class IndexManager<T> {
                 .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*" + value + "*").boost(1f))
                 .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*" + value + "*").boost(1.5f))
                 .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*" + value + "*").boost(0.8f))
-                .should(QueryBuilders.queryStringQuery(value).field("goodsNamePinyin", 1.5f)
-                        .field("categoryName1Pinyin", 2f)
+                .should(QueryBuilders.queryStringQuery(value).field("goodsNamePinyin", 2f)
+                        .field("categoryName1Pinyin", 0.8f)
                         .field("categoryName2Pinyin", 1f)
                         .field("categoryName3Pinyin", 1.5f)
                         .field("goodsSkuAttrPinyin", 0.8f))
