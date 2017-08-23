@@ -21,6 +21,7 @@ import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,9 +95,9 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setUpdateUser("jdAdmin");
                     try {
                         Integer count = goodsService.updateService(goodsInfoEntity);
-                        //TODO
                         if(count == 1){
                             Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
+                            LOGGER.info("监听京东商品下架删除索引传递的参数:{}",GsonUtils.toJson(goods));
                             goodsEsDao.delete(goods);
                         }
                     } catch (Exception e) {
@@ -277,10 +278,10 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
-                    //TODO
                     Integer count = goodsService.updateService(goodsInfoEntity);
                     if(count == 1){
                         Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
+                        LOGGER.info("监听京东商品池删除,删除索引传递的参数:{}",GsonUtils.toJson(goods));
                         goodsEsDao.delete(goods);
                     }
                 } catch (Exception e) {

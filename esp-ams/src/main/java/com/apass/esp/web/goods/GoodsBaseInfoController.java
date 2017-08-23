@@ -650,9 +650,9 @@ public class GoodsBaseInfoController {
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
         Integer count = goodsService.updateService(entity);
         if(count == 1){
-            //TODO
             GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
             Goods goods = goodsService.goodsInfoToGoods(entity2);
+            LOGGER.info("商品下架，删除索引传递的参数:{}",GsonUtils.toJson(goods));
             goodsEsDao.delete(goods);
         }
         return SUCCESS;
@@ -689,7 +689,7 @@ public class GoodsBaseInfoController {
                     if(count == 1){
                         GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
-                        LOGGER.info("添加索引传递的参数:{}",GsonUtils.toJson(goods));
+                        LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));
                         goodsEsDao.add(goods);
 //                        if(add){
 //                            LOGGER.info("添加索引成功，添加内容:{}",GsonUtils.toJson(goods));
