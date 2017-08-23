@@ -197,6 +197,7 @@ public class IndexManager<T> {
         if (!StringUtils.isEmpty(sortField)) {
             serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
+        serachBuilder.addSort("_score",SortOrder.DESC);
         if (0 != size) {
             serachBuilder.setFrom(from).setSize(size);
         }
