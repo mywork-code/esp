@@ -54,7 +54,7 @@ public class IndexManager<T> {
             esprop.setIndice(properties.getProperty("esIndice"));
         } catch (IOException e) {
             LOGGER.error("get es config error ...");
-        }finally {
+        } finally {
             IOUtils.closeQuietly(esIn);
         }
     }
@@ -64,18 +64,14 @@ public class IndexManager<T> {
      */
     public static <Goods> Pagination<Goods> goodSearch(GoodsSearchCondition condition, String sortField, boolean desc, int from, int size) {
         String value = condition.getGoodsName();
-        if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())) {
+        if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())||Pinyin4jUtil.isContainSpecial(condition.getGoodsName())) {
             MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
                     "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
-            Pagination<Goods> goodsPagination =
-                    search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
-            if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
-                return goodsPagination;
-            }
-        }
-        if(Pinyin4jUtil.isContainSpecial(condition.getGoodsName())){
-            MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
-                    "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
+            multiMatchQueryBuilder.field("categoryName1", 2f);
+            multiMatchQueryBuilder.field("categoryName2", 1f);
+            multiMatchQueryBuilder.field("categoryName3", 1.5f);
+            multiMatchQueryBuilder.field("goodsName", 1f);
+            multiMatchQueryBuilder.field("goodsSkuAttr", 0.8f);
             Pagination<Goods> goodsPagination =
                     search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
             if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
@@ -83,23 +79,27 @@ public class IndexManager<T> {
             }
         }
         return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(value));
-        
+
     }
 
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder
-                .should(QueryBuilders.wildcardQuery("goodsNamePinyin",  "*"+value+"*" ))
-                .should(QueryBuilders.wildcardQuery("categoryName1Pinyin",  "*"+value+"*"))
-                .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*"+ value+"*" ))
-                .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*"+ value+"*"))
-                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*"+ value+"*" ))
-                .should(QueryBuilders.queryStringQuery(value).field("goodsNamePinyin").field("categoryName1Pinyin").field("categoryName2Pinyin").field("categoryName3Pinyin").field("goodsSkuAttrPinyin"))
-                .should(QueryBuilders.termQuery("goodsNamePinyin",  value ))
-                .should(QueryBuilders.termQuery("categoryName1Pinyin",  value))
-                .should(QueryBuilders.termQuery("categoryName2Pinyin",  value ))
-                .should(QueryBuilders.termQuery("categoryName3Pinyin",  value))
-                .should(QueryBuilders.termQuery("goodsSkuAttrPinyin",  value ));
+                .should(QueryBuilders.wildcardQuery("goodsNamePinyin", "*" + value + "*").boost(2f))
+                .should(QueryBuilders.wildcardQuery("categoryName1Pinyin", "*" + value + "*").boost(0.8f))
+                .should(QueryBuilders.wildcardQuery("categoryName2Pinyin", "*" + value + "*").boost(1f))
+                .should(QueryBuilders.wildcardQuery("categoryName3Pinyin", "*" + value + "*").boost(1.5f))
+                .should(QueryBuilders.wildcardQuery("goodsSkuAttrPinyin", "*" + value + "*").boost(0.8f))
+                .should(QueryBuilders.queryStringQuery(value).field("goodsNamePinyin", 1.5f)
+                        .field("categoryName1Pinyin", 2f)
+                        .field("categoryName2Pinyin", 1f)
+                        .field("categoryName3Pinyin", 1.5f)
+                        .field("goodsSkuAttrPinyin", 0.8f))
+                .should(QueryBuilders.termQuery("goodsNamePinyin", value).boost(2f))
+                .should(QueryBuilders.termQuery("categoryName1Pinyin", value).boost(0.8f))
+                .should(QueryBuilders.termQuery("categoryName2Pinyin", value).boost(1f))
+                .should(QueryBuilders.termQuery("categoryName3Pinyin", value).boost(1.5f))
+                .should(QueryBuilders.termQuery("goodsSkuAttrPinyin", value).boost(0.8f));
         return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
     }
 
@@ -194,10 +194,10 @@ public class IndexManager<T> {
         SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
                 .setQuery(queryBuilder);
+        serachBuilder.addSort("_score", SortOrder.DESC);
         if (!StringUtils.isEmpty(sortField)) {
             serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
-        serachBuilder.addSort("_score",SortOrder.DESC);
         if (0 != size) {
             serachBuilder.setFrom(from).setSize(size);
         }
