@@ -1386,7 +1386,7 @@ public class OrderService {
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetailInfo.getGoodsStockId());
             GoodsInfoEntity goods = goodsDao.select(orderDetailInfo.getGoodsId());
             if (null != goodsStock) {
-                goodsInfo.setGoodsLogoUrl(goodsStock.getGoodsLogoUrl());
+        		goodsInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
                 goodsInfo.setGoodsSkuAttr(goodsStock.getGoodsSkuAttr());
             }else{
                 if (null != goods) {
