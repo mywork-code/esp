@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.apass.esp.search.enums.SortMode;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -194,8 +195,10 @@ public class IndexManager<T> {
         SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
                 .setQuery(queryBuilder);
-        serachBuilder.addSort("_score", SortOrder.DESC);
         if (!StringUtils.isEmpty(sortField)) {
+            if(sortField.equalsIgnoreCase(SortMode.ORDERVALUE_ASC.getSortField())){
+                serachBuilder.addSort("_score", SortOrder.DESC);
+            }
             serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
         if (0 != size) {
