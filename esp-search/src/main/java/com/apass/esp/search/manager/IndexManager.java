@@ -72,7 +72,16 @@ public class IndexManager<T> {
             if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
                 return goodsPagination;
             }
-        } 
+        }
+        if(Pinyin4jUtil.isContainSpecial(condition.getGoodsName())){
+            MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
+                    "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
+            Pagination<Goods> goodsPagination =
+                    search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+            if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
+                return goodsPagination;
+            }
+        }
         return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(value));
         
     }

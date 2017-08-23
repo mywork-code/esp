@@ -183,4 +183,11 @@ public class Pinyin4jUtil {
         Matcher m = p.matcher(str);
         return m.find();
     }
+
+    public static boolean isContainSpecial(String str) {
+
+        Pattern p = Pattern.compile("^[0-9().【】\\[\\]+=/\\-_]+$");
+        Matcher m = p.matcher(str);
+        return m.find();
+    }
 }
