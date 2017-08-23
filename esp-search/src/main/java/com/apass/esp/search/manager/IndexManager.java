@@ -1,15 +1,14 @@
 package com.apass.esp.search.manager;
 
-
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.IdAble;
 import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.utils.ESDataUtil;
 import com.apass.esp.search.utils.Esprop;
 import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.search.utils.PropertiesUtils;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -193,8 +192,10 @@ public class IndexManager<T> {
         SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
                 .setQuery(queryBuilder);
-        serachBuilder.addSort("_score", SortOrder.DESC);
         if (!StringUtils.isEmpty(sortField)) {
+            if(sortField.equalsIgnoreCase(SortMode.ORDERVALUE_ASC.getSortField())){
+                serachBuilder.addSort("_score", SortOrder.DESC);
+            }
             serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
         if (0 != size) {
