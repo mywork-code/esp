@@ -33,9 +33,9 @@ public class ESClientController {
     @Autowired
     private GoodsService goodsService;
     
-    @RequestMapping(value = "addData", method = RequestMethod.POST)
+    @RequestMapping(value = "addData", method = RequestMethod.GET)
     @ResponseBody
-    public Response addData(@RequestBody Map<String, Object> paramMap) {
+    public Response addData() {
         int index = 0;
         final int BACH_SIZE = 500;
         try {
