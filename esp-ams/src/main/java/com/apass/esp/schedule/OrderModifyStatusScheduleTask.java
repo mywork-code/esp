@@ -35,10 +35,10 @@ public class OrderModifyStatusScheduleTask{
 	
 	@Autowired
     private OrderService orderService;
-	
+
 	@Autowired
     private KvattrService kvattrService;
-	
+
 	@PostConstruct
 	public void init() {
 		threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
