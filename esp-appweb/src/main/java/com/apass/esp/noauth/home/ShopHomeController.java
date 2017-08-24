@@ -44,6 +44,7 @@ import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.condition.GoodsSearchCondition;
 import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.address.AddressService;
@@ -502,15 +503,17 @@ public class ShopHomeController {
 			Pagination<Goods> pagination = new Pagination<>();
 			pagination=IndexManager.goodSearchCategoryId2(categoryId, goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),(pages - 1) * row, row);
 			//当es查询不到结果时，到数据库查询
-			Map<String, Object> returnMap2 = new HashMap<String, Object>();
 			if(null==pagination || pagination.getDataList().size()==0){
-				returnMap2= loadGoodsListByCategoryIdByMysql(paramMap);
-				return Response.successResponse(returnMap2);
-           }else{
-        		returnMap.put("totalCount", pagination.getTotalCount());
-                returnMap.put("goodsList", pagination.getDataList());
-                return Response.successResponse(returnMap);
-           }
+				returnMap= loadGoodsListByCategoryIdByMysql(paramMap);
+			} else {
+				List<GoodsVo> list = new ArrayList<GoodsVo>();
+				for (Goods goods : pagination.getDataList()) {
+					list.add(goodsToGoodVo(goods));
+				}
+				returnMap.put("totalCount", pagination.getTotalCount());
+				returnMap.put("goodsList", list);
+			}
+           return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
             LOGGER.error("加载商品列表失败！");
@@ -1140,5 +1143,19 @@ public class ShopHomeController {
         }
 
         return Response.successResponse(list);
+    }
+    public GoodsVo goodsToGoodVo(Goods goods) {
+        GoodsVo vo = new GoodsVo();
+        vo.setFirstPrice(goods.getFirstPrice());
+        vo.setGoodId(goods.getGoodId());
+        vo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
+        vo.setGoodsLogoUrlNew(goods.getGoodsLogoUrlNew());
+        vo.setGoodsName(goods.getGoodsName());
+        vo.setGoodsPrice(goods.getGoodsPrice());
+        vo.setGoodsStockId(goods.getGoodsStockId());
+        vo.setGoodsTitle(goods.getGoodsTitle());
+        vo.setId(goods.getId());
+        vo.setSource(goods.getSource());
+        return vo;
     }
 }
