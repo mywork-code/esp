@@ -109,6 +109,5 @@ public class OtherCategoryGoodsVo {
 	public void setGoodsCategoryDtos(List<GoodsCategoryDto> goodsCategoryDtos) {
 		this.goodsCategoryDtos = goodsCategoryDtos;
 	}
-    
-	
+
 }
