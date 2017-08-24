@@ -1,11 +1,27 @@
 package com.apass.esp.service.category;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
+import com.apass.esp.domain.dto.category.CategoryDto;
+import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.CategoryDo;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.CategoryLevel;
+import com.apass.esp.domain.enums.CategoryStatus;
+import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
+import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.enums.SortMode;
+import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,26 +31,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.dto.category.CategoryDto;
-import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
-import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.CategoryDo;
-import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.enums.CategoryLevel;
-import com.apass.esp.domain.enums.CategoryStatus;
-import com.apass.esp.domain.vo.CategoryVo;
-import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
-import com.apass.esp.mapper.CategoryMapper;
-import com.apass.esp.repository.goods.GoodsBasicRepository;
-import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品分类操作service
@@ -86,7 +87,7 @@ public class CategoryInfoService {
 
     /**
      * 根据传入的id，获取list中，入职匹配的对象
-     * 
+     *
      * @param id
      * @param cateList
      * @return
@@ -155,7 +156,7 @@ public class CategoryInfoService {
 
     /**
      * entity 转 vo
-     * 
+     *
      * @param cate
      * @return
      */
@@ -176,7 +177,7 @@ public class CategoryInfoService {
 
     /**
      * entity 转 CategoryDo
-     * 
+     *
      * @param cate
      * @return
      */
@@ -199,7 +200,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类目名称，查询改类目名称是否存在
-     * 
+     *
      * @param categoryName
      * @return
      */
@@ -209,7 +210,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类目名称，查询获取重复类目名称有几个
-     * 
+     *
      * @param categoryName
      * @return
      */
@@ -220,7 +221,7 @@ public class CategoryInfoService {
 
     /**
      * 根据parentId查询下属类别
-     * 
+     *
      * @param parentId
      * @return
      */
@@ -240,7 +241,7 @@ public class CategoryInfoService {
 
     /**
      * 后台查询商品类目列表
-     * 
+     *
      * @return
      */
     public List<CategoryDo> goodsCategoryList() {
@@ -295,7 +296,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类别id获取类别
-     * 
+     *
      * @param id
      * @return
      */
@@ -306,7 +307,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类别id修改类别名称
-     * 
+     *
      * @param id
      * @param categoryName
      * @throws BusinessException
@@ -338,7 +339,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类目id，删除分类
-     * 
+     *
      * @param id
      * @throws BusinessException
      */
@@ -380,7 +381,7 @@ public class CategoryInfoService {
 
     /**
      * 逻辑删除
-     * 
+     *
      * @param id
      */
     @Transactional(rollbackFor = Exception.class)
@@ -392,7 +393,7 @@ public class CategoryInfoService {
 
     /**
      * 根据类别id修改类别排序
-     * 
+     *
      * @param id
      */
     @Transactional(rollbackFor = Exception.class)
@@ -408,7 +409,7 @@ public class CategoryInfoService {
 
     /**
      * 新增一个类别
-     * 
+     *
      * @param categoryDto
      * @return
      * @throws BusinessException
@@ -451,7 +452,7 @@ public class CategoryInfoService {
 
     /**
      * 跟进类目id查询类目名称
-     * 
+     *
      * @param id
      * @return
      */
@@ -461,7 +462,7 @@ public class CategoryInfoService {
 
     /**
      * 根据一级类目id查询二级类目下所有商品
-     * 
+     *
      * @param categoryId
      * @return
      * @throws BusinessException
@@ -486,12 +487,12 @@ public class CategoryInfoService {
             if (categoryTemp != null) {
                 categoryVo.setBanner(imageService.getImageUrl(categoryTemp.getPictureUrl()));
             }
-            List<GoodsInfoEntity> goodsEntities = goodsService.selectByCategoryId2(categoryVo
-                    .getCategoryIdSecond());
+            Pagination<Goods> pagination = IndexManager.goodSearchCategoryId2(categoryVo.getCategoryIdSecond().toString(), SortMode.ORDERVALUE_DESC.getSortField(), true, 0, 10);
+            List<Goods> goodsList = pagination.getDataList();
             List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
-            if (goodsEntities != null && goodsEntities.size() > 0) {
-                for (GoodsInfoEntity goodsInfoEntity : goodsEntities) {
-                    GoodsCategoryDto goodsCategoryDto = convertToGoodsCategoryDto(goodsInfoEntity);
+            if (CollectionUtils.isNotEmpty(goodsList)) {
+                for (Goods goods : goodsList) {
+                    GoodsCategoryDto goodsCategoryDto = goodsToGoodsCategoryDto(goods);
                     goodsCategoryDtos.add(goodsCategoryDto);
                 }
                 categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
@@ -503,8 +504,36 @@ public class CategoryInfoService {
     }
 
     /**
+     * goods转goodsCategoryDto(首页其它类目商品显示数据)
+     * @param goods
+     * @return
+     * @throws BusinessException
+     */
+    private GoodsCategoryDto goodsToGoodsCategoryDto(Goods goods) throws BusinessException {
+        Map<String, Object> result = goodsService.getMinPriceGoods(goods.getGoodId());
+
+        GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
+        if ("jd".equals(goods.getSource())) {
+            goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"
+                    + goods.getGoodsLogoUrl());
+        } else {
+            goodsCategoryDto.setGoodsLogoUrlNew(imageService.getImageUrl(goods.getGoodsLogoUrl()));
+        }
+
+        goodsCategoryDto.setGoodId(goods.getGoodId());
+        goodsCategoryDto.setGoodsName(goods.getGoodsName());
+        goodsCategoryDto.setGoodsTitle(goods.getGoodsTitle());
+        goodsCategoryDto.setGoodsPrice((BigDecimal) result.get("minPrice"));
+        goodsCategoryDto.setFirstPrice(((BigDecimal) result.get("minPrice")).multiply(new BigDecimal("0.1")).setScale(2,
+                BigDecimal.ROUND_DOWN));
+        goodsCategoryDto.setSource(goods.getSource());
+
+        return goodsCategoryDto;
+    }
+
+    /**
      * GoodsInfoEntity 转 GoodsCategoryDto
-     * 
+     *
      * @param goodsInfoEntity
      * @return
      * @throws BusinessException
@@ -548,7 +577,7 @@ public class CategoryInfoService {
 
     /**
      * Category转OtherCategoryGoodsVo
-     * 
+     *
      * @param category
      * @return
      */
