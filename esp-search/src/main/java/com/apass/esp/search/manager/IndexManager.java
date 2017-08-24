@@ -1,14 +1,12 @@
 package com.apass.esp.search.manager;
 
-import com.apass.esp.search.condition.GoodsSearchCondition;
-import com.apass.esp.search.entity.IdAble;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.enums.SortMode;
-import com.apass.esp.search.utils.ESDataUtil;
-import com.apass.esp.search.utils.Esprop;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.search.utils.PropertiesUtils;
-import com.apass.gfb.framework.mybatis.page.Pagination;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,12 +27,16 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.enums.SortMode;
+import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
@@ -79,6 +81,20 @@ public class IndexManager<T> {
         return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(value));
 
     }
+    /**
+     * 二级类目查询
+     * http://blog.csdn.net/xiaohulunb/article/details/37877435
+     */
+	public static <Goods> Pagination<Goods> goodSearchCategoryId2(String categoryId2, String sortField, boolean desc,
+			int from, int size) {
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+				.must(QueryBuilders.termQuery("categoryId2", categoryId2));
+		Pagination<Goods> goodsPagination = search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+		if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
+			return goodsPagination;
+		}
+		return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(categoryId2.toString()));
+	}
 
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
