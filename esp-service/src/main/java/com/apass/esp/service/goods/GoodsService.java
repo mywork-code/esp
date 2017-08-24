@@ -883,6 +883,7 @@ public class GoodsService {
             return null;
         }
         goods.setCategoryName2(cate2.getCategoryName());
+        goods.setCategoryId2(g.getCategoryId2());
         goods.setCategoryName2Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate2.getCategoryName()));
         goods.setCategoryId3(g.getCategoryId3());
         Category cate3 = categoryMapper.selectByPrimaryKey(g.getCategoryId3());
