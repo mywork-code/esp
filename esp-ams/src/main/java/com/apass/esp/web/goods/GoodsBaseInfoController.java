@@ -597,9 +597,9 @@ public class GoodsBaseInfoController {
         for (GoodsStockInfoEntity goodsStockInfoEntity1 : stockList) {
             BigDecimal goodsPrice = goodsStockInfoEntity1.getGoodsPrice();
             BigDecimal goodsCostPrice = goodsStockInfoEntity1.getGoodsCostPrice();
-            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_HALF_UP);
+            BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
             BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
-                    .setScale(4, BigDecimal.ROUND_HALF_UP);
+                    .setScale(4, BigDecimal.ROUND_DOWN);
             if ("jd".equals(source)) {
                 String skuId = goodsEntity.getExternalId();
                 Map<String, Object> descMap = new HashMap<String, Object>();

@@ -42,7 +42,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import static java.math.BigDecimal.ROUND_HALF_DOWN;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -179,13 +178,13 @@ public class CashRefundService {
                 cr.setMainOrderId(orderInfo.getMainOrderId());
                 cr.setReason(reason);
                 cr.setMemo(memo);
-                
-                Boolean s = alipayType(orderInfo.getMainOrderId());
-                if(s){
-                	cr.setRefundType(RefundType.OFF_LINE.getCode());
-                }else{
-                	cr.setRefundType(RefundType.ON_LINE.getCode());
-                }
+                cr.setRefundType(RefundType.ON_LINE.getCode());
+//                Boolean s = alipayType(orderInfo.getMainOrderId());
+//                if(s){
+//                	cr.setRefundType(RefundType.OFF_LINE.getCode());
+//                }else{
+//                	cr.setRefundType(RefundType.ON_LINE.getCode());
+//                }
                 
                 int result = cashRefundMapper.insert(cr);
                 if (result != 1) {
@@ -367,7 +366,7 @@ public class CashRefundService {
                 }
 
                 if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString());
+                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
                       //退款失败
                       try {
@@ -421,7 +420,7 @@ public class CashRefundService {
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
                 if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType()) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString());
+                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
                         //退款失败
                         try {
