@@ -42,7 +42,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import static java.math.BigDecimal.ROUND_HALF_DOWN;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -179,7 +178,7 @@ public class CashRefundService {
                 cr.setMainOrderId(orderInfo.getMainOrderId());
                 cr.setReason(reason);
                 cr.setMemo(memo);
-                
+                cr.setRefundType(RefundType.ON_LINE.getCode());
 //                Boolean s = alipayType(orderInfo.getMainOrderId());
 //                if(s){
 //                	cr.setRefundType(RefundType.OFF_LINE.getCode());
