@@ -54,7 +54,7 @@ public class PaymentHttpClient {
     private static final String NEW_CUSTOMER_FLAG_URL = "/myCenter/search/customerFlag";
 
     //  支付宝退款
-    private static final String ALIPAY_REFUND = "/xinlan/apassRefund/refundCash";
+    private static final String ALIPAY_REFUND = "/xinlan/apassRefund/refundCashNew";
     /**
      * 调用GFB获取客户信息
      *
@@ -324,13 +324,14 @@ public class PaymentHttpClient {
      * @return
      * @throws BusinessException
      */
-    public Response refundAliPay(String mainOrderId,String refundAmt)  {
+    public Response refundAliPay(String mainOrderId,String refundAmt,String refundId)  {
         String responseJson = null;
         try {
             String address = bbsReqUrl + ALIPAY_REFUND;
             Map<String, Object> map = new HashMap<>();
             map.put("merOrderId", mainOrderId);
             map.put("refundAmount", refundAmt);
+            map.put("refundId", refundId);
             String requestJson = GsonUtils.toJson(map);
 
             LOG.logstashRequest("", "调用BSS退款请求:", requestJson);
