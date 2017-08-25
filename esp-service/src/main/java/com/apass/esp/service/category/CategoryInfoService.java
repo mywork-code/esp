@@ -178,7 +178,7 @@ public class CategoryInfoService {
     /**
      * entity 转 CategoryDo
      *
-     * @param cate
+     * @param
      * @return
      */
     public List<CategoryDo> categroyToCathgroyDo(List<Category> cateList) {
@@ -487,28 +487,46 @@ public class CategoryInfoService {
             if (categoryTemp != null) {
                 categoryVo.setBanner(imageService.getImageUrl(categoryTemp.getPictureUrl()));
             }
-            Pagination<Goods> pagination = IndexManager.goodSearchCategoryId2(categoryVo.getCategoryIdSecond().toString(), SortMode.ORDERVALUE_DESC.getSortField(), true, 0, 10);
-            List<Goods> goodsList = pagination.getDataList();
+            Pagination<Goods> pagination = null;
             List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
-            if (CollectionUtils.isNotEmpty(goodsList)) {
-                for (Goods goods : goodsList) {
-                    GoodsCategoryDto goodsCategoryDto = goodsToGoodsCategoryDto(goods);
-                    goodsCategoryDtos.add(goodsCategoryDto);
+            try {
+                pagination = IndexManager.goodSearchCategoryId2(categoryVo.getCategoryIdSecond().toString(), SortMode.ORDERVALUE_DESC.getSortField(), true, 0, 10);
+                List<Goods> goodsList = pagination.getDataList();
+                if (CollectionUtils.isNotEmpty(goodsList)) {
+                    for (Goods goods : goodsList) {
+                        GoodsCategoryDto goodsCategoryDto = goodsToGoodsCategoryDto(goods);
+                        goodsCategoryDtos.add(goodsCategoryDto);
+                    }
+                    categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
+                    list2.add(categoryVo);
                 }
-                categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
-                list2.add(categoryVo);
+            } catch (Exception e) {
+                LOGGER.info("根据二级类目id查询商品，ES结果异常，去数据库查询.");
+                List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(categoryVo.getCategoryIdSecond());
+                if (CollectionUtils.isNotEmpty(goodsInfoEntities)) {
+                    for (GoodsInfoEntity goodsInfoEntity : goodsInfoEntities) {
+                        GoodsCategoryDto goodsCategoryDto = convertToGoodsCategoryDto(goodsInfoEntity);
+                        goodsCategoryDtos.add(goodsCategoryDto);
+                    }
+                    categoryVo.setGoodsCategoryDtos(goodsCategoryDtos);
+                    list2.add(categoryVo);
+                }
             }
+
         }
 
         return list2;
     }
 
+
     /**
      * goods转goodsCategoryDto(首页其它类目商品显示数据)
+     *
      * @param goods
      * @return
      * @throws BusinessException
      */
+
     private GoodsCategoryDto goodsToGoodsCategoryDto(Goods goods) throws BusinessException {
         Map<String, Object> result = goodsService.getMinPriceGoods(goods.getGoodId());
 

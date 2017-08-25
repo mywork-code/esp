@@ -31,10 +31,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -174,7 +177,7 @@ public class CashRefundService {
                 cr.setMainOrderId(orderInfo.getMainOrderId());
                 cr.setReason(reason);
                 cr.setMemo(memo);
-                
+                cr.setRefundType(RefundType.ON_LINE.getCode());
 //                Boolean s = alipayType(orderInfo.getMainOrderId());
 //                if(s){
 //                	cr.setRefundType(RefundType.OFF_LINE.getCode());
