@@ -5,15 +5,13 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CashRefundAmtDto;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
+import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundVoStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.RefundType;
-import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.*;
+import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -35,14 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import static java.math.BigDecimal.ROUND_HALF_DOWN;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -73,6 +65,9 @@ public class CashRefundService {
 
     @Autowired
     private TxnInfoMapper txnInfoMapper;
+
+    @Autowired
+    private ApassTxnAttrMapper apassTxnAttrMapper;
 
     /**
      * @param orderId
@@ -326,7 +321,6 @@ public class CashRefundService {
     @Transactional(rollbackFor = Exception.class)
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
-        
         OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
 
         //1:退款提交 才能进行同意
@@ -366,8 +360,10 @@ public class CashRefundService {
                     e.printStackTrace();
                 }
 
-                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
+                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+                    //聚合支付新加
+                    ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntityList.get(0).getTxnId());
+                    Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
                       //退款失败
                       try {
@@ -420,8 +416,10 @@ public class CashRefundService {
                 cashRefundTxn.setUpdateDate(date);
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
-                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType()) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
+                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                    //聚合支付新加
+                    ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntity.getTxnId());
+                    Response response =  paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
                         //退款失败
                         try {
