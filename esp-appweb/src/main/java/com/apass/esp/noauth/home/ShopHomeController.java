@@ -68,7 +68,7 @@ import com.google.common.collect.Lists;
 
 /**
  * 首页
- * 
+ *
  * @description
  *
  * @author liuming
@@ -118,13 +118,13 @@ public class ShopHomeController {
     private ActivityInfoRepository actityInfoDao;
     @Autowired
     private OrderService orderService;
-    
+
     @Value("${esp.image.uri}")
     private String espImageUrl;
 
     /**
      * 首页初始化 加载banner和精品商品
-     * 
+     *
      * @return
      */
     @POST
@@ -388,7 +388,7 @@ public class ShopHomeController {
                         goodsInfo.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                                 BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                     }
-                    
+
                     if ("jd".equals(goodsInfo.getSource())) {// 京东图片
                         String logoUrl = goodsInfo.getGoodsLogoUrl();
                         goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + logoUrl);
@@ -523,7 +523,7 @@ public class ShopHomeController {
     /**
      * 当ES报错或查不到数据时，从数据库查询
      * @return
-     * @throws BusinessException 
+     * @throws BusinessException
      */
 	public Map<String, Object> loadGoodsListByCategoryIdByMysql(Map<String, Object> paramMap) throws BusinessException {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -769,7 +769,7 @@ public class ShopHomeController {
                 skuNum.setSkuId(Long.parseLong(externalId));
                 skuNumList.add(skuNum);
                 //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){           
+                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
@@ -956,7 +956,7 @@ public class ShopHomeController {
 
     /**
      * 获取商品价格
-     * 
+     *
      * @param goodsIds
      * @return
      * @throws BusinessException
@@ -1049,7 +1049,7 @@ public class ShopHomeController {
 
     /**
      * 精选推荐 大于10个时 分页展示
-     * 
+     *
      * @param paramMap
      * @return
      */
@@ -1094,7 +1094,7 @@ public class ShopHomeController {
     }
 
     /**
-     * 
+     *
      * @param goodsId
      * @return
      * @throws BusinessException
@@ -1103,8 +1103,8 @@ public class ShopHomeController {
         // 根据goodsid查询库存，找出最低售价显示前端
         Map<String, Object> minPriceGoodsMap = goodsService.getMinPriceGoods(goodsId);
         BigDecimal goodsPrice = (BigDecimal) minPriceGoodsMap.get("minPrice");
-        
-        
+
+
 //        List<GoodsStockInfoEntity> goodsStocks = goodsService.loadDetailInfoByGoodsId(goodsId);
 //        if (goodsStocks == null || goodsStocks.size() == 0) {
 //            LOGGER.error("数据异常，商品id为:{}无对应库存", goodsId.toString());
@@ -1122,7 +1122,7 @@ public class ShopHomeController {
 
     /**
      * 其它分类页面
-     * 
+     *
      * @param paramMap
      * @return
      */
