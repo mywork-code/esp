@@ -1,5 +1,6 @@
 package com.apass.esp.service.refund;
 
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CashRefundAmtDto;
@@ -325,16 +326,17 @@ public class CashRefundService {
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
         OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
-
+        logger.info("agree refund orderId {}",orderId);
         //1:退款提交 才能进行同意
         if (cashRefund == null || cashRefund.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
+        logger.info("agree refund orderId {},cashRefund {} ",orderId, JSONObject.toJSON(cashRefund));
         List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(cashRefund.getMainOrderId());
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
             return Response.fail(BusinessErrorCode.NO);
         }
-
+        logger.info("agree refund orderId {},cashRefund {},txnInfoEntityList {} ",orderId, JSONObject.toJSON(cashRefund),JSONObject.toJSON(txnInfoEntityList));
         BigDecimal txnAmt = new BigDecimal(0);
         Date date = new Date();
         if (txnInfoEntityList.size() == 1) {
@@ -366,8 +368,10 @@ public class CashRefundService {
                 if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
                     //聚合支付新加
                     ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntityList.get(0).getTxnId());
+                    logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
                     Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
+                        logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                       //退款失败
                       try {
                         paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
@@ -376,6 +380,7 @@ public class CashRefundService {
                       }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
+                        logger.info("refund success orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                         //退款成功
                         try {
                             paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
@@ -422,8 +427,11 @@ public class CashRefundService {
                 if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
                     //聚合支付新加
                     ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntity.getTxnId());
+                    logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
                     Response response =  paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
+                        logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
+
                         //退款失败
                         try {
                             paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
@@ -432,6 +440,7 @@ public class CashRefundService {
                         }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
+                        logger.info("refund success orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                         alpaySFFlag = true;
                         continue;
                     }
