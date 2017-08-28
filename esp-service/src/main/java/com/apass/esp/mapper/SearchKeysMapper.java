@@ -19,11 +19,11 @@ public interface SearchKeysMapper extends GenericMapper<SearchKeys, Long> {
 	 * 获取10条常用搜素
 	 * @return
 	 */
-	public List<SearchKeys> commonSearch(String userId);
+	public List<SearchKeys> commonSearch(@Param("userId")String userId,@Param("deviceId")String deviceId);
 	
 	/**
 	 * 删除keys
 	 * @return
 	 */
-	public Integer deleteSearchKey(Long keyId);
+	public Integer deleteSearchKey(@Param("userId")String userId,@Param("deviceId")String deviceId);
 }

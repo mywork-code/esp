@@ -36,15 +36,23 @@ public class SearchKeyService {
 	}
 	
 
-	public void deleteSearchKeys(Long keyId){
-		keysMapper.deleteSearchKey(keyId);
+	public void deleteSearchKeysByUserId(String userId){
+		keysMapper.deleteSearchKey(userId,"");
+	}
+	
+	public void deleteSearchKeysByDeviceId(String deviceId){
+		keysMapper.deleteSearchKey("",deviceId);
 	}
 	
 	public List<SearchKeys> hotSearch(String startDate1,String startDate2){
 		return keysMapper.hotSearch(startDate1,startDate2);
 	}
 	
-	public List<SearchKeys> commonSearch(String userId){
-		return keysMapper.commonSearch(userId);
+	public List<SearchKeys> commonSearchByUserId(String userId){
+		return keysMapper.commonSearch(userId,"");
+	}
+	
+	public List<SearchKeys> commonSearchByDeviceId(String deviceId){
+		return keysMapper.commonSearch("",deviceId);
 	}
 }

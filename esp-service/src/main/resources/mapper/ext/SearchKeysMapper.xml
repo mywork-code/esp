@@ -14,18 +14,29 @@
     order by count(key_value) desc,convert(key_value USING gbk) COLLATE gbk_chinese_ci asc limit 10
   </select>
   
-  <select id="commonSearch" resultMap="BaseResultMap" parameterType="java.lang.String">
+  <select id="commonSearch" resultMap="BaseResultMap">
     select 
     DISTINCT(KEY_VALUE) keyValue
     from t_esp_search_keys
-    where key_status = 0 and user_id = #{userId}
+    where key_status = 0 
+    <if test="userId != null and userId != ''">
+        <![CDATA[  and user_id = #{userId} ]]>
+    </if>
+    <if test="deviceId != null and deviceId != ''">
+    	<![CDATA[  and device_id = #{deviceId} ]]>
+    </if>
     order by CREATE_DATE desc
     limit 10
   </select>
   
-  <update id="deleteSearchKey" parameterType="java.lang.Long">
-  	 update t_esp_search_keys set key_status = 1 where id = #{keyId} and key_status = 0
-  </update>
-  
+  <delete id="deleteSearchKey">
+  	 delete from t_esp_search_keys where  1 = 1
+  	 <if test="userId != null and userId != ''">
+        <![CDATA[  and user_id = #{userId} ]]>
+    </if>
+    <if test="deviceId != null and deviceId != ''">
+    	<![CDATA[  and device_id = #{deviceId} ]]>
+    </if>
+  </delete>  
   
 </mapper>
