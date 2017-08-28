@@ -254,4 +254,12 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     	return getSqlSession().selectList("selectUpGoods",param);
     }
 
+
+    public List<GoodsInfoEntity> selectJdGoods(int index,int size){
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("index", index);
+        param.put("size", size);
+        return getSqlSession().selectList("selectJdGoods",param);
+    }
+
 }
