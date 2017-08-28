@@ -52,13 +52,13 @@ public class MD5Utils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (null != in) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+//			if (null != in) {
+//				try {
+//					in.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
 		}
 		return value;
 	}
