@@ -189,25 +189,46 @@ public class FeedbackController {
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
 
+		String picture1=CommonUtils.getValue(paramMap, "picture1");//图片1
+		String picture2=CommonUtils.getValue(paramMap, "picture2");//图片2
+		String picture3=CommonUtils.getValue(paramMap, "picture3");//图片3
+		String picture1Url="";
+		String picture2Url="";
+		String picture3Url="";
+		String pictureUrl="";
+		
+		FeedBack fb=new FeedBack();
+
 		if(StringUtils.isBlank(feedbackType)){
 			return Response.fail("反馈类型不能为空！");
 		}
-		
 		if(StringUtils.isBlank(comments)){
 			return Response.fail("反馈内容不能为空！");
+		}	
+		Random radom = new Random();
+		int radomNumber = radom.nextInt(10000);
+		if (StringUtils.isNotBlank(picture1)) {
+			picture1Url = nfsFeedback + mobile + "_" + radomNumber + ".jpg";
+			byte[] picture1Byte = Base64Utils.decodeFromString(picture1);
+			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture1Url, picture1Byte);
+			pictureUrl=picture1Url;
 		}
-		
-//		if(StringUtils.isBlank(mobile)){
-//			return Response.fail("手机号不能为空！");
-//		}
-		
+		if (StringUtils.isNotBlank(picture2)) {
+			picture2Url = nfsFeedback + mobile + "_" + (radomNumber+1) + ".jpg";
+			byte[] picture2Byte = Base64Utils.decodeFromString(picture2);
+			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture2Url, picture2Byte);
+			pictureUrl=pictureUrl+picture2Url;
+		}
+		if (StringUtils.isNotBlank(picture3)) {
+			picture3Url = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
+			byte[] picture3Byte = Base64Utils.decodeFromString(picture3);
+			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url, picture3Byte);
+			pictureUrl=pictureUrl+picture3Url;
+		}
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
 			return Response.fail("反馈内容输入的字数过长！");
 		}
-//		String comments2=filterEmoji(comments,"");
-//		String comments3=  filter(comments2);
-		
 		Boolean falge=EmojiFilter.containsEmoji(comments);
 		String csom="";
 		if(falge){
@@ -216,11 +237,14 @@ public class FeedbackController {
 			csom=comments;
 		}
 		Date date=new Date();
-		FeedBack fb=new FeedBack();
+		fb.setType(FeedBackCategory.ANJIAPAI.getCode());
+		fb.setPicture(pictureUrl);
 		fb.setFeedbackType(feedbackType);
 		fb.setComments(csom);
 		fb.setMobile(mobile);
 		fb.setCreateDate(date);
+		fb.setUpdateDate(date);
+
 		Integer result=feedBackService.insert(fb);
 		if(result==1){
 			return Response.success("提交成功，非常感谢您的反馈！");
