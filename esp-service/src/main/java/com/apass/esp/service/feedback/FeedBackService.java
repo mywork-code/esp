@@ -54,6 +54,6 @@ public class FeedBackService {
 	}
 	
 	public Integer insert(FeedBack fb) {
-		return feedbackMapper.insert(fb);
+		return feedbackMapper.insertSelective(fb);
 	}
 }
