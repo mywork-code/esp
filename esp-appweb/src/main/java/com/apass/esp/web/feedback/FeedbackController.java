@@ -144,13 +144,13 @@ public class FeedbackController {
 			picture2Url = nfsFeedback + mobile + "_" + (radomNumber+1) + ".jpg";
 			byte[] picture2Byte = Base64Utils.decodeFromString(picture2);
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture2Url, picture2Byte);
-			pictureUrl=pictureUrl+picture2Url;
+			pictureUrl=pictureUrl+";"+picture2Url;
 		}
 		if (StringUtils.isNotBlank(picture3)) {
 			picture3Url = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
 			byte[] picture3Byte = Base64Utils.decodeFromString(picture3);
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url, picture3Byte);
-			pictureUrl=pictureUrl+picture3Url;
+			pictureUrl=pictureUrl+";"+picture3Url;
 		}
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
@@ -217,13 +217,13 @@ public class FeedbackController {
 			picture2Url = nfsFeedback + mobile + "_" + (radomNumber+1) + ".jpg";
 			byte[] picture2Byte = Base64Utils.decodeFromString(picture2);
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture2Url, picture2Byte);
-			pictureUrl=pictureUrl+picture2Url;
+			pictureUrl=pictureUrl+";"+picture2Url;
 		}
 		if (StringUtils.isNotBlank(picture3)) {
 			picture3Url = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
 			byte[] picture3Byte = Base64Utils.decodeFromString(picture3);
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url, picture3Byte);
-			pictureUrl=pictureUrl+picture3Url;
+			pictureUrl=pictureUrl+";"+picture3Url;
 		}
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
