@@ -7,6 +7,7 @@ import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,8 +54,15 @@ public class MonitorScheduleTask {
     @Value("${monitor.env}")
     public String env;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
     @Scheduled(cron = "* 0/30 * * * *")
     public void monitorSchedule() {
+
+        if(!systemEnvConfig.isPROD()){
+            return;
+        }
         String time = cacheManager.get("monitor_time");//间隔时间
         String times = cacheManager.get("monitor_times");//该时间的次数
         // time="10";
