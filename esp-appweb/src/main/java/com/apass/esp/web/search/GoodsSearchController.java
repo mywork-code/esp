@@ -2,8 +2,6 @@ package com.apass.esp.web.search;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +42,9 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.search.SearchKeyService;
-import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 /**
  * 商品搜索类
@@ -90,16 +86,22 @@ public class GoodsSearchController {
     @Path(value = "/delete")
     public Response delteSearchKeys(Map<String,Object> paramMap){
     	
-    	String keyId = CommonUtils.getValue(paramMap, "keyId");
+    	String userId = CommonUtils.getValue(paramMap, "userId");
+    	String deviceId = CommonUtils.getValue(paramMap, "deviceId");
     	try {
-    		ValidateUtils.isNotBlank(keyId, "编号不能为空！");
-    		searchKeyService.deleteSearchKeys(Long.parseLong(keyId));
+    		if(StringUtils.isBlank(userId) && StringUtils.isBlank(deviceId)){
+    			throw new BusinessException("参数传值有误!");
+    		}
+    		if(StringUtils.isNotBlank(userId)){
+    			searchKeyService.deleteSearchKeysByUserId(userId);
+    		}else{
+    			searchKeyService.deleteSearchKeysByDeviceId(deviceId);
+    		}
 		}catch(BusinessException e){
 			return Response.fail(e.getErrorDesc());
 		}catch (Exception e) {
 			return Response.fail(e.getMessage());
 		}
-    	
     	return Response.success("删除成功!");
     }
     
@@ -108,12 +110,19 @@ public class GoodsSearchController {
     public Response getSearchKeys(Map<String,Object> paramMap){
     	
     	String userId = CommonUtils.getValue(paramMap, "userId");
+    	String deviceId = CommonUtils.getValue(paramMap, "deviceId");
     	List<SearchSort> sort = new ArrayList<SearchSort>();
     	try {
-    		//List<SearchKeys> common = searchKeyService.commonSearch(userId);
-    		//Calendar cal = Calendar.getInstance();
-    		//cal.add(cal.DATE, -10);
-    		//List<SearchKeys> hot = searchKeyService.hotSearch(DateFormatUtil.dateToString(cal.getTime(),""),DateFormatUtil.dateToString(new Date())+" 23:59:59");
+    		List<SearchKeys> common = null;
+    		if(StringUtils.isBlank(userId) && StringUtils.isBlank(deviceId)){
+    			throw new BusinessException("参数传值有误!");
+    		}
+    		if(StringUtils.isNotBlank(userId)){
+    			common = searchKeyService.commonSearchByUserId(userId);
+    		}else{
+    			common = searchKeyService.commonSearchByDeviceId(deviceId);
+    		}
+    		sort.add(new SearchSort("最近搜索",keysToVoList(common)));
     		sort.add(new SearchSort("热门搜索", hotList(new ArrayList<SearchKeys>())));
     		sort.add(new SearchSort("常用分类", getClassification()));
 		}
