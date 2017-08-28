@@ -324,13 +324,14 @@ public class PaymentHttpClient {
      * @return
      * @throws BusinessException
      */
-    public Response refundAliPay(String mainOrderId,String refundAmt,String refundId)  {
+    public Response refundAliPay(String mainOrderId,String refundAmt,String refundId,String totalFee)  {
         String responseJson = null;
         try {
             String address = bbsReqUrl + ALIPAY_REFUND;
             Map<String, Object> map = new HashMap<>();
             map.put("merOrderId", mainOrderId);
             map.put("refundAmount", refundAmt);
+            map.put("totalFee", totalFee);
             map.put("refundId", refundId);
             String requestJson = GsonUtils.toJson(map);
 
