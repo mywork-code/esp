@@ -3,13 +3,17 @@
 <mapper namespace="com.apass.esp.mapper.FeedBackMapper" >
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.FeedBack" >
     <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="module" property="module" jdbcType="VARCHAR" />
     <result column="feedback_type" property="feedbackType" jdbcType="VARCHAR" />
     <result column="comments" property="comments" jdbcType="VARCHAR" />
     <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="picture" property="picture" jdbcType="VARCHAR" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, feedback_type, comments, mobile, create_date
+    id, type, module, feedback_type, comments, mobile, picture, create_date, update_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -22,14 +26,22 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_feedback (feedback_type, comments, mobile, 
-      create_date,update_date)
-    values (#{feedbackType,jdbcType=VARCHAR}, #{comments,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP},now())
+    insert into t_esp_feedback (type, module, feedback_type, 
+      comments, mobile, picture, 
+      create_date, update_date)
+    values (#{type,jdbcType=VARCHAR}, #{module,jdbcType=VARCHAR}, #{feedbackType,jdbcType=VARCHAR}, 
+      #{comments,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{picture,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.FeedBack" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_feedback
     <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="module != null" >
+        module,
+      </if>
       <if test="feedbackType != null" >
         feedback_type,
       </if>
@@ -39,11 +51,23 @@
       <if test="mobile != null" >
         mobile,
       </if>
+      <if test="picture != null" >
+        picture,
+      </if>
       <if test="createDate != null" >
         create_date,
       </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="module != null" >
+        #{module,jdbcType=VARCHAR},
+      </if>
       <if test="feedbackType != null" >
         #{feedbackType,jdbcType=VARCHAR},
       </if>
@@ -53,15 +77,26 @@
       <if test="mobile != null" >
         #{mobile,jdbcType=VARCHAR},
       </if>
+      <if test="picture != null" >
+        #{picture,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null" >
         #{createDate,jdbcType=TIMESTAMP},
       </if>
-      ,update_date = now()
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.FeedBack" >
     update t_esp_feedback
     <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="module != null" >
+        module = #{module,jdbcType=VARCHAR},
+      </if>
       <if test="feedbackType != null" >
         feedback_type = #{feedbackType,jdbcType=VARCHAR},
       </if>
@@ -71,18 +106,28 @@
       <if test="mobile != null" >
         mobile = #{mobile,jdbcType=VARCHAR},
       </if>
+      <if test="picture != null" >
+        picture = #{picture,jdbcType=VARCHAR},
+      </if>
       <if test="createDate != null" >
         create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.FeedBack" >
     update t_esp_feedback
-    set feedback_type = #{feedbackType,jdbcType=VARCHAR},
+    set type = #{type,jdbcType=VARCHAR},
+      module = #{module,jdbcType=VARCHAR},
+      feedback_type = #{feedbackType,jdbcType=VARCHAR},
       comments = #{comments,jdbcType=VARCHAR},
       mobile = #{mobile,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP}
+      picture = #{picture,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
