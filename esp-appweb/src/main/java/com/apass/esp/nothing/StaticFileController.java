@@ -48,13 +48,13 @@ public class StaticFileController {
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
     public Response getMd5ByFile() {
-        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/commission.weex_v16.js");
+        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/commission.weex_v17.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         Map<String, Object> map = new HashMap<>();
         map.put("flag",true);
         map.put("id","app_weex");
-        map.put("url",appWebDomain + "/appweb/WebContent/js/commission.weex_v16.js");
-        map.put("ver","16");
+        map.put("url",appWebDomain + "/appweb/WebContent/js/commission.weex_v17.js");
+        map.put("ver","17");
         map.put("md5",md5);
         return Response.successResponse(map);
     }
