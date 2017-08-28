@@ -1,19 +1,18 @@
 package com.apass.esp.service.refund;
 
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CashRefundAmtDto;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.aftersale.TxnInfoDto;
+import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundVoStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.RefundType;
-import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.*;
+import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -72,6 +69,9 @@ public class CashRefundService {
 
     @Autowired
     private TxnInfoMapper txnInfoMapper;
+
+    @Autowired
+    private ApassTxnAttrMapper apassTxnAttrMapper;
 
     /**
      * @param orderId
@@ -325,18 +325,18 @@ public class CashRefundService {
     @Transactional(rollbackFor = Exception.class)
     public Response agreeRefund(String userId, String orderId) {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
-        
         OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
-
+        logger.info("agree refund orderId {}",orderId);
         //1:退款提交 才能进行同意
         if (cashRefund == null || cashRefund.getStatus() != 1) {
             return Response.fail(BusinessErrorCode.NO);
         }
+        logger.info("agree refund orderId {},cashRefund {} ",orderId, JSONObject.toJSON(cashRefund));
         List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(cashRefund.getMainOrderId());
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
             return Response.fail(BusinessErrorCode.NO);
         }
-
+        logger.info("agree refund orderId {},cashRefund {},txnInfoEntityList {} ",orderId, JSONObject.toJSON(cashRefund),JSONObject.toJSON(txnInfoEntityList));
         BigDecimal txnAmt = new BigDecimal(0);
         Date date = new Date();
         if (txnInfoEntityList.size() == 1) {
@@ -365,9 +365,13 @@ public class CashRefundService {
                     e.printStackTrace();
                 }
 
-                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response = paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
+                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+                    //聚合支付新加
+                    ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntityList.get(0).getTxnId());
+                    logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
+                    Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
+                        logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                       //退款失败
                       try {
                         paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
@@ -376,6 +380,7 @@ public class CashRefundService {
                       }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
+                        logger.info("refund success orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                         //退款成功
                         try {
                             paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
@@ -419,9 +424,14 @@ public class CashRefundService {
                 cashRefundTxn.setUpdateDate(date);
                 cashRefundTxnMapper.insert(cashRefundTxn);
 
-                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType()) && StringUtils.equals(RefundType.ON_LINE.getCode(), cashRefund.getRefundType())) {
-                    Response response =  paymentHttpClient.refundAliPay(cashRefund.getMainOrderId(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
+                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                    //聚合支付新加
+                    ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntity.getTxnId());
+                    logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
+                    Response response =  paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt().toString(),cashRefund.getOrderId());
                     if (!response.statusResult()) {
+                        logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
+
                         //退款失败
                         try {
                             paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
@@ -430,6 +440,7 @@ public class CashRefundService {
                         }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
+                        logger.info("refund success orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                         alpaySFFlag = true;
                         continue;
                     }

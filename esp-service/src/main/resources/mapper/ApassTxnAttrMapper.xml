@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ApassTxnAttrMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ApassTxnAttr" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="transaction_id" property="transactionId" jdbcType="VARCHAR" />
+    <result column="pass_trade_no" property="passTradeNo" jdbcType="VARCHAR" />
+    <result column="time_end" property="timeEnd" jdbcType="VARCHAR" />
+    <result column="buyer_logon_id" property="buyerLogonId" jdbcType="VARCHAR" />
+    <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+    <result column="txn_id" property="txnId" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, transaction_id, pass_trade_no, time_end, buyer_logon_id, out_trade_no, txn_id, 
+    create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_apass_txn_attr
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_apass_txn_attr
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ApassTxnAttr" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_apass_txn_attr (transaction_id, pass_trade_no, time_end, 
+      buyer_logon_id, out_trade_no, txn_id, 
+      create_date, update_date)
+    values (#{transactionId,jdbcType=VARCHAR}, #{passTradeNo,jdbcType=VARCHAR}, #{timeEnd,jdbcType=VARCHAR}, 
+      #{buyerLogonId,jdbcType=VARCHAR}, #{outTradeNo,jdbcType=VARCHAR}, #{txnId,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ApassTxnAttr" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_apass_txn_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="transactionId != null" >
+        transaction_id,
+      </if>
+      <if test="passTradeNo != null" >
+        pass_trade_no,
+      </if>
+      <if test="timeEnd != null" >
+        time_end,
+      </if>
+      <if test="buyerLogonId != null" >
+        buyer_logon_id,
+      </if>
+      <if test="outTradeNo != null" >
+        out_trade_no,
+      </if>
+      <if test="txnId != null" >
+        txn_id,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="transactionId != null" >
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="passTradeNo != null" >
+        #{passTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="timeEnd != null" >
+        #{timeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="buyerLogonId != null" >
+        #{buyerLogonId,jdbcType=VARCHAR},
+      </if>
+      <if test="outTradeNo != null" >
+        #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ApassTxnAttr" >
+    update t_apass_txn_attr
+    <set >
+      <if test="transactionId != null" >
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="passTradeNo != null" >
+        pass_trade_no = #{passTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="timeEnd != null" >
+        time_end = #{timeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="buyerLogonId != null" >
+        buyer_logon_id = #{buyerLogonId,jdbcType=VARCHAR},
+      </if>
+      <if test="outTradeNo != null" >
+        out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      </if>
+      <if test="txnId != null" >
+        txn_id = #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ApassTxnAttr" >
+    update t_apass_txn_attr
+    set transaction_id = #{transactionId,jdbcType=VARCHAR},
+      pass_trade_no = #{passTradeNo,jdbcType=VARCHAR},
+      time_end = #{timeEnd,jdbcType=VARCHAR},
+      buyer_logon_id = #{buyerLogonId,jdbcType=VARCHAR},
+      out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+      txn_id = #{txnId,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
