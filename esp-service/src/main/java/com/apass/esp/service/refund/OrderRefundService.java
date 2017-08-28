@@ -156,7 +156,7 @@ public class OrderRefundService {
     /**
      * 重新发货 ，售后状态为REFUND_STATUS04：商家已重新发货 ；插入售后流程表
      * 
-     * @param orderId
+     * @param map
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
@@ -193,7 +193,7 @@ public class OrderRefundService {
     /**
      * 确认退款 ，售后状态为RS05：交易完成
      * 
-     * @param orderId
+     * @param map
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
