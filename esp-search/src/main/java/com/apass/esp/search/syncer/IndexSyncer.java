@@ -113,7 +113,9 @@ public class IndexSyncer {
                 continue;
             }
             try {
-                updated.getType().operator(esprop.getIndice(), indexType, updated.getObject());
+                if(updated!=null){
+                    updated.getType().operator(esprop.getIndice(), indexType, updated.getObject());
+                }
             } catch (Exception e) {
                 LOGGER.error("in " + name + "update index error",e);
                 //indexType.offerQueue(updated);
