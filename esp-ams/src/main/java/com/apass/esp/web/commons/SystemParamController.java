@@ -8,9 +8,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
-import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.utils.CronTools;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.jexl2.UnifiedJEXL;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -83,6 +85,35 @@ public class SystemParamController {
             LOG.error("京东商品售价管理，系统参数查询失败:{}",e);
         }
         return respBody;
+    }
+
+
+
+    @RequestMapping("/jd/update")
+    @ResponseBody
+    public Response updateJdSystemParam(@RequestBody JdSystemParamVo jdSystemParamVo){
+        JdSystemParamVo jdSystemParamVo1 = kvattrService.get(new JdSystemParamVo());
+        if (jdSystemParamVo1 == null) {
+            kvattrService.add(jdSystemParamVo);
+        } else {
+            List<Kvattr> list = kvattrService.getTypeName(jdSystemParamVo1);
+            List<Kvattr> list2= new ArrayList<>();
+            for (Kvattr kvattr:list) {
+                if(kvattr.getKey().equalsIgnoreCase("protocolPrice1")){
+                    kvattr.setValue(jdSystemParamVo.getProtocolPrice1());
+                }
+                if(kvattr.getKey().equalsIgnoreCase("protocolPrice2")){
+                    kvattr.setValue(jdSystemParamVo.getProtocolPrice2());
+                }
+                if(kvattr.getKey().equalsIgnoreCase("protocolPrice3")){
+                    kvattr.setValue(jdSystemParamVo.getProtocolPrice3());
+                }
+                list2.add(kvattr);
+            }
+            kvattrService.update(list2);
+        }
+
+        return Response.successResponse();
     }
 
     /**
