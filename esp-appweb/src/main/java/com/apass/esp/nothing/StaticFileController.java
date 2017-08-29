@@ -77,6 +77,7 @@ public class StaticFileController {
         commissionWalletVo.setId("commission");
         commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v17.js");
         commissionWalletVo.setMd5(md5);
+        commissionWalletVo.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo);
 
         InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_v1.js");
@@ -87,6 +88,7 @@ public class StaticFileController {
         commissionWalletVo2.setId("wallet");
         commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_v1.js");
         commissionWalletVo2.setMd5(md52);
+        commissionWalletVo2.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo2);
 
         try {
