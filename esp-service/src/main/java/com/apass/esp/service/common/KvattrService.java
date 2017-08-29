@@ -57,8 +57,7 @@ public class KvattrService {
      * @param list
      */
     public void update(List<Kvattr> list) {
-        for (Kvattr kvattr : list
-                ) {
+        for (Kvattr kvattr : list) {
             kvattr.setCreateDate(new Date());
             kvattr.setUpdateDate(new Date());
             kvattrMapper.updateByPrimaryKey(kvattr);

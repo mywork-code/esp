@@ -2,11 +2,13 @@ package com.apass.esp.nothing;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
+import com.apass.esp.domain.vo.CommissionWalletVo;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.MD5Utils;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -48,15 +51,52 @@ public class StaticFileController {
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
     public Response getMd5ByFile() {
-        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/app.weex_v15.js");
+        InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/commission/commission.weex_v17.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         Map<String, Object> map = new HashMap<>();
         map.put("flag",true);
         map.put("id","app_weex");
-        map.put("url",appWebDomain + "/appweb/WebContent/js/app.weex_v15.js");
-        map.put("ver","15");
+        map.put("url",appWebDomain + "/appweb/WebContent/js/commission/commission.weex_v17.js");
+        map.put("ver","17");
         map.put("md5",md5);
+
         return Response.successResponse(map);
+    }
+
+    @RequestMapping(value = "v2/app_weex")
+    @ResponseBody
+    public Response getMd5ByFile2() {
+        ClassLoader classLoader = StaticFileController.class.getClassLoader();
+        List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
+
+        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v17.js");
+        String md5 = MD5Utils.getMd5ByFile(in);
+        CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
+        commissionWalletVo.setVer("17");
+        commissionWalletVo.setFlag(true);
+        commissionWalletVo.setId("commission");
+        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v17.js");
+        commissionWalletVo.setMd5(md5);
+        commissionWalletVos.add(commissionWalletVo);
+
+        InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_v1.js");
+        String md52 = MD5Utils.getMd5ByFile(in);
+        CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
+        commissionWalletVo2.setVer("1");
+        commissionWalletVo2.setFlag(true);
+        commissionWalletVo2.setId("wallet");
+        commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_v1.js");
+        commissionWalletVo2.setMd5(md52);
+        commissionWalletVos.add(commissionWalletVo2);
+
+        try {
+            in2.close();
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.successResponse(commissionWalletVos);
     }
 
     @RequestMapping(value = "jsUtils/test1", method = RequestMethod.POST)
