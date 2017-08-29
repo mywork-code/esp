@@ -167,6 +167,8 @@ $(function() {
 		$('#status').combobox('setValue','');
 		$('#selectMerchant').combobox('setValue','');
 		$("#goodsNames").textbox('clear');
+        $("#goodsCode").textbox('clear');
+        $("#merchantName").textbox('clear');
 		var params={};
 		$("#tablelist").datagrid('load',params);
 	});

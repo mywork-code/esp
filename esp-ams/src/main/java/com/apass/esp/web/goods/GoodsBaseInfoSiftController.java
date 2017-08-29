@@ -99,12 +99,28 @@ public class GoodsBaseInfoSiftController {
 			String goodsType = HttpWebUtils.getValue(request, "goodsType");
 			String goodsName = HttpWebUtils.getValue(request, "goodsName");
 			String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
+			String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
 			GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
 			goodsInfoEntity.setGoodsType(goodsType);
 			goodsInfoEntity.setGoodsCode(goodsCode);
 			goodsInfoEntity.setGoodsName(goodsName);
 			goodsInfoEntity.setIsDelete("01");
 			goodsInfoEntity.setMerchantName(merchantName);
+			if (StringUtils.isNotBlank(goodsCategoryCombo)) {
+				String[] aArray = goodsCategoryCombo.split("_");
+				String level = aArray[0];
+				String id = aArray[1];
+				if ("1".equals(level)) {
+					if (!("-1".equals(id))) {
+						goodsInfoEntity.setCategoryId1(Long.valueOf(id));
+					}
+				} else if ("2".equals(level)) {
+					goodsInfoEntity.setCategoryId2(Long.valueOf(id));
+				} else if ("3".equals(level)) {
+					goodsInfoEntity.setCategoryId3(Long.valueOf(id));
+				}
+			}
+
 			// 获取分页结果返回给页面
 			PaginationManage<GoodsInfoEntity> pagination = goodsService.page(goodsInfoEntity, page);
 			if (pagination == null) {
