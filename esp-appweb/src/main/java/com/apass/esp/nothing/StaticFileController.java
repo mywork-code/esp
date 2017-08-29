@@ -60,6 +60,12 @@ public class StaticFileController {
         map.put("ver","17");
         map.put("md5",md5);
 
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return Response.successResponse(map);
     }
 
