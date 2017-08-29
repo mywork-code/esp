@@ -26,7 +26,7 @@ public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetail
     /**
      * 根据订单列表查询订单详情
      *
-     * @param orderId
+     * @param orderList
      * @return
      * @throws BusinessException
      */

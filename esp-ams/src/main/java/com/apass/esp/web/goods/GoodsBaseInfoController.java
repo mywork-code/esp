@@ -347,7 +347,7 @@ public class GoodsBaseInfoController {
     /**
      * 商品基本信息修改
      *
-     * @param pageModel
+     * @param pageModelEdit
      * @param model
      * @param request
      * @return
