@@ -89,6 +89,10 @@ public class JDTaskListener implements MessageListener {
                 if (state == 0) {
                     //直接将商品下架
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    if(goodsInfoEntity==null){
+                        LOGGER.info("skuId {}, state {} 消息接收  0表示下架消息 1表示上架消息 商品不存在", skuId, state);
+                        continue;
+                    }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
@@ -275,6 +279,9 @@ public class JDTaskListener implements MessageListener {
                     //商品池商品删除  直接将商品下架
                     LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    if(goodsInfoEntity==null){
+                       return;
+                    }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
