@@ -2,6 +2,7 @@ package com.apass.esp.mq.listener;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.common.model.JdMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -255,7 +256,7 @@ public class JDTaskListener implements MessageListener {
                     entity.setCategoryId3(Long.valueOf(thirdCategory));
                     entity.setGoodsName(jdGoods.getName());
                     entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-                    entity.setMerchantCode("0000103");
+                    entity.setMerchantCode(JdMerchantCode.JDMERCHANTCODE);
                     entity.setStatus(GoodStatus.GOOD_NEW.getCode());
                     entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
                     entity.setListTime(null);
