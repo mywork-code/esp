@@ -1170,4 +1170,18 @@
 	  ]]>
 	</select>
 
+	<select id="selectJdGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
+		<![CDATA[
+		SELECT
+				t.ID goodId,
+				t.ID id,
+				t.merchant_code merchantCode
+		FROM
+			t_esp_goods_base_info t
+		WHERE
+	        t.source ='jd'
+		    limit #{index},#{size}
+	  ]]>
+	</select>
+
 </mapper> 

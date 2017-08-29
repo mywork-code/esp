@@ -840,6 +840,10 @@ public class GoodsService {
         return goodsDao.selectUpGoods(index, size);
     }
 
+    public List<GoodsInfoEntity> selectJdGoods(int index, int size) {
+        return goodsDao.selectJdGoods(index, size);
+    }
+
     public List<Goods> esInit(int index, int size) {
         List<GoodsInfoEntity> selectByCategoryId2 = selectUpGoods(index, size);
         if (CollectionUtils.isEmpty(selectByCategoryId2)) {
