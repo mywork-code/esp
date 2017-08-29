@@ -51,4 +51,46 @@ $(function(){
             })
         }
     });
+    /**
+     * 查询
+     */
+    $(".search-btn").click(function(){
+    	 var params = {};
+         params['mobile'] = $("#mobile").textbox('getValue');
+         params['module'] = $("#module").combobox('getValue');
+         params['feedbackType'] = $("#feedbackType").combobox('getValue');
+         params['submitDate1'] = $("#submitDate1").datetimebox('getValue');
+         params['submitDate2'] = $("#submitDate2").datetimebox('getValue');
+         $('#list').datagrid('load', params);
+    });
+	    /**
+		 * 重置
+		 */
+	$(".reset-btn").click(function() {
+		$("#mobile").textbox('setValue', '');
+		$("#module").combobox('setValue', '');
+		$("#feedbackType").combobox('setValue', '');
+		$("#submitDate1").datetimebox('setValue', '');
+		$("#submitDate2").datetimebox('setValue', '');
+		var params = {};
+		$('#list').datagrid('load', params);
+	});
+	    /**
+		 * 查看上传图片
+		 */
+	$.lookPicture = function(picture) {
+		$("#lookPictureImg1").attr("src", "");
+		var pictureList = picture.split(";");
+		if (pictureList.length == 1) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+		} else if (pictureList.length== 2) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+			$("#lookPictureImg2").attr("src", pictureList[1]);
+		} else if (pictureList.length == 3) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+			$("#lookPictureImg2").attr("src", pictureList[1]);
+			$("#lookPictureImg3").attr("src", pictureList[2]);
+		}
+		$('#lookPictureWindow').window('open');
+	}
 });
