@@ -9,6 +9,7 @@ public class CommissionWalletVo {
     private String id;
     private String url;
     private String md5;
+    private boolean offLine;
 
     public String getVer() {
         return ver;
@@ -48,5 +49,13 @@ public class CommissionWalletVo {
 
     public void setMd5(String md5) {
         this.md5 = md5;
+    }
+
+    public boolean isOffLine() {
+        return offLine;
+    }
+
+    public void setOffLine(boolean offLine) {
+        this.offLine = offLine;
     }
 }
