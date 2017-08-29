@@ -234,14 +234,26 @@ public class JDTaskListener implements MessageListener {
                     LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
                     throw new RuntimeException(e);
                 }
-                JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                if(jdCategory3==null){
+                    addCategory(String.valueOf(thirdCategory),3);
+                }
+                JdCategory jdCategory2 = jdCategoryMapper.getCateGoryByCatId(secondCategory);
+                if(jdCategory2==null){
+                    addCategory(String.valueOf(secondCategory),2);
+                }
+                JdCategory jdCategory1 = jdCategoryMapper.getCateGoryByCatId(firstCategory);
+                if(jdCategory1==null){
+                    addCategory(String.valueOf(firstCategory),1);
+                }
+                JdCategory jdCategory =  jdCategoryMapper.getCateGoryByCatId(thirdCategory);
                 //已关联
-                if (jdCategory.getFlag()) {
+                if (jdCategory!=null && jdCategory.getFlag()) {
                     GoodsInfoEntity entity = new GoodsInfoEntity();
                     entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
-                    entity.setCategoryId1(jdCategory.getCategoryId1());
-                    entity.setCategoryId2(jdCategory.getCategoryId2());
-                    entity.setCategoryId3(jdCategory.getCategoryId3());
+                    entity.setCategoryId1(Long.valueOf(firstCategory));
+                    entity.setCategoryId2(Long.valueOf(secondCategory));
+                    entity.setCategoryId3(Long.valueOf(thirdCategory));
                     entity.setGoodsName(jdGoods.getName());
                     entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
                     entity.setMerchantCode("0000103");
@@ -303,4 +315,36 @@ public class JDTaskListener implements MessageListener {
         }
         LOGGER.info("jdTaskListener start consume message............");
     }
+
+    private void addCategory(String category, int level) {
+            JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.getcategory(Long.valueOf(category));
+            if (jdApiResponse == null || jdApiResponse.getResult() == null) {
+                return;
+            }
+            if (!jdApiResponse.isSuccess()) {
+                return;
+            }
+            JSONObject jsonObject = jdApiResponse.getResult();
+            Integer parentId = jsonObject.getInteger("parentId");
+            Integer catClass = jsonObject.getInteger("catClass");
+            String name = jsonObject.getString("name");
+            Integer catId = jsonObject.getInteger("catId");
+            Integer state = jsonObject.getInteger("state");
+            JdCategory jdCategory = new JdCategory();
+            jdCategory.setName(name);
+            jdCategory.setParentId(Long.valueOf(parentId));
+            jdCategory.setCatClass(catClass);
+            jdCategory.setFlag(false);
+            jdCategory.setCatId(Long.valueOf(catId));
+            jdCategory.setStatus(state == 1 ? true : false);
+            jdCategory.setCategoryId1(0l);
+            jdCategory.setCategoryId2(0l);
+            jdCategory.setCategoryId3(0l);
+            try {
+                jdCategoryMapper.insertSelective(jdCategory);
+            } catch (Exception e) {
+                LOGGER.error("insert jdCategoryMapper sql catId {}", catId);
+            }
+        }
+
 }
