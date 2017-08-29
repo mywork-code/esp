@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,12 +49,10 @@ import net.sf.json.JsonConfig;
  * 电商交易明细日报
  * 每日拉取近15天，每天的 支付成功的商品数据明细
  */
-//@Component
-//@Configurable
-//@EnableScheduling
-//@Profile("Schedule")
-@Controller
-@RequestMapping("/orderdetail/feedback")
+@Component
+@Configurable
+@EnableScheduling
+@Profile("Schedule")
 public class OrderTransactionDetailSchedeuleTask {
 	
 	private static final Logger logger  = LoggerFactory.getLogger(OrderTransactionDetailSchedeuleTask.class);
@@ -76,8 +75,7 @@ public class OrderTransactionDetailSchedeuleTask {
 	@Autowired
 	private OrderInforMailSendScheduleTask scheduleTask;
 	
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	@ResponseBody
+	@Scheduled(cron = "0 0 9 * * ?")
 	public void sendOrderMailEveryDay(){
 		String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -15), "YYYY-MM-dd");
     	String dateEnd = DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd");
