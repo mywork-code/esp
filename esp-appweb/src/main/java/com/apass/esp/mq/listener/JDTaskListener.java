@@ -105,13 +105,10 @@ public class JDTaskListener implements MessageListener {
                             if(goods!=null){
                                 goodsEsDao.delete(goods);
                             }
-
                         }
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                       LOGGER.error("delete index error");
                     }
-                } else {
-
                 }
             }
             return;
@@ -135,7 +132,6 @@ public class JDTaskListener implements MessageListener {
                 //orderInfoEntity.setAcceptGoodsDate(new Date());
                 orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
             }
-
             return;
         }
         //拆单消息接收
@@ -145,20 +141,23 @@ public class JDTaskListener implements MessageListener {
             JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
             if (!jdApiResponse.isSuccess()) {
                 LOGGER.info("confirm order result {}", jdApiResponse);
-                throw new RuntimeException();
+                return;
             }
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
             if (orderInfoEntity == null) {
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
                 return;
             }
             if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
                 return;
             }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
             } catch (BusinessException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}" ,orderInfoEntity.getExtOrderId());
+                return;
             }
 
         }
@@ -170,7 +169,7 @@ public class JDTaskListener implements MessageListener {
                 JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(skuId);
                 if (!jdApiResponse.isSuccess() || jdApiResponse == null) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONObject jsonObject1 = jdApiResponse.getResult();
                 String category = (String) jsonObject1.get("category");
@@ -190,19 +189,19 @@ public class JDTaskListener implements MessageListener {
                 JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skulist);
                 if (jsonArrayJdApiResponse == null) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
-                if (productPriceList == null) {
+                if (productPriceList == null||productPriceList.size()==0) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONObject jsonObject12 = null;
                 try {
                     jsonObject12 = (JSONObject) productPriceList.get(0);
                 } catch (Exception e) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException(e);
+                    return;
                 }
                 BigDecimal price = (BigDecimal) jsonObject12.get("price");
                 BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
@@ -232,7 +231,7 @@ public class JDTaskListener implements MessageListener {
                 } catch (Exception e) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
                     LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
-                    throw new RuntimeException(e);
+                    return;
                 }
                 JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
                 if(jdCategory3==null){
@@ -270,7 +269,6 @@ public class JDTaskListener implements MessageListener {
                     entity.setUpdateDate(new Date());
                     entity.setCreateDate(new Date());
                     GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
-
                     //往t_esp_goods_stock_info表插数据
                     GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
                     stockEntity.setStockTotalAmt(-1l);
@@ -285,7 +283,7 @@ public class JDTaskListener implements MessageListener {
                         goodsStockInfoService.insert(stockEntity);
                     } catch (Exception e) {
                         LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                        throw new RuntimeException(e);
+                        return;
                     }
                 }
             }else{
@@ -295,7 +293,8 @@ public class JDTaskListener implements MessageListener {
                     LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
                     if(goodsInfoEntity==null){
-                       return;
+                        LOGGER.error("delete goods result {},goodsInfoEntity {}",goodsInfoEntity);
+                        return;
                     }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
@@ -309,7 +308,7 @@ public class JDTaskListener implements MessageListener {
                         }
                     }
                 } catch (Exception e) {
-                   // throw new RuntimeException(e);
+                    return;
                 }
             }
         }
