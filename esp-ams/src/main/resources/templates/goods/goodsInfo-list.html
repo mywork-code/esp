@@ -85,6 +85,9 @@
 				  	<td width="10%" align="right">商品类目：</td>
 				  	 <td><input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 200px;" />
 				  	</td>
+					<td width="10%" align="right">商品编码：</td>
+					<td width="20%"><input id="goodsCode"  class="easyui-textbox"
+										   style="width: 200px;"  ></td>
 				</tr>
 				<tr>
 					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
@@ -98,16 +101,27 @@
 						  <option label="精选" value="2">精选</option>   
 						</select>
 					</td>
-					<td width="5%" />
+					<td width="10%" align="right">商户类型：</td>
+					<td>
+						<select class="easyui-combobox" style="width: 150px;" id="goodsStatus">
+							<option value="" class="" selected="selected">请选择</option>
+							<option value="G00">待上架</option>
+							<option value="G01">待审核</option>
+							<option value="G02">已上架</option>
+							<option value="G03">已下架</option>
+							<option value="G04">保本率审核</option>
+						</select>
+					</td>
+
 					<td>
 						<a href="javascript:void(0);"
 						class="easyui-linkbutton search-btn"
-						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp; 
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
 					  <@apass.role value="GOODS_INFO_ADD">
-						<#if merchantStatus??&&merchantStatus=="1"> 
+						<#if merchantStatus??&&merchantStatus=="1">
 						<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
 						data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
-						</#if> 
+						</#if>
 						</@apass.role>
 						 <@apass.role value="GOODS_INFO_EXPORT">
 						<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
