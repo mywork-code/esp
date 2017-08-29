@@ -102,7 +102,10 @@ public class JDTaskListener implements MessageListener {
                         if(count == 1){
                             Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
                             LOGGER.info("监听京东商品下架删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                            goodsEsDao.delete(goods);
+                            if(goods!=null){
+                                goodsEsDao.delete(goods);
+                            }
+
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -289,7 +292,9 @@ public class JDTaskListener implements MessageListener {
                     if(count == 1){
                         Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
                         LOGGER.info("监听京东商品池删除,删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                        goodsEsDao.delete(goods);
+                        if(goods != null){
+                            goodsEsDao.delete(goods);
+                        }
                     }
                 } catch (Exception e) {
                    // throw new RuntimeException(e);
