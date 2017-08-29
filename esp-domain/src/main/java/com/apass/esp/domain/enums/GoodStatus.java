@@ -1,5 +1,7 @@
 package com.apass.esp.domain.enums;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 /**
  * 
  * @description 商品状态枚举
@@ -42,5 +44,15 @@ public enum GoodStatus {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public static String getMessageByCode(String code){
+    	GoodStatus[] status = GoodStatus.values();
+    	for (GoodStatus goods : status) {
+			if(StringUtils.equals(goods.getCode(), code)){
+				return goods.getMessage();
+			}
+		}
+    	return "";
     }
 }

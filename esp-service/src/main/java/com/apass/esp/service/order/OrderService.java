@@ -2191,7 +2191,46 @@ public class OrderService {
         param.put("dateEnd", dateEnd);
         return orderSubInfoRepository.queryOrderSubInfoByTime(param);
     }
+    
+    /**
+     * 获取15天内，交易成功的订单信息
+     */
+    public List<OrderSubInfoEntity> queryOrderIdByOrderStatus(String dateBegin, String dateEnd) {
+        HashMap<String, String> param = Maps.newHashMap();
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return orderSubInfoRepository.queryOrderIdByOrderStatus(param);
+    }
 
+    @SuppressWarnings("null")
+	public List<OrderSubInfoEntity> getOrderDetail(String dateBegin, String dateEnd){
+    	List<OrderSubInfoEntity> dtoList = new ArrayList<OrderSubInfoEntity>();
+    	List<OrderSubInfoEntity> orderIdList = queryOrderIdByOrderStatus(dateBegin, dateEnd);
+    	for (OrderSubInfoEntity order : orderIdList) {
+    		List<OrderDetailInfoEntity> details = orderDetailInfoRepository.queryOrderDetailBySubOrderId(order.getOrderId());
+    		for (OrderDetailInfoEntity detail : details) {
+    			OrderSubInfoEntity sub = new OrderSubInfoEntity();
+    			
+    			//首先获取商户名称
+    			MerchantInfoEntity merchant = merchantInforService.queryByMerchantCode(order.getMerchantCode());
+    			GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+    			//时间
+    			sub.setPayTime(order.getPayDate());
+    			//商户名称
+    			sub.setMerchantName(null != merchant ?merchant.getMerchantName():"");
+    			//商品编号  商品名称  商品状态  商品件数  商品金额
+    			sub.setGoodsId(detail.getGoodsId()+"");
+    			sub.setGoodsName(null != goods ?detail.getGoodsName():"");
+    			sub.setGoodStatus(GoodStatus.getMessageByCode(goods.getStatus()));
+    			
+    			sub.setGoodsNum(detail.getGoodsNum()+"");
+    			sub.setOrderAmt(detail.getGoodsPrice().multiply(new BigDecimal(detail.getGoodsNum())).setScale(2, BigDecimal.ROUND_DOWN));
+    			dtoList.add(sub);
+			}
+    	}
+    	return dtoList;
+    }
+    
     /**
      * 根据订单号，获取订单信息
      * 

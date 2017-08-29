@@ -60,8 +60,18 @@ public class OrderSubInfoEntity {
      * 支付时间
      */
     private String payDate;
+    
+    private String payTime;
+    
+    public String getPayTime() {
+		return payTime;
+	}
 
-    public String getPayDate() {
+	public void setPayTime(String payTime) {
+		this.payTime = payTime;
+	}
+
+	public String getPayDate() {
         return payDate;
     }
 
@@ -253,6 +263,8 @@ public class OrderSubInfoEntity {
     private String goodsSkuAttr;
 
     private String goodsPrice;
+    
+    private String goodStatus;
 
     // 退款金额 退款状态 审核人 审核日期
     private BigDecimal txnAmt;
@@ -272,7 +284,15 @@ public class OrderSubInfoEntity {
 
     private String cardBank;
 
-    public String getUserName() {
+    public String getGoodStatus() {
+		return goodStatus;
+	}
+
+	public void setGoodStatus(String goodStatus) {
+		this.goodStatus = goodStatus;
+	}
+
+	public String getUserName() {
         return userName;
     }
 

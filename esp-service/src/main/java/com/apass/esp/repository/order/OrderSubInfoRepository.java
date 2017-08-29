@@ -126,4 +126,13 @@ public class OrderSubInfoRepository extends BaseMybatisRepository<OrderSubInfoEn
     public List<OrderSubInfoEntity> queryOrderSubInfoByTime(Map<String,String> param) {
         return getSqlSession().selectList(getSQL("queryOrderSubInfoByTime"), param);
     }
+    
+    /**
+     * 获取15天内，交易成功的订单信息
+     * @param param
+     * @return
+     */
+    public List<OrderSubInfoEntity> queryOrderIdByOrderStatus(Map<String,String> param){
+    	return getSqlSession().selectList(getSQL("queryOrderIdByOrderStatus"), param);
+    }
 }

@@ -178,7 +178,7 @@ public class OrderInforMailSendScheduleTask {
      * @param workbook
      * @return
      */
-    private List<HSSFCellStyle> getHSSFCellStyle(HSSFWorkbook workbook) {
+    public List<HSSFCellStyle> getHSSFCellStyle(HSSFWorkbook workbook) {
         List<HSSFCellStyle> styleList = new ArrayList<>();
         // 生成一个标题样式
         HSSFCellStyle headStyle = workbook.createCellStyle();
