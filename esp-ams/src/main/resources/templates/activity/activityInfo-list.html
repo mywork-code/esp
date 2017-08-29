@@ -38,25 +38,33 @@
 			<table style="min-width: 700px;">
 				<tr>
 					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
-					<td width="20%"><input id="goodsNames" class="easyui-textbox"
+					<td width="10%"><input id="goodsNames" class="easyui-textbox"
 						style="width: 200px;" /></td>
+					<td width="10%" align="right">商品编号：</td>
+					<td width="10%"><input id="goodsCode"  class="easyui-textbox"
+										   style="width: 200px;" data-options="prompt:'请输入商品编号/skuid'"></td>
+				</tr>
+				<tr>
+					<td width="10%" align="right">商户名称：</td>
+					<td width="10%"><input id="merchantName"  class="easyui-textbox"
+										   style="width: 200px;"  ></td>
 					<td width="10%" align="right" nowrap="nowrap">活动状态：</td>
-					<td width="10%" align="right" nowrap="nowrap">
-						<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;">   
-						  <option value="" selected="selected">请选择</option>   
-						  <option label="正常" value="1">正常</option>   
-						  <option label="精选" value="2">精选</option>   
+					<td width="10%" align="left" nowrap="nowrap">
+						<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;">
+							<option value="" selected="selected">请选择</option>
+							<option label="正常" value="1">正常</option>
+							<option label="精选" value="2">精选</option>
 						</select>
 					</td>
 					<td width="5%" />
 					<td>
-					<a href="javascript:void(0);"
-						class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>
+						<a href="javascript:void(0);"
+						   class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>
 						&nbsp;&nbsp;
-				      <@apass.role value="ACTIVITY_INFO_ADD">
-						<a href="javascript:void(0);" 
-						class="easyui-linkbutton checkAll" data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;活&nbsp;动&nbsp;</a></td>
-						</@apass.role>
+						<@apass.role value="ACTIVITY_INFO_ADD">
+						<a href="javascript:void(0);"
+						   class="easyui-linkbutton checkAll" data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;活&nbsp;动&nbsp;</a></td>
+				</@apass.role>
 				</tr>
 			</table>
 		</div>
@@ -67,12 +75,12 @@
 
 	<!-- 审核 -->
 	<div id="activityInfos">
-		
+
 		<!-- 活动列表-->
 		<div id="activityFromlist"  name="activityFromlist" style="display: none;">
 			<div id="activityTablelist"></div>
 		</div>
-		
+
 		<form id="activityInfoForm" method="POST">
 			<table style="width: 400px;">
 				<tr>

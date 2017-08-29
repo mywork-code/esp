@@ -76,8 +76,42 @@ public class ActivityInfoEntity {
 
 	/** 商品下架时间 **/
 	private Date delistTime;
-	
-	
+	// 商品编号
+	private String goodsCode;
+
+	/**
+	 * 商户名称
+	 */
+	private String merchantName;
+	/**
+	 * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
+	 */
+	private String externalId;
+
+	public String getGoodsCode() {
+		return goodsCode;
+	}
+
+	public void setGoodsCode(String goodsCode) {
+		this.goodsCode = goodsCode;
+	}
+
+	public String getMerchantName() {
+		return merchantName;
+	}
+
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	public String getMerchantCode() {
 		return merchantCode;
 	}

@@ -30,7 +30,20 @@ $(function() {
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },{  
+                },{
+                    title : '商品编号',
+                    field : 'goodsCode',
+                    width : 90,
+                    align : 'center'
+                },{
+                    title : 'skuid',
+                    field : 'externalId',
+                    width : 90,
+                    align : 'center',
+                    formatter : function(value, row, index) {
+                        return value == '' ? "--" : value;
+                    }
+                },{
        		 		title : '三级类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
@@ -162,7 +175,24 @@ $(function() {
             })
         }
     });
-    
+    $("#goodsCategoryCombo").combotree({
+//        required : true,
+        loader : function(param, success, error) {
+            $.ajax({
+                url : ctx + "/application/goods/management/categoryList",
+                data : param,
+                type : "get",
+                dataType : "json",
+                success : function(resp) {
+                    $.validateResponse(resp, function() {
+                        success(resp.data);
+                    });
+                }
+            })
+        }
+    });
+    $("#goodsCategoryCombo").combotree('setValue', '请选择');
+
     // 查询列表
     $(".search-btn").click(function() {
     	//debugger;
@@ -170,6 +200,13 @@ $(function() {
         var goodsType=$("#goodsTypeId").combobox('getValue');
         params['goodsName'] = $("#goodsName").textbox('getValue');
         params['goodsType'] = goodsType;
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['merchantName'] = $("#merchantName").textbox('getValue');
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+            goodsCategoryCombo="";
+        }
+        params['goodsCategoryCombo']=goodsCategoryCombo;
         $('#tablelist').datagrid('load', params);
     });
     
@@ -177,7 +214,11 @@ $(function() {
 	$("#flush").click(function(){
 		//debugger;
 		$("#goodsName").textbox('setValue','');
+		$("#goodsCode").textbox('setValue','');
 		$("#goodsTypeId").combobox('setValue','');
+        $("#merchantName").textbox('setValue','');
+        $("#goodsCategoryCombo").combotree('setValue','');
+        $("#goodsCategoryCombo").combotree('setValue', '请选择');
 		var params = {};
 		$('#tablelist').datagrid('load', params);
 	});

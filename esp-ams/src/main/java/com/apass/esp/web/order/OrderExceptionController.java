@@ -26,6 +26,7 @@ import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
 import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
+import com.apass.esp.schedule.OrderTransactionDetailSchedeuleTask;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -69,6 +70,9 @@ public class OrderExceptionController {
 
     @Autowired
     private OrderInforMailSendScheduleTask task;
+    
+    @Autowired
+    private OrderTransactionDetailSchedeuleTask detailTask;
 
     @Autowired
     private MerchantInforRepository merchant;
@@ -224,5 +228,12 @@ public class OrderExceptionController {
     public Response sendOrderMailOn1stMonth() {
         task.sendOrderMailOn1stMonth();
         return Response.success("发送成功");
+    }
+    
+    @ResponseBody
+    @RequestMapping("/detailTask")
+    public Response detailTask(){
+    	detailTask.sendOrderMailEveryDay();
+    	return Response.success("发送成功");
     }
 }

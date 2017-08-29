@@ -274,9 +274,6 @@
 		ORDER BY orderInfo.orderstatus, orderInfo.create_date DESC
 	</select>
 	
-	
-	
-	
 	<!-- 订单查询页面显示  -->
 	<select id="queryOrderCashRefundException" parameterType="Map"
 		resultType="OrderSubInfoEntity">
@@ -361,5 +358,26 @@
 		refundTxn.txn_type in ('T10','T11')
 	    
 		ORDER BY refund.create_date DESC
+	</select>
+	<!-- 某一时间段内付款成功的订单 -->
+	<select id="queryOrderIdByOrderStatus" parameterType="Map" resultType="OrderSubInfoEntity">
+	    select 
+	        order_id orderId,
+	        merchant_code merchantCode,
+	        pay_time payDate
+	    from t_esp_order_info 
+	    <where>
+	     orderstatus in ('D02','D03','D04','D05','D09') 
+	    <if test="dateBegin != null and dateBegin != ''">
+		  <![CDATA[ 
+		    and pay_time >= #{dateBegin} 
+		    ]]> 
+		</if>
+		<if test="dateEnd != null and dateEnd != ''">
+		  <![CDATA[ 
+		    and pay_time <  #{dateEnd} 
+		    ]]> 
+		</if>
+		</where>
 	</select>
 </mapper>
