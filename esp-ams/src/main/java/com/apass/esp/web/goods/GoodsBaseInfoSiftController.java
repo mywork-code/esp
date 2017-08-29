@@ -94,15 +94,17 @@ public class GoodsBaseInfoSiftController {
 			    page.setPage(pageNoNum <= 0 ? 1 : pageNoNum);
 			    page.setLimit(pageSizeNum <= 0 ? 1 : pageSizeNum);
 			}
-
+			String merchantName = HttpWebUtils.getValue(request, "merchantName");
 			// 获取页面查询条件
 			String goodsType = HttpWebUtils.getValue(request, "goodsType");
 			String goodsName = HttpWebUtils.getValue(request, "goodsName");
+			String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
 			GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
 			goodsInfoEntity.setGoodsType(goodsType);
+			goodsInfoEntity.setGoodsCode(goodsCode);
 			goodsInfoEntity.setGoodsName(goodsName);
 			goodsInfoEntity.setIsDelete("01");
-
+			goodsInfoEntity.setMerchantName(merchantName);
 			// 获取分页结果返回给页面
 			PaginationManage<GoodsInfoEntity> pagination = goodsService.page(goodsInfoEntity, page);
 			if (pagination == null) {

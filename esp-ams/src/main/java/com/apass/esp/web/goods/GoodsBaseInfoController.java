@@ -241,8 +241,9 @@ public class GoodsBaseInfoController {
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
-
+            String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
+            goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
             goodsInfoEntity.setGoodsType(goodsType);

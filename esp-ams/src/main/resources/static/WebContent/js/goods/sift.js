@@ -30,7 +30,20 @@ $(function() {
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },{  
+                },{
+                    title : '商品编号',
+                    field : 'goodsCode',
+                    width : 90,
+                    align : 'center'
+                },{
+                    title : 'skuid',
+                    field : 'externalId',
+                    width : 90,
+                    align : 'center',
+                    formatter : function(value, row, index) {
+                        return value == '' ? "--" : value;
+                    }
+                },{
        		 		title : '三级类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
@@ -170,6 +183,8 @@ $(function() {
         var goodsType=$("#goodsTypeId").combobox('getValue');
         params['goodsName'] = $("#goodsName").textbox('getValue');
         params['goodsType'] = goodsType;
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['merchantName'] = $("#merchantName").textbox('getValue');
         $('#tablelist').datagrid('load', params);
     });
     

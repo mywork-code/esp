@@ -239,7 +239,8 @@ public class ActivityInfoController {
             String goodsName = HttpWebUtils.getValue(request, "goodsName");
             String status = HttpWebUtils.getValue(request, "status");
             String merchantCode = HttpWebUtils.getValue(request, "merchantCode");
-
+            String merchantName = HttpWebUtils.getValue(request, "merchantName");
+            String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
             ActivityInfoEntity activityInfoEntity = new ActivityInfoEntity();
             if (!StringUtils.isBlank(goodsName)) {
                 activityInfoEntity.setGoodsName(goodsName);
@@ -250,7 +251,12 @@ public class ActivityInfoController {
             if (!StringUtils.isBlank(merchantCode)) {
                 activityInfoEntity.setMerchantCode(merchantCode);
             }
-
+            if (!StringUtils.isBlank(merchantName)) {
+                activityInfoEntity.setMerchantName(merchantName);
+            }
+            if (!StringUtils.isBlank(goodsCode)) {
+                activityInfoEntity.setGoodsCode(goodsCode);
+            }
             PaginationManage<ActivityInfoEntity> pagination = activityInfoService
                 .activityAndGoodsPageList(activityInfoEntity, pageNo, pageSize);
             if (pagination == null) {
