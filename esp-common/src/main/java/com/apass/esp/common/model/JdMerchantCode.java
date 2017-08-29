@@ -9,5 +9,5 @@ package com.apass.esp.common.model;
  * @since JDK 1.8
  */
 public class JdMerchantCode {
-    public static  final String JDMERCHANTCODE="0000103";
+    public static  final String JDMERCHANTCODE="0000097";
 }
