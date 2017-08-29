@@ -245,6 +245,8 @@ $(function() {
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").combobox('getValue');
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['goodsStatus'] = $("#goodsStatus").combobox('getValue');
         var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
         if("请选择"==goodsCategoryCombo){
         	goodsCategoryCombo="";

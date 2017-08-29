@@ -83,8 +83,6 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
      * 商品信息列表
      * 
      * @param domain GoodsInfoEntity
-     * @param pageSiz
-     * @param begin
      * @return
      */
     public List<GoodsInfoEntity> pageList(GoodsInfoEntity domain) {
@@ -108,7 +106,6 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     /**
      * 商品基本信息+商户信息+库存信息
      * 
-     * @param goodsId
      * @param goodsStockId
      * @return
      */

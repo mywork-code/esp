@@ -236,12 +236,14 @@ public class GoodsBaseInfoController {
             String merchantName = HttpWebUtils.getValue(request, "merchantName");
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
-            String status = HttpWebUtils.getValue(request, "status");
+            String status = HttpWebUtils.getValue(request, "goodsStatus");
             // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
             String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
+
+
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
             goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
@@ -446,9 +448,8 @@ public class GoodsBaseInfoController {
     /**
      * 上传banner图
      *
-     * @param pageModel
-     * @param model
-     * @param request
+     * @param bannerDto
+     * @param bannerDto
      * @return
      */
     @ResponseBody
