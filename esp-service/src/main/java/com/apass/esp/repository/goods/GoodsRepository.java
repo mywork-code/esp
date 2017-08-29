@@ -105,12 +105,12 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 
     /**
      * 商品基本信息+商户信息+库存信息
-     * 
+     *
      * @param goodsStockId
      * @return
      */
     public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsStockId) {
-        
+
     	/**
     	 * 根据stockId获取goodsId
     	 */
