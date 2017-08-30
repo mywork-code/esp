@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.apass.esp.domain.enums.DeviceType;
+import com.apass.esp.domain.enums.kvattrKey;
+import com.apass.esp.domain.enums.kvattrSource;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.gfb.framework.utils.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.common.SequenceEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
@@ -44,6 +47,8 @@ public class CommonService {
     private SequenceRepository sequenceDao;
     @Autowired
     private PaymentHttpClient paymentHttpClient;
+    @Autowired
+    private KvattrService kvattrService;
 
     /**
      * 根据市场价和折扣率【取系统折扣率或活动折扣率 优惠最大】计算商品价格
@@ -116,8 +121,18 @@ public class CommonService {
             price = goodsStock.getMarketPrice().multiply(discount);
             return price.setScale(2, BigDecimal.ROUND_FLOOR);//接近负无穷大的舍入模式 保留两位小数
         }else{
-            price = goodsStock.getGoodsPrice();
-            return price.setScale(2, BigDecimal.ROUND_FLOOR);//接近负无穷大的舍入模式 保留两位小数
+//            price = goodsStock.getGoodsPrice();
+        	 BigDecimal goodsCostPrice=goodsStock.getGoodsCostPrice();
+        	 String goodsCostKey="";
+        	 if(goodsCostPrice.compareTo(new BigDecimal(99))>0 && goodsCostPrice.compareTo(new BigDecimal(500))<=0){
+        		 goodsCostKey=kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
+        	 }else 	if(goodsCostPrice.compareTo(new BigDecimal(500))>0 && goodsCostPrice.compareTo(new BigDecimal(2000))<=0){
+        		 goodsCostKey=kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
+        	 }else 	if(goodsCostPrice.compareTo(new BigDecimal(2000))>0){
+        		 goodsCostKey=kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
+        	 }
+        	 price=goodsCostPrice.multiply(new BigDecimal(goodsCostKey));
+            return price.setScale(0, BigDecimal.ROUND_HALF_UP);
         }
 //        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
 //        return price.setScale(0, BigDecimal.ROUND_DOWN);

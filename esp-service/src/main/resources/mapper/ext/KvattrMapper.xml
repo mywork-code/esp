@@ -5,4 +5,8 @@
     SELECT * from t_esp_kvattr
     WHERE  source=#{source}
   </select>
+   <select id="getByKey" resultMap="String">
+    SELECT value from t_esp_kvattr
+    WHERE  key=#{key}
+  </select>
 </mapper>
