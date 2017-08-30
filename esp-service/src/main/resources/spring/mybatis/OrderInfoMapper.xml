@@ -23,6 +23,9 @@
 			<if test="status != null and status != ''">
 				and orderstatus=#{status, jdbcType=VARCHAR}
 			</if>
+			<if test="isDelete != null and isDelete != ''">
+			    and is_delete=#{isDelete, jdbcType=VARCHAR}
+			</if>
 	</sql>
 
 	<select id="select" parameterType="OrderInfoEntity" resultType="OrderInfoEntity">
@@ -326,6 +329,19 @@
 		<set>
 			update_date = CURRENT_TIMESTAMP,
 			orderstatus = #{status, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<update id="updateIsDeleteByOrderId" parameterType="OrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_info 
+		]]>
+		<set>
+			is_delete = '01',
+			update_date = #{updateDate,jdbcType=TIMESTAMP}
 		</set>
 	<![CDATA[
 		WHERE order_id =  #{orderId, jdbcType=VARCHAR}

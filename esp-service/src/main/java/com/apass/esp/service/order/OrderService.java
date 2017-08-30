@@ -1214,8 +1214,10 @@ public class OrderService {
             LOG.info(requestId, "当前订单状态不能删除订单", orderId);
             throw new BusinessException("当前订单状态不能删除订单", BusinessErrorCode.ORDER_DELETE_ERROR);
         }
-        orderInfoRepository
-                .updateStatusByOrderId(orderInfo.getOrderId(), OrderStatus.ORDER_DELETED.getCode());
+        /**
+         * 前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
+         */
+        orderInfoRepository.updateIsDeleteByOrderId(orderInfo.getOrderId());
     }
 
     /**
@@ -1231,6 +1233,8 @@ public class OrderService {
         Long userIdVal = Long.valueOf(userId);
         OrderInfoEntity orderInfo = new OrderInfoEntity();
         orderInfo.setUserId(userIdVal);
+        //前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
+        orderInfo.setIsDelete("00");
         if (StringUtils.isNotBlank(orderStatus)) {
             orderInfo.setStatus(orderStatus);
         }

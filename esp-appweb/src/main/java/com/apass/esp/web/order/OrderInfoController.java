@@ -223,7 +223,6 @@ public class OrderInfoController {
 	      return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
 	  } catch (Exception e) {
 		  LOGGER.error(e.getMessage(), e);
-	      LOGGER.error("订单取消失败!请稍后再试");
 	      return Response.fail(BusinessErrorCode.EDIT_INFO_FAILED);
 	  }
 	  return Response.success("验证成功!",params);

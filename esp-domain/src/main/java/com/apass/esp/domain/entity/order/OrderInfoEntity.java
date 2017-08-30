@@ -198,8 +198,19 @@ public class OrderInfoEntity {
      * 是否为京东父Id
      */
     private String extParentId ;
+    
+    /** 是否删除 **/
+    private String isDelete;
+    
+    public String getIsDelete() {
+		return isDelete;
+	}
 
-    public String getDeviceType() {
+	public void setIsDelete(String isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	public String getDeviceType() {
         return deviceType;
     }
 
