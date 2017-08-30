@@ -37,7 +37,7 @@ public class ESClientController {
     @ResponseBody
     public Response addData() {
         int index = 0;
-        final int BACH_SIZE = 500;
+        final int BACH_SIZE = 100;
         try {
 	        while (true) {
 	            List<GoodsInfoEntity> goodsList = goodsService.selectUpGoods(index, BACH_SIZE);
@@ -45,7 +45,7 @@ public class ESClientController {
 	                break;
 	            }
 	            List<Goods> list = goodsService.getGoodsList(goodsList);
-	            index += goodsList.size();
+	            index += BACH_SIZE;
 	            IndexManager.createIndex(list, IndexType.GOODS);
 	        }
         }catch(Exception e){
