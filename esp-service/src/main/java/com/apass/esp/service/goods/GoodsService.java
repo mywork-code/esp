@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.search.utils.Pinyin4jUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -880,7 +881,7 @@ public class GoodsService {
         }
         goods.setCategoryName1(cate1.getCategoryName());
         goods.setCategoryId1(g.getCategoryId1());
-        goods.setCategoryName1Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate1.getCategoryName()));
+        goods.setCategoryName1Pinyin(Pinyin4jUtil.converterToSpell(cate1.getCategoryName()));
 
         Category cate2 = categoryMapper.selectByPrimaryKey(g.getCategoryId2());
         if (null == cate2) {
@@ -888,17 +889,17 @@ public class GoodsService {
         }
         goods.setCategoryName2(cate2.getCategoryName());
         goods.setCategoryId2(g.getCategoryId2());
-        goods.setCategoryName2Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate2.getCategoryName()));
+        goods.setCategoryName2Pinyin(Pinyin4jUtil.converterToSpell(cate2.getCategoryName()));
         goods.setCategoryId3(g.getCategoryId3());
         Category cate3 = categoryMapper.selectByPrimaryKey(g.getCategoryId3());
         if (null == cate3) {
             return null;
         }
         goods.setCategoryName3(cate3.getCategoryName());
-        goods.setCategoryName3Pinyin(Pinyin4jUtils.getPinyinToLowerCase(cate3.getCategoryName()));
+        goods.setCategoryName3Pinyin(Pinyin4jUtil.converterToSpell(cate3.getCategoryName()));
 
         goods.setGoodsName(g.getGoodsName());
-        goods.setGoodsNamePinyin(Pinyin4jUtils.getPinyinToLowerCase(g.getGoodsName()));
+        goods.setGoodsNamePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsName()));
         goods.setDelistTime(g.getDelistTime());
         goods.setGoodsLogoUrl(g.getGoodsLogoUrl());
         if (StringUtils.equals(g.getSource(), SourceType.JD.getCode())) {
@@ -915,7 +916,7 @@ public class GoodsService {
         goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
         goods.setCreateDate(g.getCreateDate());
         goods.setGoodsTitle(g.getGoodsTitle());
-        goods.setGoodsTitlePinyin(Pinyin4jUtils.getPinyinToLowerCase(g.getGoodsTitle()));
+        goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));
         goods.setListTime(g.getListTime());
         goods.setListTimeString(DateFormatUtil.dateToString(g.getListTime(), ""));
         goods.setNewCreatDate(g.getNewCreatDate());
@@ -964,7 +965,7 @@ public class GoodsService {
             	goods.setGoodsSkuAttr("");
             }
             if(StringUtils.isNotEmpty(goods.getGoodsSkuAttr())){
-                goods.setGoodsSkuAttrPinyin(Pinyin4jUtils.getPinyinToLowerCase(goods.getGoodsSkuAttr()));
+                goods.setGoodsSkuAttrPinyin(Pinyin4jUtil.converterToSpell(goods.getGoodsSkuAttr()));
             }else{
                 goods.setGoodsSkuAttrPinyin("");
 
