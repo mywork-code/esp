@@ -42,7 +42,7 @@ public class RegExpUtils {
 	}
 
 	public static boolean mobiles(String value){
-		return Pattern.matches("^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17([0,1,6,7,]))|(18[0-2,5-9]))\\d{8}$", value);
+		return Pattern.matches("^((13[0-9])|(14[5|7])|(15[0-9])|(17[0-9])|(18[0-9]))\\d{8}$", value);
 	}
 	/**
 	 * 是否合法日期
