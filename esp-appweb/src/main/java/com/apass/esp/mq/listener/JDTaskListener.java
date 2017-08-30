@@ -89,6 +89,10 @@ public class JDTaskListener implements MessageListener {
                 if (state == 0) {
                     //直接将商品下架
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    if(goodsInfoEntity==null){
+                        LOGGER.info("skuId {}, state {} 消息接收  0表示下架消息 1表示上架消息 商品不存在", skuId, state);
+                        continue;
+                    }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
@@ -98,13 +102,13 @@ public class JDTaskListener implements MessageListener {
                         if(count == 1){
                             Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
                             LOGGER.info("监听京东商品下架删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                            goodsEsDao.delete(goods);
+                            if(goods!=null){
+                                goodsEsDao.delete(goods);
+                            }
                         }
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        LOGGER.error("delete index error");
                     }
-                } else {
-
                 }
             }
             return;
@@ -128,7 +132,6 @@ public class JDTaskListener implements MessageListener {
                 //orderInfoEntity.setAcceptGoodsDate(new Date());
                 orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
             }
-
             return;
         }
         //拆单消息接收
@@ -138,20 +141,23 @@ public class JDTaskListener implements MessageListener {
             JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
             if (!jdApiResponse.isSuccess()) {
                 LOGGER.info("confirm order result {}", jdApiResponse);
-                throw new RuntimeException();
+                return;
             }
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
             if (orderInfoEntity == null) {
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
                 return;
             }
             if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
                 return;
             }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
             } catch (BusinessException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}" ,orderInfoEntity.getExtOrderId());
+                return;
             }
 
         }
@@ -163,7 +169,7 @@ public class JDTaskListener implements MessageListener {
                 JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(skuId);
                 if (!jdApiResponse.isSuccess() || jdApiResponse == null) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONObject jsonObject1 = jdApiResponse.getResult();
                 String category = (String) jsonObject1.get("category");
@@ -183,19 +189,19 @@ public class JDTaskListener implements MessageListener {
                 JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skulist);
                 if (jsonArrayJdApiResponse == null) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
-                if (productPriceList == null) {
+                if (productPriceList == null||productPriceList.size()==0) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException();
+                    return;
                 }
                 JSONObject jsonObject12 = null;
                 try {
                     jsonObject12 = (JSONObject) productPriceList.get(0);
                 } catch (Exception e) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                    throw new RuntimeException(e);
+                    return;
                 }
                 BigDecimal price = (BigDecimal) jsonObject12.get("price");
                 BigDecimal jdPrice = (BigDecimal) jsonObject12.get("jdPrice");
@@ -225,19 +231,31 @@ public class JDTaskListener implements MessageListener {
                 } catch (Exception e) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
                     LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
-                    throw new RuntimeException(e);
+                    return;
                 }
-                JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                if(jdCategory3==null){
+                    addCategory(String.valueOf(thirdCategory),3);
+                }
+                JdCategory jdCategory2 = jdCategoryMapper.getCateGoryByCatId(secondCategory);
+                if(jdCategory2==null){
+                    addCategory(String.valueOf(secondCategory),2);
+                }
+                JdCategory jdCategory1 = jdCategoryMapper.getCateGoryByCatId(firstCategory);
+                if(jdCategory1==null){
+                    addCategory(String.valueOf(firstCategory),1);
+                }
+                JdCategory jdCategory =  jdCategoryMapper.getCateGoryByCatId(thirdCategory);
                 //已关联
-                if (jdCategory.getFlag()) {
+                if (jdCategory!=null && jdCategory.getFlag()) {
                     GoodsInfoEntity entity = new GoodsInfoEntity();
                     entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
-                    entity.setCategoryId1(jdCategory.getCategoryId1());
-                    entity.setCategoryId2(jdCategory.getCategoryId2());
-                    entity.setCategoryId3(jdCategory.getCategoryId3());
+                    entity.setCategoryId1(Long.valueOf(firstCategory));
+                    entity.setCategoryId2(Long.valueOf(secondCategory));
+                    entity.setCategoryId3(Long.valueOf(thirdCategory));
                     entity.setGoodsName(jdGoods.getName());
                     entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-                    entity.setMerchantCode("0000103");
+                    entity.setMerchantCode(JdMerchantCode.JDMERCHANTCODE);
                     entity.setStatus(GoodStatus.GOOD_NEW.getCode());
                     entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
                     entity.setListTime(null);
@@ -251,7 +269,6 @@ public class JDTaskListener implements MessageListener {
                     entity.setUpdateDate(new Date());
                     entity.setCreateDate(new Date());
                     GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
-
                     //往t_esp_goods_stock_info表插数据
                     GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
                     stockEntity.setStockTotalAmt(-1l);
@@ -266,7 +283,7 @@ public class JDTaskListener implements MessageListener {
                         goodsStockInfoService.insert(stockEntity);
                     } catch (Exception e) {
                         LOGGER.error("skuId {} type 6 state {} error", skuId, state);
-                        throw new RuntimeException(e);
+                        return;
                     }
                 }
             }else{
@@ -275,6 +292,10 @@ public class JDTaskListener implements MessageListener {
                     //商品池商品删除  直接将商品下架
                     LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+                    if(goodsInfoEntity==null){
+                        LOGGER.error("delete goods result {},goodsInfoEntity {}",goodsInfoEntity);
+                        return;
+                    }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
@@ -282,13 +303,47 @@ public class JDTaskListener implements MessageListener {
                     if(count == 1){
                         Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
                         LOGGER.info("监听京东商品池删除,删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                        goodsEsDao.delete(goods);
+                        if(goods != null){
+                            goodsEsDao.delete(goods);
+                        }
                     }
                 } catch (Exception e) {
-                   // throw new RuntimeException(e);
+                    return;
                 }
             }
         }
         LOGGER.info("jdTaskListener start consume message............");
     }
+
+    private void addCategory(String category, int level) {
+        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.getcategory(Long.valueOf(category));
+        if (jdApiResponse == null || jdApiResponse.getResult() == null) {
+            return;
+        }
+        if (!jdApiResponse.isSuccess()) {
+            return;
+        }
+        JSONObject jsonObject = jdApiResponse.getResult();
+        Integer parentId = jsonObject.getInteger("parentId");
+        Integer catClass = jsonObject.getInteger("catClass");
+        String name = jsonObject.getString("name");
+        Integer catId = jsonObject.getInteger("catId");
+        Integer state = jsonObject.getInteger("state");
+        JdCategory jdCategory = new JdCategory();
+        jdCategory.setName(name);
+        jdCategory.setParentId(Long.valueOf(parentId));
+        jdCategory.setCatClass(catClass);
+        jdCategory.setFlag(false);
+        jdCategory.setCatId(Long.valueOf(catId));
+        jdCategory.setStatus(state == 1 ? true : false);
+        jdCategory.setCategoryId1(0l);
+        jdCategory.setCategoryId2(0l);
+        jdCategory.setCategoryId3(0l);
+        try {
+            jdCategoryMapper.insertSelective(jdCategory);
+        } catch (Exception e) {
+            LOGGER.error("insert jdCategoryMapper sql catId {}", catId);
+        }
+    }
+
 }
