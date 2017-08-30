@@ -181,7 +181,7 @@ public class ExportFileController {
     /**
      * 导入文件
      * 
-     * @param request
+     * @param file
      * @return
      */
     @RequestMapping("/importFile")
@@ -448,7 +448,7 @@ public class ExportFileController {
     }
 
     /**
-     * @param xhExcel中的每一个格子
+     * @param cell
      * @return Excel中每一个格子中的值
      */
     private String getValue(HSSFCell cell) {

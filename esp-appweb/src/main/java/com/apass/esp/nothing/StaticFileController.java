@@ -9,6 +9,7 @@ import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -60,11 +61,7 @@ public class StaticFileController {
         map.put("ver","17");
         map.put("md5",md5);
 
-        try {
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        IOUtils.closeQuietly(in);
 
         return Response.successResponse(map);
     }
@@ -75,13 +72,13 @@ public class StaticFileController {
         ClassLoader classLoader = StaticFileController.class.getClassLoader();
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
 
-        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v18.js");
+        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v19.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-        commissionWalletVo.setVer("18");
+        commissionWalletVo.setVer("19");
         commissionWalletVo.setFlag(true);
         commissionWalletVo.setId("commission");
-        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v18.js");
+        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v19.js");
         commissionWalletVo.setMd5(md5);
         commissionWalletVo.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo);
@@ -96,13 +93,9 @@ public class StaticFileController {
         commissionWalletVo2.setMd5(md52);
         commissionWalletVo2.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo2);
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(in2);
 
-        try {
-            in2.close();
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         return Response.successResponse(commissionWalletVos);
     }
