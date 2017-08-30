@@ -124,6 +124,7 @@ public class JDTaskListener implements MessageListener {
             }catch (Exception e){
                 LOGGER.error("message jdGoods skuId {} update price error ");
             }
+            return;
         }
 
         if (jdApiMessage.getType() == JdMessageEnum.WITHDRAW_SKU.getType()) {//商品下架消息
