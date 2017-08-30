@@ -133,17 +133,17 @@ public class CommonService {
 			GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 			if (SourceType.JD.getCode().equals(goodsBasicInfo.getSource())) {
 				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
-				String goodsCostKey = "";
+				Kvattr kvattr = new Kvattr();
 				if (goodsCostPrice.compareTo(new BigDecimal(99)) > 0
 						&& goodsCostPrice.compareTo(new BigDecimal(500)) <= 0) {
-					goodsCostKey = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
 				} else if (goodsCostPrice.compareTo(new BigDecimal(500)) > 0
 						&& goodsCostPrice.compareTo(new BigDecimal(2000)) <= 0) {
-					goodsCostKey = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
 				} else if (goodsCostPrice.compareTo(new BigDecimal(2000)) > 0) {
-					goodsCostKey = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
 				}
-				price = goodsCostPrice.multiply(new BigDecimal(goodsCostKey));
+				price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
 				return price.setScale(0, BigDecimal.ROUND_HALF_UP);
 			} else {
 				price = goodsStock.getGoodsPrice();

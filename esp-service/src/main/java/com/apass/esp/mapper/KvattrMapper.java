@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface KvattrMapper extends GenericMapper<Kvattr, Long> {
     public List<Kvattr> getBySource(@Param("source") String source);
-    public String getByKey(@Param("key") String key);
+    public Kvattr getByKey(@Param("key") String key);
 }
