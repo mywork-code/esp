@@ -13,6 +13,7 @@ import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.domain.enums.FeedBackModule;
 import com.apass.esp.domain.enums.FeedBackType;
+import com.apass.esp.domain.query.FeedBackQuery;
 import com.apass.esp.domain.vo.FeedBackVo;
 import com.apass.esp.mapper.FeedBackMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -45,7 +46,24 @@ public class FeedBackService {
 		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
 		return pageBody;
 	}
-	
+	/**
+	 * 获取反馈信息列表
+	 * @param query
+	 * @return
+	 */
+	public ResponsePageBody<FeedBackVo> getFeedBackListPage(FeedBackQuery feedBack){
+		ResponsePageBody<FeedBackVo> pageBody = new ResponsePageBody<FeedBackVo>();
+		List<FeedBack> backList = feedbackMapper.getFeedBackListPage(feedBack);
+		Integer count =feedbackMapper.getFeedBackListPageCount(feedBack);
+		
+		List<FeedBackVo> backVoList = new ArrayList<FeedBackVo>();
+		backVoList=changFeedBack(backList);
+		
+		pageBody.setTotal(count);
+		pageBody.setRows(backVoList);
+		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+		return pageBody;
+	}
 	public Integer insert(FeedBack fb) {
 		return feedbackMapper.insertSelective(fb);
 	}

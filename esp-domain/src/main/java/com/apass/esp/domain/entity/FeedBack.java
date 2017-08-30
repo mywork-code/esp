@@ -2,7 +2,7 @@ package com.apass.esp.domain.entity;
 
 import java.util.Date;
 
-public class FeedBack {
+public class FeedBack{
     private Long id;
 
     private String type;
@@ -18,6 +18,11 @@ public class FeedBack {
     private String picture;
 
     private Date createDate;
+    
+    private String createDateBegin;
+    
+    private String createDateEnd;
+
 
     private Date updateDate;
 
@@ -92,4 +97,21 @@ public class FeedBack {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public String getCreateDateBegin() {
+		return createDateBegin;
+	}
+
+	public void setCreateDateBegin(String createDateBegin) {
+		this.createDateBegin = createDateBegin;
+	}
+
+	public String getCreateDateEnd() {
+		return createDateEnd;
+	}
+
+	public void setCreateDateEnd(String createDateEnd) {
+		this.createDateEnd = createDateEnd;
+	}
+    
 }

@@ -1,4 +1,5 @@
 $(function(){
+	$('#lookPictureWindow').window('close');
 
     //Grid
     $('#list').datagrid({
@@ -34,13 +35,24 @@ $(function(){
                 field : 'comments',
                 width : 150,
                 align : 'center'
-            }
-            ]],
+            },{
+				title : '操作',
+				field : 'opt',
+				width : 120,
+				align : 'center',
+				formatter : function(value, row, index) {
+					var content = "";
+					 if (null !=row.picture  && row.picture!='') {
+                         content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+                         content += " onclick='$.lookPicture(\"" + row.picture + "\");'>查看上传图片</a>";
+                     }  
+				 return content;
+			}}]],
         loader : function(param, success, error) {
             $.ajax({
                 url : ctx + '/feedbackinfo/feedback/list',
                 data : param,
-                type : "get",
+                type : "post",
                 dataType : "json",
                 success : function(data) {
                 	console.log(data);
@@ -59,8 +71,8 @@ $(function(){
          params['mobile'] = $("#mobile").textbox('getValue');
          params['module'] = $("#module").combobox('getValue');
          params['feedbackType'] = $("#feedbackType").combobox('getValue');
-         params['submitDate1'] = $("#submitDate1").datetimebox('getValue');
-         params['submitDate2'] = $("#submitDate2").datetimebox('getValue');
+         params['createDateBegin'] = $("#submitDate1").datetimebox('getValue');
+         params['createDateEnd'] = $("#submitDate2").datetimebox('getValue');
          $('#list').datagrid('load', params);
     });
 	    /**

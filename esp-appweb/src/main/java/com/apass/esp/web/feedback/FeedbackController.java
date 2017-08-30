@@ -99,7 +99,7 @@ public class FeedbackController {
 	 * 意见反馈保存（购物）
 	 */
 	@POST
-    @Path("/save2")
+    @Path("/saveShop")
 	public Response saveFeedback2(Map<String, Object> paramMap) {
 		String feedbackType = CommonUtils.getValue(paramMap, "feedbackType");//意见反馈类型
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
