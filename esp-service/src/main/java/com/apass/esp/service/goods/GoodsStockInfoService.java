@@ -1,21 +1,21 @@
 package com.apass.esp.service.goods;
 
-import java.util.List;
-import java.util.Set;
-
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
-import org.apache.commons.collections.CollectionUtils;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.service.common.CommonService;
+import com.apass.esp.utils.PaginationManage;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.repository.goods.GoodsStockInfoRepository;
-import com.apass.esp.utils.PaginationManage;
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class GoodsStockInfoService {
@@ -23,6 +23,8 @@ public class GoodsStockInfoService {
     private static final Logger      LOGGER = LoggerFactory.getLogger(GoodsStockInfoService.class);
     @Autowired
     private GoodsStockInfoRepository goodsStockDao;
+    @Autowired
+    private CommonService commonService;
 
     /**
      * 商品分页(查询)
@@ -33,7 +35,7 @@ public class GoodsStockInfoService {
      * @return
      */
     public PaginationManage<GoodsStockInfoEntity> pageList(GoodsStockInfoEntity goodsStockInfoEntity, String pageNo,
-                                                           String pageSize) {
+                                                           String pageSize) throws BusinessException {
         Page page = new Page();
         page.setPage(Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo));
         page.setLimit(Integer.valueOf(pageSize) <= 0 ? 1 : Integer.valueOf(pageSize));
@@ -41,8 +43,15 @@ public class GoodsStockInfoService {
         PaginationManage<GoodsStockInfoEntity> result = new PaginationManage<GoodsStockInfoEntity>();
 
         Pagination<GoodsStockInfoEntity> entity = goodsStockDao.pageList(goodsStockInfoEntity, page);
+        List<GoodsStockInfoEntity> goodsStockInfoEntities = entity.getDataList();
+        for(GoodsStockInfoEntity goodStockEntity: goodsStockInfoEntities){
+            if(goodStockEntity.getStockCurrAmt() == -1){
+                BigDecimal goodsPrice = commonService.calculateGoodsPrice( goodsStockInfoEntity.getGoodsId(),goodsStockInfoEntity.getId());
+                goodStockEntity.setGoodsPrice(goodsPrice);
+            }
+        }
 
-        result.setDataList(entity.getDataList());
+        result.setDataList(goodsStockInfoEntities);
         result.setPageInfo(page.getPageNo(), page.getPageSize());
         result.setTotalCount(entity.getTotalCount());
         return result;

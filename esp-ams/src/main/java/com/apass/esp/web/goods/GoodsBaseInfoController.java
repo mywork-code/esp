@@ -275,7 +275,7 @@ public class GoodsBaseInfoController {
 
             goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
 
-            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity,pageNo,pageSize);
+            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,pageSize);
 
             if (pagination == null) {
                 respBody.setTotal(0);
@@ -562,8 +562,13 @@ public class GoodsBaseInfoController {
 
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity,
-                "0", "10");
+        PaginationManage<GoodsStockInfoEntity> list = null;
+        try {
+            list = goodsStockInfoService.pageList(goodsStockInfoEntity,
+                    "0", "10");
+        } catch (BusinessException e) {
+            e.printStackTrace();
+        }
         List<GoodsStockInfoEntity> stockList = list.getDataList();
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";

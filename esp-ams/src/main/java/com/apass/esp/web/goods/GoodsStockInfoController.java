@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.gfb.framework.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,10 @@ public class GoodsStockInfoController {
             if(StringUtils.isNotBlank(id)){
                 entity.setGoodsId(Long.valueOf(id));
             }
-
+            List<GoodsStockSkuDto> goodsStockSkuInfos = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
+            if (goodsStockSkuInfos!=null){
+                entity.setId(goodsStockSkuInfos.get(0).getGoodsStockId());
+            }
             PaginationManage<GoodsStockInfoEntity> pagination = goodsStockInfoService.pageList(entity, pageNo,
                 pageSize);
 
@@ -111,7 +116,12 @@ public class GoodsStockInfoController {
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(stockInfo.getAddstockInfogoodsId());
         String goodsSkuAttr = stockInfo.getGoodsSkuAttr();
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "1000");
+        PaginationManage<GoodsStockInfoEntity> list = null;
+        try {
+            list = goodsStockInfoService.pageList(goodsStockInfoEntity, "0", "1000");
+        } catch (BusinessException e) {
+            e.printStackTrace();
+        }
         List<GoodsStockInfoEntity> dataList = list.getDataList();
         if (!dataList.isEmpty()) {
             if (list.getDataList().size() > 5) {
