@@ -3,6 +3,7 @@ package com.apass.esp.service.goods;
 import java.util.List;
 import java.util.Set;
 
+import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,4 +92,9 @@ public class GoodsStockInfoService {
 		GoodsStockInfoEntity stock = goodsStockDao.getGoodsStockInfoEntityByStockId(stockId);
 		return stock;
 	}
+
+
+    public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
+        return goodsStockDao.getGoodsStockSkuInfo(goodsId);
+    }
 }

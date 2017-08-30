@@ -182,3 +182,23 @@ function getLenString(str){
 	
 	return len;
 }
+function goodsCategoryComboFun() {
+	$("#goodsCategoryCombo").combotree({
+//        required : true,
+		loader : function(param, success, error) {
+			$.ajax({
+				url : ctx + "/application/goods/management/categoryList",
+				data : param,
+				type : "get",
+				dataType : "json",
+				success : function(resp) {
+					$.validateResponse(resp, function() {
+						success(resp.data);
+					});
+				}
+			})
+		}
+	});
+	$("#goodsCategoryCombo").combotree('setValue', '请选择');
+}
+

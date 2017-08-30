@@ -173,7 +173,7 @@ $(function() {
                     }
                 }]],
         loader : function(param, success, error) {
-        	 param['status']='G04';
+        	 param['goodsStatus']='G04';
         	 param['isAll']='T';
             $.ajax({
                 url : ctx + '/application/goods/management/pagelist',
@@ -228,9 +228,18 @@ $(function() {
         params['goodsType'] = $("#goodsTypes").textbox('getValue');
         params['status']='G01';
         params['isAll']='T';//默认
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+            goodsCategoryCombo="";
+        }
+        params['goodsCategoryCombo']=goodsCategoryCombo;
+
         $('#tablelist').datagrid('load', params);
     });
-    // 查询列表
+
+    goodsCategoryComboFun();
+
+    // 批量复核
     $(".checkAll").click(function() {
     	var selRow = $('#tablelist').datagrid('getChecked');
 		if(selRow.length==0){  
@@ -266,6 +275,7 @@ $(function() {
     	$("#merchantType").combobox('setValue','');
 		$ ("#goodsNames").textbox ('setValue', '');
 		$ ("#goodsTypes").combobox ('setValue', '');
+        $("#goodsCategoryCombo").combotree('setValue', '请选择');
 		var params = {};
 		$ ('#tablelist').datagrid ('load', params);
 	});

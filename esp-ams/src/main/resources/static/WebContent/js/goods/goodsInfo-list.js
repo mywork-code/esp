@@ -239,7 +239,6 @@ $(function() {
 
     // 查询列表
     $(".search-btn").click(function() {
-    	debugger;
         var params = {};
         params['merchantName'] = $("#merchantName").textbox('getValue');
         params['merchantType'] = $("#merchantType").combobox('getValue');
@@ -255,7 +254,7 @@ $(function() {
         
         $('#tablelist').datagrid('load', params);
     });
-    // 查询列表
+    // 刷新列表
     $("#flush").click(function() {
     	$("#goodsNames").textbox('setValue','');
     	$("#goodsTypes").combobox('setValue','');
@@ -266,24 +265,9 @@ $(function() {
     	var params = {};
     	$('#tablelist').datagrid('load', params);
     });
+
+	goodsCategoryComboFun();
     
-    $("#goodsCategoryCombo").combotree({
-//        required : true,  
-        loader : function(param, success, error) {
-            $.ajax({
-                url : ctx + "/application/goods/management/categoryList",
-                data : param,
-                type : "get",
-                dataType : "json",
-                success : function(resp) {
-                    $.validateResponse(resp, function() {
-                        success(resp.data);
-                    });
-                }
-            })
-        }
-    });
-    $("#goodsCategoryCombo").combotree('setValue', '请选择');
 //==============================================-----新增商品 始----====================================================//-----------------------
     /** 
      * 新增商品

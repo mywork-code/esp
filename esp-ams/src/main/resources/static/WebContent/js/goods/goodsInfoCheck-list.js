@@ -36,7 +36,18 @@ $(function() {
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },{  
+                },{
+                    title : '商品编号',
+                    field : 'goodsCode',
+                    width : 90,
+                    align : 'center'
+                },
+                {
+                    title : 'skuid',
+                    field : 'externalId',
+                    width : 90,
+                    align : 'center'
+                },{
        		 		title : '三级类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
@@ -168,8 +179,9 @@ $(function() {
                     }
                 }]],
         loader : function(param, success, error) {
-        	 param['status']='G01';
-        	 param['isAll']='T';
+            debugger;
+            param['goodsStatus']='G01';
+            param['isAll']='T';
             $.ajax({
                 url : ctx + '/application/goods/management/pagelist',
                 data : param,
@@ -190,11 +202,21 @@ $(function() {
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").textbox('getValue');
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
         params['status']='G01';
         params['isAll']='T';//默认
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+            goodsCategoryCombo="";
+        }
+        params['goodsCategoryCombo']=goodsCategoryCombo;
+
         $('#tablelist').datagrid('load', params);
     });
-    // 查询列表
+
+    goodsCategoryComboFun();
+
+    // 批量复核
     $(".checkAll").click(function() {
     	var selRow = $('#tablelist').datagrid('getChecked');
 		if(selRow.length==0){  
@@ -229,6 +251,7 @@ $(function() {
     	$("#merchantType").combobox('setValue','');
 		$ ("#goodsNames").textbox ('setValue', '');
 		$ ("#goodsTypes").combobox ('setValue', '');
+        $("#goodsCategoryCombo").combotree('setValue', '请选择');
 		var params = {};
 		$ ('#tablelist').datagrid ('load', params);
 	});

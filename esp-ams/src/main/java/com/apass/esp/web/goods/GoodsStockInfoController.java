@@ -102,7 +102,7 @@ public class GoodsStockInfoController {
     /**
      * 新增库存
      * 
-     * @param request
+     * @param stockInfo
      * @return
      */
     @ResponseBody
