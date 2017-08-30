@@ -1,6 +1,7 @@
 package com.apass.esp.web.feedback;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -23,8 +24,12 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.domain.enums.FeedBackCategory;
 import com.apass.esp.domain.enums.FeedBackModule;
+import com.apass.esp.domain.query.FeedBackQuery;
+import com.apass.esp.domain.vo.FeedBackVo;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 
 @Path("/v1/feedback")
@@ -252,7 +257,37 @@ public class FeedbackController {
 		LOGGER.error("意见反馈失败！");
 		return Response.fail("意见反馈保存失败!");
 	}
-	
+	/**
+	 * 查询意见反馈
+	 */
+	@POST
+    @Path("/selectFeedback")
+	public Response selectFeedback(Map<String, Object> paramMap) {
+		String page= CommonUtils.getValue(paramMap, "page");
+		String rows= CommonUtils.getValue(paramMap, "rows");
+
+		String feedbackType = CommonUtils.getValue(paramMap, "feedbackType");//意见反馈类型
+		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
+
+		String createDateBegin=CommonUtils.getValue(paramMap, "createDateBegin");//提交时间（开始）
+		String createDateEnd=CommonUtils.getValue(paramMap, "createDateEnd");//提交时间（结束）
+		FeedBackQuery feedBackQuery=new FeedBackQuery();
+		feedBackQuery.setPage(Integer.parseInt(page));
+		feedBackQuery.setRows(Integer.parseInt(rows));
+		feedBackQuery.setFeedbackType(feedbackType);
+		feedBackQuery.setMobile(mobile);
+		feedBackQuery.setCreateDateBegin(createDateBegin);
+		feedBackQuery.setCreateDateEnd(createDateEnd);
+		feedBackQuery.setType(FeedBackCategory.ANJIAPAI.getCode());
+		Map<String,Object> result=new HashMap<>();
+		ResponsePageBody<FeedBackVo> pagination=feedBackService.getFeedBackListPage(feedBackQuery);
+		result.put("FeedBackList", pagination.getRows());
+		result.put("total", pagination.getTotal());
+		if(CommonCode.SUCCESS_CODE.equals(pagination.getStatus())){
+			return Response.success("查询成功！",result);
+		}
+		return Response.fail("查询失败！");
+	}
 	/**
      * emoji表情替换
      *
