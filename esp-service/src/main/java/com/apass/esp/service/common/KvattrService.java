@@ -52,7 +52,9 @@ public class KvattrService {
         List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
         return list;
     }
-
+    public Kvattr getKvattrByKeyList(String key) {
+    	return kvattrMapper.getByKey(key);
+    }
     /**
      * @param list
      */

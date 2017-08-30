@@ -11,4 +11,6 @@ public interface JdGoodsMapper extends GenericMapper<JdGoods,Long> {
 
 	List<JdGoods> queryGoodsByThirdCateId(String cateId);
 
+	JdGoods queryGoodsBySkuId(long skuId);
+
 }
