@@ -2544,5 +2544,13 @@ public class OrderService {
         return orderInfoRepository.getSumOrderamtForPaySuccess(beginDate,endDate);
     }
 
-    
+    /**
+     * 獲取時間段內的全部訂單
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate){
+    	return orderInfoRepository.getchannelStatisticsOrders(beginDate, endDate);
+    }
 }

@@ -1,5 +1,8 @@
 package com.apass.esp.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 
  * @description 订单状态枚举
@@ -54,5 +57,11 @@ public enum OrderStatus {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public static boolean isContail(String code){
+    	return Arrays.asList(new String[]{OrderStatus.ORDER_PAYED.getCode(),
+    			OrderStatus.ORDER_SEND.getCode(),OrderStatus.ORDER_COMPLETED.getCode(),
+    			OrderStatus.ORDER_RETURNING.getCode(),OrderStatus.ORDER_REFUNDPROCESSING.getCode()}).contains(code);
     }
 }

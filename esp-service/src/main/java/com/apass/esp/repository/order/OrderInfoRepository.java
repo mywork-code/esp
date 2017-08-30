@@ -309,4 +309,10 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("getSumOrderamtForPaySuccess",param);
     }
     
+    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectList("channelStatistics",param);
+    }
 }
