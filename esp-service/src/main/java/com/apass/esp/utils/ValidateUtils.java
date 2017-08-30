@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.RegExpUtils;
 
 /**
  * 此工具类的目的，在于减少页面的验证的重复代码
@@ -85,6 +86,20 @@ public class ValidateUtils {
 	public static void checkLength(String value,int min,int max,String message) throws BusinessException{
 		
 		if((StringUtils.length(value) < min) || (StringUtils.length(value) > max)){
+			throw new BusinessException(message);
+		}
+	}
+	/**
+	 * 验证手机号码格式
+	 * @param value
+	 * @param message
+	 * @throws BusinessException
+	 */
+	public static void checkPhone(String value,String message) throws BusinessException{
+		if(StringUtils.length(value) != 11){
+			throw new BusinessException(message);
+		}
+		if(!RegExpUtils.mobiles(value)){
 			throw new BusinessException(message);
 		}
 	}
