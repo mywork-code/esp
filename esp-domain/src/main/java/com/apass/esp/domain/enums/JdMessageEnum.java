@@ -10,6 +10,8 @@ package com.apass.esp.domain.enums;
 public enum JdMessageEnum {
     SPLIT_ORDER(1, "拆单消息"),
 
+    PRICE_SKU(2,"商品价格变更消息"),
+
     DELIVERED_ORDER(5, "订单妥投消息"),
 
     WITHDRAW_SKU(4, "商品上下架消息"),
