@@ -848,4 +848,27 @@
 		where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus = 'P02'
 	</select>
 	
+	<select id="channelStatistics" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
+		SELECT
+			order_id orderId,
+			user_id userId,
+			order_amt orderAmt,
+			orderstatus status,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		where 1=1
+		<if test="beginDate != null and beginDate != ''">
+			<![CDATA[ 
+		    and create_date >= #{beginDate} 
+		    ]]> 
+		</if>
+		<if test="endDate != null and endDate != ''">
+		    <![CDATA[ 
+		    and create_date <  #{endDate} 
+		    ]]> 
+		</if>
+	</select>
+	
 </mapper>
