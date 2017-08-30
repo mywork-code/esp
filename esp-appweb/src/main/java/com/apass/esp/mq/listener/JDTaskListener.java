@@ -2,9 +2,11 @@ package com.apass.esp.mq.listener;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.common.model.JdMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -24,6 +26,7 @@ import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -64,7 +67,7 @@ public class JDTaskListener implements MessageListener {
 
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
-    
+
     @Autowired
     private GoodsEsDao goodsEsDao;
 
@@ -75,6 +78,54 @@ public class JDTaskListener implements MessageListener {
             LOGGER.info("jdApiMessage null error...");
         }
         JSONObject result = jdApiMessage.getResult();
+
+        //价格变更消息
+        if (jdApiMessage.getType() == JdMessageEnum.PRICE_SKU.getType()) {//商品下架消息
+            long skuId = result.getLongValue("skuId");
+            Set<Long> skus = new HashSet<>();
+            skus.add(skuId);
+            JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
+            if (jsonArrayJdApiResponse == null
+                    || !jsonArrayJdApiResponse.isSuccess()
+                    || jsonArrayJdApiResponse.getResult() == null
+                    || jsonArrayJdApiResponse.getResult().size() == 0
+                    ) {
+                return;
+            }
+            LOGGER.info("message price skuId {} ,response {}", skuId, jsonArrayJdApiResponse.getResult());
+            JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
+            BigDecimal price = (BigDecimal) jsonObject.get("price");
+            LOGGER.info("message price skuId {} ,price {} ,response {}", skuId, price, jsonArrayJdApiResponse.getResult());
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
+            if (goodsInfoEntity == null) {
+                return;
+            }
+            List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
+            if (CollectionUtils.isEmpty(goodsStockInfoEntityList)) {
+                return;
+            }
+            try {
+                //更新价格
+                GoodsStockInfoEntity goodsStockInfoEntity = goodsStockInfoEntityList.get(0);
+                goodsStockInfoEntity.setGoodsCostPrice(price);
+                goodsStockInfoService.update(goodsStockInfoEntity);
+            } catch (Exception e) {
+                LOGGER.error("message skuId {} update price error ");
+                return;
+            }
+            //更新京东表
+            JdGoods jdGoods = jdGoodsMapper.queryGoodsBySkuId(skuId);
+            if (jdGoods == null) {
+                return;
+            }
+            jdGoods.setPrice(price);
+            try {
+                jdGoodsMapper.updateByPrimaryKeySelective(jdGoods);
+            }catch (Exception e){
+                LOGGER.error("message jdGoods skuId {} update price error ");
+            }
+        }
+
         if (jdApiMessage.getType() == JdMessageEnum.WITHDRAW_SKU.getType()) {//商品下架消息
             long skuId = result.getLongValue("skuId");
             Set<Long> skus = new HashSet<>();
@@ -90,7 +141,7 @@ public class JDTaskListener implements MessageListener {
                 if (state == 0) {
                     //直接将商品下架
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
-                    if(goodsInfoEntity==null){
+                    if (goodsInfoEntity == null) {
                         LOGGER.info("skuId {}, state {} 消息接收  0表示下架消息 1表示上架消息 商品不存在", skuId, state);
                         continue;
                     }
@@ -100,10 +151,10 @@ public class JDTaskListener implements MessageListener {
                     goodsInfoEntity.setUpdateUser("jdAdmin");
                     try {
                         Integer count = goodsService.updateService(goodsInfoEntity);
-                        if(count == 1){
+                        if (count == 1) {
                             Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
-                            LOGGER.info("监听京东商品下架删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                            if(goods!=null){
+                            LOGGER.info("监听京东商品下架删除索引传递的参数:{}", GsonUtils.toJson(goods));
+                            if (goods != null) {
                                 goodsEsDao.delete(goods);
                             }
                         }
@@ -147,17 +198,17 @@ public class JDTaskListener implements MessageListener {
             JSONObject jsonObject = jdApiResponse.getResult();
             OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
             if (orderInfoEntity == null) {
-                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
                 return;
             }
             if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
-                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse,orderInfoEntity);
+                LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
                 return;
             }
             try {
                 orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
             } catch (BusinessException e) {
-                LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}" ,orderInfoEntity.getExtOrderId());
+                LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}", orderInfoEntity.getExtOrderId());
                 return;
             }
 
@@ -193,7 +244,7 @@ public class JDTaskListener implements MessageListener {
                     return;
                 }
                 JSONArray productPriceList = jsonArrayJdApiResponse.getResult();
-                if (productPriceList == null||productPriceList.size()==0) {
+                if (productPriceList == null || productPriceList.size() == 0) {
                     LOGGER.error("skuId {} type 6 state {} error", skuId, state);
                     return;
                 }
@@ -235,20 +286,20 @@ public class JDTaskListener implements MessageListener {
                     return;
                 }
                 JdCategory jdCategory3 = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
-                if(jdCategory3==null){
-                    addCategory(String.valueOf(thirdCategory),3);
+                if (jdCategory3 == null) {
+                    addCategory(String.valueOf(thirdCategory), 3);
                 }
                 JdCategory jdCategory2 = jdCategoryMapper.getCateGoryByCatId(secondCategory);
-                if(jdCategory2==null){
-                    addCategory(String.valueOf(secondCategory),2);
+                if (jdCategory2 == null) {
+                    addCategory(String.valueOf(secondCategory), 2);
                 }
                 JdCategory jdCategory1 = jdCategoryMapper.getCateGoryByCatId(firstCategory);
-                if(jdCategory1==null){
-                    addCategory(String.valueOf(firstCategory),1);
+                if (jdCategory1 == null) {
+                    addCategory(String.valueOf(firstCategory), 1);
                 }
-                JdCategory jdCategory =  jdCategoryMapper.getCateGoryByCatId(thirdCategory);
+                JdCategory jdCategory = jdCategoryMapper.getCateGoryByCatId(thirdCategory);
                 //已关联
-                if (jdCategory!=null && jdCategory.getFlag()) {
+                if (jdCategory != null && jdCategory.getFlag()) {
                     GoodsInfoEntity entity = new GoodsInfoEntity();
                     entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
                     entity.setCategoryId1(Long.valueOf(firstCategory));
@@ -287,24 +338,24 @@ public class JDTaskListener implements MessageListener {
                         return;
                     }
                 }
-            }else{
+            } else {
 
                 try {
                     //商品池商品删除  直接将商品下架
                     LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
                     GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
-                    if(goodsInfoEntity==null){
-                        LOGGER.error("delete goods result {},goodsInfoEntity {}",goodsInfoEntity);
+                    if (goodsInfoEntity == null) {
+                        LOGGER.error("delete goods result {},goodsInfoEntity {}", goodsInfoEntity);
                         return;
                     }
                     goodsInfoEntity.setStatus(GoodStatus.GOOD_DOWN.getCode());
                     goodsInfoEntity.setUpdateDate(new Date());
                     goodsInfoEntity.setDelistTime(new Date());
                     Integer count = goodsService.updateService(goodsInfoEntity);
-                    if(count == 1){
+                    if (count == 1) {
                         Goods goods = goodsService.goodsInfoToGoods(goodsInfoEntity);
-                        LOGGER.info("监听京东商品池删除,删除索引传递的参数:{}",GsonUtils.toJson(goods));
-                        if(goods != null){
+                        LOGGER.info("监听京东商品池删除,删除索引传递的参数:{}", GsonUtils.toJson(goods));
+                        if (goods != null) {
                             goodsEsDao.delete(goods);
                         }
                     }

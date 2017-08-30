@@ -7,4 +7,11 @@
 	    from t_esp_jd_goods
 	    where third_category = #{cateId}
 	</select>
+
+	<select id="queryGoodsBySkuId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		from t_esp_jd_goods
+		where sku_id =#{skuId}
+	</select>
 </mapper>
