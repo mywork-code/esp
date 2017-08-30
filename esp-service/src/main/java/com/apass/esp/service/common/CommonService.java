@@ -143,8 +143,13 @@ public class CommonService {
 				} else if (goodsCostPrice.compareTo(new BigDecimal(2000)) > 0) {
 					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
 				}
-				price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
-				return price.setScale(0, BigDecimal.ROUND_HALF_UP);
+				if(null !=kvattr.getValue()){
+					price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
+					return price.setScale(0, BigDecimal.ROUND_HALF_UP);
+				}else{
+					price = goodsStock.getGoodsPrice();
+					return price.setScale(2, BigDecimal.ROUND_FLOOR);
+				}
 			} else {
 				price = goodsStock.getGoodsPrice();
 				return price.setScale(2, BigDecimal.ROUND_FLOOR);
