@@ -25,6 +25,7 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
+import com.apass.esp.schedule.OrderChannelStatisticsScheduleTask;
 import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
 import com.apass.esp.schedule.OrderTransactionDetailSchedeuleTask;
 import com.apass.esp.service.order.OrderService;
@@ -73,6 +74,9 @@ public class OrderExceptionController {
     
     @Autowired
     private OrderTransactionDetailSchedeuleTask detailTask;
+    
+    @Autowired
+    private OrderChannelStatisticsScheduleTask channelTask;
 
     @Autowired
     private MerchantInforRepository merchant;
@@ -236,4 +240,12 @@ public class OrderExceptionController {
     	detailTask.sendOrderMailEveryDay();
     	return Response.success("发送成功");
     }
+    
+    @ResponseBody
+    @RequestMapping("/channelTask")
+    public Response channelTask(){
+    	channelTask.channelStatistics();
+    	return Response.success("发送成功");
+    }
+    
 }
