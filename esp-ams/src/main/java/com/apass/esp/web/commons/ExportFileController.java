@@ -866,6 +866,16 @@ public class ExportFileController {
             if (!CollectionUtils.isEmpty(list)) {
                 for (Object g : list) {
                     GoodsInfoEntity b = (GoodsInfoEntity) g;
+                    if ("jd".equals(b.getSource())) {
+                        b.setMerchantName("京东");
+                    }
+                    if (null != b.getListTime()) {
+                        b.setListTimeString(b.getListTime());
+                    }
+                    if (null != b.getDelistTime()) {
+                        b.setDelistTimeString(b.getDelistTime());
+                    }
+
                     Long categoryId = b.getCategoryId3();
                     Category category = categoryInfoService.selectNameById(categoryId);
                     b.setCategoryName3(category != null ? category.getCategoryName() : "");

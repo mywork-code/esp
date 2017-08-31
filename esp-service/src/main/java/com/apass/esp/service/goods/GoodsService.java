@@ -824,8 +824,7 @@ public class GoodsService {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
 
-    public List pageListForExport(GoodsInfoEntity goodsInfoEntity) {
-
+    public List<GoodsInfoEntity> pageListForExport(GoodsInfoEntity goodsInfoEntity) {
         return goodsDao.pageListForExport(goodsInfoEntity);
     }
 

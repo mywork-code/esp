@@ -72,7 +72,7 @@ public class GoodsBaseInfoSiftController {
 	}
 
 	/**
-	 * 说明：商品分布查询
+	 * 说明：商品分页查询
 	 * 
 	 * @param request
 	 * @return

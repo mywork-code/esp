@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -53,6 +54,10 @@ public class JdGoodsService {
 
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
+
+
+    @Autowired
+    private GoodsEsDao goodsEsDao;
     
 //    @Autowired
 //    private UsersService usersService;
@@ -265,6 +270,7 @@ public class JdGoodsService {
                 }
 
             }
+
         } else {
             for (int i = 0; i < JdGoodsList.size(); i++) {
                 GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i)
