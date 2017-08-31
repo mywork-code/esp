@@ -547,6 +547,7 @@
 			a.goods_title goodsTitle,
 			a.goods_sell_pt goodsSellPt,
 			a.goods_sift_url goodsSiftUrl,
+			a.goods_logo_url  goodsLogoUrl,
 			c.minPrice goodsPrice,
 			a.source   source
 		FROM
