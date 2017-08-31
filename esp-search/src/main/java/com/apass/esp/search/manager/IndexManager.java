@@ -207,12 +207,15 @@ public class IndexManager<T> {
         List<T> results = new ArrayList<>();
         SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
-                .setQuery(queryBuilder);
+                .setQuery(queryBuilder).setMinScore(2f);
         if (!StringUtils.isEmpty(sortField)) {
             if(sortField.equalsIgnoreCase(SortMode.ORDERVALUE_ASC.getSortField())){
                 serachBuilder.addSort("_score", SortOrder.DESC);
+                serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
+            }else{
+                serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
+            	serachBuilder.addSort("_score", SortOrder.DESC);
             }
-            serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
         if (0 != size) {
             serachBuilder.setFrom(from).setSize(size);
@@ -221,8 +224,8 @@ public class IndexManager<T> {
         SearchHits searchHits = response.getHits();
         SearchHit[] hits = searchHits.getHits();
         for (SearchHit hit : hits) {
-            results.add((T) ESDataUtil.readValue(hit.source(), type.getTypeClass()));
-        }
+			results.add((T) ESDataUtil.readValue(hit.source(), type.getTypeClass()));
+		}
         int total = (int) searchHits.getTotalHits();
         Pagination pagination = new Pagination();
         pagination.setDataList(results);
