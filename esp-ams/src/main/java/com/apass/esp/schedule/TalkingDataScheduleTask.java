@@ -81,7 +81,7 @@ public class TalkingDataScheduleTask {
                 type = "android";
             }
 
-            for (int i = -1; i < 0; i++) {
+            for (int i = -15; i < 0; i++) {
                 try {
                     // 去talkingDate中获取UV(查询活跃用户数)
                     Date beginDate = DateFormatUtil.addDays(new Date(), i);
