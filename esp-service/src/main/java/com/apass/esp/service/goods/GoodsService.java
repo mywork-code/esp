@@ -903,7 +903,7 @@ public class GoodsService {
         goods.setDelistTime(g.getDelistTime());
         goods.setGoodsLogoUrl(g.getGoodsLogoUrl());
         if (StringUtils.equals(g.getSource(), SourceType.JD.getCode())) {
-            goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + g.getGoodsLogoUrl());
+            goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + g.getGoodsLogoUrl());
         } else {
             try {
                 goods.setGoodsLogoUrlNew(imageService.getImageUrl(g.getGoodsLogoUrl()));
