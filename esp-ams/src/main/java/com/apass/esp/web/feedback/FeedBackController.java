@@ -19,6 +19,7 @@ import com.apass.esp.domain.query.FeedBackQuery;
 import com.apass.esp.domain.vo.FeedBackVo;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 @Controller
@@ -42,7 +43,13 @@ public class FeedBackController {
 	@RequestMapping(value = "/list2", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponsePageBody<FeedBackVo> listConfig(QueryParams query) {
-		return backService.getFeedBackList(query);
+    	ResponsePageBody<FeedBackVo> respBody = new ResponsePageBody<FeedBackVo>();
+		try {
+	    	respBody=backService.getFeedBackList(query);
+		} catch (BusinessException e) {
+			respBody.setMsg("意见反馈列表查询失败");
+		}
+		return respBody;
 	}
 	/**
      * 意见反馈分页json
