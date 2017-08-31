@@ -32,6 +32,26 @@ public class ExportDomainFor {
 
     private String userTime;
 
+    private String day1retention1;
+
+    private String  dauday1retention1;
+
+    public String getDay1retention1() {
+        return day1retention1;
+    }
+
+    public void setDay1retention1(String day1retention1) {
+        this.day1retention1 = day1retention1;
+    }
+
+    public String getDauday1retention1() {
+        return dauday1retention1;
+    }
+
+    public void setDauday1retention1(String dauday1retention1) {
+        this.dauday1retention1 = dauday1retention1;
+    }
+
     public String getDate() {
         return date;
     }

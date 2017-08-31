@@ -81,7 +81,7 @@ public class TalkingDataScheduleTask {
                 type = "android";
             }
 
-            for (int i = -15; i < 0; i++) {
+            for (int i = -1; i < 0; i++) {
                 try {
                     // 去talkingDate中获取UV(查询活跃用户数)
                     Date beginDate = DateFormatUtil.addDays(new Date(), i);
@@ -90,10 +90,15 @@ public class TalkingDataScheduleTask {
                     String newuser = "newuser";
                     String session = "session";
                     String avgsessionlength = "avgsessionlength";
+                    String day1retention = "day1retention";//新增
+                    String dauday1retention = "dauday1retention";
+
                     String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, new Date(), metrics, groupby, type);
                     String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, new Date(), newuser, groupby, type);
                     String talkingData1session = talkingDataService.getTalkingData1(beginDate, new Date(), session, groupby, type);
                     String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, new Date(), avgsessionlength, groupby, type);
+                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, new Date(), day1retention, groupby, type);
+                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, new Date(), dauday1retention, groupby, type);
 
                     JSONObject iosObj = (JSONObject) JSONArray.parseArray(
                             JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
@@ -103,10 +108,16 @@ public class TalkingDataScheduleTask {
                             JSONObject.parseObject(talkingData1session).getString("result")).get(0);
                     JSONObject iosObj4 = (JSONObject) JSONArray.parseArray(
                             JSONObject.parseObject(talkingData1avgsessionlength).getString("result")).get(0);
+                    JSONObject iosObj5 = (JSONObject) JSONArray.parseArray(
+                            JSONObject.parseObject(talkingData1day1retention).getString("result")).get(0);
+                    JSONObject iosObj6 = (JSONObject) JSONArray.parseArray(
+                            JSONObject.parseObject(talkingData1dauday1retention).getString("result")).get(0);
                     Integer iuv = Integer.valueOf(iosObj.getString(metrics));
                     Integer newuser1 = Integer.valueOf(iosObj2.getString(newuser));
                     Integer session1 = Integer.valueOf(iosObj3.getString(session));
                     String avgsessionlength1 = iosObj4.getString(avgsessionlength);
+                    String day1retention1 = iosObj5.getString(day1retention);
+                    String dauday1retention1 = iosObj6.getString(dauday1retention);
                     LOGGER.info(DateFormatUtil.dateToString(beginDate, "") + "~"
                             + DateFormatUtil.dateToString(endDate, "") + "号 metrics：" + iuv);
 
@@ -118,6 +129,8 @@ public class TalkingDataScheduleTask {
                     exportDomainFor.setQidongTime(session1);
                     exportDomainFor.setUserTime(avgsessionlength1);
                     exportDomainFor.setType(type);
+                    exportDomainFor.setDay1retention1(day1retention1);
+                    exportDomainFor.setDauday1retention1(dauday1retention1);
                     lists.add(exportDomainFor);
                 } catch (Exception e) {
                     LOGGER.error("error i {}", i);
@@ -297,10 +310,10 @@ public class TalkingDataScheduleTask {
         HSSFSheet sheet = wb.createSheet("sheet");
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
-        String[] headArr = {"日期", "终端", "活跃用户数",
-                "新增用户数", "启动次数", "平均使用时长"};
-        String[] countKeyArr = {"date", "type", "activeUser", "newUser",
-                "qidongTime", "userTime"};
+        String[] headArr = {"日期", "终端", "活跃用户数","活跃用户次日留存率",
+                "新增用户数", "新增用户次日留存率","启动次数", "平均使用时长"};
+        String[] countKeyArr = {"date", "type", "activeUser","day1retention1", "newUser",
+                "dauday1retention1","qidongTime", "userTime"};
         // 第三步：创建第一行（也可以称为表头）
         HSSFRow row = sheet.createRow(0);
 
