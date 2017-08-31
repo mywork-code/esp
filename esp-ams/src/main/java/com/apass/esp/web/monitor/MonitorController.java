@@ -13,7 +13,6 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.esp.web.search.ESClientController;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -175,6 +174,10 @@ public class MonitorController {
 		return   Response.success("发送成功");
 	}
 
+	/**
+	 * 京东商品添加商品编码
+	 * @return
+	 */
 	@RequestMapping(value = "addGoodsCode", method = RequestMethod.GET)
 	@ResponseBody
 	public Response addGoodsCode() {
