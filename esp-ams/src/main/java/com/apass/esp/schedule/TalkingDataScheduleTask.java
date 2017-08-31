@@ -2,8 +2,10 @@ package com.apass.esp.schedule;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.esp.utils.ExportDomainFor;
+import com.apass.esp.utils.ExportDomainFor4;
 import com.apass.esp.utils.mailUtils.MailSenderInfo;
 import com.apass.esp.utils.mailUtils.MailUtil;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
@@ -30,31 +32,27 @@ import javax.mail.internet.MimeUtility;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-/**
- * type: class
- *
- * @author xianzhi.wang
- * @date 2017/8/31
- * @see
- * @since JDK 1.8
- */
 @Component
 @Configurable
 @EnableScheduling
 @Profile("Schedule")
 public class TalkingDataScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(TalkingDataScheduleTask.class);
-    private static final Logger logger = LoggerFactory.getLogger(TalkingDataScheduleTask.class);
 
     @Autowired
     private SystemEnvConfig systemEnvConfig;
 
     @Autowired
     private TalkDataService talkingDataService;
+
+    @Autowired
+    private OrderService orderService;
 
     @Value("${monitor.send.address}")
     public String sendAddress;
@@ -113,8 +111,8 @@ public class TalkingDataScheduleTask {
                             + DateFormatUtil.dateToString(endDate, "") + "号 metrics：" + iuv);
 
                     ExportDomainFor exportDomainFor = new ExportDomainFor();
-                    exportDomainFor.setDate(DateFormatUtil.dateToString(beginDate, "") + "~"
-                            + DateFormatUtil.dateToString(endDate, ""));
+                    exportDomainFor.setDate(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD) + "~"
+                            + DateFormatUtil.dateToString(endDate, DateFormatUtil.YYYY_MM_DD));
                     exportDomainFor.setActiveUser(iuv);
                     exportDomainFor.setNewUser(newuser1);
                     exportDomainFor.setQidongTime(session1);
@@ -164,6 +162,133 @@ public class TalkingDataScheduleTask {
         mailUtil.sendTextMail(mailSenderInfo);
 
     }
+
+
+    @Scheduled(cron = "0 0 8 * * *")
+    public void schedule2() throws InterruptedException {
+        Date beginDate = DateFormatUtil.addDays(new Date(), -1);
+        Date endDate = DateFormatUtil.addDays(beginDate, 1);
+        String groupby = "daily";
+        List<ExportDomainFor4> lists = Lists.newArrayList();
+        String metrics = "activeuser";
+        String newuser = "newuser";
+        String totaluser = "totaluser";
+        String talkingData1metrics = talkingDataService.getTalkingData(beginDate, new Date(), metrics, groupby);
+        TimeUnit.SECONDS.sleep(11);
+        String talkingData1newuser = talkingDataService.getTalkingData(beginDate, new Date(), newuser, groupby);
+        TimeUnit.SECONDS.sleep(11);
+        String talkingData1totaluser = talkingDataService.getTalkingData(DateFormatUtil.addDays(new Date(), -179), new Date(), totaluser, groupby);
+
+        JSONObject iosObj = (JSONObject) JSONArray.parseArray(
+                JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
+        JSONObject iosObj2 = (JSONObject) JSONArray.parseArray(
+                JSONObject.parseObject(talkingData1newuser).getString("result")).get(0);
+        JSONObject iosObj3 = (JSONObject) JSONArray.parseArray(
+                JSONObject.parseObject(talkingData1totaluser).getString("result")).get(0);
+        Integer iuv = Integer.valueOf(iosObj.getString(metrics));
+        Integer newuser1 = Integer.valueOf(iosObj2.getString(newuser));
+        Integer session1 = Integer.valueOf(iosObj3.getString(totaluser));
+
+        Integer confirmCount = orderService.getConfirmOrderCount(beginDate, endDate);// 下单买家数
+        Integer confirmPayCount = orderService.getConfirmPayCount(beginDate, endDate);// 支付成功买家数
+        BigDecimal orderAmtAll = orderService.getSumOrderamt(beginDate, endDate);// 下单金额
+        BigDecimal orderAmtForPaySuccess = orderService.getSumOrderamtForPaySuccess(beginDate,
+                endDate);// 支付成功金额
+        ExportDomainFor4 exportDomainFor4 = new ExportDomainFor4();
+        exportDomainFor4.setDate(DateFormatUtil.dateToString(beginDate,  DateFormatUtil.YYYY_MM_DD) + "~"
+                + DateFormatUtil.dateToString(endDate, DateFormatUtil.YYYY_MM_DD));
+        exportDomainFor4.setIuv(iuv);
+        exportDomainFor4.setConfirmCount(confirmCount);
+        exportDomainFor4.setConfirmPayCount(confirmPayCount);
+        exportDomainFor4.setNewuser1(newuser1);
+        exportDomainFor4.setOrderAmtAll(orderAmtAll);
+        exportDomainFor4.setOrderAmtForPaySuccess(orderAmtForPaySuccess);
+        exportDomainFor4.setSession1(session1);
+        lists.add(exportDomainFor4);
+        try {
+            generateFile1(lists);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        MailSenderInfo mailSenderInfo = new MailSenderInfo();
+        mailSenderInfo.setMailServerHost("SMTP.263.net");
+        mailSenderInfo.setMailServerPort("25");
+        mailSenderInfo.setValidate(true);
+        mailSenderInfo.setUserName(sendAddress);
+        mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
+        mailSenderInfo.setFromAddress(sendAddress);
+        mailSenderInfo.setSubject("电商交易明细统计日报");
+        mailSenderInfo.setContent("请查收电商交易明细统计日报..");
+        mailSenderInfo.setToAddress(sendToAddress);
+        mailSenderInfo.setCcAddress(copyToAddress);
+
+
+        Multipart msgPart = new MimeMultipart();
+        MimeBodyPart body = new MimeBodyPart(); //正文
+        MimeBodyPart attach = new MimeBodyPart(); //附件
+        try {
+            attach.setDataHandler(new DataHandler(new FileDataSource("/percentx.xls")));
+            attach.setFileName(MimeUtility.encodeText("percentx.xls"));
+            msgPart.addBodyPart(attach);
+            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+            msgPart.addBodyPart(body);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        mailSenderInfo.setMultipart(msgPart);
+        MailUtil mailUtil = new MailUtil();
+        mailUtil.sendTextMail(mailSenderInfo);
+    }
+
+
+    private void generateFile1(List<ExportDomainFor4> dataList) throws IOException {
+        // 第一步：声明一个工作薄
+        HSSFWorkbook wb = new HSSFWorkbook();
+        // 第二步：声明一个单子并命名
+        HSSFSheet sheet = wb.createSheet("sheet");
+        // 获取标题样式，内容样式
+        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
+        String[] headArr = {"日期", "总用户数", "活跃用户数",
+                "新增用户数", "下单买家数", "支付买家数","下单金额","支付金额"};
+        String[] countKeyArr = {"date", "session1", "iuv", "newuser1",
+                "confirmCount", "confirmPayCount","orderAmtAll","orderAmtForPaySuccess"};
+        // 第三步：创建第一行（也可以称为表头）
+        HSSFRow row = sheet.createRow(0);
+
+        for (int i = 0; i < headArr.length; i++) {
+            HSSFCell cell = row.createCell(i);
+            sheet.autoSizeColumn(i, true);
+            cell.setCellStyle(hssfCellStyle.get(0));
+            cell.setCellValue(headArr[i]);
+        }
+
+        // 向单元格里填充数据
+        for (int i = 0; i < dataList.size(); i++) {
+            row = sheet.createRow(i + 1);
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(dataList.get(i));
+
+            for (int j = 0; j < countKeyArr.length; j++) {
+                HSSFCell cellContent = row.createCell(j);
+                cellContent.setCellStyle(hssfCellStyle.get(1));
+                if (i == 1) {
+                    sheet.autoSizeColumn(j, true);
+                }
+                cellContent.setCellValue(jsonObject.get(countKeyArr[j]) + "");
+            }
+
+        }
+
+        // 判断文件是否存在 ,没有创建文件
+        FileOutputStream out = new FileOutputStream("/percentx.xls");
+        wb.write(out);
+        out.flush();
+        out.close();
+    }
+
+
+
 
     private void generateFile(List<ExportDomainFor> dataList) throws IOException {
         // 第一步：声明一个工作薄
