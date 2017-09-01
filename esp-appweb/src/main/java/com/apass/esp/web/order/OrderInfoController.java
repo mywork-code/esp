@@ -806,7 +806,7 @@ public class OrderInfoController {
 
   /**
    * 查询 用户 待付款、待发货、待收货 订单数量
-   *
+   * 我的金库：可提现金额
    * @param paramMap
    * @return
    */

@@ -103,7 +103,7 @@ public class WithdrawService {
      * @param awardDetails
      * @return
      */
-    private BigDecimal getTotalCount(List<AwardDetail> awardDetails){
+    public BigDecimal getTotalCount(List<AwardDetail> awardDetails){
         BigDecimal totalCount = BigDecimal.ZERO;
         for (AwardDetail awardDetail : awardDetails) {
             if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode() && awardDetail.getStatus() == AwardActivity.AWARD_STATUS.SUCCESS.getCode()){
