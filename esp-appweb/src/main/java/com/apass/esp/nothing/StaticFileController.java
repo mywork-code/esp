@@ -84,7 +84,7 @@ public class StaticFileController {
         commissionWalletVos.add(commissionWalletVo);
 
         InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_v1.js");
-        String md52 = MD5Utils.getMd5ByFile(in);
+        String md52 = MD5Utils.getMd5ByFile(in2);
         CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
         commissionWalletVo2.setVer("1");
         commissionWalletVo2.setFlag(true);
@@ -93,9 +93,9 @@ public class StaticFileController {
         commissionWalletVo2.setMd5(md52);
         commissionWalletVo2.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo2);
+
         IOUtils.closeQuietly(in);
         IOUtils.closeQuietly(in2);
-
 
         return Response.successResponse(commissionWalletVos);
     }
