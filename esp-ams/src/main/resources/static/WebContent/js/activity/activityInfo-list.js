@@ -27,12 +27,30 @@ $(function() {
                     width : 80,
                     align : 'center'
                 }, {
+					title : '商户名称',
+					field : 'merchantName',
+					width : 80,
+					align : 'center'
+			    }, {
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },{  
-       		 		title : '三级类目名称',  
+                },{
+					title : '商品编号',
+					field : 'goodsCode',
+					width : 90,
+					align : 'center'
+				},{
+					title : 'skuid',
+					field : 'externalId',
+					width : 90,
+					align : 'center',
+					formatter : function(value, row, index) {
+						return value == '' ? "--" : value;
+					}
+				},{
+                title : '三级类目名称',
        		 		field : 'categoryName3', 
        		 	    width : 90,  
        		 		align : 'center'
@@ -177,6 +195,8 @@ $(function() {
         var params = {};
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").textbox('getValue');
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['merchantName'] = $("#merchantName").textbox('getValue');
         params['status']='G02';//默认
         $('#tablelist').datagrid('load', params);
     });

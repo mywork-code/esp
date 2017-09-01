@@ -77,7 +77,36 @@ public class FileUtilsCommons {
             }
         }
     }
-
+    /**
+     * 公用上传文件方法
+     * 
+     * @param fatherPath
+     * @param url文件绝对路径
+     * @param bytefile文件
+     */
+    public static void uploadByteFilesUtil(String fatherPath, String urlOld, byte[] file) {
+        FileOutputStream out = null;
+        try {
+            String url = fatherPath + urlOld;
+            // 判断目录是否存在
+            String fil = new File(url).getParent();
+            if (!new File(fil).isDirectory()) {
+                new File(fil).mkdirs();
+            }
+            out = new FileOutputStream(url);
+            out.write(file);
+        } catch (Exception e) {
+            LOGGER.error("文件上传失败", e);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    LOGGER.error("关闭输入输出流异常", e);
+                } // 关闭输入输出流
+            }
+        }
+    }
     /**
      * 获取base64文件
      * 

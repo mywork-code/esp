@@ -96,8 +96,8 @@ public class OrderDetailInfoDto {
     private String cashRefundStatus;
 
     private String source;
-
-    public String getSource() {
+    
+	public String getSource() {
         return source;
     }
 

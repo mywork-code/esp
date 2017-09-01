@@ -1,17 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>ESP管理平台</title> <#include "../common/component/library.html"/>
-	<script type="text/javascript"
-            src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
-    <script type="text/javascript"
-            src="${rc.contextPath}/WebContent/js/feedback/index.js"></script>
-    <script type="text/javascript"
-            src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/feedback/index.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
 </head>
 <body style="word-break: break-all;">
-<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
-<div id="list"></div>
+	<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
+	<div id="tb" style="display: none;">
+		<div class="search">
+			<table style="min-width: 700px;">
+				<tr>
+					<td width="10%" align="right">用户名：</td>
+					<td width="20%"><input id="mobile" class="easyui-textbox"
+						style="width: 200px;"></td>
+					<td width="10%" align="right">关联模块：</td>
+					<td><select class="easyui-combobox" style="width: 150px;"
+						id="module">
+							<option value="" class="" selected="selected">请选择</option>
+							<option label="购物" value="shop">购物</option>
+							<option label="额度" value="credit">额度</option>
+					</select></td>
+				</tr>
+				<tr>
+				   <td width="12%" align="right">反馈问题类型：</td>
+					<td><select class="easyui-combobox" style="width: 150px;"
+						id="feedbackType">
+							<option value="" class="" selected="selected">请选择</option>
+							<option label="页面显示异常" value="page_error">页面显示异常</option>
+							<option label="功能使用异常" value="fun_error">功能使用异常</option>
+							<option label="其他问题" value="other">其他问题</option>
+					</select></td>
+					<td width="4%" align="right" nowrap="nowrap">提交时间：</td>
+					<td width="310px" style="float: left;" align="left"><input
+						id="submitDate1" class="easyui-datetimebox" style="width: 145px" />~
+						<input id="submitDate2" class="easyui-datetimebox"
+						style="width: 145px" /></td>
+					<td width="5%" />
+					<td width="100%"><a href="javascript:void(0);"
+						class="easyui-linkbutton search-btn"
+						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp; <a
+						href="javascript:void(0);" class="easyui-linkbutton reset-btn"
+						data-options="iconCls:'icon-reset'">重&nbsp;置&nbsp;</a>&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="list"></div>
+	<!-- 查看上传图片-->
+	<div id="lookPictureWindow" class="easyui-window"
+		title="<font color='black'>查看图片</font>" hidden="hidden"
+		style="width: 620px; height: 450px; display: none; text-align: center;"
+		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+		<img id='lookPictureImg1' src="" /> <img id='lookPictureImg2' src="" />
+		<img id='lookPictureImg3' src="" />
+	</div>
 </body>
 </html>

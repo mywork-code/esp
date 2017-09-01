@@ -190,7 +190,7 @@ public class PaymentHttpClient {
 
     /**
      * 查询未结清借款&额度消费已出账笔数
-     *
+     *当前月额度消费已出账和还款中的记录
      * @return
      */
     public Response creditPayAuthority(Long userId) throws BusinessException {

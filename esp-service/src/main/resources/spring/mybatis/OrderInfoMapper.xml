@@ -23,6 +23,9 @@
 			<if test="status != null and status != ''">
 				and orderstatus=#{status, jdbcType=VARCHAR}
 			</if>
+			<if test="isDelete != null and isDelete != ''">
+			    and is_delete=#{isDelete, jdbcType=VARCHAR}
+			</if>
 	</sql>
 
 	<select id="select" parameterType="OrderInfoEntity" resultType="OrderInfoEntity">
@@ -326,6 +329,19 @@
 		<set>
 			update_date = CURRENT_TIMESTAMP,
 			orderstatus = #{status, jdbcType=VARCHAR}
+		</set>
+	<![CDATA[
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<update id="updateIsDeleteByOrderId" parameterType="OrderInfoEntity">
+		<![CDATA[
+		UPDATE t_esp_order_info 
+		]]>
+		<set>
+			is_delete = '01',
+			update_date = #{updateDate,jdbcType=TIMESTAMP}
 		</set>
 	<![CDATA[
 		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
@@ -830,6 +846,29 @@
 			SUM(order_amt) 
 		from t_esp_order_info
 		where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus = 'P02'
+	</select>
+	
+	<select id="channelStatistics" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
+		SELECT
+			order_id orderId,
+			user_id userId,
+			order_amt orderAmt,
+			orderstatus status,
+			create_date createDate,
+			update_date updateDate
+		FROM
+			t_esp_order_info
+		where 1=1
+		<if test="beginDate != null and beginDate != ''">
+			<![CDATA[ 
+		    and create_date >= #{beginDate} 
+		    ]]> 
+		</if>
+		<if test="endDate != null and endDate != ''">
+		    <![CDATA[ 
+		    and create_date <  #{endDate} 
+		    ]]> 
+		</if>
 	</select>
 	
 </mapper>

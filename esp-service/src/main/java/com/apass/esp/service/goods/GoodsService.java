@@ -563,7 +563,7 @@ public class GoodsService {
     /**
      * 主键查询
      *
-     * @param goodsId商品表id
+     * @param goodsId
      * @return
      */
     public GoodsInfoEntity selectByGoodsId(Long goodsId) {
@@ -592,7 +592,6 @@ public class GoodsService {
     /**
      * 说明：查询商品精选数量
      *
-     * @param goodsType
      * @return
      * @author xiaohai
      * @time：2016年12月27日 下午3:55:45
@@ -674,7 +673,7 @@ public class GoodsService {
     /**
      * 京东商品
      *
-     * @param entityList
+     * @param entity
      * @return
      */
     public GoodsInfoEntity insertJdGoods(GoodsInfoEntity entity) {
@@ -693,7 +692,7 @@ public class GoodsService {
     /**
      * 根据external_id查询商品
      *
-     * @param string
+     * @param externalId
      * @return
      * @throws BusinessException
      */
@@ -826,8 +825,7 @@ public class GoodsService {
         return goodsBasicRepository.getRemainderGoodsNew(pageIndex, pageSize);
     }
 
-    public List pageListForExport(GoodsInfoEntity goodsInfoEntity) {
-
+    public List<GoodsInfoEntity> pageListForExport(GoodsInfoEntity goodsInfoEntity) {
         return goodsDao.pageListForExport(goodsInfoEntity);
     }
 

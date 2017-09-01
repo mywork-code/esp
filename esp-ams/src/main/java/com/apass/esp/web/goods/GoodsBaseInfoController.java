@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,13 +238,15 @@ public class GoodsBaseInfoController {
             String merchantName = HttpWebUtils.getValue(request, "merchantName");
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
-            String status = HttpWebUtils.getValue(request, "status");
+            String status = HttpWebUtils.getValue(request, "goodsStatus");
             // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
             String categoryId3 = HttpWebUtils.getValue(request, "categoryId3");
+            String goodsCode = HttpWebUtils.getValue(request, "goodsCode");
 
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
+            goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
             goodsInfoEntity.setGoodsType(goodsType);
@@ -271,8 +275,7 @@ public class GoodsBaseInfoController {
 
             goodsInfoEntity.setMerchantCode(usersService.loadBasicInfo().getMerchantCode());
 
-            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,
-                    pageSize);
+            PaginationManage<GoodsInfoEntity> pagination = goodsService.pageList(goodsInfoEntity, pageNo,pageSize);
 
             if (pagination == null) {
                 respBody.setTotal(0);
@@ -308,8 +311,6 @@ public class GoodsBaseInfoController {
      * 商品基本信息录入
      *
      * @param pageModel
-     * @param model
-     * @param request
      * @return
      */
     @ResponseBody
@@ -442,11 +443,11 @@ public class GoodsBaseInfoController {
         return pagebody;
     }
 
+
     /**
      * 上传banner图
      *
      * @param bannerDto
-     *  @return
      */
     @ResponseBody
     @RequestMapping(value = "/addBanner", method = RequestMethod.POST)
@@ -513,6 +514,7 @@ public class GoodsBaseInfoController {
         }
     }
 
+
     /**
      * 更新数据库的更新人和更新时间
      */
@@ -558,8 +560,13 @@ public class GoodsBaseInfoController {
 
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
-        PaginationManage<GoodsStockInfoEntity> list = goodsStockInfoService.pageList(goodsStockInfoEntity,
-                "0", "10");
+        PaginationManage<GoodsStockInfoEntity> list = null;
+        try {
+            list = goodsStockInfoService.pageList(goodsStockInfoEntity,
+                    "0", "10");
+        } catch (BusinessException e) {
+            e.printStackTrace();
+        }
         List<GoodsStockInfoEntity> stockList = list.getDataList();
         if (stockList.isEmpty()) {
             return "商品库存为空,请添加！";
@@ -584,6 +591,17 @@ public class GoodsBaseInfoController {
             if (StringUtils.isAnyBlank(listTime, delistTime) || "null".equals(listTime)
                     || "null".equals(delistTime)) {
                 return "商品上架和下架时间不能为空，请先选择类目！";
+            }
+
+            //查询商品价格
+            List<GoodsStockSkuDto> goodsStockSkuInfo = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
+            if(CollectionUtils.isEmpty(goodsStockSkuInfo) || goodsStockSkuInfo.size()>2){
+                LOGGER.info("京东商品库存有误,商品id:{}",id);
+                return "京东商品库存有误";
+            }
+
+            if(goodsStockSkuInfo.get(0).getGoodsPrice().compareTo(new BigDecimal(99))<0){
+                return "京东商品价格低于99元，不能上架";
             }
         }
         SystemParamEntity systemParamEntity = null;

@@ -1,4 +1,5 @@
 $(function(){
+	$('#lookPictureWindow').window('close');
 
     //Grid
     $('#list').datagrid({
@@ -34,13 +35,24 @@ $(function(){
                 field : 'comments',
                 width : 150,
                 align : 'center'
-            }
-            ]],
+            },{
+				title : '操作',
+				field : 'opt',
+				width : 120,
+				align : 'center',
+				formatter : function(value, row, index) {
+					var content = "";
+					 if (null !=row.picture  && row.picture!='') {
+                         content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
+                         content += " onclick='$.lookPicture(\"" + row.picture + "\");'>查看上传图片</a>";
+                     }  
+				 return content;
+			}}]],
         loader : function(param, success, error) {
             $.ajax({
                 url : ctx + '/feedbackinfo/feedback/list',
                 data : param,
-                type : "get",
+                type : "post",
                 dataType : "json",
                 success : function(data) {
                 	console.log(data);
@@ -51,4 +63,46 @@ $(function(){
             })
         }
     });
+    /**
+     * 查询
+     */
+    $(".search-btn").click(function(){
+    	 var params = {};
+         params['mobile'] = $("#mobile").textbox('getValue');
+         params['module'] = $("#module").combobox('getValue');
+         params['feedbackType'] = $("#feedbackType").combobox('getValue');
+         params['createDateBegin'] = $("#submitDate1").datetimebox('getValue');
+         params['createDateEnd'] = $("#submitDate2").datetimebox('getValue');
+         $('#list').datagrid('load', params);
+    });
+	    /**
+		 * 重置
+		 */
+	$(".reset-btn").click(function() {
+		$("#mobile").textbox('setValue', '');
+		$("#module").combobox('setValue', '');
+		$("#feedbackType").combobox('setValue', '');
+		$("#submitDate1").datetimebox('setValue', '');
+		$("#submitDate2").datetimebox('setValue', '');
+		var params = {};
+		$('#list').datagrid('load', params);
+	});
+	    /**
+		 * 查看上传图片
+		 */
+	$.lookPicture = function(picture) {
+		$("#lookPictureImg1").attr("src", "");
+		var pictureList = picture.split(";");
+		if (pictureList.length == 1) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+		} else if (pictureList.length== 2) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+			$("#lookPictureImg2").attr("src", pictureList[1]);
+		} else if (pictureList.length == 3) {
+			$("#lookPictureImg1").attr("src", pictureList[0]);
+			$("#lookPictureImg2").attr("src", pictureList[1]);
+			$("#lookPictureImg3").attr("src", pictureList[2]);
+		}
+		$('#lookPictureWindow').window('open');
+	}
 });

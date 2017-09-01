@@ -107,12 +107,15 @@
 				  f.merchant_code merchantCode,
 				  f.goods_name goodsName,
 				  f.goods_model goodsModel,
-				  f.goods_sku_type goodsSkuType 
+				  f.goods_sku_type goodsSkuType,
+				  t2.merchant_name merchantName,
+				  f.external_id externalId,
+				  f.goods_code goodsCode
 				  from
 				  t_esp_activity_info t 
-				  left join t_esp_goods_base_info f 
+				  left join t_esp_goods_base_info f
 				  on t.goods_id = f.id 
-					
+				  left join t_esp_merchant_info t2 on t2.merchant_code=f.merchant_code
 	]]>
 		<where>
 			   <if test="goodsName != null and goodsName != ''">
@@ -123,6 +126,12 @@
 			   </if>
 			    <if test="merchantCode != null and merchantCode != ''">
 			       AND f.merchant_code = #{merchantCode}
+			   </if>
+			   <if test="goodsCode != null and goodsCode != ''">
+				AND (f.goods_code = #{goodsCode} OR f.external_id = #{goodsCode})
+			   </if>
+			   <if test="merchantName != null and merchantName != ''">
+				   AND f.merchant_name LIKE '%${merchantName}%'
 			   </if>
 		</where>
 	<![CDATA[

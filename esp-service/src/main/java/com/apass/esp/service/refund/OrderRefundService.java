@@ -245,7 +245,8 @@ public class OrderRefundService {
         
         if(null != refundedOrderInfoList && !refundedOrderInfoList.isEmpty()){
             for(RefundedOrderInfoDto dto: refundedOrderInfoList){
-                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(), OrderStatus.ORDER_COMPLETED.getCode());
+            	//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
+                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(), OrderStatus.ORDER_TRADCLOSED.getCode());
             }
         }
     }

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,10 @@ public class JdGoodsService {
 
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
+
+
+    @Autowired
+    private GoodsEsDao goodsEsDao;
     
 //    @Autowired
 //    private UsersService usersService;
@@ -104,8 +111,19 @@ public class JdGoodsService {
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
             entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+
             //查询数据库是否已经存在此商品
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
+            if(insertJdGoods != null){
+                // 商品编号
+                StringBuffer sb = new StringBuffer();
+                sb.append("97");
+                String random = RandomUtils.getRandomNum(6);
+                sb.append(random);
+                entity.setGoodsCode(sb.toString());
+                goodsService.updateService(entity);
+
+            }
 
             // 往t_esp_goods_stock_info表插数据
             GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
@@ -252,6 +270,7 @@ public class JdGoodsService {
                 }
 
             }
+
         } else {
             for (int i = 0; i < JdGoodsList.size(); i++) {
                 GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(JdGoodsList.get(i)

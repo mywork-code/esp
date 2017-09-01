@@ -47,7 +47,7 @@ public class JDMessageScheduleTask {
         if (!systemEnvConfig.isPROD()) {
             return;
         }
-        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(), JdMessageEnum.DELETEADD_SKU.getType());
+        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(), JdMessageEnum.DELETEADD_SKU.getType(),JdMessageEnum.PRICE_SKU.getType());
         for (JdApiMessage jdApiMessage : jdApiMessageList
                 ) {
             try {

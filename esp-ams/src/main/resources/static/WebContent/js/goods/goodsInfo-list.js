@@ -53,6 +53,18 @@ $(function() {
                     width : 90,
                     align : 'center'
                 },
+				{
+					title : '商品编号',
+					field : 'goodsCode',
+					width : 90,
+					align : 'center'
+				},
+				{
+					title : 'skuid',
+					field : 'externalId',
+					width : 90,
+					align : 'center'
+				},
        		 	{  
        		 		title : '类目名称',  
        		 		field : 'categoryName3', 
@@ -227,12 +239,13 @@ $(function() {
 
     // 查询列表
     $(".search-btn").click(function() {
-    	debugger;
         var params = {};
         params['merchantName'] = $("#merchantName").textbox('getValue');
         params['merchantType'] = $("#merchantType").combobox('getValue');
         params['goodsName'] = $("#goodsNames").textbox('getValue');
         params['goodsType'] = $("#goodsTypes").combobox('getValue');
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['goodsStatus'] = $("#goodsStatus").combobox('getValue');
         var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
         if("请选择"==goodsCategoryCombo){
         	goodsCategoryCombo="";
@@ -241,7 +254,7 @@ $(function() {
         
         $('#tablelist').datagrid('load', params);
     });
-    // 查询列表
+    // 刷新列表
     $("#flush").click(function() {
     	$("#goodsNames").textbox('setValue','');
     	$("#goodsTypes").combobox('setValue','');
@@ -252,24 +265,9 @@ $(function() {
     	var params = {};
     	$('#tablelist').datagrid('load', params);
     });
+
+	goodsCategoryComboFun();
     
-    $("#goodsCategoryCombo").combotree({
-//        required : true,  
-        loader : function(param, success, error) {
-            $.ajax({
-                url : ctx + "/application/goods/management/categoryList",
-                data : param,
-                type : "get",
-                dataType : "json",
-                success : function(resp) {
-                    $.validateResponse(resp, function() {
-                        success(resp.data);
-                    });
-                }
-            })
-        }
-    });
-    $("#goodsCategoryCombo").combotree('setValue', '请选择');
 //==============================================-----新增商品 始----====================================================//-----------------------
     /** 
      * 新增商品
@@ -1424,7 +1422,6 @@ $(function() {
 	var sourceJd;//修改库存时商品来源标识
 	//修改库存
 	$.editStockinfo = function(index,datagridId,source,status) {
-		debugger;
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
 		sourceJd = source;
 		if(source == "jd"){

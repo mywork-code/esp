@@ -52,13 +52,14 @@ public class KvattrService {
         List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
         return list;
     }
-
+    public Kvattr getKvattrByKeyList(String key) {
+    	return kvattrMapper.getByKey(key);
+    }
     /**
      * @param list
      */
     public void update(List<Kvattr> list) {
-        for (Kvattr kvattr : list
-                ) {
+        for (Kvattr kvattr : list) {
             kvattr.setCreateDate(new Date());
             kvattr.setUpdateDate(new Date());
             kvattrMapper.updateByPrimaryKey(kvattr);

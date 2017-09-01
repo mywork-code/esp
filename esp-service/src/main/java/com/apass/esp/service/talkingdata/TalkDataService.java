@@ -2,6 +2,7 @@ package com.apass.esp.service.talkingdata;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,35 @@ public class TalkDataService {
         String str = commonHttpClient.talkingData(talkingDataDto);
         return str;
     }
-    
+
+
+    public String getTalkingData1(Date beginDate, Date date, String metrics, String groupby,String type) {
+        try {
+            TimeUnit.SECONDS.sleep(11);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        TalkingDataDto talkingDataDto = new TalkingDataDto();
+        talkingDataDto.setGroupby(groupby);
+
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add(metrics);
+        talkingDataDto.setMetrics(arrayList);
+
+        Filter filter = new Filter();
+        ArrayList<Integer> integerArrayList = new ArrayList<>();
+        if(type.equalsIgnoreCase("ios")){
+            integerArrayList.add(2);
+        }else{
+            integerArrayList.add(1);
+        }
+        filter.setChannelids(integerArrayList);
+        filter.setStart(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD));
+        filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
+        talkingDataDto.setFilter(filter);
+
+        String str = commonHttpClient.talkingData(talkingDataDto);
+        return str;
+    }
 
 }

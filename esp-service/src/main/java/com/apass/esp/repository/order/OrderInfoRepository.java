@@ -77,6 +77,18 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         param.setStatus(status);
         this.getSqlSession().update("updateStatusByOrderId", param);
     }
+    
+    /**
+     * 更新订单状态
+     * 
+     * @param orderId
+     */
+    public void updateIsDeleteByOrderId(String orderId) {
+        OrderInfoEntity param = new OrderInfoEntity();
+        param.setOrderId(orderId);
+        param.setUpdateDate(new Date());
+        this.getSqlSession().update("updateIsDeleteByOrderId", param);
+    }
     /**
      * 根据mainOrderId更新订单信息
      * 
@@ -297,4 +309,10 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("getSumOrderamtForPaySuccess",param);
     }
     
+    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate) {
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("beginDate", beginDate);
+        param.put("endDate", endDate);
+        return getSqlSession().selectList("channelStatistics",param);
+    }
 }

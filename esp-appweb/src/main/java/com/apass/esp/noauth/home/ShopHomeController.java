@@ -13,6 +13,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.search.dao.GoodsEsDao;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +67,7 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * 首页
@@ -121,6 +124,7 @@ public class ShopHomeController {
 
     @Value("${esp.image.uri}")
     private String espImageUrl;
+
 
     /**
      * 首页初始化 加载banner和精品商品
@@ -1091,11 +1095,48 @@ public class ShopHomeController {
             return Response.successResponse(resultMap);
         } catch (BusinessException e) {
             LOGGER.error("loadRecommendGoodsByPage fail", e);
-            LOGGER.error("精选推荐 大于10个时 分页展示");
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
 
     }
+
+    @POST
+    @Path("/allRecommentGoods")
+    public Response allRecommentGoods(Map<String, Object> paramMap) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            Pagination<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods(1, 50);
+            LOGGER.info("精选推荐查询结果:{}", GsonUtils.toJson(recommendGoods.getDataList()));
+            if (CollectionUtils.isEmpty(recommendGoods.getDataList())) {
+                return Response.fail("数据库有误！");
+            }
+            for (GoodsBasicInfoEntity goodsBaseInfoEntyty : recommendGoods.getDataList()) {
+                BigDecimal price = commonService.calculateGoodsPrice(goodsBaseInfoEntyty.getGoodId(),
+                        goodsBaseInfoEntyty.getGoodsStockId());
+                goodsBaseInfoEntyty.setGoodsPrice(price);
+                goodsBaseInfoEntyty.setGoodsPriceFirst(new BigDecimal("0.1").multiply(price));// 设置首付价=商品价*10%
+                Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsBaseInfoEntyty.getGoodId());
+                goodsBaseInfoEntyty.setMarketPrice(new BigDecimal(marketPrice));
+                if ("jd".equals(goodsBaseInfoEntyty.getSource())) {
+                    goodsBaseInfoEntyty.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsBaseInfoEntyty.getGoodsLogoUrl());
+                    goodsBaseInfoEntyty.setGoodsSiftUrlNew(imageService.getImageUrl(goodsBaseInfoEntyty.getGoodsSiftUrl()));
+                } else {
+                    goodsBaseInfoEntyty.setGoodsLogoUrlNew(imageService.getImageUrl(goodsBaseInfoEntyty.getGoodsLogoUrl()));
+                    goodsBaseInfoEntyty.setGoodsSiftUrlNew(imageService.getImageUrl(goodsBaseInfoEntyty.getGoodsSiftUrl()));
+                    goodsBaseInfoEntyty.setGoodsLogoUrl(EncodeUtils.base64Encode(goodsBaseInfoEntyty.getGoodsLogoUrl()));
+                    goodsBaseInfoEntyty.setGoodsSiftUrl(EncodeUtils.base64Encode(goodsBaseInfoEntyty.getGoodsSiftUrl()));
+                }
+            }
+            resultMap.put("recommendGoods", recommendGoods);
+            return Response.successResponse(resultMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
+        }
+    }
+
+
+
 
     /**
      *

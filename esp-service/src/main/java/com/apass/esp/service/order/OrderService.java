@@ -1214,8 +1214,10 @@ public class OrderService {
             LOG.info(requestId, "当前订单状态不能删除订单", orderId);
             throw new BusinessException("当前订单状态不能删除订单", BusinessErrorCode.ORDER_DELETE_ERROR);
         }
-        orderInfoRepository
-                .updateStatusByOrderId(orderInfo.getOrderId(), OrderStatus.ORDER_DELETED.getCode());
+        /**
+         * 前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
+         */
+        orderInfoRepository.updateIsDeleteByOrderId(orderInfo.getOrderId());
     }
 
     /**
@@ -1231,6 +1233,8 @@ public class OrderService {
         Long userIdVal = Long.valueOf(userId);
         OrderInfoEntity orderInfo = new OrderInfoEntity();
         orderInfo.setUserId(userIdVal);
+        //前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
+        orderInfo.setIsDelete("00");
         if (StringUtils.isNotBlank(orderStatus)) {
             orderInfo.setStatus(orderStatus);
         }
@@ -2191,7 +2195,46 @@ public class OrderService {
         param.put("dateEnd", dateEnd);
         return orderSubInfoRepository.queryOrderSubInfoByTime(param);
     }
+    
+    /**
+     * 获取15天内，交易成功的订单信息
+     */
+    public List<OrderSubInfoEntity> queryOrderIdByOrderStatus(String dateBegin, String dateEnd) {
+        HashMap<String, String> param = Maps.newHashMap();
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return orderSubInfoRepository.queryOrderIdByOrderStatus(param);
+    }
 
+    @SuppressWarnings("null")
+	public List<OrderSubInfoEntity> getOrderDetail(String dateBegin, String dateEnd){
+    	List<OrderSubInfoEntity> dtoList = new ArrayList<OrderSubInfoEntity>();
+    	List<OrderSubInfoEntity> orderIdList = queryOrderIdByOrderStatus(dateBegin, dateEnd);
+    	for (OrderSubInfoEntity order : orderIdList) {
+    		List<OrderDetailInfoEntity> details = orderDetailInfoRepository.queryOrderDetailBySubOrderId(order.getOrderId());
+    		for (OrderDetailInfoEntity detail : details) {
+    			OrderSubInfoEntity sub = new OrderSubInfoEntity();
+    			
+    			//首先获取商户名称
+    			MerchantInfoEntity merchant = merchantInforService.queryByMerchantCode(order.getMerchantCode());
+    			GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+    			//时间
+    			sub.setPayTime(order.getPayDate());
+    			//商户名称
+    			sub.setMerchantName(null != merchant ?merchant.getMerchantName():"");
+    			//商品编号  商品名称  商品状态  商品件数  商品金额
+    			sub.setGoodsId(detail.getGoodsId()+"");
+    			sub.setGoodsName(null != goods ?detail.getGoodsName():"");
+    			sub.setGoodStatus(GoodStatus.getMessageByCode(goods.getStatus()));
+    			
+    			sub.setGoodsNum(detail.getGoodsNum()+"");
+    			sub.setOrderAmt(detail.getGoodsPrice().multiply(new BigDecimal(detail.getGoodsNum())).setScale(2, BigDecimal.ROUND_DOWN));
+    			dtoList.add(sub);
+			}
+    	}
+    	return dtoList;
+    }
+    
     /**
      * 根据订单号，获取订单信息
      * 
@@ -2501,5 +2544,13 @@ public class OrderService {
         return orderInfoRepository.getSumOrderamtForPaySuccess(beginDate,endDate);
     }
 
-    
+    /**
+     * 獲取時間段內的全部訂單
+     * @param beginDate
+     * @param endDate
+     * @return
+     */
+    public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate){
+    	return orderInfoRepository.getchannelStatisticsOrders(beginDate, endDate);
+    }
 }

@@ -38,36 +38,45 @@
 			<table style="min-width: 700px;">
 				<tr>
 				 	<td width="10%" align="right" nowrap="nowrap">选择商户：</td>
-					<td width="10%" align="right" nowrap="nowrap">
+					<td width="10%" align="left" nowrap="nowrap">
 					<select class="easyui-combobox" style="width: 180px;" id="selectMerchant" name="selectMerchant">
 				 	</select> 
 					</td>
 					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
 					<td width="10%"><input id="goodsNames" name="goodsNames" class="easyui-textbox"
 						style="width: 200px;" /></td>
+					<td width="10%" align="right">商品编号：</td>
+					<td width="10%"><input id="goodsCode"  class="easyui-textbox"
+										   style="width: 200px;" data-options="prompt:'请输入商品编号/skuid'"></td>
+
+				</tr>
+				<tr>
+					<td width="10%" align="right">商户名称：</td>
+					<td width="20%"><input id="merchantName"  class="easyui-textbox"
+										   style="width: 200px;"  ></td>
 					<td width="10%" align="right" nowrap="nowrap">活动状态：</td>
 					<td width="10%" align="left " nowrap="nowrap">
-						<select id="status" name='status' class="easyui-combobox" style="width: 150px;">   
-						  <option value="" selected="selected">请选择</option>   
-						  <option label="有效" value="1">有效</option>   
-						  <option label="无效" value="-1">无效</option>   
-						  <option label="待审核" value="0">待审核</option>  
+						<select id="status" name='status' class="easyui-combobox" style="width: 150px;">
+							<option value="" selected="selected">请选择</option>
+							<option label="有效" value="1">有效</option>
+							<option label="无效" value="-1">无效</option>
+							<option label="待审核" value="0">待审核</option>
 						</select>
 					</td>
 					<td>
-					<a href="javascript:void(0);"
-						class="easyui-linkbutton search-btn"
-						data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a> <a
-						href="javascript:void(0);" class="easyui-linkbutton" id="reset">刷&nbsp;新&nbsp;</a>
-				    <@apass.role value="ACTIVITY_CHECK_BATCH">
+						<a href="javascript:void(0);"
+						   class="easyui-linkbutton search-btn"
+						   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a> <a
+							href="javascript:void(0);" class="easyui-linkbutton" id="reset">刷&nbsp;新&nbsp;</a>
+						<@apass.role value="ACTIVITY_CHECK_BATCH">
 						<a href="javascript:void(0);" class="easyui-linkbutton checkAll"
-						data-options="iconCls:'icon-add'">批&nbsp;量&nbsp;复&nbsp;核</a>
+						   data-options="iconCls:'icon-add'">批&nbsp;量&nbsp;复&nbsp;核</a>
 					</@apass.role>
-				    <@apass.role value="ACTIVITY_INFO_EXPORT">
-						<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
-						data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>
-						</@apass.role>
-					</td>
+					<@apass.role value="ACTIVITY_INFO_EXPORT">
+					<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+					   data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>
+				</@apass.role>
+				</td>
 				</tr>
 			</table>
 		</div>

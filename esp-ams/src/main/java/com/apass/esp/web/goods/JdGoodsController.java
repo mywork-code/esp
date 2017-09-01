@@ -89,7 +89,7 @@ public class JdGoodsController {
     /**
      * 取消关联商品
      * 
-     * @param paramMap
+     * @param param
      * @return
      */
     @ResponseBody
@@ -120,8 +120,7 @@ public class JdGoodsController {
     /**
      * 参数验证
      * 
-     * @param cateId
-     * @param catClass
+     * @param param
      * @return
      * @throws BusinessException
      */
