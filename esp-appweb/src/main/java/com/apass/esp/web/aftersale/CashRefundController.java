@@ -172,6 +172,7 @@ public class CashRefundController {
             return Response.fail(BusinessErrorCode.NO);
         }
         cashRefundDto.setStatus(Integer.valueOf(CashRefundStatus.CASHREFUND_STATUS3.getCode()));
+        cashRefundDto.setUpdateDate(new Date());
         cashRefundService.updateCashRefundDto(cashRefundDto);
         return Response.success("撤销退款成功");
         
