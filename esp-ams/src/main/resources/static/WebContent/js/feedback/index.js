@@ -23,6 +23,11 @@ $(function(){
                 field : 'createDate',
                 width : 150,
                 align : 'center'
+            },{
+                title : '关联模块',
+                field : 'module',
+                width : 120,
+                align : 'center'
             },
             {
                 title : '反馈问题类型',
