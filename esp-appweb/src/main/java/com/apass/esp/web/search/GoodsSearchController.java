@@ -109,19 +109,13 @@ public class GoodsSearchController {
     @Path(value = "/searchKeys")
     public Response getSearchKeys(Map<String,Object> paramMap){
     	
-    	String userId = CommonUtils.getValue(paramMap, "userId");
     	String deviceId = CommonUtils.getValue(paramMap, "deviceId");
     	List<SearchSort> sort = new ArrayList<SearchSort>();
     	try {
-    		List<SearchKeys> common = null;
-    		if(StringUtils.isBlank(userId) && StringUtils.isBlank(deviceId)){
-    			throw new BusinessException("参数传值有误!");
+    		if( StringUtils.isEmpty(deviceId)){
+    			throw new BusinessException("设备号传值有误!");
     		}
-    		if(StringUtils.isNotBlank(userId)){
-    			common = searchKeyService.commonSearchByUserId(userId);
-    		}else{
-    			common = searchKeyService.commonSearchByDeviceId(deviceId);
-    		}
+    		List<SearchKeys> common = searchKeyService.commonSearchByDeviceId(deviceId);
     		sort.add(new SearchSort("最近搜索",keysToVoList(common)));
     		sort.add(new SearchSort("热门搜索", hotList(new ArrayList<SearchKeys>())));
     		sort.add(new SearchSort("常用分类", getClassification()));
