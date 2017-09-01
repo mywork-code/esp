@@ -24,6 +24,9 @@
 			<if test="type != null and type !='' and type=='ajp' ">
 				AND type == 'ajp'
 			</if>
+			<if test="mobile != null and mobile != ''">
+				AND mobile = #{mobile, jdbcType=VARCHAR}
+			</if>
 			<if test="module != null and module != ''">
 				AND module = #{module, jdbcType=VARCHAR}
 			</if>
