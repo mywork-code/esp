@@ -275,8 +275,17 @@ public class FeedbackController {
 			String createDateBegin = CommonUtils.getValue(paramMap, "createDateBegin");// 提交时间（开始）
 			String createDateEnd = CommonUtils.getValue(paramMap, "createDateEnd");// 提交时间（结束）
 			FeedBackQuery feedBackQuery = new FeedBackQuery();
-			feedBackQuery.setPage(Integer.parseInt(page));
-			feedBackQuery.setRows(Integer.parseInt(rows));
+			if(StringUtils.isBlank(page)){
+				feedBackQuery.setPage(Integer.parseInt("1"));
+			}else{
+				feedBackQuery.setPage(Integer.parseInt(page));
+			}
+			if(StringUtils.isBlank(rows)){
+				feedBackQuery.setRows(Integer.parseInt("10"));
+			}else{
+				feedBackQuery.setRows(Integer.parseInt(rows));
+			}
+			
 			feedBackQuery.setFeedbackType(feedbackType);
 			feedBackQuery.setMobile(mobile);
 			feedBackQuery.setCreateDateBegin(createDateBegin);

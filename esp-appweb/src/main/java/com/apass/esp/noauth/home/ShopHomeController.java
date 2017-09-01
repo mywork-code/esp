@@ -172,7 +172,11 @@ public class ShopHomeController {
                 }
                 if ("jd".equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
-                    goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    if(goods.getGoodsSiftUrl().contains("eshop")){
+                        goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    }else{
+                        goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" +goods.getGoodsLogoUrl());
+                    }
                 } else {
                     // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
                     Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());

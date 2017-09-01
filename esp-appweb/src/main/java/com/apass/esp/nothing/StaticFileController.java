@@ -9,6 +9,7 @@ import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -60,6 +61,8 @@ public class StaticFileController {
         map.put("ver","17");
         map.put("md5",md5);
 
+        IOUtils.closeQuietly(in);
+
         return Response.successResponse(map);
     }
 
@@ -69,32 +72,30 @@ public class StaticFileController {
         ClassLoader classLoader = StaticFileController.class.getClassLoader();
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
 
-        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v17.js");
+        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v20.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-        commissionWalletVo.setVer("17");
+        commissionWalletVo.setVer("20");
         commissionWalletVo.setFlag(true);
         commissionWalletVo.setId("commission");
-        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v17.js");
+        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v20.js");
         commissionWalletVo.setMd5(md5);
+        commissionWalletVo.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo);
 
         InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_v1.js");
-        String md52 = MD5Utils.getMd5ByFile(in);
+        String md52 = MD5Utils.getMd5ByFile(in2);
         CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
         commissionWalletVo2.setVer("1");
         commissionWalletVo2.setFlag(true);
         commissionWalletVo2.setId("wallet");
         commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_v1.js");
         commissionWalletVo2.setMd5(md52);
+        commissionWalletVo2.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo2);
 
-        try {
-            in2.close();
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(in2);
 
         return Response.successResponse(commissionWalletVos);
     }

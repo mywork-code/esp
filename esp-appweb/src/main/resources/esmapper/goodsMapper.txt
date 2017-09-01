@@ -4,8 +4,8 @@
                 "goodsName": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "goodsNamePinyin": {
                     "type": "text",
@@ -16,8 +16,8 @@
                 "goodsTitle": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "goodsTitlePinyin": {
                     "type": "text",
@@ -28,20 +28,20 @@
                 "categoryName1": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "categoryName2": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "categoryName3": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "categoryName1Pinyin": {
                     "type": "text",
@@ -64,8 +64,8 @@
                 "goodsSkuAttr": {
                     "type": "text",
                     "index": "analyzed",
-                    "analyzer": "ik_max_word",
-                    "search_analyzer": "ik_max_word"
+                    "analyzer": "ik_smart",
+                    "search_analyzer": "ik_smart"
                 },
                 "goodsSkuAttrPinyin": {
                     "type": "text",

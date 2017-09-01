@@ -3,16 +3,24 @@ package com.apass.esp.web.monitor;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.monitor.MonitorDto;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.MonitorFlag;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.schedule.MailStatisScheduleTask;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.monitor.MonitorService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.RandomUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by xianzhi.wang on 2017/5/18.
@@ -30,6 +39,7 @@ import java.util.HashMap;
 @Controller
 @RequestMapping(value = "/noauth/monitor")
 public class MonitorController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorController.class);
 
     @Autowired
     private MonitorService monitorService;
@@ -39,6 +49,12 @@ public class MonitorController {
 
     @Autowired
 	private MailStatisScheduleTask mailStatisScheduleTask;
+
+	@Autowired
+	private GoodsService goodsService;
+
+	@Autowired
+	private MerchantInforService merchantInforService;
     
     @RequestMapping(value = "/addMonitorLog", method = RequestMethod.POST)
 		@ResponseBody
@@ -156,5 +172,49 @@ public class MonitorController {
 	public Response orderStatis(){
 		mailStatisScheduleTask.mailStatisSchedule();
 		return   Response.success("发送成功");
+	}
+
+	/**
+	 * 京东商品添加商品编码
+	 * @return
+	 */
+	@RequestMapping(value = "addGoodsCode", method = RequestMethod.GET)
+	@ResponseBody
+	public Response addGoodsCode() {
+		int index = 0;
+		final int BACH_SIZE = 500;
+		try {
+			while (true) {
+				List<GoodsInfoEntity> goodsInfoEntityList = goodsService.selectJdGoods(index, BACH_SIZE);
+				if (CollectionUtils.isEmpty(goodsInfoEntityList)) {
+					break;
+				}
+				for (GoodsInfoEntity goodsInfoEntity : goodsInfoEntityList
+						) {
+					// 商品编号
+					StringBuffer sb = new StringBuffer();
+					String merchantCode = goodsInfoEntity.getMerchantCode();
+					MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+					if (merchantInfoEntity != null) {
+						String merchantId = String.valueOf(merchantInfoEntity.getId());
+						if (merchantId.length() == 1) {
+							merchantId = "0" + merchantId;
+						} else if (merchantId.length() > 1) {
+							merchantId = merchantId.substring(merchantId.length() - 2, merchantId.length());
+						}
+						sb.append(merchantId);
+						String random = RandomUtils.getRandomNum(6);
+						sb.append(random);
+						goodsInfoEntity.setGoodsCode(sb.toString());
+						goodsService.updateService(goodsInfoEntity);
+						LOGGER.info("goodsId {}, goodsCode {}",goodsInfoEntity.getGoodId(),goodsInfoEntity.getGoodsCode());
+					}
+				}
+				index += goodsInfoEntityList.size();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Response.successResponse();
 	}
 }

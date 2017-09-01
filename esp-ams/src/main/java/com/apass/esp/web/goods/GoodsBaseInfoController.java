@@ -448,8 +448,6 @@ public class GoodsBaseInfoController {
      * 上传banner图
      *
      * @param bannerDto
-     * @param bannerDto
-     * @return
      */
     @ResponseBody
     @RequestMapping(value = "/addBanner", method = RequestMethod.POST)

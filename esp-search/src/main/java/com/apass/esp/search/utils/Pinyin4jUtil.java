@@ -67,34 +67,38 @@ public class Pinyin4jUtil {
      * @return 拼音
      */
     public static String converterToSpell(String chines) {
-        StringBuilder pinyinName = new StringBuilder();
-        char[] nameChar = chines.toCharArray();
-        HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
-        defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-        defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        for (int i = 0; i < nameChar.length; i++) {
-            if (nameChar[i] > 128) {
-                try {
-                    // 取得当前汉字的所有全拼
-                    String[] strs = PinyinHelper.toHanyuPinyinStringArray(nameChar[i], defaultFormat);
-                    if (strs != null) {
-                        for (int j = 0; j < strs.length; j++) {
-                            pinyinName.append(strs[j]);
-                            if (j != strs.length - 1) {
-                                pinyinName.append(",");
+        try {
+            StringBuilder pinyinName = new StringBuilder();
+            char[] nameChar = chines.toCharArray();
+            HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+            defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+            defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+            for (int i = 0; i < nameChar.length; i++) {
+                if (nameChar[i] > 128) {
+                    try {
+                        // 取得当前汉字的所有全拼
+                        String[] strs = PinyinHelper.toHanyuPinyinStringArray(nameChar[i], defaultFormat);
+                        if (strs != null) {
+                            for (int j = 0; j < strs.length; j++) {
+                                pinyinName.append(strs[j]);
+                                if (j != strs.length - 1) {
+                                    pinyinName.append(",");
+                                }
                             }
                         }
+                    } catch (BadHanyuPinyinOutputFormatCombination e) {
+                        e.printStackTrace();
                     }
-                } catch (BadHanyuPinyinOutputFormatCombination e) {
-                    e.printStackTrace();
+                } else {
+                    pinyinName.append(nameChar[i]);
                 }
-            } else {
-                pinyinName.append(nameChar[i]);
+                pinyinName.append(" ");
             }
-            pinyinName.append(" ");
+            // return pinyinName.toString();
+            return parseTheChineseByObject(discountTheChinese(pinyinName.toString()));
+        } catch (Exception e) {
+            return "";
         }
-        // return pinyinName.toString();
-        return parseTheChineseByObject(discountTheChinese(pinyinName.toString()));
     }
 
     /**

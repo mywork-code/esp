@@ -63,8 +63,13 @@ public class AddressInfoController {
                 return Response.fail("收货人姓名输入不合法！");
             }
 
-            if (telephone.length() > 15) {
+            //if (telephone.length() > 15) {
+            if(StringUtils.length(telephone) != 11){
                 logger.error("收货人电话格式错误");
+                return Response.fail("收货人电话格式错误！");
+            }
+            if(!RegExpUtils.mobiles(telephone)){
+            	logger.error("收货人电话格式错误");
                 return Response.fail("收货人电话格式错误！");
             }
 
@@ -215,17 +220,26 @@ public class AddressInfoController {
 
             if (null != name && !RegExpUtils.length(name, 4, 16)) {
                 logger.error("收货人姓名输入不合法!");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+                return Response.fail("收货人姓名输入不合法!");
             }
 
-            if (null != telephone && telephone.length() > 15) {
-                logger.error("收货人电话格式错误!");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+//            if (null != telephone && telephone.length() > 15) {
+//                logger.error("收货人电话格式错误!");
+//                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+//            }
+            
+            if(StringUtils.length(telephone) != 11){
+                logger.error("收货人电话格式错误");
+                return Response.fail("收货人电话格式错误！");
+            }
+            if(!RegExpUtils.mobiles(telephone)){
+            	logger.error("收货人电话格式错误");
+                return Response.fail("收货人电话格式错误！");
             }
 
             if (null != address && (address.length() < 5 || address.length() > 80)) {
                 logger.error("详细收货地址限5~80字！");
-                return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+                return Response.fail("详细收货地址限5~80字！");
             }
 
             AddressInfoEntity addInfo = new AddressInfoEntity();
