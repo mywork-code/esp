@@ -34,6 +34,7 @@ public class KvattrService {
     private KvattrMapper kvattrMapper;
 
     /**
+     * 添加数据
      * @param object
      */
     public void add(Object object) {
@@ -47,6 +48,11 @@ public class KvattrService {
     }
 
 
+    /**
+     * 根据object中属性获取t_esp_kvattr中的数据
+     * @param object
+     * @return
+     */
     public List<Kvattr> getTypeName(Object object) {
         Class clazz = object.getClass();
         List<Kvattr> list = kvattrMapper.getBySource(clazz.getTypeName());
@@ -56,6 +62,7 @@ public class KvattrService {
     	return kvattrMapper.getByKey(key);
     }
     /**
+     * 修改t_esp_kvattr中的值
      * @param list
      */
     public void update(List<Kvattr> list) {
@@ -67,6 +74,7 @@ public class KvattrService {
     }
 
     /**
+     * 获取T属性值并返回
      * @return
      */
     public <T> T get(T t) {
@@ -94,7 +102,11 @@ public class KvattrService {
 
     }
 
-
+    /**
+     * object--->List<Kvattr>Object中属性个数为list长度
+     * @param object
+     * @return
+     */
     private List<Kvattr> convert(Object object) {
         List<Kvattr> list = new ArrayList<>();
         Class clazz = object.getClass();

@@ -1,22 +1,5 @@
 package com.apass.esp.service.order;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
@@ -27,10 +10,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
-import com.apass.esp.domain.entity.CashRefund;
-import com.apass.esp.domain.entity.CashRefundTxn;
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.RepayFlow;
+import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -43,20 +23,9 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.AcceptGoodsType;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PaymentStatus;
-import com.apass.esp.domain.enums.PreDeliveryType;
-import com.apass.esp.domain.enums.PreStockStatus;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.utils.ConstantsUtils;
-import com.apass.esp.mapper.CashRefundMapper;
-import com.apass.esp.mapper.CashRefundTxnMapper;
-import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
-import com.apass.esp.mapper.RepayFlowMapper;
+import com.apass.esp.mapper.*;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -80,6 +49,7 @@ import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.refund.OrderRefundService;
+import com.apass.esp.service.withdraw.WithdrawService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -97,6 +67,17 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -189,6 +170,12 @@ public class OrderService {
 
     @Autowired
     private CommonHttpClient commonHttpClient;
+
+    @Autowired
+    private WithdrawService withdrawService;
+
+    @Autowired
+    private AwardDetailMapper awardDetailMapper;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1463,7 +1450,7 @@ public class OrderService {
 
     /**
      * 获取用户 待付款、待发货、待收货 订单数量
-     *
+     *我的金库：可提现金额
      * @param userId
      * @return
      */
@@ -1477,6 +1464,16 @@ public class OrderService {
         for (IdNum idNum : subOrderNumList) {
             map.put(idNum.getId(), idNum.getNum());
         }
+
+        //查询全部可提金额金额,已经提现金额
+        List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
+        BigDecimal totalCount = BigDecimal.ZERO;//最大 可提现
+        if(awardDetails != null && awardDetails.size()>0){
+            totalCount = withdrawService.getTotalCount(awardDetails);
+        }
+        map.put("totalCount",totalCount.toString());
+
+
         return map;
     }
 
