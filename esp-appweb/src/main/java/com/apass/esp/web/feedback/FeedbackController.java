@@ -140,9 +140,12 @@ public class FeedbackController {
 		}	
 		Random radom = new Random();
 		int radomNumber = radom.nextInt(10000);
+		
+		long start =  System.currentTimeMillis();
 		if (StringUtils.isNotBlank(picture1)) {
 			picture1Url = nfsFeedback + mobile + "_" + radomNumber + ".jpg";
 			byte[] picture1Byte = Base64Utils.decodeFromString(picture1);
+			
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture1Url, picture1Byte);
 			pictureUrl=picture1Url;
 		}
@@ -158,6 +161,7 @@ public class FeedbackController {
 			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url, picture3Byte);
 			pictureUrl=pictureUrl+";"+picture3Url;
 		}
+		LOGGER.info("upload picture time:"+(System.currentTimeMillis() - start));
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
 			return Response.fail("反馈内容输入的字数过长！");
