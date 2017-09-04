@@ -97,17 +97,20 @@ $(function(){
 		 */
 	$.lookPicture = function(picture) {
 		$("#lookPictureImg1").attr("src", "");
+		var $lookPictureImgWrap = $("#lookPictureImgWrap");
+		var $lookPictureShowImg = $("#lookPictureShowImg");
+		var html = '';
 		var pictureList = picture.split(";");
-		if (pictureList.length == 1) {
-			$("#lookPictureImg1").attr("src", pictureList[0]);
-		} else if (pictureList.length== 2) {
-			$("#lookPictureImg1").attr("src", pictureList[0]);
-			$("#lookPictureImg2").attr("src", pictureList[1]);
-		} else if (pictureList.length == 3) {
-			$("#lookPictureImg1").attr("src", pictureList[0]);
-			$("#lookPictureImg2").attr("src", pictureList[1]);
-			$("#lookPictureImg3").attr("src", pictureList[2]);
-		}
+		pictureList.forEach(function(e,i){
+			html += '<img  src="'+e+'" />';
+		});
+		console.log(pictureList)
+		$lookPictureShowImg.attr("src",pictureList[0]);
+		$lookPictureImgWrap.html(html);
+		$lookPictureImgWrap.on("click","img",function(){
+			$lookPictureShowImg.attr("src",$(this).attr("src"))
+		})
+		
 		$('#lookPictureWindow').window('open');
 	}
 });

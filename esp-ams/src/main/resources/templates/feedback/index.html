@@ -9,6 +9,29 @@
 	src="${rc.contextPath}/WebContent/js/feedback/index.js"></script>
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
+	<style>
+		#lookPictureShowImg {
+			display:block;
+			height:300px;
+			margin:0 auto 10px;
+			background:red;
+		}
+		#lookPictureImgWrap img {
+			box-sizing:border-box;
+			display:inline-block;
+			width:100px;
+			height:100px;
+			background:red;
+			cursor:point;
+			margin:0 4px;
+			border:1px #333 solid;
+		}
+		#lookPictureImgWrap img:hover {
+			border:2px #000 solid;
+		}
+	
+	
+	</style>
 </head>
 <body style="word-break: break-all;">
 	<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
@@ -57,8 +80,11 @@
 		title="<font color='black'>查看图片</font>" hidden="hidden"
 		style="width: 620px; height: 450px; display: none; text-align: center;"
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
-		<img id='lookPictureImg1' src="" /> <img id='lookPictureImg2' src="" />
-		<img id='lookPictureImg3' src="" />
+		<img id='lookPictureShowImg' src="" /> 
+		<div id="lookPictureImgWrap"> 
+			
+		
+		</div>
 	</div>
 </body>
 </html>
