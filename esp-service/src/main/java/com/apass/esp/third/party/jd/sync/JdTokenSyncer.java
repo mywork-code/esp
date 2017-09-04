@@ -59,6 +59,6 @@ public class JdTokenSyncer extends AbstractSyncer {
 
     @Override
     protected int getIntervalSeconds() {
-        return 3600 * 24 * 7;
+        return 3600 * 24 ;
     }
 }
