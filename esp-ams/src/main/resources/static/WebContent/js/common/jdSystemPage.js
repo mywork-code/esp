@@ -102,8 +102,30 @@ $ (function ()
 		$ ('#systemparamlist').datagrid ('load', params);
 	}
 
-});
+	$(document).on("keyup","#protocolPrice1", function (event) {
+		KEYUP(event,$(this));
+	})
+	$(document).on("keyup","#protocolPrice2", function (event) {
+		KEYUP(event,$(this));
+	})
+	$(document).on("keyup","#protocolPrice3", function (event) {
+		KEYUP(event,$(this));
+	})
 
+	function KEYUP(event,that){
+		var e = event || window.event;
+		var val = that.get(0).value;
+
+		if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
+			that.val(val.substr(0,val.length-1));
+			event.preventDefault();
+			return false
+		}
+	}
+
+
+
+});
 // 确认修改京东价格系统参数
 function confirmBtn ()
 {
@@ -121,13 +143,12 @@ function confirmBtn ()
 				protocolPrice3 : protocolPrice3
 			}
 			// 验证参数
-			if (protocolPrice1 <= 0 || protocolPrice2<= 0 ||protocolPrice3 <= 0 )
+			if (protocolPrice1 <= 0 || protocolPrice2<= 0 ||protocolPrice3 <= 0)
 			{
-				$.messager.alert ("提示","京东价格系统参数字段不合法");
+				$.messager.alert ("提示","比例系数填写错误，请重新填写");
 				return false;
 			}
-			
-			
+
 			$.ajax (
 			{
 			    url : ctx + '/application/system/param/jd/update',
@@ -147,12 +168,13 @@ function confirmBtn ()
 		}
 	});
 
-    //
-	// $("#protocolPrice1").textbox('textbox').bind('keyup', function (event) {
+
+	// $("#protocolPrice1").keyup(function (event) {
 	// 	var e = event || window.event;
 	// 	var val = $(this).get(0).value;
-	// 	if(!/^[0-9]{0}([0-9]|[:])+$/.test(val)){//含有数字和：以外的字符，则执行
-	// 		$("#protocolPrice1").textbox('setValue', val.substr(0,val.length-1));
+	// 	alert();
+	// 	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
+	// 		$("#protocolPrice1").val(val.substr(0,val.length-1));
 	// 		event.preventDefault();
 	// 		return false
 	// 	}

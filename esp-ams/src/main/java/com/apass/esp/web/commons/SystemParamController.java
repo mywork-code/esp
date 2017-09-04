@@ -92,34 +92,41 @@ public class SystemParamController {
     @RequestMapping("/jd/update")
     @ResponseBody
     public Response updateJdSystemParam(@RequestBody JdSystemParamVo jdSystemParamVo){
-        JdSystemParamVo jdSystemParamVo1 = kvattrService.get(new JdSystemParamVo());
-        if (jdSystemParamVo1 == null) {
-            kvattrService.add(jdSystemParamVo);
-        } else {
-            List<Kvattr> list = kvattrService.getTypeName(jdSystemParamVo1);
-            List<Kvattr> list2= new ArrayList<>();
-            for (Kvattr kvattr:list) {
-                if(kvattr.getKey().equalsIgnoreCase("protocolPrice1")){
-                    String protocolPrice1 = jdSystemParamVo.getProtocolPrice1();
-                    BigDecimal p1 = new BigDecimal(protocolPrice1).setScale(2,BigDecimal.ROUND_HALF_UP);
-                    kvattr.setValue(p1.toString());
+        try{
+            JdSystemParamVo jdSystemParamVo1 = kvattrService.get(new JdSystemParamVo());
+            if (jdSystemParamVo1 == null) {
+                kvattrService.add(jdSystemParamVo);
+            } else {
+                List<Kvattr> list = kvattrService.getTypeName(jdSystemParamVo1);
+                List<Kvattr> list2= new ArrayList<>();
+                for (Kvattr kvattr:list) {
+                    if(kvattr.getKey().equalsIgnoreCase("protocolPrice1")){
+                        String protocolPrice1 = jdSystemParamVo.getProtocolPrice1();
+                        BigDecimal p1 = new BigDecimal(protocolPrice1).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        kvattr.setValue(p1.toString());
+                    }
+                    if(kvattr.getKey().equalsIgnoreCase("protocolPrice2")){
+                        String protocolPrice2 = jdSystemParamVo.getProtocolPrice2();
+                        BigDecimal p2 = new BigDecimal(protocolPrice2).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        kvattr.setValue(p2.toString());
+                    }
+                    if(kvattr.getKey().equalsIgnoreCase("protocolPrice3")){
+                        String protocolPrice3 = jdSystemParamVo.getProtocolPrice3();
+                        BigDecimal p3 = new BigDecimal(protocolPrice3).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        kvattr.setValue(p3.toString());
+                    }
+                    list2.add(kvattr);
                 }
-                if(kvattr.getKey().equalsIgnoreCase("protocolPrice2")){
-                    String protocolPrice2 = jdSystemParamVo.getProtocolPrice2();
-                    BigDecimal p2 = new BigDecimal(protocolPrice2).setScale(2,BigDecimal.ROUND_HALF_UP);
-                    kvattr.setValue(p2.toString());
-                }
-                if(kvattr.getKey().equalsIgnoreCase("protocolPrice3")){
-                    String protocolPrice3 = jdSystemParamVo.getProtocolPrice3();
-                    BigDecimal p3 = new BigDecimal(protocolPrice3).setScale(2,BigDecimal.ROUND_HALF_UP);
-                    kvattr.setValue(p3.toString());
-                }
-                list2.add(kvattr);
+                kvattrService.update(list2);
             }
-            kvattrService.update(list2);
+            return Response.successResponse();
+        }catch (Exception e){
+            LOG.error("修改京东价格系统参数失败:{}",e);
+            return Response.fail("修改京东价格系统参数失败");
         }
 
-        return Response.successResponse();
+
+
     }
 
     /**
