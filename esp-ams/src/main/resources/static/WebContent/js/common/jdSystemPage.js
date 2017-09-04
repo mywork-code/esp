@@ -111,6 +111,7 @@ function confirmBtn ()
 	{
 		if (r)
 		{
+			debugger;
 			var protocolPrice1 = $ ("#protocolPrice1").val ();
 			var protocolPrice2 = $ ("#protocolPrice2").val ();
 			var protocolPrice3 = $ ("#protocolPrice3").val ();
@@ -120,9 +121,9 @@ function confirmBtn ()
 				protocolPrice3 : protocolPrice3
 			}
 			// 验证参数
-			if (protocolPrice1 < 0 || protocolPrice2< 0 ||protocolPrice3 < 0 )
+			if (protocolPrice1 <= 0 || protocolPrice2<= 0 ||protocolPrice3 <= 0 )
 			{
-				$.messager.alert ("京东价格系统参数字段不合法");
+				$.messager.alert ("提示","京东价格系统参数字段不合法");
 				return false;
 			}
 			
@@ -145,6 +146,17 @@ function confirmBtn ()
 
 		}
 	});
+
+    //
+	// $("#protocolPrice1").textbox('textbox').bind('keyup', function (event) {
+	// 	var e = event || window.event;
+	// 	var val = $(this).get(0).value;
+	// 	if(!/^[0-9]{0}([0-9]|[:])+$/.test(val)){//含有数字和：以外的字符，则执行
+	// 		$("#protocolPrice1").textbox('setValue', val.substr(0,val.length-1));
+	// 		event.preventDefault();
+	// 		return false
+	// 	}
+	// });
 	
 }
 // 关闭窗口
