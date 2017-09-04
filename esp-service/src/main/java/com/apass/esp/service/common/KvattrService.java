@@ -75,6 +75,7 @@ public class KvattrService {
 
     /**
      * 获取T属性值并返回
+     * 经T对象中的属性赋值
      * @return
      */
     public <T> T get(T t) {
@@ -99,7 +100,6 @@ public class KvattrService {
             }
         }
         return t;
-
     }
 
     /**
