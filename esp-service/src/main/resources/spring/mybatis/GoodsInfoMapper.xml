@@ -32,7 +32,13 @@
 			AND t.goods_type = #{goodsType}
 		</if>
 		<if test="status != null and status != ''">
-			AND t.status = #{status}
+				AND t.status = #{status}
+		</if>
+		<if test="statuList != null and statuList != ''">
+			AND t.status in
+			<foreach collection="statuList" item="statu" separator="," open="(" close=")">
+				#{statu}
+			</foreach>
 		</if>
 		<if test="listTime != null and listTime != ''">
 			AND t.list_time &gt;= #{listTime, jdbcType=DATE}

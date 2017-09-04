@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @description
@@ -124,6 +125,15 @@ public class GoodsInfoEntity {
 
     /** 商品状态 **/
     private String status;
+    private List<String> statuList;
+
+    public List<String> getStatuList() {
+        return statuList;
+    }
+
+    public void setStatuList(List<String> statuList) {
+        this.statuList = statuList;
+    }
 
     /** 商品状态描述 **/
     private String statusDesc;
