@@ -50,7 +50,7 @@ public abstract class AbstractSyncer implements Runnable {
                     } catch (Exception e) {
                         LOGGER.error(getName(), e);
                     }
-                    Threads.sleepSeconds((long) (getIntervalSeconds() * (Math.random() + 1)));
+                    Threads.sleepSeconds((long) (getIntervalSeconds()));
 
                 }
             }
