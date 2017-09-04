@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -239,6 +236,7 @@ public class GoodsBaseInfoController {
             String merchantType = HttpWebUtils.getValue(request, "merchantType");
             String goodsCategoryCombo = HttpWebUtils.getValue(request, "goodsCategoryCombo");
             String status = HttpWebUtils.getValue(request, "goodsStatus");
+
             // String isAll = HttpWebUtils.getValue(request, "isAll");// 是否查询所有
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
             String categoryId2 = HttpWebUtils.getValue(request, "categoryId2");
@@ -249,6 +247,12 @@ public class GoodsBaseInfoController {
             goodsInfoEntity.setGoodsCode(goodsCode);
             goodsInfoEntity.setGoodsName(goodsName);
             goodsInfoEntity.setStatus(status);
+            if(StringUtils.isNotBlank(status) && status.contains("G04")){
+                String[] statuArr = status.split(",");
+                List<String> statuList = Arrays.asList(statuArr);
+                goodsInfoEntity.setStatuList(statuList);
+                goodsInfoEntity.setStatus(null);
+            }
             goodsInfoEntity.setGoodsType(goodsType);
             goodsInfoEntity.setMerchantName(merchantName);
             goodsInfoEntity.setMerchantType(merchantType);

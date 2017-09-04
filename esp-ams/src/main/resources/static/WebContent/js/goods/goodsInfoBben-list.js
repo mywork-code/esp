@@ -31,6 +31,17 @@ $(function() {
 		            width : 90,
 		            align : 'center'
                 },{
+                    title : '商品编号',
+                    field : 'goodsCode',
+                    width : 90,
+                    align : 'center'
+                },
+                {
+                    title : 'skuid',
+                    field : 'externalId',
+                    width : 90,
+                    align : 'center'
+                },{
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
@@ -228,6 +239,7 @@ $(function() {
         params['goodsType'] = $("#goodsTypes").textbox('getValue');
         params['status']='G01';
         params['isAll']='T';//默认
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
         var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
         if("请选择"==goodsCategoryCombo){
             goodsCategoryCombo="";
