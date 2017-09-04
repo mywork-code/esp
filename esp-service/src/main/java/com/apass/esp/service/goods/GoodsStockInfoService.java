@@ -46,7 +46,7 @@ public class GoodsStockInfoService {
         List<GoodsStockInfoEntity> goodsStockInfoEntities = entity.getDataList();
         for(GoodsStockInfoEntity goodStockEntity: goodsStockInfoEntities){
             if(goodStockEntity.getStockCurrAmt() == -1){
-                BigDecimal goodsPrice = commonService.calculateGoodsPrice( goodsStockInfoEntity.getGoodsId(),goodsStockInfoEntity.getId());
+                BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStockInfoEntity.getGoodsId(),goodsStockInfoEntities.get(0).getId());
                 goodStockEntity.setGoodsPrice(goodsPrice);
             }
         }
