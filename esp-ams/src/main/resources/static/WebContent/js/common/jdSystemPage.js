@@ -169,17 +169,6 @@ function confirmBtn ()
 	});
 
 
-	// $("#protocolPrice1").keyup(function (event) {
-	// 	var e = event || window.event;
-	// 	var val = $(this).get(0).value;
-	// 	alert();
-	// 	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
-	// 		$("#protocolPrice1").val(val.substr(0,val.length-1));
-	// 		event.preventDefault();
-	// 		return false
-	// 	}
-	// });
-	
 }
 // 关闭窗口
 function closeBtn ()
