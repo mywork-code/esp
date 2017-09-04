@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import com.apass.esp.domain.enums.kvattrKey;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +68,7 @@ public class JdGoodsInfoService {
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
-	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) {
+	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
@@ -86,13 +87,16 @@ public class JdGoodsInfoService {
 		Collection<Long> skuPrice = new ArrayList<Long>();
 		skuPrice.add(sku);
 
-		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
-		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
-			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
-		}
+//		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+//		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
+//			BigDecimal jdPrice = jdSellPriceList.get(0).getJdPrice();
+//			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
+//		}
 		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
 		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
-		map.put("goodsPrice",goodsStockInfoEntityList.get(0).getGoodsPrice());
+		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
+		map.put("goodsPrice",goodsPrice);
+
 		// 查询商品图片
 		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
 		map.put("jdImagePathList", JdImagePathList);

@@ -100,13 +100,19 @@ public class SystemParamController {
             List<Kvattr> list2= new ArrayList<>();
             for (Kvattr kvattr:list) {
                 if(kvattr.getKey().equalsIgnoreCase("protocolPrice1")){
-                    kvattr.setValue(jdSystemParamVo.getProtocolPrice1());
+                    String protocolPrice1 = jdSystemParamVo.getProtocolPrice1();
+                    BigDecimal p1 = new BigDecimal(protocolPrice1).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    kvattr.setValue(p1.toString());
                 }
                 if(kvattr.getKey().equalsIgnoreCase("protocolPrice2")){
-                    kvattr.setValue(jdSystemParamVo.getProtocolPrice2());
+                    String protocolPrice2 = jdSystemParamVo.getProtocolPrice2();
+                    BigDecimal p2 = new BigDecimal(protocolPrice2).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    kvattr.setValue(p2.toString());
                 }
                 if(kvattr.getKey().equalsIgnoreCase("protocolPrice3")){
-                    kvattr.setValue(jdSystemParamVo.getProtocolPrice3());
+                    String protocolPrice3 = jdSystemParamVo.getProtocolPrice3();
+                    BigDecimal p3 = new BigDecimal(protocolPrice3).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    kvattr.setValue(p3.toString());
                 }
                 list2.add(kvattr);
             }

@@ -111,7 +111,6 @@ function confirmBtn ()
 	{
 		if (r)
 		{
-			debugger;
 			var protocolPrice1 = $ ("#protocolPrice1").val ();
 			var protocolPrice2 = $ ("#protocolPrice2").val ();
 			var protocolPrice3 = $ ("#protocolPrice3").val ();
