@@ -86,17 +86,12 @@ public class GoodsSearchController {
     @Path(value = "/delete")
     public Response delteSearchKeys(Map<String,Object> paramMap){
     	
-    	String userId = CommonUtils.getValue(paramMap, "userId");
     	String deviceId = CommonUtils.getValue(paramMap, "deviceId");
     	try {
-    		if(StringUtils.isBlank(userId) && StringUtils.isBlank(deviceId)){
+    		if(StringUtils.isBlank(deviceId)){
     			throw new BusinessException("参数传值有误!");
     		}
-    		if(StringUtils.isNotBlank(userId)){
-    			searchKeyService.deleteSearchKeysByUserId(userId);
-    		}else{
-    			searchKeyService.deleteSearchKeysByDeviceId(deviceId);
-    		}
+    		searchKeyService.deleteSearchKeysByDeviceId(deviceId);
 		}catch(BusinessException e){
 			return Response.fail(e.getErrorDesc());
 		}catch (Exception e) {
