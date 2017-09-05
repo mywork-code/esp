@@ -262,6 +262,8 @@ $(function() {
     	$("#merchantType").combobox('setValue','');
     	$("#goodsCategoryCombo").combotree('setValue','');
     	$("#goodsCategoryCombo").combotree('setValue', '请选择');
+    	$("#goodsStatus").combobox('setValue','');
+    	$("#goodsCode").textbox('setValue','');
     	var params = {};
     	$('#tablelist').datagrid('load', params);
     });

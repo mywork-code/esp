@@ -1,7 +1,6 @@
 package com.apass.esp.web.feedback;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -24,13 +23,8 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.FeedBack;
 import com.apass.esp.domain.enums.FeedBackCategory;
 import com.apass.esp.domain.enums.FeedBackModule;
-import com.apass.esp.domain.query.FeedBackQuery;
-import com.apass.esp.domain.vo.FeedBackVo;
 import com.apass.esp.service.feedback.FeedBackService;
 import com.apass.esp.utils.FileUtilsCommons;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 
 @Path("/v1/feedback")
@@ -107,6 +101,9 @@ public class FeedbackController {
 	@POST
     @Path("/saveShop")
 	public Response saveFeedback2(Map<String, Object> paramMap) {
+		
+		long start =  System.currentTimeMillis();
+
 		String feedbackType = CommonUtils.getValue(paramMap, "feedbackType");//意见反馈类型
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
@@ -141,27 +138,18 @@ public class FeedbackController {
 		Random radom = new Random();
 		int radomNumber = radom.nextInt(10000);
 		
-		long start =  System.currentTimeMillis();
 		if (StringUtils.isNotBlank(picture1)) {
 			picture1Url = nfsFeedback + mobile + "_" + radomNumber + ".jpg";
-			byte[] picture1Byte = Base64Utils.decodeFromString(picture1);
-			
-			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture1Url, picture1Byte);
 			pictureUrl=picture1Url;
 		}
 		if (StringUtils.isNotBlank(picture2)) {
 			picture2Url = nfsFeedback + mobile + "_" + (radomNumber+1) + ".jpg";
-			byte[] picture2Byte = Base64Utils.decodeFromString(picture2);
-			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture2Url, picture2Byte);
 			pictureUrl=pictureUrl+";"+picture2Url;
 		}
 		if (StringUtils.isNotBlank(picture3)) {
 			picture3Url = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
-			byte[] picture3Byte = Base64Utils.decodeFromString(picture3);
-			FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url, picture3Byte);
 			pictureUrl=pictureUrl+";"+picture3Url;
 		}
-		LOGGER.info("upload picture time:"+(System.currentTimeMillis() - start));
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
 			return Response.fail("反馈内容输入的字数过长！");
@@ -173,6 +161,27 @@ public class FeedbackController {
 		}else{
 			csom=comments;
 		}
+		//启动线程去存储图片
+		new Thread(new Runnable() {
+			public void run() {
+				if (StringUtils.isNotBlank(picture1)) {
+					String picture1Url2 = nfsFeedback + mobile + "_" + radomNumber + ".jpg";
+					byte[] picture1Byte = Base64Utils.decodeFromString(picture1);
+					FileUtilsCommons.uploadByteFilesUtil(rootPath, picture1Url2, picture1Byte);
+				}
+				if (StringUtils.isNotBlank(picture2)) {
+					String picture2Url2 = nfsFeedback + mobile + "_" + (radomNumber+1) + ".jpg";
+					byte[] picture2Byte = Base64Utils.decodeFromString(picture2);
+					FileUtilsCommons.uploadByteFilesUtil(rootPath, picture2Url2, picture2Byte);
+				}
+				if (StringUtils.isNotBlank(picture3)) {
+					String picture3Url2 = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
+					byte[] picture3Byte = Base64Utils.decodeFromString(picture3);
+					FileUtilsCommons.uploadByteFilesUtil(rootPath, picture3Url2, picture3Byte);
+				}
+			}
+		}).start();
+		
 		Date date=new Date();
 		fb.setType(FeedBackCategory.ANJIAQUHUA.getCode());
 		fb.setPicture(pictureUrl);
@@ -183,6 +192,7 @@ public class FeedbackController {
 		fb.setUpdateDate(date);
 
 		Integer result=feedBackService.insert(fb);
+		LOGGER.info("saveFeedback2 upload picture time:"+(System.currentTimeMillis() - start));
 		if(result==1){
 			return Response.success("提交成功，非常感谢您的反馈！");
 		}
