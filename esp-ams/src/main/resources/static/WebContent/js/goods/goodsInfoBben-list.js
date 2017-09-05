@@ -287,6 +287,7 @@ $(function() {
     	$("#merchantType").combobox('setValue','');
 		$ ("#goodsNames").textbox ('setValue', '');
 		$ ("#goodsTypes").combobox ('setValue', '');
+        $("#goodsCode").textbox('setValue','');
         $("#goodsCategoryCombo").combotree('setValue', '请选择');
 		var params = {};
 		$ ('#tablelist').datagrid ('load', params);
