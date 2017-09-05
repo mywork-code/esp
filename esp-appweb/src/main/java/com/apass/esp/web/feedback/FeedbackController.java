@@ -101,6 +101,9 @@ public class FeedbackController {
 	@POST
     @Path("/saveShop")
 	public Response saveFeedback2(Map<String, Object> paramMap) {
+		
+		long start =  System.currentTimeMillis();
+
 		String feedbackType = CommonUtils.getValue(paramMap, "feedbackType");//意见反馈类型
 		String comments = CommonUtils.getValue(paramMap, "comments");//意见反馈内容
 		String mobile = CommonUtils.getValue(paramMap, "mobile");//反馈者手机号
@@ -135,7 +138,6 @@ public class FeedbackController {
 		Random radom = new Random();
 		int radomNumber = radom.nextInt(10000);
 		
-		long start =  System.currentTimeMillis();
 		if (StringUtils.isNotBlank(picture1)) {
 			picture1Url = nfsFeedback + mobile + "_" + radomNumber + ".jpg";
 			pictureUrl=picture1Url;
@@ -148,7 +150,6 @@ public class FeedbackController {
 			picture3Url = nfsFeedback + mobile + "_" + (radomNumber+2) + ".jpg";
 			pictureUrl=pictureUrl+";"+picture3Url;
 		}
-		LOGGER.info("upload picture time:"+(System.currentTimeMillis() - start));
 		if(comments.length()>255){
 			LOGGER.error("反馈内容输入的字数过长！");
 			return Response.fail("反馈内容输入的字数过长！");
@@ -191,6 +192,7 @@ public class FeedbackController {
 		fb.setUpdateDate(date);
 
 		Integer result=feedBackService.insert(fb);
+		LOGGER.info("saveFeedback2 upload picture time:"+(System.currentTimeMillis() - start));
 		if(result==1){
 			return Response.success("提交成功，非常感谢您的反馈！");
 		}
