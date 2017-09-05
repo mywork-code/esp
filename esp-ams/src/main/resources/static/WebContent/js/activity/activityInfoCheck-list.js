@@ -281,8 +281,10 @@ $(function() {
 				debugger;
 				var params = {};
 				params['merchantCode'] = $("#selectMerchant").combobox('getValue');
-				params['goodsNames'] = $ ("#goodsNames").textbox ('getValue');
-				params['status'] = $ ("#status").combobox ('getValue');
+				params['goodsName'] = $ ("#goodsNames").textbox('getValue');
+				params['status'] = $ ("#status").combobox('getValue');
+				params['goodsCode'] =$("#goodsCode").textbox('getValue');
+				params['merchantName'] = $("#merchantName").textbox('getValue');
 				params['isAll'] = 't';// t: 是 f: 否 是否导出全部订单信息
 				params['busCode'] = 'E003';// 订单导出code
 				exportFile ("tablelist", "活动推荐", params);

@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
@@ -887,6 +888,14 @@ public class ExportFileController {
             }
         } else if (busCode.equals(ExportBusConfig.BUS_ACTIVITY.getCode())) {
             list = activityInfoService.activityPageList(map);
+            
+            for (Object g : list) {
+            	ActivityInfoEntity b = (ActivityInfoEntity) g;
+            	Long categoryId = b.getCategoryId3();
+                Category category = categoryInfoService.selectNameById(categoryId);
+                b.setCategoryName3(category != null ? category.getCategoryName() : "");
+			}
+            
         } else if (busCode.equals(ExportBusConfig.BUS_AWARDINTRO.getCode())) {
             ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList = awardDetailService
                     .queryAwardIntroList(map);
