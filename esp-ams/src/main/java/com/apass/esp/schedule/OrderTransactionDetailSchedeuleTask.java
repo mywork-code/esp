@@ -51,11 +51,6 @@ public class OrderTransactionDetailSchedeuleTask {
 	
 	private static final Logger logger  = LoggerFactory.getLogger(OrderTransactionDetailSchedeuleTask.class);
 	
-	@Value("${monitor.send.address}")
-    public String sendAddress;
-
-    @Value("${monitor.send.password}")
-    public String sendPassword;
     
     @Value("${orderdetail.daily.sendto}")
     public String sendToAddress;
@@ -67,90 +62,24 @@ public class OrderTransactionDetailSchedeuleTask {
     private OrderService orderService;
 	
 	@Autowired
-	private OrderInforMailSendScheduleTask scheduleTask;
+	private ExportExcleCommonModel model;
 	
 	@Scheduled(cron = "0 0 9 * * ?")
 	public void sendOrderMailEveryDay(){
 		String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -15), "YYYY-MM-dd");
     	String dateEnd = DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd");
+    	
+    	String fileName = "安家趣花电商交易明细（商品）日报";
+    	String[] rowHeadArr = {"日期", "商户名称", "商品编号", "商品名称", "商品当前状态", "支付件数", "支付金额"};
+        String[] headKeyArr = {"payTime", "merchantName", "goodsId", "goodsName", "goodStatus", "goodsNum", "orderAmt"};
     	//获取15天订单信息
     	List<OrderSubInfoEntity> list = orderService.getOrderDetail(dateBegin, dateEnd);
     	try {
-    		generateFile(list);
+    		model.generateFile(list,rowHeadArr,headKeyArr,fileName);
 		} catch (Exception e) {
 			logger.error("export order detail with exception information ");
 			e.printStackTrace();
 		}
-    	MailSenderInfo mailSenderInfo = new MailSenderInfo();
-        mailSenderInfo.setMailServerHost("SMTP.263.net");
-        mailSenderInfo.setMailServerPort("25");
-        mailSenderInfo.setValidate(true);
-        mailSenderInfo.setUserName(sendAddress);
-        mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
-        mailSenderInfo.setFromAddress(sendAddress);
-        mailSenderInfo.setSubject("安家趣花电商交易明细（商品）日报");
-        mailSenderInfo.setContent("电商交易明细（商品）日报..");
-        mailSenderInfo.setToAddress(sendToAddress);
-        mailSenderInfo.setCcAddress(copyToAddress);
-   	
-        
-        Multipart msgPart = new MimeMultipart();
-        MimeBodyPart body = new MimeBodyPart(); //正文
-        MimeBodyPart attach = new MimeBodyPart(); //附件
-        try {
-            attach.setDataHandler(new DataHandler(new FileDataSource("/电商交易明细（商品）日报.xlxs")));
-            attach.setFileName(MimeUtility.encodeText("电商交易明细（商品）日报.xlxs"));
-            msgPart.addBodyPart(attach);
-            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
-            msgPart.addBodyPart(body);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch(UnsupportedEncodingException e){
-       	 e.printStackTrace();
-        }
-        mailSenderInfo.setMultipart(msgPart);
-        MailUtil mailUtil = new MailUtil();
-        mailUtil.sendTextMail(mailSenderInfo);
+    	model.sendMail(sendToAddress, copyToAddress, fileName);
 	}
-	
-	private void generateFile(List list) throws IOException {
-        // 第一步：声明一个工作薄
-        HSSFWorkbook wb = new HSSFWorkbook();
-        // 第二步：声明一个单子并命名
-        HSSFSheet sheet = wb.createSheet("sheet");
-
-        // 获取标题样式，内容样式
-        List<HSSFCellStyle> hssfCellStyle = scheduleTask.getHSSFCellStyle(wb);
-        HSSFRow createRow = sheet.createRow(0);
-
-        String[] rowHeadArr = {"日期", "商户名称", "商品编号", "商品名称", "商品当前状态", "支付件数", "支付金额"};
-        String[] headKeyArr = {"payTime", "merchantName", "goodsId", "goodsName", "goodStatus", "goodsNum", "orderAmt"};
-        for (int i = 0; i < rowHeadArr.length; i++) {
-            HSSFCell cell = createRow.createCell(i);
-            sheet.autoSizeColumn(i, true);
-            cell.setCellStyle(hssfCellStyle.get(0));
-            cell.setCellValue(rowHeadArr[i]);
-        }
-        for (int i = 0; i < list.size(); i++) {
-            HSSFRow createRowContent = sheet.createRow(i + 1);
-            Object object = list.get(i);
-            // json日期转换配置类
-            JsonConfig jsonConfig = new JsonConfig();
-            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
-            JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
-            for (int j = 0; j < rowHeadArr.length; j++) {
-                HSSFCell cellContent = createRowContent.createCell(j);
-                cellContent.setCellStyle(hssfCellStyle.get(1));
-                if (i == 1) {
-                    sheet.autoSizeColumn(j, true);
-                }
-                String value = jsonObject.get(headKeyArr[j]) + "";             
-                cellContent.setCellValue(value);
-            }
-        }
-        FileOutputStream fileOutputStream = new FileOutputStream("/电商交易明细（商品）日报.xlxs");
-        wb.write(fileOutputStream);
-        fileOutputStream.flush();
-        fileOutputStream.close();
-    }
 }
