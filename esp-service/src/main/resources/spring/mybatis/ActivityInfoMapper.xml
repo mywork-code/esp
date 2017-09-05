@@ -131,7 +131,7 @@
 				AND (f.goods_code = #{goodsCode} OR f.external_id = #{goodsCode})
 			   </if>
 			   <if test="merchantName != null and merchantName != ''">
-				   AND f.merchant_name LIKE '%${merchantName}%'
+				   AND t2.merchant_name LIKE '%${merchantName}%'
 			   </if>
 		</where>
 	<![CDATA[
