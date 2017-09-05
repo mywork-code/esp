@@ -2168,6 +2168,15 @@ public class OrderService {
         return orderInfoRepository.selectOrderCountByStatus(orderStatus, dateBegin, dateEnd);
     }
 
+
+    public Double selectOrderAmtByStatus(String orderStatus, String dateBegin, String dateEnd) {
+        return orderInfoRepository.selectOrderAmtByStatus(orderStatus, dateBegin, dateEnd);
+    }
+
+    public  List<OrderInfoEntity>  selectOrderByStatus(String orderStatus, String dateBegin, String dateEnd) {
+        return orderInfoRepository.selectOrderByStatus(orderStatus, dateBegin, dateEnd);
+    }
+
     public Integer selectSumAmt(String dateBegin, String dateEnd) {
         return orderInfoRepository.selectSumAmt(dateBegin, dateEnd);
     }

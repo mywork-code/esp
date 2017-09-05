@@ -617,7 +617,36 @@
 		and create_date &gt;= #{dateBegin}
         and create_date &lt; #{dateEnd}
 	</select>
-	
+
+	<select id="selectOrderAmtByStatus" resultType="java.lang.Double">
+		SELECT sum(order_amt) from t_esp_order_info
+		where  orderstatus =#{orderStatus}
+		and pay_time &gt;= #{dateBegin}
+		and pay_time &lt;= #{dateEnd}
+	</select>
+
+	<select id="selectOrderByStatus" resultType="OrderInfoEntity">
+	    SELECT
+	    id	id,
+			order_id orderId,
+			user_id userId,
+			payType payType,
+			order_amt orderAmt,
+			paystatus payStatus,
+			orderstatus status,
+			logistics_name logisticsName,
+			logistics_no logisticsNo,
+			acceptgoodstype		 acceptGoodsType,
+            extend_acceptgoodsNum  extendAcceptGoodsNum,
+            send_outgoodsdate      sendOutGoodsDate,
+            last_acceptgoodsdate		lastAcceptGoodsDate,
+            acceptgoodsdate			acceptGoodsDate
+	    from t_esp_order_info
+		where  orderstatus =#{orderStatus}
+		and pay_time &gt;= #{dateBegin}
+		and pay_time &lt;= #{dateEnd}
+	</select>
+
 	<select id="selectSumAmt" resultType="java.lang.Integer">
 		select sum(txn_amt) from t_apass_txn_info where txn_type in ('T01','T05') and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
 	</select>

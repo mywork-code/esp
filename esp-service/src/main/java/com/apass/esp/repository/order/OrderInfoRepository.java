@@ -184,6 +184,22 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectOne("selectOrderCountByStatus", param);
     }
 
+    public  Double selectOrderAmtByStatus(String orderStatus,String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("orderStatus", orderStatus);
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectOne("selectOrderAmtByStatus", param);
+    }
+
+    public  List<OrderInfoEntity> selectOrderByStatus(String orderStatus,String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("orderStatus", orderStatus);
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectList("selectOrderByStatus", param);
+    }
+
     public  Integer  selectSumAmt(String dateBegin,String dateEnd){
         HashMap<Object, Object> param = new HashMap<>();
         param.put("dateBegin", dateBegin);
