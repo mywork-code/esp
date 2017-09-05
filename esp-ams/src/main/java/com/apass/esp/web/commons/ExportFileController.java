@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -861,6 +858,13 @@ public class ExportFileController {
             }
         } else if (busCode.equals(ExportBusConfig.BUS_GOODS.getCode())) {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
+            String status = (String) map.get("status");
+            if(StringUtils.isNotBlank(status) && status.contains("G04")){
+                String[] statuArr = status.split(",");
+                List<String> statuList = Arrays.asList(statuArr);
+                map.put("statuList",statuList);
+                map.put("status",null);
+            }
             BeanUtils.populate(goodsInfoEntity, map);
             list = goodsService.pageListForExport(goodsInfoEntity);
             if (!CollectionUtils.isEmpty(list)) {

@@ -1912,7 +1912,6 @@ $(function() {
 		        if("请选择"==goodsCategoryCombo){
 		        	goodsCategoryCombo="";
 		        }
-		        
 		        var arry = goodsCategoryCombo.split("_");
 		        var level = arry[0];
 		        var id = arry[1];
@@ -1930,7 +1929,9 @@ $(function() {
 		        params['categoryId1']=categoryId1;
 		        params['categoryId2']=categoryId2;
 		        params['categoryId3']=categoryId3;
-				
+				params['goodsCode'] = $("#goodsCode").textbox('getValue');
+				params['status']= $("#goodsStatus").combobox('getValue');//params['goodsStatus']
+
 				params['isAll'] = 'f';// t: 是 f: 否 是否导出全部订单信息
 				params['busCode'] = 'E002';// 订单导出code
 				exportFile ("tablelist", "商品信息", params);
