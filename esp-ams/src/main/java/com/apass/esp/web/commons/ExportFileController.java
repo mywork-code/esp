@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
@@ -861,6 +859,13 @@ public class ExportFileController {
             }
         } else if (busCode.equals(ExportBusConfig.BUS_GOODS.getCode())) {
             GoodsInfoEntity goodsInfoEntity = new GoodsInfoEntity();
+            String status = (String) map.get("status");
+            if(StringUtils.isNotBlank(status) && status.contains("G04")){
+                String[] statuArr = status.split(",");
+                List<String> statuList = Arrays.asList(statuArr);
+                map.put("statuList",statuList);
+                map.put("status",null);
+            }
             BeanUtils.populate(goodsInfoEntity, map);
             list = goodsService.pageListForExport(goodsInfoEntity);
             if (!CollectionUtils.isEmpty(list)) {
@@ -883,6 +888,14 @@ public class ExportFileController {
             }
         } else if (busCode.equals(ExportBusConfig.BUS_ACTIVITY.getCode())) {
             list = activityInfoService.activityPageList(map);
+            
+            for (Object g : list) {
+            	ActivityInfoEntity b = (ActivityInfoEntity) g;
+            	Long categoryId = b.getCategoryId3();
+                Category category = categoryInfoService.selectNameById(categoryId);
+                b.setCategoryName3(category != null ? category.getCategoryName() : "");
+			}
+            
         } else if (busCode.equals(ExportBusConfig.BUS_AWARDINTRO.getCode())) {
             ResponsePageBody<AwardBindRelIntroVo> queryAwardIntroList = awardDetailService
                     .queryAwardIntroList(map);

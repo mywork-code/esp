@@ -87,7 +87,7 @@ public class ActivityInfoEntity {
 	 * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
 	 */
 	private String externalId;
-
+	
 	public String getGoodsCode() {
 		return goodsCode;
 	}
