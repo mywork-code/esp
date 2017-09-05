@@ -83,10 +83,16 @@ public class FeedbackController {
 		}
 		Date date=new Date();
 		FeedBack fb=new FeedBack();
+		//兼容老接口
+		fb.setModule("");
+		fb.setType("");
+		fb.setPicture("");
 		fb.setFeedbackType(feedbackType);
 		fb.setComments(csom);
 		fb.setMobile(mobile);
 		fb.setCreateDate(date);
+		fb.setUpdateDate(date);
+
 		Integer result=feedBackService.insert(fb);
 		if(result==1){
 			return Response.success("提交成功，非常感谢您的反馈！");
