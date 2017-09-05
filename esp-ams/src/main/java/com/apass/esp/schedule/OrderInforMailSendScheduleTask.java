@@ -49,12 +49,6 @@ public class OrderInforMailSendScheduleTask {
 	
 	private static final Logger logger  = LoggerFactory.getLogger(OrderInforMailSendScheduleTask.class);
 	
-    @Value("${monitor.send.address}")
-    public String sendAddress;
-
-    @Value("${monitor.send.password}")
-    public String sendPassword;
-    
     @Value("${order.daily.sendto}")
     public String sendToAddress;
     
@@ -64,12 +58,16 @@ public class OrderInforMailSendScheduleTask {
     @Autowired
     private OrderService orderService;
     
+    @Autowired
+    private ExportExcleCommonModel model;
+    
     @Scheduled(cron = "0 0 9 * * ?")
     public void sendOrderMailEveryDay(){
     	logger.info("-----------sendOrderMailEveryDay now time:{}-------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1), "YYYY-MM-dd");
     	String dateEnd = DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd");
-    	common(dateBegin,dateEnd);
+    	String fileName = "安家趣花电商订单(全部最新订单信息(日报))";
+    	common(fileName,dateBegin,dateEnd);
     }
     
     @Scheduled(cron = "0 0 9 1 * ?")
@@ -77,146 +75,33 @@ public class OrderInforMailSendScheduleTask {
     	logger.info("-----------sendOrderMailOn1stMonth now time:{}------------",DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd HH:mm:ss"));
     	String dateBegin = DateFormatUtil.dateToString(DateFormatUtil.firstDayLastMonth(), "YYYY-MM-dd");
     	String dateEnd = DateFormatUtil.dateToString(new Date(), "YYYY-MM-dd");
-    	common(dateBegin,dateEnd);
+    	String fileName = "安家趣花电商订单(全部最新订单信息(月报))";
+    	common(fileName,dateBegin,dateEnd);
     }
     
-    public void common(String dateBegin,String dateEnd) {
+    public void common(String fileName,String dateBegin,String dateEnd) {
+    	
     	List<OrderSubInfoEntity> list = orderService.queryOrderSubInfoByTime(dateBegin, dateEnd);
+    	for (OrderSubInfoEntity sub : list) {
+    		String name = sub.getName();
+    		String telephone = sub.getTelephone();
+    		if(StringUtils.isNotBlank(name)){
+    			sub.setName(name.replaceFirst(name.substring(0,1), "*"));
+    		}
+    		if(StringUtils.isNotBlank(telephone) && StringUtils.length(telephone) == 11){
+    			sub.setTelephone(telephone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
+    		}
+		}
+    	
+    	String[] rowHeadArr = {"订单号", "下单时间", "收货人姓名", "收货人手机号", "收货地址", "商户编码", "商户名称", "付款方式","付款时间","订单状态","商品编号","商品名称","商品类型","商品型号","商品规格","购买价格","购买量","商家是否发货"};
+        String[] headKeyArr = {"orderId", "createDate", "name", "telephone", "province", "merchantCode", "merchantName", "payType","payDate","orderStatusDsc","goodsId","goodsName","goodsTypeDesc","goodsModel","goodsSkuAttr","goodsPrice","goodsNum","preDeliveryMsg"};
     	try {
-    		generateFile(list);
+    		model.generateFile(list,rowHeadArr,headKeyArr,fileName);
 		} catch (Exception e) {
 			logger.error("export all orders with exception information ");
 			e.printStackTrace();
 		}
     	
-    	 MailSenderInfo mailSenderInfo = new MailSenderInfo();
-         mailSenderInfo.setMailServerHost("SMTP.263.net");
-         mailSenderInfo.setMailServerPort("25");
-         mailSenderInfo.setValidate(true);
-         mailSenderInfo.setUserName(sendAddress);
-         mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
-         mailSenderInfo.setFromAddress(sendAddress);
-         mailSenderInfo.setSubject("安家趣花电商订单");
-         mailSenderInfo.setContent("请查收最新订单..");
-         mailSenderInfo.setToAddress(sendToAddress);
-         mailSenderInfo.setCcAddress(copyToAddress);
-    	
-         
-         Multipart msgPart = new MimeMultipart();
-         MimeBodyPart body = new MimeBodyPart(); //正文
-         MimeBodyPart attach = new MimeBodyPart(); //附件
-         try {
-             attach.setDataHandler(new DataHandler(new FileDataSource("/全部订单信息.xlxs")));
-             attach.setFileName(MimeUtility.encodeText("全部订单信息.xlxs"));
-             msgPart.addBodyPart(attach);
-             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
-             msgPart.addBodyPart(body);
-         } catch (MessagingException e) {
-             e.printStackTrace();
-         } catch(UnsupportedEncodingException e){
-        	 e.printStackTrace();
-         }
-         mailSenderInfo.setMultipart(msgPart);
-         MailUtil mailUtil = new MailUtil();
-         mailUtil.sendTextMail(mailSenderInfo);
+    	model.sendMail(sendToAddress, copyToAddress, fileName);
     }
-    
-    private void generateFile(List list) throws IOException {
-        // 第一步：声明一个工作薄
-        HSSFWorkbook wb = new HSSFWorkbook();
-        // 第二步：声明一个单子并命名
-        HSSFSheet sheet = wb.createSheet("sheet");
-
-        // 获取标题样式，内容样式
-        List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
-        HSSFRow createRow = sheet.createRow(0);
-
-        String[] rowHeadArr = {"订单号", "下单时间", "收货人姓名", "收货人手机号", "收货地址", "商户编码", "商户名称", "付款方式","付款时间","订单状态","商品编号","商品名称","商品类型","商品型号","商品规格","购买价格","购买量","商家是否发货"};
-        String[] headKeyArr = {"orderId", "createDate", "name", "telephone", "province", "merchantCode", "merchantName", "payType","payDate","orderStatusDsc","goodsId","goodsName","goodsTypeDesc","goodsModel","goodsSkuAttr","goodsPrice","goodsNum","preDeliveryMsg"};
-        for (int i = 0; i < rowHeadArr.length; i++) {
-            HSSFCell cell = createRow.createCell(i);
-            sheet.autoSizeColumn(i, true);
-            cell.setCellStyle(hssfCellStyle.get(0));
-            cell.setCellValue(rowHeadArr[i]);
-        }
-        for (int i = 0; i < list.size(); i++) {
-            HSSFRow createRowContent = sheet.createRow(i + 1);
-            Object object = list.get(i);
-            // json日期转换配置类
-            JsonConfig jsonConfig = new JsonConfig();
-            jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor());
-            JSONObject jsonObject = JSONObject.fromObject(object, jsonConfig);
-            for (int j = 0; j < rowHeadArr.length; j++) {
-                HSSFCell cellContent = createRowContent.createCell(j);
-                cellContent.setCellStyle(hssfCellStyle.get(1));
-                if (i == 1) {
-                    sheet.autoSizeColumn(j, true);
-                }
-                String value = jsonObject.get(headKeyArr[j]) + "";
-                if(StringUtils.equals(headKeyArr[j], "name")){
-                	if(StringUtils.isNotBlank(value)){
-                		char[] values = value.toCharArray();values[0]= '*';
-                		value = new String(values);
-                	}
-                }
-                if(StringUtils.equals(headKeyArr[j], "telephone")){
-                	if(StringUtils.isNotBlank(value) && StringUtils.length(value) == 11){
-                		value = value.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");  
-                	}
-                }
-                cellContent.setCellValue(value);
-            }
-        }
-        FileOutputStream fileOutputStream = new FileOutputStream("/全部订单信息.xlxs");
-        wb.write(fileOutputStream);
-        fileOutputStream.flush();
-        fileOutputStream.close();
-    }
-    
-    /**
-     * 给单元格设置样式
-     * @param workbook
-     * @return
-     */
-    public List<HSSFCellStyle> getHSSFCellStyle(HSSFWorkbook workbook) {
-        List<HSSFCellStyle> styleList = new ArrayList<>();
-        // 生成一个标题样式
-        HSSFCellStyle headStyle = workbook.createCellStyle();
-        headStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 居中
-        // 设置表头标题样式:宋体，大小11，粗体显示，
-        HSSFFont headfont = workbook.createFont();
-        headfont.setFontName("微软雅黑");
-        headfont.setFontHeightInPoints((short) 11);// 字体大小
-        headfont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);// 粗体显示
-        /**
-         * 边框
-         */
-        headStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN); // 下边框
-        headStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);// 左边框
-        headStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);// 上边框
-        headStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);// 右边框
-        headStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
-        headStyle.setFont(headfont);// 字体样式
-        styleList.add(headStyle);
-        // 生成一个内容样式
-        HSSFCellStyle contentStyle = workbook.createCellStyle();
-        contentStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 居中
-        contentStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
-        /**
-         * 边框
-         */
-        contentStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);// 下边框
-        contentStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);// 左边框
-        contentStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);// 上边框
-        contentStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);// 右边框
-
-        HSSFFont contentFont = workbook.createFont();
-        contentFont.setFontName("微软雅黑");
-        contentFont.setFontHeightInPoints((short) 11);// 字体大小
-        contentStyle.setFont(contentFont);// 字体样式
-        styleList.add(contentStyle);
-
-        return styleList;
-    }
-    
 }
