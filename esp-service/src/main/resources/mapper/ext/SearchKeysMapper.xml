@@ -16,7 +16,7 @@
   
   <select id="commonSearch" resultMap="BaseResultMap">
     select 
-    DISTINCT(KEY_VALUE) keyValue
+    KEY_VALUE,max(id)
     from t_esp_search_keys
     where key_status = 0 
     <if test="userId != null and userId != ''">
@@ -25,7 +25,8 @@
     <if test="deviceId != null and deviceId != ''">
     	<![CDATA[  and device_id = #{deviceId} ]]>
     </if>
-    order by CREATE_DATE desc
+    GROUP BY KEY_VALUE
+    order by max(id) desc
     limit 10
   </select>
   
