@@ -49,12 +49,22 @@ public class GoodsStockInfoService {
                 BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStockInfoEntity.getGoodsId(),goodsStockInfoEntities.get(0).getId());
                 goodStockEntity.setGoodsPrice(goodsPrice);
             }
+            BigDecimal goodsCostPrice = goodStockEntity.getGoodsCostPrice();
+            BigDecimal priceCostRate = goodStockEntity.getGoodsPrice().divide(goodsCostPrice,4,BigDecimal.ROUND_CEILING);
+            priceCostRate = priceCostRate.multiply(new BigDecimal(100));
+            goodStockEntity.setPriceCostRate(priceCostRate.setScale(2, BigDecimal.ROUND_HALF_UP));
         }
 
         result.setDataList(goodsStockInfoEntities);
         result.setPageInfo(page.getPageNo(), page.getPageSize());
         result.setTotalCount(entity.getTotalCount());
         return result;
+    }
+
+    public static void main(String[] args) {
+        BigDecimal divide = new BigDecimal(22756).divide(new BigDecimal(5579.22978),BigDecimal.ROUND_CEILING);
+        BigDecimal bigDecimal = divide.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        System.out.println(bigDecimal);
     }
 
     /**
