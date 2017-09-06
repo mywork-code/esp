@@ -72,13 +72,13 @@ public class StaticFileController {
         ClassLoader classLoader = StaticFileController.class.getClassLoader();
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
 
-        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_v20.js");
+        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_sit_v23.js");
         String md5 = MD5Utils.getMd5ByFile(in);
         CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-        commissionWalletVo.setVer("20");
+        commissionWalletVo.setVer("23");
         commissionWalletVo.setFlag(true);
         commissionWalletVo.setId("commission");
-        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_v20.js");
+        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_sit_v23.js");
         commissionWalletVo.setMd5(md5);
         commissionWalletVo.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo);
