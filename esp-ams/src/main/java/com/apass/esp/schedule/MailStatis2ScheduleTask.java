@@ -52,7 +52,7 @@ import java.util.List;
 @Component
 @Configurable
 @EnableScheduling
-//@Profile("Schedule")
+@Profile("Schedule")
 public class MailStatis2ScheduleTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailStatis2ScheduleTask.class);
@@ -76,7 +76,7 @@ public class MailStatis2ScheduleTask {
     @Autowired
     private GoodsService goodsService;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void mailStatisSchedule() {
         String currentDate = DateFormatUtil.getCurrentTime("YYYY-MM-dd");//当天
         Date date = DateFormatUtil.addDays(new Date(), -1);//前一天
