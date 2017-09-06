@@ -204,6 +204,15 @@ public class AwardActivityInfoService {
                     resultMap.put("repaymentDate",customerCreditInfo.getRepaymentDate());//还款日
                 }
             }
+            Response responseRateInfo = commonHttpClient.getCustomerRateInfo(requestId,userId);
+            if(responseRateInfo!=null&&responseRateInfo.statusResult()){
+                CustomerRateInfo customerRateInfo  = Response.resolveResult(responseRateInfo,CustomerRateInfo.class);
+                if(customerRateInfo!=null){
+                    resultMap.put("monthlyInterestRate",customerRateInfo.getCashStageMonthlyInterestRate());//月利率
+                    resultMap.put("monthlyServiceRate",customerRateInfo.getCashStageMonthlyServiceRate());//月服务费率
+                    resultMap.put("monthlyPlatformServiceRate",customerRateInfo.getCashStageMonthlyPlatformServiceRate());//月平台服务费率
+                }
+            }
 
 			// 银行卡未绑定
 			if (StringUtils.isAnyEmpty(customerBasicInfo.getBankCode(), customerBasicInfo.getCardBank(),
