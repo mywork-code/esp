@@ -92,6 +92,10 @@ $(function(){
 		var params = {};
 		$('#list').datagrid('load', params);
 	});
+	
+	$("#lookPictureShowImg").on("dblclick",function(){
+   	 window.open($(this).attr("src"));
+   })
 	    /**
 		 * 查看上传图片
 		 */
