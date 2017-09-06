@@ -17,10 +17,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
@@ -87,13 +84,9 @@ public class IndexManager<T> {
      */
 	public static <Goods> Pagination<Goods> goodSearchCategoryId2(String categoryId2, String sortField, boolean desc,
 			int from, int size) {
-		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-				.must(QueryBuilders.termQuery("categoryId2", categoryId2));
-		Pagination<Goods> goodsPagination = search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
-		if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
-			return goodsPagination;
-		}
-		return boolSearch(sortField, desc, from, size, StringUtils.lowerCase(categoryId2.toString()));
+        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("categoryId2", categoryId2);
+		Pagination<Goods> goodsPagination = search(termQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+        return goodsPagination;
 	}
 
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
