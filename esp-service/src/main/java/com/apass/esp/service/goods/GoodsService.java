@@ -9,7 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.enums.JDReturnType;
 import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -99,6 +103,9 @@ public class GoodsService {
 
     @Autowired
     private JdGoodsMapper jdGoodsMapper;
+
+    @Autowired
+    private JdProductApiClient jdProductApiClient;
 
     /**
      * app 首页加载精品推荐商品
@@ -968,6 +975,15 @@ public class GoodsService {
                 goods.setGoodsSkuAttrPinyin("");
 
             }
+            if(SourceType.JD.getCode().equalsIgnoreCase(g.getSource())){
+                JdApiResponse<JSONObject> jdApiResponse =  jdProductApiClient.productDetailQuery(Long.valueOf(g.getExternalId()));
+                JSONObject jsonObject = jdApiResponse.getResult();
+                if (jdApiResponse.isSuccess()||jdApiResponse!=null||jsonObject != null) {
+                    String introduction = (String) jsonObject.get("introduction");
+                    goods.setGoodsDetail(introduction);
+                }
+            }
+
         } catch (Exception e) {
             e.getStackTrace();
             return null;

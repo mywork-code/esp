@@ -97,8 +97,17 @@ public class Goods implements IdAble{
      * 商品规格拼音
      */
     private String goodsSkuAttrPinyin;
-    
-    
+
+    private String goodsDetail;
+
+	public String getGoodsDetail() {
+		return goodsDetail;
+	}
+
+	public void setGoodsDetail(String goodsDetail) {
+		this.goodsDetail = goodsDetail;
+	}
+
 	public String getGoodsTitlePinyin() {
 		return goodsTitlePinyin;
 	}
