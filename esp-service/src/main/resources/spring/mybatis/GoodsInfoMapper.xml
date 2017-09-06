@@ -989,7 +989,8 @@
 				t.sord_no sordNo,
 				t.un_support_province unSupportProvince,
 				t.source source,
-				t.external_id externalId
+				t.external_id externalId,
+				t.attr_desc     attrDesc
 			from t_esp_goods_base_info t
 			where external_id = #{externalId}
 	</select>
