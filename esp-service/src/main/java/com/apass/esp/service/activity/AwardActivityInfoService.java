@@ -203,6 +203,7 @@ public class AwardActivityInfoService {
                 if(customerCreditInfo!=null){
                     resultMap.put("repaymentDate",customerCreditInfo.getRepaymentDate());//还款日
                     resultMap.put("creditExpire",customerCreditInfo.getCreditExpire());//
+                    resultMap.put("monthlyServiceRate",customerCreditInfo.getMonthlyServiceRatePurse());//月服务费率
                 }
             }
             Response responseRateInfo = commonHttpClient.getCustomerRateInfo(requestId,userId);
@@ -210,7 +211,6 @@ public class AwardActivityInfoService {
                 CustomerRateInfo customerRateInfo  = Response.resolveResult(responseRateInfo,CustomerRateInfo.class);
                 if(customerRateInfo!=null){
                     resultMap.put("monthlyInterestRate",customerRateInfo.getCashStageMonthlyInterestRate());//月利率
-                    resultMap.put("monthlyServiceRate",customerRateInfo.getCashStageMonthlyServiceRate());//月服务费率
                     resultMap.put("monthlyPlatformServiceRate",customerRateInfo.getCashStageMonthlyPlatformServiceRate());//月平台服务费率
                 }
             }
