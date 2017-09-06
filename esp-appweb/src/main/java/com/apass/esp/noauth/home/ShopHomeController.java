@@ -781,7 +781,7 @@ public class ShopHomeController {
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), region3);
+                        Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
 
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
 

@@ -71,7 +71,7 @@ public class GoodsBasicController {
                 region.setTownId(0);
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), region);
+                        Long.valueOf(externalId).longValue(), goodsId.toString(), region);
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(Long.valueOf(goodsId));
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称

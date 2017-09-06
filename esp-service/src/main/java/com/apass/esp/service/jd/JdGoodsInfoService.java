@@ -37,6 +37,9 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -113,7 +116,7 @@ public class JdGoodsInfoService {
 	 * 根据商品编号获取商品需要展示App信息
 	 * @throws BusinessException 
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, Region region)
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, String goodsId,Region region)
 			throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
@@ -121,9 +124,16 @@ public class JdGoodsInfoService {
 			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
 			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
 		} else {
-			// 查询商品名称
-			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
-			String jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
+			String  jddetail="";
+			//从ES中查询商品详情信息
+			Goods goods=IndexManager.getDocument("goods",IndexType.GOODS, Integer.parseInt(goodsId));
+			if(null !=goods && StringUtils.isNotBlank(goods.getGoodsDetail())){
+				jddetail=goods.getGoodsDetail().replaceAll("src=\"//", "src=\"http://");
+			}else{
+				// 查询商品名称
+				JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+				jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
+			}
 //			map.put("goodsName", jdGoods.getName());// 商品名称
 			// java字符串转义,把&lt;&gt;转换成<>等字符
 			String skuCss = getSkuCss(sku).replaceAll("background-image:url\\(//", "background-image:url\\(http://");
