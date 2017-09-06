@@ -873,6 +873,7 @@ public class GoodsService {
     }
 
     public Goods goodsInfoToGoods(GoodsInfoEntity g) {
+        LOGGER.info("goodsInfoToGoods被调用了:{}",GsonUtils.toJson(g));
         if (g == null) {
             return null;
         }

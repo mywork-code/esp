@@ -135,13 +135,11 @@ public class JDTaskListener implements MessageListener {
           goodsInfoEntity.setUpdateUser("jdAdmin");
           try {
             Integer count = goodsService.updateService(goodsInfoEntity);
-            if (count == 1) {
-              GoodsInfoEntity entity2 = goodsService.selectByGoodsId(goodsInfoEntity.getId());
-              Goods goods = goodsService.goodsInfoToGoods(entity2);
-              LOGGER.info("监听京东商品下架删除索引传递的参数:{}", GsonUtils.toJson(goods));
-              if (goods != null) {
-                goodsEsDao.delete(goods);
-              }
+            GoodsInfoEntity entity2 = goodsService.selectByGoodsId(goodsInfoEntity.getId());
+            Goods goods = goodsService.goodsInfoToGoods(entity2);
+            LOGGER.info("监听京东商品下架删除索引传递的参数:{}", GsonUtils.toJson(goods));
+            if (goods != null) {
+              goodsEsDao.delete(goods);
             }
           } catch (Exception e) {
             LOGGER.error("delete index error");
