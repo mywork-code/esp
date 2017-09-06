@@ -96,6 +96,11 @@ public class GoodsStockInfoEntity {
     /**比价链接2URL**/
     private String     goodsCompareUrl2;
 
+    /**
+     * 保本率
+     */
+    private BigDecimal priceCostRate;
+
     public String getGoodsCompareUrl() {
         return goodsCompareUrl;
     }
@@ -263,6 +268,12 @@ public class GoodsStockInfoEntity {
 	public void setGoodsLogoUrl(String goodsLogoUrl) {
 		this.goodsLogoUrl = goodsLogoUrl;
 	}
-    
-    
+
+    public BigDecimal getPriceCostRate() {
+        return priceCostRate;
+    }
+
+    public void setPriceCostRate(BigDecimal priceCostRate) {
+        this.priceCostRate = priceCostRate;
+    }
 }

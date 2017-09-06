@@ -77,6 +77,7 @@ public class GoodsStockInfoController {
                 entity.setGoodsId(Long.valueOf(id));
             }
             List<GoodsStockSkuDto> goodsStockSkuInfos = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
+
             if (goodsStockSkuInfos!=null){
                 entity.setId(goodsStockSkuInfos.get(0).getGoodsStockId());
             }

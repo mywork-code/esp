@@ -222,7 +222,14 @@ $(function() {
 //		                }
 	                },
 	                {field: 'marketPrice', title: '市场价格', width: 80,align : 'center'},
-	                {field: 'goodsPrice', title: '商品现价', width: 80,align : 'center'},
+	                {field: 'goodsPrice', title: '售价', width: 80,align : 'center'},
+                    {field: 'priceCostRate', title: '保本率', width: 80,
+                        formatter:function(value, row, index){
+                            if(value != null && value != '') {
+                                return value+"%";
+                            }
+                        },
+                        align : 'center'},
 	                {field: 'stockTotalAmt', title: '商品总量', width: 80,align : 'center'},
 	                {field: 'stockCurrAmt', title: '当前库存量', width: 80,align : 'center'}	                
 	            ]] 
