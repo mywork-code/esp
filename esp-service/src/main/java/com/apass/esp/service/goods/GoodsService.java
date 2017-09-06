@@ -978,7 +978,7 @@ public class GoodsService {
             if(SourceType.JD.getCode().equalsIgnoreCase(g.getSource())){
                 JdApiResponse<JSONObject> jdApiResponse =  jdProductApiClient.productDetailQuery(Long.valueOf(g.getExternalId()));
                 JSONObject jsonObject = jdApiResponse.getResult();
-                if (jdApiResponse.isSuccess()||jdApiResponse!=null||jsonObject != null) {
+                if (jdApiResponse.isSuccess()&&jdApiResponse!=null&&jsonObject != null) {
                     String introduction = (String) jsonObject.get("introduction");
                     goods.setGoodsDetail(introduction);
                 }
