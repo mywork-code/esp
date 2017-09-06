@@ -243,6 +243,10 @@ public class ActivityWithDrawController {
 		paramMap.put("identityNo", result.get("identityNo"));
 		paramMap.put("mobile", mobile);
 		paramMap.put("repaymentDate", result.get("repaymentDate"));
+		paramMap.put("monthlyInterestRate", result.get("monthlyInterestRate"));
+		paramMap.put("monthlyServiceRate", result.get("monthlyServiceRate"));
+		paramMap.put("monthlyPlatformServiceRate", result.get("monthlyPlatformServiceRate"));
+
 		Response res1 = awardActivityInfoService.validateBindCard(paramMap);
 		if (!"1".equals(res1.getStatus())) {
 			return res1;
