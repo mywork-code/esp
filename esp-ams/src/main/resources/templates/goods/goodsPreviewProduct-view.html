@@ -350,9 +350,10 @@
 	$prodChose.click(function() {
 		$(this).children(".SIZE").show();
 	});
-	$prodChoseClose.on('click', function() {
+	$prodChoseClose.on('click', function(e) {
+		if(!e) e = window.event; 
 		$(this).parent().hide();
-		event.stopPropagation();
+		e.stopPropagation();
 	});
 	
 </script>
