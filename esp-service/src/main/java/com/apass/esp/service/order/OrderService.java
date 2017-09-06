@@ -1173,9 +1173,9 @@ public class OrderService {
             throw new BusinessException("当前订单状态不能确认收货", BusinessErrorCode.ORDER_CONFIRM_ERROR);
         }
         // 判断如果订单的是否发货状态不为Y(发货)，则置为Y
-        if (!StringUtils.equals(PreDeliveryType.PRE_DELIVERY_Y.getCode(), orderInfo.getPreDelivery())) {
-            orderInfo.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
-        }
+//        if (!StringUtils.equals(PreDeliveryType.PRE_DELIVERY_Y.getCode(), orderInfo.getPreDelivery())) {
+//            orderInfo.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
+//        }
         orderInfo.setAcceptGoodsDate(new Date());
         orderInfo.setAcceptGoodsType(AcceptGoodsType.USERCONFIRM.getCode());
         orderInfo.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
