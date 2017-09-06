@@ -202,6 +202,7 @@ public class AwardActivityInfoService {
                 CustomerCreditInfo customerCreditInfo =  Response.resolveResult(responseCredit,CustomerCreditInfo.class);
                 if(customerCreditInfo!=null){
                     resultMap.put("repaymentDate",customerCreditInfo.getRepaymentDate());//还款日
+                    resultMap.put("creditExpire",customerCreditInfo.getCreditExpire());//
                 }
             }
             Response responseRateInfo = commonHttpClient.getCustomerRateInfo(requestId,userId);
