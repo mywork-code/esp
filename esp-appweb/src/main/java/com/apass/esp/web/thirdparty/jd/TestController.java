@@ -326,6 +326,24 @@ public class TestController {
         JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.addressTownsByCountyIdQuery(48299);
         return Response.success("1", jdApiResponse);
     }
+    /**
+     * 验证商品是否可售
+     * @param paramMap
+     * @return
+     * @throws InterruptedException
+     */
+    @RequestMapping(value = "/checkGoodsSalesOrNot", method = RequestMethod.POST)
+    @ResponseBody
+    public Response checkGoodsSalesOrNot(@RequestBody Map<String, Object> paramMap) throws InterruptedException {
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		  List<SkuNum> skuNumList=new ArrayList<>();
+          SkuNum skuNum=new SkuNum();
+          skuNum.setNum(1);
+          skuNum.setSkuId(Long.parseLong(sku));
+          skuNumList.add(skuNum);
+          Boolean result= orderService.checkGoodsSalesOrNot(skuNumList);
+        return Response.success("1", result);
+    }
 
     @RequestMapping(value = "/test1111", method = RequestMethod.POST)
     @ResponseBody
