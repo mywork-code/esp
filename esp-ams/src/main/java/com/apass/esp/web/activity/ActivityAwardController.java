@@ -1,5 +1,16 @@
 package com.apass.esp.web.activity;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardActivityInfoDto;
@@ -13,24 +24,11 @@ import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
-import com.apass.esp.web.banner.BannerController;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by jie.xu on 17/4/21.

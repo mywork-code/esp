@@ -22,7 +22,6 @@ import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.ApprovalStatus;
-import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.service.activity.ActivityInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.PaginationManage;
