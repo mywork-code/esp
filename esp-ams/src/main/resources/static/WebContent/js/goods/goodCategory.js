@@ -104,8 +104,8 @@ $(function() {
 		if (isLastOne) {
 			$('#optMenu').menu('disableItem', '#downCategory');
 		}
-		var evt = (evt) ? evt : ((window.event) ? window.event : null);
-		$('#optMenu').menu('show', {
+		var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+        $('#optMenu').menu('show', {
 			left : evt.pageX,
 			top : evt.pageY
 		});
@@ -581,7 +581,6 @@ $(function() {
 										field : 'opt',
 										align : 'center',
 										formatter : function(value, row, index) {
-											debugger;
 											var content = "";
 											// 编辑
 											content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";

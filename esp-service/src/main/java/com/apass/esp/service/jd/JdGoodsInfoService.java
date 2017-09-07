@@ -114,50 +114,61 @@ public class JdGoodsInfoService {
 	
 	/**
 	 * 根据商品编号获取商品需要展示App信息
-	 * @throws BusinessException 
+	 * 
+	 * @throws BusinessException
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, String goodsId,Region region)
-			throws BusinessException {
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, String goodsId, Region region) {
 		Map<String, Object> map = Maps.newHashMap();
-		if (sku.toString().length() == 8) {
-			// 查询商品名称（图书音像类目）
-			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
-			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
-		} else {
-			String  jddetail="";
-			//从ES中查询商品详情信息
-			Goods goods=IndexManager.getDocument("goods",IndexType.GOODS, Integer.parseInt(goodsId));
-			if(null !=goods && StringUtils.isNotBlank(goods.getGoodsDetail())){
-				jddetail=goods.getGoodsDetail().replaceAll("src=\"//", "src=\"http://");
-			}else{
-				// 查询商品名称
-				JdGoods jdGoods = getJdGoodsInfoBySku(sku);
-				jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
+		try {
+			if (sku.toString().length() == 8) {
+				// 查询商品名称（图书音像类目）
+				JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
+				map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
+			} else {
+				String jddetail = "";
+				// 从ES中查询商品详情信息
+				Goods goods = IndexManager.getDocument("goods", IndexType.GOODS, Integer.parseInt(goodsId));
+				if (null != goods && StringUtils.isNotBlank(goods.getGoodsDetail())) {
+					jddetail = goods.getGoodsDetail().replaceAll("src=\"//", "src=\"http://");
+				} else {
+					// 查询商品名称
+					JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+					jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
+				}
+				// map.put("goodsName", jdGoods.getName());// 商品名称
+				// java字符串转义,把&lt;&gt;转换成<>等字符
+				String skuCss = getSkuCss(sku).replaceAll("background-image:url\\(//",
+						"background-image:url\\(http://");
+				String introduction = jddetail.replaceAll("width", "width");
+				map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
 			}
-//			map.put("goodsName", jdGoods.getName());// 商品名称
-			// java字符串转义,把&lt;&gt;转换成<>等字符
-			String skuCss = getSkuCss(sku).replaceAll("background-image:url\\(//", "background-image:url\\(http://");
-			String introduction = jddetail.replaceAll("width", "width");
-			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
+			// 查看商品的邮费
+			List<Long> goodsIds = new ArrayList<>();
+			goodsIds.add(sku);
+			// BigDecimal postage = goodsService.getPostage(goodsIds);
+			map.put("postage", "0");
+			// 查询商品图片
+			List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
+			map.put("jdImagePathList", JdImagePathList);
+			// 查询商品是否有货
+			String jdGoodStock = getStockBySku(sku.toString(), region);
+			map.put("goodsStockDes", jdGoodStock);
+			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region);
+			map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
+			map.put("skuId", map2.get("skuId"));
+			map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
+			map.put("jdSimilarSkuListSize", map2.get("jdSimilarSkuListSize"));
+			
+		} catch (Exception e) {
+			List<JdSimilarSku> jdSimilarSkuList=new ArrayList<>();
+			List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
+			map.put("JdSimilarSkuToList",JdSimilarSkuToList);
+			map.put("skuId",sku);
+			map.put("jdSimilarSkuList", jdSimilarSkuList);
+			map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 		}
-		// 查看商品的邮费
-		List<Long> goodsIds = new ArrayList<>();
-		goodsIds.add(sku);
-//		BigDecimal postage = goodsService.getPostage(goodsIds);
-		map.put("postage", "0");
-		// 查询商品图片
-		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
-		map.put("jdImagePathList", JdImagePathList);
-		// 查询商品是否有货
-		String jdGoodStock = getStockBySku(sku.toString(), region);
-		map.put("goodsStockDes", jdGoodStock);
-		Map<String,Object> map2 =getJdSimilarSkuInfoList(sku,region);
-		map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
-		map.put("skuId", map2.get("skuId"));
-		map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
-		map.put("jdSimilarSkuListSize", map2.get("jdSimilarSkuListSize"));
 		return map;
-		}
+	}
 	
 	// 查询商品规格（包括库存）
 	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region) throws BusinessException {
