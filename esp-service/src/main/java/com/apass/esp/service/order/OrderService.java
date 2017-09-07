@@ -2174,7 +2174,11 @@ public class OrderService {
     }
 
     public  List<OrderInfoEntity>  selectOrderByStatus(String orderStatus, String dateBegin, String dateEnd) {
-        return orderInfoRepository.selectOrderByStatus(orderStatus, dateBegin, dateEnd);
+        List<OrderInfoEntity> orderInfoEntityList =  orderInfoRepository.selectOrderByStatus(orderStatus, dateBegin, dateEnd);
+        if(CollectionUtils.isEmpty(orderInfoEntityList)){
+            return Collections.emptyList();
+        }
+        return orderInfoEntityList;
     }
 
     public Integer selectSumAmt(String dateBegin, String dateEnd) {
