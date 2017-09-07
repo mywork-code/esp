@@ -2,14 +2,7 @@ package com.apass.esp.web.activity;
 
 import java.util.Map;
 
-import com.apass.esp.domain.vo.AwardBindRelIntroVo;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardBindRelService;
-import com.apass.esp.service.activity.AwardDetailService;
-import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.HttpWebUtils;
-import com.google.common.collect.Maps;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+import com.apass.esp.domain.vo.AwardBindRelIntroVo;
+import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.google.common.collect.Maps;
 
 /**
  * Created by jie.xu on 17/4/21.
@@ -32,14 +30,9 @@ public class AwardBindRelIntroController {
 	 * 日志
 	 */
   private static final Logger LOGGER  = LoggerFactory.getLogger(AwardBindRelIntroController.class);
-  @Autowired
-  private AwardActivityInfoService awardActivityInfoService;
 
   @Autowired
   private AwardDetailService awardDetailService;
-  
-  @Autowired
-  private AwardBindRelService awardBindRelService; 
 
   /**
    * 转介绍活动配置页
