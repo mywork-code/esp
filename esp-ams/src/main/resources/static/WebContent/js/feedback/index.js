@@ -103,6 +103,8 @@ $(function(){
 		$("#lookPictureImg1").attr("src", "");
 		var $lookPictureImgWrap = $("#lookPictureImgWrap");
 		var $lookPictureShowImg = $("#lookPictureShowImg");
+		$lookPictureImgWrap.html('');
+		$lookPictureShowImg.attr("src",'')
 		var html = '';
 		var pictureList = picture.split(";");
 		pictureList.forEach(function(e,i){
