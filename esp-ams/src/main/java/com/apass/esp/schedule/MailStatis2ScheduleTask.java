@@ -37,9 +37,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * type: class
@@ -86,11 +84,85 @@ public class MailStatis2ScheduleTask {
         String beginDate = dateBeforeDate + "01";
 
         //订单list
-        List<OrderInfoEntity> orderInfoEntityList =  orderService.selectOrderByStatus("D04", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD02 =  orderService.selectOrderByStatus("D02", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD03 =  orderService.selectOrderByStatus("D03", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD04 =  orderService.selectOrderByStatus("D04", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD05 =  orderService.selectOrderByStatus("D05", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD09 =  orderService.selectOrderByStatus("D09", beginDate, currentDate);
+        List<OrderInfoEntity> orderInfoEntityListD10 =  orderService.selectOrderByStatus("D10", beginDate, currentDate);
         BigDecimal amt = new BigDecimal(0);
         BigDecimal totalPrice = new BigDecimal(0);
         BigDecimal xieYiPrice = new BigDecimal(0);
 
+        HashMap<String,BigDecimal> mapD02  =  convert(orderInfoEntityListD02);
+        HashMap<String,BigDecimal> mapD03  =  convert(orderInfoEntityListD03);
+        HashMap<String,BigDecimal> mapD04  =  convert(orderInfoEntityListD04);
+        HashMap<String,BigDecimal> mapD05  =  convert(orderInfoEntityListD05);
+        HashMap<String,BigDecimal> mapD09  =  convert(orderInfoEntityListD09);
+        HashMap<String,BigDecimal> mapD10  =  convert(orderInfoEntityListD10);
+
+        List<ExportDomain1> list = new ArrayList<>();
+        ExportDomain1 exportDomain1 = new ExportDomain1();
+        exportDomain1.setType("成交金额");
+        exportDomain1.setD02(String.valueOf(mapD02.get("totalPrice")));
+        exportDomain1.setD03(String.valueOf(mapD03.get("totalPrice")));
+        exportDomain1.setD04(String.valueOf(mapD04.get("totalPrice")));
+        exportDomain1.setD05(String.valueOf(mapD05.get("totalPrice")));
+        exportDomain1.setD09(String.valueOf(mapD09.get("totalPrice")));
+        exportDomain1.setD10(String.valueOf(mapD10.get("totalPrice")));
+        ExportDomain1 exportDomain2 = new ExportDomain1();
+        exportDomain2.setType("采购金额");
+        exportDomain2.setD02(String.valueOf(mapD02.get("xieYiPrice")));
+        exportDomain2.setD03(String.valueOf(mapD03.get("xieYiPrice")));
+        exportDomain2.setD04(String.valueOf(mapD04.get("xieYiPrice")));
+        exportDomain2.setD05(String.valueOf(mapD05.get("xieYiPrice")));
+        exportDomain2.setD09(String.valueOf(mapD09.get("xieYiPrice")));
+        exportDomain2.setD10(String.valueOf(mapD10.get("xieYiPrice")));
+        list.add(exportDomain1);
+        list.add(exportDomain2);
+        try {
+            generateFile(list);
+        } catch (IOException e) {
+            LOGGER.error("mailStatisSchedule generateFile error .... ", e);
+        }
+        MailSenderInfo mailSenderInfo = new MailSenderInfo();
+        mailSenderInfo.setMailServerHost("SMTP.263.net");
+        mailSenderInfo.setMailServerPort("25");
+        mailSenderInfo.setValidate(true);
+        mailSenderInfo.setUserName(sendAddress);
+        mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
+        mailSenderInfo.setFromAddress(sendAddress);
+        mailSenderInfo.setSubject("安家趣花电商订单统计(成交金额，统计成本)【" + beginDate + " ~ " + dateBefore + "】");
+        mailSenderInfo.setContent("请查收最新统计报表..");
+        mailSenderInfo.setToAddress("xujie@apass.cn");
+        if ("prod".equals(env)) {
+            mailSenderInfo.setToAddress("huangbeifang@apass.cn,xujie@apass.cn");
+            mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
+        }
+
+        Multipart msgPart = new MimeMultipart();
+        MimeBodyPart body = new MimeBodyPart(); //正文
+        MimeBodyPart attach = new MimeBodyPart(); //附件
+        try {
+            attach.setDataHandler(new DataHandler(new FileDataSource("/reportings1.xlxs")));
+            attach.setFileName("reportings1.xls");
+            msgPart.addBodyPart(attach);
+            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
+            msgPart.addBodyPart(body);
+        } catch (MessagingException e) {
+            LOGGER.error("mailStatisSchedule msgPart   body error.... ", e);
+        }
+        mailSenderInfo.setMultipart(msgPart);
+        MailUtil mailUtil = new MailUtil();
+        mailUtil.sendTextMail(mailSenderInfo);
+
+    }
+
+    private HashMap<String,BigDecimal> convert(List<OrderInfoEntity> orderInfoEntityList){
+        BigDecimal amt = new BigDecimal(0);
+        BigDecimal totalPrice = new BigDecimal(0);
+        BigDecimal xieYiPrice = new BigDecimal(0);
+        HashMap<String,BigDecimal> map = new HashMap<>();
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList
                 ) {
             amt = amt.add(orderInfoEntity.getOrderAmt());
@@ -133,43 +205,9 @@ public class MailStatis2ScheduleTask {
                 }
             }
         }
-        List<ExportDomain1> list = new ArrayList<>();
-        ExportDomain1 exportDomain1 = new ExportDomain1();
-        exportDomain1.setAmt(amt.toString());
-        exportDomain1.setDate(beginDate + " ~ " + dateBefore);
-        exportDomain1.setPrice(totalPrice + "/" + xieYiPrice);
-        list.add(exportDomain1);
-        MailSenderInfo mailSenderInfo = new MailSenderInfo();
-        mailSenderInfo.setMailServerHost("SMTP.263.net");
-        mailSenderInfo.setMailServerPort("25");
-        mailSenderInfo.setValidate(true);
-        mailSenderInfo.setUserName(sendAddress);
-        mailSenderInfo.setPassword(sendPassword);// 您的邮箱密码
-        mailSenderInfo.setFromAddress(sendAddress);
-        mailSenderInfo.setSubject("安家趣花电商订单统计(成交金额，统计成本)【" + beginDate + " ~ " + dateBefore + "】");
-        mailSenderInfo.setContent("请查收最新统计报表..");
-        mailSenderInfo.setToAddress("xujie@apass.cn");
-        if ("prod".equals(env)) {
-            mailSenderInfo.setToAddress("huangbeifang@apass.cn,xujie@apass.cn");
-            mailSenderInfo.setCcAddress("maoyanping@apass.cn,yangxiaoqing@apass.cn");
-        }
-
-        Multipart msgPart = new MimeMultipart();
-        MimeBodyPart body = new MimeBodyPart(); //正文
-        MimeBodyPart attach = new MimeBodyPart(); //附件
-        try {
-            attach.setDataHandler(new DataHandler(new FileDataSource("/reportings1.xlxs")));
-            attach.setFileName("reportings1.xls");
-            msgPart.addBodyPart(attach);
-            body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
-            msgPart.addBodyPart(body);
-        } catch (MessagingException e) {
-            LOGGER.error("mailStatisSchedule msgPart   body error.... ", e);
-        }
-        mailSenderInfo.setMultipart(msgPart);
-        MailUtil mailUtil = new MailUtil();
-        mailUtil.sendTextMail(mailSenderInfo);
-
+        map.put("xieYiPrice",xieYiPrice);
+        map.put("totalPrice",totalPrice);
+        return map;
     }
 
     private void generateFile(List list) throws IOException {
@@ -181,8 +219,8 @@ public class MailStatis2ScheduleTask {
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
         HSSFRow createRow = sheet.createRow(0);
-        String[] rowHeadArr = {"统计日期", "成交金额", "采购成本"};
-        String[] headKeyArr = {"date", "amt", "price"};
+        String[] rowHeadArr = {"统计维度", "待发货", "待收货","交易完成","售后服务中","退款处理中","交易关闭"};
+        String[] headKeyArr = {"type", "d02", "d03", "d04", "d05", "d09", "d10"};
         for (int i = 0; i < rowHeadArr.length; i++) {
             HSSFCell cell = createRow.createCell(i);
             sheet.autoSizeColumn(i, true);
