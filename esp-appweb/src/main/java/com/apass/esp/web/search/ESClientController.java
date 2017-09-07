@@ -55,6 +55,7 @@ public class ESClientController {
 	                break;
 	            }
 	            List<Goods> list = goodsService.getGoodsList(goodsList);
+	            LOGGER.info("-------------index------------{}",index);
 	            index += goodsList.size();
 	            IndexManager.createIndex(list, IndexType.GOODS);
 	        }
