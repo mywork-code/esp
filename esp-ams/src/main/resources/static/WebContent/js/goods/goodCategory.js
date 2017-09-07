@@ -104,7 +104,7 @@ $(function() {
 		if (isLastOne) {
 			$('#optMenu').menu('disableItem', '#downCategory');
 		}
-		var evt = (evt) ? evt : ((window.event) ? window.event : null);
+		var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
 		$('#optMenu').menu('show', {
 			left : evt.pageX,
 			top : evt.pageY
