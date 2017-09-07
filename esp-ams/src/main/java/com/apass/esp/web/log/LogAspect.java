@@ -5,9 +5,11 @@ import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +19,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.alibaba.fastjson.JSON;
 import com.apass.esp.domain.entity.log.LogInfoEntity;
 import com.apass.esp.service.log.LogService;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.HttpWebUtils;
 
-import net.sf.json.JSONObject; 
 @Aspect
 @Component
 public class LogAspect {
@@ -50,8 +51,8 @@ public class LogAspect {
      *  
      * @param joinPoint 切点  
      */  
-    @Before("controllerAspect()")
-    public void doBefore(JoinPoint joinPoint) {
+    @AfterReturning("controllerAspect()")
+    public void doAfter(JoinPoint joinPoint) {
          try {    
             //*========数据库日志=========*//    
             LogInfoEntity log =   getControllerMethodLog(joinPoint);
@@ -78,69 +79,48 @@ public class LogAspect {
         
         LogInfoEntity logInfo =  new LogInfoEntity();
         
+        String simpleName = joinPoint.getTarget().getClass().getSimpleName();
+        
+        Signature signature = joinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature) signature;
+        
+        String methodName = signature.getName();    
+        Object[] arguments = joinPoint.getArgs();
+        
         StringBuffer content = new StringBuffer();
-        
-        String operationType = null;
-        LogValueTypeEnum valueType = null;
-        
-        
-        String className = joinPoint.getTarget().getClass().getName();    
-        String methodName = joinPoint.getSignature().getName();    
-        Object[] arguments = joinPoint.getArgs();    
-        
-        content.append("className:"+className + "####");
+        content.append("className:"+simpleName + "####");
         content.append("methodName:"+methodName + "####");
         content.append("arguments:");
         
-        Class targetClass = Class.forName(className);    
-        Method[] methods = targetClass.getMethods();    
-        for (Method method : methods) {    
-             if (method.getName().equals(methodName)) {    
-                Class[] clazzs = method.getParameterTypes();    
-                 if (clazzs.length == arguments.length) {    
-                     operationType = method.getAnnotation(LogAnnotion.class).operationType(); 
-                     valueType = method.getAnnotation(LogAnnotion.class).valueType();
-                     break;    
-                }    
-            }    
-        }    
+        Method targetMethod = methodSignature.getMethod();
+        Method realMethod = joinPoint.getTarget().getClass().getDeclaredMethod(methodName, targetMethod.getParameterTypes());
+
+        LogAnnotion annotion = realMethod.getAnnotation(LogAnnotion.class);
+        String operationType = annotion.operationType();
+        LogValueTypeEnum valueType = annotion.valueType();
         
-        for (Object obj : arguments) {
-            
-            if(obj == null){
-                continue;
-            }
-            
-            //如果是参数为file类型，则获取文件的名称
-            if(( obj instanceof MultipartFile) && valueType == LogValueTypeEnum.VALUE_FILE){
-                CommonsMultipartFile file = (CommonsMultipartFile)obj;
+        if(valueType == LogValueTypeEnum.VALUE_FILE){
+        	Object obj = arguments[0];
+        	if(obj instanceof MultipartFile){
+        		CommonsMultipartFile file = (CommonsMultipartFile)obj;
                 content.append("文件名:"+file.getOriginalFilename() + "####");
-            }
-            
-            //如果参数为dto类型
-            if(valueType == LogValueTypeEnum.VALUE_DTO){
-                content.append(JSONObject.fromObject(obj).toString());
-            }
-            
-            //如果为request带传参数，暂不处理
-            if(valueType == LogValueTypeEnum.VALUE_REQUEST){
-                
-            }
-            
-            /**
-             * 因为导出是一个公共模块，所以无法确定导出所属模块 ,所以只能通过request
-             */
-            if(valueType == LogValueTypeEnum.VALUE_EXPORT){
-                
-                operationType = HttpWebUtils.getValue(request, "fileName")+LogValueTypeEnum.VALUE_EXPORT.getMessage();
-            }
-            
+        	}
+        }else if(valueType == LogValueTypeEnum.VALUE_REQUEST || valueType == LogValueTypeEnum.VALUE_EXPORT){
+        	if(valueType == LogValueTypeEnum.VALUE_EXPORT){
+        		operationType = request.getParameter("fileName");
+        	}
+        	content.append(JSON.toJSONString(request.getParameterMap()));
+        }else{
+        	for (Object ss : arguments) {
+        		if(ss == null){
+                    continue;
+                }
+        		content.append("#"+JSON.toJSONString(ss)+"#");
+        	}
         }
-        
         logInfo.setContent(content.toString());
         logInfo.setOperationType(operationType);
         logInfo.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-        
         return logInfo;    
     }  
 }

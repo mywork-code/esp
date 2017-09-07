@@ -55,6 +55,8 @@ import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -552,6 +554,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping("/shelves")
+    @LogAnnotion(operationType = "商品上架", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String shelves(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
         String source = HttpWebUtils.getValue(request, "source");
@@ -661,6 +664,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping("/shelf")
+    @LogAnnotion(operationType = "商品下架", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String shelf(HttpServletRequest request) {
         String id = HttpWebUtils.getValue(request, "id");
         // String source = HttpWebUtils.getValue(request, "source");
@@ -686,6 +690,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping("/checkview")
+    @LogAnnotion(operationType = "商品复核", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String checkview(HttpServletRequest request) {
         String ids = HttpWebUtils.getValue(request, "ids");
         String flag = HttpWebUtils.getValue(request, "flag");
@@ -725,6 +730,7 @@ public class GoodsBaseInfoController {
 
     @ResponseBody
     @RequestMapping("/bBencheckview")
+    @LogAnnotion(operationType = "商品信息保本复核", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String bBencheckview(HttpServletRequest request) {
         String ids = HttpWebUtils.getValue(request, "ids");
         String flag = HttpWebUtils.getValue(request, "flag");
