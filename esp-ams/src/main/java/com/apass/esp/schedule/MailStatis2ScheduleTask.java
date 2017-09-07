@@ -86,8 +86,7 @@ public class MailStatis2ScheduleTask {
         String beginDate = dateBeforeDate + "01";
 
         //订单list
-        List<OrderInfoEntity> orderInfoEntityList = orderService.selectOrderByStatus("D04", beginDate, currentDate);
-
+        List<OrderInfoEntity> orderInfoEntityList =  orderService.selectOrderByStatus("D04", beginDate, currentDate);
         BigDecimal amt = new BigDecimal(0);
         BigDecimal totalPrice = new BigDecimal(0);
         BigDecimal xieYiPrice = new BigDecimal(0);
@@ -99,15 +98,15 @@ public class MailStatis2ScheduleTask {
             try {
                 orderDetailInfoDto = orderService.getOrderDetailInfoDto("", orderInfoEntity.getOrderId());
             } catch (BusinessException e) {
-               LOGGER.error("orderId {} dto null ....",orderInfoEntity.getOrderId());
+                LOGGER.error("orderId {} dto null ....", orderInfoEntity.getOrderId());
             }
             if (orderDetailInfoDto == null) {
                 continue;
             }
             //订单明细list
             List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = orderDetailInfoDto.getOrderDetailInfoList();
-            if(CollectionUtils.isEmpty(goodsInfoInOrderDtoList)){
-                LOGGER.info("goodsInfoInOrderDtoList is empty ,orderId {}",orderInfoEntity.getOrderId());
+            if (CollectionUtils.isEmpty(goodsInfoInOrderDtoList)) {
+                LOGGER.info("goodsInfoInOrderDtoList is empty ,orderId {}", orderInfoEntity.getOrderId());
                 continue;
             }
             for (GoodsInfoInOrderDto goodsInfoInOrderDto :
@@ -120,7 +119,7 @@ public class MailStatis2ScheduleTask {
                     //成本价
                     totalPrice = totalPrice.add(goodsInfoInOrderDto.getGoodsPrice().multiply(new BigDecimal(goodsInfoInOrderDto.getBuyNum())));
                 } catch (Exception e) {
-                   LOGGER.error("totalPrice cul error goodsInfoInOrderDto {}", JSONObject.toJSONString(goodsInfoInOrderDto));
+                    LOGGER.error("totalPrice cul error goodsInfoInOrderDto {}", JSONObject.toJSONString(goodsInfoInOrderDto));
                 }
                 try {
                     for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockInfoEntityList) {
@@ -138,7 +137,7 @@ public class MailStatis2ScheduleTask {
         ExportDomain1 exportDomain1 = new ExportDomain1();
         exportDomain1.setAmt(amt.toString());
         exportDomain1.setDate(beginDate + " ~ " + dateBefore);
-        exportDomain1.setPrice(totalPrice+"/"+xieYiPrice);
+        exportDomain1.setPrice(totalPrice + "/" + xieYiPrice);
         list.add(exportDomain1);
         MailSenderInfo mailSenderInfo = new MailSenderInfo();
         mailSenderInfo.setMailServerHost("SMTP.263.net");
