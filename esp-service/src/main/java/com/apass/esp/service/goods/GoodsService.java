@@ -878,6 +878,7 @@ public class GoodsService {
             return null;
         }
         Goods goods = new Goods();
+        try {
         goods.setId(Integer.valueOf(g.getId() + ""));
         goods.setGoodId(g.getGoodId());
         goods.setCategoryId1(g.getCategoryId1());
@@ -943,6 +944,12 @@ public class GoodsService {
         }
         goods.setSaleNum(goodsSum);
         goods.setSaleNumFor30(goodsSum30);
+        
+        } catch (Exception e) {
+			LOGGER.error("goodsInfoToGoods error",e);
+			return null;
+		}
+        
         try {
             Map<String, Object> params = getMinPriceGoods(g.getGoodId());
             if (params.isEmpty()) {
@@ -986,7 +993,7 @@ public class GoodsService {
             }
 
         } catch (Exception e) {
-            e.getStackTrace();
+        	LOGGER.error("-----exception-------",e);
             return null;
         }
         return goods;
