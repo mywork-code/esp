@@ -642,7 +642,7 @@
             last_acceptgoodsdate		lastAcceptGoodsDate,
             acceptgoodsdate			acceptGoodsDate
 	    from t_esp_order_info
-		where  orderstatus in('D04','D02','D03')
+		where  orderstatus in('D04','D02','D03','D05')
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
