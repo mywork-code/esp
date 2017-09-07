@@ -915,7 +915,7 @@ public class GoodsService {
             try {
                 goods.setGoodsLogoUrlNew(imageService.getImageUrl(g.getGoodsLogoUrl()));
             } catch (BusinessException e) {
-                e.getStackTrace();
+            	goods.setGoodsLogoUrlNew("");
             }
         }
 
@@ -946,7 +946,7 @@ public class GoodsService {
         goods.setSaleNumFor30(goodsSum30);
         
         } catch (Exception e) {
-			LOGGER.error("goodsInfoToGoods error",e);
+			LOGGER.error("goodsInfoToGoods error---{}",e);
 			return null;
 		}
         
@@ -964,6 +964,7 @@ public class GoodsService {
                 try {
                     descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(g.getExternalId()));
                 } catch (Exception e) {
+                	return null;
                 }
                 String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
                 int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
@@ -981,7 +982,6 @@ public class GoodsService {
                 goods.setGoodsSkuAttrPinyin(Pinyin4jUtil.converterToSpell(goods.getGoodsSkuAttr()));
             }else{
                 goods.setGoodsSkuAttrPinyin("");
-
             }
             if(SourceType.JD.getCode().equalsIgnoreCase(g.getSource())){
                 JdApiResponse<JSONObject> jdApiResponse =  jdProductApiClient.productDetailQuery(Long.valueOf(g.getExternalId()));
@@ -993,7 +993,7 @@ public class GoodsService {
             }
 
         } catch (Exception e) {
-        	LOGGER.error("-----exception-------",e);
+        	LOGGER.error("-----exception-------{}",e);
             return null;
         }
         return goods;
