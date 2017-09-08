@@ -1,10 +1,11 @@
 package com.apass.esp.domain.entity.order;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.apass.gfb.framework.annotation.MyBatisEntity;
 
 /**
  * 商品订单实体
@@ -202,7 +203,7 @@ public class OrderInfoEntity {
     /** 是否删除 **/
     private String isDelete;
     
-    public String getIsDelete() {
+	public String getIsDelete() {
 		return isDelete;
 	}
 

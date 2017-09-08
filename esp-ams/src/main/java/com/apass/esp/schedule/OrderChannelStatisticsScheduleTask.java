@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -82,40 +84,87 @@ public class OrderChannelStatisticsScheduleTask {
 		
 		List<ChanelStatisticsVo> chanelList = new ArrayList<ChanelStatisticsVo>();
 		
-		BigDecimal buyAmtSum = BigDecimal.ZERO;
-		BigDecimal payAmtSum = BigDecimal.ZERO;
-		
-		Long buyPersonNums = 0l;
-		Long payPersonNums = 0l;
-		
-		Map<String,String> buyPersonParams = Maps.newHashMap();
-		Map<String,String> payPersonParams = Maps.newHashMap();
+		/**
+		 * 渠道-总人数
+		 */
+		Map<String,Set<Long>> buyParams = Maps.newHashMap();
+		/**
+		 * 渠道-下单金额
+		 */
+		Map<String,BigDecimal> buyAmtSum = Maps.newHashMap();
+		/**
+		 * 渠道--支付金额
+		 */
+		Map<String,BigDecimal> payAmtSum = Maps.newHashMap();
+		/**
+		 * 渠道--支付买家数
+		 */
+		Map<String,Set<Long>> payParams = Maps.newHashMap();
 		for (OrderInfoEntity order : orderList) {
-			buyAmtSum  = buyAmtSum.add(order.getOrderAmt());
+			
+			String userChannel = getChannelInfo(order.getUserId()+"");
+			/**
+			 * 根据渠道统计人数(渠道-总人数)
+			 */
+			if(buyParams.containsKey(userChannel)){
+				buyParams.get(userChannel).add(order.getUserId());
+			}else{
+				Set<Long> ls = new HashSet<Long>();
+				ls.add(order.getUserId());
+				buyParams.put(userChannel,ls);
+			}
+			/**
+			 * 根据渠道统计下单金额
+			 */
+			if(buyAmtSum.containsKey(userChannel)){
+				BigDecimal  money =  buyAmtSum.get(userChannel).add(order.getOrderAmt());
+				buyAmtSum.put(userChannel, money);
+			}else{
+				buyAmtSum.put(userChannel, order.getOrderAmt());
+			}
+			
+			/**
+			 * 根据渠道统计支付金额
+			 */
 			if(OrderStatus.isContail(order.getStatus())){
-				payAmtSum = payAmtSum.add(order.getOrderAmt());
-				if(!payPersonParams.containsKey(order.getUserId()+"")){
-					payPersonNums +=1;
-					payPersonParams.put(order.getUserId()+"", order.getUserId()+"");
+				if(payAmtSum.containsKey(userChannel)){
+					BigDecimal  money =  payAmtSum.get(userChannel).add(order.getOrderAmt());
+					payAmtSum.put(userChannel, money);
+				}else{
+					payAmtSum.put(userChannel, order.getOrderAmt());
 				}
 			}
 			
-			if(!buyPersonParams.containsKey(order.getUserId()+"")){
-				//下单人数
-				buyPersonNums += 1;
-				buyPersonParams.put(order.getUserId()+"", order.getUserId()+"");
+			/**
+			 * 根据渠道统计支付的人数
+			 */
+			if(OrderStatus.isContail(order.getStatus())){
+				if(payParams.containsKey(userChannel)){
+					payParams.get(userChannel).add(order.getUserId());
+				}else{
+					Set<Long> ls = new HashSet<Long>();
+					ls.add(order.getUserId());
+					payParams.put(userChannel,ls);
+				}
 			}
 		}
-		buyAmtSum = buyAmtSum.setScale(2, BigDecimal.ROUND_DOWN);
-		payAmtSum = payAmtSum.setScale(2, BigDecimal.ROUND_DOWN);
+		
 		ChanelStatisticsVo v = null;
-		for (String userId : buyPersonParams.keySet()) {
+		for (String channel : buyParams.keySet()) {
 			v = new ChanelStatisticsVo();
-			v.setChanel(getChannelInfo(userId));
-			v.setBuyAmtSum(buyAmtSum);
-			v.setPayAmtSum(payAmtSum);
-			v.setBuyPersonNums(buyPersonNums);
-			v.setPayPersonNums(payPersonNums);
+			v.setChanel(channel);
+			v.setBuyAmtSum(buyAmtSum.get(channel).setScale(2, BigDecimal.ROUND_DOWN));
+			BigDecimal payAmt = payAmtSum.get(channel);
+			if(payAmt == null){
+				payAmt = new BigDecimal(0);
+			}
+			v.setPayAmtSum(payAmt.setScale(2, BigDecimal.ROUND_DOWN));
+			v.setBuyPersonNums(buyParams.get(channel).size());
+			Long size = 0L;
+			if(payParams.get(channel) != null){
+				size = (long) payParams.get(channel).size();
+			}
+			v.setPayPersonNums(size);
 			v.setDate(DateFormatUtil.dateToString(cal.getTime()));
 			chanelList.add(v);
 		}
