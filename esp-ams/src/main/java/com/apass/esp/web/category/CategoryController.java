@@ -29,6 +29,8 @@ import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
@@ -104,6 +106,7 @@ public class CategoryController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
+    @LogAnnotion(operationType = "新增类目", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response addCategory(@RequestBody CategoryDto dto) {
         try {
             // 验证传入参数是否符合要求
@@ -125,6 +128,7 @@ public class CategoryController {
      */
     @RequestMapping(value = "/edit")
     @ResponseBody
+    @LogAnnotion(operationType = "修改类目", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response updateCategoryName(@RequestBody CategoryDto dto) throws BusinessException {
         try {
             validateUpdateCategoryDto(dto);
