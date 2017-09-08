@@ -873,12 +873,12 @@ public class GoodsService {
     }
 
     public Goods goodsInfoToGoods(GoodsInfoEntity g) {
-        LOGGER.info("goodsInfoToGoods被调用了:{}",GsonUtils.toJson(g));
         if (g == null) {
             return null;
         }
         Goods goods = new Goods();
         try {
+        LOGGER.info("goodsInfoToGoods被调用了:{}",GsonUtils.toJson(g));
         goods.setId(Integer.valueOf(g.getId() + ""));
         goods.setGoodId(g.getGoodId());
         goods.setCategoryId1(g.getCategoryId1());
@@ -963,15 +963,14 @@ public class GoodsService {
                 Map<String, Object> descMap = new HashMap<String, Object>();
                 try {
                     descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(g.getExternalId()));
+                    String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
+                    int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
+                    if (StringUtils.isNotBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
+                        goods.setGoodsSkuAttr(jdGoodsSimilarSku);
+                    }
                 } catch (Exception e) {
-                	return null;
+                    LOGGER.error("-------  jdGoodsSimilarSku has error when building es's index--------",e);
                 }
-                String jdGoodsSimilarSku = (String) descMap.get("jdGoodsSimilarSku");
-                int jdSimilarSkuListSize = (int) descMap.get("jdSimilarSkuListSize");
-                if (StringUtils.isNotBlank(jdGoodsSimilarSku) && jdSimilarSkuListSize > 0) {
-                    goods.setGoodsSkuAttr(jdGoodsSimilarSku);
-                }
-
             } else {
                 goods.setGoodsSkuAttr(String.valueOf(params.get("minSkuAttr")));
             }
