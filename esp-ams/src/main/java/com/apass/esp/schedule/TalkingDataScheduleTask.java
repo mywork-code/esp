@@ -161,8 +161,8 @@ public class TalkingDataScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("电商流量日报");
         mailSenderInfo.setContent("请查收电商流量日报..");
-        mailSenderInfo.setToAddress(sendToAddressFlow);
-        mailSenderInfo.setCcAddress(copyToAddressFlow);
+        mailSenderInfo.setToAddress("xujie@apass.cn,zhangjinfeng@apass.cn");
+//        mailSenderInfo.setCcAddress(copyToAddressFlow);
 
 
         Multipart msgPart = new MimeMultipart();
