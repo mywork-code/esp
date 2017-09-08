@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
  */
 @Service
 public class TalkDataService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TalkDataService.class);
     @Autowired
     private CommonHttpClient commonHttpClient;
 
@@ -51,7 +55,7 @@ public class TalkDataService {
         try {
             TimeUnit.SECONDS.sleep(11);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("-----getTalkingData1 Exception---->",e);
         }
         TalkingDataDto talkingDataDto = new TalkingDataDto();
         talkingDataDto.setGroupby(groupby);

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.apass.esp.schedule.TalkingDataScheduleTask;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -81,6 +82,8 @@ public class OrderExceptionController {
     @Autowired
     private MerchantInforRepository merchant;
 
+    @Autowired
+    private TalkingDataScheduleTask talkingDataScheduleTask;
     /**
      * 订单信息页面
      */
@@ -245,6 +248,12 @@ public class OrderExceptionController {
     @RequestMapping("/channelTask")
     public Response channelTask(){
     	channelTask.channelStatistics();
+    	return Response.success("发送成功");
+    }
+    @ResponseBody
+    @RequestMapping("/talkingDataTask")
+    public Response talkingDataTask(){
+        talkingDataScheduleTask.schedule();
     	return Response.success("发送成功");
     }
     

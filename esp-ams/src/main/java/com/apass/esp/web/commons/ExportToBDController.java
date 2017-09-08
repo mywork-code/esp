@@ -46,7 +46,7 @@ public class ExportToBDController {
      * @param request
      * @param response
      */
-    @RequestMapping("/percentConversion")
+        @RequestMapping("/percentConversion")
     public void percentConversion(HttpServletRequest request, HttpServletResponse response) {
         LOGGER.info("15天内转化率导出开始执行....");
         String metrics = "activeuser";

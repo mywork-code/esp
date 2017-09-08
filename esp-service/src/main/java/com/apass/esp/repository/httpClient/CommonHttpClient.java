@@ -176,7 +176,7 @@ public class CommonHttpClient {
             Map<String, String> headerparams = new HashMap<String, String>();
             headerparams.put("Content-Type", "application/json");
             StringEntity stringEntity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
-            LOGGER.info( "talkingData返回数据:requestUrl {} stringEntity {} requestJson {}",requestUrl,stringEntity,requestJson);
+            LOGGER.info( "talkingData请求数据:requestUrl {} stringEntity {} requestJson {}",requestUrl,stringEntity,requestJson);
             String responseJson = HttpClientUtils.getMethodPostContent(requestUrl, stringEntity, headerparams);
             LOGGER.info( "talkingData返回数据:requestUrl {} responseJson {}",requestUrl, responseJson);
 //            Response response = GsonUtils.convertObj(responseJson, Response.class);
@@ -185,7 +185,7 @@ public class CommonHttpClient {
 //            }
             return responseJson;
         } catch (Exception e) {
-            LOGGER.error("talkingData返回数据",  e);
+            LOGGER.error("talkingData--------Exception----------",  e);
             return null;
         }
     }
