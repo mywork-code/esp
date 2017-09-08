@@ -22,18 +22,39 @@ public class ExportDomainFor {
      */
     private String end;
 
+    /**
+     * 类型：ios,android
+     */
     private String type;
 
+    /**
+     * 查询活跃用户数
+     */
     private int activeUser;
 
+    /**
+     * 新增用户数
+     */
     private int newUser;
 
+    /**
+     * 启动次数
+     */
     private int qidongTime;
 
+    /**
+     * 平均每次启动使用时长
+     */
     private String userTime;
 
+    /**
+     * 新增用户次日留存率
+     */
     private String day1retention1;
 
+    /**
+     * 活跃用户次日留存率
+     */
     private String  dauday1retention1;
 
     public String getDay1retention1() {

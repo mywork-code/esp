@@ -72,6 +72,9 @@ public class TalkingDataScheduleTask {
     @Value("${orderstatistics.daily.copyto}")
     public String copyToAddressStatis;
 
+    /**
+     * 电商流量日报
+     */
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule() {
         if (!systemEnvConfig.isPROD()) {
@@ -92,12 +95,12 @@ public class TalkingDataScheduleTask {
                     // 去talkingDate中获取UV(查询活跃用户数)
                     Date beginDate = DateFormatUtil.addDays(new Date(), i);
                     Date endDate = DateFormatUtil.addDays(beginDate, 1);
-                    String metrics = "activeuser";
-                    String newuser = "newuser";
-                    String session = "session";
-                    String avgsessionlength = "avgsessionlength";
-                    String day1retention = "day1retention";//新增
-                    String dauday1retention = "dauday1retention";
+                    String metrics = "activeuser";//查询活跃用户数
+                    String newuser = "newuser";//新增用户数
+                    String session = "session";//启动次数
+                    String avgsessionlength = "avgsessionlength";//平均每次启动使用时长
+                    String day1retention = "day1retention";//新增用户次日留存率
+                    String dauday1retention = "dauday1retention";//活跃用户次日留存率
 
                     String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, new Date(), metrics, groupby, type);
                     String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, new Date(), newuser, groupby, type);
@@ -139,7 +142,7 @@ public class TalkingDataScheduleTask {
                     exportDomainFor.setDauday1retention1(dauday1retention1);
                     lists.add(exportDomainFor);
                 } catch (Exception e) {
-                    LOGGER.error("error i {}", i);
+                    LOGGER.error("error i {}", e);
                 }
             }
         }
@@ -183,6 +186,10 @@ public class TalkingDataScheduleTask {
     }
 
 
+    /**
+     * 电商交易明细统计日报
+     * @throws InterruptedException
+     */
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule2() throws InterruptedException {
         Date beginDate = DateFormatUtil.addDays(new Date(), -1);
