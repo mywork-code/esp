@@ -27,6 +27,8 @@ import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
@@ -155,6 +157,7 @@ public class GoodsBaseInfoSiftController {
 	 */
 	@ResponseBody
 	@RequestMapping("/update")
+	@LogAnnotion(operationType = "设置商品是否为精选", valueType = LogValueTypeEnum.VALUE_REQUEST)
 	public Response handleDelete(HttpServletRequest request) {
 		try {
 			// 查询商品精选数量
