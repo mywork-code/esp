@@ -27,6 +27,8 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -58,6 +60,7 @@ public class ActivityInfoController {
      */
     @ResponseBody
     @RequestMapping("/insert")
+    @LogAnnotion(operationType = "设置活动", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String insert(HttpServletRequest request) {
         try {
             String ids = HttpWebUtils.getValue(request, "ids");
@@ -288,6 +291,7 @@ public class ActivityInfoController {
      */
     @ResponseBody
     @RequestMapping("/editAllActivity")
+    @LogAnnotion(operationType = "活动复核", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public String editAllActivity(HttpServletRequest request) {
         String ids = HttpWebUtils.getValue(request, "ids");
         String status = HttpWebUtils.getValue(request, "status");
@@ -307,6 +311,7 @@ public class ActivityInfoController {
      */
     @ResponseBody
     @RequestMapping("/setInvalid")
+    @LogAnnotion(operationType = "设置活动无效", valueType = LogValueTypeEnum.VALUE_DTO)
     public String setInvalid(String id){
     	try {
     		if(StringUtils.isBlank(id)){
