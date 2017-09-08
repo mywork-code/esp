@@ -63,9 +63,9 @@ public class IndexManager<T> {
         String value = condition.getGoodsName();
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())||Pinyin4jUtil.isContainSpecial(condition.getGoodsName())) {
             MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
-                    "categoryName1", "categoryName2", "categoryName3", "goodsName", "goodsSkuAttr");
-            multiMatchQueryBuilder.field("categoryName1", 0.8f);
-            multiMatchQueryBuilder.field("categoryName2", 1f);
+                     "categoryName3", "goodsName", "goodsSkuAttr");
+//            multiMatchQueryBuilder.field("categoryName1", 0.8f);
+//            multiMatchQueryBuilder.field("categoryName2", 1f);
             multiMatchQueryBuilder.field("categoryName3", 1.5f);
             multiMatchQueryBuilder.field("goodsName", 2f);
             multiMatchQueryBuilder.field("goodsSkuAttr", 0.8f);

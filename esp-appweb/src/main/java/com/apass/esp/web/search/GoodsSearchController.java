@@ -206,6 +206,7 @@ public class GoodsSearchController {
     
     @POST
 	@Path(value = "/search2")
+    @Deprecated
 	public Response search(Map<String, Object> paramMap) {
 		try {
 	    	String deviceId = CommonUtils.getValue(paramMap, "deviceId");//设备号
