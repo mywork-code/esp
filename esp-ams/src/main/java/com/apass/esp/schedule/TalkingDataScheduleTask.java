@@ -60,11 +60,17 @@ public class TalkingDataScheduleTask {
     @Value("${monitor.send.password}")
     public String sendPassword;
 
-    @Value("${order.daily.sendto}")
-    public String sendToAddress;
+    @Value("${orderflow.daily.sendto}")
+    public String sendToAddressFlow;
 
-    @Value("${order.daily.copyto}")
-    public String copyToAddress;
+    @Value("${orderflow.daily.copyto}")
+    public String copyToAddressFlow;
+    
+    @Value("${orderstatistics.daily.sendto}")
+    public String sendToAddressStatis;
+
+    @Value("${orderstatistics.daily.copyto}")
+    public String copyToAddressStatis;
 
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule() {
@@ -152,8 +158,8 @@ public class TalkingDataScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("电商流量日报");
         mailSenderInfo.setContent("请查收电商流量日报..");
-        mailSenderInfo.setToAddress(sendToAddress);
-        mailSenderInfo.setCcAddress(copyToAddress);
+        mailSenderInfo.setToAddress(sendToAddressFlow);
+        mailSenderInfo.setCcAddress(copyToAddressFlow);
 
 
         Multipart msgPart = new MimeMultipart();
@@ -232,8 +238,8 @@ public class TalkingDataScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("电商交易明细统计日报");
         mailSenderInfo.setContent("请查收电商交易明细统计日报..");
-        mailSenderInfo.setToAddress(sendToAddress);
-        mailSenderInfo.setCcAddress(copyToAddress);
+        mailSenderInfo.setToAddress(sendToAddressStatis);
+        mailSenderInfo.setCcAddress(copyToAddressStatis);
 
 
         Multipart msgPart = new MimeMultipart();

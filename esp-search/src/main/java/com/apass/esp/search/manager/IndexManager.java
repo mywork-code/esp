@@ -1,12 +1,14 @@
 package com.apass.esp.search.manager;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,23 +19,24 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.apass.esp.search.condition.GoodsSearchCondition;
-import com.apass.esp.search.entity.IdAble;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.enums.SortMode;
-import com.apass.esp.search.utils.ESDataUtil;
-import com.apass.esp.search.utils.Esprop;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.search.utils.PropertiesUtils;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
@@ -63,9 +66,9 @@ public class IndexManager<T> {
         String value = condition.getGoodsName();
         if (Pinyin4jUtil.isContainChinese(condition.getGoodsName())||Pinyin4jUtil.isContainSpecial(condition.getGoodsName())) {
             MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(value,
-                     "categoryName3", "goodsName", "goodsSkuAttr");
-//            multiMatchQueryBuilder.field("categoryName1", 0.8f);
-//            multiMatchQueryBuilder.field("categoryName2", 1f);
+                     "categoryName3", "goodsName", "goodsSkuAttr").operator(Operator.AND);
+            multiMatchQueryBuilder.field("categoryName1", 0.8f);
+            multiMatchQueryBuilder.field("categoryName2", 1f);
             multiMatchQueryBuilder.field("categoryName3", 1.5f);
             multiMatchQueryBuilder.field("goodsName", 2f);
             multiMatchQueryBuilder.field("goodsSkuAttr", 0.8f);
@@ -204,6 +207,7 @@ public class IndexManager<T> {
         if (!StringUtils.isEmpty(sortField)) {
             serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
         }
+        serachBuilder.addSort("_score", SortOrder.DESC);
         if (0 != size) {
             serachBuilder.setFrom(from).setSize(size);
         }

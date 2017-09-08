@@ -1,24 +1,21 @@
 package com.apass.esp.web.search;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.goods.GoodsService;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Created by xianzhi.wang on 2017/5/16.
@@ -44,9 +41,12 @@ public class ESClientController {
 	            if (CollectionUtils.isEmpty(goodsList)) {
 	                break;
 	            }
+              LOGGER.info("--------goods index: [" + index + "]-----------");
 	            List<Goods> list = goodsService.getGoodsList(goodsList);
 	            index += BACH_SIZE;
-	            IndexManager.createIndex(list, IndexType.GOODS);
+            if(CollectionUtils.isNotEmpty(list)){
+              IndexManager.createIndex(list, IndexType.GOODS);
+            }
 	        }
         }catch(Exception e){
         	LOGGER.error("----------addData----------", e);
