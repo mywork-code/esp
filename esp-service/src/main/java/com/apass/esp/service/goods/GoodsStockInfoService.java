@@ -50,9 +50,9 @@ public class GoodsStockInfoService {
                 goodStockEntity.setGoodsPrice(goodsPrice);
             }
             BigDecimal goodsCostPrice = goodStockEntity.getGoodsCostPrice();
-            BigDecimal priceCostRate = goodStockEntity.getGoodsPrice().divide(goodsCostPrice,4,BigDecimal.ROUND_CEILING);
+            BigDecimal priceCostRate = goodStockEntity.getGoodsPrice().divide(goodsCostPrice,4,BigDecimal.ROUND_HALF_UP);
             priceCostRate = priceCostRate.multiply(new BigDecimal(100));
-            goodStockEntity.setPriceCostRate(priceCostRate.setScale(2, BigDecimal.ROUND_HALF_UP));
+            goodStockEntity.setPriceCostRate(priceCostRate.setScale(2));
         }
 
         result.setDataList(goodsStockInfoEntities);
