@@ -75,8 +75,8 @@ public class ExportExcleCommonModel {
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件
         try {
-            attach.setDataHandler(new DataHandler(new FileDataSource("/"+fileName+".xlxs")));
-            attach.setFileName(MimeUtility.encodeText(fileName+".xlxs"));
+            attach.setDataHandler(new DataHandler(new FileDataSource("/"+fileName+".xlsx")));
+            attach.setFileName(MimeUtility.encodeText(fileName+".xlsx"));
             msgPart.addBodyPart(attach);
             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
             msgPart.addBodyPart(body);
@@ -130,7 +130,7 @@ public class ExportExcleCommonModel {
                 cellContent.setCellValue(value);
             }
         }
-        FileOutputStream fileOutputStream = new FileOutputStream("/"+fileName+".xlxs");
+        FileOutputStream fileOutputStream = new FileOutputStream("/"+fileName+".xlsx");
         wb.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();

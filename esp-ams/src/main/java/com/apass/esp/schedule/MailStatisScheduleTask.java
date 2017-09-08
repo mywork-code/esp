@@ -163,7 +163,7 @@ public class MailStatisScheduleTask {
         MimeBodyPart body = new MimeBodyPart(); //正文
         MimeBodyPart attach = new MimeBodyPart(); //附件
         try {
-            attach.setDataHandler(new DataHandler(new FileDataSource("/reportingStatistics.xlxs")));
+            attach.setDataHandler(new DataHandler(new FileDataSource("/reportingStatistics.xlsx")));
             attach.setFileName("reportingStatistics.xls");
             msgPart.addBodyPart(attach);
             body.setContent(mailSenderInfo.getContent(), "text/html; charset=utf-8");
@@ -210,7 +210,7 @@ public class MailStatisScheduleTask {
                 cellContent.setCellValue(jsonObject.get(headKeyArr[j]) + "");
             }
         }
-        FileOutputStream fileOutputStream = new FileOutputStream("/reportingStatistics.xlxs");
+        FileOutputStream fileOutputStream = new FileOutputStream("/reportingStatistics.xlsx");
         wb.write(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
