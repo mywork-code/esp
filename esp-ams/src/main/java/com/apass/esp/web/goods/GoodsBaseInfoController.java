@@ -50,6 +50,8 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.service.order.OrderService;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
@@ -106,6 +108,8 @@ public class GoodsBaseInfoController {
     
     @Autowired
     private GoodsEsDao goodsEsDao;
+    @Autowired
+    private OrderService orderService;
 
     /**
      * 图片服务器地址
@@ -609,6 +613,16 @@ public class GoodsBaseInfoController {
 
             if(goodsStockSkuInfo.get(0).getGoodsPrice().compareTo(new BigDecimal(99))<0){
                 return "京东商品价格低于99元，不能上架";
+            }
+            
+            List<SkuNum> skuNumList=new ArrayList<>();
+            SkuNum skuNum=new SkuNum();
+            skuNum.setNum(1);
+            skuNum.setSkuId(Long.parseLong(goodsEntity.getExternalId()));
+            skuNumList.add(skuNum);
+            //验证商品是否可售（当验证为不可售时，提示操作人员）
+            if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+            	 return "该京东商品暂时不可售，不能上架";
             }
         }
         SystemParamEntity systemParamEntity = null;
