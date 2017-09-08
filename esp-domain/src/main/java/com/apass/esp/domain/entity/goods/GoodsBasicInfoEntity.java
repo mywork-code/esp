@@ -26,6 +26,8 @@ public class GoodsBasicInfoEntity {
     private Long goodId;
 
     private Long goodsStockId;
+    
+    private String externalId;
 
     /** 商品名称 **/
     private String goodsName;
@@ -287,4 +289,12 @@ public class GoodsBasicInfoEntity {
         this.source = source;
     }
 
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+    
 }
