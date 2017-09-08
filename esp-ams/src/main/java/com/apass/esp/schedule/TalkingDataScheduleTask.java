@@ -72,6 +72,9 @@ public class TalkingDataScheduleTask {
     @Value("${orderstatistics.daily.copyto}")
     public String copyToAddressStatis;
 
+    /**
+     * 电商流量日报
+     */
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule() {
         if (!systemEnvConfig.isPROD()) {
@@ -183,6 +186,10 @@ public class TalkingDataScheduleTask {
     }
 
 
+    /**
+     * 电商交易明细统计日报
+     * @throws InterruptedException
+     */
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule2() throws InterruptedException {
         Date beginDate = DateFormatUtil.addDays(new Date(), -1);

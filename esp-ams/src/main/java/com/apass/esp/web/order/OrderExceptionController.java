@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.apass.esp.schedule.TalkingDataScheduleTask;
+import com.apass.esp.schedule.*;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,9 +26,6 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
-import com.apass.esp.schedule.OrderChannelStatisticsScheduleTask;
-import com.apass.esp.schedule.OrderInforMailSendScheduleTask;
-import com.apass.esp.schedule.OrderTransactionDetailSchedeuleTask;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -84,6 +81,7 @@ public class OrderExceptionController {
 
     @Autowired
     private TalkingDataScheduleTask talkingDataScheduleTask;
+
     /**
      * 订单信息页面
      */
@@ -251,10 +249,20 @@ public class OrderExceptionController {
     	return Response.success("发送成功");
     }
     @ResponseBody
-    @RequestMapping("/talkingDataTask")
-    public Response talkingDataTask(){
+    @RequestMapping("/talkingDataTask1")
+    public Response talkingDataTask1(){
         talkingDataScheduleTask.schedule();
     	return Response.success("发送成功");
     }
-    
+    @ResponseBody
+    @RequestMapping("/talkingDataTask2")
+    public Response talkingDataTask2(){
+        try {
+            talkingDataScheduleTask.schedule2();
+        } catch (InterruptedException e) {
+            LOG.error("---------------Exception:--------->",e);
+        }
+        return Response.success("发送成功");
+    }
+
 }
