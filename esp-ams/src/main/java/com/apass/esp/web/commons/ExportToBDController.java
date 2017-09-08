@@ -42,6 +42,7 @@ import com.apass.esp.service.talkingdata.TalkDataService;
 import com.apass.esp.utils.ExportDomainForBD;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Lists;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("application/export")
@@ -55,12 +56,11 @@ public class ExportToBDController {
      * @param request
      * @param response
      */
-        @RequestMapping("/percentConversion")
+    @RequestMapping("/percentConversion")
+    @ResponseBody
     public Response percentConversion(HttpServletRequest request, HttpServletResponse response) {
         talkingDataConversionTask.conversionSchedule();
 
         return Response.success("发送成功");
     }
-
-
 }
