@@ -8,6 +8,9 @@ import com.apass.esp.schedule.OrderModifyStatusScheduleTask;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.utils.CronTools;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,7 @@ public class AutoShipController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
+    @LogAnnotion(operationType = "自动发货时间设置", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response update(@RequestBody ShipmentTimeConfigAttr shipmentTimeConfigAttr) {
         ShipmentTimeConfigAttr shipmentTimeConfigAttr1 = kvattrService.get(new ShipmentTimeConfigAttr());
         if (shipmentTimeConfigAttr1 == null) {

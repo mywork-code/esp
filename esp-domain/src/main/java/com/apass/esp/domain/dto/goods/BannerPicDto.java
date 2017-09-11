@@ -39,7 +39,11 @@ public class BannerPicDto {
 	public void setBannerPicFile(MultipartFile bannerPicFile) {
 		this.bannerPicFile = bannerPicFile;
 	}
-
-	 
+	@Override
+	public String toString() {
+		return "BannerPicDto [bannerGoodsId=" + bannerGoodsId
+				+ ", bannerPicName=" + bannerPicName + ", bannerPicOrder="
+				+ bannerPicOrder + ", bannerPicFile=" + bannerPicFile.getName() + "]";
+	}
 
 }

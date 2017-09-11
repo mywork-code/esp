@@ -57,7 +57,7 @@ public class LogAspect {
             //*========数据库日志=========*//    
             LogInfoEntity log =   getControllerMethodLog(joinPoint);
             //保存数据库    
-            logService.saveLog(log);    
+            logService.saveLog(log);   
         }  catch (Exception e) {    
             //记录本地异常日志    
             logger.error("异常信息:{}", e);    
@@ -112,10 +112,10 @@ public class LogAspect {
         	content.append(JSON.toJSONString(request.getParameterMap()));
         }else{
         	for (Object ss : arguments) {
-        		if(ss == null){
-                    continue;
-                }
-        		content.append("#"+JSON.toJSONString(ss)+"#");
+        		if(null == ss){
+        			continue;
+        		}
+            	content.append("#"+ss.toString()+"#");
         	}
         }
         logInfo.setContent(content.toString());

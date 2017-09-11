@@ -28,6 +28,8 @@ import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
@@ -91,6 +93,7 @@ public class SystemParamController {
 
     @RequestMapping("/jd/update")
     @ResponseBody
+    @LogAnnotion(operationType = "京东售价系数编辑", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response updateJdSystemParam(@RequestBody JdSystemParamVo jdSystemParamVo){
         try{
             JdSystemParamVo jdSystemParamVo1 = kvattrService.get(new JdSystemParamVo());

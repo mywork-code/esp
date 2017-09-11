@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LogAttrMapper" >
+   <insert id="insertAttr" parameterType="com.apass.esp.domain.entity.LogAttr">
+    insert into t_esp_log_attr_info (content, ext_id, sort_type, 
+      create_date, update_date)
+    values 
+     <foreach item="item" collection="list" separator=",">
+    (#{item.content}, #{item.extId}, #{item.sortType}, 
+      #{item.createDate}, #{item.updateDate})
+      </foreach>
+  </insert>
+</mapper>
