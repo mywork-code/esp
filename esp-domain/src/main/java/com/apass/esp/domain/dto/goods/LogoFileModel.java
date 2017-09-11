@@ -44,5 +44,13 @@ public class LogoFileModel {
 	public void setEditStockLogoUrl(String editStockLogoUrl) {
 		this.editStockLogoUrl = editStockLogoUrl;
 	}
+
+	@Override
+	public String toString() {
+		return "LogoFileModel [editLogogoodsId=" + editLogogoodsId
+				+ ", editStockinfoIdInForm=" + editStockinfoIdInForm
+				+ ", editGoodsLogoFile=" + editGoodsLogoFile.getName()
+				+ ", editStockLogoUrl=" + editStockLogoUrl + "]";
+	}
 	
 }

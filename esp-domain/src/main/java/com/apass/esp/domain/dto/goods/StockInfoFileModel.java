@@ -102,4 +102,17 @@ public class StockInfoFileModel {
 	private String goodsCostPrice;
 	
 	private MultipartFile stockLogoFile;
+
+	@Override
+	public String toString() {
+		return "StockInfoFileModel [addstockInfogoodsId=" + addstockInfogoodsId
+				+ ", goodsSkuAttr=" + goodsSkuAttr + ", goodsPrice="
+				+ goodsPrice + ", marketPrice=" + marketPrice
+				+ ", goodsCompareUrl=" + goodsCompareUrl + ", goodsCompareUrl2="
+				+ goodsCompareUrl2 + ", stockTotalAmt=" + stockTotalAmt
+				+ ", goodsCostPrice=" + goodsCostPrice + ", stockLogoFile="
+				+ stockLogoFile.getName() + "]";
+	}
+	
+	
 }
