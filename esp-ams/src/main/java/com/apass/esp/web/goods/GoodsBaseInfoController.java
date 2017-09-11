@@ -574,8 +574,8 @@ public class GoodsBaseInfoController {
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
         PaginationManage<GoodsStockInfoEntity> list = null;
         try {
-                list = goodsStockInfoService.pageList(goodsStockInfoEntity,
-                    "0", "10");
+            list = goodsStockInfoService.pageList(goodsStockInfoEntity,
+                "0", "10");
         } catch (BusinessException e) {
             e.printStackTrace();
         }
