@@ -23,6 +23,8 @@ import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.controller.BaseController;
@@ -181,6 +183,7 @@ public class MerchantInforController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/add")
+    @LogAnnotion(operationType = "添加商户信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response addMerchantInfor(HttpServletRequest request) {
         try {
             MerchantInfoEntity mity = this.encapMethod(request);
@@ -215,6 +218,7 @@ public class MerchantInforController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/edit")
+    @LogAnnotion(operationType = "编辑(主)商户信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editMerchantInfor(HttpServletRequest request) {
         try {
             MerchantInfoEntity mity = this.encapMethod(request);
@@ -243,6 +247,7 @@ public class MerchantInforController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/editTemp")
+    @LogAnnotion(operationType = "编辑(临)商户信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editMerchantInforTemp(HttpServletRequest request) {
         try {
             MerchantInfoEntity mity = this.encapMethod(request);
@@ -273,6 +278,7 @@ public class MerchantInforController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/editStatus")
+    @LogAnnotion(operationType = "编辑商户状态", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editMerchantStatus(HttpServletRequest request) {
         try {
             String merchantCode = HttpWebUtils.getValue(request, "merchantCode");

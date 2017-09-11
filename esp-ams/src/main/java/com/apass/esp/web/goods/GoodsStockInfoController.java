@@ -117,6 +117,7 @@ public class GoodsStockInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "新增库存", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response add(@ModelAttribute("stockInfoFileModel") StockInfoFileModel stockInfo) {
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(stockInfo.getAddstockInfogoodsId());

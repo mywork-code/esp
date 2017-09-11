@@ -64,7 +64,7 @@
 	
 	
 	<!-- 插入日志信息到日志表中-->
-	<insert id="insert" parameterType="LogInfoEntity">
+	<insert id="insert" parameterType="LogInfoEntity" useGeneratedKeys="true" keyProperty="id">
 	      <![CDATA[
 	               INSERT INTO t_esp_log_info 
 					(  

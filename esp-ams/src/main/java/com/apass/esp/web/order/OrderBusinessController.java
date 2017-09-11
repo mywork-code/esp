@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 
 /**
@@ -42,6 +44,7 @@ public class OrderBusinessController {
 	 */
 	@ResponseBody
 	@RequestMapping("/updateLogisticsInfoAndOrderInfoByOrderId")
+	@LogAnnotion(operationType = "发货", valueType = LogValueTypeEnum.VALUE_REQUEST)
 	public Response updateLogisticsDetail(HttpServletRequest request) {
 		try {
 			// 获取请求的参数
