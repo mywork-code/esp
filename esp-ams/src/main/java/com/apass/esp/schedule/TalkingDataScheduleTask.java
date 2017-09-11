@@ -75,11 +75,11 @@ public class TalkingDataScheduleTask {
     /**
      * 电商流量日报
      */
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0/1 * * * *")
     public void schedule() {
-        if (!systemEnvConfig.isPROD()) {
-            return;
-        }
+//        if (!systemEnvConfig.isPROD()) {
+//            return;
+//        }
         String groupby = "daily";
         List<ExportDomainFor> lists = Lists.newArrayList();
         for (int j = 0; j < 2; j++) {
