@@ -174,6 +174,7 @@ public class CommonHttpClient {
             String requestJson = GsonUtils.toJson(talkingDataDto);
 
             Map<String, String> headerparams = new HashMap<String, String>();
+            headerparams.put("X-Real-IP","180.169.91.26");
             headerparams.put("Content-Type", "application/json");
             StringEntity stringEntity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
             LOGGER.info( "talkingData请求数据:requestUrl {} stringEntity {} requestJson {}",requestUrl,stringEntity,requestJson);
