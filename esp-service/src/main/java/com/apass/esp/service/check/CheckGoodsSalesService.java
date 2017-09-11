@@ -17,7 +17,6 @@ import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 @Service
 public class CheckGoodsSalesService {
@@ -39,7 +38,7 @@ public class CheckGoodsSalesService {
 			gbinfo.setRows(100);
 			List<GoodsBasicInfoEntity> goodslist = goodsService.searchJDGoodsList(gbinfo);
 			for (int j = 0; j < goodslist.size(); j++) {
-//				LOGGER.info("商品goodsID", GsonUtils.toJson(goodslist.get(j).getGoodId().toString()));
+				LOGGER.info("商品goodsID", goodslist.get(j).getGoodId().toString());
 				// 从ES中查询商品详情信息
 				Goods goods = IndexManager.getDocument("goods", IndexType.GOODS,
 						Integer.parseInt(goodslist.get(j).getGoodId().toString()));
@@ -55,16 +54,20 @@ public class CheckGoodsSalesService {
 					if (null != goods) {
 						GoodsInfoEntity entity = goodsService.selectByGoodsId(goodslist.get(j).getGoodId());
 						Goods goods2 = goodsService.goodsInfoToGoods(entity);
-						LOGGER.info("商品下架，删除索引传递的参数:{}", GsonUtils.toJson(goods2));
-						goodsEsDao.delete(goods2);
+						if (null != goods2) {
+							goodsEsDao.delete(goods2);
+							LOGGER.info("商品不可售，删除ES中的索引", goodslist.get(j).getGoodId().toString());
+						}
 					}
 				} else {
 					// 京东可售
 					if (null == goods) {
 						GoodsInfoEntity entity2 = goodsService.selectByGoodsId(goodslist.get(j).getGoodId());
 						Goods goods3 = goodsService.goodsInfoToGoods(entity2);
-						LOGGER.info("审核通过,添加索引传递的参数:{}", GsonUtils.toJson(goods3));
-						goodsEsDao.add(goods3);
+						if (null != goods3) {
+							goodsEsDao.add(goods3);
+							LOGGER.info("商品可售,添加ES索引",goodslist.get(j).getGoodId().toString());
+						}
 					}
 				}
 
