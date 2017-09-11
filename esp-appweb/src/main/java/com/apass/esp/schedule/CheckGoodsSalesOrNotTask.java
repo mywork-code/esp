@@ -24,7 +24,7 @@ public class CheckGoodsSalesOrNotTask {
 	/**
 	 * 每天凌晨一点执行，校验商品是否可售
 	 */
-//	@Scheduled(cron = "0 0 1 * * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void checkGoodsSales() {
 		try {
 			logger.info("执行校验商品是否可售定时任务开始");
