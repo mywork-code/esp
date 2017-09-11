@@ -246,7 +246,20 @@ public class GoodsService {
         goodsBasicInfoEntity.setRows(limitInteger);
         return goodsBasicRepository.searchGoodsListPrice(goodsBasicInfoEntity);
     }
-
+    /**
+     * 查询可上架的京东商品
+     * @return
+     */
+    public List<GoodsBasicInfoEntity> searchJDGoodsList(GoodsBasicInfoEntity gbinfoty){
+    	return goodsBasicRepository.searchJDGoodsList(gbinfoty);
+    }
+    /**
+     * 查询可上架的京东商品数量
+     * @return
+     */
+    public Integer selectJDGoodsCount(){
+    	return goodsBasicRepository.selectJDGoodsCount();
+    }
     /**
      * 通过类目id查询商品[客户端分页](商品上架时间)(按商品销量排列)(商品创建时间)(商品售价)(数量)
      */
