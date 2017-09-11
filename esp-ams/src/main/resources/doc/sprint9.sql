@@ -24,3 +24,6 @@ CREATE TABLE `t_esp_weex_info` (
   `create_user` varchar(12) NOT NULL DEFAULT '' COMMENT '创建人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='相关weex JS信息管理表';
+
+ALTER TABLE `t_esp_weex_info`
+ADD COLUMN `weex_type`  varchar(12) NOT NULL DEFAULT '' COMMENT 'weex的类型(commission或wallet)';
