@@ -7,7 +7,7 @@ package com.apass.gfb.framework.log;
  */
 public enum LogValueTypeEnum {
     
-    VALUE_DTO("G00","Dto"),//dto类方式
+    VALUE_DTO("G00","Dto"),//dto类方式,请重写dto中的头string方法
     
     VALUE_REQUEST("G01","Original"),//request方式
   

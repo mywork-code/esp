@@ -33,6 +33,8 @@ import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.security.controller.BaseController;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
@@ -129,6 +131,7 @@ public class BannerController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/delete")
+    @LogAnnotion(operationType = "删除banner信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response deleteBanner(HttpServletRequest request) {
         try {
             String id = HttpWebUtils.getValue(request, "id");
@@ -181,6 +184,7 @@ public class BannerController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/addBannerFile", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "添加banner信息", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response addBannerInfor(AddBannerInfoEntity pageModel) {
         BannerInfoEntity entity = new BannerInfoEntity();
         try {

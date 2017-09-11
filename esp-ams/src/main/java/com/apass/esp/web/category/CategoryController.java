@@ -150,6 +150,7 @@ public class CategoryController {
      */
     @ResponseBody
     @RequestMapping(value = "/addpic", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "类目图片上传", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response uploadPicFile(@ModelAttribute("categoryPicDto")CategoryPicDto categoryPicDto) {
     	MultipartFile file = categoryPicDto.getFile();
     	String categoryLevel = categoryPicDto.getCategoryLevel();

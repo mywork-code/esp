@@ -42,4 +42,12 @@ public class JdSystemParamVo {
     public void setProtocolPrice3(String protocolPrice3) {
         this.protocolPrice3 = protocolPrice3;
     }
+
+	@Override
+	public String toString() {
+		return "JdSystemParamVo [protocolPrice1=" + protocolPrice1
+				+ ", protocolPrice2=" + protocolPrice2 + ", protocolPrice3="
+				+ protocolPrice3 + "]";
+	}
+    
 }

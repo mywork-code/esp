@@ -42,4 +42,11 @@ public class ShipmentTimeConfigAttr {
   public void setTime4(String time4) {
     this.time4 = time4;
   }
+
+@Override
+public String toString() {
+	return "ShipmentTimeConfigAttr [time1=" + time1 + ", time2=" + time2
+			+ ", time3=" + time3 + ", time4=" + time4 + "]";
+}
+  
 }
