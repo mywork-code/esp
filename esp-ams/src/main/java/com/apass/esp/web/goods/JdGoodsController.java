@@ -19,6 +19,8 @@ import com.apass.esp.service.UsersService;
 import com.apass.esp.service.jd.JdCategoryService;
 import com.apass.esp.service.jd.JdGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 
@@ -47,8 +49,14 @@ public class JdGoodsController {
         return Response.successResponse(jdCategoryService.listAll());
     }
 
+    /**
+     * 管理京东类目
+     * @param param
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/relevance")
+    @LogAnnotion(operationType = "京东类目关联", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response relevanceJdCategory(@RequestParam("param") String param) {
         try {
             if (StringUtils.isBlank(param)) {
@@ -72,7 +80,11 @@ public class JdGoodsController {
 
         return Response.success("关联京东类目成功！");
     }
-
+    /**
+     * 各种验证
+     * @param param
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/disrelevance1")
     public Response disRelevance1(@RequestParam("param") String param) {
@@ -94,6 +106,7 @@ public class JdGoodsController {
      */
     @ResponseBody
     @RequestMapping("/disrelevance")
+    @LogAnnotion(operationType = "京东类目取消关联", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response disRelevanceJdCategory(@RequestParam("param") String param) {
         try {
             if (StringUtils.isBlank(param)) {

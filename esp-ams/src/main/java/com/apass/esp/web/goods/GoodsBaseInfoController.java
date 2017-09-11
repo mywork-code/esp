@@ -325,6 +325,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "商品添加", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response add(@ModelAttribute("pageModel") GoodsInfoEntity pageModel) {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
@@ -365,8 +366,8 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-            HttpServletRequest request) {
+    @LogAnnotion(operationType = "商品修改", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response edit(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
         LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
         String message = SUCCESS;
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
@@ -387,8 +388,8 @@ public class GoodsBaseInfoController {
 
     @ResponseBody
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
-    public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit, Model model,
-            HttpServletRequest request) {
+    @LogAnnotion(operationType = "商品类目修改", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
         String message = SUCCESS;
         try {
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人

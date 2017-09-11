@@ -79,9 +79,9 @@ public class TalkingDataConversionTask {
      */
     @Scheduled(cron = "0 0 8 * * *")
     public void conversionSchedule(){
-//        if (!systemEnvConfig.isPROD()) {
-//            return;
-//        }
+        if (!systemEnvConfig.isPROD()) {
+            return;
+        }
 
         LOGGER.info("15天内转化率导出开始执行....");
         String metrics = "activeuser";

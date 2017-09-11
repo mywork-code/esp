@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,6 +214,7 @@ public class GoodsStockInfoController {
      */
     @ResponseBody
     @RequestMapping("/editStockinfo")
+    @LogAnnotion(operationType = "商品修改库存", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editStockinfo(HttpServletRequest request) {
         String goodsSkuAttr = HttpWebUtils.getValue(request, "goodsSkuAttr");
         String id = HttpWebUtils.getValue(request, "id");
