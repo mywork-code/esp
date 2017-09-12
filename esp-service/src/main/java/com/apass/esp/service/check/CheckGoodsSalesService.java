@@ -53,7 +53,9 @@ public class CheckGoodsSalesService {
 					// 京东不可售
 					if (null != goods) {
 						GoodsInfoEntity entity = goodsService.selectByGoodsId(goodslist.get(j).getGoodId());
-						Goods goods2 = goodsService.goodsInfoToGoods(entity);
+						Goods goods2 = new Goods();
+						goods.setId(entity.getGoodId().intValue());
+						//goodsService.goodsInfoToGoods(entity);
 						if (null != goods2) {
 							goodsEsDao.delete(goods2);
 							LOGGER.info("商品不可售，删除ES中的索引", goodslist.get(j).getGoodId().toString());
