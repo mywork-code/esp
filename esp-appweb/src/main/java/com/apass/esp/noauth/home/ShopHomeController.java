@@ -784,6 +784,7 @@ public class ShopHomeController {
                         Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
 
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
+                returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
 
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
