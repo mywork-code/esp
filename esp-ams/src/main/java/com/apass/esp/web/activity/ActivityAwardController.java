@@ -75,7 +75,7 @@ public class ActivityAwardController {
   @ResponseBody
   @LogAnnotion(operationType = "添加活动配置", valueType = LogValueTypeEnum.VALUE_DTO)
   public Response addIntroConfig(AwardActivityInfoDto dto) throws BusinessException {
-    if (dto.getRebate() == null
+    if (dto.getRebate() == null || dto.getAwardAmont() == null
         || StringUtils.isEmpty(dto.getStartDate()) || StringUtils.isEmpty(dto.getEndDate())) {
       return Response.fail("请输入完整信息...");
     }
@@ -102,11 +102,12 @@ public class ActivityAwardController {
       String id = HttpWebUtils.getValue(request, "id");
       String rebate = HttpWebUtils.getValue(request, "rebate");
       String endDate = HttpWebUtils.getValue(request, "endDate");
-      if (StringUtils.isAnyBlank(id,rebate,endDate)) {
+      String awardAmount = HttpWebUtils.getValue(request, "awardAmount");
+      if (StringUtils.isAnyBlank(id,rebate,endDate,awardAmount)) {
           return Response.fail("请输入完整信息...");
         }
       
-      Integer count = awardActivityInfoService.editActivity(id,rebate,endDate);
+      Integer count = awardActivityInfoService.editActivity(id,rebate,endDate,awardAmount);
       if (count == 1) {
         return Response.success("操作成功...");
       } else {
