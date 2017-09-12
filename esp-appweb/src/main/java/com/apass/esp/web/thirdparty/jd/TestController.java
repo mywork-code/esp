@@ -363,7 +363,7 @@ public class TestController {
         JSONArray jsonArray = jdApiResponse.getResult();
         List<Test> list = new ArrayList<>();
         JSONArray jsonArray122 =new JSONArray();
-        jsonArray122.add(jsonArray.get(14))       ;
+        jsonArray122.add(jsonArray.get(15))       ;
         for (Object jsonArray1 : jsonArray122) {
             JSONObject jsonObject = (JSONObject) jsonArray1;
             Object object = jsonObject.get("page_num");
@@ -448,7 +448,7 @@ public class TestController {
                 jdGoods.setUpdateDate(new Date());
                 jdGoods.setSimilarSkus("");
                 try {
-                   // jdGoodsMapper.insertSelective(jdGoods);
+                    jdGoodsMapper.insertSelective(jdGoods);
                 } catch (Exception e) {
                     LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
                 }
