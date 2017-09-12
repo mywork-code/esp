@@ -10,10 +10,7 @@ import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.order.OrderService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.client.JdOrderApiClient;
-import com.apass.esp.third.party.jd.client.JdProductApiClient;
-import com.apass.esp.third.party.jd.client.JdTokenClient;
+import com.apass.esp.third.party.jd.client.*;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -95,6 +92,9 @@ public class TestController {
     private JdCategoryMapper jdCategoryMapper;
     @Autowired
     private JdGoodsInfoService  jdGoodsInfoService;
+
+    @Autowired
+    private JdAfterSaleApiClient jdAfterSaleApiClient;
 
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     @ResponseBody
@@ -354,7 +354,12 @@ public class TestController {
         return Response.success("1", jsonArrayJdApiResponse);
 
     }
-
+    @RequestMapping(value = "/test11211")
+    @ResponseBody
+    public Response test11111() {
+        JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(60503462184l, 1, 10);
+        return Response.success("1", afsInfo);
+    }
 
     @RequestMapping(value = "/test111")
     @ResponseBody

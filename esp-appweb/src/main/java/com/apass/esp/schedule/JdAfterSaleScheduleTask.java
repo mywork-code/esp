@@ -2,11 +2,16 @@ package com.apass.esp.schedule;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.TxnInfoMapper;
+import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.repository.refund.RefundDetailInfoRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
@@ -26,6 +31,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -68,6 +74,14 @@ public class JdAfterSaleScheduleTask {
     @Autowired
     private OrderRefundRepository orderRefundRepository;
 
+    @Autowired
+    private CashRefundMapper cashRefundMapper;
+
+    @Autowired
+    private OrderInfoRepository orderInfoRepository;
+
+    @Autowired
+    private TxnInfoMapper txnInfoMapper;
     /**
      * 京东售后状态更新
      */
@@ -75,7 +89,9 @@ public class JdAfterSaleScheduleTask {
     public void handleJdConfirmPreInventoryTask() {
         //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
+        LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
+            LOGGER.info("orderInfoEntity.getExtOrderId() {}",orderInfoEntity.getExtOrderId());
             long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
             JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(jdOrderId, 1, 10);
             if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
@@ -85,6 +101,7 @@ public class JdAfterSaleScheduleTask {
             if (result == null || "".equals(result)) {
                 continue;
             }
+            LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(),result);
             JSONArray array = JSONArray.parseArray(result);
             Integer customerExpect = getCustomerExpect(array, orderInfoEntity.getOrderId());
 
@@ -110,6 +127,7 @@ public class JdAfterSaleScheduleTask {
                 if(refundStatus.equals(RefundStatus.REFUND_STATUS05.getCode())){
                     paramMap.put("completionTime",new Date());
                 }
+                LOGGER.info("updateRefundStatusJDByOrderId  orderId {}",orderInfoEntity.getOrderId());
                 orderRefundDao.updateRefundStatusJDByOrderId(paramMap);
             }
         }
@@ -170,8 +188,9 @@ public class JdAfterSaleScheduleTask {
             list.add(afsServiceStep);
         }
         Integer i = Collections.min(list);
+        LOGGER.info("process orderId {} ,i {}",orderId,i);
         if (i == 20 || i == 60) {
-            insertProcess(refundId, RefundStatus.REFUND_STATUS06.getCode(), "");
+            insertProcess(refundId, RefundStatus.REFUND_STATUS06.getCode(), "",orderId);
         } else if (i == 33 || i == 34||i == 32||i == 31) {
             Map<String, String> map = new HashMap<>();
             map.put("orderId", orderId);
@@ -179,11 +198,11 @@ public class JdAfterSaleScheduleTask {
             map.put("approvalUser", "jdAdmin");
             map.put("approvalComments", "同意");
             orderRefundRepository.agreeRefundByOrderId(map);
-            insertProcess(refundId, RefundStatus.REFUND_STATUS02.getCode(), "");
-            insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "");
-            insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "");
+            insertProcess(refundId, RefundStatus.REFUND_STATUS02.getCode(), "",orderId);
+            insertProcess(refundId, RefundStatus.REFUND_STATUS03.getCode(), "",orderId);
+            insertProcess(refundId, RefundStatus.REFUND_STATUS04.getCode(), "",orderId);
         } else if (i == 40 || i == 50) {
-            insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode(), "");
+            insertProcess(refundId, RefundStatus.REFUND_STATUS05.getCode(), "",orderId);
         }
     }
 
@@ -197,6 +216,7 @@ public class JdAfterSaleScheduleTask {
     private Integer getCustomerExpect(JSONArray jsonArray, String orderId) {
         JSONObject jsonObject = (JSONObject) jsonArray.get(0);
         AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+        LOGGER.info("newAfsInfo.. {}",JSONObject.toJSONString(newAfsInfo));
         for (Object object : jsonArray) {
             JSONObject jsonObject1 = (JSONObject) object;
             AfsInfo newAfsInfo1 = AfsInfo.fromOriginalJson(jsonObject1);
@@ -229,13 +249,27 @@ public class JdAfterSaleScheduleTask {
      * @param refundId
      * @param status
      */
-    private void insertProcess(long refundId, String status, String modeMessage) {
+    private void insertProcess(long refundId, String status, String modeMessage,String orderId) {
         Map<String, String> map = new HashMap<>();
         try {
             map.put("refundId", String.valueOf(refundId));
             map.put("nodeName", status);
             List<ServiceProcessEntity> list1 = serviceProcessService.queryServiceProcessByParam(map);
             if (CollectionUtils.isEmpty(list1)) {
+                if(status.equalsIgnoreCase(RefundStatus.REFUND_STATUS05.getCode())){
+                    //RS05时 退款  退款额度
+                    CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
+                    OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
+                    List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(cashRefund.getMainOrderId());
+                    if (CollectionUtils.isNotEmpty(txnInfoEntityList)) {
+                        BigDecimal txnAmt = new BigDecimal(0);
+                        Date date = new Date();
+                        if (txnInfoEntityList.size() == 1) {
+                            
+                        }
+                    }
+
+                }
                 afterSaleService.insertServiceProcessInfo(refundId, status, modeMessage);
             }
         } catch (Exception e) {
