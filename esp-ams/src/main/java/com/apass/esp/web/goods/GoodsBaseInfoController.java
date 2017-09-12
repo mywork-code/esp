@@ -694,7 +694,9 @@ public class GoodsBaseInfoController {
         Integer count = goodsService.updateService(entity);
         if(count == 1){
             GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
-            Goods goods = goodsService.goodsInfoToGoods(entity2);
+            Goods goods = new Goods();
+            goods.setId(entity2.getGoodId().intValue());
+            //goodsService.goodsInfoToGoods(entity2);
             LOGGER.info("商品下架，删除索引传递的参数:{}",GsonUtils.toJson(goods));
             goodsEsDao.delete(goods);
         }
