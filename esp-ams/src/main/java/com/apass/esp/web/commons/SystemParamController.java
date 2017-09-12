@@ -250,19 +250,19 @@ public class SystemParamController {
             MultipartFile weexFile = weexInfoEntity.getWeexFile();
             String url = null;
             if(systemEnvConfig.isDEV()){
-                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
                     url = nfsWeexRoot + "/sit/commission.weex_sit.js";
                 }else {
                     url = nfsWeexRoot + "/sit/wallet.weex_sit.js";
                 }
             }else if(systemEnvConfig.isUAT()){
-                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
                     url = nfsWeexRoot + "/uat/commission.weex_sit.js";
                 }else {
                     url = nfsWeexRoot + "/uat/wallet.weex_sit.js";
                 }
             }else if(systemEnvConfig.isPROD()){
-                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
                     url = nfsWeexRoot + "/prod/commission.weex_sit.js";
                 }else {
                     url = nfsWeexRoot + "/prod/wallet.weex_sit.js";
