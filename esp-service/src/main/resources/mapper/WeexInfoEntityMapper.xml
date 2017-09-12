@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.WeexInfoEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.WeexInfoEntity" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="weex_path" property="weexPath" jdbcType="VARCHAR" />
+    <result column="weex_ver" property="weexVer" jdbcType="VARCHAR" />
+    <result column="weex_eve" property="weexEve" jdbcType="VARCHAR" />
+    <result column="create_data" property="createData" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="weex_type" property="weexType" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    ID, WEEX_PATH, WEEX_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE
+  </sql>
+
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.WeexInfoEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_weex_info (weex_path, weex_ver, weex_eve, 
+      create_data, update_date)
+    values (#{weexPath,jdbcType=VARCHAR}, #{weexVer,jdbcType=VARCHAR}, #{weexEve,jdbcType=VARCHAR}, 
+      #{createData,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.WeexInfoEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_weex_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="weexPath != null" >
+        weex_path,
+      </if>
+      <if test="weexVer != null" >
+        weex_ver,
+      </if>
+      <if test="weexEve != null" >
+        weex_eve,
+      </if>
+      <if test="createData != null" >
+        create_data,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="weexPath != null" >
+        #{weexPath,jdbcType=VARCHAR},
+      </if>
+      <if test="weexVer != null" >
+        #{weexVer,jdbcType=VARCHAR},
+      </if>
+      <if test="weexEve != null" >
+        #{weexEve,jdbcType=VARCHAR},
+      </if>
+      <if test="createData != null" >
+        #{createData,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -846,6 +846,7 @@ function mysort(index, type, gridname, categoryLevel, categoryId, parentId) {
 /** 回显图标* */
 function loadPic(id, pictureUrl) {
 	if (pictureUrl != null) {
+		debugger;
 		$("#" + id).attr("src", "");
 		$("#" + id).attr("src", ctx + "/fileView/query?picUrl=" + pictureUrl);
 	} else {

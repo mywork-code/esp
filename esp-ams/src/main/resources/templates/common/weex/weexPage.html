@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SLD管理平台</title> <#include "../component/library.html"/>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+</style>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/weexPage.js"></script>
+</head>
+<body>
+
+
+	<!-- 系统参数查询列表 -->
+	<div id="weexJslist"></div>
+
+	<!-- 系统参数编辑窗口 -->
+
+	<div id="editWeexJsInfo" class="easyui-dialog" title="weex信息更新"
+		style="width: 600px; height: 260px;"
+		data-options="iconCls:'icon-save',resizable:true,modal:true">
+		<h2 style="text-align: center;">更新weex</h2>
+		<form id="weexJsForm" method="POST" enctype="multipart/form-data" modelAttribute="weexInfoEntity">
+			<table>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>版本号：
+					</td>
+					<td width="30%">
+						<input type="hidden" id="weexId" name = "id">
+						<input type="text" id="weexVer" name="weexVer" style="width: 130px;">
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>weex类型：
+					</td>
+					<td width="10%"><select style="width:120px" id="weexType" name="weexType"
+										   class="easyui-combobox">
+						<option value="" selected="selected">请选择</option>
+						<option value="commission">commission</option>
+						<option value="wallet">wallet</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>文件：
+					</td>
+					<td width="10%">
+						<input type="file" id="weexFile" name="weexFile" style="width: 130px;">
+					</td>
+				</tr>
+
+			</table>
+
+			<table style="width: 100%; text-align: center;">
+				<tr>
+					<td width="100%"><a href="javascript:confirmWeexBtn();"
+						class="easyui-linkbutton agree-btn"
+						data-options="iconCls:'icon-search'">确&nbsp;定</a> <a
+						href="javascript:closeWeexBtn();" class="easyui-linkbutton close-btn"
+						data-options="iconCls:'icon-search'">关&nbsp;闭&nbsp;</a>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
