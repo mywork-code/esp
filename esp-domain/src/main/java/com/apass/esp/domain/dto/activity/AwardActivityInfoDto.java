@@ -14,6 +14,8 @@ public class AwardActivityInfoDto {
     private String endDate;
 
     private BigDecimal rebate;
+    
+    private BigDecimal awardAmont;
 
     private String createBy;
 
@@ -57,10 +59,19 @@ public class AwardActivityInfoDto {
         this.rebate = rebate;
     }
 
+	public BigDecimal getAwardAmont() {
+		return awardAmont;
+	}
+
+	public void setAwardAmont(BigDecimal awardAmont) {
+		this.awardAmont = awardAmont;
+	}
+
 	@Override
 	public String toString() {
 		return "AwardActivityInfoDto [id=" + id + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", rebate=" + rebate + ", createBy="
-				+ createBy + "]";
+				+ ", endDate=" + endDate + ", rebate=" + rebate
+				+ ", awardAmont=" + awardAmont + ", createBy=" + createBy + "]";
 	}
+	
 }
