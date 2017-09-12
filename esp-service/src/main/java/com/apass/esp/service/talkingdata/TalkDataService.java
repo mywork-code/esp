@@ -71,7 +71,7 @@ public class TalkDataService {
         }else{
             integerArrayList.add(1);
         }
-        filter.setChannelids(integerArrayList);
+        filter.setPlatformids(integerArrayList);
         filter.setStart(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD));
         filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
         talkingDataDto.setFilter(filter);

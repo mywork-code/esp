@@ -356,13 +356,15 @@ public class TestController {
     }
 
 
-    @RequestMapping(value = "/test111", method = RequestMethod.POST)
+    @RequestMapping(value = "/test111")
     @ResponseBody
-    public Response test111(@RequestBody Map<String, Object> paramMap) {
+    public Response test111() {
         JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.productPageNumQuery();
         JSONArray jsonArray = jdApiResponse.getResult();
         List<Test> list = new ArrayList<>();
-        for (Object jsonArray1 : jsonArray) {
+        JSONArray jsonArray122 =new JSONArray();
+        jsonArray122.add(jsonArray.get(15))       ;
+        for (Object jsonArray1 : jsonArray122) {
             JSONObject jsonObject = (JSONObject) jsonArray1;
             Object object = jsonObject.get("page_num");
             int pageNum = Integer.parseInt(String.valueOf(object));
@@ -442,6 +444,9 @@ public class TestController {
                 jdGoods.setWeight(new BigDecimal(weight));
                 jdGoods.setUpc(upc);
                 jdGoods.setState(state == 1 ? true : false);
+                jdGoods.setCreateDate(new Date());
+                jdGoods.setUpdateDate(new Date());
+                jdGoods.setSimilarSkus("");
                 try {
                     jdGoodsMapper.insertSelective(jdGoods);
                 } catch (Exception e) {
@@ -480,6 +485,9 @@ public class TestController {
             jdCategory.setCategoryId1(0l);
             jdCategory.setCategoryId2(0l);
             jdCategory.setCategoryId3(0l);
+            jdCategory.setCreateDate(new Date());
+            jdCategory.setUpdateDate(new Date());
+
             try {
                 jdCategoryMapper.insertSelective(jdCategory);
 
