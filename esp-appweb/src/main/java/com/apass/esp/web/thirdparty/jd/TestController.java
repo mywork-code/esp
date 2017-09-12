@@ -448,7 +448,7 @@ public class TestController {
                 jdGoods.setUpdateDate(new Date());
                 jdGoods.setSimilarSkus("");
                 try {
-                   // jdGoodsMapper.insertSelective(jdGoods);
+                    jdGoodsMapper.insertSelective(jdGoods);
                 } catch (Exception e) {
                     LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
                 }
