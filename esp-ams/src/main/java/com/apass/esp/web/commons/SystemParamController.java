@@ -272,7 +272,7 @@ public class SystemParamController {
             }
 
             //修改数据库内容
-            weexInfoEntity.setWeexPath(rootPath+url);
+            weexInfoEntity.setWeexPath(url);
             weexInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
             Integer count = weexInfoService.updateWeexJs(weexInfoEntity);
             if(count != 1){
