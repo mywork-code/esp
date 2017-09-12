@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.entity.log.LogInfoEntity;
+import com.apass.esp.domain.enums.LogAttrEnums;
 import com.apass.esp.domain.enums.StatusCode;
+import com.apass.esp.service.log.LogAttrService;
 import com.apass.esp.service.log.LogService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -37,6 +39,9 @@ public class LogInfoController extends BaseController  {
     @Autowired
     private LogService logService;
     
+    @Autowired
+    private LogAttrService logAttrService;
+    
     /**
      * 商户信息查询(分页)
      */
@@ -47,18 +52,22 @@ public class LogInfoController extends BaseController  {
         try {
             String pageNo = HttpWebUtils.getValue(request, "page");
             String pageSize = HttpWebUtils.getValue(request, "rows");
-            Integer pageNoNum = Integer.valueOf(pageNo);
-            Integer pageSizeNum = Integer.valueOf(pageSize);
+            Integer pageNoNum = null;
+            Integer pageSizeNum = null;
+            try {
+            	pageNoNum = Integer.valueOf(pageNo);
+            	pageSizeNum = Integer.valueOf(pageSize);
+			} catch (Exception e) {
+				pageNoNum = 1 ;
+				pageSizeNum = 1;
+			}
+            
             Page page = new Page();
             page.setPage(pageNoNum <= 0 ? 1 : pageNoNum);
             page.setLimit(pageSizeNum <= 0 ? 1 : pageSizeNum);
 
-            String merchantName = HttpWebUtils.getValue(request, "merchantName");
-            String merchantType = HttpWebUtils.getValue(request, "merchantType");
-
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("merchantName", merchantName);
-            map.put("merchantType", merchantType);
+            map.put("operationType", LogAttrEnums.LOG.getCode());
 
             Pagination<LogInfoEntity> resultPage = logService.getLogForPageByCondition(map, page);
             if (resultPage == null) {
@@ -66,6 +75,10 @@ public class LogInfoController extends BaseController  {
                 respBody.setStatus(StatusCode.SUCCESS_CODE.getCode());
                 return respBody;
             }
+            
+            for (LogInfoEntity log : resultPage.getDataList()) {
+				log.setContent(logAttrService.getContent(log.getId()+""));
+			}
             respBody.setTotal(resultPage.getTotalCount());
             respBody.setRows(resultPage.getDataList());
             respBody.setStatus(StatusCode.SUCCESS_CODE.getCode());

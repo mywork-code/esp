@@ -170,7 +170,9 @@ public class OrderInfoController {
           if(resultMap.isEmpty()){
          		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
          			        purchaseList, sourceFlag, deviceType);
+         		 List<String> merchantCodeList = orderService.merchantCodeList(orders);
          			     resultMap.put("orderList", orders);
+         			     resultMap.put("merchantCodeList", merchantCodeList);
           }
       }
     } catch (BusinessException e) {
