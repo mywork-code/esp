@@ -63,4 +63,12 @@ public class AddBannerInfoEntity {
 	public void setActivityName(String activityName) {
 		this.activityName = activityName;
 	}
+
+	@Override
+	public String toString() {
+		return "AddBannerInfoEntity [bannerName=" + bannerName + ", bannerFile="
+				+ bannerFile.getName() + ", bannerType=" + bannerType + ", bannerOrder="
+				+ bannerOrder + ", activityUrl=" + activityUrl
+				+ ", activityName=" + activityName + "]";
+	}
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -47,6 +49,7 @@ public class RefundBusinessController {
      */
     @ResponseBody
     @RequestMapping("/agreeRefundApplyByOrderId")
+    @LogAnnotion(operationType = "同意售后", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response agreeRefundApplyByOrderId(HttpServletRequest request) {
         try {
             // 获取请求的参数
@@ -83,6 +86,7 @@ public class RefundBusinessController {
      */
     @ResponseBody
     @RequestMapping("/rejectRequestByOrderId")
+    @LogAnnotion(operationType = "驳回售后", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response rejectByOrderId(HttpServletRequest request) {
         try {
             // 获取请求的参数
@@ -123,6 +127,7 @@ public class RefundBusinessController {
      */
     @ResponseBody
     @RequestMapping("/confirmReceiptByOrderId")
+    @LogAnnotion(operationType = "商家确认收货", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response confirmReceiptByOrderId(HttpServletRequest request) {
         try {
             // 获取请求的参数
@@ -156,6 +161,7 @@ public class RefundBusinessController {
      */
     @ResponseBody
     @RequestMapping("/sendGoodsAgain")
+    @LogAnnotion(operationType = "商家重新发货", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response sendGoodsAgain(HttpServletRequest request) {
         try {
             // 获取请求的参数
@@ -195,6 +201,7 @@ public class RefundBusinessController {
      */
     @ResponseBody
     @RequestMapping("/confirmRefundByOrderId")
+    @LogAnnotion(operationType = "商家确认退款", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response confirmRefundByOrderId(HttpServletRequest request) {
         try {
             // 获取请求的参数

@@ -164,5 +164,17 @@ public class CategoryDto {
     public void setCategoryIdOld(Long categoryIdOld) {
         this.categoryIdOld = categoryIdOld;
     }
-	
+	@Override
+	public String toString() {
+		return "CategoryDto [categoryId=" + categoryId + ", categoryIdNew="
+				+ categoryIdNew + ", categoryIdOld=" + categoryIdOld
+				+ ", categoryName=" + categoryName + ", parentId=" + parentId
+				+ ", sortOrder=" + sortOrder + ", sortOrderNew=" + sortOrderNew
+				+ ", sortOrderOld=" + sortOrderOld + ", level=" + level
+				+ ", pictureUrl=" + pictureUrl + ", createUser=" + createUser
+				+ ", updateUser=" + updateUser + ", createDate=" + createDate
+				+ ", updateDate=" + updateDate + ", categoryId1=" + categoryId1
+				+ ", categoryId2=" + categoryId2 + ", categoryId3="
+				+ categoryId3 + "]";
+	}
 }

@@ -75,15 +75,16 @@ public class GoodsStockInfoController {
             String pageNo = HttpWebUtils.getValue(request, "page");
             String pageSize = HttpWebUtils.getValue(request, "rows");
             String id = HttpWebUtils.getValue(request, "goodsId");
+            String source = HttpWebUtils.getValue(request, "source");
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             if(StringUtils.isNotBlank(id)){
                 entity.setGoodsId(Long.valueOf(id));
             }
-            List<GoodsStockSkuDto> goodsStockSkuInfos = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
-
-            if (goodsStockSkuInfos!=null){
-                entity.setId(goodsStockSkuInfos.get(0).getGoodsStockId());
-            }
+//            List<GoodsStockSkuDto> goodsStockSkuInfos = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
+//
+//            if (goodsStockSkuInfos!=null){
+//                entity.setId(goodsStockSkuInfos.get(0).getGoodsStockId());
+//            }
             PaginationManage<GoodsStockInfoEntity> pagination = goodsStockInfoService.pageList(entity, pageNo,
                 pageSize);
 
@@ -116,6 +117,7 @@ public class GoodsStockInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "新增库存", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response add(@ModelAttribute("stockInfoFileModel") StockInfoFileModel stockInfo) {
         GoodsStockInfoEntity goodsStockInfoEntity = new GoodsStockInfoEntity();
         goodsStockInfoEntity.setGoodsId(stockInfo.getAddstockInfogoodsId());

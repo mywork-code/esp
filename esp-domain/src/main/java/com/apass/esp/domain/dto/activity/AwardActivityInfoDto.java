@@ -56,4 +56,11 @@ public class AwardActivityInfoDto {
     public void setRebate(BigDecimal rebate) {
         this.rebate = rebate;
     }
+
+	@Override
+	public String toString() {
+		return "AwardActivityInfoDto [id=" + id + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", rebate=" + rebate + ", createBy="
+				+ createBy + "]";
+	}
 }

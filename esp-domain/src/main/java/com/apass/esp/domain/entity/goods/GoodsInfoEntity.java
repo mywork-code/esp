@@ -621,4 +621,36 @@ public class GoodsInfoEntity {
         this.pageSize = pageSize;
     }
 
+	@Override
+	public String toString() {
+		return "GoodsInfoEntity [id=" + id + ", goodId=" + goodId
+				+ ", goodsCode=" + goodsCode + ", categoryCode=" + categoryCode
+				+ ", goodsName=" + goodsName + ", goodsTitle=" + goodsTitle
+				+ ", goodsSellPt=" + goodsSellPt + ", goodsType=" + goodsType
+				+ ", goodsTypeDesc=" + goodsTypeDesc + ", goodsLogoUrl="
+				+ goodsLogoUrl + ", goodsLogoUrlNew=" + goodsLogoUrlNew
+				+ ", goodsSiftUrl=" + goodsSiftUrl + ", goodsSiftUrlNew="
+				+ goodsSiftUrlNew + ", listTime=" + listTime
+				+ ", listTimeString=" + listTimeString + ", delistTime="
+				+ delistTime + ", delistTimeString=" + delistTimeString
+				+ ", newCreatDate=" + newCreatDate + ", proDate=" + proDate
+				+ ", keepDate=" + keepDate + ", supNo=" + supNo
+				+ ", createUser=" + createUser + ", updateUser=" + updateUser
+				+ ", createDate=" + createDate + ", updateDate=" + updateDate
+				+ ", merchantCode=" + merchantCode + ", remark=" + remark
+				+ ", isDelete=" + isDelete + ", status=" + status
+				+ ", statuList=" + statuList + ", statusDesc=" + statusDesc
+				+ ", googsDetail=" + googsDetail + ", goodsSkuType="
+				+ goodsSkuType + ", goodsModel=" + goodsModel
+				+ ", merchantName=" + merchantName + ", merchantType="
+				+ merchantType + ", categoryId1=" + categoryId1
+				+ ", categoryId2=" + categoryId2 + ", categoryId3="
+				+ categoryId3 + ", categoryName3=" + categoryName3
+				+ ", unSupportProvince=" + unSupportProvince + ", source="
+				+ source + ", externalId=" + externalId + ", goodsPrice="
+				+ goodsPrice + ", firstPrice=" + firstPrice + ", attrDesc="
+				+ attrDesc + ", begin=" + begin + ", pageSize=" + pageSize
+				+ ", colFalgt=" + colFalgt + ", sordNo=" + sordNo + "]";
+	}
+
 }

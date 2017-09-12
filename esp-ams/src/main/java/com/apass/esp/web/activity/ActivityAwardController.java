@@ -25,6 +25,8 @@ import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ResponsePageIntroStaticBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -71,6 +73,7 @@ public class ActivityAwardController {
    */
   @RequestMapping(value = "/introduce/config", method = RequestMethod.POST)
   @ResponseBody
+  @LogAnnotion(operationType = "添加活动配置", valueType = LogValueTypeEnum.VALUE_DTO)
   public Response addIntroConfig(AwardActivityInfoDto dto) throws BusinessException {
     if (dto.getRebate() == null
         || StringUtils.isEmpty(dto.getStartDate()) || StringUtils.isEmpty(dto.getEndDate())) {

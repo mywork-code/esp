@@ -1,14 +1,17 @@
 package com.apass.esp.web.goods;
 
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
+import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
@@ -462,6 +465,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/addBanner", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "商品大图", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response addBanner(@ModelAttribute("bannerModel") BannerPicDto bannerDto) {
 
         List<BannerInfoEntity> listEntity = bannerInfoService.loadIndexBanners(bannerDto.getBannerGoodsId());
@@ -574,8 +578,8 @@ public class GoodsBaseInfoController {
         goodsStockInfoEntity.setGoodsId(Long.valueOf(id));
         PaginationManage<GoodsStockInfoEntity> list = null;
         try {
-                list = goodsStockInfoService.pageList(goodsStockInfoEntity,
-                    "0", "10");
+            list = goodsStockInfoService.pageList(goodsStockInfoEntity,
+                "0", "10");
         } catch (BusinessException e) {
             e.printStackTrace();
         }
@@ -790,6 +794,7 @@ public class GoodsBaseInfoController {
      */
     @ResponseBody
     @RequestMapping(value = "/uplogoFile", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "商品墙图片", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response uplogoFile(@ModelAttribute("logoFileModel") LogoFileModel logoFileModel) {
         try {
             Integer random = (int) (Math.random() * 9000 + 1000);// 生成4位随机数
