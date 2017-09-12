@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.WeexInfoEntityMapper" >
+
+  <select id="queryWeexInfoList" resultMap="BaseResultMap">
+    SELECT  <include refid="Base_Column_List" /> FROM t_esp_weex_info  ORDER BY WEEX_EVE ASC ,UPDATE_DATE DESC
+  </select>
+
+  <update id="updateWeexJs" parameterType="com.apass.esp.domain.entity.WeexInfoEntity">
+    UPDATE T_ESP_WEEX_INFO
+    <set>
+      UPDATE_DATE = CURRENT_TIMESTAMP,
+      <if test="weexVer != null and weexVer != ''">
+        WEEX_VER = #{weexVer,jdbcType=TIMESTAMP},
+      </if>
+      <if test="weexPath != null and weexPath != ''">
+        WEEX_PATH = #{weexPath,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null and updateUser != ''">
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="weexType != null and weexType != ''">
+        WEEX_TYPE = #{weexType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE ID =  #{id, jdbcType=INTEGER}
+  </update>
+</mapper>

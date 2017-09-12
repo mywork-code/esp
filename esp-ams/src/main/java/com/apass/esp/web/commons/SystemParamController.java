@@ -9,16 +9,23 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.apass.esp.domain.entity.Kvattr;
+import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.service.common.WeexInfoService;
 import com.apass.esp.utils.CronTools;
+import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ImageTools;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.jexl2.UnifiedJEXL;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,6 +42,7 @@ import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserD
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 
@@ -47,6 +55,10 @@ import com.apass.gfb.framework.utils.HttpWebUtils;
 @Controller
 @RequestMapping("/application/system/param")
 public class SystemParamController {
+    @Value("${nfs.rootPath}")
+    private String rootPath;
+    @Value("${nfs.weex}")
+    private String nfsWeexRoot;
     /**
      * 日志
      */
@@ -57,6 +69,12 @@ public class SystemParamController {
 
     @Autowired
     private KvattrService kvattrService;
+
+    @Autowired
+    private WeexInfoService weexInfoService;
+
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
 
     /**
      * 系统参数信息页面
@@ -196,6 +214,85 @@ public class SystemParamController {
         }
         return Response.success("修改系统参数成功！");
     }
+
+    /**
+     * 热部署安卓weex相关js
+     */
+    @RequestMapping("/weexPage")
+    public String weexPage() {
+        return "common/weex/weexPage";
+    }
+
+    /**
+     * 查询js列表
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/listAndriodJs")
+    public ResponsePageBody queryCommisionAndWallet(){
+        ResponsePageBody<WeexInfoEntity> respBody = new ResponsePageBody<WeexInfoEntity>();
+        try {
+            List<WeexInfoEntity> weexInfoEnties = weexInfoService.queryWeexInfoList();
+            respBody.setRows(weexInfoEnties);
+            respBody.setTotal(weexInfoEnties.size());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+        } catch (Exception e) {
+            LOG.error("weex信息列表查询失败", e);
+            respBody.setStatus(CommonCode.FAILED_CODE);
+        }
+        return respBody;
+    }
+    @ResponseBody
+    @RequestMapping("/updateWeex")
+    public Response updateWeexJs(@ModelAttribute("weexInfoEntity")WeexInfoEntity weexInfoEntity) {
+        try{
+            //上传js到服务端，覆盖之前js,名称不变
+            MultipartFile weexFile = weexInfoEntity.getWeexFile();
+            String url = null;
+            if(systemEnvConfig.isDEV()){
+                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                    url = nfsWeexRoot + "/sit/commission.weex_sit.js";
+                }else {
+                    url = nfsWeexRoot + "/sit/wallet.weex_sit.js";
+                }
+            }else if(systemEnvConfig.isUAT()){
+                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                    url = nfsWeexRoot + "/uat/commission.weex_sit.js";
+                }else {
+                    url = nfsWeexRoot + "/uat/wallet.weex_sit.js";
+                }
+            }else if(systemEnvConfig.isPROD()){
+                if(StringUtils.equals("commision",weexInfoEntity.getWeexType())){
+                    url = nfsWeexRoot + "/prod/commission.weex_sit.js";
+                }else {
+                    url = nfsWeexRoot + "/prod/wallet.weex_sit.js";
+                }
+            }else {
+                return Response.fail("发布有误，无法区分是什么环境");
+            }
+
+            //修改数据库内容
+            weexInfoEntity.setWeexPath(rootPath+url);
+            weexInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
+            Integer count = weexInfoService.updateWeexJs(weexInfoEntity);
+            if(count != 1){
+                return Response.fail("更新weex失败");
+            }
+
+            /**
+             * 上传文件
+             */
+            FileUtilsCommons.uploadFilesUtil(rootPath, url, weexFile);
+
+        }catch (Exception e){
+            LOG.error("--------Exception--------",e);
+            return Response.fail("更新weex失败");
+        }
+
+        //修改数据库存版本号
+        return Response.success("更新weex成功");
+    }
+
 
     public void paramCheck(Map<String, String> map) throws BusinessException {
 
