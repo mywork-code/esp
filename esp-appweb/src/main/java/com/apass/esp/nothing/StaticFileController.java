@@ -136,12 +136,12 @@ public class StaticFileController {
 
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
-                        file1 = new File(weexInfoEntity.getWeexPath());
+                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                        file2 = new File(weexInfoEntity.getWeexPath());
+                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver2 = weexInfoEntity.getWeexVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
@@ -150,12 +150,12 @@ public class StaticFileController {
             } else if(systemEnvConfig.isUAT()){
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
-                        file1 = new File(weexInfoEntity.getWeexPath());
+                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                        file2 = new File(weexInfoEntity.getWeexPath());
+                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver2 = weexInfoEntity.getWeexVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
@@ -163,12 +163,12 @@ public class StaticFileController {
             }else if(systemEnvConfig.isPROD()){
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commision")){
-                        file1 = new File(weexInfoEntity.getWeexPath());
+                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                        file2 = new File(weexInfoEntity.getWeexPath());
+                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver2 = weexInfoEntity.getWeexVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
