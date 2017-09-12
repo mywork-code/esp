@@ -27,3 +27,18 @@ CREATE TABLE `t_esp_weex_info` (
 
 ALTER TABLE `t_esp_weex_info`
 ADD COLUMN `weex_type`  varchar(12) NOT NULL DEFAULT '' COMMENT 'weex的类型(commission或wallet)';
+
+
+DROP TABLE  IF EXISTS esp.`t_esp_home_config_info`;
+CREATE TABLE `t_esp_home_config_info` (
+`id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键标识ID' ,
+`home_name`  varchar(50) NOT NULL DEFAULT ''  COMMENT '窗口名称' ,
+`start_time`  datetime NOT NULL COMMENT '开始时间' ,
+`end_time`   datetime NOT NULL COMMENT '结束时间' ,
+`home_status`  varchar(2) NOT NULL DEFAULT 'Y' COMMENT '结束时间（Y:有效 N:无效）' ,
+`logo_url`  varchar(255) NOT NULL DEFAULT '' COMMENT '图片地址' ,
+`active_link`  varchar(255) NOT NULL DEFAULT '' COMMENT '活动地址' ,
+`create_date`  datetime NOT NULL COMMENT '创建时间' ,
+`update_date`  datetime NOT NULL COMMENT '修改时间' ,
+PRIMARY KEY (`ID`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='首页活动配置';
