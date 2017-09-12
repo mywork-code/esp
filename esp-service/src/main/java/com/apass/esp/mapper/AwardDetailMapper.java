@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +41,6 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	 * @return
 	 */
 	Integer countAwardIntroList(Map<String, Object> paramMap);
+
+	BigDecimal getAllAwardByUserId(Long userId);
 }

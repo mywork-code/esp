@@ -54,4 +54,12 @@
     	select count(1) from t_esp_award_detail
     	<include refid="query_where_clause" />
     </select>
+
+    <select id="getAllAwardByUserId" resultType="java.math.BigDecimal">
+        SELECT sum(amount)
+        FROM t_esp_award_detail
+        WHERE
+        DATE_FORMAT( create_date, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+        and user_id=#{userId}
+    </select>
 </mapper>

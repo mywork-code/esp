@@ -167,13 +167,14 @@ public class WithdrawService {
         awardDetail.setRealName((String)resultBind.get("realName"));
         
         //获取扣税金额
-        BigDecimal taxAmount = getTaxAmount(userId,amount);
-        awardDetail.setTaxAmount(taxAmount);
+       // BigDecimal taxAmount = getTaxAmount(userId,amount);
+        //awardDetail.setTaxAmount(taxAmount);
         
         int count = awardDetailMapper.insert(awardDetail);
         if(count == 1){
             result.put("cardBank", cardBank);
-            result.put("amount", BigDecimal.valueOf(Long.valueOf(amount)).subtract(taxAmount));
+            result.put("amount", BigDecimal.valueOf(Long.valueOf(amount))//.subtract(taxAmount)
+            );
             result.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
             result.put("customerId", resultBind.get("customerId"));
             LOGGER.info("提现成功，返回数据：{}",result);

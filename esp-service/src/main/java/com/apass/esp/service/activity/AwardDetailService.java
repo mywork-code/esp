@@ -320,5 +320,9 @@ public class AwardDetailService {
 		}
         return totalCount;
 	}
-	
+
+	public BigDecimal getAllAwardByUserId(Long userId){
+		return awardDetailMapper.getAllAwardByUserId(userId)==null?new BigDecimal(0):awardDetailMapper.getAllAwardByUserId(userId);
+	}
+
 }

@@ -179,7 +179,19 @@ public class PayCallback {
 							if (rebateInt == 0) {
 								continue;
 							}
-							awardDetailDto.setAmount(new BigDecimal(rebateInt));
+							BigDecimal allAward = awardDetailService.getAllAwardByUserId(awardBindRel.getUserId());
+							BigDecimal newAward = allAward.add(new BigDecimal(rebateInt));
+							if(allAward.compareTo(new BigDecimal(800))>0){
+								awardDetailDto.setAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.8)));
+								awardDetailDto.setTaxAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.2)));
+							}else if(allAward.compareTo(new BigDecimal(800))<=0&&newAward.compareTo(new BigDecimal(800))>0){
+								BigDecimal taxAmount= newAward.subtract(new BigDecimal(800)).multiply(new BigDecimal(0.2));
+								awardDetailDto.setTaxAmount(taxAmount);
+								awardDetailDto.setAmount(new BigDecimal(rebateInt).subtract(taxAmount));
+							}else{
+								awardDetailDto.setAmount(new BigDecimal(rebateInt));
+							}
+
 							awardDetailDto.setOrderId(orderInfoEntity.getOrderId());
 							awardDetailDto.setCreateDate(new Date());
 							awardDetailDto.setUpdateDate(new Date());
