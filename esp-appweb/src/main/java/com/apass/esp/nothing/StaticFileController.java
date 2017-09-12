@@ -6,6 +6,7 @@ import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.domain.vo.CommissionWalletVo;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.schedule.JdAfterSaleScheduleTask;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.WeexInfoService;
 import com.apass.esp.service.order.OrderService;
@@ -59,6 +60,9 @@ public class StaticFileController {
 
     @Autowired
     private WeexInfoService weexInfoService;
+
+    @Autowired
+    private JdAfterSaleScheduleTask jdAfterSaleScheduleTask;
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
@@ -241,4 +245,10 @@ public class StaticFileController {
     }
 
 
+    @RequestMapping("/test/jdAftersale")
+    @ResponseBody
+    public String jdAfterSaleScheduleTask(){
+        jdAfterSaleScheduleTask.handleJdConfirmPreInventoryTask();
+        return "success";
+    }
 }
