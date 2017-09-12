@@ -31,7 +31,7 @@ $(function(){
                 align : 'center'
             },
             {
-                title : '个人返点',
+                title : '电商个人返点配置',
                 field : 'rebate',
                 width : 120,
                 align : 'center',
@@ -40,6 +40,12 @@ $(function(){
                 		return FormatAfterDotNumber(value,2)+"%";
                 	}
                 }
+            },
+            {
+                title : '信贷奖励金额',
+                field : 'awardAmont',
+                width : 150,
+                align : 'center'
             },
             {
                 title : '操作',
@@ -53,7 +59,7 @@ $(function(){
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteActivity("
                             + row.id+ ");\">关闭活动</a>&nbsp;&nbsp;";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editActivity('"
-						+ row.id+"','"+ row.rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "');\"'>编辑</a>&nbsp;&nbsp;";
+						+ row.id+"','"+ row.rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "','"+row.awardAmont + "');\"'>编辑</a>&nbsp;&nbsp;";
                     return content;
                 }
             }
@@ -92,7 +98,12 @@ $(function(){
     $("#agreeAdd").click(function(){
         var rebate=$("#rebate").numberbox('getValue');
         if(null == rebate || rebate==""){
-            $.messager.alert("<span style='color: black;'>提示</span>","返点配置不能为空！","info");
+            $.messager.alert("<span style='color: black;'>提示</span>","电商个人返点配置不能为空！","info");
+            return;
+        }
+        var awardAmont=$("#awardAmont").numberbox('getValue');
+        if(null == awardAmont || awardAmont==""){
+            $.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额！","info");
             return;
         }
         var startDate=$("#startDate").textbox('getValue');
@@ -155,13 +166,6 @@ $(function(){
         $("#addIntroConfig").window('close');
     });
 
-    //查询
-//    $(".search-btn").click(function(){
-//        var params={};
-//        $('#list').datagrid('load',params);
-//    });
-
-
     $.deleteActivity=function(id){
         $.messager.confirm("<span style='color: black;'>操作提示</span>", "您确定关闭该活动吗？", function (r){
             if(r){
@@ -199,12 +203,13 @@ $(function(){
     /**
 	 * 编辑
 	 */
-	$.editActivity = function(id,rebate,startDate,endDate) {
+	$.editActivity = function(id,rebate,startDate,endDate,awardAmount) {
 		$("#editIntroConfig").window({modal: true});
 		$("#editIntroConfig").window('open');
 		idActiv = id;
 		
 		$("#editRebate").textbox('setValue',rebate);
+		$("#editAwardAmont").textbox('setValue',awardAmount);
 		$("#editStartDate").datetimebox('setValue',startDate); 
 		$("#editEndDate").datetimebox('setValue',endDate); 
 		
@@ -218,7 +223,8 @@ $(function(){
 		var rebate = $("#editRebate").textbox('getValue');
 		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
-		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate};
+		var awardAmount = $("#editAwardAmont").textbox('getValue');
+		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate,"awardAmount":awardAmount};
 		if(null == endDate || endDate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
             return;

@@ -89,7 +89,8 @@ public class AwardActivityInfoService {
         entity.setUpdateBy(dto.getCreateBy());
         entity.setCreateDate(new Date());
         entity.setUpdateDate(new Date());
-        awardActivityInfoMapper.insert(entity);
+        entity.setAwardAmont(dto.getAwardAmont());
+        awardActivityInfoMapper.insertSelective(entity);
         return entity;
     }
 
@@ -100,11 +101,12 @@ public class AwardActivityInfoService {
      * @return
      */
     @Transactional(rollbackFor=Exception.class) 
-    public Integer editActivity(String id,String rebate,String endDate) {
+    public Integer editActivity(String id,String rebate,String endDate,String awardAmount) {
         AwardActivityInfo awardActivityInfo = new AwardActivityInfo();
         awardActivityInfo.setaEndDate(DateFormatUtil.string2date(endDate, DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         awardActivityInfo.setRebate(BigDecimal.valueOf(Double.valueOf(rebate)/100));
         awardActivityInfo.setId(Long.valueOf(id));
+        awardActivityInfo.setAwardAmont(BigDecimal.valueOf(Double.valueOf(awardAmount)));
         return awardActivityInfoMapper.updateByPrimaryKeySelective(awardActivityInfo);
     }
 
@@ -125,6 +127,7 @@ public class AwardActivityInfoService {
             vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
             vo.setRebate(ai.getRebate().doubleValue()*100+"");
             vo.setUpdateDate(DateFormatUtil.datetime2String(ai.getUpdateDate()));
+            vo.setAwardAmont(ai.getAwardAmont()+"");
             result.add(vo);
         }
         if (CollectionUtils.isEmpty(list)) {

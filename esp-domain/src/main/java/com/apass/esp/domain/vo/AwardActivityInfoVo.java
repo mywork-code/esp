@@ -14,9 +14,20 @@ public class AwardActivityInfoVo {
 
   private String rebate;
   
+  private String awardAmont;
+  
   private String updateDate;
 
-  public String getActivityName() {
+  
+  public String getAwardAmont() {
+	return awardAmont;
+ }
+
+	public void setAwardAmont(String awardAmont) {
+		this.awardAmont = awardAmont;
+	}
+
+public String getActivityName() {
     return activityName;
   }
 
