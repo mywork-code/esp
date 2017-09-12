@@ -57,6 +57,9 @@
 			<if test="name != null and name != ''">
 				and orderInfo.name like CONCAT('%',#{name},'%')
 			</if>
+			<if test="preDelivery != null and preDelivery != ''">
+				and orderInfo.pre_delivery = #{preDelivery}
+			</if>
 		</where>
 	</sql>
 	<!-- 订单查询页面显示  -->

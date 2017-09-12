@@ -47,9 +47,12 @@
 					<td width="5%"><input id="name" style="width:120px" class="easyui-textbox" /></td>
 					<td width="5%" align="right" nowrap="nowrap">手机号码：</td>
 					<td width="5%"><input id=telephone style="width:120px" class="easyui-textbox" /></td>
+					
+				</tr>
+				<tr>
 					<td width="5%" align="right" nowrap="nowrap">订单状态：</td>
-					<td width="5%"><select style="width:120px" id="orderStatus" name="orderStatus"
-						class="easyui-combobox">
+					<td width="5%"><select style="width: 120px" id="orderStatus"
+						name="orderStatus" class="easyui-combobox">
 							<option value="" selected="selected">请选择</option>
 							<option label="待付款" value="D00">待付款</option>
 							<option label="待发货" value="D02">待发货</option>
@@ -62,13 +65,21 @@
 							<option label="交易关闭" value="D10">交易关闭</option>
 					</select></td>
 					<td width="5%" align="right" nowrap="nowrap">售后状态：</td>
-					<td width="5%"><select style="width:120px" id="refundType" name="refundType"
-						class="easyui-combobox">
+					<td width="5%"><select style="width: 120px" id="refundType"
+						name="refundType" class="easyui-combobox">
 							<option value="" selected="selected">请选择</option>
 							<option label="退货" value="0">退货</option>
 							<option label="换货" value="1">换货</option>
-<!-- 						<option label="退款" value="1">退款</option>-->
- 					</select></td>
+							<!-- <option label="退款" value="1">退款</option>-->
+					</select></td>
+				    <td width="5%" align="right" nowrap="nowrap">商家是否发货：</td>
+					<td width="5%"><select style="width: 120px" id="preDelivery"
+						name="preDelivery" class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
+							<option label="是" value="Y">是</option>
+							<option label="否" value="N">否</option>
+							<!-- <option label="退款" value="1">退款</option>-->
+					</select></td>
 				</tr>
 			</table>
 

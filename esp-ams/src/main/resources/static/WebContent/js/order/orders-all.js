@@ -232,6 +232,7 @@ $(function () {
         params['telephone'] = $("#telephone").textbox('getValue');
         params['orderStatus'] = $("#orderStatus").textbox('getValue');
         params['refundType'] = $("#refundType").textbox('getValue');
+        params['preDelivery'] = $("#preDelivery").textbox('getValue');
         $('#tablelist').datagrid('load', params);
     });
 
@@ -242,6 +243,7 @@ $(function () {
         $(".search #telephone").textbox('setValue', '');
         $(".search #orderStatus").combobox('setValue', '');
         $(".search #refundType").combobox('setValue', '');
+        $(".search #preDelivery").combobox('setValue', '');
         $(".search #name").textbox('setValue', '');
         var params = {};
         $('#tablelist').datagrid('load', params);
