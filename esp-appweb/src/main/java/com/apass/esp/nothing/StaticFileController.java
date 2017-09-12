@@ -11,6 +11,7 @@ import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.WeexInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
+import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
@@ -120,6 +121,7 @@ public class StaticFileController {
     @RequestMapping(value = "v3/app_weex")
     @ResponseBody
     public Response getMd5ByFile3() {
+        LOG.info("weex,v3自动部署程序开始执行.....");
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
@@ -133,7 +135,7 @@ public class StaticFileController {
             if (systemEnvConfig.isDEV()){
 
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"commision")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
@@ -147,7 +149,7 @@ public class StaticFileController {
 
             } else if(systemEnvConfig.isUAT()){
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"commision")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
@@ -205,8 +207,7 @@ public class StaticFileController {
             e.printStackTrace();
         }
 
-
-        return  null;
+        return Response.successResponse(commissionWalletVos);
     }
 
     @RequestMapping(value = "jsUtils/test1", method = RequestMethod.POST)
