@@ -790,6 +790,20 @@ public class OrderService {
         }
         return orderList;
     }
+    
+    /**
+     * 根据订单号获取对应商户号
+     * @param orderIdList
+     * @return
+     */
+    public List<String> merchantCodeList(List<String> orderIdList){
+    	List<String> merchantCodeList = new ArrayList<String>();
+    	for (String orderId : orderIdList) {
+			OrderInfoEntity order =  getOrderInfoEntityByOrderId(orderId);
+			merchantCodeList.add(order.getMerchantCode());
+		}
+    	return merchantCodeList;
+    }
 
     private Long countGoodsNumGroupByMerchantCode(String merchantCode, List<PurchaseRequestDto> purchaseList) {
         Long goodsNum = 0L;

@@ -10,4 +10,10 @@
       #{item.createDate}, #{item.updateDate})
       </foreach>
   </insert>
+  
+  <select id="selectLogAttr" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+       from t_esp_log_attr_info
+       where ext_id = #{extId} order by create_date
+  </select>
 </mapper>

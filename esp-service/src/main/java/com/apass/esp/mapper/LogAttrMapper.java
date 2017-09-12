@@ -18,5 +18,5 @@ public interface LogAttrMapper extends GenericMapper<LogAttr, Long> {
 	 * @param extId
 	 * @return
 	 */
-	public List<LogAttr> getLogAttr(String extId);
+	public List<LogAttr> selectLogAttr(String extId);
 }
