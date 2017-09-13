@@ -16,5 +16,34 @@
      <select id ="getHomeConfigListPageCount" resultType="java.lang.Integer">
       select count(*) from t_esp_home_config_info
     </select>
+    
+    <select id="getContainsTimesList" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_home_config_info 
+       <where>  
+               <![CDATA[  and home_status = 'Y']]>
+           	   <![CDATA[  and end_time >= #{time} ]]>
+           	   <![CDATA[  and start_time <= #{time} ]]>
+           	   <if  test="id != null">
+           	     <![CDATA[  and id != #{id} ]]>
+           	   </if>
+       </where>
+    </select>
 
+	<select id="getContainsTimeCount" resultType="java.lang.Integer">
+	    select count(*)
+        from t_esp_home_config_info 
+        <where> 
+          <![CDATA[  and home_status = 'Y']]>
+          <if test="endTime != null and endTime != ''">
+             <![CDATA[  and end_time <= #{endTime} ]]>
+          </if> 
+          <if test="startTime != null and startTime != ''">
+             <![CDATA[  and start_time >= #{startTime} ]]>
+          </if>  
+          <if test="id != null">
+       	     <![CDATA[  and id != #{id} ]]>
+       	   </if>  
+       </where>
+	</select>
 </mapper>
