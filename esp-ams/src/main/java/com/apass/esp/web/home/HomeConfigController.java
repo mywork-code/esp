@@ -124,27 +124,28 @@ public class HomeConfigController {
     
     
     public void checkParam(HomeConfigDto config,boolean bl) throws BusinessException{
+    	ValidateUtils.isNotBlank(config.getHomeName(), "请填写窗口名称");
     	ValidateUtils.checkLength(config.getHomeName(), 1, 20, "窗口名称长度不能超过20！");
-    	ValidateUtils.isNotBlank(config.getActiveLink(), "活动链接不能为空！");
-    	ValidateUtils.isNotBlank(config.getStartTime(), "开始时间不能为空!");
-    	ValidateUtils.isNotBlank(config.getEndTime(), "结束时间不能为空!");
+    	ValidateUtils.isNotBlank(config.getActiveLink(), "请填写活动链接！");
+    	ValidateUtils.isNotBlank(config.getStartTime(), "请填写开始时间!");
+    	ValidateUtils.isNotBlank(config.getEndTime(), "请填写结束时间!");
     	Date start = DateFormatUtil.string2date(config.getStartTime(), "");
     	Date end = DateFormatUtil.string2date(config.getEndTime(), "");
     	if(end.before(start)){
-    		throw new BusinessException("开始时间不能大于结束时间！");
+    		throw new BusinessException("开始时间填写错误，请重新填写！");
     	}
     	if(end.before(new Date())){
-    		throw new BusinessException("结束时间不能小于当前时间！");
+    		throw new BusinessException("结束时间填写错误，请重新填写。！");
     	}
     	
     	int startCount = homeConfigService.getContainsTimesCount(config.getStartTime(),config.getId());
     	int endCount = homeConfigService.getContainsTimesCount(config.getEndTime(),config.getId());
     	int count = homeConfigService.getContainsTimeCount(config.getStartTime(), config.getEndTime(),config.getId());
     	if(startCount > 0 || endCount > 0 || count > 0){
-    		throw new BusinessException("配置时间与已有的配置时间有冲突！");
+    		throw new BusinessException("活动时间不能与其他活动时间有重叠！");
     	}
     	if(bl){
-    		ValidateUtils.isNotBlank(config.getLogoUrl(), "上传图片不能为空！");
+    		ValidateUtils.isNotBlank(config.getLogoUrl(), "请上传图片！");
     	}
     	if(!bl){
     		ValidateUtils.isNullObject(config.getId(), "配置项编号不能为空!");
@@ -154,7 +155,7 @@ public class HomeConfigController {
     public String uploadPicFile(MultipartFile file) {
     	try { 
     	if (file == null || file.isEmpty()) {
-             throw new BusinessException("上传图片不能为空!");
+             throw new BusinessException("请上传图片!");
          }
     	 String imgType = ImageTools.getImgType(file);
          String url = homeConfigPath + "config_" + System.currentTimeMillis() + "." + imgType;

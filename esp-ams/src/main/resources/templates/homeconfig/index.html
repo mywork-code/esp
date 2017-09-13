@@ -56,17 +56,17 @@
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>开始时间：</td>
-					<td align="left"><input type="text" id="startTime" name="startTime" class="easyui-datetimebox"
-						style="width: 160px;" maxlength="255"></input></td>
+					<td align="left"><input type="text" id="startTime" name="startTime" editable="false" class="easyui-datetimebox"
+						style="width: 160px;" maxlength="255"></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>结束时间：</td>
-					<td align="left"><input type="text" id="endTime" name="endTime" style="width: 160px;" class="easyui-datetimebox"></input></td>
+					<td align="left"><input type="text" id="endTime" name="endTime" editable="false" style="width: 160px;" class="easyui-datetimebox"/></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>活动链接：</td>
 					<td align="left"><input type="text" id="activeLink" name="activeLink"
-						 class="easyui-textbox" style="width: 160px;" maxlength="200"></input></td>
+						 class="easyui-textbox" style="width: 160px;" maxlength="200"/></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>上传图片：</td>
@@ -87,22 +87,22 @@
 	<!-- 配置添加结束  -->
 	<!-- 修改配置开始 -->
 	<div id="editConfig" class="easyui-window" title="<font color='black'>编辑</font>" hidden="hidden"
-		style="width: 500px; height: 250px; display: none; text-align: center;" >
+		style="width: 500px; height: 350px; display: none; text-align: center;" >
 			<form id="configFormEdit" method="POST" enctype="multipart/form-data" modelAttribute="config">
 			<table style="width: 100%;height: auto;">
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>窗口名称：</td>
 					<td align="left"><input type="text" id="homeNameEdit" name="homeName"
-						 class="easyui-textbox" style="width: 160px;" maxlength="20" /></td>
+						 class="easyui-textbox" style="width: 160px;" maxlength="20" readonly/></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>开始时间：</td>
 					<td align="left"><input type="text" id="startTimeEdit" name="startTime" class="easyui-datetimebox"
-						style="width: 160px;" maxlength="255"></input></td>
+						style="width: 160px;" maxlength="255" readonly></input></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>结束时间：</td>
-					<td align="left"><input type="text" id="endTimeEdit" name="endTime" style="width: 160px;" class="easyui-datetimebox"></input></td>
+					<td align="left"><input type="text" id="endTimeEdit" name="endTime" editable="false" style="width: 160px;" class="easyui-datetimebox"></input></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>活动链接：</td>
