@@ -114,6 +114,7 @@ public class HomeConfigService {
 			vo.setId(config.getId());
 			vo.setStartTime(DateFormatUtil.dateToString(config.getStartTime(), ""));
 			vo.setLogoUrl(imageService.getImageUrl(config.getLogoUrl()));
+			vo.setHomeStatus(config.getHomeStatus());
 		}
 		return vo;
 	}
