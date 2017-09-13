@@ -616,8 +616,8 @@ public class GoodsBaseInfoController {
                 return "京东商品库存有误";
             }
 
-            if(goodsStockSkuInfo.get(0).getGoodsPrice().compareTo(new BigDecimal(99))<0){
-                return "京东商品价格低于99元，不能上架";
+            if(goodsStockSkuInfo.get(0).getGoodsCostPrice().compareTo(new BigDecimal(99))<0){
+                return "京东协议价格低于99元，不能上架";
             }
             
             List<SkuNum> skuNumList=new ArrayList<>();
