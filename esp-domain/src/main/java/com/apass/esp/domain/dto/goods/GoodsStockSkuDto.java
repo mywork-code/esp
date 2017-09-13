@@ -30,6 +30,19 @@ public class GoodsStockSkuDto {
     /** 商品规格logo url **/
     private String stockLogo;
 
+    /**
+     * 商品成本价格
+     */
+    private BigDecimal goodsCostPrice;
+
+    public BigDecimal getGoodsCostPrice() {
+        return goodsCostPrice;
+    }
+
+    public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
+        this.goodsCostPrice = goodsCostPrice;
+    }
+
     public String getStockLogoNew() {
         return stockLogoNew;
     }
