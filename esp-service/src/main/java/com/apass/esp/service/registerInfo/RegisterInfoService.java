@@ -28,6 +28,8 @@ public class RegisterInfoService {
     private static final String CHECKUSER_OLDORNEW="/checkUser/oldOrNew";
     private static final String CHECKUSER_REGISTER="/checkUser/register";
     private static final String CHECKUSER_GETINVITERINFO="/checkUser/getInviterInfo";
+    private static final String CHECKUSER_ISOLDUSER="/checkUser/isOldUser";
+
 
     /**
      * 供房帮服务地址
@@ -147,6 +149,26 @@ public class RegisterInfoService {
 		}
     	return Flage;
     }
-    
+    /**
+     * 判断是否为老用户(在微信端和App端已经注册过的都为老用户)
+     * @param mobile
+     * @return
+     */
+    public Response isOldUser(String mobile,String InviterId){
+    	try {
+			 Map<String,Object> map=new HashMap<String,Object>();
+			 map.put("mobile", mobile);
+			 map.put("InviterId", InviterId);
+	         String requestUrl = gfbServiceUrl + CHECKUSER_ISOLDUSER;
+	         String reqJson = GsonUtils.toJson(map);
+	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+	         Response response = GsonUtils.convertObj(responseJson, Response.class);
+	         return response;
+    	} catch (Exception e) {
+			LOGGER.error("新用户注册失败！", e);
+		}
+		return null;
+    }
     
 }
