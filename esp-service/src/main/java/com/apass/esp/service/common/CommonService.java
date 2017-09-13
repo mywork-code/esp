@@ -134,7 +134,7 @@ public class CommonService {
 			if (SourceType.JD.getCode().equals(goodsBasicInfo.getSource())) {
 				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
 				Kvattr kvattr = new Kvattr();
-				if (goodsCostPrice.compareTo(new BigDecimal(99)) > 0
+				if (goodsCostPrice.compareTo(new BigDecimal(99)) >= 0
 						&& goodsCostPrice.compareTo(new BigDecimal(500)) <= 0) {
 					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
 				} else if (goodsCostPrice.compareTo(new BigDecimal(500)) > 0
