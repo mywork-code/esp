@@ -164,6 +164,7 @@ public class AwardActivityInfoService {
         vo.setaStartDate(DateFormatUtil.datetime2String(ai.getaStartDate()));
         vo.setaEndDate(DateFormatUtil.datetime2String(ai.getaEndDate()));
         vo.setRebate(NumberUtils.multiply100(ai.getRebate()) + "%");
+        vo.setAwardAmont(ai.getAwardAmont().toString());
         return vo;
     }
 
