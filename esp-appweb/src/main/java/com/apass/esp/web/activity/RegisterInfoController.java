@@ -12,6 +12,7 @@ import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -613,10 +614,27 @@ public class RegisterInfoController {
 	 * 获取下单立返比例和好友首次获额获得的奖励金额
 	 */
 	@RequestMapping(value = "/getConfigure", method = RequestMethod.GET)
-	public Response getConfigure(@RequestBody Map<String, Object> paramMap) {
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("比例", "");
-		result.put("奖金", "");
-		return Response.success("获取有效活动开始时间成功！", result);
+	public Response getConfigure() {
+		try {
+			Map<String, Object> result = new HashMap<String, Object>();
+			ActivityName activityName = ActivityName.INTRO;// 获取活动名称
+			AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
+			if (null == aInfoVo) {
+				logger.error("获取信息失败,无有效活动！");
+				return Response.fail("获取信息失败,无有效活动！");
+			}
+			Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
+			int falge = aEndDate.compareTo(new Date());
+			if (falge < 0) {
+				logger.error("获取信息失败,活动已经结束！");
+				return Response.fail("获取信息失败,活动已经结束！");
+			}
+			result.put("rebate", aInfoVo.getRebate());
+			result.put("awardAmont", aInfoVo.getAwardAmont());
+			return Response.success("获取信息成功！", result);
+		} catch (BusinessException e) {
+			logger.error("获取信息失败！");
+			return Response.fail("获取信息失败！");
+		}
 	}
 }
