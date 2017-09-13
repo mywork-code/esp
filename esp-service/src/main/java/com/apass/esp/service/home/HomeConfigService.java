@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import com.apass.esp.domain.entity.HomeConfig;
 import com.apass.esp.domain.enums.YesNoEnums;
 import com.apass.esp.domain.vo.HomeConfigVo;
 import com.apass.esp.mapper.HomeConfigMapper;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -24,6 +27,8 @@ public class HomeConfigService {
 	@Autowired
 	private HomeConfigMapper configMapper;
 	
+	@Autowired
+	private ImageService imageService;
 	/**
 	 * 获取反馈信息列表
 	 * @param query
@@ -93,4 +98,33 @@ public class HomeConfigService {
 		return configMapper.updateByPrimaryKeySelective(config);
 	}
 	
+	public List<HomeConfig> getContainsTimesList(String time,Long id){
+		return configMapper.getContainsTimesList(time,id);
+	}
+	
+	public HomeConfigVo getActiveConfig(String time,Long id) throws BusinessException{
+		List<HomeConfig> configList = getContainsTimesList(time,id);
+		HomeConfigVo vo = null;
+		if(CollectionUtils.isNotEmpty(configList)){
+			HomeConfig config = configList.get(0);
+			vo = new HomeConfigVo();
+			vo.setActiveLink(config.getActiveLink());
+			vo.setEndTime(DateFormatUtil.dateToString(config.getEndTime(), ""));
+			vo.setHomeName(config.getHomeName());
+			vo.setId(config.getId());
+			vo.setStartTime(DateFormatUtil.dateToString(config.getStartTime(), ""));
+			vo.setLogoUrl(imageService.getImageUrl(config.getLogoUrl()));
+			vo.setHomeStatus(config.getHomeStatus());
+		}
+		return vo;
+	}
+	
+	public Integer getContainsTimesCount(String time,Long id){
+		List<HomeConfig> list = getContainsTimesList(time,id);
+		return CollectionUtils.isNotEmpty(list) ? list.size() : 0 ;
+	}
+	
+	public Integer getContainsTimeCount(String startTime,String endTime,Long id){
+		return configMapper.getContainsTimeCount(startTime, endTime,id);
+	}
 }
