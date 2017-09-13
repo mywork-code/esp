@@ -1,7 +1,5 @@
 package com.apass.esp.domain.vo;
 
-import java.util.Date;
-
 public class HomeConfigVo {
     private Long id;
 

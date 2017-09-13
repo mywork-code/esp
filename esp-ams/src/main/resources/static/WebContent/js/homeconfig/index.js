@@ -114,6 +114,7 @@ $(function(){
 		$("#activeLinkEdit").textbox('setValue',activeLink);
 		$("#logoUrl").val(logoUrl);
 		$("#id").val(id);
+		loadPic("addShowHomePicId", logoUrl);
         $('#editConfig').window('open');
     }
     
@@ -276,3 +277,11 @@ $(function(){
         });
     }
 });
+function loadPic(id, pictureUrl) {
+	if (pictureUrl != null) {
+		$("#" + id).attr("src", "");
+		$("#" + id).attr("src", ctx + "/fileView/query?picUrl=" + pictureUrl);
+	} else {
+		$("#" + id).attr("src", '');
+	}
+}
