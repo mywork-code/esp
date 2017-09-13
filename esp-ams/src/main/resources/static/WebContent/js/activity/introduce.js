@@ -98,12 +98,12 @@ $(function(){
     $("#agreeAdd").click(function(){
         var rebate=$("#rebate").numberbox('getValue');
         if(null == rebate || rebate==""){
-            $.messager.alert("<span style='color: black;'>提示</span>","电商个人返点配置不能为空！","info");
+            $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
         var awardAmont=$("#awardAmont").numberbox('getValue');
         if(null == awardAmont || awardAmont==""){
-            $.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额！","info");
+            $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
             return;
         }
         var startDate=$("#startDate").textbox('getValue');
@@ -224,7 +224,15 @@ $(function(){
 		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
 		var awardAmount = $("#editAwardAmont").textbox('getValue');
-		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate,"awardAmount":awardAmount};
+		
+        if(null == rebate || rebate==""){
+            $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
+            return;
+        }
+        if(null == awardAmount || awardAmount==""){
+            $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
+            return;
+        }
 		if(null == endDate || endDate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
             return;
@@ -240,7 +248,7 @@ $(function(){
 			$('#endDate').datetimebox('setValue','');
 			return;
 		}
-		
+		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate,"awardAmount":awardAmount};
 		$.ajax({
 			type : "POST",
 			url : ctx + '/activity/introduce/edit',
