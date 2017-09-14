@@ -29,6 +29,8 @@ public class RegisterInfoService {
     private static final String CHECKUSER_REGISTER="/checkUser/register";
     private static final String CHECKUSER_GETINVITERINFO="/checkUser/getInviterInfo";
     private static final String CHECKUSER_ISOLDUSER="/checkUser/isOldUser";
+    private static final String ESPCUSTOMER_ISFIRSTCREDIT="/espCustomer/isFirstCredit";
+
 
 
     /**
@@ -149,26 +151,50 @@ public class RegisterInfoService {
 		}
     	return Flage;
     }
-    /**
-     * 判断是否为老用户(在微信端和App端已经注册过的都为老用户)
-     * @param mobile
-     * @return
-     */
-    public Response isOldUser(String mobile,String InviterId){
-    	try {
-			 Map<String,Object> map=new HashMap<String,Object>();
-			 map.put("mobile", mobile);
-			 map.put("InviterId", InviterId);
-	         String requestUrl = gfbServiceUrl + CHECKUSER_ISOLDUSER;
-	         String reqJson = GsonUtils.toJson(map);
-	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
-	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
-	         Response response = GsonUtils.convertObj(responseJson, Response.class);
-	         return response;
-    	} catch (Exception e) {
+
+	/**
+	 * 判断是否为老用户(在微信端和App端已经注册过的都为老用户)
+	 * 
+	 * @param mobile
+	 * @return
+	 */
+	public Response isOldUser(String mobile, String InviterId) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("mobile", mobile);
+			map.put("InviterId", InviterId);
+			String requestUrl = gfbServiceUrl + CHECKUSER_ISOLDUSER;
+			String reqJson = GsonUtils.toJson(map);
+			StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			Response response = GsonUtils.convertObj(responseJson, Response.class);
+			return response;
+		} catch (Exception e) {
 			LOGGER.error("新用户注册失败！", e);
+			return null;
 		}
-		return null;
-    }
+	}
+
+	/**
+	 * 判断是否为第一次获取额度
+	 * 
+	 * @param mobile
+	 * @return
+	 */
+	public Response customerIsFirstCredit(String customerId) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("customerId", customerId);
+			String requestUrl = gfbServiceUrl + ESPCUSTOMER_ISFIRSTCREDIT;
+			String reqJson = GsonUtils.toJson(map);
+			StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			Response response = GsonUtils.convertObj(responseJson, Response.class);
+			return response;
+		} catch (Exception e) {
+			LOGGER.error("判断是否为第一次获取额度失败！", e);
+			return null;
+		}
+	}
     
 }
