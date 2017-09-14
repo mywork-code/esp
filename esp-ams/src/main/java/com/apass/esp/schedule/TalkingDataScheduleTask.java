@@ -82,15 +82,16 @@ public class TalkingDataScheduleTask {
         }
         String groupby = "daily";
         List<ExportDomainFor> lists = Lists.newArrayList();
-        for (int j = 0; j < 2; j++) {
-            String type = "";
-            if (j == 0) {
-                type = "ios";
-            } else {
-                type = "android";
-            }
+
 
             for (int i = -15; i < 0; i++) {
+                for (int j = 0; j < 2; j++) {
+                    String type = "";
+                    if (j == 0) {
+                        type = "ios";
+                    } else {
+                        type = "android";
+                    }
                 try {
                     // 去talkingDate中获取UV(查询活跃用户数)
                     Date beginDate = DateFormatUtil.addDays(new Date(), i);
@@ -102,12 +103,12 @@ public class TalkingDataScheduleTask {
                     String day1retention = "day1retention";//新增用户次日留存率
                     String dauday1retention = "dauday1retention";//活跃用户次日留存率
 
-                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, new Date(), metrics, groupby, type);
-                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, new Date(), newuser, groupby, type);
-                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, new Date(), session, groupby, type);
-                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, new Date(), avgsessionlength, groupby, type);
-                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, new Date(), day1retention, groupby, type);
-                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, new Date(), dauday1retention, groupby, type);
+                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, endDate, metrics, groupby, type);
+                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, endDate, newuser, groupby, type);
+                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, endDate, session, groupby, type);
+                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, endDate, avgsessionlength, groupby, type);
+                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, endDate, day1retention, groupby, type);
+                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, endDate, dauday1retention, groupby, type);
 
                     JSONObject iosObj = (JSONObject) JSONArray.parseArray(
                             JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
@@ -131,8 +132,7 @@ public class TalkingDataScheduleTask {
                             + DateFormatUtil.dateToString(endDate, "") + "号 metrics：" + iuv);
 
                     ExportDomainFor exportDomainFor = new ExportDomainFor();
-                    exportDomainFor.setDate(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD) + "~"
-                            + DateFormatUtil.dateToString(endDate, DateFormatUtil.YYYY_MM_DD));
+                    exportDomainFor.setDate(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD) );
                     exportDomainFor.setActiveUser(iuv);
                     exportDomainFor.setNewUser(newuser1);
                     exportDomainFor.setQidongTime(session1);

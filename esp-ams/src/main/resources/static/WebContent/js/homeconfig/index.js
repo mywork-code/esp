@@ -83,27 +83,6 @@ $(function(){
              modal:true,
              top:$(document).scrollTop() + ($(window).height()-250) * 0.5
          });
-         //加载省份 和城市
-         $('#addConfig').attr("title","新增");
-         $('#addConfig').window('open');
-     });
-    
-    $("#add").click(function () {
-    	$('#configForm').form('load', {
-    		homeName : '',
-    		startTime : '',
-    		endTime : '',
-    		activeLink : '',
-    		addConfigFilePic : ''
-		});
-         //打开弹出框
-         $('#addConfig').window({
-        	 minimizable:false,
-             maximizable:false,
-             collapsible:false,
-             modal:true,
-             top:$(document).scrollTop() + ($(window).height()-250) * 0.5
-         });
          $('#addConfig').window('open');
      });
     
@@ -130,41 +109,41 @@ $(function(){
     $("#agreeAdd").click(function(){
 		var homeName = $("#homeName").textbox('getValue');
 		if(homeName=='' || null==homeName){
-			$.messager.alert("<span style='color: black;'>提示</span>","窗口名称不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写窗口名称！","info");
 			return;
 		}
 		var startTime=$("#startTime").textbox('getValue');
 		if(startTime=='' || null==startTime){
-			$.messager.alert("<span style='color: black;'>提示</span>","开始时间不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写开始时间！","info");
 			return;
 		}
 		
 		var endTime= $("#endTime").textbox('getValue');
 		if(endTime=='' || null==endTime){
-			$.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写结束时间！","info");
 			return;
 		}
 		
 		if(startTime!=null && startTime!=''&&endTime!=null && endTime!=''){
     		if(startTime > endTime){
-    			$.messager.alert("<span style='color: black;'>提示</span>","开始时间应早于结束时间！",'info');
+    			$.messager.alert("<span style='color: black;'>提示</span>","开始时间填写错误，请重新填写！",'info');
     			return;
     		}
     		if(endTime < new Date().Format("yyyy-MM-dd hh:mm:ss")){
-    			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：结束时间不能小于当前时间！",'info');
+    			$.messager.alert("<span style='color: black;'>提示</span>","结束时间填写错误，请重新填写！",'info');
     			return;
     		}
     	}
 		
 		var activeLink= $("#activeLink").textbox('getValue');
 		if(activeLink=='' || null==activeLink){
-			$.messager.alert("<span style='color: black;'>提示</span>","活动链接不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写活动链接！","info");
 			return;
 		}
 		
 		var addConfigFilePic= $("#addConfigFilePic").val();
 		if(addConfigFilePic=='' || null==addConfigFilePic){
-			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请上传图片！","info");
 			return;
 		}
 		//提交from
@@ -197,18 +176,18 @@ $(function(){
     $("#agreeEdit").click(function(){
 		var homeName = $("#homeNameEdit").textbox('getValue');
 		if(homeName=='' || null==homeName){
-			$.messager.alert("<span style='color: black;'>提示</span>","窗口名称不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写窗口名称！","info");
 			return;
 		}
 		var startTime=$("#startTimeEdit").textbox('getValue');
 		if(startTime=='' || null==startTime){
-			$.messager.alert("<span style='color: black;'>提示</span>","开始时间不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写开始时间！","info");
 			return;
 		}
 		
 		var endTime= $("#endTimeEdit").textbox('getValue');
 		if(endTime=='' || null==endTime){
-			$.messager.alert("<span style='color: black;'>提示</span>","结束时间不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写结束时间！","info");
 			return;
 		}
 		
@@ -225,7 +204,7 @@ $(function(){
 		
 		var activeLink= $("#activeLinkEdit").textbox('getValue');
 		if(activeLink=='' || null==activeLink){
-			$.messager.alert("<span style='color: black;'>提示</span>","活动链接不能为空！","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","请填写活动链接！","info");
 			return;
 		}
 		
