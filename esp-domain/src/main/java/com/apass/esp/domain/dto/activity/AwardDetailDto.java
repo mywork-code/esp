@@ -39,6 +39,8 @@ public class AwardDetailDto {
 	private Date createDate;
 
 	private Date updateDate;
+	
+	private String mobile;
 
 	public Long getId() {
 		return id;
@@ -144,4 +146,13 @@ public class AwardDetailDto {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+	
 }
