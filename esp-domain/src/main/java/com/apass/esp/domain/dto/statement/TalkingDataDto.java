@@ -15,7 +15,7 @@ public class TalkingDataDto {
     private ArrayList<String> metrics;
     private String groupby;//="daily";
     private Filter filter;
-    private String order = "desc";
+   // private String order = "desc";
 //    private Integer limit = 1000;
 //    private boolean sum = true;
 //    private boolean avg = false;
@@ -52,13 +52,13 @@ public class TalkingDataDto {
         this.filter = filter;
     }
 
-    public String getOrder() {
-        return order;
-    }
-
-    public void setOrder(String order) {
-        this.order = order;
-    }
+//    public String getOrder() {
+//        return order;
+//    }
+//
+//    public void setOrder(String order) {
+//        this.order = order;
+//    }
 
 //    public Integer getLimit() {
 //        return limit;

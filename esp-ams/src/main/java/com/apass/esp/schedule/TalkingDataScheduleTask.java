@@ -103,12 +103,12 @@ public class TalkingDataScheduleTask {
                     String day1retention = "day1retention";//新增用户次日留存率
                     String dauday1retention = "dauday1retention";//活跃用户次日留存率
 
-                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, endDate, metrics, groupby, type);
-                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, endDate, newuser, groupby, type);
-                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, endDate, session, groupby, type);
-                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, endDate, avgsessionlength, groupby, type);
-                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, endDate, day1retention, groupby, type);
-                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, endDate, dauday1retention, groupby, type);
+                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, beginDate, metrics, groupby, type);
+                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, beginDate, newuser, groupby, type);
+                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, beginDate, session, groupby, type);
+                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, beginDate, avgsessionlength, groupby, type);
+                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, beginDate, day1retention, groupby, type);
+                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, beginDate, dauday1retention, groupby, type);
 
                     JSONObject iosObj = (JSONObject) JSONArray.parseArray(
                             JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
