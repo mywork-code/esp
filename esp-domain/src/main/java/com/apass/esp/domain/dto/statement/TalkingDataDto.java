@@ -15,10 +15,10 @@ public class TalkingDataDto {
     private ArrayList<String> metrics;
     private String groupby;//="daily";
     private Filter filter;
-    private String order = "desc";
-    private Integer limit = 1000;
-    private boolean sum = true;
-    private boolean avg = false;
+   // private String order = "desc";
+//    private Integer limit = 1000;
+//    private boolean sum = true;
+//    private boolean avg = false;
 
     public String getAccesskey() {
         return accesskey;
@@ -52,35 +52,35 @@ public class TalkingDataDto {
         this.filter = filter;
     }
 
-    public String getOrder() {
-        return order;
-    }
+//    public String getOrder() {
+//        return order;
+//    }
+//
+//    public void setOrder(String order) {
+//        this.order = order;
+//    }
 
-    public void setOrder(String order) {
-        this.order = order;
-    }
-
-    public Integer getLimit() {
-        return limit;
-    }
-
-    public void setLimit(Integer limit) {
-        this.limit = limit;
-    }
-
-    public boolean isSum() {
-        return sum;
-    }
-
-    public void setSum(boolean sum) {
-        this.sum = sum;
-    }
-
-    public boolean isAvg() {
-        return avg;
-    }
-
-    public void setAvg(boolean avg) {
-        this.avg = avg;
-    }
+//    public Integer getLimit() {
+//        return limit;
+//    }
+//
+//    public void setLimit(Integer limit) {
+//        this.limit = limit;
+//    }
+//
+//    public boolean isSum() {
+//        return sum;
+//    }
+//
+//    public void setSum(boolean sum) {
+//        this.sum = sum;
+//    }
+//
+//    public boolean isAvg() {
+//        return avg;
+//    }
+//
+//    public void setAvg(boolean avg) {
+//        this.avg = avg;
+//    }
 }

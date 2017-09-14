@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,12 +105,12 @@ public class TalkingDataScheduleTask {
                     String day1retention = "day1retention";//新增用户次日留存率
                     String dauday1retention = "dauday1retention";//活跃用户次日留存率
 
-                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, endDate, metrics, groupby, type);
-                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, endDate, newuser, groupby, type);
-                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, endDate, session, groupby, type);
-                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, endDate, avgsessionlength, groupby, type);
-                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, endDate, day1retention, groupby, type);
-                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, endDate, dauday1retention, groupby, type);
+                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, beginDate, metrics, groupby, type);
+                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, beginDate, newuser, groupby, type);
+                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, beginDate, session, groupby, type);
+                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, beginDate, avgsessionlength, groupby, type);
+                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, beginDate, day1retention, groupby, type);
+                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, beginDate, dauday1retention, groupby, type);
 
                     JSONObject iosObj = (JSONObject) JSONArray.parseArray(
                             JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
@@ -138,8 +140,8 @@ public class TalkingDataScheduleTask {
                     exportDomainFor.setQidongTime(session1);
                     exportDomainFor.setUserTime(avgsessionlength1);
                     exportDomainFor.setType(type);
-                    exportDomainFor.setDay1retention1(day1retention1);
-                    exportDomainFor.setDauday1retention1(dauday1retention1);
+                    exportDomainFor.setDay1retention1(convert(day1retention1));
+                    exportDomainFor.setDauday1retention1(convert(dauday1retention1));
                     lists.add(exportDomainFor);
                 } catch (Exception e) {
                     LOGGER.error("error i {}", e);
@@ -404,4 +406,11 @@ public class TalkingDataScheduleTask {
         return styleList;
     }
 
+    private String convert(String number){
+        double result1=Double.valueOf(number);
+        DecimalFormat df = new DecimalFormat("0.00%");
+        df.setRoundingMode(RoundingMode.CEILING );
+        String r = df.format(result1);
+        return r;
+    }
 }

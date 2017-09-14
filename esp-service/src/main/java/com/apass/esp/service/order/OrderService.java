@@ -22,6 +22,7 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.utils.ConstantsUtils;
@@ -39,6 +40,7 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.order.OrderSubInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.repository.refund.RefundDetailInfoRepository;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
@@ -176,6 +178,9 @@ public class OrderService {
 
     @Autowired
     private AwardDetailMapper awardDetailMapper;
+    
+    @Autowired
+    private RefundDetailInfoRepository detailInfoRepository;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1135,6 +1140,59 @@ public class OrderService {
             goodsStcokLogDao.deleteByOrderId(orderId);
         }
     }
+    
+    
+    @Transactional(rollbackFor = Exception.class)
+    public void addGoodsStockInAfterSalesTask(String requestId,String orderId) throws BusinessException {
+    	Integer errorNum = errorNo;
+    	/** 
+    	 * 根据订单的Id，查询该订单下的退货物品
+    	 */
+    	List<RefundDetailInfoEntity> list = detailInfoRepository.getRefundDetailList(orderId);
+    	for (RefundDetailInfoEntity detail : list) {
+    	  try {
+    		   if(StringUtils.equals(detail.getSource(), SourceType.JD.getCode())){
+    			   continue;
+    		   }
+    		for (int i = 0; i < errorNum; i++) {
+    			OrderDetailInfoEntity orderDetail = orderDetailInfoRepository.select(detail.getOrderDetailId());
+        		GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
+        		if (null == goodsStock) {
+                    LOG.info(requestId, "加库存,根据商品库存id查询商品库存信息,数据为空", orderDetail.getGoodsStockId()
+                            .toString());
+                    throw new BusinessException("商品信息不存在,请联系客服!");
+                }
+                goodsStock.setStockAmt(goodsStock.getStockCurrAmt());
+                // 加库存
+                Long stockCurrAmt = goodsStock.getStockCurrAmt() + orderDetail.getGoodsNum();
+                goodsStock.setStockCurrAmt(stockCurrAmt);
+                if (stockCurrAmt > goodsStock.getStockTotalAmt()) {
+                    LOGGER.error("当前库存不能大于总库存");
+                    throw new BusinessException("当前库存不能大于总库存", BusinessErrorCode.GOODSSTOCK_UPDATE_ERROR);
+                }
+
+                Integer successFlag = goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
+                if (successFlag == 0) {
+                    if (errorNum <= 0) {
+                        LOG.info(requestId, "加库存,修改库存尝试次数已达3次", orderDetail.getGoodsStockId().toString());
+                        throw new BusinessException("网络异常稍后再试");
+                    }
+                    errorNum--;
+                    continue;
+                } else if (successFlag > 1) {
+                    LOG.info(requestId, "加库存,商品库存更新异常", orderDetail.getGoodsStockId().toString());
+                    throw new BusinessException(goodsStock.getGoodsName() + "商品库存更新异常请联系客服!");
+                } else if (successFlag == 1) {
+                    break;
+                }
+    		}
+    	  } catch (Exception e) {
+              LOG.info(requestId, "加库存操作失败", orderId);
+              LOGGER.error("加库存操作失败", e);
+              continue;
+          }
+		}
+    }
 
     /**
      * 延迟收货
@@ -1576,7 +1634,7 @@ public class OrderService {
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
             GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
             // 判断库存
-            if (goodsStock.getStockCurrAmt() <= 0) {
+            if (goodsStock.getStockCurrAmt() <= 0 && !StringUtils.equals(goods.getSource(), SourceType.JD.getCode()) ) {
                 throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
             }
             GoodsInfoInCartEntity goodInfo = new GoodsInfoInCartEntity();
@@ -1584,11 +1642,17 @@ public class OrderService {
             goodInfo.setGoodsStockId(goodsStock.getGoodsStockId());
             goodInfo.setGoodsName(orderDetail.getGoodsName());
             goodInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
-            if (orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt()) {
-                goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
-            } else {
-                goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+            
+            if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
+            	goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+            }else{
+            	if (orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt()) {
+                    goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
+                } else {
+                    goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+                }
             }
+            
             BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
                     goodsStock.getGoodsStockId());
 

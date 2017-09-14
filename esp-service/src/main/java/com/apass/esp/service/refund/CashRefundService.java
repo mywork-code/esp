@@ -11,6 +11,7 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -20,6 +21,7 @@ import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.esp.utils.BeanUtils;
@@ -38,7 +40,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 @Service
@@ -72,6 +77,9 @@ public class CashRefundService {
 
     @Autowired
     private ApassTxnAttrMapper apassTxnAttrMapper;
+    
+    @Autowired
+    public OrderRefundRepository  orderRefundRepository;
 
     /**
      * @param orderId
@@ -483,6 +491,104 @@ public class CashRefundService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void agreeRefundInAfterSalesTask(String orderId) {
+    	
+    	OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
+    	/**
+    	 * 如果订单的支付方式不是支付宝支付获取额度支付，不需要往下面走
+    	 */
+    	if(!StringUtils.equals(PaymentType.CREDIT_PAYMENT.getCode(), order.getPayType()) && 
+    			!StringUtils.equals(PaymentType.ALIPAY_PAYMENT.getCode(), order.getPayType())){
+    		return;
+    	}
+    	
+    	Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderId);
+        map.put("refundType", "0");
+    	RefundInfoEntity refund = orderRefundRepository.queryRefundInfoByOrderIdAndRefundType(map);
+    	
+        logger.info("agree refund orderId {}",orderId);
+        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
+        if (CollectionUtils.isEmpty(txnInfoEntityList)) {
+        	logger.error("orderId:"+orderId+"txn-info is null");
+        }
+        
+        
+        
+        if(txnInfoEntityList.size() == 1){
+        	
+        	TxnInfoEntity txn = txnInfoEntityList.get(0);
+        	String txnType = txn.getTxnType();
+        	if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+        		
+        		/**
+            	 * 退换库存
+            	 */
+            	try {
+                    orderService.addGoodsStockInAfterSalesTask("", orderId);
+                } catch (BusinessException e) {
+                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
+                	logger.error("back goods stock is failed!!!!! ",e);
+                    e.printStackTrace();
+                }
+        		
+        		ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txn.getTxnId());
+                logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),txn.getTxnAmt());
+                Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),refund.getRefundAmt().toString(),orderId,txn.getTxnAmt().toString());
+                if (!response.statusResult()) {
+                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
+                }
+        	}
+        }
+        
+        if(txnInfoEntityList.size() == 2){
+        	TxnInfoEntity txn1 = txnInfoEntityList.get(0);
+        	TxnInfoEntity txn2 = txnInfoEntityList.get(1);
+        	if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode()) || StringUtils.equals(txn2.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
+        		/**
+            	 * 退换库存
+            	 */
+            	try {
+                    orderService.addGoodsStockInAfterSalesTask("", orderId);
+                } catch (BusinessException e) {
+                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
+                	logger.error("back goods stock is failed!!!!! ",e);
+                    e.printStackTrace();
+                }
+        		Long txnId = null;
+        		BigDecimal amount = new BigDecimal(0);
+        		if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
+        			txnId = txn1.getTxnId();
+        			amount = txn1.getTxnAmt();
+        		}else{
+        			txnId = txn2.getTxnId();
+        			amount = txn2.getTxnAmt();
+        		}
+        		ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
+        		CashRefundAmtDto dto = getCreditCashRefundAmt(txnInfoEntityList, refund.getRefundAmt());
+        		BigDecimal sf = dto.getSfAmt();
+        		BigDecimal creditAmt  = dto.getCreditAmt();
+        		
+        		logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),sf);
+                /**
+                 * 支付宝退款
+                 */
+        		Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),sf.toString(),orderId,amount.toString());
+                if (!response.statusResult()) {
+                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
+                }
+                /**
+                 * 退还额度
+                 */
+                Response res = commonHttpClient.updateAvailableAmount("",order.getUserId() , String.valueOf(creditAmt));
+                if (!res.statusResult()) {
+                	logger.error("reback creditAmt is failed！orderId:{0}",orderId);
+                }
+        	}
+        }
+    }
+    
     /**
      * 信用支付时 才能调用
      * @param txnInfoEntityList

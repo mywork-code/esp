@@ -53,6 +53,7 @@
                 GOODS_PRICE             goodsPrice,
                 GOODS_NUM               goodsNum,
                 GOODS_ID 				goodsId,
+                SOURCE					source,
                 REMARK                  remark
         FROM T_ESP_REFUND_DETAIL_INFO
     ]]>

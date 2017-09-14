@@ -41,6 +41,9 @@ public class OrderRefundService {
     
     @Autowired
     private LogisticsService logisticsService;
+    
+    @Autowired
+    private CashRefundService cashRefundService;
 
     /**
      * 查询订单退货详情信息
@@ -246,16 +249,21 @@ public class OrderRefundService {
         
         if(null != refundedOrderInfoList && !refundedOrderInfoList.isEmpty()){
             for(RefundedOrderInfoDto dto: refundedOrderInfoList){
-            	String status = OrderStatus.ORDER_TRADCLOSED.getCode();
+            	String status = OrderStatus.ORDER_COMPLETED.getCode();
             	//根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
-            	if(StringUtils.equals(dto.getRefundType(), "1")){
-            		status = OrderStatus.ORDER_COMPLETED.getCode();
+            	if(StringUtils.equals(dto.getRefundType(), "0")){
+            		status = OrderStatus.ORDER_TRADCLOSED.getCode();
+            		//支付宝退款
+            		cashRefundService.agreeRefundInAfterSalesTask(dto.getOrderId());
             	}
-            	
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
         }
     }
+    
+    /**
+     * 1.在退货完成，修改订单状态为交易关闭的时候，应该退款给客户（支付宝）
+     */
     
     /**
      * 换货 商家重新发货物流显示已签收， 3天后标记售后完成
