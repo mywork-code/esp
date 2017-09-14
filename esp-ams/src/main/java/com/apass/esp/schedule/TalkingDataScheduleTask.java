@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -138,8 +140,8 @@ public class TalkingDataScheduleTask {
                     exportDomainFor.setQidongTime(session1);
                     exportDomainFor.setUserTime(avgsessionlength1);
                     exportDomainFor.setType(type);
-                    exportDomainFor.setDay1retention1(day1retention1);
-                    exportDomainFor.setDauday1retention1(dauday1retention1);
+                    exportDomainFor.setDay1retention1(convert(day1retention1));
+                    exportDomainFor.setDauday1retention1(convert(dauday1retention1));
                     lists.add(exportDomainFor);
                 } catch (Exception e) {
                     LOGGER.error("error i {}", e);
@@ -404,4 +406,11 @@ public class TalkingDataScheduleTask {
         return styleList;
     }
 
+    private String convert(String number){
+        double result1=Double.valueOf(number);
+        DecimalFormat df = new DecimalFormat("0.00%");
+        df.setRoundingMode(RoundingMode.DOWN);
+        String r = df.format(result1);
+        return r;
+    }
 }
