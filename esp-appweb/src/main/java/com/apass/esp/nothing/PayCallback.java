@@ -182,14 +182,14 @@ public class PayCallback {
 							BigDecimal allAward = awardDetailService.getAllAwardByUserId(awardBindRel.getUserId());
 							BigDecimal newAward = allAward.add(new BigDecimal(rebateInt));
 							if(allAward.compareTo(new BigDecimal(800))>0){
-								awardDetailDto.setAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.8)));
-								awardDetailDto.setTaxAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.2)));
+								awardDetailDto.setAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.8)).setScale(2,   BigDecimal.ROUND_DOWN));
+								awardDetailDto.setTaxAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.2)).setScale(2,   BigDecimal.ROUND_DOWN));
 							}else if(allAward.compareTo(new BigDecimal(800))<=0&&newAward.compareTo(new BigDecimal(800))>0){
-								BigDecimal taxAmount= newAward.subtract(new BigDecimal(800)).multiply(new BigDecimal(0.2));
+								BigDecimal taxAmount= newAward.subtract(new BigDecimal(800)).multiply(new BigDecimal(0.2).setScale(2,   BigDecimal.ROUND_DOWN));
 								awardDetailDto.setTaxAmount(taxAmount);
-								awardDetailDto.setAmount(new BigDecimal(rebateInt).subtract(taxAmount));
+								awardDetailDto.setAmount(new BigDecimal(rebateInt).subtract(taxAmount).setScale(2,   BigDecimal.ROUND_DOWN));
 							}else{
-								awardDetailDto.setAmount(new BigDecimal(rebateInt));
+								awardDetailDto.setAmount(new BigDecimal(rebateInt).setScale(2,   BigDecimal.ROUND_DOWN));
 							}
 
 							awardDetailDto.setOrderId(orderInfoEntity.getOrderId());
