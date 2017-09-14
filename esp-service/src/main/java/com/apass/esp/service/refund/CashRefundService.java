@@ -526,7 +526,7 @@ public class CashRefundService {
             	 * 退换库存
             	 */
             	try {
-                    orderService.addGoodsStock("", orderId);
+                    orderService.addGoodsStockInAfterSalesTask("", orderId);
                 } catch (BusinessException e) {
                 	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
                 	logger.error("back goods stock is failed!!!!! ",e);
@@ -546,18 +546,16 @@ public class CashRefundService {
         	TxnInfoEntity txn1 = txnInfoEntityList.get(0);
         	TxnInfoEntity txn2 = txnInfoEntityList.get(1);
         	if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode()) || StringUtils.equals(txn2.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
-        		
         		/**
             	 * 退换库存
             	 */
             	try {
-                    orderService.addGoodsStock("", orderId);
+                    orderService.addGoodsStockInAfterSalesTask("", orderId);
                 } catch (BusinessException e) {
                 	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
                 	logger.error("back goods stock is failed!!!!! ",e);
                     e.printStackTrace();
                 }
-        		
         		Long txnId = null;
         		BigDecimal amount = new BigDecimal(0);
         		if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
