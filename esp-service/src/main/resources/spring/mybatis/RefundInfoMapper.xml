@@ -166,6 +166,7 @@
             SELECT
 			    t1.id                    refundId,
 			    t1.status                refundStatus,
+			    t1.refund_type			 refundType,
 			    t1.completion_time       completionTime,
 			    t1.order_id              orderId,
 			    t2.orderstatus           orderStatus
