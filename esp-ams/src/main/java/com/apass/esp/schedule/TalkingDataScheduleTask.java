@@ -409,7 +409,7 @@ public class TalkingDataScheduleTask {
     private String convert(String number){
         double result1=Double.valueOf(number);
         DecimalFormat df = new DecimalFormat("0.00%");
-        df.setRoundingMode(RoundingMode.DOWN);
+        df.setRoundingMode(RoundingMode.CEILING );
         String r = df.format(result1);
         return r;
     }
