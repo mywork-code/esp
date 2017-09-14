@@ -301,8 +301,8 @@ public class ActivityWithDrawController {
 	 */
 	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
 	public void saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
+		String customerId = CommonUtils.getValue(paramMap, "customerId");
 		try {
-			String customerId = CommonUtils.getValue(paramMap, "customerId");
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
 			if (null != response && "1".equals(response.getStatus())) {
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
@@ -364,7 +364,7 @@ public class ActivityWithDrawController {
 				}
 			}
 		} catch (BusinessException e) {
-			e.printStackTrace();
+			LOGGER.error("customerId 用户获得额度时：customerId="+customerId);
 		}
 	}
 	
