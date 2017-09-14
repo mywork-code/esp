@@ -26,6 +26,8 @@ public class AwardActivityInfo {
 
     private Date updateDate;
 
+    private BigDecimal awardAmont;
+
     public Long getId() {
         return id;
     }
@@ -112,5 +114,13 @@ public class AwardActivityInfo {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public BigDecimal getAwardAmont() {
+        return awardAmont;
+    }
+
+    public void setAwardAmont(BigDecimal awardAmont) {
+        this.awardAmont = awardAmont;
     }
 }

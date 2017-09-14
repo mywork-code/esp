@@ -42,3 +42,6 @@ CREATE TABLE `t_esp_home_config_info` (
 `update_date`  datetime NOT NULL COMMENT '修改时间' ,
 PRIMARY KEY (`ID`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='首页活动配置';
+
+
+ALTER TABLE `t_esp_award_activity_info` ADD COLUMN `award_amont` decimal(10,2) NOT NULL COMMENT '信贷奖励金额';

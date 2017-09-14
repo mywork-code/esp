@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.HomeConfigDto;
-import com.apass.esp.domain.entity.HomeConfig;
 import com.apass.esp.domain.enums.YesNoEnums;
 import com.apass.esp.domain.vo.HomeConfigVo;
 import com.apass.esp.service.home.HomeConfigService;
@@ -26,8 +23,8 @@ import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 首页配置
  */
@@ -40,7 +37,7 @@ public class HomeConfigController {
     private static final Logger logger = LoggerFactory.getLogger(HomeConfigController.class);
     
 	@Autowired
-	private HomeConfigService backService;
+	private HomeConfigService homeConfigService;
 	
 	 /**
      * 图片服务器地址
@@ -67,7 +64,7 @@ public class HomeConfigController {
     public ResponsePageBody<HomeConfigVo> FeedBackPageList() {
     	ResponsePageBody<HomeConfigVo> respBody = new ResponsePageBody<HomeConfigVo>();
 		try {
-			ResponsePageBody<HomeConfigVo> pagination=backService.getHomeConfigListPage();
+			ResponsePageBody<HomeConfigVo> pagination=homeConfigService.getHomeConfigListPage();
             respBody.setTotal(pagination.getTotal());
             respBody.setRows(pagination.getRows());
             respBody.setStatus(CommonCode.SUCCESS_CODE);
@@ -83,7 +80,7 @@ public class HomeConfigController {
     	try {
     		config.setLogoUrl(uploadPicFile(config.getAddConfigFilePic()));
     		checkParam(config,true);
-        	backService.insert(config);
+        	homeConfigService.insert(config);
         	return Response.success("添加成功");
 		} catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
@@ -101,7 +98,7 @@ public class HomeConfigController {
     		String url = uploadPicFile(config.getAddConfigFilePic());
     		config.setLogoUrl(StringUtils.isNotBlank(url)?url:null);
     		checkParam(config,false);
-        	backService.update(config);
+        	homeConfigService.update(config);
         	return Response.success("添加成功");
 		} catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
@@ -117,7 +114,7 @@ public class HomeConfigController {
     	try {
     		ValidateUtils.isNullObject(config.getId(), "配置项编号不能为空!");
     		config.setHomeStatus(YesNoEnums.NO.getCode());
-        	backService.update(config);
+        	homeConfigService.update(config);
         	return Response.success("修改状态成功!");
 		} catch (Exception e) {
 			logger.error("修改状态失败", e);
@@ -127,20 +124,28 @@ public class HomeConfigController {
     
     
     public void checkParam(HomeConfigDto config,boolean bl) throws BusinessException{
+    	ValidateUtils.isNotBlank(config.getHomeName(), "请填写窗口名称");
     	ValidateUtils.checkLength(config.getHomeName(), 1, 20, "窗口名称长度不能超过20！");
-    	ValidateUtils.isNotBlank(config.getActiveLink(), "活动链接不能为空！");
-    	ValidateUtils.isNotBlank(config.getStartTime(), "开始时间不能为空!");
-    	ValidateUtils.isNotBlank(config.getEndTime(), "结束时间不能为空!");
+    	ValidateUtils.isNotBlank(config.getActiveLink(), "请填写活动链接！");
+    	ValidateUtils.isNotBlank(config.getStartTime(), "请填写开始时间!");
+    	ValidateUtils.isNotBlank(config.getEndTime(), "请填写结束时间!");
     	Date start = DateFormatUtil.string2date(config.getStartTime(), "");
     	Date end = DateFormatUtil.string2date(config.getEndTime(), "");
     	if(end.before(start)){
-    		throw new BusinessException("开始时间不能大于结束时间！");
+    		throw new BusinessException("开始时间填写错误，请重新填写！");
     	}
     	if(end.before(new Date())){
-    		throw new BusinessException("结束时间不能小于当前时间！");
+    		throw new BusinessException("结束时间填写错误，请重新填写。！");
+    	}
+    	
+    	int startCount = homeConfigService.getContainsTimesCount(config.getStartTime(),config.getId());
+    	int endCount = homeConfigService.getContainsTimesCount(config.getEndTime(),config.getId());
+    	int count = homeConfigService.getContainsTimeCount(config.getStartTime(), config.getEndTime(),config.getId());
+    	if(startCount > 0 || endCount > 0 || count > 0){
+    		throw new BusinessException("活动时间不能与其他活动时间有重叠！");
     	}
     	if(bl){
-    		ValidateUtils.isNotBlank(config.getLogoUrl(), "上传图片不能为空！");
+    		ValidateUtils.isNotBlank(config.getLogoUrl(), "请上传图片！");
     	}
     	if(!bl){
     		ValidateUtils.isNullObject(config.getId(), "配置项编号不能为空!");
@@ -150,7 +155,7 @@ public class HomeConfigController {
     public String uploadPicFile(MultipartFile file) {
     	try { 
     	if (file == null || file.isEmpty()) {
-             throw new BusinessException("上传图片不能为空!");
+             throw new BusinessException("请上传图片!");
          }
     	 String imgType = ImageTools.getImgType(file);
          String url = homeConfigPath + "config_" + System.currentTimeMillis() + "." + imgType;

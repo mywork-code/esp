@@ -247,7 +247,8 @@
                 GOODS_PRICE              goodsPrice,
                 GOODS_SKU_ATTR           goodsSkuAttr,
                 STOCK_CURR_AMT           stockCurrAmt,
-                STOCK_LOGO               stockLogo
+                STOCK_LOGO               stockLogo,
+                GOODS_COST_PRICE		 goodsCostPrice
             FROM
                 T_ESP_GOODS_STOCK_INFO
             WHERE

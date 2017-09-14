@@ -12,6 +12,7 @@ import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -332,13 +333,80 @@ public class RegisterInfoController {
 					}
 					respMap.put("isAppUser", "old");
 					return Response.success("校验成功！", respMap);
-				} else if ("new".equals(falge)) {
+				}else if ("new".equals(falge)) {
 					respMap.put("isAppUser", "new");
 					return Response.success("校验成功！", respMap);
 				}
 				return Response.fail("校验失败,请重新注册！");
 			}
 
+			logger.error("校验失败,请重新注册！");
+			return Response.fail("校验失败,请重新注册！");
+		} catch (Exception e) {
+			logger.error("校验失败,请重新注册", e);
+			return Response.fail("校验失败,请重新注册！");
+		}
+	}
+	/**
+	 * <pre>
+	 * 3.根据输入的手机号码&验证码进行校验用户填写的验证码是否正确
+	 * &#64;param mobile
+	 * &#64;param randomCode
+	 * </pre>
+	 */
+	@RequestMapping(value = "/v2/validate", method = RequestMethod.POST)
+	public Response validateRandomCode2(@RequestBody Map<String, Object> paramMap) {
+		String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
+		String mobile = CommonUtils.getValue(paramMap, "mobile");// 手机号
+		String code = CommonUtils.getValue(paramMap, "code");// 短信验证码
+		String randomCode = CommonUtils.getValue(paramMap, "randomCode");// 随机码
+		String InviterId = CommonUtils.getValue(paramMap, "InviterId");// 邀请人的id
+		String randomFlage = CommonUtils.getValue(paramMap, "randomFlage");// 随机码标识
+		String mobile2 = mobile.replace(" ", "");
+		logger.info("立即校验接口validate：----》" + "smsType" + smsType + ",mobile:" + mobile + ",code:" + code
+				+ ",randomCode:" + randomCode + ",InviterId:" + InviterId + ",randomFlage:" + randomFlage);
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile2);
+		if (StringUtils.isBlank(smsType)) {
+			logger.error("手机号验证码类型不能为空");
+			return Response.fail("手机号验证码类型不能为空");
+		} else if (StringUtils.isBlank(mobile2)) {
+			logger.error("手机号不能为空");
+			return Response.fail("手机号不能为空");
+		} else if (!m.matches()) {
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail("手机号格式不正确,请重新输入！");
+		} else if (StringUtils.isBlank(code)) {
+			logger.error("短信验证码不能为空！");
+			return Response.fail("短信验证码不能为空！");
+		} else if (StringUtils.isBlank(randomCode)) {
+			logger.error("随机码不能为空");
+			return Response.fail("随机码不能为空");
+		} else if (StringUtils.isBlank(InviterId)) {
+			logger.error("邀请人的id不能为空");
+			return Response.fail("邀请人的id不能为空");
+		} else if (StringUtils.isBlank(randomFlage)) {
+			logger.error("随机码标识不能为空");
+			return Response.fail("随机码标识不能为空");
+		}
+		try {
+			String cacheKey = "activityRegistRandom_" + randomFlage;
+			String cacheJson = cacheManager.get(cacheKey);
+			Map<String, Object> cacheJsonMap = GsonUtils.convert(cacheJson);
+			if (cacheJsonMap == null || !cacheJsonMap.containsKey("value")) {
+				logger.error("验证码不正确");
+				return Response.fail("验证码不正确");
+			}
+			if (!StringUtils.equalsIgnoreCase((String) cacheJsonMap.get("value"), randomCode)) {
+				logger.error("验证码不正确");
+				return Response.fail("验证码不正确");
+			}
+			Map<String, Object> respMap = new HashMap<String, Object>();
+			boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile2, code);// 判断短信验证码是否填写正确
+			if (result2) {
+				logger.error("校验成功！");
+				return Response.success("校验成功！");
+			}
 			logger.error("校验失败,请重新注册！");
 			return Response.fail("校验失败,请重新注册！");
 		} catch (Exception e) {
@@ -501,5 +569,72 @@ public class RegisterInfoController {
 			return Response.fail("获取有效活动开始时间失败！");
 		}
 	}
+	/**
+	 * <pre>
+	 * 2.根据九期需求，根据手机号判断是否为老用户
+	 * &#64;param mobile
+	 * &#64;return Responses
+	 * </pre>
+	 */
+	@RequestMapping(value = "/isOldUser", method = RequestMethod.POST)
+	public Response isOldUser(@RequestBody Map<String, Object> paramMap) {
+		String mobile = CommonUtils.getValue(paramMap, "mobile");// 被邀请人的手机号
+		String InviterId = CommonUtils.getValue(paramMap, "InviterId");// 邀请人的id
 
+		String mobile2 = mobile.replace(" ", "");
+		Pattern p = Pattern.compile("^1[0-9]{10}$");
+		Matcher m = p.matcher(mobile2);
+		if (StringUtils.isAnyBlank(mobile2)) {
+			logger.error("手机号不能为空！");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		} else if (!m.matches()) {
+			logger.error("手机号格式不正确,请重新输入！");
+			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+		}else if (StringUtils.isBlank(InviterId)) {
+			logger.error("邀请人的id不能为空");
+			return Response.fail("邀请人的id不能为空");
+		}
+		try {
+			Response resp = registerInfoService.isOldUser(mobile2,InviterId);
+			if ("1".equals(resp.getStatus())) {
+				Map<String, Object> resultMap = (Map<String, Object>) resp.getData();
+				String falge = (String) resultMap.get("falge");
+				Map<String, Object> respMap = new HashMap<String, Object>();
+				respMap.put("UserFalge", falge);
+				return Response.success("手机号验证成功！", respMap);
+			}
+		} catch (Exception e) {
+			logger.error("手机号验证失败", e);
+			return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
+		}
+		return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
+	}
+
+	/**
+	 * 获取下单立返比例和好友首次获额获得的奖励金额
+	 */
+	@RequestMapping(value = "/getConfigure", method = RequestMethod.GET)
+	public Response getConfigure() {
+		try {
+			Map<String, Object> result = new HashMap<String, Object>();
+			ActivityName activityName = ActivityName.INTRO;// 获取活动名称
+			AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
+			if (null == aInfoVo) {
+				logger.error("获取信息失败,无有效活动！");
+				return Response.fail("获取信息失败,无有效活动！");
+			}
+			Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
+			int falge = aEndDate.compareTo(new Date());
+			if (falge < 0) {
+				logger.error("获取信息失败,活动已经结束！");
+				return Response.fail("获取信息失败,活动已经结束！");
+			}
+			result.put("rebate", aInfoVo.getRebate());
+			result.put("awardAmont", aInfoVo.getAwardAmont());
+			return Response.success("获取信息成功！", result);
+		} catch (BusinessException e) {
+			logger.error("获取信息失败！");
+			return Response.fail("获取信息失败！");
+		}
+	}
 }

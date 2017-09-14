@@ -15,13 +15,24 @@ public class RefundedOrderInfoDto {
     
     private String refundStatus;
     
+    private String refundType;
+    
     private Date completionTime;
     
     private String orderId;
     
     private String orderStatus;
 
-    public Long getRefundId() {
+    
+    public String getRefundType() {
+		return refundType;
+	}
+
+	public void setRefundType(String refundType) {
+		this.refundType = refundType;
+	}
+
+	public Long getRefundId() {
         return refundId;
     }
 
