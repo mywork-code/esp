@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,8 +246,13 @@ public class OrderRefundService {
         
         if(null != refundedOrderInfoList && !refundedOrderInfoList.isEmpty()){
             for(RefundedOrderInfoDto dto: refundedOrderInfoList){
-            	//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
-                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(), OrderStatus.ORDER_TRADCLOSED.getCode());
+            	String status = OrderStatus.ORDER_TRADCLOSED.getCode();
+            	//根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
+            	if(StringUtils.equals(dto.getRefundType(), "1")){
+            		status = OrderStatus.ORDER_COMPLETED.getCode();
+            	}
+            	
+                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
         }
     }
