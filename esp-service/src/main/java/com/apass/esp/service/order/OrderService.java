@@ -1634,7 +1634,7 @@ public class OrderService {
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
             GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
             // 判断库存
-            if (goodsStock.getStockCurrAmt() <= 0) {
+            if (goodsStock.getStockCurrAmt() <= 0 && !StringUtils.equals(goods.getSource(), SourceType.JD.getCode()) ) {
                 throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
             }
             GoodsInfoInCartEntity goodInfo = new GoodsInfoInCartEntity();
@@ -1642,11 +1642,17 @@ public class OrderService {
             goodInfo.setGoodsStockId(goodsStock.getGoodsStockId());
             goodInfo.setGoodsName(orderDetail.getGoodsName());
             goodInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
-            if (orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt()) {
-                goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
-            } else {
-                goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+            
+            if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
+            	goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+            }else{
+            	if (orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt()) {
+                    goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
+                } else {
+                    goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+                }
             }
+            
             BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
                     goodsStock.getGoodsStockId());
 
