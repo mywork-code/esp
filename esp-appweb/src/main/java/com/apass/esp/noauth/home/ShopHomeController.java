@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.domain.entity.common.ResponseInit;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -148,11 +149,15 @@ public class ShopHomeController {
             Pagination<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods(0, 10);
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods.getDataList());
-            ArrayList<Map<String,String>> mapArrayList= new ArrayList<>(2);
-            HashMap<String,String> hashMap = new HashMap<>();
-            hashMap.put("商城首付价购物指引","http://ajqh.download.apass.cn/activity/20170912/index.html");
-            hashMap.put("客户谨慎还款重要提示","");
-            mapArrayList.add(hashMap);
+            ArrayList<ResponseInit> mapArrayList= new ArrayList<>(2);
+            ResponseInit responseInit = new ResponseInit();
+            responseInit.setTitle("商城首付价购物指引");
+            responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
+            ResponseInit responseInit2 = new ResponseInit();
+            responseInit2.setTitle("客户谨慎还款重要提示");
+            responseInit2.setUrl("");
+            mapArrayList.add(responseInit);
+            mapArrayList.add(responseInit2);
             returnMap.put("guide",mapArrayList);
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 ActivityInfoEntity param = new ActivityInfoEntity();
