@@ -306,11 +306,10 @@ public class ActivityWithDrawController {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
 			if (null != response && "1".equals(response.getStatus())) {
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
-				Boolean isFirstCredit = (Boolean) resultMap.get("isFirstCredit");
+				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
-				if (isFirstCredit) {// 如果该用户是第一次获取额度则奖励给他的邀请人
-					ActivityName activityName = ActivityName.INTRO;// 获取活动名称
-					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
+				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
+					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
 					if (null != aInfoVo) {
 						Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
 						int falge = aEndDate.compareTo(new Date());
