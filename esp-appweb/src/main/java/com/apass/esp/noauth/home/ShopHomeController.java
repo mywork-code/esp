@@ -148,7 +148,12 @@ public class ShopHomeController {
             Pagination<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods(0, 10);
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods.getDataList());
-
+            ArrayList<Map<String,String>> mapArrayList= new ArrayList<>(2);
+            HashMap<String,String> hashMap = new HashMap<>();
+            hashMap.put("商城首付价购物指引","http://ajqh.download.apass.cn/activity/20170912/index.html");
+            hashMap.put("客户谨慎还款重要提示","");
+            mapArrayList.add(hashMap);
+            returnMap.put("guide",mapArrayList);
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 ActivityInfoEntity param = new ActivityInfoEntity();
                 param.setGoodsId(goods.getGoodId());
