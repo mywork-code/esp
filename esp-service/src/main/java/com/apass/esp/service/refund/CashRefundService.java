@@ -492,30 +492,52 @@ public class CashRefundService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Response agreeRefundInAfterSalesTask(String orderId) {
+    public void agreeRefundInAfterSalesTask(String orderId) {
     	
-    	OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
+    	OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
+    	/**
+    	 * 如果订单的支付方式不是支付宝支付获取额度支付，不需要往下面走
+    	 */
+    	if(!StringUtils.equals(PaymentType.CREDIT_PAYMENT.getCode(), order.getPayType()) && 
+    			!StringUtils.equals(PaymentType.ALIPAY_PAYMENT.getCode(), order.getPayType())){
+    		return;
+    	}
+    	
     	Map<String, Object> map = new HashMap<>();
         map.put("orderId", orderId);
         map.put("refundType", "0");
     	RefundInfoEntity refund = orderRefundRepository.queryRefundInfoByOrderIdAndRefundType(map);
     	
         logger.info("agree refund orderId {}",orderId);
-        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(orderEntity.getMainOrderId());
+        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
-            return Response.fail("orderId:"+orderId+"txn-info is null",BusinessErrorCode.NO);
+        	logger.error("orderId:"+orderId+"txn-info is null");
         }
         
+        
+        
         if(txnInfoEntityList.size() == 1){
+        	
         	TxnInfoEntity txn = txnInfoEntityList.get(0);
         	String txnType = txn.getTxnType();
         	if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+        		
+        		/**
+            	 * 退换库存
+            	 */
+            	try {
+                    orderService.addGoodsStock("", orderId);
+                } catch (BusinessException e) {
+                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
+                	logger.error("back goods stock is failed!!!!! ",e);
+                    e.printStackTrace();
+                }
+        		
         		ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txn.getTxnId());
                 logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),txn.getTxnAmt());
                 Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),refund.getRefundAmt().toString(),orderId,txn.getTxnAmt().toString());
                 if (!response.statusResult()) {
-                    logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
-                    return Response.fail(BusinessErrorCode.NO);
+                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                 }
         	}
         }
@@ -524,6 +546,18 @@ public class CashRefundService {
         	TxnInfoEntity txn1 = txnInfoEntityList.get(0);
         	TxnInfoEntity txn2 = txnInfoEntityList.get(1);
         	if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode()) || StringUtils.equals(txn2.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
+        		
+        		/**
+            	 * 退换库存
+            	 */
+            	try {
+                    orderService.addGoodsStock("", orderId);
+                } catch (BusinessException e) {
+                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
+                	logger.error("back goods stock is failed!!!!! ",e);
+                    e.printStackTrace();
+                }
+        		
         		Long txnId = null;
         		BigDecimal amount = new BigDecimal(0);
         		if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
@@ -544,19 +578,17 @@ public class CashRefundService {
                  */
         		Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),sf.toString(),orderId,amount.toString());
                 if (!response.statusResult()) {
-                    logger.info("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
-                    return Response.fail(BusinessErrorCode.NO);
+                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                 }
                 /**
                  * 退还额度
                  */
-                Response res = commonHttpClient.updateAvailableAmount("",orderEntity.getUserId() , String.valueOf(creditAmt));
+                Response res = commonHttpClient.updateAvailableAmount("",order.getUserId() , String.valueOf(creditAmt));
                 if (!res.statusResult()) {
                 	logger.error("reback creditAmt is failed！orderId:{0}",orderId);
                 }
         	}
         }
-    	return Response.successResponse();
     }
     
     /**
