@@ -300,6 +300,7 @@ public class ActivityWithDrawController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
+	@ResponseBody
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
 		try {
@@ -382,11 +383,11 @@ public class ActivityWithDrawController {
 					}
 				}
 			}
+			return Response.fail("奖励邀请人奖励金失败！");
 		} catch (BusinessException e) {
 			LOGGER.error("customerId 用户获得额度时：customerId="+customerId);
 			return Response.fail("奖励邀请人奖励金失败！");
 		}
-		return Response.fail("奖励邀请人奖励金失败！");
 	}
 	
 }
