@@ -1636,7 +1636,7 @@ public class OrderService {
             GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
             GoodsInfoEntity goods = goodsDao.select(orderDetail.getGoodsId());
             // 判断库存
-            if (goodsStock.getStockCurrAmt() <= 0 && !StringUtils.equals(goods.getSource(), SourceType.JD.getCode()) ) {
+            if (goodsStock.getStockCurrAmt() <= 0 && StringUtils.isBlank(goods.getSource()) ) {
                 throw new BusinessException(orderDetail.getGoodsName() + "商品库存不足!");
             }
             GoodsInfoInCartEntity goodInfo = new GoodsInfoInCartEntity();
