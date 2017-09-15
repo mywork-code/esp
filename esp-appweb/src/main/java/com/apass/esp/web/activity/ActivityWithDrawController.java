@@ -300,7 +300,7 @@ public class ActivityWithDrawController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
-	public void saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
+	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
@@ -361,6 +361,7 @@ public class ActivityWithDrawController {
 										awardDetailDto.setTaxAmount(new BigDecimal("0"));
 										awardDetailDto.setAmount(awardAmont);
 										awardDetailService.addAwardDetail(awardDetailDto);
+										return Response.success("奖励邀请人奖励金成功！");
 									}else if(new BigDecimal("800").compareTo(amountAward)>0 && new BigDecimal("800").compareTo(amount)<0){
 										BigDecimal more=amount.subtract(new BigDecimal("800"));
 										//扣除20%个人所得税后的奖励金额
@@ -368,10 +369,12 @@ public class ActivityWithDrawController {
 										awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
 										awardDetailDto.setAmount(awardAmont2);
 										awardDetailService.addAwardDetail(awardDetailDto);
+										return Response.success("奖励邀请人奖励金成功！");
 									}else if(new BigDecimal("800").compareTo(amountAward)<0){
 										awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
 										awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
 										awardDetailService.addAwardDetail(awardDetailDto);
+										return Response.success("奖励邀请人奖励金成功！");
 									}
 								}
 							}
@@ -381,7 +384,9 @@ public class ActivityWithDrawController {
 			}
 		} catch (BusinessException e) {
 			LOGGER.error("customerId 用户获得额度时：customerId="+customerId);
+			return Response.fail("奖励邀请人奖励金失败！");
 		}
+		return Response.fail("奖励邀请人奖励金失败！");
 	}
 	
 }
