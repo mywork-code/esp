@@ -1644,15 +1644,14 @@ public class OrderService {
             goodInfo.setGoodsStockId(goodsStock.getGoodsStockId());
             goodInfo.setGoodsName(orderDetail.getGoodsName());
             goodInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
-            
-            if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
-            	goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
+            /**
+             * 京东不需要验证数量
+             */
+            if(StringUtils.isBlank(goods.getSource()) && 
+            		(orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt())){
+            	goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
             }else{
-            	if (orderDetail.getGoodsNum() > goodsStock.getStockCurrAmt()) {
-                    goodInfo.setGoodsNum(goodsStock.getStockCurrAmt().intValue());
-                } else {
-                    goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
-                }
+            	goodInfo.setGoodsNum(orderDetail.getGoodsNum().intValue());
             }
             
             BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
