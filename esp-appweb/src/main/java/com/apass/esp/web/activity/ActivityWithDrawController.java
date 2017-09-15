@@ -324,7 +324,7 @@ public class ActivityWithDrawController {
 							parMap2.put("activityId",awardBindRel.getActivityId());
 							parMap2.put("orderId",userId);
 							parMap2.put("type","0");
-							int result=awardDetailMapper.isAwardSameUserId(parMap2);//已经获得的奖励金额
+							int result=awardDetailMapper.isAwardSameUserId(parMap2);
 							if(0==result){
 								//获取当前月的第一天和最后一天的时间
 								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
