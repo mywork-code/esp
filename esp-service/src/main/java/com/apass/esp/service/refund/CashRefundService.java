@@ -498,8 +498,12 @@ public class CashRefundService {
     	/**
     	 * 如果订单的支付方式不是支付宝支付获取额度支付，不需要往下面走
     	 */
-    	if(!StringUtils.equals(PaymentType.CREDIT_PAYMENT.getCode(), order.getPayType()) && 
-    			!StringUtils.equals(PaymentType.ALIPAY_PAYMENT.getCode(), order.getPayType())){
+    	if(!StringUtils.equals(order.getPayType(), PaymentType.CREDIT_PAYMENT.getCode()) && 
+    			!StringUtils.equals(order.getPayType(), PaymentType.ALIPAY_PAYMENT.getCode())){
+    		return;
+    	}
+    	
+    	if(!StringUtils.equals(order.getStatus(), OrderStatus.ORDER_RETURNING.getCode())){
     		return;
     	}
     	
@@ -513,8 +517,6 @@ public class CashRefundService {
         if (CollectionUtils.isEmpty(txnInfoEntityList)) {
         	logger.error("orderId:"+orderId+"txn-info is null");
         }
-        
-        
         
         if(txnInfoEntityList.size() == 1){
         	
