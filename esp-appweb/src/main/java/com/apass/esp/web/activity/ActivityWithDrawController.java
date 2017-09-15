@@ -317,51 +317,64 @@ public class ActivityWithDrawController {
 							//获取当前活动下邀请人的信息
 							AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(userId,
 									Integer.parseInt(aInfoVo.getId().toString()));
-							//获取当前月的第一天和最后一天的时间
-							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-							//获取当前月第一天
-							Calendar c = Calendar.getInstance();    
-							c.add(Calendar.MONTH, 0);
-							c.set(Calendar.DAY_OF_MONTH,1);
-							String first = format.format(c.getTime());
-							String firstDay=first+" 00:00:00";
-							String nowTime=DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
-							if(null !=awardBindRel){
-								AwardDetailDto awardDetailDto=new AwardDetailDto();
-								awardDetailDto.setActivityId(aInfoVo.getId());
-								awardDetailDto.setUserId(awardBindRel.getUserId());
-								awardDetailDto.setRealName(awardBindRel.getName());
-								awardDetailDto.setMobile(awardBindRel.getMobile());
-								awardDetailDto.setType(new Byte("0"));
-								awardDetailDto.setStatus(new Byte("0"));
-								awardDetailDto.setCreateDate(new Date());
-								awardDetailDto.setUpdateDate(new Date());
-								
-								Map<String, Object> parMap=new HashMap<>();
-								parMap.put("userId", awardBindRel.getUserId());
-								parMap.put("type", "0");
-								parMap.put("applyDate1", firstDay);
-								parMap.put("applyDate2", nowTime);
-								BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
-								if(amountAward == null){
-									amountAward = new BigDecimal(0);
-								}
-								BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
-								BigDecimal amount=awardAmont.add(amountAward);
-								if(new BigDecimal("800").compareTo(amount)>0){//总奖励金额小于800，直接插入记录
-									awardDetailDto.setTaxAmount(new BigDecimal("0"));
-									awardDetailDto.setAmount(awardAmont);
-									awardDetailService.addAwardDetail(awardDetailDto);
-								}else{//超出800部分要收取20%的个人所得税
-									BigDecimal more=amount.subtract(new BigDecimal("800"));
-									//扣除20%个人所得税后的奖励金额
-									BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
-									awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
-									awardDetailDto.setAmount(awardAmont2);
-									awardDetailService.addAwardDetail(awardDetailDto);
+							//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
+							Map<String, Object> parMap2=new HashMap<>();
+							parMap2.put("userId", awardBindRel.getUserId());
+							parMap2.put("activityId",awardBindRel.getActivityId());
+							parMap2.put("orderId",userId);
+							parMap2.put("type","0");
+							int result=awardDetailMapper.isAwardSameUserId(parMap2);//已经获得的奖励金额
+							if(0==result){
+								//获取当前月的第一天和最后一天的时间
+								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+								//获取当前月第一天
+								Calendar c = Calendar.getInstance();    
+								c.add(Calendar.MONTH, 0);
+								c.set(Calendar.DAY_OF_MONTH,1);
+								String first = format.format(c.getTime());
+								String firstDay=first+" 00:00:00";
+								String nowTime=DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+								if(null !=awardBindRel){
+									AwardDetailDto awardDetailDto=new AwardDetailDto();
+									awardDetailDto.setActivityId(aInfoVo.getId());
+									awardDetailDto.setUserId(awardBindRel.getUserId());
+									awardDetailDto.setRealName(awardBindRel.getName());
+									awardDetailDto.setMobile(awardBindRel.getMobile());
+									awardDetailDto.setOrderId(userId);
+									awardDetailDto.setType(new Byte("0"));
+									awardDetailDto.setStatus(new Byte("0"));
+									awardDetailDto.setCreateDate(new Date());
+									awardDetailDto.setUpdateDate(new Date());
+									
+									Map<String, Object> parMap=new HashMap<>();
+									parMap.put("userId", awardBindRel.getUserId());
+									parMap.put("type", "0");
+									parMap.put("applyDate1", DateFormatUtil.string2date(firstDay, "yyyy-MM-dd HH:mm:ss"));
+									parMap.put("applyDate2", DateFormatUtil.string2date(nowTime, "yyyy-MM-dd HH:mm:ss"));
+									BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
+									if(amountAward == null){
+										amountAward = new BigDecimal(0);
+									}
+									BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
+									BigDecimal amount=awardAmont.add(amountAward);
+									if(new BigDecimal("800").compareTo(amount)>0){//总奖励金额小于800，直接插入记录
+										awardDetailDto.setTaxAmount(new BigDecimal("0"));
+										awardDetailDto.setAmount(awardAmont);
+										awardDetailService.addAwardDetail(awardDetailDto);
+									}else if(new BigDecimal("800").compareTo(amountAward)>0 && new BigDecimal("800").compareTo(amount)<0){
+										BigDecimal more=amount.subtract(new BigDecimal("800"));
+										//扣除20%个人所得税后的奖励金额
+										BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
+										awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
+										awardDetailDto.setAmount(awardAmont2);
+										awardDetailService.addAwardDetail(awardDetailDto);
+									}else if(new BigDecimal("800").compareTo(amountAward)<0){
+										awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
+										awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
+										awardDetailService.addAwardDetail(awardDetailDto);
+									}
 								}
 							}
-				
 						}
 					}
 				}
