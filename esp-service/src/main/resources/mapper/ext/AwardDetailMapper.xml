@@ -62,4 +62,10 @@
         DATE_FORMAT( create_date, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
         and user_id=#{userId}
     </select>
+    
+    <select id="queryAmountAward" resultType="java.math.BigDecimal">
+        select SUM(amount)
+	    from t_esp_award_detail	
+	    <include refid="query_where_clause" />
+    </select>
 </mapper>
