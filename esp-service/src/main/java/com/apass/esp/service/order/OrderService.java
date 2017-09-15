@@ -1146,14 +1146,15 @@ public class OrderService {
     public void addGoodsStockInAfterSalesTask(String requestId,String orderId) throws BusinessException {
     	Integer errorNum = errorNo;
     	/** 
-    	 * 根据订单的Id，查询该订单下的退货物品
+    	 * 根据订单的Id，查询该订单下的退货物品(除京东的商品)
     	 */
+    	OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
+    	if(StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+    		return;
+    	}
     	List<RefundDetailInfoEntity> list = detailInfoRepository.getRefundDetailList(orderId);
     	for (RefundDetailInfoEntity detail : list) {
     	  try {
-    		   if(StringUtils.equals(detail.getSource(), SourceType.JD.getCode())){
-    			   continue;
-    		   }
     		for (int i = 0; i < errorNum; i++) {
     			OrderDetailInfoEntity orderDetail = orderDetailInfoRepository.select(detail.getOrderDetailId());
         		GoodsStockInfoEntity goodsStock = goodsStockDao.select(orderDetail.getGoodsStockId());
@@ -1192,6 +1193,7 @@ public class OrderService {
               continue;
           }
 		}
+    	goodsStcokLogDao.deleteByOrderId(orderId);
     }
 
     /**
