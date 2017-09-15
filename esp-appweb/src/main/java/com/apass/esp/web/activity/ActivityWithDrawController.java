@@ -333,6 +333,7 @@ public class ActivityWithDrawController {
 								awardDetailDto.setRealName(awardBindRel.getName());
 								awardDetailDto.setMobile(awardBindRel.getMobile());
 								awardDetailDto.setType(new Byte("0"));
+								awardDetailDto.setStatus(new Byte("0"));
 								awardDetailDto.setCreateDate(new Date());
 								awardDetailDto.setUpdateDate(new Date());
 								
@@ -342,6 +343,9 @@ public class ActivityWithDrawController {
 								parMap.put("applyDate1", firstDay);
 								parMap.put("applyDate2", nowTime);
 								BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
+								if(amountAward == null){
+									amountAward = new BigDecimal(0);
+								}
 								BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
 								BigDecimal amount=awardAmont.add(amountAward);
 								if(new BigDecimal("800").compareTo(amount)>0){//总奖励金额小于800，直接插入记录
