@@ -41,6 +41,12 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	 */
 	BigDecimal queryAmountAward(Map<String, Object> paramMap);
 	/**
+	 * 查询判断在当前活动下邀请人是否已经获得了被邀请人的奖励
+	 * @param paramMap
+	 * @return
+	 */
+	Integer isAwardSameUserId(Map<String, Object> paramMap);
+	/**
 	 * 查询有提现纪录的所有用户总数
 	 * @param paramMap
 	 * @return
