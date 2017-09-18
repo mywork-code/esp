@@ -833,7 +833,7 @@ function refundDeal(orderId, refundId, refundType) {
                         }
                     });
                     // 设置确认付款状态按钮为只读（售后完成）
-                    if (dataObject.status == "RS03" && dataObject.refundType == '0' && dataObject.payType != 'T10' && dataObject.payType != 'T11') {
+                    if (dataObject.status == "RS03" && dataObject.refundType == '0') {
                         $("#serviceDetailList  .confirm-refund-btn").linkbutton('enable');
                     }
                     else {
