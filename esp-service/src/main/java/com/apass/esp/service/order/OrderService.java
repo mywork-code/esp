@@ -623,7 +623,7 @@ public class OrderService {
                 .getTownsCode()));
         addressInfo.setAddress(address.getAddress());
         addressInfo.setReceiver(address.getName());
-        addressInfo.setEmail("xujie@apass.cn");
+        addressInfo.setEmail("jdsupport@apass.cn");
         addressInfo.setMobile(address.getTelephone());
         return addressInfo;
     }
