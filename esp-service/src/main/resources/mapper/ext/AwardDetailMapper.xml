@@ -63,9 +63,25 @@
         and user_id=#{userId}
     </select>
     
-    <select id="queryAmountAward" resultType="java.math.BigDecimal">
+   <select id="queryAmountAward" resultType="java.math.BigDecimal">
         select SUM(amount)
 	    from t_esp_award_detail	
-	    <include refid="query_where_clause" />
+	      <where>
+		   	<if test="applyDate1 !=null and applyDate1 != ''"><![CDATA[and create_date > #{applyDate1}]]></if>
+	    	<if test="applyDate2 !=null and applyDate2 != ''"><![CDATA[and create_date <= #{applyDate2}]]></if>
+	    	<if test="userId !=null and userId != ''">and user_Id = #{userId}</if>
+	    	<if test="type !=null and type != ''">and type = #{type}</if>
+	   </where>
+    </select>
+    
+      <select id="isAwardSameUserId" resultType="Integer">
+        select count(1) 
+	    from t_esp_award_detail	
+	      <where>
+	    	<if test="userId !=null and userId != ''">and user_Id = #{userId}</if>
+	    	<if test="type !=null and type != ''">and type = #{type}</if>
+	    	<if test="orderId !=null and orderId != ''">and order_id = #{orderId}</if>
+	    	<if test="activityId !=null and activityId != ''">and activity_id = #{activityId}</if>
+	   </where>
     </select>
 </mapper>
