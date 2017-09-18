@@ -117,10 +117,16 @@ $(function() {
 						onClick : function(item) {
 							if (item.text == '编辑') {
 								$("#editCategoryDetail").window('open');
+								$("#editShowCategoryPicId").attr("src",'');
 								$("#editCategoryLevel").val(categoryLevel);
 								if (categoryLevel == 3 || categoryLevel == 1) {
 									if($.trim(picUrl) !=''){
 										$("#editShowCategoryPicId").css("display","block");
+										if(categoryLevel == 3){
+											alert("jaahhahahaha");
+											$("#editShowCategoryPicId").removeAttr("width",'');
+											$("#editShowCategoryPicId").removeAttr("height",'');
+										}
 										loadPic("editShowCategoryPicId", picUrl);
 									}
 								}
