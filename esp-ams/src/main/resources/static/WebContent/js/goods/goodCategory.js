@@ -123,7 +123,6 @@ $(function() {
 									if($.trim(picUrl) !=''){
 										$("#editShowCategoryPicId").css("display","block");
 										if(categoryLevel == 3){
-											alert("jaahhahahaha");
 											$("#editShowCategoryPicId").removeAttr("width",'');
 											$("#editShowCategoryPicId").removeAttr("height",'');
 										}
