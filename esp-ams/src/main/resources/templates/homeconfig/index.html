@@ -87,7 +87,7 @@
 	<!-- 配置添加结束  -->
 	<!-- 修改配置开始 -->
 	<div id="editConfig" class="easyui-window" title="<font color='black'>编辑</font>" hidden="hidden"
-		style="width: 500px; height: 350px; display: none; text-align: center;" >
+		style="width: 700px; height: 350px; display: none; text-align: center;" >
 			<form id="configFormEdit" method="POST" enctype="multipart/form-data" modelAttribute="config">
 			<table style="width: 100%;height: auto;">
 				<tr>
@@ -97,8 +97,8 @@
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>开始时间：</td>
-					<td align="left"><input type="text" id="startTimeEdit" name="startTime" class="easyui-datetimebox"
-						style="width: 160px;" maxlength="255" readonly></input></td>
+					<td align="left"><input type="text" id="startTimeEdit" name="startTime1" class="easyui-datetimebox"
+						style="width: 160px;" maxlength="255" disabled/><input id="startTimeEdit1" name="startTime" class="easyui-datetimebox" readonly type="hidden"/></td>
 				</tr>
 				<tr>
 					<td width="20%" align="right"><span style="color: red;">*</span>结束时间：</td>
@@ -113,7 +113,7 @@
 					<td width="20%" align="right"><span style="color: red;">*</span>上传图片：</td>
 					<td align="left">
 						<input type="file" id="addConfigFilePicEdit" name="addConfigFilePic" />
-						<br><img id="addShowHomePicId" src="" width="350" height="100">
+						<br><img id="addShowHomePicId" src="" width="580" height="750">
 						<br/><span style="color: red;">支持格式：.jpg .png 图片尺寸：580*750 图片大小：&lt;=300kb</span>
 					</td>
 				</tr>

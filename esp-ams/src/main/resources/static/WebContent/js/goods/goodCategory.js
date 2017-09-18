@@ -119,7 +119,10 @@ $(function() {
 								$("#editCategoryDetail").window('open');
 								$("#editCategoryLevel").val(categoryLevel);
 								if (categoryLevel == 3 || categoryLevel == 1) {
-									loadPic("editShowCategoryPicId", picUrl);
+									if($.trim(picUrl) !=''){
+										$("#editShowCategoryPicId").css("display","block");
+										loadPic("editShowCategoryPicId", picUrl);
+									}
 								}
 
 								$("#editCategoryName").textbox('setValue',
@@ -490,7 +493,10 @@ $(function() {
 				if (response.status == "1") {
 					$.messager.alert("提示", response.msg, 'info');
 					picUrl = response.data;
-					loadPic("editShowCategoryPicId", picUrl);
+					if($.trim(picUrl) !=''){
+						$("#editShowCategoryPicId").css("display","block");
+						loadPic("editShowCategoryPicId", picUrl);
+					}
 				} else {
 					$.messager.alert("错误", response.msg, 'error');
 				}
