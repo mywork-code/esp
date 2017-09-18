@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
@@ -50,9 +51,10 @@ public class ActivityAwardController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
+	@ResponseBody
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
-		LOGGER.error("用户获得额度时：customerId="+customerId);
+		LOGGER.info("用户获得额度时：customerId="+customerId);
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
 			if (null != response && "1".equals(response.getStatus())) {
