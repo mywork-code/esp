@@ -116,6 +116,7 @@ public class OrderQueryController {
             String orderId = HttpWebUtils.getValue(request, "orderId");
             String orderStatus = HttpWebUtils.getValue(request, "orderStatus");
             String refundType = HttpWebUtils.getValue(request, "refundType");
+            String preDelivery = HttpWebUtils.getValue(request, "preDelivery");
             String createDate = HttpWebUtils.getValue(request, "createDate");
             String telephone = HttpWebUtils.getValue(request, "telephone");
             String name = HttpWebUtils.getValue(request, "name");
@@ -136,6 +137,7 @@ public class OrderQueryController {
             map.put("orderId", orderId);
             map.put("orderStatus", orderStatus);
             map.put("refundType", refundType);
+            map.put("preDelivery", preDelivery);
             map.put("merchantCode", merchantCode);
             map.put("createDate", createDate);
             map.put("telephone", telephone);

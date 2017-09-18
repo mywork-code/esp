@@ -43,27 +43,40 @@
 			<table style="min-width: 500px;">
 				<tr>
 					<td width="5%" align="right" nowrap="nowrap">订单号：</td>
-					<td width="5%"><input id="orderId" style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%"><input id="orderId" style="width: 120px"
+						class="easyui-textbox" /></td>
 					<td width="5%" align="right" nowrap="nowrap">下单时间：</td>
-					<td width="5%"><input id="createDate" style="width:120px" class="easyui-datebox" /></td>
+					<td width="5%"><input id="createDate" style="width: 120px"
+						class="easyui-datebox" /></td>
 					<td width="5%" align="right" nowrap="nowrap">姓名：</td>
-					<td width="5%"><input id="name" style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%"><input id="name" style="width: 120px"
+						class="easyui-textbox" /></td>
 					<td width="5%" align="right" nowrap="nowrap">手机号码：</td>
-					<td width="5%"><input id=telephone style="width:120px" class="easyui-textbox" /></td>
+					<td width="5%"><input id=telephone style="width: 120px"
+						class="easyui-textbox" /></td>
+				</tr>
+				<tr>
 					<td width="5%" align="right" nowrap="nowrap">订单状态：</td>
-					<td width="5%"><select style="width:120px" id="orderStatus" name="orderStatus"
-						class="easyui-combobox">
+					<td width="5%"><select style="width: 120px" id="orderStatus"
+						name="orderStatus" class="easyui-combobox">
 							<option value="" selected="selected">请选择</option>
 							<option label="待签收" value="D03">待收货</option>
 							<option label="交易完成" value="D04">交易完成</option>
 							<option label="售后服务中" value="D05">售后服务中</option>
 					</select></td>
 					<td width="5%" align="right" nowrap="nowrap">售后状态：</td>
-					<td width="5%"><select style="width:120px" id="refundType" name="refundType"
-						class="easyui-combobox">
+					<td width="5%"><select style="width: 120px" id="refundType"
+						name="refundType" class="easyui-combobox">
 							<option value="" selected="selected">请选择</option>
 							<option label="退货" value="0">退货</option>
 							<option label="换货" value="1">换货</option>
+					</select></td>
+					<td width="5%" align="right" nowrap="nowrap">商家是否发货：</td>
+					<td width="5%"><select style="width: 120px" id="preDelivery"
+						name="preDelivery" class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
+							<option label="是" value="Y">是</option>
+							<option label="否" value="N">否</option>
 					</select></td>
 				</tr>
 			</table>
