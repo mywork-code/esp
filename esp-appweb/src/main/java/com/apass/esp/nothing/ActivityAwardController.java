@@ -1,21 +1,5 @@
 package com.apass.esp.nothing;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -29,6 +13,21 @@ import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/activity/award")
@@ -54,7 +53,7 @@ public class ActivityAwardController {
 	@ResponseBody
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
-		LOGGER.info("用户获得额度时：customerId="+customerId);
+		LOGGER.info("-----用户获得额度时：customerId="+customerId);
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
 			if (null != response && "1".equals(response.getStatus())) {

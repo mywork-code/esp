@@ -230,9 +230,9 @@ public class JdAfterSaleScheduleTask {
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS02.getCode());
             } else if (i == 32) {
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS03.getCode());
-            } else if (i == 33 || i == 34) {
+            } else if (i == 34 || i == 40) {
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS04.getCode());
-            } else if (i == 40 || i == 50) {
+            } else if (i == 50) {
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS05.getCode());
             } else {
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS01.getCode());
