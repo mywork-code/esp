@@ -896,27 +896,26 @@ public class GoodsService {
         goods.setGoodId(g.getGoodId());
         goods.setCategoryId1(g.getCategoryId1());
         Category cate1 = categoryMapper.selectByPrimaryKey(g.getCategoryId1());
-        if (null == cate1) {
-            return null;
+        if (null != cate1) {
+
+            goods.setCategoryName1(cate1.getCategoryName());
+            goods.setCategoryId1(g.getCategoryId1());
+            goods.setCategoryName1Pinyin(Pinyin4jUtil.converterToSpell(cate1.getCategoryName()));
         }
-        goods.setCategoryName1(cate1.getCategoryName());
-        goods.setCategoryId1(g.getCategoryId1());
-        goods.setCategoryName1Pinyin(Pinyin4jUtil.converterToSpell(cate1.getCategoryName()));
 
         Category cate2 = categoryMapper.selectByPrimaryKey(g.getCategoryId2());
-        if (null == cate2) {
-            return null;
+        if (null != cate2) {
+
+            goods.setCategoryName2(cate2.getCategoryName());
+            goods.setCategoryId2(g.getCategoryId2());
+            goods.setCategoryName2Pinyin(Pinyin4jUtil.converterToSpell(cate2.getCategoryName()));
         }
-        goods.setCategoryName2(cate2.getCategoryName());
-        goods.setCategoryId2(g.getCategoryId2());
-        goods.setCategoryName2Pinyin(Pinyin4jUtil.converterToSpell(cate2.getCategoryName()));
-        goods.setCategoryId3(g.getCategoryId3());
         Category cate3 = categoryMapper.selectByPrimaryKey(g.getCategoryId3());
-        if (null == cate3) {
-            return null;
+            if (null != cate3) {
+                goods.setCategoryId3(g.getCategoryId3());
+                goods.setCategoryName3(cate3.getCategoryName());
+            goods.setCategoryName3Pinyin(Pinyin4jUtil.converterToSpell(cate3.getCategoryName()));
         }
-        goods.setCategoryName3(cate3.getCategoryName());
-        goods.setCategoryName3Pinyin(Pinyin4jUtil.converterToSpell(cate3.getCategoryName()));
 
         goods.setGoodsName(g.getGoodsName());
         goods.setGoodsNamePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsName()));
