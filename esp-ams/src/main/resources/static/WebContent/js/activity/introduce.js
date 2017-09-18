@@ -117,12 +117,12 @@ $(function(){
     });
     //确认   添加活动
     $("#agreeAdd").click(function(){
-        var rebate=$("#rebate").numberbox('getValue');
+        var rebate=$("#rebate").val();
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
-        var awardAmont=$("#awardAmont").numberbox('getValue');
+        var awardAmont=$("#awardAmont").val();
         if(null == awardAmont || awardAmont==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
             return;
