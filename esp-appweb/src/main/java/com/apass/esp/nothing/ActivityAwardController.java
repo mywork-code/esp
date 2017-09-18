@@ -29,8 +29,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller
-@RequestMapping("/activity/award")
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("/activity/award")
+@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ActivityAwardController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityAwardController.class);
 	@Autowired
@@ -49,8 +56,8 @@ public class ActivityAwardController {
 	 * @param paramMap
 	 * @return
 	 */
-	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
-	@ResponseBody
+    @POST
+    @Path("/saveAwardInfo")
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
 		LOGGER.info("-----用户获得额度时：customerId="+customerId);
