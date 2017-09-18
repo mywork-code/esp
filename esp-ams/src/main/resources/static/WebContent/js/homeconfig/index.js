@@ -89,9 +89,10 @@ $(function(){
     $.editConfig = function(id,homeName,startTime,endTime,activeLink,logoUrl){
     	$("#homeNameEdit").textbox('setValue',homeName);
 		$("#startTimeEdit").datetimebox('setValue',startTime); 
+		$("#startTimeEdit1").datetimebox('setValue',startTime);
 		$("#endTimeEdit").datetimebox('setValue',endTime); 
 		$("#activeLinkEdit").textbox('setValue',activeLink);
-		$("#logoUrl").val(logoUrl);
+		//$("#logoUrl").val(logoUrl);
 		$("#id").val(id);
 		loadPic("addShowHomePicId", logoUrl);
         $('#editConfig').window('open');
@@ -162,13 +163,12 @@ $(function(){
 				var respon=JSON.parse(data);
 				if(respon.status=="1"){
 					$.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
-
+					$("#addConfig").dialog("close");
+					var param = {};
+		            $('#list').datagrid('load', param);
 				}else{
 					$.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
 				}
-				$("#addConfig").dialog("close");
-				var param = {};
-	            $('#list').datagrid('load', param);
 			}
 		});
 	});
@@ -179,7 +179,7 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写窗口名称！","info");
 			return;
 		}
-		var startTime=$("#startTimeEdit").textbox('getValue');
+		var startTime=$("#startTimeEdit1").textbox('getValue');
 		if(startTime=='' || null==startTime){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写开始时间！","info");
 			return;
@@ -224,12 +224,12 @@ $(function(){
 				var respon=JSON.parse(data);
 				if(respon.status=="1"){
 					$.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
+					$("#editConfig").dialog("close");
+					var param = {};
+		            $('#list').datagrid('load', param);
 				}else{
 					$.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
 				}
-				$("#editConfig").dialog("close");
-				var param = {};
-	            $('#list').datagrid('load', param);
 			}
 		});
 	});
@@ -245,11 +245,11 @@ $(function(){
                     success: function (data) {
                         if (data.status == "1") {
                             $.messager.alert("<span style='color: black;'>提示</span>", data.msg, 'info');
+                            var params = {};
+            	            $('#list').datagrid('load', params);
                         } else {
                             $.messager.alert("<span style='color: black;'>错误</span>", data.msg, 'error');
                         }
-                        var params = {};
-        	            $('#list').datagrid('load', params);
                     }
                 });
             }

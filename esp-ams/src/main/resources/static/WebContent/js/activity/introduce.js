@@ -1,6 +1,22 @@
 $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
+    
+    $(document).on("keyup","#rebate", function (event) {
+		KEYUP(event,$(this));
+	});
+    
+    $(document).on("keyup","#editRebate", function (event) {
+		KEYUP(event,$(this));
+	});
+   
+	$(document).on("keyup","#awardAmont", function (event) {
+		KEYUP(event,$(this));
+	});
+	
+	$(document).on("keyup","#editAwardAmont", function (event) {
+		KEYUP(event,$(this));
+	});
 
     //Grid
     $('#list').datagrid({
@@ -71,7 +87,6 @@ $(function(){
                 type : "get",
                 dataType : "json",
                 success : function(data) {
-                	debugger;
                 	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
@@ -84,6 +99,12 @@ $(function(){
 
     //添加 活动
     $("#add").click(function(){
+    	$('#addIntroConfig').form('load', {
+    		rebate : '',
+    		awardAmont : '',
+    		startDate : '',
+    		endDate : ''
+		});
         $('#addIntroConfig').window({
             minimizable:false,
             maximizable:false,
@@ -137,7 +158,6 @@ $(function(){
         theForm.form("submit",{
             url : ctx + '/activity/introduce/config',
             success : function(data) {
-                debugger;
                 var flag1 = data.indexOf('登录系统');
                 var flag2 = data.indexOf('</div');
                 if (flag1 != -1 && flag2 != -1) {
@@ -147,7 +167,6 @@ $(function(){
                 }
                 var respon=JSON.parse(data);
                 if(respon.status=="1"){
-                	debugger;
                     $.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
                     $("#addIntroConfig").window('close');
                     var params={};
@@ -186,7 +205,6 @@ $(function(){
                             return false;
                         }
                         if(data.status=="1"){
-                        	debugger;
                             $.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
                             var params={};
                             $('#list').datagrid('load',params);
@@ -204,12 +222,13 @@ $(function(){
 	 * 编辑
 	 */
 	$.editActivity = function(id,rebate,startDate,endDate,awardAmount) {
+		debugger;
 		$("#editIntroConfig").window({modal: true});
 		$("#editIntroConfig").window('open');
 		idActiv = id;
 		
-		$("#editRebate").textbox('setValue',rebate);
-		$("#editAwardAmont").textbox('setValue',awardAmount);
+		$("#editRebate").val(rebate);
+		$("#editAwardAmont").val(awardAmount);
 		$("#editStartDate").datetimebox('setValue',startDate); 
 		$("#editEndDate").datetimebox('setValue',endDate); 
 		
@@ -220,10 +239,10 @@ $(function(){
     });
     //确定  编辑活动信息
     $("#editAgreeAdd").click(function(){
-		var rebate = $("#editRebate").textbox('getValue');
+		var rebate = $("#editRebate").val();
 		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
-		var awardAmount = $("#editAwardAmont").textbox('getValue');
+		var awardAmount = $("#editAwardAmont").val();
 		
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
@@ -263,5 +282,15 @@ $(function(){
 			}
 		});
     });
-    
+    function KEYUP(event,that){
+    	var e = event || window.event;
+    	var val = that.get(0).value;
+
+    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
+    		that.val(val.substr(0,val.length-1));
+    		event.preventDefault();
+    		return false
+    	}
+    }
 });
+

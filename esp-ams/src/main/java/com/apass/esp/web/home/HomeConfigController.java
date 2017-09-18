@@ -1,5 +1,6 @@
 package com.apass.esp.web.home;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -152,10 +153,9 @@ public class HomeConfigController {
     	}
     }
     
-    public String uploadPicFile(MultipartFile file) {
-    	try { 
+    public String uploadPicFile(MultipartFile file) throws IOException, BusinessException {
     	if (file == null || file.isEmpty()) {
-             throw new BusinessException("请上传图片!");
+             return "";
          }
     	 String imgType = ImageTools.getImgType(file);
          String url = homeConfigPath + "config_" + System.currentTimeMillis() + "." + imgType;
@@ -165,16 +165,17 @@ public class HomeConfigController {
          int size = file.getInputStream().available();
          if (!(checkImgSize && checkImgType)) {
              file.getInputStream().close();// 750*300;大小：≤300kb;.jpg .png
-             throw new BusinessException("文件尺寸不符,上传图片尺寸必须是宽：580px,高：750px,格式：.jpg,.png", url);
+             throw new BusinessException("文件尺寸不符,上传图片尺寸必须是宽：580px,高：750px,格式：.jpg,.png");
          } else if (size > 1024 * 300) {
              file.getInputStream().close();
-             throw new BusinessException("文件不能大于300kb!", url);
+             throw new BusinessException("文件不能大于300kb!");
          }
-         FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
-         return url;
-    	} catch (Exception e) {
-            logger.error("上传图片失败", e);
-            return "";
-        }
+         try {
+        	 FileUtilsCommons.uploadFilesUtil(rootPath, url, file);
+		} catch (Exception e) {
+			logger.error("上传图片失败!",e);
+			return "";
+		}
+        return url;
     }
 }
