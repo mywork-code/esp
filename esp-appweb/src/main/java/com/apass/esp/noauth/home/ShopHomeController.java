@@ -1,28 +1,5 @@
 package com.apass.esp.noauth.home;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import com.apass.esp.domain.entity.common.ResponseInit;
-import com.apass.esp.search.dao.GoodsEsDao;
-import com.apass.gfb.framework.utils.GsonUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
@@ -30,6 +7,7 @@ import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.DictDTO;
+import com.apass.esp.domain.entity.common.ResponseInit;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -63,12 +41,31 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 首页
@@ -126,6 +123,9 @@ public class ShopHomeController {
     @Value("${esp.image.uri}")
     private String espImageUrl;
 
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
+
 
     /**
      * 首页初始化 加载banner和精品商品
@@ -155,7 +155,12 @@ public class ShopHomeController {
             responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
             ResponseInit responseInit2 = new ResponseInit();
             responseInit2.setTitle("客户谨慎还款重要提示");
-            responseInit2.setUrl("");
+          if(systemEnvConfig.isPROD()){
+            responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
+          }else{
+            responseInit2.setUrl("http://gfbapp.vcash.cn/#/Announcement");
+          }
+
             mapArrayList.add(responseInit);
             mapArrayList.add(responseInit2);
             returnMap.put("guide",mapArrayList);
