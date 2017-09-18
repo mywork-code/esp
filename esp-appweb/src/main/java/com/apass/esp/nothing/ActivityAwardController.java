@@ -30,7 +30,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Controller
-@RequestMapping("activity/award")
+@RequestMapping("/activity/award")
 public class ActivityAwardController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityAwardController.class);
 	@Autowired
