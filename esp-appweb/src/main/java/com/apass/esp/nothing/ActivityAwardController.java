@@ -52,6 +52,7 @@ public class ActivityAwardController {
 	@RequestMapping(value = "/saveAwardInfo", method = RequestMethod.POST)
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
+		LOGGER.error("用户获得额度时：customerId="+customerId);
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
 			if (null != response && "1".equals(response.getStatus())) {
