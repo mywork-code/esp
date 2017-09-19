@@ -44,6 +44,11 @@ public class OrderDetailInfoEntity {
     private BigDecimal goodsPrice;
 
     /**
+     * 商品成本价格
+     */
+    private BigDecimal goodsCostPrice;
+    
+    /**
      * 商品数量
      */
     private Long goodsNum;
@@ -151,7 +156,15 @@ public class OrderDetailInfoEntity {
     // 退款金额
     private BigDecimal refundAmt;
 
-    public String getGoodsModel() {
+    public BigDecimal getGoodsCostPrice() {
+		return goodsCostPrice;
+	}
+
+	public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
+		this.goodsCostPrice = goodsCostPrice;
+	}
+
+	public String getGoodsModel() {
         return goodsModel;
     }
 
