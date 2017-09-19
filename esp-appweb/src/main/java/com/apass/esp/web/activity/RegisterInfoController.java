@@ -585,16 +585,19 @@ public class RegisterInfoController {
 		Matcher m = p.matcher(mobile2);
 		if (StringUtils.isAnyBlank(mobile2)) {
 			logger.error("手机号不能为空！");
-			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			return Response.fail("手机号不能为空！");
 		} else if (!m.matches()) {
 			logger.error("手机号格式不正确,请重新输入！");
-			return Response.fail(BusinessErrorCode.PARAM_FORMAT_ERROR);
+			return Response.fail("手机号格式不正确,请重新输入！");
 		}else if (StringUtils.isBlank(InviterId)) {
 			logger.error("邀请人的id不能为空");
 			return Response.fail("邀请人的id不能为空");
 		}
 		try {
 			Response resp = registerInfoService.isOldUser(mobile2,InviterId);
+			if(null == resp){
+				return Response.fail("服务异常，请稍后再试！");
+			}
 			if ("1".equals(resp.getStatus())) {
 				Map<String, Object> resultMap = (Map<String, Object>) resp.getData();
 				String falge = (String) resultMap.get("falge");
@@ -604,9 +607,8 @@ public class RegisterInfoController {
 			}
 		} catch (Exception e) {
 			logger.error("手机号验证失败", e);
-			return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
 		}
-		return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
+		return Response.fail("手机号验证失败");
 	}
 
 	/**
