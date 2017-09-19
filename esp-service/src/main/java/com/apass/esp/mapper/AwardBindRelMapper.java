@@ -32,6 +32,12 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    */
   Integer selectByMobileAndActivityId(AwardBindRel abr);
   /**
+   * 查看当前手机号码是否已被邀请
+   * @param AwardBindRel
+   * @return
+   */
+  Integer selectByMobile(AwardBindRel abr);
+  /**
    * 统计查询同一用户邀请人数
    *
    * @return
