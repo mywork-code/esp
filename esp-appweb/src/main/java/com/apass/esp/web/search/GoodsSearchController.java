@@ -539,33 +539,11 @@ public class GoodsSearchController {
     	vo.setGoodsTitle(goods.getGoodsTitle());
     	vo.setId(goods.getId());
     	vo.setSource(goods.getSource());
-    	Map<String,Object> map =getGoodPriceByGoodsId(goods.getGoodId(),goods.getGoodsStockId());
-        vo.setGoodsPrice((BigDecimal)map.get("goodPrice"));
-        vo.setFirstPrice((BigDecimal)map.get("goodsPriceFirst"));
+    	Map<String,Object> result = goodsservice.getMinPriceGoods(goods.getGoodId());
+        vo.setGoodsPrice((BigDecimal)result.get("minPrice"));
+        vo.setFirstPrice(((BigDecimal) result.get("minPrice")).multiply(new BigDecimal("0.1")).setScale(2,
+                 BigDecimal.ROUND_DOWN));
     	return vo;
-    }
-    /**
-     * 通过goodsId查询商品的价格
-     * @throws BusinessException 
-     */
-    public Map<String,Object>  getGoodPriceByGoodsId(Long goodId,Long goodsStockId) throws BusinessException{
-    	Map<String,Object> map=new HashMap<>();
-    	ActivityInfoEntity param = new ActivityInfoEntity();
-		param.setGoodsId(goodId);
-		param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-		List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-		Map<String, Object> result = new HashMap<>();
-		if (null != activitys && activitys.size() > 0) {
-			result = goodsservice.getMinPriceGoods(goodId);
-			BigDecimal price = (BigDecimal) result.get("minPrice");
-			map.put("goodPrice", price);
-			map.put("goodsPriceFirst", (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-		} else {
-			BigDecimal price = commonService.calculateGoodsPrice(goodId,goodsStockId);
-			map.put("goodPrice", price);
-			map.put("goodsPriceFirst", (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-		}
-		return map;
     }
     /**
      * 当用ES查询时出错时查询数据库的数据
