@@ -103,5 +103,12 @@
 	<select id="getInviterUserCountByTime" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
 	   select count(id) from t_esp_award_bind_rel where create_date >= #{startCreateDate}
 	</select>
-	
+
+	<select id="selectByInviterUserId" resultMap="BaseResultMap" >
+		select *
+		from t_esp_award_bind_rel
+		where invite_user_id = #{userId}
+	</select>
+
+
 </mapper>

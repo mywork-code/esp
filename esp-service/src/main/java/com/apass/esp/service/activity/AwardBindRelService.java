@@ -1,6 +1,9 @@
 package com.apass.esp.service.activity;
 
+
 import java.util.Calendar;
+import java.util.Calendar;
+import java.util.List;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -42,6 +45,10 @@ public class AwardBindRelService {
 	public AwardBindRel getByInviterUserId(String userId,int activityId){
 		return wihdrawBindRelMapper.getByInviterUserId(userId,activityId);
 
+	}
+
+	public List<AwardBindRel> selectByInviterUserId(String userId){
+		return wihdrawBindRelMapper.selectByInviterUserId(userId);
 	}
 	
 	public List<AwardBindRel> getAllByInviterUserId(String userId){
