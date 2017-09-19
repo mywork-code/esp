@@ -70,11 +70,11 @@ public class ActivityInfoController {
             String remark = HttpWebUtils.getValue(request, "remark");
             Date startDate = null;
             Date endDate = null;
-            if (null != aStartDate && !aStartDate.trim().isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat(TIMETYE);
-                startDate = sdf.parse(aStartDate.trim());
+            if (StringUtils.isNotBlank(aStartDate)) {
+            	SimpleDateFormat sdf = new SimpleDateFormat(TIMETYE);
+            	startDate = sdf.parse(aStartDate.trim());
             }
-            if (null != aEndDate && !aEndDate.trim().isEmpty()) {
+            if (StringUtils.isNotBlank(aEndDate)) {
                 SimpleDateFormat sdf = new SimpleDateFormat(TIMETYE);
                 endDate = sdf.parse(aEndDate.trim());
             }
