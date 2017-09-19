@@ -1,17 +1,17 @@
 package com.apass.esp.service.activity;
 
-import java.util.Calendar;
-
+import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.mapper.AwardBindRelMapper;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
-import com.apass.esp.mapper.AwardBindRelMapper;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class AwardBindRelService {
@@ -38,6 +38,10 @@ public class AwardBindRelService {
 	public AwardBindRel getByInviterUserId(String userId,int activityId){
 		return wihdrawBindRelMapper.getByInviterUserId(userId,activityId);
 
+	}
+
+	public List<AwardBindRel> selectByInviterUserId(String userId){
+		return wihdrawBindRelMapper.selectByInviterUserId(userId);
 	}
 	
 	/**
