@@ -60,6 +60,7 @@ public class RegisterInfoController {
 	 * </pre>
 	 */
 	@RequestMapping(value = "/isWeChatUser", method = RequestMethod.POST)
+	@Deprecated
 	public Response isWeChatUser(@RequestBody Map<String, Object> paramMap) {
 		String mobile = CommonUtils.getValue(paramMap, "mobile");// 手机号
 		String mobile2 = mobile.replace(" ", "");
@@ -96,6 +97,7 @@ public class RegisterInfoController {
 	 * </pre>
 	 */
 	@RequestMapping(value = "/isSameIdentityNo", method = RequestMethod.POST)
+	@Deprecated
 	public Response isSameIdentityNo(@RequestBody Map<String, Object> paramMap) {
 
 		String mobile = CommonUtils.getValue(paramMap, "mobile");// 手机号
@@ -215,6 +217,7 @@ public class RegisterInfoController {
 	 * </pre>
 	 */
 	@RequestMapping(value = "/validate", method = RequestMethod.POST)
+	@Deprecated
 	public Response validateRandomCode(@RequestBody Map<String, Object> paramMap) {
 		String smsType = CommonUtils.getValue(paramMap, "smsType");// 验证码类型
 		String mobile = CommonUtils.getValue(paramMap, "mobile");// 手机号
