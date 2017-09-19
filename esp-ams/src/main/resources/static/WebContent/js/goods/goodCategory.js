@@ -116,9 +116,11 @@ $(function() {
 					{
 						onClick : function(item) {
 							if (item.text == '编辑') {
-								$("#editCategoryDetail").window('open');
+								$("#editShowCategoryPicId").css("display","none");
 								$("#editShowCategoryPicId").attr("src",'');
 								$("#editCategoryLevel").val(categoryLevel);
+								$("#editCategoryFilePic").val('');
+								$("#editCategoryDetail").window('open');
 								if (categoryLevel == 3 || categoryLevel == 1) {
 									if($.trim(picUrl) !=''){
 										$("#editShowCategoryPicId").css("display","block");
