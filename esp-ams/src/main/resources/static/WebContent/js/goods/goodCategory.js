@@ -116,10 +116,20 @@ $(function() {
 					{
 						onClick : function(item) {
 							if (item.text == '编辑') {
-								$("#editCategoryDetail").window('open');
+								$("#editShowCategoryPicId").css("display","none");
+								$("#editShowCategoryPicId").attr("src",'');
 								$("#editCategoryLevel").val(categoryLevel);
+								$("#editCategoryFilePic").val('');
+								$("#editCategoryDetail").window('open');
 								if (categoryLevel == 3 || categoryLevel == 1) {
-									loadPic("editShowCategoryPicId", picUrl);
+									if($.trim(picUrl) !=''){
+										$("#editShowCategoryPicId").css("display","block");
+										if(categoryLevel == 3){
+											$("#editShowCategoryPicId").removeAttr("width",'');
+											$("#editShowCategoryPicId").removeAttr("height",'');
+										}
+										loadPic("editShowCategoryPicId", picUrl);
+									}
 								}
 
 								$("#editCategoryName").textbox('setValue',
@@ -490,7 +500,10 @@ $(function() {
 				if (response.status == "1") {
 					$.messager.alert("提示", response.msg, 'info');
 					picUrl = response.data;
-					loadPic("editShowCategoryPicId", picUrl);
+					if($.trim(picUrl) !=''){
+						$("#editShowCategoryPicId").css("display","block");
+						loadPic("editShowCategoryPicId", picUrl);
+					}
 				} else {
 					$.messager.alert("错误", response.msg, 'error');
 				}

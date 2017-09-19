@@ -732,7 +732,7 @@ public class GoodsBaseInfoController {
                     entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                     entity.setRemark(message);
                     Integer count = goodsService.updateService(entity);
-                    if(count == 1){
+                    if(count == 1 && !"reject".equals(flag)){
                         GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
                         LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));

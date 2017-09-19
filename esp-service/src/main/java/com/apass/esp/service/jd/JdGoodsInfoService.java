@@ -133,7 +133,7 @@ public class JdGoodsInfoService {
 				} else {
 					// 查询商品名称
 					JdGoods jdGoods = getJdGoodsInfoBySku(sku);
-					jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://");
+					jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://").replaceAll("href=\'//","href=\'http://");
 				}
 				// map.put("goodsName", jdGoods.getName());// 商品名称
 				// java字符串转义,把&lt;&gt;转换成<>等字符
@@ -676,4 +676,5 @@ public class JdGoodsInfoService {
 		}
 		return "";
     }
+
 }
