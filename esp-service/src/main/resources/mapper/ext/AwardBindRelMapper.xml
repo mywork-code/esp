@@ -85,13 +85,19 @@
 		GROUP  BY user_id) as t
 	</select>
 
-	<!-- 查询被邀请人的记录 -->
+	<!-- 根据被邀请人的userId和活动Id查询邀请人的记录 -->
 	<select id="getByInviterUserId" resultMap="BaseResultMap" >
 		select * 
 		from t_esp_award_bind_rel
-		where invite_user_id = #{userId} 
+		where invite_user_id = #{userId} and activity_id=#{activityId} 
 	</select>
-	<!-- 九期需求  and activity_id=#{activityId} -->
+	<!-- 查询所有邀请人的记录 -->
+	<select id="getAllByInviterUserId" resultMap="BaseResultMap" >
+		select * 
+		from t_esp_award_bind_rel
+		where invite_user_id = #{userId}
+	    ORDER BY create_date DESC
+	</select>
 	
 	<!-- 查询被邀请的人数根据传入的时间 -->
 	<select id="getInviterUserCountByTime" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">

@@ -1,6 +1,7 @@
 package com.apass.esp.service.activity;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,9 @@ public class AwardBindRelService {
 
 	}
 	
+	public List<AwardBindRel> getAllByInviterUserId(String userId){
+		return wihdrawBindRelMapper.getAllByInviterUserId(userId);
+	}
 	/**
 	  * 统计查询在某一时间内邀请的总人数
 	  */
