@@ -1205,18 +1205,45 @@ public class ShopHomeController {
 
         return Response.successResponse(list);
     }
-    public GoodsVo goodsToGoodVo(Goods goods) {
+    public GoodsVo goodsToGoodVo(Goods goods) throws BusinessException {
         GoodsVo vo = new GoodsVo();
-        vo.setFirstPrice(goods.getFirstPrice());
+//        vo.setFirstPrice(goods.getFirstPrice());
         vo.setGoodId(goods.getGoodId());
         vo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
         vo.setGoodsLogoUrlNew(goods.getGoodsLogoUrlNew());
         vo.setGoodsName(goods.getGoodsName());
-        vo.setGoodsPrice(goods.getGoodsPrice());
+//        vo.setGoodsPrice(goods.getGoodsPrice());
         vo.setGoodsStockId(goods.getGoodsStockId());
         vo.setGoodsTitle(goods.getGoodsTitle());
         vo.setId(goods.getId());
         vo.setSource(goods.getSource());
+        Map<String,Object> map =getGoodPriceByGoodsId(goods.getGoodId(),goods.getGoodsStockId());
+        vo.setGoodsPrice((BigDecimal)map.get("goodPrice"));
+        vo.setFirstPrice((BigDecimal)map.get("goodsPriceFirst"));
         return vo;
     }
+    /**
+     * 通过goodsId查询商品的价格
+     * @throws BusinessException 
+     */
+    public Map<String,Object>  getGoodPriceByGoodsId(Long goodId,Long goodsStockId) throws BusinessException{
+    	Map<String,Object> map=new HashMap<>();
+    	ActivityInfoEntity param = new ActivityInfoEntity();
+		param.setGoodsId(goodId);
+		param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+		List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+		Map<String, Object> result = new HashMap<>();
+		if (null != activitys && activitys.size() > 0) {
+			result = goodService.getMinPriceGoods(goodId);
+			BigDecimal price = (BigDecimal) result.get("minPrice");
+			map.put("goodPrice", price);
+			map.put("goodsPriceFirst", (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+		} else {
+			BigDecimal price = commonService.calculateGoodsPrice(goodId,goodsStockId);
+			map.put("goodPrice", price);
+			map.put("goodsPriceFirst", (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+		}
+		return map;
+    }
+    
 }
