@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -74,13 +75,12 @@ public class ActivityAwardController {
 						int falge = aEndDate.compareTo(new Date());
 						if (falge > 0) {
 							//获取当前活动下邀请人的信息
-							AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(userId,
-									Integer.parseInt(aInfoVo.getId().toString()));
-							if(null !=awardBindRel){
+							List<AwardBindRel> awardBindRel = awardBindRelService.getAllByInviterUserId(userId);
+							if(null !=awardBindRel & awardBindRel.size()>0){
 								//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
 								Map<String, Object> parMap2=new HashMap<>();
-								parMap2.put("userId", awardBindRel.getUserId());
-								parMap2.put("activityId",awardBindRel.getActivityId());
+								parMap2.put("userId", awardBindRel.get(0).getUserId());
+								parMap2.put("activityId",awardBindRel.get(0).getActivityId());
 								parMap2.put("orderId",userId);
 								parMap2.put("type","0");
 								int result=awardDetailMapper.isAwardSameUserId(parMap2);//已经获得的奖励金额
@@ -97,9 +97,9 @@ public class ActivityAwardController {
 									if(null !=awardBindRel){
 										AwardDetailDto awardDetailDto=new AwardDetailDto();
 										awardDetailDto.setActivityId(aInfoVo.getId());
-										awardDetailDto.setUserId(awardBindRel.getUserId());
-										awardDetailDto.setRealName(awardBindRel.getName());
-										awardDetailDto.setMobile(awardBindRel.getMobile());
+										awardDetailDto.setUserId(awardBindRel.get(0).getUserId());
+										awardDetailDto.setRealName(awardBindRel.get(0).getName());
+										awardDetailDto.setMobile(awardBindRel.get(0).getMobile());
 										awardDetailDto.setOrderId(userId);
 										awardDetailDto.setType(new Byte("0"));
 										awardDetailDto.setStatus(new Byte("0"));
@@ -107,7 +107,7 @@ public class ActivityAwardController {
 										awardDetailDto.setUpdateDate(new Date());
 										
 										Map<String, Object> parMap=new HashMap<>();
-										parMap.put("userId", awardBindRel.getUserId());
+										parMap.put("userId", awardBindRel.get(0).getUserId());
 										parMap.put("type", "0");
 										parMap.put("applyDate1", DateFormatUtil.string2date(firstDay, "yyyy-MM-dd HH:mm:ss"));
 										parMap.put("applyDate2", DateFormatUtil.string2date(nowTime, "yyyy-MM-dd HH:mm:ss"));

@@ -14,13 +14,11 @@ import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
-import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,9 +30,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -146,10 +142,10 @@ public class PayCallback {
 		}
 		// 返现活动存在
 		if (awardActivityInfoVo != null) {
-			List<OrderInfoEntity> orderInfoEntityList = new ArrayList<OrderInfoEntity>();
+			List<OrderInfoEntity> orderInfoEntityList = null;
 			Long userId = null;
 			try {
-				orderInfoEntityList = orderService.selectByMainOrderId(mainOrderId);
+					orderInfoEntityList = orderService.selectByMainOrderId(mainOrderId);
 			} catch (BusinessException e) {
 				LOGGER.error("根据订单号和用户id查询订单信息", e);
 				return;
@@ -165,8 +161,9 @@ public class PayCallback {
 							mainOrderId, awardActivityInfoVo.getId(), startDate, endDate, date);
 					if (date.before(endDate) && date.after(startDate)) {// 下单时间在活动有效期
 						//当前活动是否存在绑定关系
-						AwardBindRel awardBindRel = awardBindRelService.getByInviterUserId(String.valueOf(userId),Integer.parseInt(String.valueOf(awardActivityInfoVo.getId())));
-						if (awardBindRel != null) {// 当前用户已经被邀请
+						List<AwardBindRel> awardBindRelList = awardBindRelService.selectByInviterUserId(String.valueOf(userId));
+						if (CollectionUtils.isNotEmpty(awardBindRelList)) {// 当前用户已经被邀请
+							AwardBindRel awardBindRel = awardBindRelList.get(0);
 							AwardDetailDto awardDetailDto = new AwardDetailDto();
 							awardDetailDto.setActivityId(awardActivityInfoVo.getId());
 							// 返点金额
