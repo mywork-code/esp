@@ -33,7 +33,10 @@ public class AwardBindRelService {
 	public Integer selectByMobileAndActivityId(AwardBindRel abr){
 		return wihdrawBindRelMapper.selectByMobileAndActivityId(abr);
 	}
-
+	
+	public Integer selectByMobile(AwardBindRel abr){
+		return wihdrawBindRelMapper.selectByMobile(abr);
+	}
 
 	public AwardBindRel getByInviterUserId(String userId,int activityId){
 		return wihdrawBindRelMapper.getByInviterUserId(userId,activityId);

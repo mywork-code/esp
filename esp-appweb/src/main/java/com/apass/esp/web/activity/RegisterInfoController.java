@@ -485,8 +485,8 @@ public class RegisterInfoController {
 				}
 				AwardBindRel abr = new AwardBindRel();
 				abr.setInviteMobile(mobile2);
-				abr.setActivityId(aInfoVo.getId());
-				Integer abrel = awardBindRelService.selectByMobileAndActivityId(abr);// 判断是否已经被邀请
+//				abr.setActivityId(aInfoVo.getId());
+				Integer abrel = awardBindRelService.selectByMobile(abr);// 通过手机号判断是否已经被邀请
 				if (abrel == 0) {
 					Map<String, Object> rrse = (Map<String, Object>) resp.getData();
 					AwardBindRel aRel = new AwardBindRel();
