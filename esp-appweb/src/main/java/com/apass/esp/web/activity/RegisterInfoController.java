@@ -401,14 +401,13 @@ public class RegisterInfoController {
 				logger.error("验证码不正确");
 				return Response.fail("验证码不正确");
 			}
-			Map<String, Object> respMap = new HashMap<String, Object>();
 			boolean result2 = mobileRandomService.mobileCodeValidate(smsType, mobile2, code);// 判断短信验证码是否填写正确
-			if (result2) {
-				logger.error("校验成功！");
-				return Response.success("校验成功！");
+			if (!result2) {
+				logger.error("短信验证码不正确，请重新输入！");
+				return Response.fail("短信验证码不正确，请重新输入！");
 			}
-			logger.error("校验失败,请重新注册！");
-			return Response.fail("校验失败,请重新注册！");
+			logger.error("校验成功！");
+			return Response.success("校验成功！");
 		} catch (Exception e) {
 			logger.error("校验失败,请重新注册", e);
 			return Response.fail("校验失败,请重新注册！");
