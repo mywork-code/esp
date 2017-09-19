@@ -766,6 +766,23 @@ public class OrderService {
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                         orderDetail.setSource(SourceType.JD.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
+                        
+                        long skuId = Long.parseLong(goods.getExternalId());
+                        Set<Long> skus = new HashSet<>();
+                        skus.add(skuId);
+                        JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
+                        if (jsonArrayJdApiResponse != null
+                            && jsonArrayJdApiResponse.isSuccess()
+                            && jsonArrayJdApiResponse.getResult() != null
+                            && jsonArrayJdApiResponse.getResult().size() != 0
+                            ) {
+                        	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
+                            BigDecimal price = (BigDecimal) jsonObject.get("price");
+                            orderDetail.setGoodsCostPrice(price);
+                        }
+                    }
+                    if(StringUtils.isBlank(goods.getSource())){
+                    	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());
                     }
                     orderDetail.setOrderId(orderInfo.getOrderId());
                     orderDetail.setGoodsId(goods.getId());
@@ -1315,24 +1332,12 @@ public class OrderService {
 
             try {
                 if (OrderStatus.ORDER_NOPAY.getCode().equals(order.getStatus())) {
-                    PayRequestDto req = new PayRequestDto();
-                    req.setOrderId(order.getOrderId());
-                    String payRealStatus = "";
-                    Response response = paymentHttpClient.gateWayTransStatusQuery(requestId, req);
-                    if (!response.statusResult()) {
-                        payRealStatus = "1";
-                    } else {
-                        payRealStatus = (String) response.getData();
-                    }
-                    // 0:支付成功 非零:支付失败
-                    if (!YesNo.NO.getCode().equals(payRealStatus)) {
-                        GoodsStockLogEntity sotckLog = goodsStcokLogDao.loadByOrderId(order.getOrderId());
-                        if (null == sotckLog) {
-                            continue;
-                        }
-                        LOG.info(requestId, "库存记录日志", sotckLog.getOrderId());
+                    GoodsStockLogEntity sotckLog = goodsStcokLogDao.loadByOrderId(order.getOrderId());
+                    if (null != sotckLog) {
+                    	LOG.info(requestId, "库存记录日志", sotckLog.getOrderId());
                         // 存在回滚
                         addGoodsStock(requestId, order.getOrderId());
+                        goodsStcokLogDao.deleteByOrderId(sotckLog.getOrderId());
                     }
                 }
 
