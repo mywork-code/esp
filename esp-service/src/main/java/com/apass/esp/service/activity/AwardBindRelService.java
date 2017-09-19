@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.mapper.AwardBindRelMapper;
+import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
@@ -24,10 +26,19 @@ public class AwardBindRelService {
 
 	@Autowired
 	public AwardBindRelMapper wihdrawBindRelMapper;
-
+	@Autowired
+	public RegisterInfoService registerInfoService;
+	
     @Transactional(rollbackFor=Exception.class) 
 	public int insertAwardBindRel(AwardBindRel awardBindRel){
-		return wihdrawBindRelMapper.insert(awardBindRel);
+    	int result2 = 0;
+    	Long userId=awardBindRel.getUserId();
+    	Long inviteUserId=awardBindRel.getInviteUserId();
+    	Response result=registerInfoService.saveCustomerReferenceInfo(userId, inviteUserId);
+    	if(result.statusResult()){
+    		result2=wihdrawBindRelMapper.insert(awardBindRel);
+    	}
+		return result2;
 	}
 	
 	public Integer selectCountByInviteMobile(String moblie){

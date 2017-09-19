@@ -30,8 +30,7 @@ public class RegisterInfoService {
     private static final String CHECKUSER_GETINVITERINFO="/checkUser/getInviterInfo";
     private static final String CHECKUSER_ISOLDUSER="/checkUser/isOldUser";
     private static final String ESPCUSTOMER_ISFIRSTCREDIT="/espCustomer/isFirstCredit";
-
-
+    private static final String ESPCUSTOMER_SAVEREFERENCEINFO="/espCustomer/saveReferenceInfo";
 
     /**
      * 供房帮服务地址
@@ -193,6 +192,27 @@ public class RegisterInfoService {
 			return response;
 		} catch (Exception e) {
 			LOGGER.error("判断是否为第一次获取额度失败！", e);
+			return null;
+		}
+	}
+	/**
+	 *将邀请人和被邀请人的关系存入gfb的t_gfb_customer_reference_info表中
+	 * @param userId  inviteUserId
+	 * @return
+	 */
+	public Response saveCustomerReferenceInfo(Long userId, Long inviteUserId) {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("userId", userId);
+			map.put("inviteUserId", inviteUserId);
+			String requestUrl = gfbServiceUrl + ESPCUSTOMER_SAVEREFERENCEINFO;
+			String reqJson = GsonUtils.toJson(map);
+			StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+			String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+			Response response = GsonUtils.convertObj(responseJson, Response.class);
+			return response;
+		} catch (Exception e) {
+			LOGGER.error("将邀请人与被邀请人的关系存入gfb失败！", e);
 			return null;
 		}
 	}

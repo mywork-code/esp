@@ -61,29 +61,33 @@ public class ActivityAwardController {
     @Path("/saveAwardInfo")
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
-		LOGGER.info("-----用户获得额度时：customerId="+customerId);
+		LOGGER.info("-----用户获得额度时调用奖励邀请人接口：customerId="+customerId);
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
-			if (null != response && "1".equals(response.getStatus())) {
+			LOGGER.info("用户获得额度时 response="+response);
+			if (null != response && "1".equals(response.getStatus())) {//判断该用户是否是第一次活动额度
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
 				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
+					LOGGER.info("用户获得额度时 活动aInfoVo="+aInfoVo);
 					if (null != aInfoVo) {
 						Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
 						int falge = aEndDate.compareTo(new Date());
 						if (falge > 0) {
-							//获取当前活动下邀请人的信息
+							//获取邀请人的信息
 							List<AwardBindRel> awardBindRel = awardBindRelService.getAllByInviterUserId(userId);
-							if(null !=awardBindRel & awardBindRel.size()>0){
+							LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel);
+							if(null !=awardBindRel && awardBindRel.size()>0){
 								//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
 								Map<String, Object> parMap2=new HashMap<>();
 								parMap2.put("userId", awardBindRel.get(0).getUserId());
-								parMap2.put("activityId",awardBindRel.get(0).getActivityId());
+//								parMap2.put("activityId",awardBindRel.get(0).getActivityId());
 								parMap2.put("orderId",userId);
 								parMap2.put("type","0");
-								int result=awardDetailMapper.isAwardSameUserId(parMap2);//已经获得的奖励金额
+								int result=awardDetailMapper.isAwardSameUserId(parMap2);//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
+								LOGGER.info("用户获得额度时 判断邀请人是否已经获得了被邀请人的奖励(大于0为已经获得)result="+result);
 								if(0==result){
 									//获取当前月的第一天和最后一天的时间
 									SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -94,7 +98,7 @@ public class ActivityAwardController {
 									String first = format.format(c.getTime());
 									String firstDay=first+" 00:00:00";
 									String nowTime=DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
-									if(null !=awardBindRel){
+									if(null !=awardBindRel && awardBindRel.size()>0){
 										AwardDetailDto awardDetailDto=new AwardDetailDto();
 										awardDetailDto.setActivityId(aInfoVo.getId());
 										awardDetailDto.setUserId(awardBindRel.get(0).getUserId());
@@ -112,6 +116,7 @@ public class ActivityAwardController {
 										parMap.put("applyDate1", DateFormatUtil.string2date(firstDay, "yyyy-MM-dd HH:mm:ss"));
 										parMap.put("applyDate2", DateFormatUtil.string2date(nowTime, "yyyy-MM-dd HH:mm:ss"));
 										BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
+										LOGGER.info("用户获得额度时 已经获得的奖励金额amountAward="+amountAward);
 										if(amountAward == null){
 											amountAward = new BigDecimal(0);
 										}
