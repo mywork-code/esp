@@ -562,7 +562,7 @@ public class RegisterInfoController {
 			return Response.success("获取有效活动开始时间成功！", result);
 		} catch (BusinessException e) {
 			logger.error("获取有效活动开始时间失败！", e);
-			return Response.fail(e.getErrorDesc(), e.getBusinessErrorCode());
+			return Response.fail(e.getErrorDesc());
 		} catch (ParseException e) {
 			logger.error("获取有效活动开始时间失败！", e);
 			return Response.fail("获取有效活动开始时间失败！");
