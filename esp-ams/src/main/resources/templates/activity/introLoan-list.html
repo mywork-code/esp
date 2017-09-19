@@ -21,6 +21,16 @@
     <div class="search">
         <table style="min-width: 1040px;">
             <tr>
+                
+                <td width="4%" align="right" nowrap="nowrap">姓名：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="realName" class="easyui-textbox" style="width:145px">
+                </td>
+                <td width="4%" align="right" nowrap="nowrap">申请提现时间：</td>
+                <td width="310px" style="float: left;" align="left">
+                    <input id="applyDate1" class="easyui-datetimebox"  style="width:145px"/>~
+                    <input id="applyDate2" class="easyui-datetimebox"  style="width:145px"/>
+                </td>
                 <td width="4%" align="right" nowrap="nowrap">放款状态：</td>
                 <td width="8%" style="float: left;" align="left">
                     <select  id="loanStatus" class="easyui-combobox" style="width:145px">
@@ -30,34 +40,29 @@
 					    <option value="1">放款失败</option>   
                     </select>
                 </td>
-                <td width="4%" align="right" nowrap="nowrap">姓名：</td>
-                <td width="8%" style="float: left;" align="left">
-                	<input  id="realName" class="easyui-textbox">
-                </td>
-                <td width="4%" align="center" nowrap="nowrap">手机号：</td>
-                <td width="8%" style="float: left;" align="left">
-                	<input  id="mobile" class="easyui-textbox">
-                </td>
             </tr>
             <tr>
+                <td width="4%" align="center" nowrap="nowrap">手机号：</td>
+                <td width="8%" style="float: left;" align="left">
+                	<input  id="mobile" class="easyui-textbox" style="width:145px">
+                </td>
                 <td width="4%" align="right" nowrap="nowrap">放款时间：</td>
                 <td width="310px" style="float: left;" align="left">
                     <input id="releaseDate1" class="easyui-datetimebox"  style="width:145px"/>~
                     <input id="releaseDate2" class="easyui-datetimebox"  style="width:145px"/>
                 </td>
-                <td width="4%" align="right" nowrap="nowrap">申请提现时间：</td>
-                <td width="310px" style="float: left;" align="left">
-                    <input id="applyDate1" class="easyui-datetimebox"  style="width:145px"/>~
-                    <input id="applyDate2" class="easyui-datetimebox"  style="width:145px"/>
-                </td>
-                <td colspan="2">
+                <td width="4%" align="center" nowrap="nowrap">
                     <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
                 </td>
+                <td>
+                    
+                </td>
             </tr>
-            <tr>
-                <td width="30%" colspan="6" align="right">
+            <tr style="line-height:36px;">
+                <td colspan="4"></td>
+                <td width="30%" colspan="2" align="left">
                 	<form id='ExcelFileForm' enctype='multipart/form-data' method="post" target="_self" style="    display: inline-block;">
-	            		<input type="file" id = "Excelfile" name="file">
+	            		<input type="file" id = "Excelfile" name="file" style="width:70px;">
                 	</form>
                     <a href="javascript:void(0);" class="easyui-linkbutton"  id="import">导&nbsp;入&nbsp;</a> &nbsp;&nbsp;
                     <a href="javascript:void(0);" class="easyui-linkbutton"  id="export">导&nbsp;出&nbsp;</a> &nbsp;&nbsp;
