@@ -53,6 +53,12 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * @return
    */
   AwardBindRel getByInviterUserId(@Param("userId") String userId,@Param("activityId") int activityId);
+  /**
+   * 根据userId查询被邀请人的记录
+   * @param userId
+   * @return
+   */
+  List<AwardBindRel> getAllByInviterUserId(@Param("userId") String userId);
 
   /**
    * 统计查询同一用户邀总人数

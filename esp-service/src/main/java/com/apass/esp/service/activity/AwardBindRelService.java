@@ -1,17 +1,21 @@
 package com.apass.esp.service.activity;
 
-import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
-import com.apass.esp.mapper.AwardBindRelMapper;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+
+import java.util.Calendar;
+import java.util.Calendar;
+import java.util.List;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.List;
+import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.mapper.AwardBindRelMapper;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
 public class AwardBindRelService {
@@ -47,6 +51,9 @@ public class AwardBindRelService {
 		return wihdrawBindRelMapper.selectByInviterUserId(userId);
 	}
 	
+	public List<AwardBindRel> getAllByInviterUserId(String userId){
+		return wihdrawBindRelMapper.getAllByInviterUserId(userId);
+	}
 	/**
 	  * 统计查询在某一时间内邀请的总人数
 	  */
