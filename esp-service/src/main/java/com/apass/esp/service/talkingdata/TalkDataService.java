@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.dto.statement.Filter;
 import com.apass.esp.domain.dto.statement.TalkingDataDto;
+import com.apass.esp.domain.enums.TermainalTyps;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
@@ -66,11 +67,8 @@ public class TalkDataService {
 
         Filter filter = new Filter();
         ArrayList<Integer> integerArrayList = new ArrayList<>();
-        if(type.equalsIgnoreCase("ios")){
-            integerArrayList.add(2);
-        }else{
-            integerArrayList.add(1);
-        }
+        integerArrayList.add(Integer.parseInt(TermainalTyps.getCode(type)));
+        
         filter.setPlatformids(integerArrayList);
         filter.setStart(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD));
         filter.setEnd(DateFormatUtil.dateToString(date, DateFormatUtil.YYYY_MM_DD));
