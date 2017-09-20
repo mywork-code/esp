@@ -257,15 +257,15 @@ public class SystemParamController {
                 }
             }else if(systemEnvConfig.isUAT()){
                 if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
-                    url = nfsWeexRoot + "/uat/commission.weex_sit.js";
+                    url = nfsWeexRoot + "/uat/commission.weex_uat.js";
                 }else {
-                    url = nfsWeexRoot + "/uat/wallet.weex_sit.js";
+                    url = nfsWeexRoot + "/uat/wallet.weex_uat.js";
                 }
             }else if(systemEnvConfig.isPROD()){
                 if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
-                    url = nfsWeexRoot + "/prod/commission.weex_sit.js";
+                    url = nfsWeexRoot + "/prod/commission.weex_prod.js";
                 }else {
-                    url = nfsWeexRoot + "/prod/wallet.weex_sit.js";
+                    url = nfsWeexRoot + "/prod/wallet.weex_prod.js";
                 }
             }else {
                 return Response.fail("发布有误，无法区分是什么环境");
