@@ -509,8 +509,8 @@ public class RegisterInfoController {
 					int res = awardBindRelService.insertAwardBindRel(aRel);
 					return Response.success("注册成功！");
 				} else{
-					logger.error("校验失败，您在当前活动中已与其他用户绑定过关系!");
-					return Response.fail("校验失败，您在当前活动中已与其他用户绑定过关系!");
+					logger.error("校验失败，您已与其他用户绑定过关系!");
+					return Response.fail("校验失败，您已与其他用户绑定过关系!");
 				}
 			}
 			logger.error("注册新用户失败");
