@@ -64,7 +64,7 @@ public class ActivityAwardController {
 		LOGGER.info("-----用户获得额度时调用奖励邀请人接口：customerId="+customerId);
 		try {
 			Response response = registerInfoService.customerIsFirstCredit(customerId);
-			LOGGER.info("用户获得额度时 response="+response);
+			LOGGER.info("用户获得额度时 response.status="+response.getStatus());
 			if (null != response && "1".equals(response.getStatus())) {//判断该用户是否是第一次活动额度
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
