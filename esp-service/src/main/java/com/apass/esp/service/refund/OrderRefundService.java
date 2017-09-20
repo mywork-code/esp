@@ -42,9 +42,6 @@ public class OrderRefundService {
     @Autowired
     private LogisticsService logisticsService;
     
-    @Autowired
-    private CashRefundService cashRefundService;
-
     /**
      * 查询订单退货详情信息
      * 
@@ -254,7 +251,7 @@ public class OrderRefundService {
             	if(StringUtils.equals(dto.getRefundType(), "0")){
             		status = OrderStatus.ORDER_TRADCLOSED.getCode();
             		//支付宝退款
-            		cashRefundService.agreeRefundInAfterSalesTask(dto.getOrderId());
+            		//cashRefundService.agreeRefundInAfterSalesTask(dto.getOrderId());
             	}
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
