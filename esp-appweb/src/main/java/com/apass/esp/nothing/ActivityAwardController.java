@@ -67,6 +67,7 @@ public class ActivityAwardController {
 			LOGGER.info("用户获得额度时 response.status="+response.getStatus());
 			if (null != response && "1".equals(response.getStatus())) {//判断该用户是否是第一次活动额度
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
+				LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
 				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
