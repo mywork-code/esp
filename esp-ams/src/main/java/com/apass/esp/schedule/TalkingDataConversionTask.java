@@ -77,7 +77,7 @@ public class TalkingDataConversionTask {
     /**
      *电商转化率日报
      */
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 9 * * *")
     public void conversionSchedule(){
         if (!systemEnvConfig.isPROD()) {
             return;
