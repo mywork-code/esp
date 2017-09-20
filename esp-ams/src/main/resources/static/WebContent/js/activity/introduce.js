@@ -122,6 +122,10 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
+        if(rebate > 100){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	return;
+        }
         var awardAmont=$("#awardAmont").val();
         if(null == awardAmont || awardAmont==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
@@ -140,14 +144,10 @@ $(function(){
         if(startDate!=null && startDate!=''&&endDate!=null && endDate!=''){
     		if(startDate>endDate){
     			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
-    			$('#startDate').datetimebox('setValue','');
-    			$('#endDate').datetimebox('setValue','');
     			return;
     		}
     		if(startDate<new Date().Format("yyyy-MM-dd hh:mm:ss")){
     			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间不能小于当前时间！",'info');
-    			$('#startDate').datetimebox('clear');
-    			$('#endDate').datetimebox('setValue','');
     			return;
     		}
     	}
@@ -222,7 +222,6 @@ $(function(){
 	 * 编辑
 	 */
 	$.editActivity = function(id,rebate,startDate,endDate,awardAmount) {
-		debugger;
 		$("#editIntroConfig").window({modal: true});
 		$("#editIntroConfig").window('open');
 		idActiv = id;
@@ -248,6 +247,10 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
+        if(rebate > 100){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	return;
+        }
         if(null == awardAmount || awardAmount==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
             return;
@@ -258,13 +261,10 @@ $(function(){
         }
 		if(startDate>endDate){
 			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
-			$('#editEndDate').datetimebox('setValue','');
 			return;
 		}
 		if(endDate<new Date().Format("yyyy-MM-dd hh:mm:ss")){
 			$.messager.alert("<span style='color: black;'>提示</span>","编辑时  ：结束时间不能小于当前时间！",'info');
-			$('#startDate').datetimebox('clear');
-			$('#endDate').datetimebox('setValue','');
 			return;
 		}
 		var params = {"id":idActiv,"rebate":rebate,"endDate":endDate,"awardAmount":awardAmount};
