@@ -114,7 +114,7 @@ public class GoodsSearchController {
     		}else{
     			common = searchKeyService.commonSearchByUserId(userId);
     		}
-    		//sort.add(new SearchSort("最近搜索",keysToVoList(common)));
+    		sort.add(new SearchSort("最近搜索",keysToVoList(common)));
     		sort.add(new SearchSort("热门搜索", hotList(new ArrayList<SearchKeys>())));
     		sort.add(new SearchSort("常用分类", getClassification()));
 		}
