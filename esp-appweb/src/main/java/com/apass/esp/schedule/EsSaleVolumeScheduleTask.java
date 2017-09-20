@@ -1,7 +1,7 @@
 package com.apass.esp.schedule;
 
-import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
@@ -9,10 +9,8 @@ import com.apass.esp.service.goods.GoodsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -56,13 +54,14 @@ public class EsSaleVolumeScheduleTask {
         List<GoodsInfoEntity> goodsInfoEntityList = new ArrayList<>();
         for (String goodsId : goodsIds) {
             GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-            goodsInfoEntityList.add(goodsInfoEntity);
+            if(GoodStatus.GOOD_UP.getCode().equals(goodsInfoEntity.getStatus())){
+                //已上架的商品 在es里更新
+                goodsInfoEntityList.add(goodsInfoEntity);
+            }
         }
         List<Goods> goods = goodsService.getGoodsList(goodsInfoEntityList);
         for (Goods goods1 : goods) {
             goodsEsDao.update(goods1);
         }
-
-
     }
 }
