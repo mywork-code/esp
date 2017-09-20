@@ -180,10 +180,6 @@ public class CommonHttpClient {
             LOGGER.info( "talkingData请求数据:requestUrl {} stringEntity {} requestJson {}",requestUrl,stringEntity,requestJson);
             String responseJson = HttpClientUtils.getMethodPostContent(requestUrl, stringEntity, headerparams);
             LOGGER.info( "talkingData返回数据:requestUrl {} responseJson {}",requestUrl, responseJson);
-//            Response response = GsonUtils.convertObj(responseJson, Response.class);
-//            if (response == null ) {
-//                return Response.fail("talkingData服务异常",BusinessErrorCode.CUSTOMER_UPDATE_AMOUNT_EXCEPTION);
-//            }
             return responseJson;
         } catch (Exception e) {
             LOGGER.error("talkingData--------Exception----------",  e);
