@@ -1,14 +1,6 @@
 $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
-
-    $(document).on("keyup","#rebate", function (event) {
-		KEYUP(event,$(this));
-	});
-    
-    $(document).on("keyup","#editRebate", function (event) {
-		KEYUP(event,$(this));
-	});
    
 	$(document).on("keyup","#awardAmont", function (event) {
 		KEYUP(event,$(this));
@@ -71,11 +63,13 @@ $(function(){
                 formatter : function(value, row, index) {
                     // 授权标示
                     var grantedAuthority=$('#grantedAuthority').val();
+                    var rebate = FormatAfterDotNumber(row.rebate,2);
+                    var awardAmont = FormatAfterDotNumber(row.awardAmont,2);
                     var content = "";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteActivity("
                             + row.id+ ");\">关闭活动</a>&nbsp;&nbsp;";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editActivity('"
-						+ row.id+"','"+ row.rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "','"+row.awardAmont + "');\"'>编辑</a>&nbsp;&nbsp;";
+						+ row.id+"','"+ rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "','"+awardAmont + "');\"'>编辑</a>&nbsp;&nbsp;";
                     return content;
                 }
             }
