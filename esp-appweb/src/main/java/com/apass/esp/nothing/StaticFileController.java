@@ -166,7 +166,7 @@ public class StaticFileController {
                 }
             }else if(systemEnvConfig.isPROD()){
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commision")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
@@ -180,7 +180,6 @@ public class StaticFileController {
             }else{
                 return Response.fail("发布有误，无法区分是什么环境");
             }
-//            LOG.info("file1的路径是,",file1.getPath());
 
             LOGGER.info("file1:{},file2:{}",file1.getPath(),file2.getPath());
             FileInputStream in1 = new FileInputStream(file1);
