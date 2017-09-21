@@ -131,7 +131,7 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
             return;
         }
-        if(awardAmount.lenght > 10){
+        if(awardAmont.length > 10){
         	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
@@ -259,7 +259,7 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
             return;
         }
-        if(awardAmount.lenght > 10){
+        if(awardAmount.length > 10){
         	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
