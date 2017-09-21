@@ -1,14 +1,22 @@
 $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
-    
 
-     $('body').delegate("input[class='NumDecText']", "keyup", function(e) {
-        var value = $(this).val(); 
-        RegStr = '^[\\+\\-]?\\d+\\.?\\d{0,2}'; // 保留小数点后2位
-        $(this).val(value.match(new RegExp(RegStr, 'g')));
-        return;                    
-     });
+    $(document).on("keyup","#rebate", function (event) {
+		KEYUP(event,$(this));
+	});
+    
+    $(document).on("keyup","#editRebate", function (event) {
+		KEYUP(event,$(this));
+	});
+   
+	$(document).on("keyup","#awardAmont", function (event) {
+		KEYUP(event,$(this));
+	});
+	
+	$(document).on("keyup","#editAwardAmont", function (event) {
+		KEYUP(event,$(this));
+	});
 
     //Grid
     $('#list').datagrid({
@@ -290,5 +298,15 @@ $(function(){
 			}
 		});
     });
+    function KEYUP(event,that){
+    	var e = event || window.event;
+    	var val = that.get(0).value;
+
+    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//鍚湁鏁板瓧鍜�.浠ュ鐨勫瓧绗︼紝鍒欐墽琛�
+    		that.val(val.substr(0,val.length-1));
+    		event.preventDefault();
+    		return false
+    	}
+    }
 });
 
