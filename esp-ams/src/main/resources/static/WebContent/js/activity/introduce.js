@@ -2,21 +2,13 @@ $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
     
-    $(document).on("keyup","#rebate", function (event) {
-		KEYUP(event,$(this));
-	});
-    
-    $(document).on("keyup","#editRebate", function (event) {
-		KEYUP(event,$(this));
-	});
-   
-	$(document).on("keyup","#awardAmont", function (event) {
-		KEYUP(event,$(this));
-	});
-	
-	$(document).on("keyup","#editAwardAmont", function (event) {
-		KEYUP(event,$(this));
-	});
+
+     $('body').delegate("input[class='NumDecText']", "keyup", function(e) {
+        var value = $(this).val(); 
+        RegStr = '^[\\+\\-]?\\d+\\.?\\d{0,2}'; // 保留小数点后2位
+        $(this).val(value.match(new RegExp(RegStr, 'g')));
+        return;                    
+     });
 
     //Grid
     $('#list').datagrid({
@@ -121,6 +113,10 @@ $(function(){
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
+        }
+        if(rebate <= 0 ){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点填写错误，请重新填写！","info");
+        	return;
         }
         if(rebate > 100){
         	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
@@ -251,6 +247,10 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
+        if(rebate <= 0 ){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点填写错误，请重新填写！","info");
+        	return;
+        }
         if(rebate > 100){
         	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
         	return;
@@ -290,15 +290,5 @@ $(function(){
 			}
 		});
     });
-    function KEYUP(event,that){
-    	var e = event || window.event;
-    	var val = that.get(0).value;
-
-    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
-    		that.val(val.substr(0,val.length-1));
-    		event.preventDefault();
-    		return false
-    	}
-    }
 });
 
