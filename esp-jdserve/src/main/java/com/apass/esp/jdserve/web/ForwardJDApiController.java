@@ -1,13 +1,15 @@
 package com.apass.esp.jdserve.web;
 
-import com.apass.esp.third.party.jd.client.JdApiClient;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Map;
+import com.apass.esp.third.party.jd.client.JdApiClient;
 
 /**
  * Created by jie.xu on 17/9/21.
@@ -24,9 +26,9 @@ public class ForwardJDApiController {
    */
   @RequestMapping(value = "/jd", method = RequestMethod.POST)
   @ResponseBody
-  public Object forwardJd(Map<String,Object> params) throws Exception {
+  public Object forwardJd(@RequestBody Map<String,Object> params) throws Exception {
     String method = (String) params.get("method");
-    Map<String,Object> jdParams = (Map<String, Object>) params.get("jdParams");
+    String jdParams = (String) params.get("jdParams");
     return jdApiClient.request(method,jdParams);
   }
 }

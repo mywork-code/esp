@@ -3,6 +3,8 @@ package com.apass.esp.third.party.jd.client;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.utils.UrlUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.CookieSpecs;
@@ -97,7 +99,7 @@ public  class JdApiClient {
 
     }
 
-    public String request(String method,Map<String,Object> jdParams) throws Exception {
+    public String request(String method,String jdParams) throws Exception {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("method", UrlUtils.encode(method));
         params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
@@ -107,7 +109,7 @@ public  class JdApiClient {
         params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         params.put("format", UrlUtils.encode("json"));
         params.put("v", UrlUtils.encode(JdConstants.API_VERSION));
-        String param_json = jdParams == null ? "{}" : JSONObject.toJSONString(jdParams);
+        String param_json = StringUtils.isNotBlank(jdParams) ? jdParams: "{}" ;
         params.put("param_json", UrlUtils.encode(param_json));
         String url = UrlUtils.build(JdConstants.API_URL, params);
         Map<String, String> headerparams = new HashMap<>();
