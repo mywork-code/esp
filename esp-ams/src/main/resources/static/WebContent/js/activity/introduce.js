@@ -1,14 +1,6 @@
 $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
-
-    $(document).on("keyup","#rebate", function (event) {
-		KEYUP(event,$(this));
-	});
-    
-    $(document).on("keyup","#editRebate", function (event) {
-		KEYUP(event,$(this));
-	});
    
 	$(document).on("keyup","#awardAmont", function (event) {
 		KEYUP(event,$(this));
@@ -71,11 +63,13 @@ $(function(){
                 formatter : function(value, row, index) {
                     // 授权标示
                     var grantedAuthority=$('#grantedAuthority').val();
+                    var rebate = FormatAfterDotNumber(row.rebate,2);
+                    var awardAmont = FormatAfterDotNumber(row.awardAmont,2);
                     var content = "";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteActivity("
                             + row.id+ ");\">关闭活动</a>&nbsp;&nbsp;";
                         content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editActivity('"
-						+ row.id+"','"+ row.rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "','"+row.awardAmont + "');\"'>编辑</a>&nbsp;&nbsp;";
+						+ row.id+"','"+ rebate+"','"+ row.aStartDate+"','"+row.aEndDate + "','"+awardAmont + "');\"'>编辑</a>&nbsp;&nbsp;";
                     return content;
                 }
             }
@@ -117,7 +111,7 @@ $(function(){
     });
     //确认   添加活动
     $("#agreeAdd").click(function(){
-        var rebate=$("#rebate").val();
+        var rebate=$("#rebate").numberbox('getValue');
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
@@ -234,7 +228,7 @@ $(function(){
 		$("#editIntroConfig").window('open');
 		idActiv = id;
 		
-		$("#editRebate").val(rebate);
+		$("#editRebate").numberbox('setValue',rebate);
 		$("#editAwardAmont").val(awardAmount);
 		$("#editStartDate").datetimebox('setValue',startDate); 
 		$("#editEndDate").datetimebox('setValue',endDate); 
@@ -246,7 +240,7 @@ $(function(){
     });
     //确定  编辑活动信息
     $("#editAgreeAdd").click(function(){
-		var rebate = $("#editRebate").val();
+		var rebate = $("#editRebate").numberbox('getValue');
 		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
 		var awardAmount = $("#editAwardAmont").val();

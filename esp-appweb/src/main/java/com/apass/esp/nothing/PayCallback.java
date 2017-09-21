@@ -126,7 +126,7 @@ public class PayCallback {
 		}
 		return Response.success("数据库更新成功！");
 	}
-
+	
 	private void addRebateRecord(String status, String mainOrderId) {
 		if (YesNo.isNo(status)) {
 			return;
@@ -171,22 +171,20 @@ public class PayCallback {
 							BigDecimal rebate = new BigDecimal(rebateString.substring(0, rebateString.length() - 1))
 									.multiply(BigDecimal.valueOf(0.01));
 							BigDecimal rebateAmt = orderInfoEntity.getOrderAmt().multiply(rebate);
-							int rebateInt = rebateAmt.intValue();
-							// 返现金额小于1时 不返现
-							if (rebateInt == 0) {
-								continue;
+							if(rebateAmt.compareTo(BigDecimal.ZERO) == 0){
+								return;
 							}
 							BigDecimal allAward = awardDetailService.getAllAwardByUserId(awardBindRel.getUserId());
-							BigDecimal newAward = allAward.add(new BigDecimal(rebateInt));
+							BigDecimal newAward = allAward.add(rebateAmt);
 							if(allAward.compareTo(new BigDecimal(800))>0){
-								awardDetailDto.setAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.8)).setScale(2,   BigDecimal.ROUND_DOWN));
-								awardDetailDto.setTaxAmount(new BigDecimal(rebateInt).multiply(new BigDecimal(0.2)).setScale(2,   BigDecimal.ROUND_DOWN));
+								awardDetailDto.setAmount(rebateAmt.multiply(new BigDecimal(0.8)).setScale(2,   BigDecimal.ROUND_DOWN));
+								awardDetailDto.setTaxAmount(rebateAmt.multiply(new BigDecimal(0.2)).setScale(2,   BigDecimal.ROUND_DOWN));
 							}else if(allAward.compareTo(new BigDecimal(800))<=0&&newAward.compareTo(new BigDecimal(800))>0){
 								BigDecimal taxAmount= newAward.subtract(new BigDecimal(800)).multiply(new BigDecimal(0.2).setScale(2,   BigDecimal.ROUND_DOWN));
 								awardDetailDto.setTaxAmount(taxAmount);
-								awardDetailDto.setAmount(new BigDecimal(rebateInt).subtract(taxAmount).setScale(2,   BigDecimal.ROUND_DOWN));
+								awardDetailDto.setAmount(rebateAmt.subtract(taxAmount).setScale(2,   BigDecimal.ROUND_DOWN));
 							}else{
-								awardDetailDto.setAmount(new BigDecimal(rebateInt).setScale(2,   BigDecimal.ROUND_DOWN));
+								awardDetailDto.setAmount(rebateAmt.setScale(2,   BigDecimal.ROUND_DOWN));
 							}
 
 							awardDetailDto.setOrderId(orderInfoEntity.getOrderId());
