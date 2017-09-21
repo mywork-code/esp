@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.MessageListenerMapper" >  
+    <!-- 查询条件 -->
+	<sql id="QueryConditionSql">
+		<where>
+			<if test="type != null and type != ''">
+				AND type = #{type, jdbcType=VARCHAR}
+			</if>
+			<if test="skuid != null and skuid != ''">
+				AND skuId = #{skuid, jdbcType=VARCHAR}
+			</if>
+			<if test="orderid != null and orderid != ''">
+				AND orderId = #{orderid, jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status, jdbcType=VARCHAR}
+			</if>
+			<if test="errorMassage != null and errorMassage != ''">
+				AND error_massage = #{errorMassage, jdbcType=VARCHAR}
+			</if>
+			<if test="result != null and result != ''">
+				AND result = #{result, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+     <select id="getMessageListenerListPage" parameterType="com.apass.esp.domain.entity.MessageListener" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_message_listener
+        <include refid="QueryConditionSql" />
+        <![CDATA[ 
+         order by create_date desc
+         ]]>
+       <if test="startRecordIndex != null">
+           <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+     </select>
+     
+     <select id ="getMessageListenerListPageCount" parameterType="com.apass.esp.domain.entity.MessageListener" resultType="java.lang.Integer">
+      select count(*) from t_esp_message_listener
+      <include refid="QueryConditionSql" />
+    </select>
+</mapper>

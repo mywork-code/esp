@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/message/messageListenerList.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/easyui/outOfBounds.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+</head>
+<body>
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 1040px;">
+				<tr>
+			        <td width="10%" align="right">推送类型：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 200px;" id="type">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="拆单消息" value="1">拆单消息</option>
+						   <option label="订单妥投消息" value="5">订单妥投消息</option>
+						   <option label="商品上下架消息" value="4">商品上下架消息</option>
+						   <option label="商品价格变更消息" value="2">商品价格变更消息</option>
+						   <option label="商品添加删除消息" value="6">商品添加删除消息</option>
+						   <option label="京东售后状态消息" value="100">京东售后状态消息</option>
+						</select>
+				  	</td>
+				  	<td width="10%" align="right"><font color="red">*</font>京东商品编号:</td>
+			        <td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text" id="skuid" name="skuid"/></td>
+				    <td width="10%" align="right"><font color="red">*</font>京东订单编号:</td>
+			        <td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text" id="orderid" name="orderid"/></td>
+				   </tr>
+				   <tr>
+				    <td width="10%" align="right">接口状态：</td>
+				    <td>
+					    <select class="easyui-combobox" style="width: 200px;" id="status">
+						   <option value="" class="" selected="selected">请选择</option>
+						   <option label="成功" value="1">成功</option>
+						   <option label="失败" value="0">失败</option>
+						</select>
+				  	</td>
+				  <td width="30%" />
+				    <a href="javascript:void(0);" class="easyui-linkbutton search-btn">查&nbsp;询&nbsp;</a> &nbsp;&nbsp;
+					<a href="javascript:void(0);" class="easyui-linkbutton"  id="flush">重&nbsp;置&nbsp;</a>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 用户查询列表 -->
+	<div id="messageListenerList"></div>	
+</body>
+</html>

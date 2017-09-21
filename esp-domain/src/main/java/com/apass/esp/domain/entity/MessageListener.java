@@ -2,7 +2,9 @@ package com.apass.esp.domain.entity;
 
 import java.util.Date;
 
-public class MessageListener {
+import com.apass.esp.common.model.QueryParams;
+
+public class MessageListener extends QueryParams{
     private Long id;
 
     private String type;
@@ -18,7 +20,9 @@ public class MessageListener {
     private String result;
 
     private Date createDate;
-
+    
+    private String createDateString;
+    
     private Date updateDate;
 
     public Long getId() {
@@ -92,4 +96,13 @@ public class MessageListener {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
+	public String getCreateDateString() {
+		return createDateString;
+	}
+
+	public void setCreateDateString(String createDateString) {
+		this.createDateString = createDateString;
+	}
+    
 }
