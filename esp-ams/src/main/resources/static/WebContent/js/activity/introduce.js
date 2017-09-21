@@ -1,7 +1,7 @@
 $(function(){
     $("#addIntroConfig").window('close');
     $("#editIntroConfig").window('close');
-    
+
     $(document).on("keyup","#rebate", function (event) {
 		KEYUP(event,$(this));
 	});
@@ -122,13 +122,21 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
+        if(rebate <= 0 ){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点填写错误，请重新填写！","info");
+        	return;
+        }
         if(rebate > 100){
-        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
         	return;
         }
         var awardAmont=$("#awardAmont").val();
         if(null == awardAmont || awardAmont==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
+            return;
+        }
+        if(awardAmont.length > 10){
+        	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
         var startDate=$("#startDate").textbox('getValue');
@@ -247,12 +255,20 @@ $(function(){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
         }
+        if(rebate <= 0 ){
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点填写错误，请重新填写！","info");
+        	return;
+        }
         if(rebate > 100){
-        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
         	return;
         }
         if(null == awardAmount || awardAmount==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
+            return;
+        }
+        if(awardAmount.length > 10){
+        	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
 		if(null == endDate || endDate==""){
@@ -286,7 +302,7 @@ $(function(){
     	var e = event || window.event;
     	var val = that.get(0).value;
 
-    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//含有数字和.以外的字符，则执行
+    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){
     		that.val(val.substr(0,val.length-1));
     		event.preventDefault();
     		return false

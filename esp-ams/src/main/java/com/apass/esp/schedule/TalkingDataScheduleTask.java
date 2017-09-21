@@ -47,9 +47,23 @@ import java.util.concurrent.TimeUnit;
 public class TalkingDataScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(TalkingDataScheduleTask.class);
 
+    /**
+     * 数据维度，即数据分组方式
+     */
+    public static String groupby = "daily";
+    
+    
+    public static String metrics = "activeuser";//查询活跃用户数
+    public static String newuser = "newuser";//新增用户数
+    public static String session = "session";//启动次数
+    public static String avgsessionlength = "avgsessionlength";//平均每次启动使用时长
+    public static String day1retention = "day1retention";//新增用户次日留存率
+    public static String dauday1retention = "dauday1retention";//活跃用户次日留存率
+    public static String totaluser = "totaluser";
+    
     @Autowired
     private SystemEnvConfig systemEnvConfig;
-
+    
     @Autowired
     private TalkDataService talkingDataService;
 
@@ -77,75 +91,59 @@ public class TalkingDataScheduleTask {
     /**
      * 电商流量日报
      */
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 7 * * *")
     public void schedule() {
-        if (!systemEnvConfig.isPROD()) {
+    	if (!systemEnvConfig.isPROD()) {
             return;
         }
-        String groupby = "daily";
         List<ExportDomainFor> lists = Lists.newArrayList();
-
-
-            for (int i = -15; i < 0; i++) {
-                for (int j = 0; j < 2; j++) {
-                    String type = "";
-                    if (j == 0) {
-                        type = "ios";
-                    } else {
-                        type = "android";
-                    }
-                try {
-                    // 去talkingDate中获取UV(查询活跃用户数)
-                    Date beginDate = DateFormatUtil.addDays(new Date(), i);
-                    Date endDate = DateFormatUtil.addDays(beginDate, 1);
-                    String metrics = "activeuser";//查询活跃用户数
-                    String newuser = "newuser";//新增用户数
-                    String session = "session";//启动次数
-                    String avgsessionlength = "avgsessionlength";//平均每次启动使用时长
-                    String day1retention = "day1retention";//新增用户次日留存率
-                    String dauday1retention = "dauday1retention";//活跃用户次日留存率
-
-                    String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, beginDate, metrics, groupby, type);
-                    String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, beginDate, newuser, groupby, type);
-                    String talkingData1session = talkingDataService.getTalkingData1(beginDate, beginDate, session, groupby, type);
-                    String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, beginDate, avgsessionlength, groupby, type);
-                    String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, beginDate, day1retention, groupby, type);
-                    String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, beginDate, dauday1retention, groupby, type);
-
-                    JSONObject iosObj = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
+        String[] terminalTypes = {"ios","android"};  /**终端类型*/
+        //查询时间段
+        Date endDate = DateFormatUtil.addDays(new Date(), -1);
+        Date beginDate = DateFormatUtil.addDays(endDate, -14);
+        for (String type : terminalTypes) {
+            try {
+                // 去talkingDate中获取UV(查询活跃用户数)
+                String talkingData1metrics = talkingDataService.getTalkingData1(beginDate, endDate, metrics, groupby, type);
+                String talkingData1newuser = talkingDataService.getTalkingData1(beginDate, endDate, newuser, groupby, type);
+                String talkingData1session = talkingDataService.getTalkingData1(beginDate, endDate, session, groupby, type);
+                String talkingData1avgsessionlength = talkingDataService.getTalkingData1(beginDate, endDate, avgsessionlength, groupby, type);
+                String talkingData1day1retention = talkingDataService.getTalkingData1(beginDate, endDate, day1retention, groupby, type);
+                String talkingData1dauday1retention = talkingDataService.getTalkingData1(beginDate, endDate, dauday1retention, groupby, type);
+                for(int i = 0;i < 15 ; i++ ){
+                	JSONObject iosObj = (JSONObject) JSONArray.parseArray(
+                            JSONObject.parseObject(talkingData1metrics).getString("result")).get(i);
                     JSONObject iosObj2 = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1newuser).getString("result")).get(0);
+                            JSONObject.parseObject(talkingData1newuser).getString("result")).get(i);
                     JSONObject iosObj3 = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1session).getString("result")).get(0);
+                            JSONObject.parseObject(talkingData1session).getString("result")).get(i);
                     JSONObject iosObj4 = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1avgsessionlength).getString("result")).get(0);
+                            JSONObject.parseObject(talkingData1avgsessionlength).getString("result")).get(i);
                     JSONObject iosObj5 = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1day1retention).getString("result")).get(0);
+                            JSONObject.parseObject(talkingData1day1retention).getString("result")).get(i);
                     JSONObject iosObj6 = (JSONObject) JSONArray.parseArray(
-                            JSONObject.parseObject(talkingData1dauday1retention).getString("result")).get(0);
+                            JSONObject.parseObject(talkingData1dauday1retention).getString("result")).get(i);
                     Integer iuv = Integer.valueOf(iosObj.getString(metrics));
                     Integer newuser1 = Integer.valueOf(iosObj2.getString(newuser));
                     Integer session1 = Integer.valueOf(iosObj3.getString(session));
                     String avgsessionlength1 = iosObj4.getString(avgsessionlength);
                     String day1retention1 = iosObj5.getString(day1retention);
                     String dauday1retention1 = iosObj6.getString(dauday1retention);
-                    LOGGER.info(DateFormatUtil.dateToString(beginDate, "") + "~"
-                            + DateFormatUtil.dateToString(endDate, "") + "号 metrics：" + iuv);
+                    LOGGER.info(iosObj.getString(groupby) + "号 metrics：" + iuv);
 
                     ExportDomainFor exportDomainFor = new ExportDomainFor();
-                    exportDomainFor.setDate(DateFormatUtil.dateToString(beginDate, DateFormatUtil.YYYY_MM_DD) );
+                    exportDomainFor.setDate(iosObj.getString(groupby));
                     exportDomainFor.setActiveUser(iuv);
                     exportDomainFor.setNewUser(newuser1);
                     exportDomainFor.setQidongTime(session1);
-                    exportDomainFor.setUserTime(avgsessionlength1);
+                    exportDomainFor.setUserTime(converInteger(avgsessionlength1));
                     exportDomainFor.setType(type);
                     exportDomainFor.setDay1retention1(convert(day1retention1));
                     exportDomainFor.setDauday1retention1(convert(dauday1retention1));
                     lists.add(exportDomainFor);
-                } catch (Exception e) {
-                    LOGGER.error("error i {}", e);
                 }
+            } catch (Exception e) {
+                LOGGER.error("error i {}", e);
             }
         }
         // 导出
@@ -163,8 +161,8 @@ public class TalkingDataScheduleTask {
         mailSenderInfo.setFromAddress(sendAddress);
         mailSenderInfo.setSubject("电商流量日报");
         mailSenderInfo.setContent("请查收电商流量日报..");
-        mailSenderInfo.setToAddress("xujie@apass.cn,zhangjinfeng@apass.cn");
-//        mailSenderInfo.setCcAddress(copyToAddressFlow);
+        mailSenderInfo.setToAddress(sendToAddressFlow);
+        mailSenderInfo.setCcAddress(copyToAddressFlow);
 
 
         Multipart msgPart = new MimeMultipart();
@@ -194,45 +192,51 @@ public class TalkingDataScheduleTask {
      */
     @Scheduled(cron = "0 0 8 * * *")
     public void schedule2() throws InterruptedException {
-        Date beginDate = DateFormatUtil.addDays(new Date(), -1);
-        Date endDate = DateFormatUtil.addDays(beginDate, 1);
-        String groupby = "daily";
+    	if (!systemEnvConfig.isPROD()) {
+            return;
+        }
+    	Date endDate = DateFormatUtil.addDays(new Date(), -1);
+        Date beginDate = DateFormatUtil.addDays(endDate, -14);
         List<ExportDomainFor4> lists = Lists.newArrayList();
-        String metrics = "activeuser";
-        String newuser = "newuser";
-        String totaluser = "totaluser";
-        String talkingData1metrics = talkingDataService.getTalkingData(beginDate, new Date(), metrics, groupby);
+        
+        String talkingData1metrics = talkingDataService.getTalkingData(beginDate, endDate, metrics, groupby);
         TimeUnit.SECONDS.sleep(11);
-        String talkingData1newuser = talkingDataService.getTalkingData(beginDate, new Date(), newuser, groupby);
+        String talkingData1newuser = talkingDataService.getTalkingData(beginDate, endDate, newuser, groupby);
         TimeUnit.SECONDS.sleep(11);
-        String talkingData1totaluser = talkingDataService.getTalkingData(DateFormatUtil.addDays(new Date(), -179), new Date(), totaluser, groupby);
+        
+        String talkingData1totaluser = talkingDataService.getTalkingData(beginDate, endDate, totaluser, groupby);
+        
+        for(int i = 0 ;i < 15; i++ ){
+        	JSONObject iosObj = (JSONObject) JSONArray.parseArray(
+                    JSONObject.parseObject(talkingData1metrics).getString("result")).get(i);
+            JSONObject iosObj2 = (JSONObject) JSONArray.parseArray(
+                    JSONObject.parseObject(talkingData1newuser).getString("result")).get(i);
+            JSONObject iosObj3 = (JSONObject) JSONArray.parseArray(
+                    JSONObject.parseObject(talkingData1totaluser).getString("result")).get(i);
+            Integer iuv = Integer.valueOf(iosObj.getString(metrics));
+            Integer newuser1 = Integer.valueOf(iosObj2.getString(newuser));
+            Integer session1 = Integer.valueOf(iosObj3.getString(totaluser));
 
-        JSONObject iosObj = (JSONObject) JSONArray.parseArray(
-                JSONObject.parseObject(talkingData1metrics).getString("result")).get(0);
-        JSONObject iosObj2 = (JSONObject) JSONArray.parseArray(
-                JSONObject.parseObject(talkingData1newuser).getString("result")).get(0);
-        JSONObject iosObj3 = (JSONObject) JSONArray.parseArray(
-                JSONObject.parseObject(talkingData1totaluser).getString("result")).get(0);
-        Integer iuv = Integer.valueOf(iosObj.getString(metrics));
-        Integer newuser1 = Integer.valueOf(iosObj2.getString(newuser));
-        Integer session1 = Integer.valueOf(iosObj3.getString(totaluser));
-
-        Integer confirmCount = orderService.getConfirmOrderCount(beginDate, endDate);// 下单买家数
-        Integer confirmPayCount = orderService.getConfirmPayCount(beginDate, endDate);// 支付成功买家数
-        BigDecimal orderAmtAll = orderService.getSumOrderamt(beginDate, endDate);// 下单金额
-        BigDecimal orderAmtForPaySuccess = orderService.getSumOrderamtForPaySuccess(beginDate,
-                endDate);// 支付成功金额
-        ExportDomainFor4 exportDomainFor4 = new ExportDomainFor4();
-        exportDomainFor4.setDate(DateFormatUtil.dateToString(beginDate,  DateFormatUtil.YYYY_MM_DD) + "~"
-                + DateFormatUtil.dateToString(endDate, DateFormatUtil.YYYY_MM_DD));
-        exportDomainFor4.setIuv(iuv);
-        exportDomainFor4.setConfirmCount(confirmCount);
-        exportDomainFor4.setConfirmPayCount(confirmPayCount);
-        exportDomainFor4.setNewuser1(newuser1);
-        exportDomainFor4.setOrderAmtAll(orderAmtAll);
-        exportDomainFor4.setOrderAmtForPaySuccess(orderAmtForPaySuccess);
-        exportDomainFor4.setSession1(session1);
-        lists.add(exportDomainFor4);
+            Date startTime = DateFormatUtil.string2date(iosObj.getString(groupby));
+            Date endTime = DateFormatUtil.addDays(startTime, 1);
+            
+            Integer confirmCount = orderService.getConfirmOrderCount(startTime, endTime);// 下单买家数
+            Integer confirmPayCount = orderService.getConfirmPayCount(startTime, endTime);// 支付成功买家数
+            BigDecimal orderAmtAll = orderService.getSumOrderamt(startTime, endTime);// 下单金额
+            BigDecimal orderAmtForPaySuccess = orderService.getSumOrderamtForPaySuccess(startTime,
+            		endTime);// 支付成功金额
+            ExportDomainFor4 exportDomainFor4 = new ExportDomainFor4();
+            exportDomainFor4.setDate(iosObj.getString(groupby));
+            exportDomainFor4.setIuv(iuv);
+            exportDomainFor4.setConfirmCount(confirmCount);
+            exportDomainFor4.setConfirmPayCount(confirmPayCount);
+            exportDomainFor4.setNewuser1(newuser1);
+            exportDomainFor4.setOrderAmtAll(orderAmtAll);
+            exportDomainFor4.setOrderAmtForPaySuccess(orderAmtForPaySuccess);
+            exportDomainFor4.setSession1(session1);
+            lists.add(exportDomainFor4);
+        }
+        
         try {
             generateFile1(lists);
         } catch (IOException e) {
@@ -325,8 +329,8 @@ public class TalkingDataScheduleTask {
         HSSFSheet sheet = wb.createSheet("sheet");
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
-        String[] headArr = {"日期", "终端", "活跃用户数","活跃用户次日留存率",
-                "新增用户数", "新增用户次日留存率","启动次数", "平均使用时长"};
+        String[] headArr = {"日期", "终端", "活跃用户数","新增用户次日留存率",
+                "新增用户数", "活跃用户次日留存率","启动次数", "平均使用时长"};
         String[] countKeyArr = {"date", "type", "activeUser","day1retention1", "newUser",
                 "dauday1retention1","qidongTime", "userTime"};
         // 第三步：创建第一行（也可以称为表头）
@@ -412,5 +416,12 @@ public class TalkingDataScheduleTask {
         df.setRoundingMode(RoundingMode.CEILING );
         String r = df.format(result1);
         return r;
+    }
+    
+    @SuppressWarnings("unused")
+	private String converInteger(String number){
+    	double result1=Double.valueOf(number);
+        DecimalFormat df = new DecimalFormat("######0");
+        return df.format(result1);
     }
 }

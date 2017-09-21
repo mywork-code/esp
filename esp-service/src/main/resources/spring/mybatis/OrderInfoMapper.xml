@@ -840,7 +840,7 @@
 					user_id
 				FROM
 					t_esp_order_info
-				where create_date BETWEEN #{beginDate} AND #{endDate}
+				where create_date BETWEEN #{beginDate} AND #{endDate} AND create_date != #{endDate}
 				GROUP BY
 					user_id
 				ORDER BY create_date
@@ -856,7 +856,7 @@
 					user_id
 				FROM
 					t_esp_order_info
-				where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus in('P02')
+				where create_date BETWEEN #{beginDate} AND #{endDate} AND create_date != #{endDate} and paystatus in('P02')
 				GROUP BY
 					user_id
 				ORDER BY create_date
@@ -868,13 +868,13 @@
 		SELECT 
 			SUM(order_amt) 
 		from t_esp_order_info
-		where create_date BETWEEN #{beginDate} AND #{endDate}
+		where create_date BETWEEN #{beginDate} AND #{endDate} AND create_date != #{endDate}
 	</select>
 	<select id="getSumOrderamtForPaySuccess" resultType="java.math.BigDecimal">
 		SELECT 
 			SUM(order_amt) 
 		from t_esp_order_info
-		where create_date BETWEEN #{beginDate} AND #{endDate} and paystatus = 'P02'
+		where create_date BETWEEN #{beginDate} AND #{endDate} AND create_date != #{endDate} and paystatus = 'P02'
 	</select>
 	
 	<select id="channelStatistics" parameterType="java.util.HashMap" resultType="OrderInfoEntity">
