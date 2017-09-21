@@ -111,7 +111,7 @@ $(function(){
     });
     //确认   添加活动
     $("#agreeAdd").click(function(){
-        var rebate=$("#rebate").val();
+        var rebate=$("#rebate").numberbox('getValue');
         if(null == rebate || rebate==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写电商个人返点！","info");
             return;
@@ -228,7 +228,7 @@ $(function(){
 		$("#editIntroConfig").window('open');
 		idActiv = id;
 		
-		$("#editRebate").val(rebate);
+		$("#editRebate").numberbox('setValue',rebate);
 		$("#editAwardAmont").val(awardAmount);
 		$("#editStartDate").datetimebox('setValue',startDate); 
 		$("#editEndDate").datetimebox('setValue',endDate); 
@@ -240,7 +240,7 @@ $(function(){
     });
     //确定  编辑活动信息
     $("#editAgreeAdd").click(function(){
-		var rebate = $("#editRebate").val();
+		var rebate = $("#editRebate").numberbox('getValue');
 		var startDate = $("#editStartDate").datetimebox('getValue'); 
 		var endDate = $("#editEndDate").datetimebox('getValue'); 
 		var awardAmount = $("#editAwardAmont").val();
