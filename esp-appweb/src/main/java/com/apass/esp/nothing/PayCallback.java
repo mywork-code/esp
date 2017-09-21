@@ -126,11 +126,6 @@ public class PayCallback {
 		}
 		return Response.success("数据库更新成功！");
 	}
-
-	public static void main(String[] args) {
-		String str = "asdfghjkl";
-		System.out.println(str.substring(0, str.length() - 1));
-	}
 	
 	private void addRebateRecord(String status, String mainOrderId) {
 		if (YesNo.isNo(status)) {
