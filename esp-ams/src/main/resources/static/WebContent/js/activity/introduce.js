@@ -302,7 +302,7 @@ $(function(){
     	var e = event || window.event;
     	var val = that.get(0).value;
 
-    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){//鍚湁鏁板瓧鍜�.浠ュ鐨勫瓧绗︼紝鍒欐墽琛�
+    	if(!/^[0-9]{0}([0-9]|[\.])+$/.test(val) || val.split(".")[1].length>2){
     		that.val(val.substr(0,val.length-1));
     		event.preventDefault();
     		return false
