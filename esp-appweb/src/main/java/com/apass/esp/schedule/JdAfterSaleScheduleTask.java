@@ -3,6 +3,7 @@ package com.apass.esp.schedule;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.MessageListener;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
@@ -10,6 +11,7 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.MessageListenerMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
@@ -82,6 +84,8 @@ public class JdAfterSaleScheduleTask {
 
     @Autowired
     private TxnInfoMapper txnInfoMapper;
+    @Autowired
+    private MessageListenerMapper messageListenerMapper;
     /**
      * 京东售后状态更新
      */
@@ -89,16 +93,29 @@ public class JdAfterSaleScheduleTask {
     public void handleJdConfirmPreInventoryTask() {
         //List<Integer> appendInfoSteps = Arrays.asList(new Integer[]{1, 2, 3, 4, 5});
         List<OrderInfoEntity> orderInfoEntityList = orderService.getJdOrderByOrderStatus("D05");
+        MessageListener ml=new MessageListener();
+        ml.setType("100");
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
             LOGGER.info("orderInfoEntity.getExtOrderId() {}",orderInfoEntity.getExtOrderId());
             long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
+            ml.setOrderid(jdOrderId+"");
             JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(jdOrderId, 1, 10);
             if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
+            	ml.setStatus("0");
+            	ml.setResult("afterSaleServiceListPageQuery接口调用失败！");
+            	ml.setCreateDate(new Date());
+            	ml.setUpdateDate(new Date());
+            	messageListenerMapper.insert(ml);
                 continue;
             }
             String result = afsInfo.getResult().getString("serviceInfoList");
             if (result == null || "".equals(result)) {
+            	ml.setStatus("0");
+            	ml.setResult("获取serviceInfoList组件列表失败！");
+            	ml.setCreateDate(new Date());
+            	ml.setUpdateDate(new Date());
+            	messageListenerMapper.insert(ml);
                 continue;
             }
             LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(),result);
@@ -216,6 +233,9 @@ public class JdAfterSaleScheduleTask {
     private Integer getCustomerExpect(JSONArray jsonArray, String orderId) {
         JSONObject jsonObject = (JSONObject) jsonArray.get(0);
         AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+        MessageListener ml=new MessageListener();
+        ml.setType("100");
+        ml.setOrderid(orderId);
         LOGGER.info("newAfsInfo.. {}",JSONObject.toJSONString(newAfsInfo));
         for (Object object : jsonArray) {
             JSONObject jsonObject1 = (JSONObject) object;
@@ -225,18 +245,38 @@ public class JdAfterSaleScheduleTask {
             refundDetailInfoEntity.setOrderId(orderId);
             Integer i = newAfsInfo1.getAfsServiceStep();
             if (i == 20 || i == 60) {
+            	if(i == 20){
+            		ml.setResult("审核不通过");
+            	}else{
+            		ml.setResult("取消 ");
+            	}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS06.getCode());
             } else if (i == 31) {
+            	ml.setResult("京东收货");
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS02.getCode());
             } else if (i == 32) {
+            	ml.setResult("京东收货");
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS03.getCode());
             } else if (i == 34 || i == 40) {
+            	if(i == 34){
+                	ml.setResult("商家处理");
+            	}else{
+                	ml.setResult("用户确认");
+            	}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS04.getCode());
             } else if (i == 50) {
+            	ml.setResult("完成");
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS05.getCode());
             } else {
+            	if(i==10){ml.setResult("完成");}
+            	else if(i==21){ml.setResult("客服审核");}
+            	else if(i==22){ml.setResult("商家审核");}
+            	else if(i==33){ml.setResult("京东处理");}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS01.getCode());
             }
+            ml.setCreateDate(new Date());
+            ml.setUpdateDate(new Date());
+            messageListenerMapper.insert(ml);
             refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
         }
 
