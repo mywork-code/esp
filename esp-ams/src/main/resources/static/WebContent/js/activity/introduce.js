@@ -123,12 +123,16 @@ $(function(){
             return;
         }
         if(rebate > 100){
-        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
         	return;
         }
         var awardAmont=$("#awardAmont").val();
         if(null == awardAmont || awardAmont==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
+            return;
+        }
+        if(awardAmount.length > 10){
+        	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
         var startDate=$("#startDate").textbox('getValue');
@@ -248,11 +252,15 @@ $(function(){
             return;
         }
         if(rebate > 100){
-        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点不能大于100！","info");
+        	$.messager.alert("<span style='color: black;'>提示</span>","电商个人返点应在0~100之间！","info");
         	return;
         }
         if(null == awardAmount || awardAmount==""){
             $.messager.alert("<span style='color: black;'>提示</span>","请填写信贷奖励金额！","info");
+            return;
+        }
+        if(awardAmount.length > 10){
+        	$.messager.alert("<span style='color: black;'>提示</span>","信贷奖励金额输入长度超过限度！","info");
             return;
         }
 		if(null == endDate || endDate==""){
