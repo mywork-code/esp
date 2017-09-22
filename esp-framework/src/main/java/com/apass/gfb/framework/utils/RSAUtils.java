@@ -17,7 +17,9 @@ import java.util.Map;
 
 import javax.crypto.Cipher;
 
+import net.sf.json.JSON;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 
 /**
  * 
@@ -276,10 +278,34 @@ public class RSAUtils {
 		System.err.println("public:" + publicKey);
 		String data = "woldiwu";
 
+		Map<String,Object> params = new HashMap<>();
+		Map<String,Object> paramJson = new HashMap<>();
+		paramJson.put("sku","107164,179638");
+		params.put("method","biz.product.state.query");
+		params.put("jdParams", JSONObject.valueToString(paramJson));
+
 		String content = encryptByPrivateKey(data, privateKey);
 		System.err.println("private encode ->" + content);
 
 		String publicDecryptContent = decryptByPublicKey(content, publicKey);
 		System.err.println("public decode->" + publicDecryptContent);
+	}
+
+	public void testRsa1() throws Exception {
+		Map<String,Object> params = new HashMap<>();
+		Map<String,Object> paramJson = new HashMap<>();
+		paramJson.put("sku","107164,179638");
+		params.put("method","biz.product.state.query");
+		params.put("jdParams", JSONObject.valueToString(paramJson));
+		String content = 	encryptByPublicKey(JSONObject.valueToString(params),"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCLJmVDX0IQBxA99/7F0HlLzSsskIJ9S6a0TYgxNaAaM6Kpoipe24ozwPGUi6PmMZvdaLeDE8bkqkBTf6BienaBFGBxH1xXgVmiy/MEb9gBelbt9H6j6UQ/b6rr5xn1RLdQjAf0HCuGswUzbMzOwzeVmfwuxq6zlagMPC4abtVidQIDAQAB");
+		System.err.println("public encode ->" + content);
+
+		String publicDecryptContent = decryptByPrivateKey(content, "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIsmZUNfQhAHED33/sXQeUvNKyyQgn1LprRNiDE1oBozoqmiKl7bijPA8ZSLo+Yxm91ot4MTxuSqQFN/oGJ6doEUYHEfXFeBWaLL8wRv2AF6Vu30fqPpRD9vquvnGfVEt1CMB/QcK4azBTNszM7DN5WZ/C7GrrOVqAw8Lhpu1WJ1AgMBAAECgYBHlsBgUgDV6BxmFVGhCeltoyeELPDFb4dbmcvorVMqR8h3B3RPCxnmGGzxZIo1Iu6ykW5gZGteN20SyEWGhMS0Tr8PPtkIV8sJxknUh5DGpqrGXwkAFx8IdJYcWf3t2nnFJpeqhfdq/maVBDLl2IOBJ9CxNqHLEbBusKush/XAfQJBANFA+oN6Tc4+GVqje1No5E2ZfleEx8RhvG6VmWpaGkD5psMlqFa3clpKK9FfTsCiFGYkMUUumbLxLOe9B2t/bdcCQQCqPD84trprP4tYi+23vRDNlB3hVFcRR54950QTZGs9oTlhhvS9cZTxqgTkAZIdhwsU9UhGgXpHF6j7LiLkVzCTAkA8DwRX3DCcs2Ifi7CH3iE4zIdgozGbAdpNew6PYdELORxOAm7whLKDi6pL66j0zRBByL2Dd76Rh3s2ACEzD139AkBI8xBUiVlRZCWeiDgSKJ7uua4kRTQaX4pcFKKDfODHxDMGrAJsvCOLe8QkwNeQd7I0BPg33nw7wtPS725cU1CpAkEAq3N/I3BrZ9brCyP/Q7ZyoGmU4T/lWQNK3BS3+WYQocRRNVeyMkAwuEj7btjHTQMgIwfdZmVU6UC5NUhM9jKyFw==");
+		System.err.println("private decode->" + publicDecryptContent);
+	}
+
+	public static void main(String[] args) throws Exception {
+		RSAUtils rsaUtils = new RSAUtils();
+		rsaUtils.testRsa1();
 	}
 }

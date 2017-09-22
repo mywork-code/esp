@@ -1,0 +1,78 @@
+{
+        "goods": {
+            "properties": {
+                "goodsName": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "goodsNamePinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                },
+                "goodsTitle": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "goodsTitlePinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                },
+                "categoryName1": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "categoryName2": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "categoryName3": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "categoryName1Pinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                },
+                "categoryName2Pinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                },
+                "categoryName3Pinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                },
+                "goodsSkuAttr": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_max_word"
+                },
+                "goodsSkuAttrPinyin": {
+                    "type": "text",
+                    "index": "analyzed",
+                    "analyzer": "standard",
+                    "search_analyzer": "standard"
+                }
+            }
+        }
+}

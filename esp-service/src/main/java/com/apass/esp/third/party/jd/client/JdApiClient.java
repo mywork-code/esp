@@ -3,6 +3,8 @@ package com.apass.esp.third.party.jd.client;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.utils.UrlUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.CookieSpecs;
@@ -27,7 +29,7 @@ import java.util.*;
  * @since JDK 1.8
  */
 @Service
-public abstract class JdApiClient {
+public  class JdApiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdApiClient.class);
     private static final Charset CHARSET = Charset.forName("UTF-8");
     private static final int TIMEOUT = 5000;
@@ -41,7 +43,6 @@ public abstract class JdApiClient {
         params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
         JSONObject token = jdTokenManager.getToken();
         params.put("access_token",
-               // "2d65f8b1551645df96abd5dd7cb28a308");
                UrlUtils.encode(token.getString("access_token")));
         params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         params.put("format", UrlUtils.encode("json"));
@@ -63,7 +64,6 @@ public abstract class JdApiClient {
             if ("0010".equals(res.getResultCode()) && "0".equals(res.getCode())) {
                 return res;
             }
-            //LOGGER.error("request error,token: {},url: {},response: {}", token, url, response);
             LOGGER.error("request error,token: {},url: {},response: {}", url, response);
         }
         return res;
@@ -97,5 +97,23 @@ public abstract class JdApiClient {
 //        requestBuilder.addHeader("Connection", "Keep-Alive");
         return requestBuilder.build();
 
+    }
+
+    public String request(String method,String jdParams) throws Exception {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("method", UrlUtils.encode(method));
+        params.put("app_key", UrlUtils.encode(JdConstants.APP_KEY));
+        JSONObject token = jdTokenManager.getToken();
+        params.put("access_token",
+            UrlUtils.encode(token.getString("access_token")));
+        params.put("timestamp", UrlUtils.encode(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
+        params.put("format", UrlUtils.encode("json"));
+        params.put("v", UrlUtils.encode(JdConstants.API_VERSION));
+        String param_json = StringUtils.isNotBlank(jdParams) ? jdParams: "{}" ;
+        params.put("param_json", UrlUtils.encode(param_json));
+        String url = UrlUtils.build(JdConstants.API_URL, params);
+        Map<String, String> headerparams = new HashMap<>();
+        headerparams.put("Content-Type", "application/json");
+        return HttpClientUtils.getMethodGetContent(url, headerparams);
     }
 }
