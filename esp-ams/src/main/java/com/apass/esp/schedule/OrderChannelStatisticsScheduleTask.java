@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
@@ -186,7 +187,11 @@ public class OrderChannelStatisticsScheduleTask {
 	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
 	         Response   response=GsonUtils.convertObj(responseJson, Response.class);
 	         AgentChannelVo agent = Response.resolveResult(response, AgentChannelVo.class);
-	         return agent == null ? "":agent.getAgent();
+	         String scene = "";
+	         if( agent != null && StringUtils.isNotBlank(agent.getSceneDesc()) ){
+	        	 scene = agent.getSceneDesc();
+	         }
+	         return scene;
     	} catch (Exception e) {
 			logger.error("判断获取用户渠道失败！", e);
 		}

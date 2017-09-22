@@ -4,7 +4,12 @@ public class AgentChannelVo {
 
 	private String agent;
 	
-	private String userId;
+	private Long userId;
+	
+	/**
+	 * 渠道来源
+	 */
+	private String sceneDesc;
 
 	public String getAgent() {
 		return agent;
@@ -14,11 +19,19 @@ public class AgentChannelVo {
 		this.agent = agent;
 	}
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getSceneDesc() {
+		return sceneDesc;
+	}
+
+	public void setSceneDesc(String sceneDesc) {
+		this.sceneDesc = sceneDesc;
 	}
 }
