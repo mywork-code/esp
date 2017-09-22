@@ -93,25 +93,25 @@ public class StaticFileController {
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
 
 
-        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_sit_v25.js");
+        InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_prd_v26.js");
 
         String md5 = MD5Utils.getMd5ByFile(in);
         CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-        commissionWalletVo.setVer("25");
+        commissionWalletVo.setVer("26");
         commissionWalletVo.setFlag(true);
         commissionWalletVo.setId("commission");
-        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_sit_v25.js");
+        commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_prd_v26.js");
         commissionWalletVo.setMd5(md5);
         commissionWalletVo.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo);
 
-        InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_sit_v5.js");
+        InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_prd_v6.js");
         String md52 = MD5Utils.getMd5ByFile(in2);
         CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
-        commissionWalletVo2.setVer("5");
+        commissionWalletVo2.setVer("6");
         commissionWalletVo2.setFlag(true);
         commissionWalletVo2.setId("wallet");
-        commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_sit_v5.js");
+        commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_prd_v6.js");
         commissionWalletVo2.setMd5(md52);
         commissionWalletVo2.setOffLine(false);
         commissionWalletVos.add(commissionWalletVo2);
