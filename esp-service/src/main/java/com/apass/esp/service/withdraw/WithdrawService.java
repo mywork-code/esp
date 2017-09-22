@@ -141,15 +141,16 @@ public class WithdrawService {
         //查询全部可提金额金额
         List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(Long.valueOf(userId));
         BigDecimal totalCount = BigDecimal.ZERO;
+        BigDecimal amounts = new BigDecimal(amount);
         if(awardDetails != null && awardDetails.size()>0){
             totalCount = getTotalCount(awardDetails);
-            if(totalCount.compareTo(BigDecimal.valueOf(Long.valueOf(amount))) < 0){
+            if(totalCount.compareTo(amounts) < 0){
                 throw new BusinessException("提现金额大于最大可提现金额！请重新输入提现金额。");
             }
         }
 
         AwardDetail awardDetail = new AwardDetail();
-        awardDetail.setAmount(BigDecimal.valueOf(Long.valueOf(amount)));
+        awardDetail.setAmount(amounts);
         awardDetail.setUserId(Long.valueOf(userId));
         AwardActivityInfoVo awardActivityInfoVo = awardActivityInfoService.getActivityByName(AwardActivity.ActivityName.INTRO);
         LOGGER.info("活动详细信息：[{}]",GsonUtils.toJson(awardActivityInfoVo));
@@ -173,8 +174,7 @@ public class WithdrawService {
         int count = awardDetailMapper.insert(awardDetail);
         if(count == 1){
             result.put("cardBank", cardBank);
-            result.put("amount", BigDecimal.valueOf(Long.valueOf(amount))//.subtract(taxAmount)
-            );
+            result.put("amount", amounts);
             result.put("cardNoLastFour", cardNo.substring(cardNo.length()-4, cardNo.length()));
             result.put("customerId", resultBind.get("customerId"));
             LOGGER.info("提现成功，返回数据：{}",result);

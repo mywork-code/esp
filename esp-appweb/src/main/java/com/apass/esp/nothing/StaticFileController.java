@@ -16,6 +16,8 @@ import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -64,6 +66,8 @@ public class StaticFileController {
 
     @Autowired
     private JdAfterSaleScheduleTask jdAfterSaleScheduleTask;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StaticFileController.class);
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
@@ -121,7 +125,7 @@ public class StaticFileController {
     @RequestMapping(value = "v3/app_weex")
     @ResponseBody
     public Response getMd5ByFile3() {
-        LOG.info("weex,v3自动部署程序开始执行.....");
+        LOGGER.info("weex,v3自动部署程序开始执行.....");
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
@@ -162,7 +166,7 @@ public class StaticFileController {
                 }
             }else if(systemEnvConfig.isPROD()){
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commision")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
                         ver1 = weexInfoEntity.getWeexVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
@@ -177,6 +181,7 @@ public class StaticFileController {
                 return Response.fail("发布有误，无法区分是什么环境");
             }
 
+            LOGGER.info("file1:{},file2:{}",file1.getPath(),file2.getPath());
             FileInputStream in1 = new FileInputStream(file1);
             String md5 = MD5Utils.getMd5ByFile(in1);
             CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
