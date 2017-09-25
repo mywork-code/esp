@@ -221,6 +221,19 @@ public class GoodsInfoEntity {
      */
     private Integer pageSize;
 
+    /**
+     * 是否支持7天退货
+     */
+    private String support7dRefund;
+
+    public String getSupport7dRefund() {
+        return support7dRefund;
+    }
+
+    public void setSupport7dRefund(String support7dRefund) {
+        this.support7dRefund = support7dRefund;
+    }
+
     public String getSource() {
         if(StringUtils.isBlank(source)){
             return "";

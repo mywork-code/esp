@@ -47,6 +47,7 @@ PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='促销活动分组表';
 
 --创建商品和分组关联表
+DROP TABLE  IF EXISTS esp.`t_esp_pro_group_goods`;
 CREATE TABLE `t_esp_pro_group_goods` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id' ,
 `goods_id`  bigint(20) NOT NULL COMMENT '商品id' ,
@@ -61,6 +62,8 @@ CREATE TABLE `t_esp_pro_group_goods` (
 `update_user` varchar(50) NOT NULL COMMENT '修改人',
 `create_date` datetime NOT NULL COMMENT '创建时间',
 `update_date` datetime NOT NULL COMMENT '修改时间',
+`activity_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '活动配置的id',
+`status`  varchar(2) NOT NULL DEFAULT 'S' COMMENT 'S:成功；F：失败',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分组商品关联表';
 
