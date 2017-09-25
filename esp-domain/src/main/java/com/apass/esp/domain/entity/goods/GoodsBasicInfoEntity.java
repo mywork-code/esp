@@ -34,6 +34,8 @@ public class GoodsBasicInfoEntity {
 
     /** 商品大标题 **/
     private String goodsTitle;
+    
+    private String goodsCode;
 
     /** 商品小标题 **/
     private String goodsSellPt;
@@ -296,5 +298,13 @@ public class GoodsBasicInfoEntity {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
-    
+
+	public String getGoodsCode() {
+		return goodsCode;
+	}
+
+	public void setGoodsCode(String goodsCode) {
+		this.goodsCode = goodsCode;
+	}
+	
 }
