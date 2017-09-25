@@ -25,6 +25,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupGoodsTo;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
@@ -43,6 +44,8 @@ public class ProGroupGoodsExportFikeController {
 	private static final Logger LOG = LoggerFactory.getLogger(ProGroupGoodsExportFikeController.class);
 	@Autowired
 	private GoodsBasicRepository goodsBasicRepository;
+	@Autowired
+	private ProGroupGoodsMapper proGroupGoodsMapper;
 	/**
 	 * 导入文件
 	 * 
@@ -80,6 +83,8 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 					pggds.setCreateDate(new Date());
 					pggds.setUpdateDate(new Date());
+					pggds.setMarketPrice(list.get(i).getMarketPrice());
+					pggds.setActivityPrice(list.get(i).getActivityPrice());
 					if(result1.size()==1 && result2.size()==0){
 						pggds.setGoodsId(result1.get(0).getGoodId());
 						pggds.setSkuId(id);
@@ -89,8 +94,10 @@ public class ProGroupGoodsExportFikeController {
 						pggds.setSkuId(result2.get(0).getExternalId());
 						pggds.setGoodsCode(id);
 					}else{
-						
+						pggds.setSkuId(id);
+						pggds.setGoodsCode(id);
 					}
+					proGroupGoodsMapper.insert(pggds);
 				}
 			}
 		} catch (Exception e) {
