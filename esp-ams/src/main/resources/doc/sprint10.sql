@@ -56,9 +56,14 @@ CREATE TABLE `t_esp_pro_group_goods` (
 `activity_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '活动价' ,
 `order_sort`  bigint(20) NOT NULL DEFAULT 1 COMMENT '排序' ,
 `goods_code`  varchar(10) NOT NULL DEFAULT '' COMMENT '商品编号' ,
+`detail_desc`  varchar(30) NOT NULL DEFAULT '' COMMENT '备注信息' ,
 `create_user` varchar(50) NOT NULL COMMENT '创建人',
 `update_user` varchar(50) NOT NULL COMMENT '修改人',
 `create_date` datetime NOT NULL COMMENT '创建时间',
 `update_date` datetime NOT NULL COMMENT '修改时间',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分组商品关联表';
+
+
+alter table t_esp_goods_base_info add column support_7d_refund varchar(2) not null default '' comment '是否支持7天无理由退货,Y、N';
+update t_esp_goods_base_info set support_7d_refund = 'Y' where source is null;
