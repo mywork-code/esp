@@ -19,6 +19,10 @@
 						   <option value="" class="" selected="selected">请选择</option>
 						   <option label="首页" value="index">首页</option>
 						   <option label="精选" value="sift">精选</option>
+							<#list oneLevelCateList as cate>
+								<option label="cate.categoryName" value="cate_${cate.categoryId}">${cate.categoryName}</option>
+							</#list>
+
 						</select>
 				  	</td>
 				  <td width="30%">
