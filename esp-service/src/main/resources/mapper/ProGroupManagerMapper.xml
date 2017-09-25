@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ProGroupManagerMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProGroupManager" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="goods_sum" property="goodsSum" jdbcType="BIGINT" />
+    <result column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="order_sort" property="orderSort" jdbcType="BIGINT" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, group_name, goods_sum, activity_id, order_sort, create_user, update_user, create_date, 
+    update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_pro_group_manager
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_pro_group_manager
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ProGroupManager" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_group_manager (group_name, goods_sum, activity_id, 
+      order_sort, create_user, update_user, 
+      create_date, update_date)
+    values (#{groupName,jdbcType=VARCHAR}, #{goodsSum,jdbcType=BIGINT}, #{activityId,jdbcType=BIGINT}, 
+      #{orderSort,jdbcType=BIGINT}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProGroupManager" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_group_manager
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupName != null" >
+        group_name,
+      </if>
+      <if test="goodsSum != null" >
+        goods_sum,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="orderSort != null" >
+        order_sort,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSum != null" >
+        #{goodsSum,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSort != null" >
+        #{orderSort,jdbcType=BIGINT},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProGroupManager" >
+    update t_esp_pro_group_manager
+    <set >
+      <if test="groupName != null" >
+        group_name = #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSum != null" >
+        goods_sum = #{goodsSum,jdbcType=BIGINT},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSort != null" >
+        order_sort = #{orderSort,jdbcType=BIGINT},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProGroupManager" >
+    update t_esp_pro_group_manager
+    set group_name = #{groupName,jdbcType=VARCHAR},
+      goods_sum = #{goodsSum,jdbcType=BIGINT},
+      activity_id = #{activityId,jdbcType=BIGINT},
+      order_sort = #{orderSort,jdbcType=BIGINT},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

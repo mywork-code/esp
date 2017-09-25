@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ProActivityCfgMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProActivityCfg" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="activity_name" property="activityName" jdbcType="VARCHAR" />
+    <result column="activity_type" property="activityType" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="offer_sill1" property="offerSill1" jdbcType="DECIMAL" />
+    <result column="discount_amonut1" property="discountAmonut1" jdbcType="DECIMAL" />
+    <result column="offer_sill2" property="offerSill2" jdbcType="DECIMAL" />
+    <result column="discount_amount2" property="discountAmount2" jdbcType="DECIMAL" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, activity_name, activity_type, start_time, end_time, offer_sill1, discount_amonut1, 
+    offer_sill2, discount_amount2, create_user, update_user, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_pro_activity_cfg
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_pro_activity_cfg
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ProActivityCfg" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_activity_cfg (activity_name, activity_type, start_time, 
+      end_time, offer_sill1, discount_amonut1, 
+      offer_sill2, discount_amount2, create_user, 
+      update_user, create_date, update_date
+      )
+    values (#{activityName,jdbcType=VARCHAR}, #{activityType,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{offerSill1,jdbcType=DECIMAL}, #{discountAmonut1,jdbcType=DECIMAL}, 
+      #{offerSill2,jdbcType=DECIMAL}, #{discountAmount2,jdbcType=DECIMAL}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProActivityCfg" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_activity_cfg
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="activityName != null" >
+        activity_name,
+      </if>
+      <if test="activityType != null" >
+        activity_type,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="offerSill1 != null" >
+        offer_sill1,
+      </if>
+      <if test="discountAmonut1 != null" >
+        discount_amonut1,
+      </if>
+      <if test="offerSill2 != null" >
+        offer_sill2,
+      </if>
+      <if test="discountAmount2 != null" >
+        discount_amount2,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="activityName != null" >
+        #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityType != null" >
+        #{activityType,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="offerSill1 != null" >
+        #{offerSill1,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmonut1 != null" >
+        #{discountAmonut1,jdbcType=DECIMAL},
+      </if>
+      <if test="offerSill2 != null" >
+        #{offerSill2,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmount2 != null" >
+        #{discountAmount2,jdbcType=DECIMAL},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProActivityCfg" >
+    update t_esp_pro_activity_cfg
+    <set >
+      <if test="activityName != null" >
+        activity_name = #{activityName,jdbcType=VARCHAR},
+      </if>
+      <if test="activityType != null" >
+        activity_type = #{activityType,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="offerSill1 != null" >
+        offer_sill1 = #{offerSill1,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmonut1 != null" >
+        discount_amonut1 = #{discountAmonut1,jdbcType=DECIMAL},
+      </if>
+      <if test="offerSill2 != null" >
+        offer_sill2 = #{offerSill2,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmount2 != null" >
+        discount_amount2 = #{discountAmount2,jdbcType=DECIMAL},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProActivityCfg" >
+    update t_esp_pro_activity_cfg
+    set activity_name = #{activityName,jdbcType=VARCHAR},
+      activity_type = #{activityType,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      offer_sill1 = #{offerSill1,jdbcType=DECIMAL},
+      discount_amonut1 = #{discountAmonut1,jdbcType=DECIMAL},
+      offer_sill2 = #{offerSill2,jdbcType=DECIMAL},
+      discount_amount2 = #{discountAmount2,jdbcType=DECIMAL},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ProGroupGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProGroupGoods" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="BIGINT" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="activity_price" property="activityPrice" jdbcType="DECIMAL" />
+    <result column="order_sort" property="orderSort" jdbcType="BIGINT" />
+    <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code, 
+    create_user, update_user, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_pro_group_goods
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_pro_group_goods
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_group_goods (goods_id, sku_id, group_id, 
+      market_price, activity_price, order_sort, 
+      goods_code, create_user, update_user, 
+      create_date, update_date)
+    values (#{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
+      #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{orderSort,jdbcType=BIGINT}, 
+      #{goodsCode,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_group_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="marketPrice != null" >
+        market_price,
+      </if>
+      <if test="activityPrice != null" >
+        activity_price,
+      </if>
+      <if test="orderSort != null" >
+        order_sort,
+      </if>
+      <if test="goodsCode != null" >
+        goods_code,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="marketPrice != null" >
+        #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="activityPrice != null" >
+        #{activityPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="orderSort != null" >
+        #{orderSort,jdbcType=BIGINT},
+      </if>
+      <if test="goodsCode != null" >
+        #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
+    update t_esp_pro_group_goods
+    <set >
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="activityPrice != null" >
+        activity_price = #{activityPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="orderSort != null" >
+        order_sort = #{orderSort,jdbcType=BIGINT},
+      </if>
+      <if test="goodsCode != null" >
+        goods_code = #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
+    update t_esp_pro_group_goods
+    set goods_id = #{goodsId,jdbcType=BIGINT},
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      group_id = #{groupId,jdbcType=BIGINT},
+      market_price = #{marketPrice,jdbcType=DECIMAL},
+      activity_price = #{activityPrice,jdbcType=DECIMAL},
+      order_sort = #{orderSort,jdbcType=BIGINT},
+      goods_code = #{goodsCode,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
