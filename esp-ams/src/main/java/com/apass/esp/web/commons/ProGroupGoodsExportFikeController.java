@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupGoodsTo;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
  * 导入.xlsx .xls文件
@@ -35,7 +41,8 @@ public class ProGroupGoodsExportFikeController {
 	 * 日志
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(ProGroupGoodsExportFikeController.class);
-
+	@Autowired
+	private GoodsBasicRepository goodsBasicRepository;
 	/**
 	 * 导入文件
 	 * 
@@ -60,6 +67,30 @@ public class ProGroupGoodsExportFikeController {
 				for(int i=0;i<list.size();i++){
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
+					GoodsBasicInfoEntity gbity=new GoodsBasicInfoEntity();
+					gbity.setExternalId(id);
+					List<GoodsBasicInfoEntity> result1=new ArrayList<>();
+					result1=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
+					gbity.setExternalId("");
+					gbity.setGoodsCode(id);
+					List<GoodsBasicInfoEntity> result2=new ArrayList<>();
+					result2=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
+					ProGroupGoods pggds=new ProGroupGoods();
+					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
+					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+					pggds.setCreateDate(new Date());
+					pggds.setUpdateDate(new Date());
+					if(result1.size()==1 && result2.size()==0){
+						pggds.setGoodsId(result1.get(0).getGoodId());
+						pggds.setSkuId(id);
+						pggds.setGoodsCode(result1.get(0).getGoodsCode());
+					}else if(result1.size()==0 && result2.size()==1){
+						pggds.setGoodsId(result2.get(0).getGoodId());
+						pggds.setSkuId(result2.get(0).getExternalId());
+						pggds.setGoodsCode(id);
+					}else{
+						
+					}
 				}
 			}
 		} catch (Exception e) {
