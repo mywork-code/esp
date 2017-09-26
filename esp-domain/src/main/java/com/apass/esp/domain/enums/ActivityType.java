@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum ActivityType {
 
-	NONE("none", "无优惠"),
+	NONE("N", "无优惠"),
 
-	LESS("less", "满减");
+	LESS("Y", "满减");
 
 	private String code;
 
