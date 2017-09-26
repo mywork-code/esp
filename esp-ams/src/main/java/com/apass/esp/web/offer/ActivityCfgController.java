@@ -1,5 +1,9 @@
 package com.apass.esp.web.offer;
 
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +11,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.enums.ActivityType;
 import com.apass.esp.domain.vo.ActivityCfgVo;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.esp.utils.ValidateUtils;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.google.common.collect.Maps;
 /**
  * 活动配置
  */
@@ -47,7 +58,7 @@ public class ActivityCfgController {
      * 活动配置分页json
      */
     @ResponseBody
-    @RequestMapping(value ="/list",method = RequestMethod.POST)
+    @RequestMapping(value ="/list")
     public ResponsePageBody<ActivityCfgVo> ActivityCfgPageList() {
     	ResponsePageBody<ActivityCfgVo> respBody = new ResponsePageBody<ActivityCfgVo>();
 		try {
@@ -76,20 +87,80 @@ public class ActivityCfgController {
  	 */
  	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
- 	public Response activityAddSave(){
- 		
- 		return Response.successResponse();
+ 	public Response activityAddSave(ActivityCfgVo vo){
+ 		try {
+ 			validateParams(vo, false);
+ 			activityCfgService.saveActivity(vo);
+ 			return Response.success("添加成功");
+		} catch (BusinessException e) {
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			logger.error("新增活动配置失败", e);
+			return Response.fail("新增活动配置失败");
+		}
  	}
  	
  	@RequestMapping(value = "/edit")
-    public String activityEditConfig() {
-       return "activitycfg/activityEdit";
+    public ModelAndView activityEditConfig(String id) {
+ 	   Map<String, Object> map = Maps.newHashMap();
+       map.put("vo", activityCfgService.getActivityCfgVo(id));
+       return new ModelAndView("activitycfg/activityEdit",map);
     }
  	
  	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
- 	public Response activityEditSave(){
+ 	public Response activityEditSave(ActivityCfgVo vo){
+ 		try {
+ 			validateParams(vo, true);
+ 			activityCfgService.editActivity(vo);
+ 			return Response.success("编辑成功");
+		} catch (BusinessException e) {
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			logger.error("编辑活动配置失败", e);
+			return Response.fail("编辑活动配置失败");
+		}
+ 	}
+ 	
+ 	public void validateParams(ActivityCfgVo vo,boolean bl) throws BusinessException{
  		
- 		return Response.successResponse();
+ 		String activityName = vo.getActivityName();
+ 		ValidateUtils.isNotBlank(activityName, "请填写活动名称！");
+ 		if(!ListeningRegExpUtils.isChineseOrLetterOrMath(activityName)){
+ 			throw new BusinessException("活动名称格式不正确，只能输入汉字、字母和数字,请重新输入");
+ 		}
+ 		if (!ListeningRegExpUtils.lengthValue(activityName, 1, 12)) {
+            throw new BusinessException("活动名称格式不正确，最多只能输入6个汉字,请重新输入");
+        }
+ 		
+ 		String startTime = vo.getStartTime();
+ 		ValidateUtils.isNotBlank(startTime, "请填写开始时间！");
+ 		String endTime = vo.getEndTime();
+ 		ValidateUtils.isNotBlank(endTime, "请填写结束时间！");
+ 		
+ 		Date start = DateFormatUtil.string2date(startTime, "");
+ 		Date end = DateFormatUtil.string2date(endTime, "");
+ 		
+ 		if(start.getTime() >= end.getTime()){
+ 			throw new BusinessException("开始时间应大于结束时间，请重新填写！");
+ 		}
+ 		
+ 		String activityType = vo.getActivityType();
+ 		ValidateUtils.isNotBlank(activityType, "请选择活动类型！");
+ 		
+ 		if(StringUtils.equalsIgnoreCase(activityType, ActivityType.LESS.getCode())){
+ 			ValidateUtils.isNullObject(vo.getOfferSill1(), "请填写第一个优惠门槛！");
+ 			ValidateUtils.isNullObject(vo.getOfferSill2(), "请填写第二个优惠门槛！");
+ 			ValidateUtils.isNullObject(vo.getDiscount1(), "请填写第一个优惠金额！");
+ 			ValidateUtils.isNullObject(vo.getDiscount2(), "请填写第二个优惠金额！");
+ 			
+ 			if(vo.getOfferSill1() == vo.getOfferSill2()){
+ 				throw new BusinessException("优惠门槛不能相同，请重新填写！");
+ 			}
+ 		}
+ 		
+ 		if(bl){
+ 			ValidateUtils.isNullObject(vo.getId(), "活动编号不能为空!");
+ 		}
  	}
 }

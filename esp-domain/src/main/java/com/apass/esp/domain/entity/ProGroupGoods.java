@@ -20,6 +20,8 @@ public class ProGroupGoods {
 
     private String goodsCode;
 
+    private String detailDesc;
+
     private String createUser;
 
     private String updateUser;
@@ -28,7 +30,9 @@ public class ProGroupGoods {
 
     private Date updateDate;
 
-    private String detailDesc;
+    private Long activityId;
+
+    private String status;
 
     public Long getId() {
         return id;
@@ -94,6 +98,14 @@ public class ProGroupGoods {
         this.goodsCode = goodsCode;
     }
 
+    public String getDetailDesc() {
+        return detailDesc;
+    }
+
+    public void setDetailDesc(String detailDesc) {
+        this.detailDesc = detailDesc;
+    }
+
     public String getCreateUser() {
         return createUser;
     }
@@ -126,11 +138,19 @@ public class ProGroupGoods {
         this.updateDate = updateDate;
     }
 
-    public String getDetailDesc() {
-        return detailDesc;
+    public Long getActivityId() {
+        return activityId;
     }
 
-    public void setDetailDesc(String detailDesc) {
-        this.detailDesc = detailDesc;
+    public void setActivityId(Long activityId) {
+        this.activityId = activityId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

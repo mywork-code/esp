@@ -13,11 +13,11 @@ public class ActivityCfgVo {
 
     private Long offerSill1;
 
-    private Long discountAmonut1;
+    private Long discount1;
 
     private Long offerSill2;
 
-    private Long discountAmount2;
+    private Long discount2;
     
     private String status;
 
@@ -70,12 +70,12 @@ public class ActivityCfgVo {
         this.offerSill1 = offerSill1;
     }
 
-    public Long getDiscountAmonut1() {
-        return discountAmonut1;
+    public Long getDiscount1() {
+        return discount1;
     }
 
-    public void setDiscountAmonut1(Long discountAmonut1) {
-        this.discountAmonut1 = discountAmonut1;
+    public void setDiscount1(Long discount1) {
+        this.discount1 = discount1;
     }
 
     public Long getOfferSill2() {
@@ -86,13 +86,13 @@ public class ActivityCfgVo {
         this.offerSill2 = offerSill2;
     }
 
-    public Long getDiscountAmount2() {
-        return discountAmount2;
-    }
+    public Long getDiscount2() {
+		return discount2;
+	}
 
-    public void setDiscountAmount2(Long discountAmount2) {
-        this.discountAmount2 = discountAmount2;
-    }
+	public void setDiscount2(Long discount2) {
+		this.discount2 = discount2;
+	}
 
 	public String getStatus() {
 		return status;

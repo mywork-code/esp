@@ -241,14 +241,51 @@ $(function(){
 		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
-		if(acUrl.index("id") != -1){
+		if(acUrl.indexOf("id") != -1){
 			var id = acUrl.slice(acUrl.indexOf("=") +1,acUrl.indexOf("&"));
+			var source = '';
+			if(acUrl.indexOf("notJd") == -1){
+				source = 'jd'
+			}
 			//跳转到商品详情页
+			$.previewProduct(id,source);
 		}else{
-			window.location.href=acUrl;
+			window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+
+		}
+	}
+
+	$.previewProduct = function(id,source) {
+		var subtitle = "商品预览-" + id;
+		var parentTabs = parent.$('#tabs');
+		var destAddress="";
+		if("jd"==source){
+			subtitle = "商品预览-" + id;
+			destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
+		}else{
+			destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
 		}
 
-	}
+		if (parentTabs.tabs('exists', subtitle)) {
+			parentTabs.tabs('select', subtitle);
+			return;
+		}
+		parentTabs.tabs('add', {
+			title : subtitle,
+			content : function() {
+				var array = new Array();
+				array.push('<iframe name="mainFrame" ');
+				array.push('scrolling="auto" ');
+				array.push('frameborder="0" ');
+				array.push('src="' + destAddress + '" ');
+				array.push(' style="width:100%;height:100%;" ');
+				array.push(' ></iframe>');
+				return array.join('');
+			},
+			closable : true
+		});
+	};
+
 	// 重置
 	$("#reset").click(function(){
 		$('#bannerType2').combobox('setValue','');

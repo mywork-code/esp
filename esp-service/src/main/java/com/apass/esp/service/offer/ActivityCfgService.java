@@ -7,15 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.apass.esp.domain.entity.HomeConfig;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.ActivityType;
 import com.apass.esp.domain.vo.ActivityCfgVo;
-import com.apass.esp.domain.vo.HomeConfigVo;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 
@@ -45,6 +44,45 @@ public class ActivityCfgService {
 	}
 	
 	/**
+	 * 保存添加活动配置信息
+	 */
+	public Integer saveActivity(ActivityCfgVo vo){
+		ProActivityCfg record = getActivityCfg(vo);
+		record.setCreateDate(new Date());
+		record.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		return activityCfgMapper.insertSelective(record);
+	}
+	
+	/**
+	 * 保存编辑活动配置信息
+	 */
+	public Integer editActivity(ActivityCfgVo vo){
+		ProActivityCfg record = getActivityCfg(vo);
+		record.setId(vo.getId());
+		return activityCfgMapper.updateByPrimaryKeySelective(record);
+	}
+	
+	public ActivityCfgVo getActivityCfgVo(String id){
+		ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(id));
+		return ActivityCfgPoToVo(cfg);
+	}
+	
+	public ProActivityCfg getActivityCfg(ActivityCfgVo vo){
+		ProActivityCfg record = new ProActivityCfg();
+		record.setActivityName(vo.getActivityName());
+		record.setActivityType(vo.getActivityType());
+		record.setDiscountAmonut1(vo.getDiscount1());
+		record.setDiscountAmount2(vo.getDiscount2());
+		record.setEndTime(DateFormatUtil.string2date(vo.getEndTime(),""));
+		record.setOfferSill1(vo.getOfferSill1());
+		record.setOfferSill2(vo.getOfferSill2());
+		record.setStartTime(DateFormatUtil.string2date(vo.getStartTime(),""));
+		record.setUpdateDate(new Date());
+		record.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		return record;
+	}
+	
+	/**
 	 * po 2 vo
 	 * @param configList
 	 * @return
@@ -66,11 +104,14 @@ public class ActivityCfgService {
 	 */
 	public ActivityCfgVo ActivityCfgPoToVo(ProActivityCfg cfg){
 		ActivityCfgVo vo = new ActivityCfgVo();
+		if(null == cfg){
+			return vo;
+		}
 		vo.setId(cfg.getId());
 		vo.setActivityName(cfg.getActivityName());
 		vo.setActivityType(ActivityType.getMessage(cfg.getActivityType()));
-		vo.setDiscountAmonut1(cfg.getDiscountAmonut1());
-		vo.setDiscountAmount2(cfg.getDiscountAmount2());
+		vo.setDiscount1(cfg.getDiscountAmonut1());
+		vo.setDiscount2(cfg.getDiscountAmount2());
 		vo.setEndTime(DateFormatUtil.dateToString(cfg.getEndTime(), ""));
 		vo.setStartTime(DateFormatUtil.dateToString(cfg.getStartTime(), ""));
 		vo.setOfferSill1(cfg.getOfferSill1());
