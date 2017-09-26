@@ -101,6 +101,7 @@ $(function(){
   
     //导入
     $("#import").click(function(){
+    	$("#activityId").val("4");
     	var form = $("#ExcelFileForm");
     	var file = $("#Excelfile").val();
     	if(file == null || file == ''){

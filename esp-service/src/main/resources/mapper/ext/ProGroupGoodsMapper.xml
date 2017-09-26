@@ -8,4 +8,6 @@
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and status = 'S' order by id desc limit 1
     </select>
+
 </mapper>
+
