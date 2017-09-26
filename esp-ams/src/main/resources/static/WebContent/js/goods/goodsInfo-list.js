@@ -782,8 +782,8 @@ $(function() {
 		
 		initEditGoodsInfo(rowData);//编辑商品回显
 		$("#editBannerGoodsId").val(rowData.id);
-
 		if(rowData.source == 'jd'){
+			debugger;
 			$("#editPlanDecrible #one").css({'display':'none'});
 	    	$("#editPlanDecrible #two").css({'display':'inline','font-weight':'bold'});
 	    	$("#editPlanDecrible #three").css('display','none');
@@ -793,6 +793,8 @@ $(function() {
 			$("#editWriteGoodsInfo").css('display','block');
 			$("#editUpLoadGoodsPicture").css('display','none');
 			$("#editGoodsStock").css('display','none');
+			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
+			$("input[name='editSupport7dRefund'][value='N']").attr("disabled",true);
 		}else{
 			$("#editPlanDecrible #one").css({'display':'inline','font-weight':'bold'});
 			$("#editPlanDecrible #two").css({'display':'inline','font-weight':'lighter'});
@@ -803,6 +805,9 @@ $(function() {
 			$("#editWriteGoodsInfo").css('display','none');
 			$("#editUpLoadGoodsPicture").css('display','none');
 			$("#editGoodsStock").css('display','none');
+
+			$("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
+			$("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
 		}
 		
     	
@@ -904,6 +909,7 @@ $(function() {
 		listTime=$("#editlistTime").datetimebox('getValue'),
 		proDate=$("#editproDate").datebox('getValue'),
 		delistTime=$("#editdelistTime").datetimebox('getValue'),
+		editSupport7dRefund	= $("input[name='editSupport7dRefund']:checked").val(),
 		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
 		keepDate=$("#editkeepDate").textbox('getValue'),sordNo=$("#editsordNo").numberbox('getValue'),
 		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
@@ -1962,6 +1968,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	supNo=$("#addsupNo").textbox('getValue'),
 	goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
 	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
+	addSupport7dRefund=$("input[name='addSupport7dRefund']:checked").val(),
 	sordNo=$("#sordNo").textbox('getValue');
 	debugger;
 	//字段效验
@@ -2037,6 +2044,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 //		return;
 //	}
 	
+	if (null == addSupport7dRefund || ("") == addSupport7dRefund) {
+		$.messager.alert("提示", "是否支持7天退货还能为空！", "info");
+		return;
+	}
 	if (null == sordNo || ("") == sordNo) {
 		$.messager.alert("提示", "排序不能为空！", "info");
 		return;
@@ -2065,6 +2076,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		formObj.append("<input type='text' name='supNo' value='"+supNo+"'/>");
 	}
 	formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
+	formObj.append("<input type='text' name='support7dRefund' value='"+addSupport7dRefund+"'/>");
 	formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
 	formObj.css('display','none').appendTo("body");
 	formObj.form("submit",{ 

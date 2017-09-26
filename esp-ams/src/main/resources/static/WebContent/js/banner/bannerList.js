@@ -19,18 +19,19 @@ $(function(){
 			//width : 150,
 			//align : 'center'
 			//},	
+			// {
+			// 	title : '图片地址',
+			// 	field : 'bannerImgUrl',
+			// 	width : 250,
+			// 	align : 'center',
+			// 	formatter : function(value, row, index) {
+			// 			 var content = "";
+			// 			 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
+			// 			+ row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
+			// 	return content;
+			//     }
+			// },
 			{
-				title : '图片地址',
-				field : 'bannerImgUrl',
-				width : 250,
-				align : 'center',
-				formatter : function(value, row, index) {
-						 var content = "";
-						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-						+ row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
-				return content;
-			    }
-			}, {
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
@@ -43,22 +44,22 @@ $(function(){
 				}
 			}
 			},
-			{
-				title : '活动地址',
-				field : 'activityUrl',
-				width : 250,
-				align : 'center',
-				formatter : function(value, row, index) {
-					 var content = "";
-					 if(row.activityUrl!=null){
-						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
-								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
-						 
-//						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
-					 }
-			         return content;
-		        }
-			},
+// 			{
+// 				title : '活动地址',
+// 				field : 'activityUrl',
+// 				width : 250,
+// 				align : 'center',
+// 				formatter : function(value, row, index) {
+// 					 var content = "";
+// 					 if(row.activityUrl!=null){
+// 						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
+// 								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
+//
+// //						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
+// 					 }
+// 			         return content;
+// 		        }
+// 			},
 			{
 				title : '排序',
 				field : 'bannerOrder',
@@ -79,8 +80,8 @@ $(function(){
 					}  
 					     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
-					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-						+ row.bannerImgUrl+ "');\">预览</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
+						+ row.activityUrl+ "');\">预览</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 						+ row.bannerImgUrl+ "');\">编辑</a>&nbsp;&nbsp;";
 				 return content;
@@ -237,12 +238,16 @@ $(function(){
 	}
 	//查看活动
 	$.showActivity = function(activityUrl) {
-		var index = activityUrl.indexOf("="); 
+		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
-		if(isNaN(acUrl)){//排除是商品地址的情况
+		if(acUrl.index("id") != -1){
+			var id = acUrl.slice(acUrl.indexOf("=") +1,acUrl.indexOf("&"));
+			//跳转到商品详情页
+		}else{
 			window.location.href=acUrl;
 		}
+
 	}
 	// 重置
 	$("#reset").click(function(){

@@ -1,10 +1,10 @@
 package com.apass.esp.domain.entity.banner;
 
-import java.util.Date;
-
 import com.apass.gfb.framework.annotation.MyBatisEntity;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Date;
 
 /**
  * banner信息
@@ -136,5 +136,6 @@ public class BannerInfoEntity {
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
     
 }

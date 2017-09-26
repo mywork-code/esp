@@ -20,9 +20,8 @@
 						   <option label="首页" value="index">首页</option>
 						   <option label="精选" value="sift">精选</option>
 							<#list oneLevelCateList as cate>
-								<option label="cate.categoryName" value="cate_${cate.categoryId}">${cate.categoryName}</option>
+								<option label="cate.categoryName" value="category_${cate.categoryId}">${cate.categoryName}</option>
 							</#list>
-
 						</select>
 				  	</td>
 				  <td width="30%">
@@ -53,6 +52,9 @@
 	             		    <option value="">请选择</option>
 							<option value="index">首页</option>
 							<option value="sift">精选</option>
+						<#list oneLevelCateList as cate>
+							<option label="cate.categoryName" value="category_${cate.categoryId}">${cate.categoryName}</option>
+						</#list>
 	             	 </select></td>
                  </tr>
             	<tr>
@@ -63,7 +65,7 @@
 					<td width="30%" align="right">
 					   <select id="activityName" class="easyui-combobox" name="activityName" style="width:80px;" panelHeight="60">   
                                <option value="activity">活动地址</option>   
-                               <option value="goodId">商品id</option>   
+                               <option value="goodId">商品编号/skuid</option>
                        </select></td>
 					<td align="left"><input id="activityUrl" name="activityUrl"
 						class="easyui-textbox" style="width: 180px;" /></td>

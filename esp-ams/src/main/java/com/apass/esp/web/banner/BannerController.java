@@ -4,7 +4,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -213,7 +213,8 @@ public class BannerController extends BaseController {
             	if("activity".equals(activityName)){
             		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
             	}else if("goodId".equals(activityName)){
-            		GoodsInfoEntity goodsInfo=goodsService.selectByGoodsId(Long.parseLong(activityUrl));
+                  //这里由原来的goodId 改为 商品编号或skuid
+                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode(activityUrl);
             		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=jd";
             		}else{
@@ -291,23 +292,18 @@ public class BannerController extends BaseController {
      * @return
      */
     private String isAdd(String bannerType, Long bannerOrder) {
-        String type = null;
-        if ("index".equals(bannerType)) {
-            type = "首页";
-        } else {
-            type = "精品";
-        }
+
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(BANNER_TYPE, bannerType);
         List<BannerInfoEntity> banners = bannerInfoService.loadBannersList(map); // 判断是否大于等于5
         if (banners.size() >= 0 && banners.size() < 5) {
             for (BannerInfoEntity banner : banners) {
                 if (bannerOrder == banner.getBannerOrder()) { // 判断是否存在重复
-                    return type + "中该图片已经存在！";
+                    return  "该类型中该图片已经存在！";
                 }
             }
         } else {
-            return type + "超过5条，请删除后再添加！";
+            return "该类型超过5条，请删除后再添加！";
         }
         return "ok";
     }
