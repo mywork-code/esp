@@ -19,18 +19,19 @@ $(function(){
 			//width : 150,
 			//align : 'center'
 			//},	
+			// {
+			// 	title : '图片地址',
+			// 	field : 'bannerImgUrl',
+			// 	width : 250,
+			// 	align : 'center',
+			// 	formatter : function(value, row, index) {
+			// 			 var content = "";
+			// 			 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
+			// 			+ row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
+			// 	return content;
+			//     }
+			// },
 			{
-				title : '图片地址',
-				field : 'bannerImgUrl',
-				width : 250,
-				align : 'center',
-				formatter : function(value, row, index) {
-						 var content = "";
-						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-						+ row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
-				return content;
-			    }
-			}, {
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
@@ -43,22 +44,22 @@ $(function(){
 				}
 			}
 			},
-			{
-				title : '活动地址',
-				field : 'activityUrl',
-				width : 250,
-				align : 'center',
-				formatter : function(value, row, index) {
-					 var content = "";
-					 if(row.activityUrl!=null){
-						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
-								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
-						 
-//						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
-					 }
-			         return content;
-		        }
-			},
+// 			{
+// 				title : '活动地址',
+// 				field : 'activityUrl',
+// 				width : 250,
+// 				align : 'center',
+// 				formatter : function(value, row, index) {
+// 					 var content = "";
+// 					 if(row.activityUrl!=null){
+// 						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
+// 								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
+//
+// //						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
+// 					 }
+// 			         return content;
+// 		        }
+// 			},
 			{
 				title : '排序',
 				field : 'bannerOrder',
@@ -79,8 +80,8 @@ $(function(){
 					}  
 					     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
-					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-						+ row.bannerImgUrl+ "');\">预览</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
+						+ row.activityUrl+ "');\">预览</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 						+ row.bannerImgUrl+ "');\">编辑</a>&nbsp;&nbsp;";
 				 return content;
