@@ -10,3 +10,4 @@
       AND  goods_id = #{goodsId}
   </select>
 </mapper>
+
