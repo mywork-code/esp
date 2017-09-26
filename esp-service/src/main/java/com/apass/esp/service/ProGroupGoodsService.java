@@ -41,7 +41,7 @@ public class ProGroupGoodsService {
       return bo;
   }
 	public ProGroupGoods selectByGoodsId(Long goodsId){
-		return groupGoodsMapper.selectByGoodsId(goodsId);
+		return groupGoodsMapper.selectLatestByGoodsId(goodsId);
 	}
 	
 	public Integer insertSelective(ProGroupGoods proGroupGoods){
