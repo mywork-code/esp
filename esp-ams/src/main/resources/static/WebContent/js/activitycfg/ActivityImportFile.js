@@ -44,32 +44,32 @@ $(function(){
                 align : 'center'
             },{
                 title : '成本价',
-                field : 'goodsCategory',
+                field : 'goodsCostPrice',
                 width : 120,
                 align : 'center'
             },{
                 title : '售价',
-                field : 'goodsCategory',
+                field : 'goodsPrice',
                 width : 120,
                 align : 'center'
             },{
                 title : '市场价',
-                field : 'goodsCategory',
+                field : 'marketPrice',
                 width : 120,
                 align : 'center'
             },{
                 title : '活动价',
-                field : 'goodsCategory',
+                field : 'activityPrice',
                 width : 120,
                 align : 'center'
             },{
                 title : '分组',
-                field : 'goodsCategory',
+                field : 'groupName',
                 width : 120,
                 align : 'center'
             },{
                 title : '备注',
-                field : 'goodsCategory',
+                field : 'detailDesc',
                 width : 120,
                 align : 'center'
             },{

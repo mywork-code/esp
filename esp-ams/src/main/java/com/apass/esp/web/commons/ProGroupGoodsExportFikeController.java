@@ -23,10 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
-import com.apass.esp.domain.entity.ProGroupGoodsTo;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
-import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
@@ -43,7 +43,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(ProGroupGoodsExportFikeController.class);
 	@Autowired
-	private GoodsBasicRepository goodsBasicRepository;
+	private GoodsService goodsService;
 	@Autowired
 	private ProGroupGoodsMapper proGroupGoodsMapper;
 	/**
@@ -70,14 +70,12 @@ public class ProGroupGoodsExportFikeController {
 				for(int i=0;i<list.size();i++){
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=new GoodsBasicInfoEntity();
-					gbity.setExternalId(id);
-					List<GoodsBasicInfoEntity> result1=new ArrayList<>();
-					result1=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
-					gbity.setExternalId("");
-					gbity.setGoodsCode(id);
-					List<GoodsBasicInfoEntity> result2=new ArrayList<>();
-					result2=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
+					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+					if(null !=gbity){
+						ProGroupGoods pgg=new ProGroupGoods();
+					}else{
+						
+					}
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -85,18 +83,7 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setUpdateDate(new Date());
 					pggds.setMarketPrice(list.get(i).getMarketPrice());
 					pggds.setActivityPrice(list.get(i).getActivityPrice());
-					if(result1.size()==1 && result2.size()==0){
-						pggds.setGoodsId(result1.get(0).getGoodId());
-						pggds.setSkuId(id);
-						pggds.setGoodsCode(result1.get(0).getGoodsCode());
-					}else if(result1.size()==0 && result2.size()==1){
-						pggds.setGoodsId(result2.get(0).getGoodId());
-						pggds.setSkuId(result2.get(0).getExternalId());
-						pggds.setGoodsCode(id);
-					}else{
-						pggds.setSkuId(id);
-						pggds.setGoodsCode(id);
-					}
+					
 					proGroupGoodsMapper.insert(pggds);
 				}
 			}
@@ -108,7 +95,6 @@ public class ProGroupGoodsExportFikeController {
 	// 将上传文件读取到List中
 	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
 		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
-
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
 		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
@@ -125,7 +111,7 @@ public class ProGroupGoodsExportFikeController {
 			for (int j = 0; j < 3; j++) {
 				HSSFCell cell = hssfRow.getCell(j);
 				if (cell == null) {
-					break;
+					continue;
 				}
 				switch (j) {
 				case 0:

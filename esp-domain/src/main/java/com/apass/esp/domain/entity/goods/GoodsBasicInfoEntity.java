@@ -35,7 +35,7 @@ public class GoodsBasicInfoEntity {
     /** 商品大标题 **/
     private String goodsTitle;
     
-    private String goodsCode;
+    private Long goodsCode;
 
     /** 商品小标题 **/
     private String goodsSellPt;
@@ -299,12 +299,11 @@ public class GoodsBasicInfoEntity {
 		this.externalId = externalId;
 	}
 
-	public String getGoodsCode() {
+	public Long getGoodsCode() {
 		return goodsCode;
 	}
 
-	public void setGoodsCode(String goodsCode) {
+	public void setGoodsCode(Long goodsCode) {
 		this.goodsCode = goodsCode;
 	}
-	
 }
