@@ -238,12 +238,16 @@ $(function(){
 	}
 	//查看活动
 	$.showActivity = function(activityUrl) {
-		var index = activityUrl.indexOf("="); 
+		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
-		if(isNaN(acUrl)){//排除是商品地址的情况
+		if(acUrl.index("id") != -1){
+			var id = acUrl.slice(acUrl.indexOf("=") +1,acUrl.indexOf("&"));
+			//跳转到商品详情页
+		}else{
 			window.location.href=acUrl;
 		}
+
 	}
 	// 重置
 	$("#reset").click(function(){
