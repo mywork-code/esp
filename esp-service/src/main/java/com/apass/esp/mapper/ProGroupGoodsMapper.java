@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
 
-   ProGroupGoods selectByGoodsId(@Param("goodsId") Long goodsId);
+   ProGroupGoods selectLatestByGoodsId(@Param("goodsId") Long goodsId);
 	
 }
