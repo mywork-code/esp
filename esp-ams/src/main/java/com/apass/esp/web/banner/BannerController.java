@@ -216,9 +216,9 @@ public class BannerController extends BaseController {
                   //这里由原来的goodId 改为 商品编号或skuid
                   GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode(activityUrl);
             		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
-            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=jd";
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=jd";
             		}else{
-            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+activityUrl+"&source=notJd";
+            			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
             		}
             		
             	}
