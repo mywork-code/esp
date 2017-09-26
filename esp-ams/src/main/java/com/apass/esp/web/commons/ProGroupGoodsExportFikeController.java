@@ -36,7 +36,7 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
  *
  */
 @Controller
-@RequestMapping("")
+@RequestMapping("/application/activity")
 public class ProGroupGoodsExportFikeController {
 	/**
 	 * 日志
@@ -106,8 +106,9 @@ public class ProGroupGoodsExportFikeController {
 		return null;
 	}
 	// 将上传文件读取到List中
-	private List<ProGroupGoodsTo> readImportExcel(InputStream importFilein) throws IOException {
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(importFilein);
+	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
+		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
+
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
 		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
