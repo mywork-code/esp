@@ -149,7 +149,7 @@
 				AND CURRENT_TIMESTAMP < a.delist_time
 	]]>
 	   <if test="goodsCode != null or externalId != null">
-            AND (a.goods_code = #{goodsCode, jdbcType=VARCHAR}
+            AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
            OR a.external_id = #{externalId, jdbcType=VARCHAR}
            )
         </if>

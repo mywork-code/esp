@@ -1,4 +1,4 @@
-package com.apass.esp.domain.entity;
+package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
 
