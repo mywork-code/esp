@@ -10,15 +10,17 @@
     <result column="activity_price" property="activityPrice" jdbcType="DECIMAL" />
     <result column="order_sort" property="orderSort" jdbcType="BIGINT" />
     <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+    <result column="detail_desc" property="detailDesc" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
-    <result column="detail_desc" property="detailDesc" jdbcType="VARCHAR" />
+    <result column="activity_id" property="activityId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code, 
-    create_user, update_user, create_date, update_date, detail_desc
+    detail_desc, create_user, update_user, create_date, update_date, activity_id, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -33,14 +35,14 @@
   <insert id="insert" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_group_goods (goods_id, sku_id, group_id, 
       market_price, activity_price, order_sort, 
-      goods_code, create_user, update_user, 
-      create_date, update_date, detail_desc
-      )
+      goods_code, detail_desc, create_user, 
+      update_user, create_date, update_date, 
+      activity_id, status)
     values (#{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{orderSort,jdbcType=BIGINT}, 
-      #{goodsCode,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{detailDesc,jdbcType=VARCHAR}
-      )
+      #{goodsCode,jdbcType=VARCHAR}, #{detailDesc,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{activityId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_group_goods
@@ -66,6 +68,9 @@
       <if test="goodsCode != null" >
         goods_code,
       </if>
+      <if test="detailDesc != null" >
+        detail_desc,
+      </if>
       <if test="createUser != null" >
         create_user,
       </if>
@@ -78,8 +83,11 @@
       <if test="updateDate != null" >
         update_date,
       </if>
-      <if test="detailDesc != null" >
-        detail_desc,
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="status != null" >
+        status,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -104,6 +112,9 @@
       <if test="goodsCode != null" >
         #{goodsCode,jdbcType=VARCHAR},
       </if>
+      <if test="detailDesc != null" >
+        #{detailDesc,jdbcType=VARCHAR},
+      </if>
       <if test="createUser != null" >
         #{createUser,jdbcType=VARCHAR},
       </if>
@@ -116,8 +127,11 @@
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="detailDesc != null" >
-        #{detailDesc,jdbcType=VARCHAR},
+      <if test="activityId != null" >
+        #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -145,6 +159,9 @@
       <if test="goodsCode != null" >
         goods_code = #{goodsCode,jdbcType=VARCHAR},
       </if>
+      <if test="detailDesc != null" >
+        detail_desc = #{detailDesc,jdbcType=VARCHAR},
+      </if>
       <if test="createUser != null" >
         create_user = #{createUser,jdbcType=VARCHAR},
       </if>
@@ -157,8 +174,11 @@
       <if test="updateDate != null" >
         update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="detailDesc != null" >
-        detail_desc = #{detailDesc,jdbcType=VARCHAR},
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -172,11 +192,13 @@
       activity_price = #{activityPrice,jdbcType=DECIMAL},
       order_sort = #{orderSort,jdbcType=BIGINT},
       goods_code = #{goodsCode,jdbcType=VARCHAR},
+      detail_desc = #{detailDesc,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP},
-      detail_desc = #{detailDesc,jdbcType=VARCHAR}
+      activity_id = #{activityId,jdbcType=BIGINT},
+      status = #{status,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

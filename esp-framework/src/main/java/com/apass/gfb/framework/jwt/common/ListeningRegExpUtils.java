@@ -184,6 +184,9 @@ public class ListeningRegExpUtils {
     	return Pattern.matches("^[a-zA-Z\u4e00-\u9fa5]+$", value);
     }
     
+    public static boolean isChineseOrLetterOrMath(String value){
+    	return Pattern.matches("^[a-zA-Z0-9\u4E00-\u9FA5]+$", value);
+    }
     /**
      * Check Is Multi Mails separate by chars
      */

@@ -6,7 +6,7 @@
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
 <script type="text/javascript"
-	src="${rc.contextPath}/WebContent/js/activitycfg/activity.js"></script>
+	src="${rc.contextPath}/WebContent/js/activitycfg/activityAdd.js"></script>
 <script type="text/javascript"
 	src="${rc.contextPath}/WebContent/js/common/datadic.js"></script>
 	<style>
@@ -38,55 +38,62 @@
 			<table style="width: 80%;height: auto;">
 				<tr>
 					<td align="right">活动名称：</td>
-					<td align="left"><input type="text" id="homeName" name="homeName"
-						 class="easyui-textbox" style="width: 160px;" maxlength="12" /></td>
+					<td align="left"><input type="text" id="activityName" name="activityName"
+						 class="easyui-textbox" style="width: 160px;"/></td>
 				</tr>
 				<tr>
 					<td align="right">开始时间：</td>
 					<td align="left"><input type="text" id="startTime" name="startTime" editable="false" class="easyui-datetimebox"
-						style="width: 160px;" maxlength="255"></td>
+						style="width: 160px;"></td>
+				</tr>
+				<tr>
+					<td align="right">结束时间：</td>
+					<td align="left"><input type="text" id="endTime" name="endTime" editable="false" class="easyui-datetimebox"
+						style="width: 160px;"></td>
 				</tr>
 				<tr>
 					<td align="right">活动类型：</td>
 					<td align="left">
-					   <select class="easyui-combobox" style="width: 160px;" name="activityType" required="required" editable="false" >   
+					   <select class="easyui-combobox" style="width: 160px;" id="activityType" name="activityType" required="required" editable="false" >   
 	                        <option value="">请选择</option>
-	                        <option value="none">无优惠</option>
-	                        <option value="less">满减</option>
+	                        <option value="N">无优惠</option>
+	                        <option value="Y">满减</option>
                        </select>
 					</td>
 				</tr>
+				</table>
+				<div id="xxxxxxID" style="display: none;">
+				<table style="width: 80%;height: auto;">
 				<tr>
 					<td align="right">优惠门槛：</td>
 					<td align="left"><input type="text" id="offerSill1" name="offerSill1"
-						 class="easyui-numberbox" style="width: 160px;" maxlength="15"/></td>
+						 class="easyui-numberbox" style="width: 160px;" data-options="min:0"/></td>
 				</tr>
 				<tr>
 					<td align="right">优惠金额：</td>
-					<td align="left"><input type="text" id="discountAmonut1" name="discountAmonut1"
-						 class="easyui-numberbox" style="width: 160px;" maxlength="15"/></td>
+					<td align="left"><input type="text" id="discount1" name="discount1"
+						 class="easyui-numberbox" style="width: 160px;" data-options="min:0"/></td>
 				</tr>
 				<tr>
 					<td align="right">优惠门槛：</td>
 					<td align="left"><input type="text" id="offerSill2" name="offerSill2"
-						 class="easyui-textbox" style="width: 160px;" maxlength="15"/></td>
+						 class="easyui-numberbox" style="width: 160px;" data-options="min:0"/></td>
 				</tr>
 				<tr>
 					<td align="right">优惠金额：</td>
-					<td align="left"><input type="text" id="discountAmonut2" name="discountAmonut2"
-						 class="easyui-textbox" style="width: 160px;" maxlength="15"/></td>
+					<td align="left"><input type="text" id="discount2" name="discount2"
+						 class="easyui-numberbox" style="width: 160px;" data-options="min:0"/></td>
 				</tr>
-				<tr>
-					<td align="right">分组管理：</td>
-					<td align="left"><input type="button" class="easyui-buttonbox" value="创建"/></td>
-				</tr>
+				</table>
+				</div>
+				<table style="width: 80%;height: auto;">
 				<tr style="margin-top: 22px;">
 	                <td colspan="2">
 	                    <a href="javascript:void(0);" id="cancelAdd" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
 	                    <a href="javascript:void(0);" id="agreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
 	                </td>
                </tr>
-			</table>
+               </table>
 			</form>
 	<!-- 配置添加结束  -->
 </body>

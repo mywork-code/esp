@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ESP管理平台</title> <#include "../common/component/library.html"/>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+<script type="text/javascript"
+	src="${rc.contextPath}/WebContent/js/activitycfg/ActivityImportFile.js"></script>
+<style>
+#resetPasswordDetails+.window .panel-header>.panel-title {
+	color: #000;
+}
+
+.window>.panel-header>.panel-title {
+	color: #000;
+}
+
+#resetPasswordDetails table {
+	padding-top: 10px;
+}
+
+#resetPasswordDetails table td input {
+	border: 1px solid #B4CFFF;
+	text-indent: 5px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+	<div id="tb">
+		<div class="search">
+			<table style="min-width: 700px;">
+				<tr>
+					<td align="right">导入活动商品:</td>
+					<td align="left">
+						<form id='ExcelFileForm' enctype='multipart/form-data'
+							method="post" target="_self" style="display: inline-block;">
+							<input type="file" id="Excelfile" name="file">
+						</form> <a href="javascript:void(0);" class="easyui-linkbutton"
+						id="import">导&nbsp;入&nbsp;</a> &nbsp;&nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td align="right">商品池</td>
+				</tr>
+				<tr>
+					<td align="right">商品编号/skuid:</td>
+					<td align="left"><input type="text" id="goodsId"
+						name="goodsId" class="easyui-textbox" style="width: 160px;"
+						maxlength="15" /></td>
+					<td align="right">商品类目:</td>
+					<td align="left"><input type="text" id="goodscategory"
+						name="goodscategory" class="easyui-textbox" style="width: 160px;"
+						maxlength="15" /></td>
+					<td colspan="3"><a href="javascript:void(0);" id="searchGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">查&nbsp;询&nbsp;</a>
+						<a href="javascript:void(0);" id="resetGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">重&nbsp;置&nbsp;</a>
+						<a href="javascript:void(0);" id="addGoods"
+						style="margin-right: 15px;" class="easyui-linkbutton">添&nbsp;加&nbsp;至</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- 商品查询列表 -->
+	<div id="importFileList"></div>
+</body>
+</html>
