@@ -54,7 +54,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping("/importFile")
-	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file) {
+	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
 		int countSuccess = 0;// 导入成功条数
 		try {
