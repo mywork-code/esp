@@ -25,7 +25,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
-import com.apass.esp.mapper.ProGroupGoodsMapper;
+import com.apass.esp.service.ProGroupGoodsService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
@@ -45,7 +45,7 @@ public class ProGroupGoodsExportFikeController {
 	@Autowired
 	private GoodsService goodsService;
 	@Autowired
-	private ProGroupGoodsMapper proGroupGoodsMapper;
+	private ProGroupGoodsService proGroupGoodsService;
 	/**
 	 * 导入文件
 	 * 
@@ -54,7 +54,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping("/importFile")
-	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file) {
+	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
 		int countSuccess = 0;// 导入成功条数
 		try {
@@ -68,14 +68,6 @@ public class ProGroupGoodsExportFikeController {
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
 			if(null !=list){
 				for(int i=0;i<list.size();i++){
-					//判断该商品是否符合导入条件
-					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if(null !=gbity){
-						ProGroupGoods pgg=new ProGroupGoods();
-					}else{
-						
-					}
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -83,8 +75,26 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setUpdateDate(new Date());
 					pggds.setMarketPrice(list.get(i).getMarketPrice());
 					pggds.setActivityPrice(list.get(i).getActivityPrice());
-					
-					proGroupGoodsMapper.insert(pggds);
+					//判断该商品是否符合导入条件
+					String id=list.get(i).getId();
+					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+					if(null !=gbity){
+						ProGroupGoods proGroupGoods=proGroupGoodsService.selectByGoodsId(gbity.getGoodId());
+						if(null ==proGroupGoods){
+							pggds.setGoodsId(gbity.getGoodId());
+							pggds.setSkuId(gbity.getExternalId());
+							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setDetailDesc("1");//1表示导入成功
+							pggds.setActivityId(Long.parseLong(activityId));
+							proGroupGoodsService.insertSelective(pggds);
+						}else{
+							//TODO 验证该商品参与的活动是否失效（）
+							Long actId=proGroupGoods.getActivityId();
+						}
+					}else{
+						pggds.setDetailDesc("0");//0表示导入失败
+						proGroupGoodsService.insertSelective(pggds);
+					}
 				}
 			}
 		} catch (Exception e) {

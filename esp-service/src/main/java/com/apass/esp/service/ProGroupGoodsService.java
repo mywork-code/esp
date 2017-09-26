@@ -1,14 +1,15 @@
 package com.apass.esp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.service.offer.ActivityCfgService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by jie.xu on 17/9/26.
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(rollbackFor = { Exception.class })
 public class ProGroupGoodsService {
-
   @Autowired
   private ProGroupGoodsMapper groupGoodsMapper;
 
@@ -39,6 +39,13 @@ public class ProGroupGoodsService {
     bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
     return bo;
   }
+	public ProGroupGoods selectByGoodsId(Long goodsId){
+		return groupGoodsMapper.selectByGoodsId(goodsId);
+	}
+	
+	public Integer insertSelective(ProGroupGoods proGroupGoods){
+		return groupGoodsMapper.insertSelective(proGroupGoods);
+	}
 
 
 }
