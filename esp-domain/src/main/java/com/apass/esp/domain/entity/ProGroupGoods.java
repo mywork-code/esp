@@ -28,6 +28,8 @@ public class ProGroupGoods {
 
     private Date updateDate;
 
+    private String detailDesc;
+
     public Long getId() {
         return id;
     }
@@ -122,5 +124,13 @@ public class ProGroupGoods {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getDetailDesc() {
+        return detailDesc;
+    }
+
+    public void setDetailDesc(String detailDesc) {
+        this.detailDesc = detailDesc;
     }
 }
