@@ -1,5 +1,6 @@
 package com.apass.esp.service.common;
 
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.common.SequenceEntity;
@@ -11,10 +12,9 @@ import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.kvattrKey;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.common.SequenceRepository;
-import com.apass.esp.repository.common.SystemParamRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
-import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.service.ProGroupGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -29,20 +29,17 @@ import java.util.List;
 public class CommonService {
 
     @Autowired
-    private SystemParamRepository systemParamDao;
-    @Autowired
     private ActivityInfoRepository actityInfoDao;
     @Autowired
     private GoodsStockInfoRepository goodsStockDao;
     @Autowired
     private SequenceRepository sequenceDao;
     @Autowired
-    private PaymentHttpClient paymentHttpClient;
-    @Autowired
     private KvattrService kvattrService;
     @Autowired
     private GoodsRepository goodsDao;
-
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
 
     /**
      * t_esp_pro_group_goods 活动价 --> 商品goodsPrice
@@ -55,6 +52,12 @@ public class CommonService {
      * @throws BusinessException
      */
 	public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
+    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
+      //返回活动价
+      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);;
+    }
+
 		Date now = new Date();
 		// 系统折扣率
 		// List<SystemParamEntity> systemParams =
