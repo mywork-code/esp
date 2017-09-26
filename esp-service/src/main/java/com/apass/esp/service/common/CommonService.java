@@ -55,19 +55,15 @@ public class CommonService {
     ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
     if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
       //返回活动价
-      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);;
+      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
     }
 
 		Date now = new Date();
 		// 系统折扣率
-		// List<SystemParamEntity> systemParams =
-		// systemParamDao.querySystemParamInfo();
+
 		BigDecimal discount = BigDecimal.ZERO;
 		BigDecimal price = BigDecimal.ZERO;
-		// if (null != systemParams && systemParams.size() > 0) {
-		// SystemParamEntity systemParam = systemParams.get(0);
-		// discount = systemParam.getGoodsPriceRate();
-		// }
+
 		GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
 		ActivityInfoEntity param = new ActivityInfoEntity();
 		param.setGoodsId(goodsId);
