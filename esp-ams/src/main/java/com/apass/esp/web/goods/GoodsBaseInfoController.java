@@ -339,7 +339,8 @@ public class GoodsBaseInfoController {
                 || pageModel.getDelistTime().equals("")
                 || pageModel.getCategoryId1().equals("")
                 || pageModel.getCategoryId2().equals("")
-                || pageModel.getCategoryId3().equals("")) {
+                || pageModel.getCategoryId3().equals("")
+                || pageModel.getSupport7dRefund().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
