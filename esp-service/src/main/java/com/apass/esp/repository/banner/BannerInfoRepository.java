@@ -1,13 +1,13 @@
 package com.apass.esp.repository.banner;
 
-import java.util.List;
-import java.util.Map;
-
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

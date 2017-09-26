@@ -52,7 +52,7 @@ CREATE TABLE `t_esp_pro_group_goods` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id' ,
 `goods_id`  bigint(20) NOT NULL COMMENT '商品id' ,
 `sku_id`  varchar(30) NULL NULL DEFAULT '' COMMENT '京东商品的skuId' ,
-`group_id`  bigint(20) NOT NULL COMMENT '分组id' ,
+`group_id`  bigint(20)  NULL COMMENT '分组id' ,
 `market_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '市场价' ,
 `activity_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '活动价' ,
 `order_sort`  bigint(20) NOT NULL DEFAULT 1 COMMENT '排序' ,
