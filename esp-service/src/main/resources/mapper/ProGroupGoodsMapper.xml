@@ -14,10 +14,11 @@
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="detail_desc" property="detailDesc" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code, 
-    create_user, update_user, create_date, update_date
+    create_user, update_user, create_date, update_date, detail_desc
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -33,11 +34,13 @@
     insert into t_esp_pro_group_goods (goods_id, sku_id, group_id, 
       market_price, activity_price, order_sort, 
       goods_code, create_user, update_user, 
-      create_date, update_date)
+      create_date, update_date, detail_desc
+      )
     values (#{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{orderSort,jdbcType=BIGINT}, 
       #{goodsCode,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{detailDesc,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_group_goods
@@ -75,6 +78,9 @@
       <if test="updateDate != null" >
         update_date,
       </if>
+      <if test="detailDesc != null" >
+        detail_desc,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="goodsId != null" >
@@ -109,6 +115,9 @@
       </if>
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="detailDesc != null" >
+        #{detailDesc,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -148,6 +157,9 @@
       <if test="updateDate != null" >
         update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="detailDesc != null" >
+        detail_desc = #{detailDesc,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -163,7 +175,8 @@
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},
       create_date = #{createDate,jdbcType=TIMESTAMP},
-      update_date = #{updateDate,jdbcType=TIMESTAMP}
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      detail_desc = #{detailDesc,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

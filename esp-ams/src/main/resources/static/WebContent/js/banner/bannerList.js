@@ -78,7 +78,11 @@ $(function(){
 							+ row.id+ ");\">删除</a>&nbsp;&nbsp;";
 					}  
 					     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-							+ row.bannerImgUrl+ "');\">查看</a>&nbsp;&nbsp;";//encodeURI(JSON.stringify(row.bannerImgUrl) )
+							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
+						+ row.bannerImgUrl+ "');\">预览</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
+						+ row.bannerImgUrl+ "');\">编辑</a>&nbsp;&nbsp;";
 				 return content;
 			}
 			}]],

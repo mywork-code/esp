@@ -1,32 +1,13 @@
 package com.apass.esp.web.banner;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
+import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
+import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
@@ -41,6 +22,26 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/application/banner/management")
@@ -68,6 +69,9 @@ public class BannerController extends BaseController {
     @Value("${nfs.banner}")
     private String              nfsBanner;
 
+    @Autowired
+    private CategoryInfoService cateService;
+
     // private String nfsBanner="E:/";
     /**
      * banner信息初始化
@@ -78,6 +82,10 @@ public class BannerController extends BaseController {
         if(SpringSecurityUtils.hasPermission("BANNER_LIST_EDIT")) {
         	map.put("grantedAuthority", "permission");
 		}
+		    //查询一级类目
+        CategoryDto dto = new CategoryDto();
+        List<CategoryVo> list = cateService.listCategory(dto);
+        map.put("oneLevelCateList",list);
         return new ModelAndView(CREDIT_GOOD_BANNER_URL, map);
     }
 
