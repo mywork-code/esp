@@ -46,7 +46,14 @@ public class ActivityCfgController {
     public String activityConfig() {
       return "activitycfg/activity";
     }
- 	
+ 	  /**
+     * 商品池初始化配置
+     * @return
+     */
+ 	@RequestMapping(value = "/importInit")
+    public String activityimportFileConfig() {
+      return "activitycfg/activityImportFile";
+    }
  	/**
      * 活动配置分页json
      */

@@ -4,10 +4,12 @@ import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.dto.goods.GoodsCategoryDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
+import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.enums.CategoryStatus;
+import com.apass.esp.domain.vo.BannerVo;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.mapper.CategoryMapper;
@@ -15,6 +17,7 @@ import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -59,6 +62,9 @@ public class CategoryInfoService {
 
     @Autowired
     private GoodsBasicRepository goodsBasicRepository;
+
+    @Autowired
+    private BannerInfoService bannerInfoService;
 
     public List<CategoryVo> listCategory(CategoryDto dto) {
         // 获取所有的一级分类
@@ -483,7 +489,22 @@ public class CategoryInfoService {
         }
         List<OtherCategoryGoodsVo> list2 = Lists.newArrayList();
         // 查询每个二级类目下的前10条商品（按上架时间降序排列）
+        int i = 0;
         for (OtherCategoryGoodsVo categoryVo : list) {
+            i++;
+            if(i == 1){
+                List<BannerInfoEntity> bannerList =  bannerInfoService.loadIndexBanners("category_"+categoryId);
+                if(CollectionUtils.isNotEmpty(bannerList)){
+                    List<BannerVo> bannerVoList = new ArrayList<>();
+                    for(BannerInfoEntity bannerInfoEntity : bannerList){
+                        BannerVo bv = new BannerVo();
+                        bv.setImg(imageService.getImageUrl(bannerInfoEntity.getBannerImgUrl()));
+                        bv.setLinkUrl(bannerInfoEntity.getActivityUrl());
+                        bannerVoList.add(bv);
+                    }
+                    categoryVo.setBannerList(bannerVoList);
+                }
+            }
             if (categoryTemp != null) {
                 categoryVo.setBanner(imageService.getImageUrl(categoryTemp.getPictureUrl()));
             }
@@ -601,6 +622,7 @@ public class CategoryInfoService {
      */
     private OtherCategoryGoodsVo convertToOtherCategoryGoodsVo(Category category) {
         OtherCategoryGoodsVo vo = new OtherCategoryGoodsVo();
+        vo.setId(category.getId());
         vo.setCategoryIdSecond(category.getId());
         vo.setCategoryNameSecond(category.getCategoryName());
         vo.setCreateDate(DateFormatUtil.dateToString(category.getCreateDate(),

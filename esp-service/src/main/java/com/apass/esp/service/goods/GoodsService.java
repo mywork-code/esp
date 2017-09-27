@@ -1018,7 +1018,7 @@ public class GoodsService {
 
   public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param) {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
-    entity.setGoodsCode(param);
+    entity.setGoodsCode(Long.parseLong(param));
     entity.setExternalId(param);
     return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
   }

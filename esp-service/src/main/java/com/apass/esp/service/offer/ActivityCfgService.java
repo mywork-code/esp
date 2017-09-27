@@ -24,6 +24,11 @@ public class ActivityCfgService {
 	
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
+
+	public ProActivityCfg getById(Long activityId){
+		return activityCfgMapper.selectByPrimaryKey(activityId);
+	}
+
 	
 	/**
 	 * 获取活动配置信息
@@ -127,7 +132,7 @@ public class ActivityCfgService {
 		vo.setStartTime(DateFormatUtil.dateToString(cfg.getStartTime(), ""));
 		vo.setOfferSill1(cfg.getOfferSill1());
 		vo.setOfferSill2(cfg.getOfferSill2());
-		vo.setStatus(getActivityStatus(cfg));
+		vo.setStatus(getActivityStatus(cfg).getMessage());
 		
 		return vo;
 	}
@@ -136,20 +141,20 @@ public class ActivityCfgService {
 	 * @param cfg
 	 * @return
 	 */
-	public String getActivityStatus(ProActivityCfg cfg){
+	public ActivityStatus getActivityStatus(ProActivityCfg cfg){
 		Date startTime = cfg.getStartTime();
 		Date endTime = cfg.getEndTime();
 		Date now = new Date();
 		if(null == startTime || null == endTime){
-			return ActivityStatus.END.getMessage();
+			return ActivityStatus.END;
 		}
 		if(startTime.getTime() > now.getTime()){
-			return ActivityStatus.NO.getMessage();
+			return ActivityStatus.NO;
 		}
 		
 		if(startTime.getTime() <= now.getTime() && endTime.getTime() >= now.getTime()){
-			return ActivityStatus.PROCESSING.getMessage();
+			return ActivityStatus.PROCESSING;
 		}
-	    return ActivityStatus.END.getMessage();
+	    return ActivityStatus.END;
 	}
 }

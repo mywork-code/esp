@@ -23,9 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
-import com.apass.esp.domain.entity.ProGroupGoodsTo;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.esp.domain.vo.ProGroupGoodsTo;
+import com.apass.esp.service.ProGroupGoodsService;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 
 /**
@@ -35,14 +36,16 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
  *
  */
 @Controller
-@RequestMapping("")
+@RequestMapping("/application/activity")
 public class ProGroupGoodsExportFikeController {
 	/**
 	 * 日志
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(ProGroupGoodsExportFikeController.class);
 	@Autowired
-	private GoodsBasicRepository goodsBasicRepository;
+	private GoodsService goodsService;
+	@Autowired
+	private ProGroupGoodsService proGroupGoodsService;
 	/**
 	 * 导入文件
 	 * 
@@ -51,7 +54,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping("/importFile")
-	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file) {
+	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
 		int countSuccess = 0;// 导入成功条数
 		try {
@@ -65,31 +68,32 @@ public class ProGroupGoodsExportFikeController {
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
 			if(null !=list){
 				for(int i=0;i<list.size();i++){
-					//判断该商品是否符合导入条件
-					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=new GoodsBasicInfoEntity();
-					gbity.setExternalId(id);
-					List<GoodsBasicInfoEntity> result1=new ArrayList<>();
-					result1=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
-					gbity.setExternalId("");
-					gbity.setGoodsCode(id);
-					List<GoodsBasicInfoEntity> result2=new ArrayList<>();
-					result2=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(gbity);
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 					pggds.setCreateDate(new Date());
 					pggds.setUpdateDate(new Date());
-					if(result1.size()==1 && result2.size()==0){
-						pggds.setGoodsId(result1.get(0).getGoodId());
-						pggds.setSkuId(id);
-						pggds.setGoodsCode(result1.get(0).getGoodsCode());
-					}else if(result1.size()==0 && result2.size()==1){
-						pggds.setGoodsId(result2.get(0).getGoodId());
-						pggds.setSkuId(result2.get(0).getExternalId());
-						pggds.setGoodsCode(id);
+					pggds.setMarketPrice(list.get(i).getMarketPrice());
+					pggds.setActivityPrice(list.get(i).getActivityPrice());
+					//判断该商品是否符合导入条件
+					String id=list.get(i).getId();
+					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+					if(null !=gbity){
+						ProGroupGoods proGroupGoods=proGroupGoodsService.selectByGoodsId(gbity.getGoodId());
+						if(null ==proGroupGoods){
+							pggds.setGoodsId(gbity.getGoodId());
+							pggds.setSkuId(gbity.getExternalId());
+							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setDetailDesc("1");//1表示导入成功
+							pggds.setActivityId(Long.parseLong(activityId));
+							proGroupGoodsService.insertSelective(pggds);
+						}else{
+							//TODO 验证该商品参与的活动是否失效（）
+							Long actId=proGroupGoods.getActivityId();
+						}
 					}else{
-						
+						pggds.setDetailDesc("0");//0表示导入失败
+						proGroupGoodsService.insertSelective(pggds);
 					}
 				}
 			}
@@ -99,8 +103,8 @@ public class ProGroupGoodsExportFikeController {
 		return null;
 	}
 	// 将上传文件读取到List中
-	private List<ProGroupGoodsTo> readImportExcel(InputStream importFilein) throws IOException {
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(importFilein);
+	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
+		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
 		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
@@ -117,7 +121,7 @@ public class ProGroupGoodsExportFikeController {
 			for (int j = 0; j < 3; j++) {
 				HSSFCell cell = hssfRow.getCell(j);
 				if (cell == null) {
-					break;
+					continue;
 				}
 				switch (j) {
 				case 0:
