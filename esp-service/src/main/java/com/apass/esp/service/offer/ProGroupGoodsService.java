@@ -1,4 +1,4 @@
-package com.apass.esp.service;
+package com.apass.esp.service.offer;
 
 import java.util.List;
 
@@ -13,7 +13,6 @@ import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
-import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
