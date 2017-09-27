@@ -85,7 +85,7 @@ $(function(){
 			}}]],
         loader : function(param, success, error) {
             $.ajax({
-                url : ctx + '/activity/cfg/list',
+                url : ctx + '/application/activity/list',
                 data : param,
                 type : "post",
                 dataType : "json",
