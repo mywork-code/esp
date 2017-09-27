@@ -10,7 +10,11 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
-import com.apass.esp.domain.entity.*;
+import com.apass.esp.domain.entity.AwardDetail;
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -24,9 +28,22 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.AcceptGoodsType;
+import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.PreStockStatus;
+import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.utils.ConstantsUtils;
-import com.apass.esp.mapper.*;
+import com.apass.esp.mapper.AwardDetailMapper;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.CashRefundTxnMapper;
+import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
+import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -41,13 +58,12 @@ import com.apass.esp.repository.order.OrderSubInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.repository.refund.RefundDetailInfoRepository;
+import com.apass.esp.service.ProGroupGoodsService;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
-import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.refund.OrderRefundService;
@@ -79,12 +95,21 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
 public class OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
+
+    public static final String PRO_ACTIVITY_FLAG = "validActivityFlag";
 
     @Autowired
     public OrderInfoRepository orderInfoRepository;
@@ -159,16 +184,10 @@ public class OrderService {
     private CashRefundTxnMapper cashRefundTxnMapper;
 
     @Autowired
-    private CustomerServiceClient customerServiceClient;
-
-    @Autowired
     private OrderRefundService orderRefundService;
 
     @Autowired
     private OrderRefundRepository orderRefundRepository;
-
-    @Autowired
-    private JdGoodsInfoService jdGoodsInfoService;
 
     @Autowired
     private CommonHttpClient commonHttpClient;
@@ -182,9 +201,13 @@ public class OrderService {
     @Autowired
     private RefundDetailInfoRepository detailInfoRepository;
 
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
+
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
     private static final String ORDERSOURCECARTFLAG = "cart";
+
 
     /**
      * 查询订单概要信息
@@ -2084,6 +2107,10 @@ public class OrderService {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
             Map<String, Object> resultMaps = new HashMap<>();
             if (null != goods) {
+                //判断商品活动是否失效
+                ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+              resultMaps.put(PRO_ACTIVITY_FLAG,validActivityFlag);
+
                 if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                     AddressInfoEntity address = addressInfoDao.select(addreesId);
                     Region region = new Region();

@@ -26,7 +26,17 @@ public class PurchaseRequestDto {
      * 商品是否支持可配送区域
      */
     private boolean unSupportProvince;
-    
+
+    private String proActivityId;//促销活动id
+
+    public String getProActivityId() {
+        return proActivityId;
+    }
+
+    public void setProActivityId(String proActivityId) {
+        this.proActivityId = proActivityId;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }

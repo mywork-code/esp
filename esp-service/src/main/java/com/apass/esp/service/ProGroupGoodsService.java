@@ -1,5 +1,6 @@
 package com.apass.esp.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,5 +49,21 @@ public class ProGroupGoodsService {
 		return groupGoodsMapper.insertSelective(proGroupGoods);
 	}
 
-
+  /**
+   * 判断商品活动是否失效
+   */
+  public ActivityStatus isValidActivity(String activityId,Long goodsId){
+    if(StringUtils.isEmpty(activityId)){
+      return ActivityStatus.NO;
+    }
+    ProGroupGoods groupGoods = groupGoodsMapper.selectByGoodsIdAndActivityId(goodsId,Long.valueOf(activityId));
+    if(groupGoods == null){
+      return ActivityStatus.NO;
+    }
+    ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+    if(activityCfg == null){
+      return ActivityStatus.NO;
+    }
+    return activityCfgService.getActivityStatus(activityCfg);
+  }
 }

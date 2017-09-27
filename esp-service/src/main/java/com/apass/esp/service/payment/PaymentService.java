@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.service.ProGroupGoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +103,9 @@ public class PaymentService {
 	private CommonService commonService;
 	@Autowired
 	private KvattrService kvattrService ;
+
+	@Autowired
+	private ProGroupGoodsService proGroupGoodsService;
 
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -479,8 +484,11 @@ public class PaymentService {
 					}
 					//验证不配送区域
 					Map<String,Object> resultMap = orderService.validateGoodsUnSupportProvince(requestId, orderId, detail.getGoodsId());
+					//判断商品活动是否失效
+					ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(detail.getProActivityId(),detail.getGoodsId());
+					resultMap.put(OrderService.PRO_ACTIVITY_FLAG,validActivityFlag);
 					Boolean s = (Boolean)resultMap.get("unSupportProvince");
-		    		if(s){
+		    		if(s || validActivityFlag == ActivityStatus.END){
 		    			 return resultMap;
 		    		}
 	    		}

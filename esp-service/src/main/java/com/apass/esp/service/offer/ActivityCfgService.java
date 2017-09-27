@@ -146,7 +146,7 @@ public class ActivityCfgService {
 		Date endTime = cfg.getEndTime();
 		Date now = new Date();
 		if(null == startTime || null == endTime){
-			return ActivityStatus.END;
+			return ActivityStatus.NO;
 		}
 		if(startTime.getTime() > now.getTime()){
 			return ActivityStatus.NO;
