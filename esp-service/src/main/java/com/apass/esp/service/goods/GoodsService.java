@@ -1020,7 +1020,11 @@ public class GoodsService {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
     entity.setGoodsCode(Long.parseLong(param));
     entity.setExternalId(param);
-    return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+    List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
+    if(null !=result && result.size()==1){
+    	return result.get(0);
+    }
+    return null;
   }
 
 }
