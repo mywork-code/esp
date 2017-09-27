@@ -39,11 +39,13 @@
 				<tr>
 					<td align="right">导入活动商品:</td>
 					<td align="left">
-						<form id="ExcelFileForm"  action="${rc.contextPath}/application/activity/importFile" method="POST" enctype="multipart/form-data">
-							<input type="file" id="Excelfile" name="file">
-							<input type="hidden" id="activityId" name="activityId"/>
-							<a href="javascript:void(0);" class="easyui-linkbutton"
-						        id="import">导&nbsp;入&nbsp;</a> &nbsp;&nbsp; 
+						<form id="ExcelFileForm"
+							action="${rc.contextPath}/application/activity/importFile"
+							method="POST" enctype="multipart/form-data">
+							<input type="file" id="Excelfile" name="file"> <input
+								type="hidden" id="activityId" name="activityId" /> <a
+								href="javascript:void(0);" class="easyui-linkbutton" id="import">导&nbsp;入&nbsp;</a>
+							&nbsp;&nbsp;
 						</form>
 					</td>
 				</tr>
@@ -56,13 +58,11 @@
 						name="goodsCode" class="easyui-textbox" style="width: 160px;"
 						maxlength="15" /></td>
 					<td align="right">skuid:</td>
-					<td align="left"><input type="text" id="skuId"
-						name="skuId" class="easyui-textbox" style="width: 160px;"
-						maxlength="15" /></td>
+					<td align="left"><input type="text" id="skuId" name="skuId"
+						class="easyui-textbox" style="width: 160px;" maxlength="15" /></td>
 					<td align="right">商品类目:</td>
-					<td align="left"><input type="text" id="goodsCategory"
-						name="goodsCategory" class="easyui-textbox" style="width: 160px;"
-						maxlength="15" /></td>
+					<td><input id="goodsCategoryCombo" name="goodsCategoryCombo"
+						class="easyui-combotree" style="width: 200px;" />
 					<td colspan="3"><a href="javascript:void(0);" id="searchGoods"
 						style="margin-right: 15px;" class="easyui-linkbutton">查&nbsp;询&nbsp;</a>
 						<a href="javascript:void(0);" id="resetGoods"

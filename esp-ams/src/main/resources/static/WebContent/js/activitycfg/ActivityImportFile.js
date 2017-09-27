@@ -71,7 +71,14 @@ $(function(){
                 title : '备注',
                 field : 'detailDesc',
                 width : 120,
-                align : 'center'
+                align : 'center',
+                formatter : function(value, row, index) {
+                	if(value=='1'){
+                		return "导入成功";
+                	}else{
+                		return "导入失败";
+                	}
+                }
             },{
 				title : '操作',
 				field : 'opt',
@@ -98,7 +105,30 @@ $(function(){
             })
         }
     });
-  
+    //加载商品类目信息
+    goodsCategoryComboFun();
+    // 查询列表
+    $("#searchGoods").click(function() {
+        var params = {};
+        params['goodsCode'] = $("#goodsCode").textbox('getValue');
+        params['skuId'] = $("#skuId").textbox('getValue');
+        var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
+        if("请选择"==goodsCategoryCombo){
+        	goodsCategoryCombo="";
+        }
+        params['goodsCategory']=goodsCategoryCombo;
+        $('#importFileList').datagrid('load', params);
+    });
+    // 刷新列表
+    $("#resetGoods").click(function() {
+    	$("#goodsCode").textbox('setValue','');
+    	$("#skuId").textbox('setValue','');
+    	$("#goodsCategoryCombo").combotree('setValue','');
+    	$("#goodsCategoryCombo").combotree('setValue', '请选择');
+    	var params = {};
+    	$('#importFileList').datagrid('load', params);
+    });
+
     //导入
     $("#import").click(function(){
     	$("#activityId").val("4");
