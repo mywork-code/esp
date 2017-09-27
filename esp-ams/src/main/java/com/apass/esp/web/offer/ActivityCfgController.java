@@ -21,6 +21,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.google.common.collect.Maps;
@@ -90,6 +91,7 @@ public class ActivityCfgController {
  	public Response activityAddSave(ActivityCfgVo vo){
  		try {
  			validateParams(vo, false);
+ 			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			activityCfgService.saveActivity(vo);
  			return Response.success("添加成功");
 		} catch (BusinessException e) {
@@ -112,6 +114,7 @@ public class ActivityCfgController {
  	public Response activityEditSave(ActivityCfgVo vo){
  		try {
  			validateParams(vo, true);
+ 			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			activityCfgService.editActivity(vo);
  			return Response.success("编辑成功");
 		} catch (BusinessException e) {
