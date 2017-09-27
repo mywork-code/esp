@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
@@ -17,8 +23,13 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 @Service
 public class GroupManagerService {
 	
+	private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
+	
 	@Autowired
 	private ProGroupManagerMapper groupManagerMapper;
+	
+	@Autowired
+	private ProGroupGoodsMapper groupGoodsMapper;
 	
 	/**
 	 * 根据活动配置的id，获取活动所属的分组
@@ -51,6 +62,19 @@ public class GroupManagerService {
 	public Integer editGroup(GroupManagerVo vo){
 		ProGroupManager manager = getProGroupManager(vo,true);
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
+	}
+	
+	@Transactional(rollbackFor = { Exception.class})
+	public Integer deleteGroup(Long id) throws BusinessException{
+		if(null == id){
+			throw new BusinessException("分组编号不能为空!");
+		}
+		List<ProGroupGoods> goodsList = groupGoodsMapper.selectGoodsByGroupId(id);
+		if(CollectionUtils.isNotEmpty(goodsList)){
+			logger.error("分组编号为{}下存在关联商品，不能删除!",id);
+			throw new BusinessException("该分组下存在关联的商品，不能删除!");
+		}
+		return groupManagerMapper.deleteByPrimaryKey(id);
 	}
 	
 	public List<GroupManagerVo> getGroupManageVoList(List<ProGroupManager> groupList){

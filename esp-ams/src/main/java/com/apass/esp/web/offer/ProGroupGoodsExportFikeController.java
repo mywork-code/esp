@@ -1,4 +1,4 @@
-package com.apass.esp.web.commons;
+package com.apass.esp.web.offer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +24,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
-import com.apass.esp.service.ProGroupGoodsService;
+import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 
 /**
  * 导入.xlsx .xls文件
@@ -46,9 +50,28 @@ public class ProGroupGoodsExportFikeController {
 	private GoodsService goodsService;
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
+	
+	/**
+     * 商品池分页json
+     */
+    @ResponseBody
+    @RequestMapping(value ="/list")
+    public ResponsePageBody<ProGroupGoodsVo> ProGroupGoodsPageList(ProGroupGoodsQuery query) {
+    	ResponsePageBody<ProGroupGoodsVo> respBody = new ResponsePageBody<ProGroupGoodsVo>();
+		try {
+			ResponsePageBody<ProGroupGoodsVo> pagination= proGroupGoodsService.getProGroupGoodsListPage(query);
+            respBody.setTotal(pagination.getTotal());
+            respBody.setRows(pagination.getRows());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+        } catch (Exception e) {
+        	LOG.error("商品池查询失败!",e);
+            respBody.setMsg("商品池查询失败");
+        }
+        return respBody;
+    }
+    
 	/**
 	 * 导入文件
-	 * 
 	 * @param file
 	 * @return
 	 */
@@ -56,6 +79,7 @@ public class ProGroupGoodsExportFikeController {
 	@RequestMapping("/importFile")
 	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
+		int count = 0;// 导入条数
 		int countSuccess = 0;// 导入成功条数
 		try {
 			importFilein = file.getInputStream();
@@ -66,6 +90,7 @@ public class ProGroupGoodsExportFikeController {
 				return Response.fail("导入文件类型不正确。");
 			}
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
+			count=list.size();
 			if(null !=list){
 				for(int i=0;i<list.size();i++){
 					ProGroupGoods pggds=new ProGroupGoods();
@@ -73,34 +98,36 @@ public class ProGroupGoodsExportFikeController {
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 					pggds.setCreateDate(new Date());
 					pggds.setUpdateDate(new Date());
-					pggds.setMarketPrice(list.get(i).getMarketPrice());
-					pggds.setActivityPrice(list.get(i).getActivityPrice());
+					BigDecimal marketPrice=list.get(i).getMarketPrice();
+					BigDecimal activityPrice=list.get(i).getActivityPrice();
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if(null !=gbity){
-						ProGroupGoods proGroupGoods=proGroupGoodsService.selectByGoodsId(gbity.getGoodId());
-						if(null ==proGroupGoods){
-							pggds.setGoodsId(gbity.getGoodId());
-							pggds.setSkuId(gbity.getExternalId());
-							pggds.setGoodsCode(gbity.getGoodsCode().toString());
-							pggds.setDetailDesc("1");//1表示导入成功
-							pggds.setActivityId(Long.parseLong(activityId));
-							proGroupGoodsService.insertSelective(pggds);
-						}else{
-							//TODO 验证该商品参与的活动是否失效（）
-							Long actId=proGroupGoods.getActivityId();
+					if(null !=gbity && null !=marketPrice && null !=activityPrice && countSuccess<=200){	
+						pggds.setMarketPrice(list.get(i).getMarketPrice());
+						pggds.setActivityPrice(list.get(i).getActivityPrice());
+						pggds.setGoodsId(gbity.getGoodId());
+						pggds.setSkuId(gbity.getExternalId());
+						pggds.setGoodsCode(gbity.getGoodsCode().toString());
+						pggds.setDetailDesc("1");//1表示导入成功
+						pggds.setActivityId(Long.parseLong(activityId));
+						Integer res=proGroupGoodsService.insertSelective(pggds);
+						if(res==1){
+							countSuccess++;
 						}
 					}else{
+						pggds.setMarketPrice(list.get(i).getMarketPrice());
+						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
 						proGroupGoodsService.insertSelective(pggds);
 					}
 				}
 			}
 		} catch (Exception e) {
+			 LOG.error("服务器忙，请稍后再试。", e);
+	         return Response.fail(e.getMessage());
 		}
-
-		return null;
+		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，导入失败"+(count-countSuccess)+"件");
 	}
 	// 将上传文件读取到List中
 	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {

@@ -87,13 +87,12 @@ public class ActivityCfgService {
 		record.setOfferSill1(vo.getOfferSill1());
 		record.setOfferSill2(vo.getOfferSill2());
 		record.setStartTime(DateFormatUtil.string2date(vo.getStartTime(),""));
-		String userName = SpringSecurityUtils.getLoginUserDetails().getUsername();
 		if(bl){
 			record.setCreateDate(new Date());
-			record.setCreateUser(userName);
+			record.setCreateUser(vo.getUserName());
 		}
 		record.setUpdateDate(new Date());
-		record.setUpdateUser(userName);
+		record.setUpdateUser(vo.getUserName());
 		record.setId(vo.getId());
 		return record;
 	}
