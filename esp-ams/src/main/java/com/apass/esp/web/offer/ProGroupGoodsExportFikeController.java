@@ -1,4 +1,4 @@
-package com.apass.esp.web.commons;
+package com.apass.esp.web.offer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,8 +27,8 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
-import com.apass.esp.service.ProGroupGoodsService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;

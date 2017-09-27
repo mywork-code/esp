@@ -14,7 +14,7 @@ import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.common.SequenceRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
-import com.apass.esp.service.ProGroupGoodsService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
