@@ -21,17 +21,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONArray;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
+import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 导入.xlsx .xls文件
@@ -50,7 +55,8 @@ public class ProGroupGoodsExportFikeController {
 	private GoodsService goodsService;
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
-	
+	@Autowired
+	private GroupManagerService groupManagerService;
 	/**
      * 商品池分页json
      */
@@ -83,6 +89,19 @@ public class ProGroupGoodsExportFikeController {
             respBody.setMsg("商品池查询失败");
         }
         return respBody;
+    }
+    /**
+     * 加载活动分组
+     */
+    @ResponseBody
+    @RequestMapping(value ="/loalgroupIds")
+    public List<GroupVo>  ProGroupGoodsPageList(@RequestParam("activityId") String activityId) {
+    	List<GroupManagerVo> result=groupManagerService.getGroupByActivityId(activityId);
+    	List<GroupVo> list=new ArrayList<>();
+    	if(null !=result && result.size()>0){
+    		list=GroupManagerToVo(result);
+    	}
+    	return list;
     }
     
 	/**
@@ -134,6 +153,7 @@ public class ProGroupGoodsExportFikeController {
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
+						pggds.setActivityId(Long.parseLong(activityId));
 						proGroupGoodsService.insertSelective(pggds);
 					}
 				}
@@ -235,5 +255,15 @@ public class ProGroupGoodsExportFikeController {
 			return false;// 如果抛出异常，返回False
 		}
 	}
-
+	
+	private List<GroupVo> GroupManagerToVo(List<GroupManagerVo> list){
+		List<GroupVo>  groupList=new ArrayList<>();
+		for(GroupManagerVo gv:list){
+			GroupVo groupVo=new GroupVo();
+			groupVo.setId(gv.getId().toString());
+			groupVo.setText(gv.getGroupName());
+			groupList.add(groupVo);
+		}
+		return groupList;
+	}
 }
