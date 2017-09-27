@@ -51,7 +51,7 @@ DROP TABLE  IF EXISTS esp.`t_esp_pro_group_goods`;
 CREATE TABLE `t_esp_pro_group_goods` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id' ,
 `goods_id`  bigint(20) NOT NULL COMMENT '商品id' ,
-`sku_id`  varchar(30) NULL NULL DEFAULT '' COMMENT '京东商品的skuId' ,
+`sku_id`  varchar(30) NOT NULL DEFAULT '' COMMENT '京东商品的skuId' ,
 `group_id`  bigint(20)  NULL COMMENT '分组id' ,
 `market_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '市场价' ,
 `activity_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '活动价' ,
@@ -63,10 +63,12 @@ CREATE TABLE `t_esp_pro_group_goods` (
 `create_date` datetime NOT NULL COMMENT '创建时间',
 `update_date` datetime NOT NULL COMMENT '修改时间',
 `activity_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '活动配置的id',
-`status`  varchar(2) NOT NULL DEFAULT 'S' COMMENT 'S:成功；F：失败',
+`status`  varchar(2) NOT NULL DEFAULT '' COMMENT 'S:成功；F：失败',
 PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分组商品关联表';
 
 
 alter table t_esp_goods_base_info add column support_7d_refund varchar(2) not null default '' comment '是否支持7天无理由退货,Y、N';
 update t_esp_goods_base_info set support_7d_refund = 'Y' where source is null;
+
+alter table t_esp_order_detail_info add column pro_activity_id varchar(20) not null default '' comment '促销活动id';
