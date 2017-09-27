@@ -1015,7 +1015,11 @@ public class GoodsService {
     return goods;
 
   }
-
+  /**
+   * 当传入的param在数据库中查出了多条数据时，则认为该条数据导入失败
+   * @param param
+   * @return
+   */
   public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param) {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
     entity.setGoodsCode(Long.parseLong(param));

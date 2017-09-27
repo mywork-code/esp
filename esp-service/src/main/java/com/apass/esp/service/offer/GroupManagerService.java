@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+
 
 @Service
 public class GroupManagerService {
@@ -66,8 +65,8 @@ public class GroupManagerService {
 	 * @return
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Integer saveGroup(GroupManagerVo vo){
-		ProGroupManager manager = getProGroupManager(vo,true);
+	public Integer saveGroup(GroupManagerVo vo,String userName){
+		ProGroupManager manager = getProGroupManager(vo,true,userName);
 		return groupManagerMapper.insertSelective(manager);
 	}
 	
@@ -77,8 +76,8 @@ public class GroupManagerService {
 	 * @return
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Integer editGroup(GroupManagerVo vo){
-		ProGroupManager manager = getProGroupManager(vo,true);
+	public Integer editGroup(GroupManagerVo vo,String userName){
+		ProGroupManager manager = getProGroupManager(vo,true,userName);
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
 	}
 	
@@ -113,14 +112,13 @@ public class GroupManagerService {
 		return vo;
 	}
 	
-	public ProGroupManager getProGroupManager(GroupManagerVo vo,boolean bl){
+	public ProGroupManager getProGroupManager(GroupManagerVo vo,boolean bl,String userName){
 		
 		ProGroupManager group = new ProGroupManager();
 		group.setActivityId(vo.getActivityId());
 		group.setGoodsSum(vo.getGoodsSum());
 		group.setGroupName(vo.getGroupName());
 		group.setOrderSort(vo.getOrderSort());
-		String userName = SpringSecurityUtils.getLoginUserDetails().getUsername();
 		if(bl){
 			group.setCreateDate(new Date());
 			group.setCreateUser(userName);

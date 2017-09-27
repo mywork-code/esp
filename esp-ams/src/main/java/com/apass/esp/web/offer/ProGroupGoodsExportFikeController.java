@@ -59,6 +59,21 @@ public class ProGroupGoodsExportFikeController {
     public ResponsePageBody<ProGroupGoodsVo> ProGroupGoodsPageList(ProGroupGoodsQuery query) {
     	ResponsePageBody<ProGroupGoodsVo> respBody = new ResponsePageBody<ProGroupGoodsVo>();
 		try {
+			String goodsCategory=query.getGoodsCategory();
+			   if (StringUtils.isNotBlank(goodsCategory)) {
+	                String[] aArray = goodsCategory.split("_");
+	                String level = aArray[0];
+	                String id = aArray[1];
+	                if ("1".equals(level)) {
+	                    if (!("-1".equals(id))) {
+	                    	query.setCategoryId1(Long.valueOf(id));
+	                    }
+	                } else if ("2".equals(level)) {
+	                	query.setCategoryId2(Long.valueOf(id));
+	                } else if ("3".equals(level)) {
+	                	query.setCategoryId3(Long.valueOf(id));
+	                }
+	            }
 			ResponsePageBody<ProGroupGoodsVo> pagination= proGroupGoodsService.getProGroupGoodsListPage(query);
             respBody.setTotal(pagination.getTotal());
             respBody.setRows(pagination.getRows());
