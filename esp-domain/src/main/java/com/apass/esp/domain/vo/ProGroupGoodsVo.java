@@ -41,6 +41,10 @@ public class ProGroupGoodsVo {
     private Date updateDate;
 
     private String detailDesc;
+    
+    private String activityId;
+    
+    private String status;
 
 	public Long getId() {
 		return id;
@@ -193,5 +197,21 @@ public class ProGroupGoodsVo {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
-    
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 }
