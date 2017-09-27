@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
+import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
@@ -31,6 +32,9 @@ public class GroupManagerService {
 	@Autowired
 	private ProGroupGoodsMapper groupGoodsMapper;
 	
+	@Autowired
+	private ProGroupGoodsService proGroupGoodsService;
+	
 	/**
 	 * 根据活动配置的id，获取活动所属的分组
 	 * @param activityId
@@ -40,6 +44,20 @@ public class GroupManagerService {
 	public List<GroupManagerVo> getGroupByActivityId(String activityId){
 		List<ProGroupManager> groupList =  groupManagerMapper.getGroupByActivityId(Long.parseLong(activityId));
 		return getGroupManageVoList(groupList);
+	}
+	
+	/**
+	 * 根据活动的id，获取下属分组和分组下的商品
+	 * @param activityId
+	 * @return
+	 */
+	public List<GroupManagerVo> getGroupAndGoodsByActivityId(String activityId){
+		List<GroupManagerVo> groupVoList = getGroupByActivityId(activityId);
+		for (GroupManagerVo vo : groupVoList) {
+			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
+			vo.setGoodsList(goodsList);
+		}
+		return groupVoList;
 	}
 	
 	/**
