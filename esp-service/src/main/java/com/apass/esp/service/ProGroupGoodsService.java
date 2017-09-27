@@ -31,23 +31,24 @@ public class ProGroupGoodsService {
   private ActivityCfgService activityCfgService;
 
   public ProGroupGoodsBo getByGoodsId(Long goodsId){
-    ProGroupGoods groupGoods =  groupGoodsMapper.selectByGoodsId(goodsId);
-    if(groupGoods == null ){
+    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
+    if(groupGoods == null){
       return null;
     }
-    ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
-    if(activityCfg == null){
-      return null;
-    }
-    ProGroupGoodsBo bo = new ProGroupGoodsBo();
-    bo.setActivityId(groupGoods.getActivityId());
-    bo.setActivityPrice(groupGoods.getActivityPrice());
-    bo.setGoodsId(goodsId);
-    bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
-    return bo;
+
+      ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+      if(activityCfg == null){
+        return null;
+      }
+      ProGroupGoodsBo bo = new ProGroupGoodsBo();
+      bo.setActivityId(groupGoods.getActivityId());
+      bo.setActivityPrice(groupGoods.getActivityPrice());
+      bo.setGoodsId(goodsId);
+      bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
+      return bo;
   }
 	public ProGroupGoods selectByGoodsId(Long goodsId){
-		return groupGoodsMapper.selectByGoodsId(goodsId);
+		return groupGoodsMapper.selectLatestByGoodsId(goodsId);
 	}
 	
 	public Integer insertSelective(ProGroupGoods proGroupGoods){

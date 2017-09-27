@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.apass.esp.mapper.ProGroupGoodsMapper">
-     <!-- 查询条件 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >   
+<mapper namespace="com.apass.esp.mapper.ProGroupGoodsMapper" >
+
+    <select id="selectLatestByGoodsId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where goods_id = #{goodsId} and status = 'S' order by id desc limit 1
+    </select>
+    
+    <select id="selectGoodsByGroupId" resultMap="BaseResultMap">
+       select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where group_id = #{groupId}
+    </select>
+	 <!-- 查询条件 -->
 	<sql id="QueryConditionSql">
 		<where>
 			<if test="goodsCode != null and goodsCode != ''">
@@ -50,5 +64,6 @@
 		select count(*) from t_esp_pro_group_goods
 		<include refid="QueryConditionSql" />
 	</select>
+
 </mapper>
 

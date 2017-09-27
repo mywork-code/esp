@@ -20,6 +20,8 @@ public class ActivityCfgVo {
     private Long discount2;
     
     private String status;
+    
+    private String userName;
 
 
     public Long getId() {
@@ -100,6 +102,14 @@ public class ActivityCfgVo {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 }
