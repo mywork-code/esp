@@ -3,7 +3,7 @@ package com.apass.esp.domain.vo;
 /**
  * Created by jie.xu on 17/9/26.
  */
-public class BannerVo {
+public class SimpleBannerVo {
   private String img; //banner图片
   private String linkUrl; //跳转链接
 
