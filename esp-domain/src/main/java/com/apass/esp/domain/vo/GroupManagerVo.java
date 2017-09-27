@@ -1,5 +1,7 @@
 package com.apass.esp.domain.vo;
 
+import java.util.List;
+
 public class GroupManagerVo {
     private Long id;
 
@@ -10,6 +12,8 @@ public class GroupManagerVo {
     private Long activityId;
 
     private Long orderSort;
+    
+    private List<GroupGoodsVo> goodsList;
     
     public Long getId() {
         return id;
@@ -50,4 +54,13 @@ public class GroupManagerVo {
     public void setOrderSort(Long orderSort) {
         this.orderSort = orderSort;
     }
+
+	public List<GroupGoodsVo> getGoodsList() {
+		return goodsList;
+	}
+
+	public void setGoodsList(List<GroupGoodsVo> goodsList) {
+		this.goodsList = goodsList;
+	}
+    
 }
