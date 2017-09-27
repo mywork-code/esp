@@ -10,7 +10,7 @@ public class GroupManagerVo {
     private Long activityId;
 
     private Long orderSort;
-
+    
     public Long getId() {
         return id;
     }

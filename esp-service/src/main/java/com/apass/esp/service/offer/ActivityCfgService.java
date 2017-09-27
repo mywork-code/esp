@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.enums.ActivityStatus;
@@ -46,19 +47,18 @@ public class ActivityCfgService {
 	/**
 	 * 保存添加活动配置信息
 	 */
+	@Transactional(rollbackFor = { Exception.class})
 	public Integer saveActivity(ActivityCfgVo vo){
-		ProActivityCfg record = getActivityCfg(vo);
-		record.setCreateDate(new Date());
-		record.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		ProActivityCfg record = getActivityCfg(vo,true);
 		return activityCfgMapper.insertSelective(record);
 	}
 	
 	/**
 	 * 保存编辑活动配置信息
 	 */
+	@Transactional(rollbackFor = { Exception.class})
 	public Integer editActivity(ActivityCfgVo vo){
-		ProActivityCfg record = getActivityCfg(vo);
-		record.setId(vo.getId());
+		ProActivityCfg record = getActivityCfg(vo,false);
 		return activityCfgMapper.updateByPrimaryKeySelective(record);
 	}
 	
@@ -66,8 +66,13 @@ public class ActivityCfgService {
 		ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(id));
 		return ActivityCfgPoToVo(cfg);
 	}
-	
-	public ProActivityCfg getActivityCfg(ActivityCfgVo vo){
+	/**
+	 * 添加或者修改 保存到数据库
+	 * @param vo
+	 * @param bl
+	 * @return
+	 */
+	public ProActivityCfg getActivityCfg(ActivityCfgVo vo,boolean bl){
 		ProActivityCfg record = new ProActivityCfg();
 		record.setActivityName(vo.getActivityName());
 		record.setActivityType(vo.getActivityType());
@@ -77,8 +82,14 @@ public class ActivityCfgService {
 		record.setOfferSill1(vo.getOfferSill1());
 		record.setOfferSill2(vo.getOfferSill2());
 		record.setStartTime(DateFormatUtil.string2date(vo.getStartTime(),""));
+		String userName = SpringSecurityUtils.getLoginUserDetails().getUsername();
+		if(bl){
+			record.setCreateDate(new Date());
+			record.setCreateUser(userName);
+		}
 		record.setUpdateDate(new Date());
-		record.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+		record.setUpdateUser(userName);
+		record.setId(vo.getId());
 		return record;
 	}
 	
