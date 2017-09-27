@@ -15,7 +15,12 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
-	 
+	     <select id="selectByGoodsIdAndActivityId">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where goods_id = #{goodsId} and activity_id = #{activityId} and status = 'S'
+    </select>
 	<!-- 通过goodsId查询成功管理活动的商品信息 -->
 	<select id="selectByGoodsId" resultMap="BaseResultMap">
 		select

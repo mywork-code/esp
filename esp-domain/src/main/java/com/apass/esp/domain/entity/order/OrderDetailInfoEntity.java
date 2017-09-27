@@ -1,14 +1,11 @@
 package com.apass.esp.domain.entity.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.apass.gfb.framework.annotation.MyBatisEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.StringUtils;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.ctc.wstx.util.StringUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商品订单详情实体
@@ -155,6 +152,17 @@ public class OrderDetailInfoEntity {
 
     // 退款金额
     private BigDecimal refundAmt;
+
+    //促销活动id
+    private String proActivityId;
+
+    public String getProActivityId() {
+        return proActivityId;
+    }
+
+    public void setProActivityId(String proActivityId) {
+        this.proActivityId = proActivityId;
+    }
 
     public BigDecimal getGoodsCostPrice() {
 		return goodsCostPrice;

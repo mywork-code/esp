@@ -14,6 +14,9 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
 
    ProGroupGoods selectLatestByGoodsId(@Param("goodsId") Long goodsId);
 
+
+   ProGroupGoods selectByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
+                                              @Param("activityId") Long activityId);
    List<ProGroupGoods> selectGoodsByGroupId(@Param("groupId") Long groupId);
    
 	//通过goodsId查询成功管理活动的商品信息
