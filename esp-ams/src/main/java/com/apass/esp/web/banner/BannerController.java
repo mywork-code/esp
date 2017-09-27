@@ -5,6 +5,7 @@ import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +111,17 @@ public class BannerController extends BaseController {
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put(BANNER_TYPE, bannerType);
+            if(org.apache.commons.lang.StringUtils.isEmpty(bannerType)){
+                List<String> bannerTypeParams = new ArrayList<>();
+                bannerTypeParams.add(BannerType.BANNER_INDEX.getIdentify());
+                bannerTypeParams.add(BannerType.BANNER_SIFT.getIdentify());
+                CategoryDto dto = new CategoryDto();
+                List<CategoryVo> list = cateService.listCategory(dto);
+                for(CategoryVo c : list){
+                    bannerTypeParams.add("category_" + c.getCategoryId());
+                }
+                map.put("bannerTypeParams",bannerTypeParams);
+            }
 
             // 获取分页结果返回给页面
             PaginationManage<BannerInfoEntity> pagination = bannerInfoService.loadBanners(map, page);

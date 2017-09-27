@@ -75,7 +75,10 @@
 			       AND banner_type = #{bannerType, jdbcType=VARCHAR} 
 			   </if>	
 			   <if test="bannerType == null or bannerType == ''">
-			       AND banner_type in ('index','sift')
+				   AND banner_type in
+				   <foreach  collection="bannerTypeParams" index="index" item="item" open="(" separator="," close=")">
+					  #{item}
+				   </foreach>
 			   </if>
 			   <if test="bannerOrder !=null and bannerOrder !=''">
 			      AND banner_order =#{bannerOrder, jdbcType=BIGINT} 

@@ -94,7 +94,6 @@ $(function(){
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                  // console.log(data);
             	   $.validateResponse(data, function() {
             		  // debugger;
                        success(data);
