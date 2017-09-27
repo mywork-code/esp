@@ -1,7 +1,13 @@
 package com.apass.esp.web.offer;
 
-import java.util.List;
-
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.domain.vo.GroupOrderSortVo;
+import com.apass.esp.service.offer.GroupManagerService;
+import com.apass.esp.utils.ValidateUtils;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.vo.GroupManagerVo;
-import com.apass.esp.domain.vo.GroupOrderSortVo;
-import com.apass.esp.service.offer.GroupManagerService;
-import com.apass.esp.utils.ValidateUtils;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import java.util.List;
 
 /**
  * 分组管理
@@ -43,7 +43,7 @@ public class GroupManagerController {
 		try {
 			validateParams(vo);
 			ValidateUtils.isNullObject(vo.getActivityId(),"活动Id不能为空!");
-			groupManagerService.saveGroup(vo);
+			groupManagerService.saveGroup(vo,SpringSecurityUtils.getLoginUserDetails().getUsername());
 			return Response.success("添加成功!");
 		}catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
@@ -58,7 +58,7 @@ public class GroupManagerController {
  	public Response groupEditSave(@RequestBody GroupManagerVo vo){
 		try {
 			validateParams(vo);
-			groupManagerService.editGroup(vo);
+			groupManagerService.editGroup(vo, SpringSecurityUtils.getLoginUserDetails().getUsername());
 			return Response.success("修改成功!");
 		}catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
