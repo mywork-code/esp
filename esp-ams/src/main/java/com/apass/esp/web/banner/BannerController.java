@@ -72,7 +72,6 @@ public class BannerController extends BaseController {
     @Autowired
     private CategoryInfoService cateService;
 
-    // private String nfsBanner="E:/";
     /**
      * banner信息初始化
      */
@@ -87,6 +86,13 @@ public class BannerController extends BaseController {
         List<CategoryVo> list = cateService.listCategory(dto);
         map.put("oneLevelCateList",list);
         return new ModelAndView(CREDIT_GOOD_BANNER_URL, map);
+    }
+
+    @RequestMapping("/getById")
+    @ResponseBody
+    public Response getById(Integer id){
+        BannerInfoEntity bannerInfoEntity =  bannerInfoService.selectById(id);
+        return Response.successResponse(bannerInfoEntity);
     }
 
     /**
@@ -223,16 +229,10 @@ public class BannerController extends BaseController {
             		
             	}
             }
-            
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
             entity.setBannerOrder(Long.valueOf(bannerOrder));
             entity.setActivityUrl(activityUrl);
-
-            String respon = isAdd(bannerType, Long.valueOf(bannerOrder));
-            if (!"ok".equals(respon)) {
-                return Response.fail(respon);
-            }
 
             //图片验证
             MultipartFile file = pageModel.getBannerFile();
@@ -266,10 +266,20 @@ public class BannerController extends BaseController {
             pageModel.setBannerFile(null);
             entity.setBannerImgUrl(fileUrl);
 
-            entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-            entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-
-            Integer result = bannerInfoService.addBannerInfor(entity);
+            Integer result = null;
+            if(pageModel.getBannerId() == null){
+                String respon = isAdd(bannerType, Long.valueOf(bannerOrder));
+                if (!"ok".equals(respon)) {
+                    return Response.fail(respon);
+                }
+                entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                 result = bannerInfoService.addBannerInfor(entity);
+            }else{
+                entity.setId(pageModel.getBannerId());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                result = bannerInfoService.update(entity);
+            }
             if (result == 1) {
                 return Response.success("上传banner成功！");
             } else {

@@ -51,13 +51,13 @@ public class OtherCategoryGoodsVo {
   /**
    * 一级类目下banner图
    */
-  private List<BannerVo> bannerList;
+  private List<SimpleBannerVo> bannerList;
 
-  public List<BannerVo> getBannerList() {
+  public List<SimpleBannerVo> getBannerList() {
     return bannerList;
   }
 
-  public void setBannerList(List<BannerVo> bannerList) {
+  public void setBannerList(List<SimpleBannerVo> bannerList) {
     this.bannerList = bannerList;
   }
 

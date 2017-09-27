@@ -55,6 +55,10 @@ public class BannerInfoService {
         return bannerDao.addBannerInfor(entity);
     }
 
+    public Integer update(BannerInfoEntity entity){
+        return bannerDao.update(entity);
+    }
+
     /**
      * 删除
      * @param entity
