@@ -42,7 +42,9 @@
 			            c.goods_price        goodsPrice,
 			            a.market_price       marketPrice,
 			            a.activity_price     activityPrice,
-			            a.detail_desc        detailDesc
+			            a.detail_desc        detailDesc,
+			            a.activity_id        activityId,
+			            a.status             status
 				FROM
 						t_esp_pro_group_goods   a
 			LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
