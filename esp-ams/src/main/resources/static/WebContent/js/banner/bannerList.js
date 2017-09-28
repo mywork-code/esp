@@ -35,14 +35,7 @@ $(function(){
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
-				align : 'center',
-				formatter:function(value,row,index){
-					if(value=="index"){
-						return "首页";
-					}else if(value=="sift"){
-						return "精选";
-				}
-			}
+				align : 'center'
 			},
 // 			{
 // 				title : '活动地址',
