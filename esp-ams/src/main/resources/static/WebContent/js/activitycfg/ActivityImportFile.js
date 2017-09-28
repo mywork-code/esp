@@ -161,8 +161,8 @@ $(function(){
     			if(data.status == '1'){
     				$.messager.alert("<font color='black'>提示</font>", data.msg, "info");
     				$('#Excelfile').val('');
-    				var param = getParam();
- 			        $('#list').datagrid('load', param);
+    				var params = {};
+    		    	$('#importFileList').datagrid('load', params);
     			}else{
     				$.messager.alert("<font color='black'>提示</font>", data.msg, "info");
     			}
@@ -181,6 +181,8 @@ $(function(){
 		    	var l=object.length;
 		    	if(l>0){
 		    		$("#addGoodsToGroup").window('open');
+		    		$("#addGoodsToGroupActivityId").val(activityId);
+		    		$("#addGoodsToGroupGoodsId").val(goodsId);
 		    	}else{
 		    		alert("请为该活动添加分组！");
 		    	}
@@ -188,9 +190,27 @@ $(function(){
 		    valueField:'id',
 		    textField:'text'
 		});
-
-		
 	};
+	//按取消键 关闭弹框
+	 $("#addGoodsToGroupOppo").click(function() {
+ 		$("#addGoodsToGroup").window('close');
+	 });
+		//确定关联分组
+	 $("#addGoodsToGroupAgree").click(function() {
+ 		$("#addGoodsToGroup").window('close');
+ 		 var params = {};
+ 		 params['activityId']= $("#addGoodsToGroupActivityId").val();
+ 		 params['goodsId']= $("#addGoodsToGroupGoodsId").val();
+         params['groupNameId'] = $("#groupName").textbox('getValue');
+ 		$.ajax({
+ 			type : "POST",
+ 			url : ctx + '/application/activity/addOneGoods',
+ 			data : params,
+ 			success : function(data) {
+ 				
+ 			}
+ 		});
+	 });
     // 批量商品添加至
     $("#addGoods").click(function() {
     	var selRow = $('#importFileList').datagrid('getChecked');

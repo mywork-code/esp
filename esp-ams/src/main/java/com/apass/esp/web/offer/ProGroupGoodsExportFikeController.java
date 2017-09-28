@@ -23,14 +23,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONArray;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -57,6 +61,8 @@ public class ProGroupGoodsExportFikeController {
 	private ProGroupGoodsService proGroupGoodsService;
 	@Autowired
 	private GroupManagerService groupManagerService;
+	@Autowired
+	private ActivityCfgService activityCfgService;
 	/**
      * 商品池分页json
      */
@@ -105,6 +111,39 @@ public class ProGroupGoodsExportFikeController {
     }
     
 	/**
+	 * 添加一个商品到分组中
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/addOneGoods")
+	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
+			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+		try {
+			// 判断该商品是否在有效的活动下
+			ProGroupGoodsBo pggbo = proGroupGoodsService.getByGoodsIdStatus(Long.parseLong(goodsId));
+			if (null != pggbo && pggbo.isValidActivity()) {
+				Response.fail("商品" + goodsId + "已经在其他有效活动中，不能再关联！");
+			} else {
+				ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+				ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+				// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+				if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+					ProGroupGoods proGroupGoods = proGroupGoodsService
+							.selectOneByGoodsIdAndActivityId(Long.parseLong(goodsId), Long.parseLong(activityId));
+					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
+					proGroupGoods.setStatus("S");
+					proGroupGoods.setUpdateDate(new Date());
+					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
+				} else {
+					Response.fail("活动已经结束，不能再添加商品！");
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("添加至该活动失败！", e);
+			Response.fail("添加至该活动失败！");
+		}
+		return Response.success("添加至该活动成功！");
+	}
+	/**
 	 * 导入文件
 	 * @param file
 	 * @return
@@ -137,19 +176,27 @@ public class ProGroupGoodsExportFikeController {
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if(null !=gbity && null !=marketPrice && null !=activityPrice && countSuccess<=200){	
-						pggds.setMarketPrice(list.get(i).getMarketPrice());
-						pggds.setActivityPrice(list.get(i).getActivityPrice());
+					if (null != gbity && null != marketPrice && null != activityPrice && countSuccess <= 200) {
+						ProGroupGoods proGroupGoods = proGroupGoodsService
+								.selectOneByGoodsIdAndActivityId(gbity.getGoodId(), Long.parseLong(activityId));
+						//判断该商品在该活动下是否已经导入过
+						if (null == proGroupGoods) {
+							pggds.setMarketPrice(list.get(i).getMarketPrice());
+							pggds.setActivityPrice(list.get(i).getActivityPrice());
+							pggds.setGoodsId(gbity.getGoodId());
+							pggds.setSkuId(gbity.getExternalId());
+							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setDetailDesc("1");// 1表示导入成功
+							pggds.setActivityId(Long.parseLong(activityId));
+							Integer res = proGroupGoodsService.insertSelective(pggds);
+							if (res == 1) {
+								countSuccess++;
+							}
+						}
+					}else if(null != gbity){
 						pggds.setGoodsId(gbity.getGoodId());
 						pggds.setSkuId(gbity.getExternalId());
 						pggds.setGoodsCode(gbity.getGoodsCode().toString());
-						pggds.setDetailDesc("1");//1表示导入成功
-						pggds.setActivityId(Long.parseLong(activityId));
-						Integer res=proGroupGoodsService.insertSelective(pggds);
-						if(res==1){
-							countSuccess++;
-						}
-					}else{
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
