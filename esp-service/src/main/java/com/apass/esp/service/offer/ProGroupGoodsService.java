@@ -59,12 +59,42 @@ public class ProGroupGoodsService {
       bo.setValidActivity(ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg));
       return bo;
   }
+  //判断商品是否已经关联了有效的活动
+  public ProGroupGoodsBo getByGoodsIdStatus(Long goodsId){
+	    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
+	    if(groupGoods == null){
+	      return null;
+	    }
+
+	      ProActivityCfg activityCfg = activityCfgService.getById(groupGoods.getActivityId());
+	      if(activityCfg == null){
+	        return null;
+	      }
+	      ProGroupGoodsBo bo = new ProGroupGoodsBo();
+	      bo.setActivityId(groupGoods.getActivityId());
+	      bo.setActivityPrice(groupGoods.getActivityPrice());
+	      bo.setGoodsId(goodsId);
+	      ActivityStatus activityStatus=activityCfgService.getActivityStatus(activityCfg);
+	      //当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+	      if(ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO==activityStatus){
+	    	  bo.setValidActivity(true);
+	      }else{
+	    	  bo.setValidActivity(false);
+	      }
+	      return bo;
+	  }
 	public ProGroupGoods selectByGoodsId(Long goodsId){
 		return groupGoodsMapper.selectLatestByGoodsId(goodsId);
 	}
 	
 	public Integer insertSelective(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.insertSelective(proGroupGoods);
+	}
+	public Integer updateProGroupGoods(ProGroupGoods proGroupGoods){
+		return groupGoodsMapper.updateByPrimaryKeySelective(proGroupGoods);
+	}
+	public ProGroupGoods selectOneByGoodsIdAndActivityId(Long goodsId,Long activityId){
+		return groupGoodsMapper.selectOneByGoodsIdAndActivityId(goodsId,activityId);
 	}
 	/**
 	 * 获取活动配置信息

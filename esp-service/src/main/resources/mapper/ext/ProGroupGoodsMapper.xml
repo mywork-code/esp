@@ -15,20 +15,18 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
-	     <select id="selectByGoodsIdAndActivityId">
+	 <select id="selectByGoodsIdAndActivityId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and activity_id = #{activityId} and status = 'S'
     </select>
-	<!-- 通过goodsId查询成功管理活动的商品信息 -->
-	<select id="selectByGoodsId" resultMap="BaseResultMap">
-		select
-		<include refid="Base_Column_List" />
-		from t_esp_pro_group_goods
-		where status = 'S'
-		AND goods_id = #{goodsId}
-	</select>
+     <select id="selectOneByGoodsIdAndActivityId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where goods_id = #{goodsId} and activity_id = #{activityId}
+    </select>
 	<select id="getProGroupGoodsListPage" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
 		resultType="com.apass.esp.domain.vo.ProGroupGoodsVo">
 				SELECT
