@@ -31,7 +31,13 @@ $(function(){
                 title : '商品名称',
                 field : 'goodsName',
                 width : 120,
-                align : 'center'
+                align : 'center',
+    			formatter : function(value, row, index) {
+                 	if(null == value || "null"==value)
+                 		value = "";
+                 	var msg = value+"";
+                 	return "<div  title='" + value + "'>" + value + "</div>";
+                 }
             },
             {
                 title : '商品状态',
@@ -199,16 +205,23 @@ $(function(){
 	 $("#addGoodsToGroupAgree").click(function() {
  		$("#addGoodsToGroup").window('close');
  		 var params = {};
- 		 params['activityId']= $("#addGoodsToGroupActivityId").val();
- 		 params['goodsId']= $("#addGoodsToGroupGoodsId").val();
-         params['groupNameId'] = $("#groupName").textbox('getValue');
+ 		 var activityId=$("#addGoodsToGroupActivityId").val();
+ 		 var goodsId=   $("#addGoodsToGroupGoodsId").val();
+ 		 var groupNameId=$("#groupName").textbox('getValue');
+ 		 if(null ==groupNameId || groupNameId ==""){
+ 			 alert("请选择分组！");
+ 			 return;
+ 		 }
+ 		 params['activityId']= activityId;
+ 		 params['goodsId']= goodsId
+         params['groupNameId'] = groupNameId;
  		$.ajax({
  			type : "POST",
  			url : ctx + '/application/activity/addOneGoods',
  			data : params,
  			success : function(data) {
  				if(data.status=='1'){
- 					alert("添加成功！");
+ 					alert(data.msg);
  				}else{
  					alert("添加失败！");
  				}
@@ -224,12 +237,31 @@ $(function(){
 			 $.messager.alert("提示", "至少勾选一条数据！","info");  
 			 return ;  
 		}else{
-			var goodsIds=[];  
-			for (var i = 0; i < selRow.length; i++) {
-				var goodsId=selRow[i].goodsId;     
-				goodsIds.push(goodsId); 
-		      }  
-			checkGoods(goodsIds,"商品池批量添加至");
+//			var activityId= $("#addGoodsToGroupActivityId").val();
+			var activityId='4';
+			var goodsIdsString=selRow[0].goodsId;
+			for (var i = 1; i < selRow.length; i++) {
+				goodsIdsString=goodsIdsString+','+selRow[i].goodsId;
+		      } 
+			/**加载该活动的分组**/
+			var params = {};
+			params['activityId']=activityId;
+			$('#groupName').combobox({
+			    url:ctx + '/application/activity/loalgroupIds',
+			    queryParams:params,
+			    onLoadSuccess:function(object){		 
+			    	var l=object.length;
+			    	if(l>0){
+			    		$("#addGoodsToGroup").window('open');
+			    		$("#addGoodsToGroupActivityId").val(activityId);
+			    	    $("#addGoodsToGroupGoodsId").val(goodsIdsString);
+			    	}else{
+			    		alert("请为该活动添加分组！");
+			    	}
+			    },
+			    valueField:'id',
+			    textField:'text'
+			});
 		}
     });
     
