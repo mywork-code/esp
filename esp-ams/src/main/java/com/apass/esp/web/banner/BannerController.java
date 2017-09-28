@@ -234,22 +234,25 @@ public class BannerController extends BaseController {
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
                   GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode(activityUrl);
-            		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
+                  if(goodsInfo == null){
+                      return Response.fail("请添加已上架的商品");
+                  }
+            		if("jd".equals(goodsInfo.getSource())){
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=jd";
             		}else{
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
             		}
             		
             	}
+                entity.setActivityUrl(activityUrl);
             }
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
             entity.setBannerOrder(Long.valueOf(bannerOrder));
-            entity.setActivityUrl(activityUrl);
 
             //图片验证
             MultipartFile file = pageModel.getBannerFile();
-            if(file != null){
+            if(file.getInputStream().available() >0){
                 String imgType = ImageTools.getImgType(file);
                 String fileName = FILE_NAME_PREFIX + bannerOrder + "_" + System.currentTimeMillis() + "." + imgType;
                 String fileUrl = nfsBanner + bannerType + "/" + fileName;
