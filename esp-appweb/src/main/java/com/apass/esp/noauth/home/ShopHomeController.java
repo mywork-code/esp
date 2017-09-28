@@ -801,6 +801,7 @@ public class ShopHomeController {
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("support7dRefund", goodsInfo.getSupport7dRefund());// 是否支持7天无理由退货,Y、N
+                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
                 if (jdGoodsStockInfoList.size() == 1) {
