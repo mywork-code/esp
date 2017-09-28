@@ -117,32 +117,43 @@ public class ProGroupGoodsExportFikeController {
 	@RequestMapping(value = "/addOneGoods")
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
 			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+		int count = 0;
+		int countSuccess = 0;
+		int countFail = 0;
 		try {
-			// 判断该商品是否在有效的活动下
-			ProGroupGoodsBo pggbo = proGroupGoodsService.getByGoodsIdStatus(Long.parseLong(goodsId));
-			if (null != pggbo && pggbo.isValidActivity()) {
-				Response.fail("商品" + goodsId + "已经在其他有效活动中，不能再关联！");
-			} else {
-				ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
-				ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
-				// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
-				if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
-					ProGroupGoods proGroupGoods = proGroupGoodsService
-							.selectOneByGoodsIdAndActivityId(Long.parseLong(goodsId), Long.parseLong(activityId));
-					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
-					proGroupGoods.setStatus("S");
-					proGroupGoods.setUpdateDate(new Date());
-					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
-					return Response.success("添加至该活动成功！");
-				} else {
-					Response.fail("活动已经结束，不能再添加商品！");
+			if (null != goodsId && goodsId != "") {
+				String[] goods = goodsId.split(",");
+				count = goods.length;
+				for (int i = 0; i < goods.length; i++) {
+					// 判断该商品是否在有效的活动下
+					ProGroupGoodsBo pggbo = proGroupGoodsService.getByGoodsIdStatus(Long.parseLong(goods[i]));
+					if (null != pggbo && pggbo.isValidActivity()) {
+						countFail++;
+					} else {
+						ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+						ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+						// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+						if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+							ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
+									Long.parseLong(goods[i]), Long.parseLong(activityId));
+							proGroupGoods.setGroupId(Long.parseLong(groupNameId));
+							proGroupGoods.setStatus("S");
+							proGroupGoods.setUpdateDate(new Date());
+							proGroupGoodsService.updateProGroupGoods(proGroupGoods);
+							countSuccess++;
+						} else {
+							countFail++;
+						}
+					}
 				}
+			} else {
+				Response.fail("添加至该活动失败！");
 			}
 		} catch (Exception e) {
 			LOG.error("添加至该活动失败！", e);
 			Response.fail("添加至该活动失败！");
 		}
-		return Response.fail("添加至该活动失败！");
+		return Response.success("共"+count+"件商品，关联成功"+countSuccess+"件，失败"+countFail+"件");
 	}
 	/**
 	 * 导入文件
