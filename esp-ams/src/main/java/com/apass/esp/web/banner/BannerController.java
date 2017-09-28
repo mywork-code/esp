@@ -5,6 +5,7 @@ import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +111,17 @@ public class BannerController extends BaseController {
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put(BANNER_TYPE, bannerType);
+            if(org.apache.commons.lang.StringUtils.isEmpty(bannerType)){
+                List<String> bannerTypeParams = new ArrayList<>();
+                bannerTypeParams.add(BannerType.BANNER_INDEX.getIdentify());
+                bannerTypeParams.add(BannerType.BANNER_SIFT.getIdentify());
+                CategoryDto dto = new CategoryDto();
+                List<CategoryVo> list = cateService.listCategory(dto);
+                for(CategoryVo c : list){
+                    bannerTypeParams.add("category_" + c.getCategoryId());
+                }
+                map.put("bannerTypeParams",bannerTypeParams);
+            }
 
             // 获取分页结果返回给页面
             PaginationManage<BannerInfoEntity> pagination = bannerInfoService.loadBanners(map, page);
@@ -211,7 +224,7 @@ public class BannerController extends BaseController {
                 throw new BusinessException("参数有误.");
             }
 
-            if (pageModel.getBannerFile().getInputStream().available() == 0) {
+            if (pageModel.getBannerFile().getInputStream().available() == 0 && pageModel.getBannerId() == null) {
                 throw new BusinessException("请选择文件.");
             }
             //电商3期511 20170519 banner 添加设置商品链接
@@ -236,35 +249,37 @@ public class BannerController extends BaseController {
 
             //图片验证
             MultipartFile file = pageModel.getBannerFile();
-            String imgType = ImageTools.getImgType(file);
-            String fileName = FILE_NAME_PREFIX + bannerOrder + "_" + System.currentTimeMillis() + "." + imgType;
-            String fileUrl = nfsBanner + bannerType + "/" + fileName;
+            if(file != null){
+                String imgType = ImageTools.getImgType(file);
+                String fileName = FILE_NAME_PREFIX + bannerOrder + "_" + System.currentTimeMillis() + "." + imgType;
+                String fileUrl = nfsBanner + bannerType + "/" + fileName;
 
-            boolean checkHomePageBannerImgSize = false;
-            if("index".equals(bannerType)){
-                checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSize(file);
-            }else{
-                checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSizeForSift(file);
-            }
-            boolean checkImgType = ImageTools.checkImgType(file);// 尺寸
-            int size = file.getInputStream().available();
-
-            if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
-                file.getInputStream().close();
+                boolean checkHomePageBannerImgSize = false;
                 if("index".equals(bannerType)){
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSize(file);
                 }else{
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSizeForSift(file);
                 }
-            } else if (size > 1024 * 512) {
-                file.getInputStream().close();
-                return Response.fail("文件不能大于500kb!");
+                boolean checkImgType = ImageTools.checkImgType(file);// 尺寸
+                int size = file.getInputStream().available();
+
+                if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
+                    file.getInputStream().close();
+                    if("index".equals(bannerType)){
+                        return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    }else{
+                        return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    }
+                } else if (size > 1024 * 512) {
+                    file.getInputStream().close();
+                    return Response.fail("文件不能大于500kb!");
+                }
+
+                FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, file);
+
+                pageModel.setBannerFile(null);
+                entity.setBannerImgUrl(fileUrl);
             }
-
-            FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, file);
-
-            pageModel.setBannerFile(null);
-            entity.setBannerImgUrl(fileUrl);
 
             Integer result = null;
             if(pageModel.getBannerId() == null){

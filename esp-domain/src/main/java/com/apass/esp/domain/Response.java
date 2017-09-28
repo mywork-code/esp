@@ -110,7 +110,9 @@ public class Response {
 			message = BusinessErrorCode.GOODS_ALREADY_REMOV.getMsg();
 		}else if(errorCode == BusinessErrorCode.GOODS_STOCK_NOTENOUGH){
 			message = BusinessErrorCode.GOODS_STOCK_NOTENOUGH.getMsg();
-		}else{
+		} else if(errorCode == BusinessErrorCode.ORDER_PAY_FAILED){
+			message = "抱歉，该支付方式暂时无法提供服务。请更换其他支付方式。";
+		} else{
 			message = "抱歉，小安暂时无法提供更多服务，请联系客服【" + errorCode.getCode() + "】";
 		}
 		return message;

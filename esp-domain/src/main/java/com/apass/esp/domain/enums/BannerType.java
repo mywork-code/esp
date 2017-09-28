@@ -36,4 +36,13 @@ public enum BannerType {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public static BannerType getEnum(String identify){
+        for(BannerType bt : values()){
+            if(bt.getIdentify().equals(identify)){
+                return bt;
+            }
+        }
+        return null;
+    }
 }
