@@ -133,6 +133,7 @@ public class ProGroupGoodsExportFikeController {
 					proGroupGoods.setStatus("S");
 					proGroupGoods.setUpdateDate(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
+					return Response.success("添加至该活动成功！");
 				} else {
 					Response.fail("活动已经结束，不能再添加商品！");
 				}
@@ -141,7 +142,7 @@ public class ProGroupGoodsExportFikeController {
 			LOG.error("添加至该活动失败！", e);
 			Response.fail("添加至该活动失败！");
 		}
-		return Response.success("添加至该活动成功！");
+		return Response.fail("添加至该活动失败！");
 	}
 	/**
 	 * 导入文件

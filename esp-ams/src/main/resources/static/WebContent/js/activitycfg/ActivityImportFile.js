@@ -100,7 +100,7 @@ $(function(){
 				align : 'center',
 				formatter : function(value, row, index) {
 					var content = "";
-					if(row.detailDesc=='1') {
+					if(row.detailDesc=='1' && row.status !='S') {
 					  	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
                              + row.goodsId +"','"+ row.activityId+ "');\">添加至</a>&nbsp;&nbsp;";
 					}
@@ -207,7 +207,13 @@ $(function(){
  			url : ctx + '/application/activity/addOneGoods',
  			data : params,
  			success : function(data) {
- 				
+ 				if(data.status=='1'){
+ 					alert("添加成功！");
+ 				}else{
+ 					alert("添加失败！");
+ 				}
+ 				var params = {};
+		    	$('#importFileList').datagrid('load', params);
  			}
  		});
 	 });
