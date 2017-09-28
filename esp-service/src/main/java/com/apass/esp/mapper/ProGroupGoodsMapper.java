@@ -20,6 +20,8 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    ProGroupGoods selectOneByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                                  @Param("activityId") Long activityId);
    List<ProGroupGoods> selectGoodsByGroupId(@Param("groupId") Long groupId);
+   
+   Integer getMaxSortOrder(@Param("groupId") Long groupId);
 	//分页查询	
    List<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query);
    //分页总数量

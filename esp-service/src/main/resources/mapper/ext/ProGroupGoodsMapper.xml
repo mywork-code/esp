@@ -27,6 +27,16 @@
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and activity_id = #{activityId}
     </select>
+    <!-- 查询分组下，最大的level,在此基础上+1 -->
+    <select id="getMaxSortOrder"  resultType="java.lang.Integer">
+     select IFNULL(max(order_sort)+1,1) from t_esp_pro_group_goods
+	   <where>
+		   <if test="groupId != null" >
+	         and group_id = ${groupId}
+	       </if>
+	       and status = 'S'
+	   </where>
+    </select>
 	<select id="getProGroupGoodsListPage" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
 		resultType="com.apass.esp.domain.vo.ProGroupGoodsVo">
 				SELECT
