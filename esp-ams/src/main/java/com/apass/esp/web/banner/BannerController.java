@@ -244,11 +244,11 @@ public class BannerController extends BaseController {
             		}
             		
             	}
+                entity.setActivityUrl(activityUrl);
             }
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
             entity.setBannerOrder(Long.valueOf(bannerOrder));
-            entity.setActivityUrl(activityUrl);
 
             //图片验证
             MultipartFile file = pageModel.getBannerFile();

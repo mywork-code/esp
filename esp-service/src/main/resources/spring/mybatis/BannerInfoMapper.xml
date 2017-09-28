@@ -154,7 +154,7 @@
 			<if test="bannerName != null" >
 				banner_name = #{bannerName},
 			</if>
-			<if test="bannerImgUrl != null" >
+			<if test="bannerImgUrl != null and bannerImgUrl != ''" >
 				banner_img_url = #{bannerImgUrl},
 			</if>
 			<if test="bannerCategory != null" >
@@ -166,7 +166,7 @@
 			<if test="bannerOrder != null" >
 				banner_order = #{bannerOrder},
 			</if>
-			<if test="activityUrl != null" >
+			<if test="activityUrl != null and activityUrl != ''" >
 				activity_url = #{activityUrl},
 			</if>
 			<if test="updateUser != null" >
