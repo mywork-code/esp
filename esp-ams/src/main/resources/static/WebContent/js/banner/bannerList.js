@@ -128,11 +128,6 @@ $(function(){
 	});
 	//确认   添加  banner信息
 	$("#agreeAdd").click(function(){
-//		var bannerName = $("#bannerName").textbox('getValue');
-//		if(null == bannerName || bannerName==""){
-//			alert("名称不能为空！");
-//			return ;
-//		}
 		var bannerType=$("#bannerType").combobox('getValue');
 		if(null == bannerType || bannerType==""){
 			$.messager.alert("<span style='color: black;'>提示</span>","类型不能为空！","info");
@@ -144,11 +139,14 @@ $(function(){
 			return;
 		}
 		var bannerFile= $("#bannerFile").val();
-		if(bannerFile=='' || null==bannerFile){
-			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
-			return;
+		var bannerId = $('#bannerId').val();
+		if(bannerId == ''){
+			if(bannerFile=='' || null==bannerFile){
+				$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
+				return;
+			}
 		}
-		
+
 //		 if(bannerFile!="" && null!= bannerFile){
 //				var pos = "." + bannerFile.replace(/.+\./, "");
 //				if(bannerFile!=null && pos!=".jpg" && pos!=".png"){
