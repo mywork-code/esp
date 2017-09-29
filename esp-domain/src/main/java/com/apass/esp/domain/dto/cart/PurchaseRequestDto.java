@@ -30,7 +30,7 @@ public class PurchaseRequestDto {
     /**
     * 促销活动id
     */
-    private String proActivityId = "4";
+    private String proActivityId;
     
     /**
      * 是否有货
