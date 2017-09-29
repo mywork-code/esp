@@ -1,6 +1,6 @@
 package com.apass.esp.domain.vo;
 
-public class GroupOrderSortVo {
+public class GoodsOrderSortVo {
 
 	/**
 	 * 主动的Id(主操作的Id)

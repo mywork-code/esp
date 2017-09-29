@@ -1,5 +1,7 @@
 package com.apass.esp.domain.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * 用户选择支付方式
  *
@@ -58,5 +60,15 @@ public enum PaymentType {
      */
     public static boolean isCardPayment(String paymentType) {
         return CARD_PAYMENT.getCode().equals(paymentType);
+    }
+    
+    public static String getMessage(String code){
+    	PaymentType[] types = PaymentType.values();
+    	for (PaymentType type : types) {
+			if(StringUtils.equalsIgnoreCase(code, type.getCode())){
+				return type.getMessage();
+			}
+		}
+    	return "";
     }
 }

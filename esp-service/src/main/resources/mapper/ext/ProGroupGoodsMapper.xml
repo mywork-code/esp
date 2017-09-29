@@ -15,7 +15,7 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
-	     <select id="selectByGoodsIdAndActivityId">
+	<select id="selectByGoodsIdAndActivityId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from t_esp_pro_group_goods
