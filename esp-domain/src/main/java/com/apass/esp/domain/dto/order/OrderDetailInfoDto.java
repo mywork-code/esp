@@ -94,8 +94,24 @@ public class OrderDetailInfoDto {
      * 退款状态(0.退款 1.处理中 2.退款中 3.退款成功 4.取消退款)
      */
     private String cashRefundStatus;
-
+    /**
+     * 来源
+     */
     private String source;
+    /**
+     * 支付方式
+     */
+    private String payType;
+    
+    /**
+     * 优惠金额
+     */
+    private BigDecimal disCountAmt;
+    
+    /**
+     * 总金额
+     */
+    private BigDecimal totalAmt;
     
 	public String getSource() {
         return source;
@@ -264,4 +280,29 @@ public class OrderDetailInfoDto {
     public void setMainOrderId(String mainOrderId) {
         this.mainOrderId = mainOrderId;
     }
+
+	public String getPayType() {
+		return payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public BigDecimal getDisCountAmt() {
+		return disCountAmt;
+	}
+
+	public void setDisCountAmt(BigDecimal disCountAmt) {
+		this.disCountAmt = disCountAmt;
+	}
+
+	public BigDecimal getTotalAmt() {
+		return totalAmt;
+	}
+
+	public void setTotalAmt(BigDecimal totalAmt) {
+		this.totalAmt = totalAmt;
+	}
+	
 }

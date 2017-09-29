@@ -27,8 +27,21 @@ public class PurchaseRequestDto {
      */
     private boolean unSupportProvince;
 
-    private String proActivityId;//促销活动id
-
+    /**
+    * 促销活动id
+    */
+    private String proActivityId = "4";
+    
+    /**
+     * 是否有货
+     */
+    private boolean stockDesc;
+    
+    /**
+     * 优惠金额
+     */
+    private BigDecimal disCount;
+    
     public String getProActivityId() {
         return proActivityId;
     }
@@ -72,6 +85,22 @@ public class PurchaseRequestDto {
 	}
 	public void setUnSupportProvince(boolean unSupportProvince) {
 		this.unSupportProvince = unSupportProvince;
+	}
+
+	public boolean isStockDesc() {
+		return stockDesc;
+	}
+
+	public void setStockDesc(boolean stockDesc) {
+		this.stockDesc = stockDesc;
+	}
+
+	public BigDecimal getDisCount() {
+		return disCount;
+	}
+
+	public void setDisCount(BigDecimal disCount) {
+		this.disCount = disCount;
 	}
     
 }

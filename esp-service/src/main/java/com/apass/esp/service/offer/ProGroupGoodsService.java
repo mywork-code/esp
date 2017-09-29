@@ -1,6 +1,7 @@
 package com.apass.esp.service.offer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
+import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
@@ -22,6 +24,7 @@ import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
 
 /**
@@ -90,6 +93,47 @@ public class ProGroupGoodsService {
 	public Integer insertSelective(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.insertSelective(proGroupGoods);
 	}
+	
+	/**
+	 * 编辑排序
+	 * @param vo
+	 * @return
+	 */
+	@Transactional(rollbackFor = { Exception.class})
+	public Integer editSortGroup(GoodsOrderSortVo vo){
+		
+		ProGroupGoods managerSub = groupGoodsMapper.selectByPrimaryKey(vo.getSubjectId());
+		ProGroupGoods managerPassive = groupGoodsMapper.selectByPrimaryKey(vo.getPassiveId());
+		if(null == managerSub || null == managerPassive){
+			return 0;
+		}
+		if(null == managerSub.getActivityId() || null == managerPassive.getActivityId() ||
+				managerSub.getActivityId() != managerPassive.getActivityId()){
+			return 0;
+		}
+		Long subSort = managerSub.getOrderSort();
+		Long passiveSort = managerPassive.getOrderSort();
+		String userName = SpringSecurityUtils.getLoginUserDetails().getUsername();
+		Date date = new Date();
+		
+		
+		managerSub.setOrderSort(passiveSort);
+		managerSub.setUpdateDate(date);
+		managerSub.setUpdateUser(userName);
+		
+		
+		managerPassive.setOrderSort(subSort);
+		managerPassive.setUpdateDate(date);
+		managerPassive.setUpdateUser(userName);
+		try {
+			groupGoodsMapper.updateByPrimaryKeySelective(managerSub);
+			groupGoodsMapper.updateByPrimaryKeySelective(managerPassive);
+		} catch (Exception e) {
+			return 0;
+		}
+		return 1;
+	}
+	
 	public Integer updateProGroupGoods(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.updateByPrimaryKeySelective(proGroupGoods);
 	}

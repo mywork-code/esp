@@ -16,12 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSONArray;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.ProActivityCfg;
@@ -29,6 +30,7 @@ import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
+import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
@@ -38,9 +40,10 @@ import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.esp.utils.ValidateUtils;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 /**
  * 导入.xlsx .xls文件
@@ -109,6 +112,26 @@ public class ProGroupGoodsExportFikeController {
     	}
     	return list;
     }
+    
+    /**
+     * 商品的上移和下移
+     */
+	@ResponseBody
+    @RequestMapping(value ="/edit/sort/save",method = RequestMethod.POST)
+	public Response groupEditSortSave(@RequestBody GoodsOrderSortVo vo){
+		try {
+			validateEditSortParams(vo);
+			Integer i = proGroupGoodsService.editSortGroup(vo);
+			if(i==1){
+				return Response.success("修改成功!");
+			}
+		}catch (BusinessException e) {
+			return Response.fail(e.getErrorDesc());
+		}catch (Exception e) {
+			LOG.error("修改分组排序信息失败", e);
+		}
+		return Response.fail("修改分组排序信息失败");
+	}
     
 	/**
 	 * 添加一个商品到分组中
@@ -316,6 +339,15 @@ public class ProGroupGoodsExportFikeController {
 		} catch (Exception e) {
 			return false;// 如果抛出异常，返回False
 		}
+	}
+	/**
+	 * 验证排序
+	 * @param vo
+	 * @throws BusinessException
+	 */
+	public void validateEditSortParams(GoodsOrderSortVo vo) throws BusinessException{
+		ValidateUtils.isNullObject(vo.getSubjectId(), "主操作Id不能为空!");
+		ValidateUtils.isNullObject(vo.getPassiveId(), "被操作Id不能为空!");
 	}
 	
 	private List<GroupVo> GroupManagerToVo(List<GroupManagerVo> list){

@@ -153,6 +153,9 @@ public class OrderDetailInfoEntity {
     // 退款金额
     private BigDecimal refundAmt;
 
+    //优惠金额
+    private BigDecimal discountAmount;
+    
     //促销活动id
     private String proActivityId;
 
@@ -399,5 +402,13 @@ public class OrderDetailInfoEntity {
     public void setRefundAmt(BigDecimal refundAmt) {
         this.refundAmt = refundAmt;
     }
+
+	public BigDecimal getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(BigDecimal discountAmount) {
+		this.discountAmount = discountAmount;
+	}
 
 }

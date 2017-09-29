@@ -1,5 +1,24 @@
 package com.apass.esp.service.order;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
@@ -14,6 +33,7 @@ import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
@@ -34,6 +54,7 @@ import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.domain.enums.SourceType;
@@ -43,6 +64,7 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
+import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
@@ -63,6 +85,7 @@ import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
@@ -85,24 +108,6 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -203,6 +208,12 @@ public class OrderService {
 
     @Autowired
     private ProGroupGoodsService proGroupGoodsService;
+    
+    @Autowired
+    private ProActivityCfgMapper activityCfgMapper;
+    
+    @Autowired
+    private JdGoodsInfoService goodsInfoService;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -760,7 +771,7 @@ public class OrderService {
             throws BusinessException {
         List<String> orderList = Lists.newArrayList();
         // 每商户订单金额
-        Map<String, BigDecimal> merchantPaymentMap = sumMerchantPayment(purchaseList);
+        Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList);
         AddressInfoEntity address = addressInfoDao.select(addressId);
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
             String merchantCode = merchant.getKey();
@@ -806,6 +817,15 @@ public class OrderService {
                 if (goods.getMerchantCode().equals(merchantCode)) {
                     GoodsStockInfoEntity goodsStock = goodsStockDao.select(purchase.getGoodsStockId());
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
+                    if(StringUtils.isNotBlank(purchase.getProActivityId())){
+                    	ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+                    	if(validActivityFlag != ActivityStatus.PROCESSING){
+                    		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
+                    		throw new BusinessException("订单中包含无效活动的商品!");
+                    	}
+                    }
+                    orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
+                    orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                         orderDetail.setSource(SourceType.JD.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
@@ -905,6 +925,68 @@ public class OrderService {
             } else {
                 merchantPayment.put(merchantCode,
                         purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum()))));
+            }
+        }
+        return merchantPayment;
+    }
+    
+    
+    /**
+     * 统计每个商户订单总金额
+     * 统计同一活动下，商品的优惠金额
+     *
+     * @param purchaseList
+     * @return
+     */
+    public Map<String, BigDecimal> sumMerchantAndActivityIdPayment(List<PurchaseRequestDto> purchaseList) {
+    	//根据活动分组，计算活动下的所有商品总额
+        Map<String,BigDecimal> activityPayment = Maps.newHashMap();
+        for (PurchaseRequestDto purchase : purchaseList) {
+    		//计算商品的应付金额价格
+        	String activityId = purchase.getProActivityId();
+    		BigDecimal goodsSum = purchase.getPrice().multiply(new BigDecimal(purchase.getBuyNum()+""));
+    		if(!activityPayment.containsKey(activityId)){
+    			activityPayment.put(activityId, goodsSum);
+    		}else{
+    			BigDecimal total = 	activityPayment.get(activityId).add(goodsSum);
+    			activityPayment.put(activityId, total);
+    		}
+		}
+        
+        //根据活动分组信息情况，查看优惠区间
+        Map<String,BigDecimal> discountPayment = Maps.newHashMap();
+        for (String activityId : activityPayment.keySet()) {
+    		BigDecimal totalMoney = activityPayment.get(activityId);
+    		long discount = 0;
+			if(StringUtils.isNotBlank(activityId)){
+				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
+			    discount = getDisCount(cfg, totalMoney);
+			}
+			discountPayment.put(activityId, BigDecimal.valueOf(discount));
+		}
+    	
+        //计算每个商户的订单金额
+        Map<String, BigDecimal> merchantPayment = Maps.newHashMap();
+        for (PurchaseRequestDto purchase : purchaseList) {
+            // 查询商品商户详情
+            GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsStockId());
+            String merchantCode = goodsDetail.getMerchantCode();
+            BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
+            
+            if(activityPayment.containsKey(purchase.getProActivityId())){
+            	BigDecimal total = activityPayment.get(purchase.getProActivityId());
+            	BigDecimal discountTotal = discountPayment.get(purchase.getProActivityId());
+            	BigDecimal discount = discountTotal.multiply(goodsSum).divide(total).setScale(2,BigDecimal.ROUND_HALF_UP);
+            	purchase.setDisCount(discount);
+            	goodsSum = goodsSum.subtract(discount);
+            }
+            
+            if (merchantPayment.containsKey(merchantCode)) {
+                BigDecimal haveSum = merchantPayment.get(merchantCode);
+                haveSum = haveSum.add(goodsSum);
+                merchantPayment.put(merchantCode, haveSum);
+            } else {
+                merchantPayment.put(merchantCode,goodsSum);
             }
         }
         return merchantPayment;
@@ -1489,9 +1571,10 @@ public class OrderService {
         List<GoodsInfoInOrderDto> goodsListInEachOrder = new ArrayList<GoodsInfoInOrderDto>();
         // 每笔订单商品数目
         int goodsSum = 0;
+        BigDecimal disCount = BigDecimal.ZERO;
         for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
             goodsSum += orderDetailInfo.getGoodsNum();
-
+            disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
@@ -1567,6 +1650,10 @@ public class OrderService {
         orderDetailInfoDto.setUserId(order.getUserId());
         orderDetailInfoDto.setMainOrderId(order.getMainOrderId());
         orderDetailInfoDto.setSource(order.getSource());
+        orderDetailInfoDto.setPayType(PaymentType.getMessage(order.getPayType()));//支付方式
+        orderDetailInfoDto.setDisCountAmt(disCount);//优惠金额
+        orderDetailInfoDto.setTotalAmt(disCount.add(order.getOrderAmt()));//总金额
+        
         return orderDetailInfoDto;
     }
 
@@ -2143,10 +2230,13 @@ public class OrderService {
                     }
                     List<Long> skus = new ArrayList<Long>();
                     skus.add(Long.parseLong(goods.getExternalId()));
-                    if (productCheckAreaLimitQuery(skus,region)) {
-                        resultMaps.put("unSupportProvince", true);
+                    
+                    boolean unsupport = productCheckAreaLimitQuery(skus,region);
+                    
+                    if (unsupport) {
                         resultMaps.put("message", "抱歉，暂不支持该地区发货！");
                     }
+                    resultMaps.put("unSupportProvince", unsupport);
                 } else {
                     // 校验非京东商品的不可发送区域
                     resultMaps = validateGoodsUnSupportProvince(requestId, addreesId, purchase.getGoodsId());
@@ -2212,6 +2302,125 @@ public class OrderService {
         return purchaseList;
     }
 
+    /**
+     * 验证商品库存
+     * @param addreesId
+     * @param purchaseList
+     * @return
+     * @throws BusinessException
+     */
+    public List<PurchaseRequestDto> validateGoodsStock(Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException {
+    	/**
+    	 * 获取地址信息
+    	 */
+    	AddressInfoEntity address = addressInfoDao.select(addreesId);
+    	if(null == address){
+    		return null;
+    	}
+    	Region region = new Region(Integer.parseInt(address.getProvinceCode()), Integer.parseInt(address.getCityCode()), 
+    			Integer.parseInt(address.getDistrictCode()), Integer.parseInt(address.getTownsCode()));
+    	for (PurchaseRequestDto purchase : purchaseList) {
+            GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+            GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
+            if(StringUtils.isBlank(goods.getSource())){
+            	if(purchase.getBuyNum() <= stock.getStockCurrAmt()){
+            		purchase.setStockDesc(true);
+            	}
+            }else{
+            	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,purchase.getBuyNum());
+            	if ("有货".equals(stockDesc)) {
+            		purchase.setStockDesc(true);
+            	}
+            }
+    	}
+    	return purchaseList;
+    }
+    
+    /**
+     * 计算商品购买总件数，实际支付金额，优惠金额
+     * @param addreesId
+     * @param purchaseList
+     * @return
+     * @throws BusinessException
+     */
+    public Map<String,Object> calcGoodsBuyNum(List<PurchaseRequestDto> purchaseList) throws BusinessException {
+    	
+    	Map<String,Object> maps = Maps.newHashMap();
+    	List<PurchaseRequestDto> available = new ArrayList<PurchaseRequestDto>();
+    	//过滤掉不支持配送的和无货的商品
+    	for (PurchaseRequestDto p : purchaseList) {
+			if(!p.isUnSupportProvince() && p.isStockDesc()){
+				available.add(p);
+			}
+		}
+    	/**
+    	 * 计算商品的总件数 ，总金额，优惠金额
+    	 */
+    	Integer buyNum = 0;//计算商品的总件数
+    	Map<String,BigDecimal> activityDecimal = Maps.newHashMap();
+    	for (PurchaseRequestDto p : available) {
+    		buyNum += p.getBuyNum();
+    		//计算商品的应付金额价格
+    		BigDecimal goodsSum = p.getPrice().multiply(new BigDecimal(p.getBuyNum()+""));
+    		if(!activityDecimal.containsKey(p.getProActivityId())){
+    			activityDecimal.put(p.getProActivityId(), goodsSum);
+    		}else{
+    			BigDecimal total = 	activityDecimal.get(p.getProActivityId()).add(goodsSum);
+    			activityDecimal.put(p.getProActivityId(), total);
+    		}
+		}
+    	//总金额
+    	BigDecimal totalSum = BigDecimal.ZERO;
+    	//折扣金额
+    	BigDecimal discountSum = BigDecimal.ZERO;
+    	for (String activityId : activityDecimal.keySet()) {
+    		BigDecimal totalMoney = activityDecimal.get(activityId);
+			if(StringUtils.isNotBlank(activityId)){
+				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
+			    long discount = getDisCount(cfg, totalMoney);
+			    discountSum = discountSum.add(BigDecimal.valueOf(discount)); 
+			}
+			totalSum = totalSum.add(totalMoney);	
+		}
+    	//实际支付金额
+    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	maps.put("buySum", buyNum);
+    	maps.put("discountSum", discountSum);
+    	maps.put("paySum",paySum);
+    	maps.put("totalSum", totalSum);
+    	return maps;
+    }
+    
+    /**
+     * 返回优惠金额
+     * @param cfg
+     * @param total
+     * @return
+     */
+    public Long getDisCount(ProActivityCfg cfg,BigDecimal total){
+    	
+    	long offerSill1 = cfg.getOfferSill1();
+    	long offerSill2 = cfg.getOfferSill2();
+    	long discount1 = cfg.getDiscountAmonut1();
+    	long discount2 = cfg.getDiscountAmount2();
+    	
+    	if(offerSill1 >= offerSill2){
+    		if(total.compareTo(BigDecimal.valueOf(offerSill1)) >= 0){
+    			return discount1;
+    		}else if(total.compareTo(BigDecimal.valueOf(offerSill2)) >= 0){
+    			return discount2;
+    		}
+    		return 0l;
+    	}else{
+    		if(total.compareTo(BigDecimal.valueOf(offerSill2)) >= 0){
+    			return discount2;
+    		}else if(total.compareTo(BigDecimal.valueOf(offerSill1)) >= 0){
+    			return discount1;
+    		}
+    		return 0l;
+    	}
+    }
+    
     /**
      * 根据订单id 和 商品Id，验证订单下，是否存在不支持配送的商品
      * 

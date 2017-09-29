@@ -2,7 +2,7 @@ package com.apass.esp.web.offer;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.GroupManagerVo;
-import com.apass.esp.domain.vo.GroupOrderSortVo;
+import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -99,13 +99,5 @@ public class GroupManagerController {
         }
  		ValidateUtils.isNullObject(vo.getOrderSort(), "显示顺序");
 	}
-	/**
-	 * 验证排序
-	 * @param vo
-	 * @throws BusinessException
-	 */
-	public void validateEditSortParams(GroupOrderSortVo vo) throws BusinessException{
-		ValidateUtils.isNullObject(vo.getSubjectId(), "主操作Id不能为空!");
-		ValidateUtils.isNullObject(vo.getPassiveId(), "被操作Id不能为空!");
-	}
+	
 }

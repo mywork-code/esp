@@ -114,7 +114,9 @@
              create_date,
              update_date,
              source,
-             sku_id
+             sku_id,
+             pro_activity_id,
+             discount_amount
              )
 			values (
 			#{orderId, jdbcType=VARCHAR},
@@ -138,7 +140,9 @@
 	      	CURRENT_TIMESTAMP,
 	        CURRENT_TIMESTAMP,
 	        #{source, jdbcType=VARCHAR},
-	        #{skuId, jdbcType=VARCHAR});
+	        #{skuId, jdbcType=VARCHAR},
+	        #{proActivityId},
+	        #{discountAmount});
 	]]>
 	</insert>
 
@@ -205,7 +209,9 @@
                     KEEP_DATE                    keepDate,
                     SUP_NO                       supNo,
                     CREATE_DATE                  createDate,
-                    UPDATE_DATE                  updateDate
+                    UPDATE_DATE                  updateDate,
+                    discount_amount				 discountAmount,
+                    pro_activity_id			     proActivityId
             FROM T_ESP_ORDER_DETAIL_INFO 
     ]]>
 		<include refid="QueryConditionSql" />
