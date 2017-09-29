@@ -33,6 +33,7 @@
 </style>
 </head>
 <body>
+    <input id="addGoodsToGroupActivityId" name="addGoodsToGroupActivityId" type="hidden">
 	<div id="tb">
 		<div class="search">
 			<table style="min-width: 700px;">
@@ -76,5 +77,27 @@
 	</div>
 	<!-- 商品查询列表 -->
 	<div id="importFileList"></div>
+	<!-- 活动分组 -->
+	<div id="addGoodsToGroup" class="easyui-window"
+		data-options="iconCls:'icon-edit',modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
+		title="添加至分组 "
+		style="width: 300px; height: 200px; display: none; text-align: center;">
+		<div>
+			<table>
+				<tr>
+					<td align="right">分组名称:</td>
+					<td><input id="groupName" name="groupName"
+						class="easyui-combobox" style="width: 200px;" />
+						<input id="addGoodsToGroupGoodsId" name="addGoodsToGroupGoodsId" type="hidden">
+				</tr>
+			</table>
+		</div>
+		<div style="width: 100%">
+			<a href="javascript:void(0);" id="addGoodsToGroupOppo"
+				style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;
+			<a href="javascript:void(0);" id="addGoodsToGroupAgree"
+				style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+		</div>
+	</div>
 </body>
 </html>

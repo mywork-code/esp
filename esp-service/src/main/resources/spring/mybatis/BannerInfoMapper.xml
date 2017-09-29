@@ -75,7 +75,10 @@
 			       AND banner_type = #{bannerType, jdbcType=VARCHAR} 
 			   </if>	
 			   <if test="bannerType == null or bannerType == ''">
-			       AND banner_type in ('index','sift')
+				   AND banner_type in
+				   <foreach  collection="bannerTypeParams" index="index" item="item" open="(" separator="," close=")">
+					  #{item}
+				   </foreach>
 			   </if>
 			   <if test="bannerOrder !=null and bannerOrder !=''">
 			      AND banner_order =#{bannerOrder, jdbcType=BIGINT} 
@@ -143,4 +146,33 @@
 		DELETE FROM t_esp_banner_info WHERE ID = #{value}
 	]]>
 	</delete>
+
+	<update id="update" parameterType="BannerInfoEntity">
+		update t_esp_banner_info
+		<set >
+				update_date = now(),
+			<if test="bannerName != null" >
+				banner_name = #{bannerName},
+			</if>
+			<if test="bannerImgUrl != null and bannerImgUrl != ''" >
+				banner_img_url = #{bannerImgUrl},
+			</if>
+			<if test="bannerCategory != null" >
+				banner_category = #{bannerCategory},
+			</if>
+			<if test="bannerType != null" >
+				banner_type = #{bannerType},
+			</if>
+			<if test="bannerOrder != null" >
+				banner_order = #{bannerOrder},
+			</if>
+			<if test="activityUrl != null and activityUrl != ''" >
+				activity_url = #{activityUrl},
+			</if>
+			<if test="updateUser != null" >
+				update_user = #{updateUser},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
 </mapper> 

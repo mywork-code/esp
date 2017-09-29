@@ -24,13 +24,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
+import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
@@ -55,7 +62,10 @@ public class ProGroupGoodsExportFikeController {
 	private GoodsService goodsService;
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
-	
+	@Autowired
+	private GroupManagerService groupManagerService;
+	@Autowired
+	private ActivityCfgService activityCfgService;
 	/**
      * 商品池分页json
      */
@@ -89,6 +99,19 @@ public class ProGroupGoodsExportFikeController {
         }
         return respBody;
     }
+    /**
+     * 加载活动分组
+     */
+    @ResponseBody
+    @RequestMapping(value ="/loalgroupIds")
+    public List<GroupVo>  ProGroupGoodsPageList(@RequestParam("activityId") String activityId) {
+    	List<GroupManagerVo> result=groupManagerService.getGroupByActivityId(activityId);
+    	List<GroupVo> list=new ArrayList<>();
+    	if(null !=result && result.size()>0){
+    		list=GroupManagerToVo(result);
+    	}
+    	return list;
+    }
     
     /**
      * 商品的上移和下移
@@ -110,6 +133,54 @@ public class ProGroupGoodsExportFikeController {
 		return Response.fail("修改分组排序信息失败");
 	}
     
+	/**
+	 * 添加一个商品到分组中
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/addOneGoods")
+	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
+			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
+		int count = 0;
+		int countSuccess = 0;
+		int countFail = 0;
+		try {
+			if (null != goodsId && goodsId != "") {
+				String[] goods = goodsId.split(",");
+				count = goods.length;
+				for (int i = 0; i < goods.length; i++) {
+					// 判断该商品是否在有效的活动下
+					ProGroupGoodsBo pggbo = proGroupGoodsService.getByGoodsIdStatus(Long.parseLong(goods[i]));
+					if (null != pggbo && pggbo.isValidActivity()) {
+						countFail++;
+					} else {
+						ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+						ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+						// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+						if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+							ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
+									Long.parseLong(goods[i]), Long.parseLong(activityId));
+							
+							int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+							proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
+							proGroupGoods.setGroupId(Long.parseLong(groupNameId));
+							proGroupGoods.setStatus("S");
+							proGroupGoods.setUpdateDate(new Date());
+							proGroupGoodsService.updateProGroupGoods(proGroupGoods);
+							countSuccess++;
+						} else {
+							countFail++;
+						}
+					}
+				}
+			} else {
+				Response.fail("添加至该活动失败！");
+			}
+		} catch (Exception e) {
+			LOG.error("添加至该活动失败！", e);
+			Response.fail("添加至该活动失败！");
+		}
+		return Response.success("共"+count+"件商品，关联成功"+countSuccess+"件，失败"+countFail+"件");
+	}
 	/**
 	 * 导入文件
 	 * @param file
@@ -143,22 +214,31 @@ public class ProGroupGoodsExportFikeController {
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if(null !=gbity && null !=marketPrice && null !=activityPrice && countSuccess<=200){	
-						pggds.setMarketPrice(list.get(i).getMarketPrice());
-						pggds.setActivityPrice(list.get(i).getActivityPrice());
+					if (null != gbity && null != marketPrice && null != activityPrice && countSuccess <= 200) {
+						ProGroupGoods proGroupGoods = proGroupGoodsService
+								.selectOneByGoodsIdAndActivityId(gbity.getGoodId(), Long.parseLong(activityId));
+						//判断该商品在该活动下是否已经导入过
+						if (null == proGroupGoods) {
+							pggds.setMarketPrice(list.get(i).getMarketPrice());
+							pggds.setActivityPrice(list.get(i).getActivityPrice());
+							pggds.setGoodsId(gbity.getGoodId());
+							pggds.setSkuId(gbity.getExternalId());
+							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setDetailDesc("1");// 1表示导入成功
+							pggds.setActivityId(Long.parseLong(activityId));
+							Integer res = proGroupGoodsService.insertSelective(pggds);
+							if (res == 1) {
+								countSuccess++;
+							}
+						}
+					}else if(null != gbity){
 						pggds.setGoodsId(gbity.getGoodId());
 						pggds.setSkuId(gbity.getExternalId());
 						pggds.setGoodsCode(gbity.getGoodsCode().toString());
-						pggds.setDetailDesc("1");//1表示导入成功
-						pggds.setActivityId(Long.parseLong(activityId));
-						Integer res=proGroupGoodsService.insertSelective(pggds);
-						if(res==1){
-							countSuccess++;
-						}
-					}else{
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
+						pggds.setActivityId(Long.parseLong(activityId));
 						proGroupGoodsService.insertSelective(pggds);
 					}
 				}
@@ -268,5 +348,16 @@ public class ProGroupGoodsExportFikeController {
 	public void validateEditSortParams(GoodsOrderSortVo vo) throws BusinessException{
 		ValidateUtils.isNullObject(vo.getSubjectId(), "主操作Id不能为空!");
 		ValidateUtils.isNullObject(vo.getPassiveId(), "被操作Id不能为空!");
+	}
+	
+	private List<GroupVo> GroupManagerToVo(List<GroupManagerVo> list){
+		List<GroupVo>  groupList=new ArrayList<>();
+		for(GroupManagerVo gv:list){
+			GroupVo groupVo=new GroupVo();
+			groupVo.setId(gv.getId().toString());
+			groupVo.setText(gv.getGroupName());
+			groupList.add(groupVo);
+		}
+		return groupList;
 	}
 }

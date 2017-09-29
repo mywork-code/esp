@@ -72,3 +72,5 @@ alter table t_esp_goods_base_info add column support_7d_refund varchar(2) not nu
 update t_esp_goods_base_info set support_7d_refund = 'Y' where source is null;
 
 alter table t_esp_order_detail_info add column pro_activity_id varchar(20) not null default '' comment '促销活动id';
+
+alter table t_esp_banner_info  modify column banner_type varchar(20);

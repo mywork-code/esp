@@ -15,20 +15,32 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
+<<<<<<< HEAD
 	<select id="selectByGoodsIdAndActivityId" resultMap="BaseResultMap">
+=======
+	 <select id="selectByGoodsIdAndActivityId" resultMap="BaseResultMap">
+>>>>>>> 0dba3f326fd92a5a5a72b834a60cc873b541e312
         select
         <include refid="Base_Column_List" />
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and activity_id = #{activityId} and status = 'S'
     </select>
-	<!-- 通过goodsId查询成功管理活动的商品信息 -->
-	<select id="selectByGoodsId" resultMap="BaseResultMap">
-		select
-		<include refid="Base_Column_List" />
-		from t_esp_pro_group_goods
-		where status = 'S'
-		AND goods_id = #{goodsId}
-	</select>
+     <select id="selectOneByGoodsIdAndActivityId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where goods_id = #{goodsId} and activity_id = #{activityId}
+    </select>
+    <!-- 查询分组下，最大的level,在此基础上+1 -->
+    <select id="getMaxSortOrder"  resultType="java.lang.Integer">
+     select IFNULL(max(order_sort)+1,1) from t_esp_pro_group_goods
+	   <where>
+		   <if test="groupId != null" >
+	         and group_id = ${groupId}
+	       </if>
+	       and status = 'S'
+	   </where>
+    </select>
 	<select id="getProGroupGoodsListPage" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
 		resultType="com.apass.esp.domain.vo.ProGroupGoodsVo">
 				SELECT
@@ -42,12 +54,16 @@
 			            c.goods_price        goodsPrice,
 			            a.market_price       marketPrice,
 			            a.activity_price     activityPrice,
-			            a.detail_desc        detailDesc
+			            a.detail_desc        detailDesc,
+			            a.activity_id        activityId,
+			            a.status             status,
+			            e.group_name         groupName
 				FROM
 						t_esp_pro_group_goods   a
 			LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
 			LEFT JOIN   t_esp_goods_stock_info  c ON c.goods_id =b.id
 			LEFT JOIN   t_esp_category          d ON b.category_id3 =d.id
+			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
          order by a.update_date desc

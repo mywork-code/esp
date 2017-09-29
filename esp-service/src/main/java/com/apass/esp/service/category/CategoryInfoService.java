@@ -9,7 +9,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.enums.CategoryStatus;
-import com.apass.esp.domain.vo.BannerVo;
+import com.apass.esp.domain.vo.SimpleBannerVo;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.mapper.CategoryMapper;
@@ -495,9 +495,9 @@ public class CategoryInfoService {
             if(i == 1){
                 List<BannerInfoEntity> bannerList =  bannerInfoService.loadIndexBanners("category_"+categoryId);
                 if(CollectionUtils.isNotEmpty(bannerList)){
-                    List<BannerVo> bannerVoList = new ArrayList<>();
+                    List<SimpleBannerVo> bannerVoList = new ArrayList<>();
                     for(BannerInfoEntity bannerInfoEntity : bannerList){
-                        BannerVo bv = new BannerVo();
+                        SimpleBannerVo bv = new SimpleBannerVo();
                         bv.setImg(imageService.getImageUrl(bannerInfoEntity.getBannerImgUrl()));
                         bv.setLinkUrl(bannerInfoEntity.getActivityUrl());
                         bannerVoList.add(bv);

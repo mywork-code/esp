@@ -3,72 +3,80 @@ package com.apass.esp.domain.dto.banner;
 import org.springframework.web.multipart.MultipartFile;
 
 public class AddBannerInfoEntity {
+  private Long bannerId;
+  private String bannerName;
 
-    private String        bannerName;
+  private MultipartFile bannerFile;
 
-    private MultipartFile bannerFile;
+  private String bannerType;
 
-    private String        bannerType;
+  private String bannerOrder;
 
-    private String        bannerOrder;
-    
-    private String        activityUrl;
-    
-    private String        activityName;
+  private String activityUrl;
 
-    public String getBannerName() {
-        return bannerName;
-    }
+  private String activityName;
 
-    public void setBannerName(String bannerName) {
-        this.bannerName = bannerName;
-    }
+  public Long getBannerId() {
+    return bannerId;
+  }
 
-    public MultipartFile getBannerFile() {
-        return bannerFile;
-    }
+  public void setBannerId(Long bannerId) {
+    this.bannerId = bannerId;
+  }
 
-    public void setBannerFile(MultipartFile bannerFile) {
-        this.bannerFile = bannerFile;
-    }
+  public String getBannerName() {
+    return bannerName;
+  }
 
-    public String getBannerType() {
-        return bannerType;
-    }
+  public void setBannerName(String bannerName) {
+    this.bannerName = bannerName;
+  }
 
-    public void setBannerType(String bannerType) {
-        this.bannerType = bannerType;
-    }
+  public MultipartFile getBannerFile() {
+    return bannerFile;
+  }
 
-    public String getBannerOrder() {
-        return bannerOrder;
-    }
+  public void setBannerFile(MultipartFile bannerFile) {
+    this.bannerFile = bannerFile;
+  }
 
-    public void setBannerOrder(String bannerOrder) {
-        this.bannerOrder = bannerOrder;
-    }
+  public String getBannerType() {
+    return bannerType;
+  }
 
-	public String getActivityUrl() {
-		return activityUrl;
-	}
+  public void setBannerType(String bannerType) {
+    this.bannerType = bannerType;
+  }
 
-	public void setActivityUrl(String activityUrl) {
-		this.activityUrl = activityUrl;
-	}
+  public String getBannerOrder() {
+    return bannerOrder;
+  }
 
-	public String getActivityName() {
-		return activityName;
-	}
+  public void setBannerOrder(String bannerOrder) {
+    this.bannerOrder = bannerOrder;
+  }
 
-	public void setActivityName(String activityName) {
-		this.activityName = activityName;
-	}
+  public String getActivityUrl() {
+    return activityUrl;
+  }
 
-	@Override
-	public String toString() {
-		return "AddBannerInfoEntity [bannerName=" + bannerName + ", bannerFile="
-				+ bannerFile.getName() + ", bannerType=" + bannerType + ", bannerOrder="
-				+ bannerOrder + ", activityUrl=" + activityUrl
-				+ ", activityName=" + activityName + "]";
-	}
+  public void setActivityUrl(String activityUrl) {
+    this.activityUrl = activityUrl;
+  }
+
+  public String getActivityName() {
+    return activityName;
+  }
+
+  public void setActivityName(String activityName) {
+    this.activityName = activityName;
+  }
+
+  @Override
+  public String toString() {
+    return "AddBannerInfoEntity [bannerName=" + bannerName + ", bannerFile="
+        + bannerFile.getName() + ", bannerType=" + bannerType + ", bannerOrder="
+        + bannerOrder + ", activityUrl=" + activityUrl
+        + ", activityName=" + activityName + "]";
+  }
 }

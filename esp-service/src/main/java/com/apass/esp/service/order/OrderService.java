@@ -617,7 +617,27 @@ public class OrderService {
         }
         return true;
     }
-    
+    /**
+     * 验证京东商品是否支持7天退货
+     */
+    public boolean checkGoodsIs7ToReturn(List<SkuNum> skuNumList){
+    	JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(skuNumList);
+        if (!skuCheckResult.isSuccess()) {
+            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
+            return false;
+        }
+        for (Object o : skuCheckResult.getResult()) {
+            JSONObject jsonObject = (JSONObject) o;
+            int is7ToReturn = jsonObject.getIntValue("is7ToReturn");
+            if (is7ToReturn != 1) {
+                LOGGER.info("sku[{}] could not is7ToReturn,detail:", jsonObject.getLongValue("skuId"),
+                        jsonObject.toJSONString());
+                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * 验证区域是否受限
      * @param skus

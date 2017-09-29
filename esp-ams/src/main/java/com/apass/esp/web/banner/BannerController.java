@@ -5,6 +5,7 @@ import com.apass.esp.domain.dto.banner.AddBannerInfoEntity;
 import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,6 @@ public class BannerController extends BaseController {
     @Autowired
     private CategoryInfoService cateService;
 
-    // private String nfsBanner="E:/";
     /**
      * banner信息初始化
      */
@@ -89,6 +90,13 @@ public class BannerController extends BaseController {
         return new ModelAndView(CREDIT_GOOD_BANNER_URL, map);
     }
 
+    @RequestMapping("/getById")
+    @ResponseBody
+    public Response getById(Integer id){
+        BannerInfoEntity bannerInfoEntity =  bannerInfoService.selectById(id);
+        return Response.successResponse(bannerInfoEntity);
+    }
+
     /**
      * banner信息分页查询
      */
@@ -103,6 +111,17 @@ public class BannerController extends BaseController {
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put(BANNER_TYPE, bannerType);
+            if(org.apache.commons.lang.StringUtils.isEmpty(bannerType)){
+                List<String> bannerTypeParams = new ArrayList<>();
+                bannerTypeParams.add(BannerType.BANNER_INDEX.getIdentify());
+                bannerTypeParams.add(BannerType.BANNER_SIFT.getIdentify());
+                CategoryDto dto = new CategoryDto();
+                List<CategoryVo> list = cateService.listCategory(dto);
+                for(CategoryVo c : list){
+                    bannerTypeParams.add("category_" + c.getCategoryId());
+                }
+                map.put("bannerTypeParams",bannerTypeParams);
+            }
 
             // 获取分页结果返回给页面
             PaginationManage<BannerInfoEntity> pagination = bannerInfoService.loadBanners(map, page);
@@ -205,7 +224,7 @@ public class BannerController extends BaseController {
                 throw new BusinessException("参数有误.");
             }
 
-            if (pageModel.getBannerFile().getInputStream().available() == 0) {
+            if (pageModel.getBannerFile().getInputStream().available() == 0 && pageModel.getBannerId() == null) {
                 throw new BusinessException("请选择文件.");
             }
             //电商3期511 20170519 banner 添加设置商品链接
@@ -215,66 +234,81 @@ public class BannerController extends BaseController {
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
                   GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode(activityUrl);
-            		if(null !=goodsInfo && "jd".equals(goodsInfo.getSource())){
+                  if(goodsInfo == null){
+                      return Response.fail("请添加已上架的商品");
+                  }
+            		if("jd".equals(goodsInfo.getSource())){
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=jd";
             		}else{
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
             		}
             		
             	}
+                entity.setActivityUrl(activityUrl);
             }
-            
             entity.setBannerName(bannerName);
             entity.setBannerType(bannerType);
             entity.setBannerOrder(Long.valueOf(bannerOrder));
-            entity.setActivityUrl(activityUrl);
-
-            String respon = isAdd(bannerType, Long.valueOf(bannerOrder));
-            if (!"ok".equals(respon)) {
-                return Response.fail(respon);
-            }
 
             //图片验证
             MultipartFile file = pageModel.getBannerFile();
-            String imgType = ImageTools.getImgType(file);
-            String fileName = FILE_NAME_PREFIX + bannerOrder + "_" + System.currentTimeMillis() + "." + imgType;
-            String fileUrl = nfsBanner + bannerType + "/" + fileName;
+            if(file.getInputStream().available() >0){
+                String imgType = ImageTools.getImgType(file);
+                String fileName = FILE_NAME_PREFIX + bannerOrder + "_" + System.currentTimeMillis() + "." + imgType;
+                String fileUrl = nfsBanner + bannerType + "/" + fileName;
 
-            boolean checkHomePageBannerImgSize = false;
-            if("index".equals(bannerType)){
-                checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSize(file);
-            }else{
-                checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSizeForSift(file);
-            }
-            boolean checkImgType = ImageTools.checkImgType(file);// 尺寸
-            int size = file.getInputStream().available();
-
-            if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
-                file.getInputStream().close();
+                boolean checkHomePageBannerImgSize = false;
                 if("index".equals(bannerType)){
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSize(file);
                 }else{
-                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    checkHomePageBannerImgSize = ImageTools.checkHomePageBannerImgSizeForSift(file);
                 }
-            } else if (size > 1024 * 512) {
-                file.getInputStream().close();
-                return Response.fail("文件不能大于500kb!");
+                boolean checkImgType = ImageTools.checkImgType(file);// 尺寸
+                int size = file.getInputStream().available();
+
+                if (!(checkHomePageBannerImgSize && checkImgType)) {// 750*420;.png,.jpg
+                    file.getInputStream().close();
+                    if("index".equals(bannerType)){
+                        return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    }else{
+                        return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：750px,高：300px,格式：.jpg,.png");
+                    }
+                } else if (size > 1024 * 512) {
+                    file.getInputStream().close();
+                    return Response.fail("文件不能大于500kb!");
+                }
+
+                FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, file);
+
+                pageModel.setBannerFile(null);
+                entity.setBannerImgUrl(fileUrl);
             }
 
-            FileUtilsCommons.uploadFilesUtil(rootPath, fileUrl, file);
-
-            pageModel.setBannerFile(null);
-            entity.setBannerImgUrl(fileUrl);
-
-            entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-            entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-
-            Integer result = bannerInfoService.addBannerInfor(entity);
-            if (result == 1) {
-                return Response.success("上传banner成功！");
-            } else {
-                return Response.fail("上传banner失败！");
+            Integer result = null;
+            if(pageModel.getBannerId() == null){
+                String respon = isAdd(bannerType, Long.valueOf(bannerOrder));
+                if (!"ok".equals(respon)) {
+                    return Response.fail(respon);
+                }
+                entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                 result = bannerInfoService.addBannerInfor(entity);
+                if (result == 1) {
+                    return Response.success("上传banner成功！");
+                } else {
+                    return Response.fail("上传banner失败！");
+                }
+            }else{
+                entity.setId(pageModel.getBannerId());
+                entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                result = bannerInfoService.update(entity);
+                if (result == 1) {
+                    return Response.success("编辑操作成功！");
+                } else {
+                    return Response.fail("上传banner失败！");
+                }
             }
+
         } catch (BusinessException e) {
             LOGGER.error("上传banner失败！", e);
             return Response.fail(e.getErrorDesc());

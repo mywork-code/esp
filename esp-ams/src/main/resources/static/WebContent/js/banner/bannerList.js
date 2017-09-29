@@ -35,14 +35,7 @@ $(function(){
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
-				align : 'center',
-				formatter:function(value,row,index){
-					if(value=="index"){
-						return "首页";
-					}else if(value=="sift"){
-						return "精选";
-				}
-			}
+				align : 'center'
 			},
 // 			{
 // 				title : '活动地址',
@@ -82,8 +75,8 @@ $(function(){
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
 						+ row.activityUrl+ "');\">预览</a>&nbsp;&nbsp;";
-					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-						+ row.bannerImgUrl+ "');\">编辑</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editBanner('"
+						+ row.id+ "');\">编辑</a>&nbsp;&nbsp;";
 				 return content;
 			}
 			}]],
@@ -94,7 +87,6 @@ $(function(){
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                  // console.log(data);
             	   $.validateResponse(data, function() {
             		  // debugger;
                        success(data);
@@ -136,11 +128,6 @@ $(function(){
 	});
 	//确认   添加  banner信息
 	$("#agreeAdd").click(function(){
-//		var bannerName = $("#bannerName").textbox('getValue');
-//		if(null == bannerName || bannerName==""){
-//			alert("名称不能为空！");
-//			return ;
-//		}
 		var bannerType=$("#bannerType").combobox('getValue');
 		if(null == bannerType || bannerType==""){
 			$.messager.alert("<span style='color: black;'>提示</span>","类型不能为空！","info");
@@ -152,11 +139,14 @@ $(function(){
 			return;
 		}
 		var bannerFile= $("#bannerFile").val();
-		if(bannerFile=='' || null==bannerFile){
-			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
-			return;
+		var bannerId = $('#bannerId').val();
+		if(bannerId == ''){
+			if(bannerFile=='' || null==bannerFile){
+				$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
+				return;
+			}
 		}
-		
+
 //		 if(bannerFile!="" && null!= bannerFile){
 //				var pos = "." + bannerFile.replace(/.+\./, "");
 //				if(bannerFile!=null && pos!=".jpg" && pos!=".png"){
@@ -253,6 +243,33 @@ $(function(){
 			window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
 
 		}
+	}
+
+	//编辑
+	$.editBanner = function(bannerId){
+
+		$.ajax({
+			url : ctx + '/application/banner/management/getById?id='+ bannerId,
+			type : "get",
+			dataType : "json",
+			success : function(resp) {
+				console.debug(resp)
+				var data = resp.data;
+				$('#addBannerInfor').window({
+					minimizable:false,
+					maximizable:false,
+					collapsible:false,
+					modal:true,
+					top:$(document).scrollTop() + ($(window).height()-250) * 0.5
+				});
+				$("#addBannerInfor").window('open');
+
+				$("#bannerType").combobox('setValue',data.bannerType);
+				$("#bannerOrder").numberbox('setValue',data.bannerOrder);
+				$('#bannerId').val(data.id);
+			}
+		});
+
 	}
 
 	$.previewProduct = function(id,source) {

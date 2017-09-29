@@ -9,11 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.enums.JDReturnType;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -43,11 +41,15 @@ import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
-import com.apass.esp.search.utils.Pinyin4jUtils;
+import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.utils.PaginationManage;
@@ -106,7 +108,10 @@ public class GoodsService {
 
   @Autowired
   private JdProductApiClient jdProductApiClient;
-
+  @Autowired
+  private ProGroupGoodsService proGroupGoodsService;
+  @Autowired
+  private ActivityCfgService activityCfgService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -357,6 +362,8 @@ public class GoodsService {
       }
     }
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
+    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
+    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("goodsStockList", goodsStockList);
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
     List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
@@ -408,7 +415,30 @@ public class GoodsService {
     }
     return minPrice;
   }
-
+  /**
+   * 通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
+   */
+  public String getActivityInfo(Long goodsId){
+	  ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+	  String activityCfgDesc="";
+	  if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+	      ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
+	      if(null !=activityCfg ){
+	    	  if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
+	    		  String  offer1   =activityCfg.getOfferSill1().toString();
+	    		  String  discount1=activityCfg.getDiscountAmonut1().toString();
+	    		  activityCfgDesc="满"+offer1+"元，支付立减"+discount1+"元现金/n";
+	    	  }
+	    	  if(null !=activityCfg.getOfferSill2() && null !=activityCfg.getDiscountAmount2()){
+	    		  String  offer2   =activityCfg.getOfferSill2().toString();
+	    		  String  discount2=activityCfg.getDiscountAmount2().toString();
+	    		  activityCfgDesc=activityCfgDesc+"满"+offer2+"元，支付立减"+discount2+"元现金";
+	    	  }
+	          return activityCfgDesc;
+	        }
+	  }
+	  return null;
+  }
   /**
    * 获取商品最低价所对应的库存id
    *
