@@ -48,10 +48,12 @@ import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -112,6 +114,8 @@ public class GoodsService {
   private ProGroupGoodsService proGroupGoodsService;
   @Autowired
   private ActivityCfgService activityCfgService;
+  @Autowired
+  private OrderService orderService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -416,7 +420,7 @@ public class GoodsService {
     return minPrice;
   }
   /**
-   * 通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
+   * (满减活动)通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
    */
   public String getActivityInfo(Long goodsId){
 	  ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
@@ -427,7 +431,7 @@ public class GoodsService {
 	    	  if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
 	    		  String  offer1   =activityCfg.getOfferSill1().toString();
 	    		  String  discount1=activityCfg.getDiscountAmonut1().toString();
-	    		  activityCfgDesc="满"+offer1+"元，支付立减"+discount1+"元现金/n";
+	    		  activityCfgDesc="满"+offer1+"元，支付立减"+discount1+"元现金\n";
 	    	  }
 	    	  if(null !=activityCfg.getOfferSill2() && null !=activityCfg.getDiscountAmount2()){
 	    		  String  offer2   =activityCfg.getOfferSill2().toString();
@@ -439,6 +443,23 @@ public class GoodsService {
 	  }
 	  return null;
   }
+
+	/**
+	 * 京东商品是否支持7天无理由退货,Y、N
+	 */
+	public String getsupport7dRefund(Long skuId) {
+		String value = "N";
+		List<SkuNum> skuNumList = new ArrayList<>();
+		SkuNum skuNum = new SkuNum();
+		skuNum.setNum(1);
+		skuNum.setSkuId(skuId);
+		skuNumList.add(skuNum);
+		// 验证京东商品是否支持7天退货
+		if (orderService.checkGoodsIs7ToReturn(skuNumList)) {
+			value = "Y";
+		}
+		return value;
+	}
   /**
    * 获取商品最低价所对应的库存id
    *
