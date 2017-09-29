@@ -96,6 +96,9 @@ public class ProGroupGoodsService {
 	public ProGroupGoods selectOneByGoodsIdAndActivityId(Long goodsId,Long activityId){
 		return groupGoodsMapper.selectOneByGoodsIdAndActivityId(goodsId,activityId);
 	}
+	public int getMaxSortOrder(Long groupId){
+		return groupGoodsMapper.getMaxSortOrder(groupId);
+	}
 	/**
 	 * 获取活动配置信息
 	 * @param query
