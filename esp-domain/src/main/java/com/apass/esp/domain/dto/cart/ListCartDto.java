@@ -9,6 +9,9 @@ public class ListCartDto {
     /** 商户编码 */
     private String merchantCode;
     
+    /** 满减活动描述  */
+    private String activityCfg;
+    
     /** 购物车中需要展示的商品信息 */
     private List<GoodsInfoInCartEntity> goodsInfoInCartList;
 
@@ -28,4 +31,12 @@ public class ListCartDto {
         this.goodsInfoInCartList = goodsInfoInCartList;
     }
 
+	public String getActivityCfg() {
+		return activityCfg;
+	}
+
+	public void setActivityCfg(String activityCfg) {
+		this.activityCfg = activityCfg;
+	}
+    
 }

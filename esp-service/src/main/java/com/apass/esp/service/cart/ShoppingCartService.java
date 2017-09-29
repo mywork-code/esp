@@ -13,6 +13,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,10 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.dto.cart.ListCartDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -35,6 +38,7 @@ import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -67,6 +71,10 @@ public class ShoppingCartService {
     private JdGoodsInfoService jdGoodsInfoService;
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
+    @Autowired
+    private ProGroupGoodsMapper groupGoodsMapper;
     /**
      * 添加商品到购物车
      * 
@@ -363,13 +371,27 @@ public class ShoppingCartService {
         if(list1 != null && list1.size()>0){
             for(int i=0; i<list1.size(); i++){
                 goodsInfoInCart = list1.get(i);
-                if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
-                    resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
-                } else {
-                    List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
-                    list.add(goodsInfoInCart);
-                    resultMap.put(goodsInfoInCart.getMerchantCode(), list);
-                }
+                //根据goodsId查询该商品是否在有效活动中
+                Long  goodsId=goodsInfoInCart.getGoodsId();
+                ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+				if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
+				    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
+				    Long activityId=groupGoods.getActivityId();
+				    String act="activity_"+activityId.toString();//防止商户编码与活动id重复
+					if (resultMap.containsKey(act)) {
+						resultMap.get(act).add(goodsInfoInCart);
+					} else {
+						List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+						list.add(goodsInfoInCart);
+						resultMap.put(act, list);
+					}
+				} else if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
+					resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
+				} else {
+					List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+					list.add(goodsInfoInCart);
+					resultMap.put(goodsInfoInCart.getMerchantCode(), list);
+				}
             }
         }
         
@@ -391,6 +413,12 @@ public class ShoppingCartService {
         if(resultMap != null){
             for(String key : resultMap.keySet()){
                 ListCartDto listCart = new ListCartDto();
+                String[] keys=key.split("_");
+                if(keys.length>1){
+                	String activityId=keys[1];
+                	String activityCfgDesc =goodsService.getActivityInfoByActivityId(Long.parseLong(activityId));
+                	listCart.setActivityCfg(activityCfgDesc);
+                }
                 listCart.setMerchantCode(key);
                 listCart.setGoodsInfoInCartList(resultMap.get(key));
                 cartDtoList.add(listCart);
