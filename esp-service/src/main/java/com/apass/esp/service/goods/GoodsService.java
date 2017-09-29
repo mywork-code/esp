@@ -29,6 +29,7 @@ import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
@@ -444,6 +445,31 @@ public class GoodsService {
 	  return null;
   }
 
+	/**
+	 * (满减活动)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
+	 */
+	public String getActivityInfoByActivityId(Long activityId) {
+		String activityCfgDesc = "";
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if (activityCfg == null) {
+			return null;
+		}
+		if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
+			if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
+				String offer1 = activityCfg.getOfferSill1().toString();
+				String discount1 = activityCfg.getDiscountAmonut1().toString();
+				activityCfgDesc = "满" + offer1 + "元，支付立减" + discount1 + "元现金\n";
+			}
+			if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
+				String offer2 = activityCfg.getOfferSill2().toString();
+				String discount2 = activityCfg.getDiscountAmount2().toString();
+				activityCfgDesc = activityCfgDesc + "满" + offer2 + "元，支付立减" + discount2 + "元现金";
+			}
+			return activityCfgDesc;
+
+		}
+		return null;
+	}
 	/**
 	 * 京东商品是否支持7天无理由退货,Y、N
 	 */
