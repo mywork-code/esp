@@ -293,16 +293,22 @@ public class BannerController extends BaseController {
                 entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                  result = bannerInfoService.addBannerInfor(entity);
+                if (result == 1) {
+                    return Response.success("上传banner成功！");
+                } else {
+                    return Response.fail("上传banner失败！");
+                }
             }else{
                 entity.setId(pageModel.getBannerId());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 result = bannerInfoService.update(entity);
+                if (result == 1) {
+                    return Response.success("编辑操作成功！");
+                } else {
+                    return Response.fail("上传banner失败！");
+                }
             }
-            if (result == 1) {
-                return Response.success("上传banner成功！");
-            } else {
-                return Response.fail("上传banner失败！");
-            }
+
         } catch (BusinessException e) {
             LOGGER.error("上传banner失败！", e);
             return Response.fail(e.getErrorDesc());
