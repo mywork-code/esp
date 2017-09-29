@@ -153,6 +153,7 @@ public class JdGoodsInfoService {
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(sku.toString(), region);
 			map.put("goodsStockDes", jdGoodStock);
+			//查询京东商品规格
 			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region);
 			map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 			map.put("skuId", map2.get("skuId"));
@@ -239,9 +240,15 @@ public class JdGoodsInfoService {
 			}
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(skuId.toString(), region);
+			//是否支持7天无理由退货,Y、N
+			String support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
+			//满减活动字段
+			String activityCfg = goodsService.getActivityInfo(goodsId);
 			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);
 			jdSimilarSkuVo.setStockDesc(jdGoodStock);
+			jdSimilarSkuVo.setSupport7dRefund(support7dRefund);
+			jdSimilarSkuVo.setActivityCfg(activityCfg);
 			
 			String skuIdOrder = "";
 			for (JdSimilarSku jdsk : jdSimilarSkuList2) {
