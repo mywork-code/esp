@@ -121,6 +121,7 @@ public class ProGroupGoodsExportFikeController {
 	public Response groupEditSortSave(@RequestBody GoodsOrderSortVo vo){
 		try {
 			validateEditSortParams(vo);
+			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
 			Integer i = proGroupGoodsService.editSortGroup(vo);
 			if(i==1){
 				return Response.success("修改成功!");

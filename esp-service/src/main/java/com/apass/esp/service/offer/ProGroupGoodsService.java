@@ -113,18 +113,17 @@ public class ProGroupGoodsService {
 		}
 		Long subSort = managerSub.getOrderSort();
 		Long passiveSort = managerPassive.getOrderSort();
-		String userName = SpringSecurityUtils.getLoginUserDetails().getUsername();
 		Date date = new Date();
 		
 		
 		managerSub.setOrderSort(passiveSort);
 		managerSub.setUpdateDate(date);
-		managerSub.setUpdateUser(userName);
+		managerSub.setUpdateUser(vo.getUserName());
 		
 		
 		managerPassive.setOrderSort(subSort);
 		managerPassive.setUpdateDate(date);
-		managerPassive.setUpdateUser(userName);
+		managerPassive.setUpdateUser(vo.getUserName());
 		try {
 			groupGoodsMapper.updateByPrimaryKeySelective(managerSub);
 			groupGoodsMapper.updateByPrimaryKeySelective(managerPassive);
