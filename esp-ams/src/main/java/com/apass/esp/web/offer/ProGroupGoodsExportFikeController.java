@@ -136,6 +136,9 @@ public class ProGroupGoodsExportFikeController {
 						if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
 							ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
 									Long.parseLong(goods[i]), Long.parseLong(activityId));
+							
+							int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+							proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
 							proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 							proGroupGoods.setStatus("S");
 							proGroupGoods.setUpdateDate(new Date());
