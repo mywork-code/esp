@@ -800,12 +800,7 @@ public class ShopHomeController {
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
-                //验证京东商品是否支持7天退货
-                if(orderService.checkGoodsIs7ToReturn(skuNumList)){
-                    returnMap.put("support7dRefund","Y");// 是否支持7天无理由退货,Y、N
-                }else{
-                	returnMap.put("support7dRefund","N");
-                }
+                returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
                 if (jdGoodsStockInfoList.size() == 1) {
