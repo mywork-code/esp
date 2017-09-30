@@ -416,8 +416,17 @@ public class ShoppingCartService {
                 String[] keys=key.split("_");
                 if(keys.length>1){
                 	String activityId=keys[1];
-                	String activityCfgDesc =goodsService.getActivityInfoByActivityId(Long.parseLong(activityId));
+                	Map<String,Object>  activityCfgMap =goodsService.getActivityInfoByActivityId(Long.parseLong(activityId));
+                	String activityCfgDesc=(String) activityCfgMap.get("activityCfgDesc");
+                	String offerSill1=(String) activityCfgMap.get("offerSill1");
+                	String discountAmonut1=(String) activityCfgMap.get("discountAmonut1");
+                	String offerSill2=(String) activityCfgMap.get("offerSill2");
+                	String discountAmonut2=(String) activityCfgMap.get("discountAmonut2");
                 	listCart.setActivityCfg(activityCfgDesc);
+                	listCart.setOfferSill1(offerSill1);
+                	listCart.setDiscountAmonut1(discountAmonut1);
+                	listCart.setOfferSill2(offerSill2);
+                	listCart.setDiscountAmount2(discountAmonut2);
                 }
                 listCart.setMerchantCode(key);
                 listCart.setGoodsInfoInCartList(resultMap.get(key));

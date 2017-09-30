@@ -448,7 +448,8 @@ public class GoodsService {
 	/**
 	 * (满减活动)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
 	 */
-	public String getActivityInfoByActivityId(Long activityId) {
+	public Map<String,Object> getActivityInfoByActivityId(Long activityId) {
+		Map<String,Object> resultMap=new HashMap<>();
 		String activityCfgDesc = "";
 		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
 		if (activityCfg == null) {
@@ -459,14 +460,18 @@ public class GoodsService {
 				String offer1 = activityCfg.getOfferSill1().toString();
 				String discount1 = activityCfg.getDiscountAmonut1().toString();
 				activityCfgDesc = "满" + offer1 + "元，支付立减" + discount1 + "元现金\n";
+				resultMap.put("offerSill1", offer1);
+				resultMap.put("discountAmonut1", discount1);
 			}
 			if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
 				String offer2 = activityCfg.getOfferSill2().toString();
 				String discount2 = activityCfg.getDiscountAmount2().toString();
 				activityCfgDesc = activityCfgDesc + "满" + offer2 + "元，支付立减" + discount2 + "元现金";
+				resultMap.put("offerSill2", offer2);
+				resultMap.put("discountAmonut2", discount2);
 			}
-			return activityCfgDesc;
-
+			resultMap.put("activityCfgDesc", activityCfgDesc);
+			return resultMap;
 		}
 		return null;
 	}
