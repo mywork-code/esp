@@ -476,6 +476,36 @@ public class GoodsService {
 		return null;
 	}
 	/**
+	 * (满减活动购物车列表)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
+	 */
+	public Map<String,Object> getCarActivityInfoByActivityId(Long activityId) {
+		Map<String,Object> resultMap=new HashMap<>();
+		String activityCfgDesc = "";
+		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+		if (activityCfg == null) {
+			return null;
+		}
+		if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
+			if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
+				String offer1 = activityCfg.getOfferSill1().toString();
+				String discount1 = activityCfg.getDiscountAmonut1().toString();
+				activityCfgDesc = "满" + offer1 + "元减" + discount1 + "元";
+				resultMap.put("offerSill1", offer1);
+				resultMap.put("discountAmonut1", discount1);
+			}
+			if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
+				String offer2 = activityCfg.getOfferSill2().toString();
+				String discount2 = activityCfg.getDiscountAmount2().toString();
+				activityCfgDesc = activityCfgDesc + "，满" + offer2 + "元减" + discount2 + "元";
+				resultMap.put("offerSill2", offer2);
+				resultMap.put("discountAmonut2", discount2);
+			}
+			resultMap.put("activityCfgDesc", activityCfgDesc);
+			return resultMap;
+		}
+		return null;
+	}
+	/**
 	 * 京东商品是否支持7天无理由退货,Y、N
 	 */
 	public String getsupport7dRefund(Long skuId) {
