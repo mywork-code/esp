@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.third.party.jd.client.JdTokenClient;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * type: class
@@ -39,10 +42,11 @@ public class JdTokenSyncer extends AbstractSyncer {
             String json = cacheManager.get(JD_TOKEN_REDIS_KEY);
             JSONObject jsonObject = JSONObject.parseObject(json);
             String time = jsonObject.getString("time");
+            LOGGER.info("the timestamp of getting jd token is " + DateFormatUtil.datetime2String(new Date(Long.valueOf(time))));
             long interVal = System.currentTimeMillis() - Long.valueOf(time);
             if (3600 * 24 * 7 * 1000 <= interVal) {
-              LOGGER.info(getName() + "  sync exec....................................");
-                JSONObject jsonObject1 = jdTokenClient.getToken();
+              LOGGER.info(getName() + " jd token sync exec....................................");
+                JSONObject jsonObject1 = jdTokenClient.refreshToken();
                 cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject1.toJSONString());
             }
         }
