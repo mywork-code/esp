@@ -47,6 +47,10 @@ public class GoodsInfoInOrderDto {
      */
     private BigDecimal goodsPrice;
     /**
+     * 优惠金额
+     */
+    private BigDecimal disCountAmt;
+    /**
      * 市场价
      */
     private BigDecimal marketPrice;
@@ -136,5 +140,12 @@ public class GoodsInfoInOrderDto {
 	public void setUnSupportProvince(String unSupportProvince) {
 		this.unSupportProvince = unSupportProvince;
 	}
-    
+
+	public BigDecimal getDisCountAmt() {
+		return disCountAmt;
+	}
+
+	public void setDisCountAmt(BigDecimal disCountAmt) {
+		this.disCountAmt = disCountAmt;
+	}
 }

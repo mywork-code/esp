@@ -114,7 +114,7 @@ public class ShoppingCartController {
             int goodsAmountInCart = shoppingCartService.getNumOfTypeInCart(userId);
 
 //            resultMap.put("goodsInfoInCartList", goodsInfoInCartList);
-            resultMap.put("goodsInfoInCartList1", listCartDtos);
+            resultMap.put("goodsInfoInCartList", listCartDtos);
             resultMap.put("goodsAmountInCart", goodsAmountInCart);
 
             return Response.success("查看购物车中商品成功", resultMap);
