@@ -22,10 +22,6 @@ public abstract class AbstractSyncer implements Runnable {
 
     protected abstract int getIntervalSeconds();
 
-    protected boolean isFrequently() {
-        return false;
-    }
-
     protected void init() {
     }
 
@@ -40,13 +36,7 @@ public abstract class AbstractSyncer implements Runnable {
                 while (true) {
                     try {
 
-                        if (!isFrequently()) {
-                            Threads.sleepSeconds((long) (3600 * (Math.random() + 1)));
-                        }
-                        LOGGER.info(getName() + "  sync start....................................");
                         AbstractSyncer.this.run();
-                        LOGGER.info(getName() + "  sync end  ....................................");
-
                     } catch (Exception e) {
                         LOGGER.error(getName(), e);
                     }
