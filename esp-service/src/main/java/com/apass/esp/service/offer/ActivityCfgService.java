@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,9 @@ public class ActivityCfgService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public ResponsePageBody<ActivityCfgVo> getActivityCfgListPage() throws BusinessException{
+	public ResponsePageBody<ActivityCfgVo> getActivityCfgListPage(ActivityfgDto activityfgDto) throws BusinessException{
 		ResponsePageBody<ActivityCfgVo> pageBody = new ResponsePageBody<ActivityCfgVo>();
-		List<ProActivityCfg> configList = activityCfgMapper.getActivityCfgListPage();
+		List<ProActivityCfg> configList = activityCfgMapper.getActivityCfgListPage(activityfgDto);
 		Integer count = activityCfgMapper.getActivityCfgListPageCount();
 		
 		List<ActivityCfgVo> configVoList = getPoToVoList(configList);

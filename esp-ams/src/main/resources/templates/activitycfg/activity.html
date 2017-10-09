@@ -27,21 +27,36 @@
 		#lookPictureImgWrap img:hover {
 			border:2px #000 solid;
 		}
-	
-	
+
+
 	</style>
 </head>
 <body style="word-break: break-all;">
 	<input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
-	<div class="search">
-		<table style="min-width: 700px;">
+	<div id="tb">
+		<table style="min-width: 1100px">
 			<tr>
-				<td width="100%"><a id="add" href="javascript:void(0);"
-					class="easyui-linkbutton add-btn"
-					data-options="iconCls:'icon-search'">新&nbsp;增&nbsp;</a>&nbsp;</td>
+				<td width="5%" align="right">活动状态：</td>
+				<td width="85%">
+					<select class="easyui-combobox" style="width: 150px;" id="status">
+						<option value="" class="" selected="selected">请选择</option>
+						<option label="未开始" value="no">未开始</option>
+						<option label="进行中" value="processing">进行中</option>
+						<option label="已结束" value="end">已结束</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="right">
+					<a id="add" href="javascript:void(0);"
+									class="easyui-linkbutton add-btn">添&nbsp;加&nbsp;活&nbsp;动</a>&nbsp;
+					<a id="search" href="javascript:void(0);" class="easyui-linkbutton search-btn"
+					   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
+				</td>
 			</tr>
 		</table>
 	</div>
+
 	<div id="list"></div>
 </body>
 </html>
