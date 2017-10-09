@@ -3,11 +3,14 @@ package com.apass.esp.web.offer;
 import java.util.Date;
 import java.util.Map;
 
+import com.apass.esp.domain.dto.offo.ActivityfgDto;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +28,9 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.google.common.collect.Maps;
+
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 活动配置
  */
@@ -60,10 +66,11 @@ public class ActivityCfgController {
      */
     @ResponseBody
     @RequestMapping(value ="/list")
-    public ResponsePageBody<ActivityCfgVo> ActivityCfgPageList() {
-    	ResponsePageBody<ActivityCfgVo> respBody = new ResponsePageBody<ActivityCfgVo>();
+    public ResponsePageBody<ActivityCfgVo> ActivityCfgPageList(ActivityfgDto activityfgDto) {
+	    ResponsePageBody<ActivityCfgVo> respBody = new ResponsePageBody<ActivityCfgVo>();
+
 		try {
-			ResponsePageBody<ActivityCfgVo> pagination= activityCfgService.getActivityCfgListPage();
+			ResponsePageBody<ActivityCfgVo> pagination= activityCfgService.getActivityCfgListPage(activityfgDto);
             respBody.setTotal(pagination.getTotal());
             respBody.setRows(pagination.getRows());
             respBody.setStatus(CommonCode.SUCCESS_CODE);

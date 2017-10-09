@@ -56,7 +56,6 @@ $(function(){
                 type : "post",
                 dataType : "json",
                 success : function(data) {
-                	console.log(data);
                     $.validateResponse(data, function() {
                         success(data);
                     });
@@ -69,4 +68,12 @@ $(function(){
     $("#add").click(function(){
     	window.location.href= ctx + '/activity/cfg/add';
     })
+
+    $(".search-btn").click(function() {
+        debugger;
+        var params = {'status':$('#status').combobox('getValue')};
+        var stat = $('#status').combobox('getValue');
+
+        $('#list').datagrid('load', params);
+    });
 });
