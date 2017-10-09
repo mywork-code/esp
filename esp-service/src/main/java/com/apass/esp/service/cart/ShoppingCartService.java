@@ -416,7 +416,7 @@ public class ShoppingCartService {
                 String[] keys=key.split("_");
                 if(keys.length>1){
                 	String activityId=keys[1];
-                	Map<String,Object>  activityCfgMap =goodsService.getActivityInfoByActivityId(Long.parseLong(activityId));
+                	Map<String,Object>  activityCfgMap =goodsService.getCarActivityInfoByActivityId(Long.parseLong(activityId));
                 	String activityCfgDesc=(String) activityCfgMap.get("activityCfgDesc");
                 	String offerSill1=(String) activityCfgMap.get("offerSill1");
                 	String discountAmonut1=(String) activityCfgMap.get("discountAmonut1");
