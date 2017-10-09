@@ -370,7 +370,8 @@ public class CashRefundService {
                 try {
                     orderService.addGoodsStock("", orderId);
                 } catch (BusinessException e) {
-                    e.printStackTrace();
+                    logger.error("agree cashrefund error...",e);
+                    return Response.fail(BusinessErrorCode.NO);
                 }
 
                 if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
@@ -384,7 +385,7 @@ public class CashRefundService {
                       try {
                         paymentService.refundCallback("", cashRefund.getOrderId() + "", "0","");
                       }catch (Exception e){
-
+                          logger.error("agree cashrefund error...",e);
                       }
                         return Response.fail(BusinessErrorCode.NO);
                     }else{
@@ -393,6 +394,7 @@ public class CashRefundService {
                         try {
                             paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
                         }catch (Exception e){
+                            logger.error("agree cashrefund error...",e);
 
                         }
                     }
@@ -450,11 +452,10 @@ public class CashRefundService {
                     }else{
                         logger.info("refund success orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
                         alpaySFFlag = true;
-                        continue;
                     }
                 }
 
-                if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                else  if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
                     Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundAmt.getCreditAmt()));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
@@ -462,7 +463,7 @@ public class CashRefundService {
                         cashRefundTxn.setStatus("3");
                         cashRefundTxn.setUpdateDate(new Date());
                         cashRefundTxnMapper.updateByTxnTypeAndCashRefundId(cashRefundTxn);
-                        return res;
+                        return Response.fail(BusinessErrorCode.NO);
                     }
                     cashRefundTxn.setStatus("2");
                     cashRefundTxn.setUpdateDate(new Date());
@@ -475,16 +476,18 @@ public class CashRefundService {
                     try {
                         orderService.addGoodsStock("", orderId);
                     } catch (BusinessException e) {
-                        e.printStackTrace();
+                        logger.error("agree cashrefund error...",e);
+                        return Response.fail(BusinessErrorCode.NO);
                     }
                 }
-                if(alpaySFFlag){
-                    //退款成功
-                    try {
-                        paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
-                    }catch (Exception e){
-
-                    }
+            }
+            if(alpaySFFlag){
+                //退款成功
+                try {
+                    paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
+                }catch (Exception e){
+                    logger.error("refundCallback cashrefund error...",e);
+                    return Response.fail(BusinessErrorCode.NO);
                 }
             }
             return Response.successResponse();
@@ -608,9 +611,7 @@ public class CashRefundService {
                 firstAmount = txnInfoEntity.getTxnAmt();
             }
         }
-        BigDecimal scale = firstAmount.divide(txtAmount,2,ROUND_HALF_UP);
-        dto.setSfScale(scale);
-        dto.setSfAmt(orderAmt.multiply(scale).setScale(2, ROUND_HALF_UP));
+        dto.setSfAmt(orderAmt.multiply(firstAmount).divide(txtAmount).setScale(3, ROUND_HALF_UP));
         dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
         return dto;
 
@@ -648,4 +649,5 @@ public class CashRefundService {
     public List<CashRefund> getCashRefundByMainOrderId(String mainOrderId,CashRefundStatus status){
         return cashRefundMapper.queryByMainOrderIdAndStatus(mainOrderId,Integer.valueOf(status.getCode()));
     }
+
 }

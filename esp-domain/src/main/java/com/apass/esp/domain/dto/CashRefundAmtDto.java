@@ -10,15 +10,6 @@ public class CashRefundAmtDto {
   private BigDecimal sfAmt;//首付金额
   private BigDecimal creditAmt;//信用额度
 
-  private BigDecimal sfScale;
-
-  public BigDecimal getSfScale() {
-    return sfScale;
-  }
-
-  public void setSfScale(BigDecimal sfScale) {
-    this.sfScale = sfScale;
-  }
 
   public BigDecimal getSfAmt() {
     return sfAmt;
