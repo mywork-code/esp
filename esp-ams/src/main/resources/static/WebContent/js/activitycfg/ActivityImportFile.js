@@ -127,6 +127,50 @@ $(function(){
             })
         }
     });
+
+	$("#createGroup").click(function () {
+		$("#groupNameAdd").textbox('clear');
+		$("#sordGroupAdd").textbox('clear');
+		$("#addGroupDiv").dialog({
+			modal : true,
+			title : "创建分组",
+			resizable:true,
+			width : 400,
+			buttons : [ {
+				text : "确定",
+				handler : function() {
+					var groupNameAdd = $("#groupNameAdd").textbox('getValue');
+					var sordGroupAdd = $("#sordGroupAdd").textbox('getValue');
+					var params = {
+						"groupName":groupNameAdd,
+						"orderSort":sordGroupAdd,
+					}
+
+					$.ajax({
+						type : "POST",
+						url : ctx + '/application/activity/addGroup',
+						data : params,
+						success : function(data) {
+							ifLogout(data);
+							if (data.status == 1) {
+								$("#addGroupDiv").dialog("close");
+								$.messager.alert('提示',data.msg,'success');
+							} else {
+								$.messager.alert('提示',data.msg,'error');
+							}
+						}
+					});
+
+				}
+			}, {
+				text : "取消",
+				handler : function() {
+					$("#addGroupDiv").dialog("close");
+				}
+			} ]
+		});
+	});
+
     //加载商品类目信息
     goodsCategoryComboFun();
     // 查询列表
@@ -266,3 +310,12 @@ $(function(){
     });
     
 });
+
+//判断是否超时
+function ifLogout(data){
+	if(data.message=='timeout' && data.result==false){
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return false;
+	}
+}

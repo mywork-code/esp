@@ -7,7 +7,7 @@
         from t_esp_pro_group_manager 
         where activity_id = #{activityId}
       <![CDATA[ 
-       order by create_date desc
+        order by create_date desc
       ]]>
    </select>
    

@@ -201,4 +201,3 @@ function goodsCategoryComboFun() {
 	});
 	$("#goodsCategoryCombo").combotree('setValue', '请选择');
 }
-

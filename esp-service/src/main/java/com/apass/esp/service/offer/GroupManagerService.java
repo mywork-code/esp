@@ -69,6 +69,18 @@ public class GroupManagerService {
 		ProGroupManager manager = getProGroupManager(vo,true,userName);
 		return groupManagerMapper.insertSelective(manager);
 	}
+
+	/**
+	 * 创建分组
+	 * @param proGroupManager
+	 * @return
+     */
+	@Transactional(rollbackFor = { Exception.class})
+	public Integer addGroup(ProGroupManager proGroupManager){
+		return groupManagerMapper.insert(proGroupManager);
+	}
+
+
 	
 	/**
 	 * 保存修改分组信息

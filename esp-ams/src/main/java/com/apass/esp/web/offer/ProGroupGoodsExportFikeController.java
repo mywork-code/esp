@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.entity.ProGroupManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -383,5 +384,29 @@ public class ProGroupGoodsExportFikeController {
 			groupList.add(groupVo);
 		}
 		return groupList;
+	}
+
+	/**
+	 * 创建分组
+	 */
+	@ResponseBody
+	@RequestMapping(value ="/addGroup")
+	public Response createGroup(ProGroupManager proGroupManager){
+		if(StringUtils.isBlank(proGroupManager.getGroupName())){
+			return Response.fail("分组名称不能为空");
+		}
+
+		if(proGroupManager.getOrderSort() == null){
+			return Response.fail("排序不能为空");
+		}
+		String currentUser = SpringSecurityUtils.getCurrentUser();
+		proGroupManager.setCreateUser(currentUser);
+		proGroupManager.setUpdateUser(currentUser);
+		proGroupManager.setCreateDate(new Date());
+		proGroupManager.setUpdateDate(new Date());
+
+		groupManagerService.addGroup(proGroupManager);
+
+		return Response.success("创建分组成功！");
 	}
 }
