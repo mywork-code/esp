@@ -15,7 +15,16 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
-
+    <!-- 从分组中移除该商品 -->
+	<update id="updateGoods" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
+	     update t_esp_pro_group_goods
+	      set 
+	      group_id = null,
+	      order_sort = #{orderSort,jdbcType=BIGINT},
+	      update_date = #{updateDate,jdbcType=TIMESTAMP},
+	      status = #{status,jdbcType=VARCHAR}
+	    where id = #{id,jdbcType=BIGINT}
+	 </update>
 	 <select id="selectByGoodsIdAndActivityId" resultMap="BaseResultMap">
 
         select

@@ -26,5 +26,6 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    List<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query);
    //分页总数量
    Integer getProGroupGoodsListPageCount(ProGroupGoodsQuery query);
-
+   
+   Integer updateGoods(ProGroupGoods proGroupGoods);
 }

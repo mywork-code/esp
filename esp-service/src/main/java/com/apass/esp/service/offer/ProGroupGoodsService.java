@@ -93,6 +93,10 @@ public class ProGroupGoodsService {
 	public Integer insertSelective(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.insertSelective(proGroupGoods);
 	}
+	//从分组中移除该商品
+	public Integer updateGoods(ProGroupGoods proGroupGoods){
+		return groupGoodsMapper.updateGoods(proGroupGoods);
+	}
 	
 	/**
 	 * 编辑排序
@@ -133,6 +137,7 @@ public class ProGroupGoodsService {
 		return 1;
 	}
 	
+
 	public Integer updateProGroupGoods(ProGroupGoods proGroupGoods){
 		return groupGoodsMapper.updateByPrimaryKeySelective(proGroupGoods);
 	}
