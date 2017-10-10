@@ -14,6 +14,8 @@ public class ProGroupGoodsQuery extends QueryParams{
 
 	    private Long groupId;
 	    
+	    private Long activityId;
+	    
 	    private String groupName ;
 	    //成本价
 	    private BigDecimal goodsCostPrice;
@@ -228,6 +230,14 @@ public class ProGroupGoodsQuery extends QueryParams{
 
 		public void setCategoryId3(Long categoryId3) {
 			this.categoryId3 = categoryId3;
+		}
+
+		public Long getActivityId() {
+			return activityId;
+		}
+
+		public void setActivityId(Long activityId) {
+			this.activityId = activityId;
 		}
 		
 }
