@@ -135,7 +135,7 @@ public class ProGroupGoodsExportFikeController {
 	}
     
 	/**
-	 * 添加一个商品到分组中
+	 * 添加商品到分组中
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/addOneGoods")
@@ -181,6 +181,29 @@ public class ProGroupGoodsExportFikeController {
 			Response.fail("添加至该活动失败！");
 		}
 		return Response.success("共"+count+"件商品，关联成功"+countSuccess+"件，失败"+countFail+"件");
+	}
+	/**
+	 *从分组中移除该商品(恢复到导入时的状态)
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/removeGoods")
+	public Response RemoveGoodsFromGroup(@RequestParam("id") String id) {
+		try {
+			if(StringUtils.isBlank(id)){
+				return Response.fail("移除失败！");
+			}
+			ProGroupGoods proGroupGoods=new ProGroupGoods();
+			proGroupGoods.setId(Long.parseLong(id));
+			proGroupGoods.setGroupId(null);
+			proGroupGoods.setOrderSort(Long.parseLong("1"));
+			proGroupGoods.setStatus("");
+			proGroupGoods.setUpdateDate(new Date());
+			proGroupGoodsService.updateGoods(proGroupGoods);
+		} catch (Exception e) {
+			LOG.error("添加至该活动失败！", e);
+			Response.fail("添加至该活动失败！");
+		}
+		return Response.success("移除成功！");
 	}
 	/**
 	 * 导入文件
