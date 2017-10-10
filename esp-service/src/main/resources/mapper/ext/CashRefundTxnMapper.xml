@@ -33,4 +33,14 @@
     where 
     	status = #{status}
   </select>
+
+
+    <select id="queryByCashRefundIdAndType" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_esp_refund_txn
+        where
+        cash_refund_id = #{cashRefunId} and type_code = #{typeCode}
+    </select>
 </mapper>

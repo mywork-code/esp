@@ -349,6 +349,7 @@ public class CashRefundService {
         Date date = new Date();
         if (txnInfoEntityList.size() == 1) {
             String txnType = txnInfoEntityList.get(0).getTxnType();
+            List<CashRefundTxn> existCashRefundTxnList = cashRefundTxnMapper.queryByCashRefundIdAndType(cashRefund.getId(),txnType);
             txnAmt = orderEntity.getOrderAmt();
             CashRefundTxn cashRefundTxn = new CashRefundTxn();
             cashRefundTxn.setAmt(txnAmt);
@@ -361,7 +362,11 @@ public class CashRefundService {
                     cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntityList.get(0).getOrigTxnCode()));
                 }
                 cashRefundTxn.setTypeCode(txnType);
-                cashRefundTxnMapper.insert(cashRefundTxn);
+                if(CollectionUtils.isEmpty(existCashRefundTxnList)){
+                    cashRefundTxnMapper.insert(cashRefundTxn);
+                }else{
+                    cashRefundTxn = existCashRefundTxnList.get(0);
+                }
                 cashRefund.setUpdateDate(date);
                 cashRefund.setStatus(2);
                 cashRefund.setStatusD(date);
@@ -374,7 +379,8 @@ public class CashRefundService {
                     return Response.fail(BusinessErrorCode.NO);
                 }
 
-                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
+                if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)
+                    && !CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.equals(cashRefundTxn.getStatus())) {
                     //聚合支付新加
                     ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntityList.get(0).getTxnId());
                     logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
@@ -420,21 +426,27 @@ public class CashRefundService {
             CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
             boolean alpaySFFlag = false;
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
-                CashRefundTxn cashRefundTxn = new CashRefundTxn();
-                if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
-                    cashRefundTxn.setAmt(refundAmt.getCreditAmt());
+                List<CashRefundTxn> existCashRefundTxnList = cashRefundTxnMapper.queryByCashRefundIdAndType(cashRefund.getId(),txnInfoEntity.getTxnType());
+                CashRefundTxn cashRefundTxn = null;
+                if(CollectionUtils.isEmpty(existCashRefundTxnList)){
+                     cashRefundTxn = new CashRefundTxn();
+                    if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.XYZF_CODE.getCode())){
+                        cashRefundTxn.setAmt(refundAmt.getCreditAmt());
+                    }else{
+                        cashRefundTxn.setAmt(refundAmt.getSfAmt());
+                    }
+                    cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
+                    cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
+                    cashRefundTxn.setStatus("1");
+                    cashRefundTxn.setCashRefundId(cashRefund.getId());
+                    cashRefundTxn.setCreateDate(date);
+                    cashRefundTxn.setUpdateDate(date);
+                    cashRefundTxnMapper.insert(cashRefundTxn);
                 }else{
-                    cashRefundTxn.setAmt(refundAmt.getSfAmt());
+                    cashRefundTxn = existCashRefundTxnList.get(0);
                 }
-                cashRefundTxn.setTypeCode(txnInfoEntity.getTxnType());
-                cashRefundTxn.setOriTxnCode(String.valueOf(txnInfoEntity.getOrigTxnCode()));
-                cashRefundTxn.setStatus("1");
-                cashRefundTxn.setCashRefundId(cashRefund.getId());
-                cashRefundTxn.setCreateDate(date);
-                cashRefundTxn.setUpdateDate(date);
-                cashRefundTxnMapper.insert(cashRefundTxn);
-
-                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                if (TxnTypeCode.ALIPAY_SF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())
+                    && !CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.equals(cashRefundTxn.getStatus())) {
                     //聚合支付新加
                     ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnInfoEntity.getTxnId());
                     logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),cashRefundTxn.getAmt());
@@ -455,7 +467,8 @@ public class CashRefundService {
                     }
                 }
 
-                else  if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())) {
+                else  if (TxnTypeCode.XYZF_CODE.getCode().equalsIgnoreCase(txnInfoEntity.getTxnType())
+                    && !CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.equals(cashRefundTxn.getStatus())) {
                     Response res = commonHttpClient.updateAvailableAmount("", Long.valueOf(userId), String.valueOf(refundAmt.getCreditAmt()));
                     if (!res.statusResult()) {
                         cashRefund.setUpdateDate(new Date());
@@ -480,14 +493,14 @@ public class CashRefundService {
                         return Response.fail(BusinessErrorCode.NO);
                     }
                 }
-            }
-            if(alpaySFFlag){
-                //退款成功
-                try {
-                    paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
-                }catch (Exception e){
-                    logger.error("refundCallback cashrefund error...",e);
-                    return Response.fail(BusinessErrorCode.NO);
+                if(alpaySFFlag){
+                    //退款成功
+                    try {
+                        paymentService.refundCallback("", cashRefund.getOrderId() + "", "1","0000");
+                    }catch (Exception e){
+                        logger.error("refundCallback cashrefund error...",e);
+                        return Response.fail(BusinessErrorCode.NO);
+                    }
                 }
             }
             return Response.successResponse();

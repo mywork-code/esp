@@ -1,11 +1,10 @@
 package com.apass.esp.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface CashRefundTxnMapper extends GenericMapper<CashRefundTxn, Long>{
 
@@ -20,5 +19,8 @@ public interface CashRefundTxnMapper extends GenericMapper<CashRefundTxn, Long>{
 	List<CashRefundTxn> queryCashRefundTxnByCashRefundId(@Param("cashRefunId")Long cashRefunId);
 
 	List<CashRefundTxn> queryCashRefundTxnByStatus(@Param("status")String status);
+
+	List<CashRefundTxn> queryByCashRefundIdAndType(@Param("cashRefunId")Long cashRefunId
+			                                          ,@Param("typeCode") String typeCode);
 
 }
