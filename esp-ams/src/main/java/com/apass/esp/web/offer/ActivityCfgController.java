@@ -1,10 +1,12 @@
 package com.apass.esp.web.offer;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.google.zxing.qrcode.decoder.Mode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +60,10 @@ public class ActivityCfgController {
      * @return
      */
  	@RequestMapping(value = "/importInit")
-    public String activityimportFileConfig() {
-      return "activitycfg/activityImportFile";
+    public ModelAndView activityimportFileConfig(ActivityCfgVo activityCfgVo) {
+		ModelAndView mv = new ModelAndView("activitycfg/activityImportFile");
+		mv.addObject("activityCfgVo",activityCfgVo);
+		return mv;
     }
  	/**
      * 活动配置分页json

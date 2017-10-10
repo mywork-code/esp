@@ -127,6 +127,49 @@ $(function(){
             })
         }
     });
+
+	$("#createGroup").click(function () {
+		$("#addGroupDiv").dialog({
+			modal : true,
+			title : "创建分组",
+			resizable:true,
+			width : 400,
+			buttons : [ {
+				iconCls : "l-btn-icon icon-ok",
+				text : "确定",
+				handler : function() {
+					var groupNameAdd = $("#groupNameAdd").textbox('getValue');
+					var sordGroupAdd = $("#sordGroupAdd").textbox('getValue');
+					var params = {
+						"groupName":groupNameAdd,
+						"orderSort":sordGroupAdd,
+					}
+
+					$.ajax({
+						type : "POST",
+						url : ctx + '/application/activity/addGroup',
+						data : params,
+						success : function(data) {
+							ifLogout(data);
+							if (data.status == 1) {
+								$("#addGroupDiv").dialog("close");
+								$.messager.alert('提示',data.message,'success');
+							} else {
+								$.messager.alert('提示',data.message,'error');
+							}
+						}
+					});
+
+				}
+			}, {
+				text : "取消",
+				handler : function() {
+					$("#addGroupDiv").dialog("close");
+				}
+			} ]
+		});
+	});
+
     //加载商品类目信息
     goodsCategoryComboFun();
     // 查询列表

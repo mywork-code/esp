@@ -33,10 +33,50 @@
 </style>
 </head>
 <body>
+
     <input id="addGoodsToGroupActivityId" name="addGoodsToGroupActivityId" type="hidden">
-	<div id="tb">
+	<div id="tb" align="center">
+		<div style="width: 1000px;margin-bottom: 10px">
+			<span style="border: 1px solid grey;width: inherit;color: red">
+				<span class="firstStep" style="font-weight: bolder">&nbsp;基&nbsp;本&nbsp;信&nbsp;息&nbsp;</span>
+				=============================================================>>
+			<span class="secondStep" style="font-weight: bolder;color: red">&nbsp;选&nbsp;择&nbsp;商&nbsp;品&nbsp;</span></span>
+		</div>
+
+		<div style="width: 1000px;margin-bottom: 10px">
+			<table style="width: 80%;height: auto;" align="center">
+				<tr>
+					<td align="right">活动名称：</td>
+					<td align="left"><input type="text" id="activityName2" value="${activityCfgVo.activityName!}"
+											class="easyui-textbox" style="width: 160px;"/></td>
+					<td align="right">开始时间：</td>
+					<td align="left"><input type="text" id="startTime2" value="${activityCfgVo.startTime!}" editable="false" class="easyui-datetimebox"
+											style="width: 160px;"></td>
+				</tr>
+				<tr>
+					<td align="right">结束时间：</td>
+					<td align="left"><input type="text" id="endTime2" value="${activityCfgVo.endTime!}" editable="false" class="easyui-datetimebox"
+											style="width: 160px;"></td>
+					<td align="right">活动类型：</td>
+					<td align="left">
+						<select class="easyui-combobox" style="width: 160px;" id="activityType2" required="required" editable="false">
+							<option value="">请选择</option>
+							<option <#if ((activityCfgVo.activityType) == 'N')>selected="selected"</#if> value="N">无优惠</option>
+							<option <#if ((activityCfgVo.activityType) == 'Y')>selected="selected"</#if> value="Y">满减</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div class="search">
 			<table style="min-width: 700px;">
+				<tr>
+					<td align="right">分组管理:</td>
+					<td><a href="javascript:void(0);" id="createGroup"
+									   style="margin-right: 15px;" class="easyui-linkbutton">创&nbsp;建&nbsp;</a>
+					</td>
+				</tr>
+
 				<tr>
 					<td align="right">导入活动商品:</td>
 					<td align="left">
@@ -51,7 +91,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td align="right">商品池</td>
+					<td align="right"><span style="font-weight: bolder">商品池</span></td>
 				</tr>
 				<tr>
 					<td align="right">商品编号:</td>
@@ -98,6 +138,21 @@
 			<a href="javascript:void(0);" id="addGoodsToGroupAgree"
 				style="margin-right: 55px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
 		</div>
+	</div>
+
+	<div style="display: none" id="addGroupDiv">
+		<table>
+			<tr>
+				<tr>
+					<td align="right">分组名称</td>
+					<td><input id="groupNameAdd" class="easyui-textbox" style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td align="right">排序</td>
+					<td><input class="easyui-textbox" id="sordGroupAdd" style="width: 200px"></td>
+				</tr>
+			</tr>
+		</table>
 	</div>
 </body>
 </html>

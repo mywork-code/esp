@@ -6,25 +6,22 @@ $(function(){
 	$("#agreeAdd").click(function(){
     	if(checkParams()){
     		var theForm = $("#configForm");
+			var activityName = $("#activityName").textbox("getValue");
+			var startTime = $("#startTime").datetimebox("getValue");
+			var endTime = $("#endTime").datetimebox("getValue");
+			var activityType = $("#activityType").combobox("getValue");
+			console.log(activityName+"::"+startTime+"::"+activityType);
     		theForm.form("submit",{ 
     			url : ctx + '/activity/cfg/add/save',
     			success : function(data) {
-    				debugger;
-    				var flag1 = data.indexOf('登录系统');
-    				var flag2 = data.indexOf('</div');
-    				if (flag1 != -1 && flag2 != -1) {
-    					$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
-    					window.top.location = ctx + "/logout";
-    					return;
-    	            }
+    				ifLogoutForm(data);
     				var respon=JSON.parse(data);
     				if(respon.status=="1"){
     					$.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
-    					debugger;
-    					window.location.href = ctx + '/activity/cfg/activity';
+    					window.location.href = ctx + "/activity/cfg/importInit?activityName="+activityName+"&startTime="+startTime+"&endTime="+endTime+"&activityType="+activityType;
     				}else{
     					$.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
-    				}	
+    				}
     			}
     		});
     	}
@@ -123,3 +120,13 @@ $(function(){
 		}
 	});
 })
+
+function ifLogoutForm(data){
+	var flag1 = data.indexOf('登录系统');
+	var flag2 = data.indexOf('</div');
+	if (flag1 != -1 && flag2 != -1) {
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return;
+	}
+}
