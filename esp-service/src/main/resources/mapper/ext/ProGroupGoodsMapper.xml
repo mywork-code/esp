@@ -92,6 +92,12 @@
 			<if test="goodsId != null and goodsId != ''">
 				AND a.goods_id = #{goodsId, jdbcType=BIGINT}
 			</if>
+			<if test="activityId != null and activityId != ''">
+				AND a.activity_id = #{activityId, jdbcType=BIGINT}
+			</if>
+			<if test="groupId != null and groupId != ''">
+				AND a.group_id = #{groupId, jdbcType=BIGINT}
+			</if>
 			<if test="categoryId1 != null and categoryId1 != ''">
 				AND b.category_id1 = #{categoryId1, jdbcType=BIGINT}
 			</if>
