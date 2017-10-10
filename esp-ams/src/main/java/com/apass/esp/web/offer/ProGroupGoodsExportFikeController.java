@@ -135,7 +135,7 @@ public class ProGroupGoodsExportFikeController {
 	}
     
 	/**
-	 * 添加一个商品到分组中
+	 * 添加商品到分组中
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/addOneGoods")
