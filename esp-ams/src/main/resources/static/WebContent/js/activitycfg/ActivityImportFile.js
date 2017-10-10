@@ -129,13 +129,14 @@ $(function(){
     });
 
 	$("#createGroup").click(function () {
+		$("#groupNameAdd").textbox('clear');
+		$("#sordGroupAdd").textbox('clear');
 		$("#addGroupDiv").dialog({
 			modal : true,
 			title : "创建分组",
 			resizable:true,
 			width : 400,
 			buttons : [ {
-				iconCls : "l-btn-icon icon-ok",
 				text : "确定",
 				handler : function() {
 					var groupNameAdd = $("#groupNameAdd").textbox('getValue');
@@ -153,9 +154,9 @@ $(function(){
 							ifLogout(data);
 							if (data.status == 1) {
 								$("#addGroupDiv").dialog("close");
-								$.messager.alert('提示',data.message,'success');
+								$.messager.alert('提示',data.msg,'success');
 							} else {
-								$.messager.alert('提示',data.message,'error');
+								$.messager.alert('提示',data.msg,'error');
 							}
 						}
 					});
@@ -309,3 +310,12 @@ $(function(){
     });
     
 });
+
+//判断是否超时
+function ifLogout(data){
+	if(data.message=='timeout' && data.result==false){
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return false;
+	}
+}
