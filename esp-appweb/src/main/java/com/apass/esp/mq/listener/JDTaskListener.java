@@ -1,13 +1,17 @@
 package com.apass.esp.mq.listener;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.common.model.JdMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.GoodsIsDelete;
+import com.apass.esp.domain.enums.GoodsType;
+import com.apass.esp.domain.enums.JdMessageEnum;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PreStockStatus;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.mapper.MessageListenerMapper;
@@ -26,14 +30,21 @@ import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by jie.xu on 17/7/14.
  */
@@ -60,25 +71,26 @@ public class JDTaskListener implements MessageListener {
   private GoodsEsDao goodsEsDao;
   @Autowired
   private MessageListenerMapper messageListenerMapper;
+
   @Override
   public void onMessage(Message message) {
     JdApiMessage jdApiMessage = JSONObject.parseObject(message.getBody(), JdApiMessage.class);
     //记录消息推送接口调用成功或失败
-    com.apass.esp.domain.entity.MessageListener ml=new com.apass.esp.domain.entity.MessageListener();
+    com.apass.esp.domain.entity.MessageListener ml = new com.apass.esp.domain.entity.MessageListener();
     if (jdApiMessage == null) {
-    	ml.setStatus("0");
-    	ml.setResult("jdApiMessage null error");
-    	ml.setCreateDate(new Date());
-    	ml.setUpdateDate(new Date());
-    	messageListenerMapper.insert(ml);
+      ml.setStatus("0");
+      ml.setResult("jdApiMessage null error");
+      ml.setCreateDate(new Date());
+      ml.setUpdateDate(new Date());
+      messageListenerMapper.insert(ml);
       LOGGER.info("jdApiMessage null error...");
     }
     JSONObject result = jdApiMessage.getResult();
     //价格变更消息
     if (jdApiMessage.getType() == JdMessageEnum.PRICE_SKU.getType()) {//商品价格变更消息
       long skuId = result.getLongValue("skuId");
-      ml.setType(JdMessageEnum.PRICE_SKU.getType()+"");
-      ml.setSkuid(skuId+"");
+      ml.setType(JdMessageEnum.PRICE_SKU.getType() + "");
+      ml.setSkuid(skuId + "");
       Set<Long> skus = new HashSet<>();
       skus.add(skuId);
       JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
@@ -87,21 +99,25 @@ public class JDTaskListener implements MessageListener {
           || jsonArrayJdApiResponse.getResult() == null
           || jsonArrayJdApiResponse.getResult().size() == 0
           ) {
-    	  ml.setStatus("0");
-    	  ml.setResult("调用批量查询京东商品价格接口失败！");
-    	  ml.setCreateDate(new Date());
-          ml.setUpdateDate(new Date());
-    	  messageListenerMapper.insert(ml);
+        ml.setStatus("0");
+        ml.setResult("调用批量查询京东商品价格接口失败！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         return;
       }
       LOGGER.info("message price skuId {} ,response {}", skuId, jsonArrayJdApiResponse.getResult());
       JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
+      if(jsonObject.get("price") == null || StringUtils.isEmpty(jsonObject.get("price").toString())){
+        return;
+      }
+
       BigDecimal price = (BigDecimal) jsonObject.get("price");
       ml.setStatus("1");
-	  ml.setResult("调用批量查询京东商品价格接口成功，京东最新价格：price="+price);
-	  ml.setCreateDate(new Date());
-	  ml.setUpdateDate(new Date());
-	  messageListenerMapper.insert(ml);
+      ml.setResult("调用批量查询京东商品价格接口成功，京东最新价格：price=" + price);
+      ml.setCreateDate(new Date());
+      ml.setUpdateDate(new Date());
+      messageListenerMapper.insert(ml);
       LOGGER.info("message price skuId {} ,price {} ,response {}", skuId, price, jsonArrayJdApiResponse.getResult());
       GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
       if (goodsInfoEntity == null) {
@@ -128,15 +144,15 @@ public class JDTaskListener implements MessageListener {
       jdGoods.setPrice(price);
       try {
         jdGoodsMapper.updateByPrimaryKeySelective(jdGoods);
-      }catch (Exception e){
+      } catch (Exception e) {
         LOGGER.error("message jdGoods skuId {} update price error ");
       }
       return;
     }
     if (jdApiMessage.getType() == JdMessageEnum.WITHDRAW_SKU.getType()) {//商品上下架消息
       long skuId = result.getLongValue("skuId");
-      ml.setType(JdMessageEnum.WITHDRAW_SKU.getType()+"");
-      ml.setSkuid(skuId+"");
+      ml.setType(JdMessageEnum.WITHDRAW_SKU.getType() + "");
+      ml.setSkuid(skuId + "");
       Set<Long> skus = new HashSet<>();
       skus.add(skuId);
       JdApiResponse<JSONArray> productPrice = jdProductApiClient.productStateQuery(skus);
@@ -147,11 +163,11 @@ public class JDTaskListener implements MessageListener {
         LOGGER.info("skuId {}, state {} 消息接收  0表示下架消息 1表示上架消息", skuId, state);
         //下架
         if (state == 0) {
-        	ml.setStatus("1");
-        	ml.setResult("商品下架");
-        	ml.setCreateDate(new Date());
-       	    ml.setUpdateDate(new Date());
-       	    messageListenerMapper.insert(ml);
+          ml.setStatus("1");
+          ml.setResult("商品下架");
+          ml.setCreateDate(new Date());
+          ml.setUpdateDate(new Date());
+          messageListenerMapper.insert(ml);
           //直接将商品下架
           GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
           if (goodsInfoEntity == null) {
@@ -167,7 +183,7 @@ public class JDTaskListener implements MessageListener {
             GoodsInfoEntity entity2 = goodsService.selectByGoodsId(goodsInfoEntity.getId());
             Goods goods = new Goods();
             goods.setId(entity2.getGoodId().intValue());
-                    //goodsService.goodsInfoToGoods(entity2);
+            //goodsService.goodsInfoToGoods(entity2);
             LOGGER.info("监听京东商品下架删除索引传递的参数:{}", GsonUtils.toJson(goods));
             if (goods != null) {
               goodsEsDao.delete(goods);
@@ -182,14 +198,14 @@ public class JDTaskListener implements MessageListener {
     if (jdApiMessage.getType() == JdMessageEnum.DELIVERED_ORDER.getType()) {//订单妥投消息
       long orderId = result.getLongValue("orderId");
       int state = result.getIntValue("state");
-      ml.setType(JdMessageEnum.DELIVERED_ORDER.getType()+"");
-      ml.setOrderid(orderId+"");
+      ml.setType(JdMessageEnum.DELIVERED_ORDER.getType() + "");
+      ml.setOrderid(orderId + "");
       LOGGER.info("orderId {}, state {}  1表示妥投 2表示拒收", orderId, state);
       if (state == 1) {
-    	ml.setResult("妥投");
-    	ml.setCreateDate(new Date());
-   	    ml.setUpdateDate(new Date());
-   	    messageListenerMapper.insert(ml);
+        ml.setResult("妥投");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         LOGGER.info("orderId {}, 已投妥 ", orderId);
         OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
         orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
@@ -197,10 +213,10 @@ public class JDTaskListener implements MessageListener {
         //orderInfoEntity.setAcceptGoodsDate(new Date());
         orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
       } else {
-    	 ml.setResult("拒收");
-    	 ml.setCreateDate(new Date());
-    	 ml.setUpdateDate(new Date());
-    	 messageListenerMapper.insert(ml);
+        ml.setResult("拒收");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         LOGGER.info("orderId {}, 已拒收 ", orderId);
         OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
         orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
@@ -213,52 +229,52 @@ public class JDTaskListener implements MessageListener {
     //拆单消息接收
     if (jdApiMessage.getType() == JdMessageEnum.SPLIT_ORDER.getType()) {
       long jdOrderId = result.getLongValue("pOrder");
-      ml.setType(JdMessageEnum.SPLIT_ORDER.getType()+"");
-      ml.setOrderid(jdOrderId+"");
+      ml.setType(JdMessageEnum.SPLIT_ORDER.getType() + "");
+      ml.setOrderid(jdOrderId + "");
       LOGGER.info("jdOrderId {}, 拆单消息 ", jdOrderId);
       JdApiResponse<JSONObject> jdApiResponse = jdOrderApiClient.orderJdOrderQuery(jdOrderId);
       if (!jdApiResponse.isSuccess()) {
-    	  ml.setStatus("0");
-    	  ml.setResult("根据京东订单号，查询京东订单明细接口失败！");
-    	  ml.setCreateDate(new Date());
-     	  ml.setUpdateDate(new Date());
-     	  messageListenerMapper.insert(ml);
+        ml.setStatus("0");
+        ml.setResult("根据京东订单号，查询京东订单明细接口失败！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         LOGGER.info("confirm order result {}", jdApiResponse);
         return;
       }
       JSONObject jsonObject = jdApiResponse.getResult();
       OrderInfoEntity orderInfoEntity = orderInfoRepository.getOrderInfoByExtOrderId(String.valueOf(jdOrderId));
       if (orderInfoEntity == null) {
-    	  ml.setStatus("0");
-    	  ml.setResult("根据京东订单号查询数据库订单失败！");
-    	  ml.setCreateDate(new Date());
-     	  ml.setUpdateDate(new Date());
-     	  messageListenerMapper.insert(ml);
+        ml.setStatus("0");
+        ml.setResult("根据京东订单号查询数据库订单失败！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
         return;
       }
       if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
-    	  ml.setStatus("0");
-    	  ml.setResult("根据京东订单号查询数据库订单中预占库存状态为空或不为预占库存状态！");
-    	  ml.setCreateDate(new Date());
-     	  ml.setUpdateDate(new Date());
-     	  messageListenerMapper.insert(ml);
-    	  LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
+        ml.setStatus("0");
+        ml.setResult("根据京东订单号查询数据库订单中预占库存状态为空或不为预占库存状态！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
+        LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
         return;
       }
       try {
         orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
-  	    ml.setStatus("1");
-	    ml.setResult("京东拆单消息处理成功！");
-	    ml.setCreateDate(new Date());
- 	    ml.setUpdateDate(new Date());
- 	    messageListenerMapper.insert(ml);
+        ml.setStatus("1");
+        ml.setResult("京东拆单消息处理成功！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
       } catch (BusinessException e) {
-  	    ml.setStatus("0");
-  	    ml.setResult("京东拆单消息处理失败！");
-  	    ml.setCreateDate(new Date());
-   	    ml.setUpdateDate(new Date());
-   	    messageListenerMapper.insert(ml);
+        ml.setStatus("0");
+        ml.setResult("京东拆单消息处理失败！");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}", orderInfoEntity.getExtOrderId());
         return;
       }
@@ -266,14 +282,14 @@ public class JDTaskListener implements MessageListener {
     if (jdApiMessage.getType() == JdMessageEnum.DELETEADD_SKU.getType()) {
       long skuId = result.getLongValue("skuId");
       int state = result.getIntValue("state");
-      ml.setType(JdMessageEnum.DELETEADD_SKU.getType()+"");
-      ml.setSkuid(skuId+"");
+      ml.setType(JdMessageEnum.DELETEADD_SKU.getType() + "");
+      ml.setSkuid(skuId + "");
       if (state == 1) {
-    	  ml.setResult("商品添加");
-    	  ml.setStatus("1");
-	      ml.setCreateDate(new Date());
- 	      ml.setUpdateDate(new Date());
- 	      messageListenerMapper.insert(ml);
+        ml.setResult("商品添加");
+        ml.setStatus("1");
+        ml.setCreateDate(new Date());
+        ml.setUpdateDate(new Date());
+        messageListenerMapper.insert(ml);
         JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(skuId);
         if (!jdApiResponse.isSuccess() || jdApiResponse == null) {
           LOGGER.error("skuId {} type 6 state {} error", skuId, state);
@@ -396,11 +412,11 @@ public class JDTaskListener implements MessageListener {
         }
       } else {
         try {
-        	  ml.setResult("商品删除");
-        	  ml.setStatus("1");
-    	      ml.setCreateDate(new Date());
-     	      ml.setUpdateDate(new Date());
-     	      messageListenerMapper.insert(ml);
+          ml.setResult("商品删除");
+          ml.setStatus("1");
+          ml.setCreateDate(new Date());
+          ml.setUpdateDate(new Date());
+          messageListenerMapper.insert(ml);
           //商品池商品删除  直接将商品下架
           LOGGER.info("skuId {} type 6 state {} 商品删除", skuId, state);
           GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(skuId));
@@ -429,6 +445,7 @@ public class JDTaskListener implements MessageListener {
     }
     LOGGER.info("jdTaskListener start consume message............");
   }
+
   private void addCategory(String category, int level) {
     JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.getcategory(Long.valueOf(category));
     if (jdApiResponse == null || jdApiResponse.getResult() == null) {
@@ -459,4 +476,5 @@ public class JDTaskListener implements MessageListener {
       LOGGER.error("insert jdCategoryMapper sql catId {}", catId);
     }
   }
+
 }
