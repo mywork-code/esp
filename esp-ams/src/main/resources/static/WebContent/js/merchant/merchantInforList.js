@@ -244,7 +244,17 @@ $(function () {
         var settlementCardNo = $("#addSettlementCardNo").textbox('getValue');
         var manageType = $("#addManageType").textbox('getValue');
         var orgCode = $("#addOrgCode").textbox('getValue');
-
+        
+        if(settlementBankName==null||settlementBankName.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "结算银行名称不能为空！", 'warning');
+            return;
+        }
+        
+        if(settlementCardNo==null||settlementCardNo.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "结算银行卡号不能为空！", 'warning');
+            return;
+        }
+        
         if(merchantCity==null||merchantCity.length==0){
             $.messager.alert("<span style='color: black;'>警告</span>", "所在城市不能为空！", 'warning');
             return;
@@ -565,7 +575,17 @@ $(function () {
         var settlementCardNo = $("#editSettlementCardNo").textbox('getValue');
         var manageType = $("#editManageType").textbox('getValue');
         var orgCode = $("#editOrgCode").textbox('getValue');
-
+        
+        if(settlementBankName==null||settlementBankName.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "结算银行名称不能为空！", 'warning');
+            return;
+        }
+        
+        if(settlementCardNo==null||settlementCardNo.length==0){
+            $.messager.alert("<span style='color: black;'>警告</span>", "结算银行卡号不能为空！", 'warning');
+            return;
+        }
+        
         if(merchantCity==null||merchantCity.length==0){
             $.messager.alert("<span style='color: black;'>警告</span>", "所在城市不能为空！", 'warning');
             return;
