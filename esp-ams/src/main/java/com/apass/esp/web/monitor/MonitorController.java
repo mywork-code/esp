@@ -203,7 +203,7 @@ public class MonitorController {
 							merchantId = merchantId.substring(merchantId.length() - 2, merchantId.length());
 						}
 						sb.append(merchantId);
-						String random = RandomUtils.getRandomNum(6);
+						String random = RandomUtils.getNum(8);
 						sb.append(random);
 						goodsInfoEntity.setGoodsCode(sb.toString());
 						goodsService.updateService(goodsInfoEntity);

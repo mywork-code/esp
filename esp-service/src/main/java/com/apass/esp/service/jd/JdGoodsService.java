@@ -1,21 +1,5 @@
 package com.apass.esp.service.jd;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
-import com.apass.esp.search.dao.GoodsEsDao;
-import com.apass.gfb.framework.utils.RandomUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
@@ -25,6 +9,7 @@ import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
+import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
@@ -32,6 +17,19 @@ import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.RandomUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jie.xu on 17/7/5.
@@ -118,7 +116,7 @@ public class JdGoodsService {
                 // 商品编号
                 StringBuffer sb = new StringBuffer();
                 sb.append("97");
-                String random = RandomUtils.getRandomNum(6);
+                String random = RandomUtils.getNum(8);
                 sb.append(random);
                 entity.setGoodsCode(sb.toString());
                 goodsService.updateService(entity);

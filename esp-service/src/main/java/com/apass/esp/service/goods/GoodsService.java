@@ -676,7 +676,7 @@ public class GoodsService {
           merchantId = merchantId.substring(merchantId.length() - 2, merchantId.length());
         }
         sb.append(merchantId);
-        String random = RandomUtils.getRandomNum(6);
+        String random = RandomUtils.getNum(8);
         sb.append(random);
         entity.setGoodsCode(sb.toString());
         goodsDao.updateGoods(entity);

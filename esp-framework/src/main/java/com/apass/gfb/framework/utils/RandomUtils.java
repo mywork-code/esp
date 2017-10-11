@@ -55,9 +55,25 @@ public class RandomUtils {
 	 * @param length
 	 * @return String
 	 */
+	@Deprecated
 	public static final String getRandomNum(int length) {
 		StringBuffer buffer = new StringBuffer();
 		String s = "0123456789";
+		for (int i = 0; i < length; i++) {
+			buffer.append(s.charAt(random.nextInt(s.length())));
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * 获取随机数建议用这个方法
+	 * @param length
+	 * @return
+	 */
+	public static String getNum(int length){
+		StringBuffer buffer = new StringBuffer();
+		String s = "0123456789";
+		Random random = new Random(System.currentTimeMillis() + Long.valueOf(getRandomNum(5)));
 		for (int i = 0; i < length; i++) {
 			buffer.append(s.charAt(random.nextInt(s.length())));
 		}
