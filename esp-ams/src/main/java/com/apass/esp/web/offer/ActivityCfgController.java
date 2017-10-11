@@ -80,12 +80,27 @@ public class ActivityCfgController {
     }
     
     /**
-     * 活动配置
+     * 活动配置:添加活动
      * @return
      */
  	@RequestMapping(value = "/add")
     public String activityAddConfig() {
        return "activitycfg/activityAdd";
+    }
+	/**
+     * 活动配置:编辑活动
+     * @return
+     */
+ 	@RequestMapping(value = "/edit")
+    public ModelAndView activityEditConfig(ActivityCfgVo activityCfgVo) {
+		ModelAndView mv = new ModelAndView("activitycfg/activityEdit");
+		if(StringUtils.equals("无优惠",activityCfgVo.getActivityType())){
+			activityCfgVo.setActivityType("N");
+		}else if(StringUtils.equals("满减",activityCfgVo.getActivityType())){
+			activityCfgVo.setActivityType("Y");
+		}
+		mv.addObject("activityCfgVo",activityCfgVo);
+		return mv;
     }
  	/**
  	 * 新增活动保存
@@ -107,13 +122,13 @@ public class ActivityCfgController {
 		}
  	}
  	
- 	@RequestMapping(value = "/edit")
-    public ModelAndView activityEditConfig(String id) {
- 	   Map<String, Object> map = Maps.newHashMap();
-       map.put("vo", activityCfgService.getActivityCfgVo(id));
-       return new ModelAndView("activitycfg/activityEdit",map);
-    }
- 	
+// 	@RequestMapping(value = "/edit")
+//    public ModelAndView activityEditConfig(String id) {
+// 	   Map<String, Object> map = Maps.newHashMap();
+//       map.put("vo", activityCfgService.getActivityCfgVo(id));
+//       return new ModelAndView("activitycfg/activityEdit",map);
+//    }
+
  	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
  	public Response activityEditSave(ActivityCfgVo vo){
