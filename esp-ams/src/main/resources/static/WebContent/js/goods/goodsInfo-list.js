@@ -922,8 +922,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsName.length>18) {
-			$.messager.alert("提示", "商品名称最多18字！", "info");
+		if ((!externalsource == 'jd') && goodsName.length>30) {
+			$.messager.alert("提示", "商品名称最多30字！", "info");
 			return;
 		}
 	
@@ -1306,6 +1306,10 @@ $(function() {
 			$.messager.alert("提示", "库存规格不能为空！", "info");
 			return;
 		}
+		if(goodsSkuAttr.length>8){
+			$.messager.alert("提示", "库存规格最多8字！", "info");  
+			return;
+		}
 		if (null == goodsPrice || ("") == goodsPrice) {
 			$.messager.alert("提示", "商品价格不能为空！", "info");
 			return;
@@ -1508,6 +1512,10 @@ $(function() {
 		}
 		if (null == goodsSkuAttr || ("") == goodsSkuAttr) {
 			$.messager.alert("提示", "属性不能为空！", "info");
+			return;
+		}
+		if(goodsSkuAttr.length>8){
+			$.messager.alert("提示", "库存规格最多8字！", "info");  
 			return;
 		}
 		if (null == goodsPrice || ("") == goodsPrice) {
@@ -1993,8 +2001,8 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		return;
 	}
 	
-	if(goodsName.length>18){
-		$.messager.alert("提示", "商品名称最多18字！", "info");  
+	if(goodsName.length>30){
+		$.messager.alert("提示", "商品名称最多30字！", "info");  
 		return;
 	}
 	if (null == goodsModel || ("") == goodsModel) {
