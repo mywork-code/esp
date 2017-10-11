@@ -151,7 +151,7 @@ public class TestController {
     @ResponseBody
     public Response priceSellPriceGet(@RequestBody Map<String, Object> paramMap){
     	Collection<Long> sku=new ArrayList<Long>();
-    	sku.add((long)1803021l);
+    	sku.add((long)1787111l);
     	JdApiResponse<JSONArray> jdApiResponse = jdProductApiClient.priceSellPriceGet(sku);
     	  return Response.success("1", jdApiResponse);
     }
