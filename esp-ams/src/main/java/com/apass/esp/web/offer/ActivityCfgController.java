@@ -1,24 +1,20 @@
 package com.apass.esp.web.offer;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import com.apass.esp.domain.dto.offo.ActivityfgDto;
-import com.apass.gfb.framework.utils.HttpWebUtils;
-import com.google.zxing.qrcode.decoder.Mode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.enums.ActivityType;
 import com.apass.esp.domain.vo.ActivityCfgVo;
 import com.apass.esp.service.offer.ActivityCfgService;
@@ -27,11 +23,9 @@ import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 活动配置
