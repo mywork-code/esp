@@ -46,7 +46,8 @@ $(function(){
 				align : 'center',
 				formatter : function(value, row, index) {
 					var content = "";
-                    content += "&nbsp;<a href='javascript:alert();' class='easyui-linkedbutton'>编辑</a>";
+                    content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroup('"
+                        + encodeURI(JSON.stringify(row)) +"');\">编辑</a>";
 				 return content;
 			}}]],
         loader : function(param, success, error) {
@@ -63,9 +64,19 @@ $(function(){
             })
         }
     });
-    
-    
+
+    $.editGroup = function (row) {
+        debugger;
+        var rows = JSON.parse(decodeURI(row));
+        var activityName = rows.activityName;
+        var startTime = rows.startTime;
+        var endTime = rows.endTime;
+        var activityType = rows.activityType;
+        window.location.href = ctx + "/activity/cfg/edit?activityName="+activityName+"&startTime="+startTime+"&endTime="+endTime+"&activityType="+activityType;
+    }
+
     $("#add").click(function(){
+        debugger;
     	window.location.href= ctx + '/activity/cfg/add';
     })
 

@@ -1496,8 +1496,7 @@ $(function() {
 		var editgoodsCompareUrltwo=$("#editgoodsCompareUrltwo").textbox('getValue');
 		var editstockLogoFile=$("#editstockLogoFile").val();
 		var editStockGoodsLogoFile=$('#editStockGoodsLogoFile').val();
-		
-		
+
 		if (null == editgoodsCompareUrlone || ("") == editgoodsCompareUrlone) {
 			$.messager.alert("提示", "比价链接不允许为空！", "info");
 			return;
