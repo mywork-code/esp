@@ -710,11 +710,11 @@ $(function() {
 			var len = $("#editgoodsName").textbox('getText').length;
 			var canLen;
 			console.log(len);
-			if(len>18){
-				canLen = len - 18;
+			if(len>30){
+				canLen = len - 30;
 				$("#editgoodsNameL").text('已经超出'+canLen+'个字');
 			}else{
-				canLen = 18 - len;
+				canLen = 30 - len;
 				$("#editgoodsNameL").text('还可以输入'+canLen+'个字');
 			}
 		})
@@ -737,11 +737,11 @@ $(function() {
 	$("input",$("#addgoodsName").next("span")).keyup(function(){
 		var len = $("#addgoodsName").textbox('getText').length;
 		var canLen;
-		if(len>18){
-			canLen = len - 18;
+		if(len>30){
+			canLen = len - 30;
 			$("#addgoodsNameL").text('已经超出'+canLen+'个字');
 		}else{
-			canLen = 18 - len;
+			canLen = 30 - len;
 			$("#addgoodsNameL").text('还可以输入'+canLen+'个字');
 		}
 	})
@@ -922,8 +922,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsName.length>18) {
-			$.messager.alert("提示", "商品名称最多18字！", "info");
+		if ((!externalsource == 'jd') && goodsName.length>30) {
+			$.messager.alert("提示", "商品名称最多30字！", "info");
 			return;
 		}
 	
@@ -1252,8 +1252,8 @@ $(function() {
 	//商品规格长度校验
 	$("input",$("#goodsSkuAttr").next("span")).blur(function(){  
 		var goodsSkuAttr = $("#goodsSkuAttr").textbox('getValue');
-		if(goodsSkuAttr.length>5){
-			$.messager.alert("<span style='color: black;'>提示</span>","商品规格内容不能超过5个字",'info');
+		if(goodsSkuAttr.length>8){
+			$.messager.alert("<span style='color: black;'>提示</span>","商品规格内容不能超过8个字",'info');
 			$("#goodsSkuAttr").textbox('setValue','');
 			return;
 		}
@@ -1304,6 +1304,10 @@ $(function() {
 		
 		if (null == goodsSkuAttr || ("") == goodsSkuAttr) {
 			$.messager.alert("提示", "库存规格不能为空！", "info");
+			return;
+		}
+		if(goodsSkuAttr.length>8){
+			$.messager.alert("提示", "库存规格最多8字！", "info");  
 			return;
 		}
 		if (null == goodsPrice || ("") == goodsPrice) {
@@ -1507,6 +1511,10 @@ $(function() {
 		}
 		if (null == goodsSkuAttr || ("") == goodsSkuAttr) {
 			$.messager.alert("提示", "属性不能为空！", "info");
+			return;
+		}
+		if(goodsSkuAttr.length>8){
+			$.messager.alert("提示", "库存规格最多8字！", "info");  
 			return;
 		}
 		if (null == goodsPrice || ("") == goodsPrice) {
@@ -1992,8 +2000,8 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		return;
 	}
 	
-	if(goodsName.length>18){
-		$.messager.alert("提示", "商品名称最多18字！", "info");  
+	if(goodsName.length>30){
+		$.messager.alert("提示", "商品名称最多30字！", "info");  
 		return;
 	}
 	if (null == goodsModel || ("") == goodsModel) {
