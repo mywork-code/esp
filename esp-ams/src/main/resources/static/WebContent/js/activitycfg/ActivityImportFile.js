@@ -1,5 +1,6 @@
 $(function(){
 	$("#addGoodsToGroup").window('close');
+	var activityId=$("#addGoodsToGroupActivityId").val();
 
 	$('#activityGroupList').datagrid({
 		fit : true,
@@ -172,6 +173,7 @@ $(function(){
 				 return content;
 			}}]],
         loader : function(param, success, error) {
+        	param['activityId']=activityId;
             $.ajax({
                 url : ctx + '/application/activity/list',
                 data : param,
@@ -253,7 +255,7 @@ $(function(){
     
     //导入
     $("#import").click(function(){
-    	$("#activityId").val("4");
+    	$("#activityId").val(activityId);
     	var form = $("#ExcelFileForm");
     	var file = $("#Excelfile").val();
     	if(file == null || file == ''){
@@ -287,7 +289,6 @@ $(function(){
 		    	var l=object.length;
 		    	if(l>0){
 		    		$("#addGoodsToGroup").window('open');
-		    		$("#addGoodsToGroupActivityId").val(activityId);
 		    		$("#addGoodsToGroupGoodsId").val(goodsId);
 		    	}else{
 		    		alert("请为该活动添加分组！");
@@ -337,8 +338,6 @@ $(function(){
 			 $.messager.alert("提示", "至少勾选一条数据！","info");  
 			 return ;  
 		}else{
-//			var activityId= $("#addGoodsToGroupActivityId").val();
-			var activityId='4';
 			var goodsIdsString=selRow[0].goodsId;
 			for (var i = 1; i < selRow.length; i++) {
 				goodsIdsString=goodsIdsString+','+selRow[i].goodsId;
@@ -353,7 +352,6 @@ $(function(){
 			    	var l=object.length;
 			    	if(l>0){
 			    		$("#addGoodsToGroup").window('open');
-			    		$("#addGoodsToGroupActivityId").val(activityId);
 			    	    $("#addGoodsToGroupGoodsId").val(goodsIdsString);
 			    	}else{
 			    		alert("请为该活动添加分组！");
