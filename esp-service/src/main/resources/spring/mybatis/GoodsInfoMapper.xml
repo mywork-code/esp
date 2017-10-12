@@ -149,10 +149,15 @@
 				t.source source,
 				t.external_id externalId,
 			  	t.goods_code goodsCode,
-				t.newCreat_date newCreatDate
+				t.newCreat_date newCreatDate,
+				t3.goods_sku_attr goodsSkuAttr,
+                t3.goods_price  goodsPrice,
+                t3.market_price  marketPrice,
+                t3.goods_cost_price goodsCostPrice
 			FROM
 				t_esp_goods_base_info t
-			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
+			LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
+			LEFT JOIN t_esp_goods_stock_info t3 ON t3.goods_id =t.id 
 	]]>
 	<include refid="QueryGoodsSql" />
 	<![CDATA[

@@ -262,7 +262,7 @@ public class OrderSubInfoEntity {
 
     private String goodsSkuAttr;
 
-    private String goodsPrice;
+    private String goodsPrice;   
     
     private String goodStatus;
 
@@ -704,5 +704,5 @@ public class OrderSubInfoEntity {
     public void setExtOrderId(String extOrderId) {
         this.extOrderId = extOrderId;
     }
-
+    
 }

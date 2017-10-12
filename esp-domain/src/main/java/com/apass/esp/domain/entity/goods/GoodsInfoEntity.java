@@ -187,12 +187,23 @@ public class GoodsInfoEntity {
      * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
      */
     private String externalId;
+    /**
+     * 商品规格
+     */
+    private String goodsSkuAttr;
 
     /**
      * 商品价格
      */
     private BigDecimal goodsPrice;
-
+    /**
+     * 市场价
+     */
+    private BigDecimal marketPrice;
+    /**
+     * 成本价
+     */
+    private BigDecimal goodsCostPrice;
     /**
      * 首付价
      */
@@ -633,6 +644,30 @@ public class GoodsInfoEntity {
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
+    
+	public String getGoodsSkuAttr() {
+		return goodsSkuAttr;
+	}
+
+	public void setGoodsSkuAttr(String goodsSkuAttr) {
+		this.goodsSkuAttr = goodsSkuAttr;
+	}
+
+	public BigDecimal getMarketPrice() {
+		return marketPrice;
+	}
+
+	public void setMarketPrice(BigDecimal marketPrice) {
+		this.marketPrice = marketPrice;
+	}
+
+	public BigDecimal getGoodsCostPrice() {
+		return goodsCostPrice;
+	}
+
+	public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
+		this.goodsCostPrice = goodsCostPrice;
+	}
 
 	@Override
 	public String toString() {
