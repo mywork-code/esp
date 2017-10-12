@@ -35,7 +35,7 @@ public class PurchaseRequestDto {
     /**
      * 是否有货
      */
-    private boolean stockDesc;
+    private boolean unStockDesc;
     
     /**
      * 优惠金额
@@ -87,12 +87,12 @@ public class PurchaseRequestDto {
 		this.unSupportProvince = unSupportProvince;
 	}
 
-	public boolean isStockDesc() {
-		return stockDesc;
+	public boolean isUnStockDesc() {
+		return unStockDesc;
 	}
 
-	public void setStockDesc(boolean stockDesc) {
-		this.stockDesc = stockDesc;
+	public void setUnStockDesc(boolean unStockDesc) {
+		this.unStockDesc = unStockDesc;
 	}
 
 	public BigDecimal getDisCount() {
