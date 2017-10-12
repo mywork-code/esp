@@ -213,5 +213,9 @@ public class ProGroupGoodsService {
     }
     return activityCfgService.getActivityStatus(activityCfg);
   }
-  
+
+
+	public ProGroupGoods selectByPrimaryKey(Long id) {
+		return groupGoodsMapper.selectByPrimaryKey(id);
+	}
 }
