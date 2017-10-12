@@ -32,5 +32,6 @@
 
     <select id ="getActivityCfgListPageCount" resultType="java.lang.Integer">
     select count(*) from t_esp_pro_activity_cfg
+    <include refid="QueryGoodsSql" />
     </select>
 </mapper>

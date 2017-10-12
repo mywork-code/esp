@@ -378,6 +378,7 @@ public class ShoppingCartService {
 				    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
 				    Long activityId=groupGoods.getActivityId();
 				    String act="activity_"+activityId.toString();//防止商户编码与活动id重复
+				    goodsInfoInCart.setProActivityId(activityId);//活动id
 					if (resultMap.containsKey(act)) {
 						resultMap.get(act).add(goodsInfoInCart);
 					} else {

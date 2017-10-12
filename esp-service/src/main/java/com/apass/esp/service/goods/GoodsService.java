@@ -366,6 +366,11 @@ public class GoodsService {
         goodsStock.setStockCurrAmtDesc("库存充足");
       }
     }
+    //返回活动id
+	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+	if(null !=proGroupGoodsBo){
+	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段

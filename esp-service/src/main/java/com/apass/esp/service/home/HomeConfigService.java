@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.dto.goods.HomeConfigDto;
 import com.apass.esp.domain.entity.HomeConfig;
 import com.apass.esp.domain.enums.YesNoEnums;
@@ -35,9 +36,9 @@ public class HomeConfigService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public ResponsePageBody<HomeConfigVo> getHomeConfigListPage() throws BusinessException{
+	public ResponsePageBody<HomeConfigVo> getHomeConfigListPage(QueryParams query) throws BusinessException{
 		ResponsePageBody<HomeConfigVo> pageBody = new ResponsePageBody<HomeConfigVo>();
-		List<HomeConfig> configList = configMapper.getHomeConfigListPage();
+		List<HomeConfig> configList = configMapper.getHomeConfigListPage(query);
 		Integer count = configMapper.getHomeConfigListPageCount();
 		
 		List<HomeConfigVo> configVoList = getPoToVoList(configList);

@@ -1,7 +1,5 @@
 package com.apass.esp.domain.entity;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
 
 public class ProGroupManager {
@@ -32,8 +30,6 @@ public class ProGroupManager {
     }
 
     public String getGroupName() {
-        if(groupName == null)
-            groupName = "";
         return groupName;
     }
 
@@ -42,9 +38,6 @@ public class ProGroupManager {
     }
 
     public Long getGoodsSum() {
-        if(goodsSum == null)
-            goodsSum = 0l;
-
         return goodsSum;
     }
 
@@ -53,8 +46,6 @@ public class ProGroupManager {
     }
 
     public Long getActivityId() {
-        if(activityId == null)
-            activityId = 0l;
         return activityId;
     }
 
@@ -63,8 +54,6 @@ public class ProGroupManager {
     }
 
     public Long getOrderSort() {
-        if(orderSort == null)
-            orderSort = 1l;
         return orderSort;
     }
 

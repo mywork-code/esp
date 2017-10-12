@@ -11,11 +11,11 @@ public interface ProActivityCfgMapper extends GenericMapper<ProActivityCfg, Long
 	 * 分页
 	 * @return
 	 */
-    List<ProActivityCfg> getActivityCfgListPage(ActivityfgDto activityfgDto);
     
+	List<ProActivityCfg> getActivityCfgListPage(ActivityfgDto activityfgDto);
 	/**
 	 * 总条数
 	 * @return
 	 */
-	Integer getActivityCfgListPageCount();
+	Integer getActivityCfgListPageCount(ActivityfgDto activityfgDto);
 }

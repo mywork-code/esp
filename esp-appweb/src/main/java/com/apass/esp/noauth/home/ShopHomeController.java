@@ -2,6 +2,7 @@ package com.apass.esp.noauth.home;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
@@ -37,6 +38,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.nation.NationService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -125,7 +127,9 @@ public class ShopHomeController {
 
     @Autowired
     private SystemEnvConfig systemEnvConfig;
-
+    
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
 
     /**
      * 首页初始化 加载banner和精品商品
@@ -797,6 +801,12 @@ public class ShopHomeController {
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
+                
+                //添加活动id
+            	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+            	if(null !=proGroupGoodsBo){
+            	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+            	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
