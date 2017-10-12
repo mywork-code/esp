@@ -8,12 +8,14 @@ import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
@@ -35,6 +37,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +72,8 @@ public class CashRefundController {
 
     @Autowired
     private TxnInfoService txnInfoService;
+    @Autowired
+    public OrderDetailInfoRepository orderDetailInfoRepository;
     /**
      * 退款详情
      *
@@ -134,7 +140,18 @@ public class CashRefundController {
                 }
             //}
         }
-
+        //获取优惠总金额
+        String orderIdString=cashRefundDto.getOrderId();
+        // 通过子订单号查询订单详情
+        OrderDetailInfoEntity orderDetailParam = new OrderDetailInfoEntity();
+        orderDetailParam.setOrderId(orderIdString);
+        List<OrderDetailInfoEntity> orderDetailInfoList = orderDetailInfoRepository.filter(orderDetailParam);
+        BigDecimal disCount = BigDecimal.ZERO;
+        for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
+             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
+            }
+        cashRefundDto.setDisCountAmt(disCount);//优惠总金额
+        
         Map<String, Object> resultMap = new HashMap<>();
         OrderDetailInfoDto orderDetailInfoDto = null;
         try {
