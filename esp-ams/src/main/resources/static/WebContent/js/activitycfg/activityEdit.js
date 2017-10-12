@@ -587,18 +587,15 @@ $(function () {
                 if (groupGoodsIndex != 0) {
                     var toup = $('#goodsList').datagrid('getData').rows[groupGoodsIndex];//当前
                     var todown = $('#goodsList').datagrid('getData').rows[new Number(groupGoodsIndex) - 1];
-
                     var params = {
-                        "subjectId" : toup.id,
-                        "passiveId" : todown.id,
+                            "subjectId" : toup.id,
+                            "passiveId" : todown.id
                     };
-
                     $.ajax({
                         type : "POST",
                         url : ctx + '/application/activity/edit/sort/save',
                         data : params,
                         dateType : "json",
-                        contentType: 'application/json',
                         success : function(data) {
                             debugger;
                             ifLogout(data);
@@ -619,18 +616,15 @@ $(function () {
                 if (groupGoodsIndex != rows - 1) {
                     var toup = $('#goodsList').datagrid('getData').rows[groupGoodsIndex];//当前
                     var todown = $('#goodsList').datagrid('getData').rows[new Number(groupGoodsIndex) + 1];
-
                     var params = {
                         "subjectId" : toup.id,
-                        "passiveId" : todown.id,
+                        "passiveId" : todown.id
                     };
-
                     $.ajax({
                         type : "POST",
                         url : ctx + '/application/activity/edit/sort/save',
                         data : params,
                         dateType : "json",
-                        contentType: 'application/json',
                         success : function(data) {
                             debugger;
                             ifLogout(data);
