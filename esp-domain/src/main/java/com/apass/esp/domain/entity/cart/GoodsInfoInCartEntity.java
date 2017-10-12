@@ -70,7 +70,8 @@ public class GoodsInfoInCartEntity {
     
     /** 商户编码 */
     private String merchantCode;
-
+    /** 活动id **/
+    private Long proActivityId;
     /**
      * 不支持配送区域
      */
@@ -210,6 +211,14 @@ public class GoodsInfoInCartEntity {
 
 	public void setGoodsBaseLogoUrl(String goodsBaseLogoUrl) {
 		this.goodsBaseLogoUrl = goodsBaseLogoUrl;
+	}
+
+	public Long getProActivityId() {
+		return proActivityId;
+	}
+
+	public void setProActivityId(Long proActivityId) {
+		this.proActivityId = proActivityId;
 	}
     
 }
