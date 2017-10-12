@@ -251,20 +251,25 @@ public class OrderInfoController {
 	  Map<String,Object> params = Maps.newHashMap();
 	  List<PurchaseRequestDto> purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
 	  
-	  if(StringUtils.isBlank(addressId) || StringUtils.isBlank(buyInfo)){
+	  if(StringUtils.isBlank(buyInfo)){
 		  return Response.fail("参数值传递有误!");
 	  }
 	  
-	  boolean exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
-	  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
-	  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
-		  return Response.fail("您填写的收货地址所在地址不完整，请重新填写！");
+	  if(StringUtils.isNotBlank(addressId)){
+		  boolean exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
+		  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
+		  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
+			  return Response.fail("您填写的收货地址所在地址不完整，请重新填写！");
+		  }
 	  }
+	  
 	  try {
-		  //验证是否支持配送区域
-		  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
-		  //验证是否有货
-		  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList);
+		  if(StringUtils.isNotBlank(addressId)){
+			  //验证是否支持配送区域
+			  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+			  //验证是否有货
+			  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList);
+		  }
 		  //计算商品数量和金额
 		  Map<String,Object> param = orderService.calcGoodsBuyNum(purchaseList);
 		  params.putAll(param);
