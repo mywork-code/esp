@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.apass.esp.domain.entity.ProGroupManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +26,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
+import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
@@ -67,6 +66,7 @@ public class ProGroupGoodsExportFikeController {
 	private GroupManagerService groupManagerService;
 	@Autowired
 	private ActivityCfgService activityCfgService;
+
 	/**
      * 商品池分页json
      */
@@ -119,13 +119,15 @@ public class ProGroupGoodsExportFikeController {
      */
 	@ResponseBody
     @RequestMapping(value ="/edit/sort/save",method = RequestMethod.POST)
-	public Response groupEditSortSave(@RequestBody GoodsOrderSortVo vo){
+	public Response groupEditSortSave(GoodsOrderSortVo vo){
+		ProGroupGoods proGroupGoods = null;
 		try {
 			validateEditSortParams(vo);
 			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
 			Integer i = proGroupGoodsService.editSortGroup(vo);
 			if(i==1){
-				return Response.success("修改成功!");
+				proGroupGoods = proGroupGoodsService.selectByPrimaryKey(vo.getSubjectId());
+				return Response.success("修改成功!",proGroupGoods);
 			}
 		}catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
@@ -189,22 +191,32 @@ public class ProGroupGoodsExportFikeController {
 	@ResponseBody
 	@RequestMapping(value = "/removeGoods")
 	public Response RemoveGoodsFromGroup(@RequestParam("id") String id) {
+		ProGroupManager proGroupManager = null;
 		try {
 			if(StringUtils.isBlank(id)){
 				return Response.fail("移除失败！");
 			}
 			ProGroupGoods proGroupGoods=new ProGroupGoods();
 			proGroupGoods.setId(Long.parseLong(id));
-			proGroupGoods.setGroupId(null);
+			proGroupGoods.setGroupId(-1l);
 			proGroupGoods.setOrderSort(Long.parseLong("1"));
 			proGroupGoods.setStatus("");
 			proGroupGoods.setUpdateDate(new Date());
-			proGroupGoodsService.updateGoods(proGroupGoods);
+
+			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
+			int count  = proGroupGoodsService.updateGoods(proGroupGoods);
+			if(count == 1){
+				Long groupId = entity.getGroupId();
+				proGroupManager = groupManagerService.selectByPrimaryKey(groupId);
+				long goodsSumNew = proGroupManager.getGoodsSum() - 1;
+				proGroupManager.setGoodsSum(goodsSumNew);
+				groupManagerService.updateByPrimaryKeySelective(proGroupManager);
+			}
 		} catch (Exception e) {
-			LOG.error("添加至该活动失败！", e);
-			Response.fail("添加至该活动失败！");
+			LOG.error("移除失败！--Exception--", e);
+			return Response.fail("移除失败！");
 		}
-		return Response.success("移除成功！");
+		return Response.success("移除成功！",proGroupManager);
 	}
 	/**
 	 * 导入文件

@@ -101,7 +101,8 @@ public class OrderInfoController {
     String methodDesc = LogStashKey.ORDER_GENERATE.getName();
 
     String userIdStr = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
-    String totalPaymentStr = CommonUtils.getValue(paramMap, "totalPayment"); // 订单总金额
+    String totalPaymentStr = CommonUtils.getValue(paramMap, "totalPayment"); // 订单总金额(支付金额)
+    String discountMoneyStr = CommonUtils.getValue(paramMap,"discountAmt");//订单优惠的金额
     String addressIdStr = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
     String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
 
@@ -117,6 +118,7 @@ public class OrderInfoController {
     try {
 
       BigDecimal totalPayment = null;
+      BigDecimal discountMoney = null;
       if (null == userIdStr) {
         LOGGER.error("对不起!用户号不能为空");
         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -152,6 +154,9 @@ public class OrderInfoController {
       } else {
         totalPayment = new BigDecimal(totalPaymentStr);
       }
+      if(StringUtils.isNotBlank(discountMoneyStr)){
+    	  discountMoney = new BigDecimal(discountMoneyStr);
+      }
       List<PurchaseRequestDto> purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
       if (purchaseList.isEmpty()) {
         LOGGER.error("请选择所购买的商品");
@@ -168,7 +173,7 @@ public class OrderInfoController {
     	  resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
           //如果map为空，则说明订单下，不存在不支持配送的区域
           if(resultMap.isEmpty()){
-         		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment, addressId,
+         		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment,discountMoney, addressId,
          			        purchaseList, sourceFlag, deviceType);
          		 List<String> merchantCodeList = orderService.merchantCodeList(orders);
          			     resultMap.put("orderList", orders);

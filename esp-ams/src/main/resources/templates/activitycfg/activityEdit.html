@@ -156,9 +156,18 @@
 		</tr>
 		<tr>
 			<td align="right">排序</td>
-			<td><input class="easyui-textbox" id="sordGroupAdd" style="width: 200px"></td>
+			<td><input id="sordGroupAdd" class="easyui-numberbox" style="width: 200px;" data-options="min:0"></td>
 		</tr>
 	</table>
+</div>
+
+<!-- 操作弹出菜单 -->
+<div id="optMenu" data-options="" class="easyui-menu" style="width:120px;">
+	<div data-options="iconCls:'icon-remove'" id="deleteCategory">删除</div>
+	<div class="menu-sep"></div>
+	<div id="moveCategory">上移</div>
+	<div class="menu-sep" ></div>
+	<div id="downCategory">下移</div>
 </div>
 <div style="display: none" id="editGroupDiv">
 	<table style="width:100%;height:100%">
@@ -171,7 +180,7 @@
 	    </tr>
 		<tr>
 			<td align="right">排序</td>
-			<td align="left"><input class="easyui-textbox" id="sordGroupEdit" style="width: 200px"></td>
+			<td align="left"><input id="sordGroupEdit"  class="easyui-numberbox" style="width: 200px;" data-options="min:0"></td>
 		</tr>
 		<tr>
 		    <td align="right">编辑商品</td>

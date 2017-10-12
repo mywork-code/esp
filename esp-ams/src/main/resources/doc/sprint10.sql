@@ -13,7 +13,8 @@ CREATE TABLE `t_esp_message_listener` (
 
 
 ---在t_esp_order_detail_info 中新增字段discount_amount字段，用来存储商品的优惠金额
-ALTER TABLE `t_esp_order_detail_info` ADD COLUMN `discount_amount` decimal(15,4) NOT NULL default 0  COMMENT '优惠金额';
+ALTER TABLE `t_esp_order_detail_info` ADD COLUMN `discount_amount` decimal(15,4) NOT NULL default 0  COMMENT '优惠金额',
+ADD COLUMN pro_activity_id varchar(20) not null default '' comment '促销活动id';
 
 --新建活动配置表
 CREATE TABLE `t_esp_pro_activity_cfg` (
@@ -52,7 +53,7 @@ CREATE TABLE `t_esp_pro_group_goods` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id' ,
 `goods_id`  bigint(20) NOT NULL COMMENT '商品id' ,
 `sku_id`  varchar(30) NOT NULL DEFAULT '' COMMENT '京东商品的skuId' ,
-`group_id`  bigint(20)  NULL COMMENT '分组id' ,
+`group_id`  bigint(20) NOT NULL DEFAULT -1 COMMENT '分组id' ,
 `market_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '市场价' ,
 `activity_price`  decimal(15,3) NOT NULL DEFAULT 0 COMMENT '活动价' ,
 `order_sort`  bigint(20) NOT NULL DEFAULT 1 COMMENT '排序' ,
@@ -71,6 +72,5 @@ PRIMARY KEY (`id`)
 alter table t_esp_goods_base_info add column support_7d_refund varchar(2) not null default '' comment '是否支持7天无理由退货,Y、N';
 update t_esp_goods_base_info set support_7d_refund = 'Y' where source is null;
 
-alter table t_esp_order_detail_info add column pro_activity_id varchar(20) not null default '' comment '促销活动id';
 
 alter table t_esp_banner_info  modify column banner_type varchar(20);

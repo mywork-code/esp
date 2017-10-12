@@ -439,13 +439,13 @@ public class OrderService {
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class,
             BusinessException.class })
-    public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment, Long addressId,
+    public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment,BigDecimal discountMoneydiscountMoney, Long addressId,
             List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType)
             throws BusinessException {
         int index = 0;
         String[] goodsStockArray = new String[purchaseList.size()];
         // 1 校验信息
-        validateCorrectInfo(requestId, totalPayment, addressId, userId, purchaseList, sourceFlag);
+        validateCorrectInfo(requestId, totalPayment,discountMoneydiscountMoney, addressId, userId, purchaseList, sourceFlag);
         // 2 修改商品数目
         for (PurchaseRequestDto purchase : purchaseList) {
             goodsStockArray[index++] = String.valueOf(purchase.getGoodsStockId());
@@ -824,6 +824,9 @@ public class OrderService {
                     		throw new BusinessException("订单中包含无效活动的商品!");
                     	}
                     }
+                    if(StringUtils.isEmpty(purchase.getProActivityId())){
+                    	purchase.setProActivityId("");
+                    }
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
@@ -1000,7 +1003,7 @@ public class OrderService {
      * @param purchaseList
      * @throws BusinessException
      */
-    public void validateCorrectInfo(String requestId, BigDecimal totalPayment, Long addressId, Long userId,
+    public void validateCorrectInfo(String requestId, BigDecimal totalPayment,BigDecimal discountMoney, Long addressId, Long userId,
             List<PurchaseRequestDto> purchaseList, String sourceFlag) throws BusinessException {
         // 校验商品的价格是否已经更改
         for (PurchaseRequestDto purchase : purchaseList) {
@@ -1018,6 +1021,8 @@ public class OrderService {
             Long buyNum = Long.valueOf(purchase.getBuyNum());
             countTotalPrice = countTotalPrice.add(purchase.getPrice().multiply(BigDecimal.valueOf(buyNum)));
         }
+        totalPayment = totalPayment.add(discountMoney);
+        
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
             throw new BusinessException("订单总金额计算错误!");
@@ -2331,13 +2336,13 @@ public class OrderService {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
             GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
             if(StringUtils.isBlank(goods.getSource())){
-            	if(purchase.getBuyNum() <= stock.getStockCurrAmt()){
-            		purchase.setStockDesc(true);
+            	if(purchase.getBuyNum() > stock.getStockCurrAmt()){
+            		purchase.setUnStockDesc(true);
             	}
             }else{
             	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,purchase.getBuyNum());
-            	if ("有货".equals(stockDesc)) {
-            		purchase.setStockDesc(true);
+            	if ("无货".equals(stockDesc)) {
+            		purchase.setUnStockDesc(true);
             	}
             }
     	}
@@ -2357,7 +2362,7 @@ public class OrderService {
     	List<PurchaseRequestDto> available = new ArrayList<PurchaseRequestDto>();
     	//过滤掉不支持配送的和无货的商品
     	for (PurchaseRequestDto p : purchaseList) {
-			if(!p.isUnSupportProvince() && p.isStockDesc()){
+			if(!p.isUnSupportProvince() && !p.isUnStockDesc()){
 				available.add(p);
 			}
 		}

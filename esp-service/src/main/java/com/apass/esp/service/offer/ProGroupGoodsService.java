@@ -156,6 +156,10 @@ public class ProGroupGoodsService {
 	public ResponsePageBody<ProGroupGoodsVo> getProGroupGoodsListPage(ProGroupGoodsQuery query) throws BusinessException{
 		ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
 		List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
+		// 因为voList在数据库查询时就已经跟进order排序来查询
+		configList.get(0).setIsFirstOne(true);
+		configList.get(configList.size() - 1).setIsLastOne(true);
+
 		Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
 		
 		pageBody.setTotal(count);
@@ -213,5 +217,9 @@ public class ProGroupGoodsService {
     }
     return activityCfgService.getActivityStatus(activityCfg);
   }
-  
+
+
+	public ProGroupGoods selectByPrimaryKey(Long id) {
+		return groupGoodsMapper.selectByPrimaryKey(id);
+	}
 }
