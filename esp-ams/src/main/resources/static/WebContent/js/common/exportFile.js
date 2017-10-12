@@ -25,6 +25,12 @@ function exportFile (id, fileName, params)
 		if(busCode == 'E002'){
 			// 去除不需要的字段
 			if (n != "opt"&&n != "id" && n != "source"){
+				if(n=="proDate"){
+					attrs["goodsSkuAttr"]="商品规格";
+					attrs["marketPrice"]="市场价";
+					attrs["goodsCostPrice"]="成本价";  
+					attrs["goodsPrice"]="商品价格";
+				}
 				attrs[n] = columns[i].title;
 			}
 		}else{
