@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.HomeConfigDto;
 import com.apass.esp.domain.enums.YesNoEnums;
@@ -62,10 +63,10 @@ public class HomeConfigController {
      */
     @ResponseBody
     @RequestMapping(value ="/list",method = RequestMethod.POST)
-    public ResponsePageBody<HomeConfigVo> FeedBackPageList() {
+    public ResponsePageBody<HomeConfigVo> FeedBackPageList(QueryParams query) {
     	ResponsePageBody<HomeConfigVo> respBody = new ResponsePageBody<HomeConfigVo>();
 		try {
-			ResponsePageBody<HomeConfigVo> pagination=homeConfigService.getHomeConfigListPage();
+			ResponsePageBody<HomeConfigVo> pagination=homeConfigService.getHomeConfigListPage(query);
             respBody.setTotal(pagination.getTotal());
             respBody.setRows(pagination.getRows());
             respBody.setStatus(CommonCode.SUCCESS_CODE);

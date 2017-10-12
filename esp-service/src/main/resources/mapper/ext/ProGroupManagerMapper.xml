@@ -2,13 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.ProGroupManagerMapper" >
    
-   <select id="getGroupByActivityId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+   <sql id="QueryGroupSql">
+        <where>
+            <if test="activityId != null and activityId != ''">
+               and activity_id = #{activityId}
+            </if>
+        </where>
+    </sql>
+   
+   <select id="getGroupByActivityId" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
         from t_esp_pro_group_manager 
-        where activity_id = #{activityId}
+        <include refid="QueryGroupSql" />
       <![CDATA[ 
         order by create_date desc
       ]]>
    </select>
+   
+   <select id="getGroupByActIdListPage"  resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+       from t_esp_pro_group_manager 
+        <include refid="QueryGroupSql" />
+        <![CDATA[
+        order by create_date desc
+        ]]>
+        <if test="startRecordIndex != null">
+          <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+   </select>
+   
+   <select id ="getGroupByActIdListPageCount" resultType="java.lang.Integer">
+       select count(*) from t_esp_pro_group_manager 
+      <include refid="QueryGroupSql" />
+    </select>
    
 </mapper>

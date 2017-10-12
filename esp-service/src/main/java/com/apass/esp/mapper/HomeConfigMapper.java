@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.HomeConfig;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -13,7 +14,7 @@ public interface HomeConfigMapper extends GenericMapper<HomeConfig, Long> {
 	 * 分页
 	 * @return
 	 */
-    List<HomeConfig> getHomeConfigListPage();
+    List<HomeConfig> getHomeConfigListPage(QueryParams query);
     
 	/**
 	 * 总条数

@@ -11,13 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.dto.offo.ActivityfgDto;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
+import com.apass.esp.domain.query.GroupQuery;
+import com.apass.esp.domain.vo.ActivityCfgVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.BaseConstants;
 
 
 @Service
@@ -34,6 +40,25 @@ public class GroupManagerService {
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
 	
+	
+	/**
+	 * 获取活动配置信息
+	 * @param query
+	 * @return
+	 * @throws BusinessException 
+	 */
+	public ResponsePageBody<GroupManagerVo> getActivityGroupListPage(GroupQuery group) throws BusinessException{
+		ResponsePageBody<GroupManagerVo> pageBody = new ResponsePageBody<GroupManagerVo>();
+		List<ProGroupManager> groupList =  groupManagerMapper.getGroupByActIdListPage(group);
+		Integer count = groupManagerMapper.getGroupByActIdListPageCount(group);
+		
+		List<GroupManagerVo> configVoList = getGroupManageVoList(groupList);
+		
+		pageBody.setTotal(count);
+		pageBody.setRows(configVoList);
+		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+		return pageBody;
+	}
 	/**
 	 * 根据活动配置的id，获取活动所属的分组
 	 * @param activityId

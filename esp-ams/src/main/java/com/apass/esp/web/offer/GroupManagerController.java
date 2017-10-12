@@ -1,7 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +10,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.query.GroupQuery;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.service.offer.GroupManagerService;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 
 /**
  * 分组管理
@@ -30,11 +31,20 @@ public class GroupManagerController {
 	
 	@Autowired
 	private GroupManagerService groupManagerService;
-	
-	@RequestMapping(value ="/list")
-	public Response getGroupListByActivityId(String activityId){
-		List<GroupManagerVo> voList = groupManagerService.getGroupByActivityId(activityId);
-		return Response.successResponse(voList);
+	@ResponseBody
+	@RequestMapping(value ="/list",method = RequestMethod.POST)
+	public ResponsePageBody<GroupManagerVo> getGroupListByActivityId(GroupQuery group){
+		 ResponsePageBody<GroupManagerVo> respBody = new ResponsePageBody<GroupManagerVo>();
+		 try {
+			ResponsePageBody<GroupManagerVo> pagination= groupManagerService.getActivityGroupListPage(group);
+            respBody.setTotal(pagination.getTotal());
+            respBody.setRows(pagination.getRows());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+         } catch (Exception e) {
+        	logger.error("分组管理查询失败!",e);
+            respBody.setMsg("分组管理查询失败");
+         }
+	     return respBody;
 	}
 	
 	@ResponseBody

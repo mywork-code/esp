@@ -38,13 +38,11 @@ $(function(){
 				align : 'center',
 				formatter : function(value, row, index) {
 					var content = "";
-					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroups('"
-						+ row.goodsId +"','"+ row.activityId+ "');\">编辑</a>&nbsp;&nbsp;";
-					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteGroups('"
-						+ row.goodsId +"','"+ row.activityId+ "');\">删除</a>&nbsp;&nbsp;";
+					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroups('"+ row.id+ "');\">编辑</a>&nbsp;&nbsp;";
+					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteGroups('"+ row.id+ "');\">删除</a>&nbsp;&nbsp;";
 					return content;
 			}}]],
-		queryParams:{"activityId":13654645},
+		queryParams:{"activityId":$("#addGoodsToGroupActivityId").val()},
 		loader : function(param, success, error) {
 			$.ajax({
 				url : ctx + '/group/manager/list',
@@ -370,6 +368,26 @@ $(function(){
 		}
     });
     
+    $.editGroups = function(id){
+    	alert("edit" + id);
+    }
+    
+    $.deleteGroups = function(id){
+    	$.messager.confirm('确认','您确认想要删除当前分组吗？',function(r){
+    		if(r){
+    			$.ajax({
+    	            url : ctx + '/group/manager/delete',
+    	            data : {"id":id},
+    	            type : "post",
+    	            dataType : "json",
+    	            success : function(data) {
+    	            	var tr = $(this).parent().parent().remove();
+    	            	alert(data.msg);
+    	            }
+    	        })
+    		}
+    	});
+    }
 });
 
 //判断是否超时

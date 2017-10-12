@@ -40,7 +40,7 @@ public class ActivityCfgService {
 	public ResponsePageBody<ActivityCfgVo> getActivityCfgListPage(ActivityfgDto activityfgDto) throws BusinessException{
 		ResponsePageBody<ActivityCfgVo> pageBody = new ResponsePageBody<ActivityCfgVo>();
 		List<ProActivityCfg> configList = activityCfgMapper.getActivityCfgListPage(activityfgDto);
-		Integer count = activityCfgMapper.getActivityCfgListPageCount();
+		Integer count = activityCfgMapper.getActivityCfgListPageCount(activityfgDto);
 		
 		List<ActivityCfgVo> configVoList = getPoToVoList(configList);
 		
