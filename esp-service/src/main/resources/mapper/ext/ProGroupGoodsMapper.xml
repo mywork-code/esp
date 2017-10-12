@@ -19,7 +19,7 @@
 	<update id="updateGoods" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
 	     update t_esp_pro_group_goods
 	      set 
-	      group_id = null,
+	      group_id = -1,
 	      order_sort = #{orderSort,jdbcType=BIGINT},
 	      update_date = #{updateDate,jdbcType=TIMESTAMP},
 	      status = #{status,jdbcType=VARCHAR}
@@ -51,9 +51,11 @@
 	<select id="getProGroupGoodsListPage" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
 		resultType="com.apass.esp.domain.vo.ProGroupGoodsVo">
 				SELECT
+						a.id				 id,
 						a.goods_code         goodsCode,
 						a.sku_id             skuId,
 						a.goods_id           goodsId,
+						a.order_sort		 orderSort,
 						b.goods_name         goodsName,
 						b.status             goodsStatus,
 						d.category_name      goodsCategory,
@@ -73,7 +75,7 @@
 			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
-         order by a.update_date desc
+         order by a.order_sort desc
          ]]>
 		<if test="startRecordIndex != null">
 			<include refid="PAGINATION.MYSQL_PAGINATION" />

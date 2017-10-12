@@ -30,7 +30,7 @@ import com.apass.gfb.framework.utils.BaseConstants;
 public class GroupManagerService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GroupManagerService.class);
-	
+
 	@Autowired
 	private ProGroupManagerMapper groupManagerMapper;
 	
@@ -164,5 +164,13 @@ public class GroupManagerService {
 		group.setUpdateUser(userName);
 		group.setId(vo.getId());
 		return group;
+	}
+
+	public ProGroupManager selectByPrimaryKey(Long groupId) {
+		return groupManagerMapper.selectByPrimaryKey(groupId);
+	}
+
+	public Integer updateByPrimaryKeySelective(ProGroupManager record) {
+		return groupManagerMapper.updateByPrimaryKeySelective(record);
 	}
 }

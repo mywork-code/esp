@@ -66,7 +66,6 @@ $(function(){
     });
 
     $.editGroup = function (row) {
-        debugger;
         var rows = JSON.parse(decodeURI(row));
         var activityName = rows.activityName;
         var activityId = rows.id;
