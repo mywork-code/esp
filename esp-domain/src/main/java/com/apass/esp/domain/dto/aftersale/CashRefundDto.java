@@ -20,6 +20,11 @@ public class CashRefundDto {
     private String updateDateStr;
 
     private BigDecimal amt;
+    
+    /**
+     * 优惠金额
+     */
+    private BigDecimal disCountAmt;
 
     private String orderId;
 
@@ -205,4 +210,14 @@ public class CashRefundDto {
     public void setAgreeD(Date agreeD) {
         this.agreeD = agreeD;
     }
+
+	public BigDecimal getDisCountAmt() {
+		return disCountAmt;
+	}
+
+	public void setDisCountAmt(BigDecimal disCountAmt) {
+		this.disCountAmt = disCountAmt;
+	}
+    
+    
 }
