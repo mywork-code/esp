@@ -49,7 +49,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
- 	public Response groupAddSave(@RequestBody GroupManagerVo vo){
+ 	public Response groupAddSave(GroupManagerVo vo){
 		try {
 			validateParams(vo);
 			ValidateUtils.isNullObject(vo.getActivityId(),"活动Id不能为空!");
@@ -65,7 +65,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
- 	public Response groupEditSave(@RequestBody GroupManagerVo vo){
+ 	public Response groupEditSave(GroupManagerVo vo){
 		try {
 			validateParams(vo);
 			groupManagerService.editGroup(vo, SpringSecurityUtils.getLoginUserDetails().getUsername());
@@ -80,7 +80,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/delete",method = RequestMethod.POST)
-	public Response groupDelete(@RequestBody GroupManagerVo vo){
+	public Response groupDelete(GroupManagerVo vo){
 		try {
 			ValidateUtils.isNullObject(vo.getId(), "分组编号不能为空！");
 			groupManagerService.deleteGroup(vo.getId());
@@ -102,11 +102,11 @@ public class GroupManagerController {
 	public void validateParams(GroupManagerVo vo) throws BusinessException{
 		ValidateUtils.isNotBlank(vo.getGroupName(), "分组名称不能为空!");
 		if(!ListeningRegExpUtils.isChineseOrLetterOrMath(vo.getGroupName())){
- 			throw new BusinessException("分组名称格式不正确，只能输入汉字、字母和数字,请重新输入");
+ 			throw new BusinessException("分组名称格式不正确，只能输入汉字、字母和数字,请重新输入!");
  		}
  		if (!ListeningRegExpUtils.lengthValue(vo.getGroupName(), 1, 12)) {
-            throw new BusinessException("分组名称格式不正确，最多只能输入6个汉字,请重新输入");
+            throw new BusinessException("分组名称格式不正确，最多只能输入6个汉字,请重新输入!");
         }
+ 		ValidateUtils.isNullObject(vo.getOrderSort(), "显示顺序不能为空!");
 	}
-	
 }

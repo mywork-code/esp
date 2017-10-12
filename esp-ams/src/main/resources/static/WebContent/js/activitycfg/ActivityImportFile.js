@@ -2,6 +2,65 @@ $(function(){
 	$("#addGoodsToGroup").window('close');
 	var activityId=$("#addGoodsToGroupActivityId").val();
 
+	$('#activityGroupList').datagrid({
+		fit : true,
+		rownumbers : true,
+		pagination : true,
+		singleSelect: false, //允许选择多行
+		selectOnCheck: true,
+		checkOnSelect: false,
+		striped:true,
+		columns : [[
+			{
+				title : '分组名称',
+				field : 'groupName',
+				width : 150,
+				align : 'center'
+			}, {
+				title : '分组下商品数量',
+				field : 'goodsSum',
+				width : 150,
+				align : 'center'
+			},{
+				title : '排序',
+				field : 'orderSort',
+				width : 120,
+				align : 'center',
+				formatter : function(value, row, index) {
+					if(null == value || "null"==value)
+						value = "";
+					var msg = value+"";
+					return "<div  title='" + value + "'>" + value + "</div>";
+				}
+			},{
+				title : '操作',
+				field : 'opt',
+				width : 120,
+				align : 'center',
+				formatter : function(value, row, index) {
+					var content = "";
+					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroups('"
+                             + row.groupName +"','"+ row.orderSort+ "','"+ row.id+ "');\">编辑</a>&nbsp;&nbsp;";
+					content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteGroups('"+ row.id+ "');\">删除</a>&nbsp;&nbsp;";
+					return content;
+			}}]],
+		queryParams:{"activityId":$("#addGoodsToGroupActivityId").val()},
+		loader : function(param, success, error) {
+			$.ajax({
+				url : ctx + '/group/manager/list',
+				data : param,
+				type : "post",
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$.validateResponse(data, function() {
+						success(data);
+					});
+				}
+			})
+		}
+	});
+	
     $('#importFileList').datagrid({
         title : '商品池',
         fit : true,
@@ -143,20 +202,17 @@ $(function(){
 				handler : function() {
 					var groupNameAdd = $("#groupNameAdd").textbox('getValue');
 					var sordGroupAdd = $("#sordGroupAdd").textbox('getValue');
-					var params = {
-						"groupName":groupNameAdd,
-						"orderSort":sordGroupAdd,
-					}
-
+					var activityId = $("#addGoodsToGroupActivityId").val();
 					$.ajax({
 						type : "POST",
-						url : ctx + '/application/activity/addGroup',
-						data : params,
+						url : ctx + '/group/manager/add/save',
+						data : {"groupName":groupNameAdd,"orderSort":sordGroupAdd,"activityId":activityId},
 						success : function(data) {
 							ifLogout(data);
 							if (data.status == 1) {
 								$("#addGroupDiv").dialog("close");
 								$.messager.alert('提示',data.msg,'success');
+								$('#activityGroupList').datagrid("load",{"activityId":activityId});
 							} else {
 								$.messager.alert('提示',data.msg,'error');
 							}
@@ -306,6 +362,190 @@ $(function(){
 			});
 		}
     });
+    
+    
+    $.editGroups = function(groupName,orderSort,id){
+    	//首先清空input 和 div内容
+    	$("#groupNameEdit").textbox("setValue",groupName);
+    	$("#groupIdEdit").val(id);
+    	$("#sordGroupEdit").textbox("setValue",orderSort);
+    	$("#goodsList").empty();
+    	
+    	$('#goodsList').datagrid({
+            title : '',
+            fit : true,
+            fitColumns : true,
+            rownumbers : true,
+            pagination : true,
+            singleSelect : true,
+            striped:true,
+            nowrap:false,
+            rowStyler:function(rowIndex,rowData){
+            	if(rowData.colFalgt=='1'){
+            		return 'background-color:#6293BB;';
+            	}
+            },
+    	columns : [[{
+                    title : '商品编号',
+                    field : 'goodsCode',
+                    width : 150,
+                    align : 'center'
+                }, {
+                    title : 'skuid',
+                    field : 'skuId',
+                    width : 150,
+                    align : 'center'
+                },{
+                    title : '商品名称',
+                    field : 'goodsName',
+                    width : 120,
+                    align : 'center',
+        			formatter : function(value, row, index) {
+                     	if(null == value || "null"==value)
+                     		value = "";
+                     	var msg = value+"";
+                     	return "<div  title='" + value + "'>" + value + "</div>";
+                     }
+                },
+                {
+                    title : '商品状态',
+                    field : 'goodsStatus',
+                    width : 120,
+                    align : 'center',
+                    formatter : function(value, row, index) {
+                    	if(value=='G00'){
+                    		return "待上架";
+                    	}else if(value=='G01'){
+                    		return "待审核";
+                    	}else if(value=='G02'){
+                    		return "已上架";
+                    	}else if(value=='G03'){
+                    		return "已下架";
+                    	}else if(value=='G04'){
+                    		return "待审核";
+                    	}
+                    }
+                },{
+                    title : '商品类目（三级）',
+                    field : 'goodsCategory',
+                    width : 120,
+                    align : 'center'
+                },{
+                    title : '成本价',
+                    field : 'goodsCostPrice',
+                    width : 120,
+                    align : 'center'
+                },{
+                    title : '售价',
+                    field : 'goodsPrice',
+                    width : 120,
+                    align : 'center'
+                },{
+                    title : '市场价',
+                    field : 'marketPrice',
+                    width : 120,
+                    align : 'center'
+                },{
+                    title : '活动价',
+                    field : 'activityPrice',
+                    width : 120,
+                    align : 'center'
+                },{
+                    title : '分组',
+                    field : 'groupName',
+                    width : 120,
+                    align : 'center'
+                },{
+    				title : '操作',
+    				field : 'opt',
+    				width : 120,
+    				align : 'center',
+    				formatter : function(value, row, index) {
+    					var content = "";
+    					  	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
+                                 + row.goodsId +"','"+ row.activityId+ "');\">删除</a>&nbsp;&nbsp;";
+    					  	content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
+                                + row.goodsId +"','"+ row.activityId+ "');\">上移</a>&nbsp;&nbsp;";
+    					  	content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
+                               + row.goodsId +"','"+ row.activityId+ "');\">下移</a>&nbsp;&nbsp;";
+    					
+    				 return content;
+    			}}]],
+    		queryParams:{"groupId":id},
+            loader : function(param, success, error) {
+                $.ajax({
+                    url : ctx + '/application/activity/list',
+                    data : param,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                    	console.log(data);
+                        $.validateResponse(data, function() {
+                            success(data);
+                        });
+                    }
+                })
+            }
+        });
+    	
+    	
+    	$("#editGroupDiv").dialog({
+			modal : true,
+			title : "编辑",
+			resizable:true,
+			width : 1100,
+			height: 500,
+			buttons : [ {
+				text : "确定",
+				handler : function() {
+					var id = $("#groupIdEdit").val();
+					var groupName = $("#groupNameEdit").textbox('getValue');
+					var orderSort = $("#sordGroupEdit").textbox('getValue');
+					var activityId = $("#addGoodsToGroupActivityId").val();
+					$.ajax({
+						type : "POST",
+						url : ctx + '/group/manager/edit/save',
+						data :{"groupName":groupName,"orderSort":orderSort,"id":id},
+						success : function(data) {
+							ifLogout(data);
+							if (data.status == 1) {
+								$("#editGroupDiv").dialog("close");
+								$.messager.alert('提示',data.msg,'success');
+								$('#activityGroupList').datagrid("load",{"activityId":activityId});
+							} else {
+								$.messager.alert('提示',data.msg,'error');
+							}
+						}
+					});
+
+				}
+			}, {
+				text : "取消",
+				handler : function() {
+					$("#editGroupDiv").dialog("close");
+				}
+			} ]
+		});
+    }
+    
+    
+    $.deleteGroups = function(id){
+    	$.messager.confirm('确认','您确认想要删除当前分组吗？',function(r){
+    		if(r){
+    			var addGoodsToGroupActivityId = $("#addGoodsToGroupActivityId").val();
+    			$.ajax({
+    	            url : ctx + '/group/manager/delete',
+    	            data : {"id":id},
+    	            type : "post",
+    	            dataType : "json",
+    	            success : function(data) {
+    	            	alert(data.msg);
+    	            	$('#activityGroupList').datagrid("load",{"activityId":activityId});
+    	            }
+    	        })
+    		}
+    	});
+    }
     
 });
 

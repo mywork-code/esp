@@ -2365,7 +2365,7 @@ public class OrderService {
     	 * 计算商品的总件数 ，总金额，优惠金额
     	 */
     	Integer buyNum = 0;//计算商品的总件数
-    	Map<String,BigDecimal> activityDecimal = Maps.newHashMap();
+    	Map<String,BigDecimal> activityDecimal = Maps.newHashMap();//计算同一个活动下的商品总金额
     	for (PurchaseRequestDto p : available) {
     		buyNum += p.getBuyNum();
     		//计算商品的应付金额价格
@@ -2378,24 +2378,24 @@ public class OrderService {
     		}
 		}
     	//总金额
-    	BigDecimal totalSum = BigDecimal.ZERO;
+    	BigDecimal totalSum = BigDecimal.ZERO;//计算当次购买商品的总金额
     	//折扣金额
-    	BigDecimal discountSum = BigDecimal.ZERO;
+    	BigDecimal discountSum = BigDecimal.ZERO;//总共优惠多少钱
     	for (String activityId : activityDecimal.keySet()) {
     		BigDecimal totalMoney = activityDecimal.get(activityId);
 			if(StringUtils.isNotBlank(activityId)){
 				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
 			    long discount = getDisCount(cfg, totalMoney);
-			    discountSum = discountSum.add(BigDecimal.valueOf(discount)); 
+			    discountSum = discountSum.add(BigDecimal.valueOf(discount)); //根据计算的同一个活动下的总金额，计算应该优惠多少钱
 			}
 			totalSum = totalSum.add(totalMoney);	
 		}
     	//实际支付金额
     	BigDecimal paySum = totalSum.subtract(discountSum);
-    	maps.put("buySum", buyNum);
-    	maps.put("discountSum", discountSum);
-    	maps.put("paySum",paySum);
-    	maps.put("totalSum", totalSum);
+    	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
+    	maps.put("discountSum", discountSum);//总共优惠的金额
+    	maps.put("paySum",paySum);//实际支付金额
+    	maps.put("totalSum", totalSum);//总金额（算上优惠金额）
     	return maps;
     }
     

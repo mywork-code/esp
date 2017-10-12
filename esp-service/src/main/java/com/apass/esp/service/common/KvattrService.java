@@ -74,7 +74,8 @@ public class KvattrService {
     }
 
     /**
-     * 获取T属性值并返回
+     * Updated upstream
+     *
      * 经T对象中的属性赋值
      * @return
      */
