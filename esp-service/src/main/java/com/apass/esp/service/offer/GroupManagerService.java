@@ -114,7 +114,7 @@ public class GroupManagerService {
 	 */
 	@Transactional(rollbackFor = { Exception.class})
 	public Integer editGroup(GroupManagerVo vo,String userName){
-		ProGroupManager manager = getProGroupManager(vo,true,userName);
+		ProGroupManager manager = getProGroupManager(vo,false,userName);
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
 	}
 	
@@ -152,13 +152,13 @@ public class GroupManagerService {
 	public ProGroupManager getProGroupManager(GroupManagerVo vo,boolean bl,String userName){
 		
 		ProGroupManager group = new ProGroupManager();
-		group.setActivityId(vo.getActivityId());
-		group.setGoodsSum(vo.getGoodsSum());
 		group.setGroupName(vo.getGroupName());
 		group.setOrderSort(vo.getOrderSort());
 		if(bl){
 			group.setCreateDate(new Date());
 			group.setCreateUser(userName);
+			group.setActivityId(vo.getActivityId());
+			group.setGoodsSum(vo.getGoodsSum());
 		}
 		group.setUpdateDate(new Date());
 		group.setUpdateUser(userName);

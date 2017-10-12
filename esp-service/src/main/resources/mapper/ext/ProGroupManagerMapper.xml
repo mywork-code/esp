@@ -7,6 +7,9 @@
             <if test="activityId != null and activityId != ''">
                and activity_id = #{activityId}
             </if>
+            <if test="groupId != null and groupId != ''">
+               and id = #{groupId}
+            </if>
         </where>
     </sql>
    
@@ -37,7 +40,7 @@
     </select>
    
    <!-- 查询分组下，最大的level,在此基础上+1 -->
-    <select id="getMaxSortOrder"  resultType="java.lang.Long">
+    <select id="getMaxOrderSort"  resultType="java.lang.Long">
      select IFNULL(max(order_sort)+1,1) from t_esp_pro_group_manager
 	   <where>
 		   <if test="activityId != null" >
