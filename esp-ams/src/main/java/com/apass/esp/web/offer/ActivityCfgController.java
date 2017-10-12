@@ -112,8 +112,8 @@ public class ActivityCfgController {
  		try {
  			validateParams(vo, false);
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
- 			activityCfgService.saveActivity(vo);
- 			return Response.success("添加成功");
+ 			Long activityId = activityCfgService.saveActivity(vo);
+ 			return Response.success("添加成功",activityId);
 		} catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
 		}catch (Exception e) {
@@ -122,13 +122,6 @@ public class ActivityCfgController {
 		}
  	}
  	
-// 	@RequestMapping(value = "/edit")
-//    public ModelAndView activityEditConfig(String id) {
-// 	   Map<String, Object> map = Maps.newHashMap();
-//       map.put("vo", activityCfgService.getActivityCfgVo(id));
-//       return new ModelAndView("activitycfg/activityEdit",map);
-//    }
-
  	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
  	public Response activityEditSave(ActivityCfgVo vo){

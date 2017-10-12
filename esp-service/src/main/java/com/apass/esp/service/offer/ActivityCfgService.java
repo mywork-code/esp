@@ -52,11 +52,16 @@ public class ActivityCfgService {
 	
 	/**
 	 * 保存添加活动配置信息
+	 * @throws BusinessException 
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Integer saveActivity(ActivityCfgVo vo){
+	public Long saveActivity(ActivityCfgVo vo) throws BusinessException{
 		ProActivityCfg record = getActivityCfg(vo,true);
-		return activityCfgMapper.insertSelective(record);
+		Integer activityId = activityCfgMapper.insertSelective(record);
+		if(activityId == 0){
+			throw new BusinessException("添加活动配置信息失败");
+		}
+		return record.getId();
 	}
 	
 	/**

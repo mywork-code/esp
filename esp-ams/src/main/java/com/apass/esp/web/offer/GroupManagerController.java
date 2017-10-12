@@ -107,7 +107,6 @@ public class GroupManagerController {
  		if (!ListeningRegExpUtils.lengthValue(vo.getGroupName(), 1, 12)) {
             throw new BusinessException("分组名称格式不正确，最多只能输入6个汉字,请重新输入");
         }
- 		ValidateUtils.isNullObject(vo.getOrderSort(), "显示顺序");
 	}
 	
 }

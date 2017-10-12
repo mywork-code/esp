@@ -19,4 +19,6 @@ public interface ProGroupManagerMapper extends GenericMapper<ProGroupManager, Lo
 	List<ProGroupManager> getGroupByActIdListPage(GroupQuery group);
 	
 	Integer getGroupByActIdListPageCount(GroupQuery group);
+	
+	Integer getMaxOrderSort(@Param("activityId") Long activityId);
 }
