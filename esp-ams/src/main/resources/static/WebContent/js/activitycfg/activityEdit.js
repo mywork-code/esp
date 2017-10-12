@@ -529,14 +529,14 @@ $(function () {
         });
     }
 
-    var groupGoodsId,groupGoodsIndex;
-
+    var groupGoodsId;//分组id
+    var groupGoodsIndex;//对应商品索引
     // 操作菜单显示
     $.optEdit = function (row, index) {
         debugger;
-        var response = JSON.parse(decodeURI(row));
-        groupGoodsId = response.id;
-        groupGoodsIndex = index;
+        var response = JSON.parse(decodeURI(row)),
+        groupGoodsId = response.id,
+        groupGoodsIndex = index,
         isFirstOne = response.isFirstOne;
         isLastOne = response.isLastOne;
         $('#optMenu').menu('enableItem', '#moveCategory');

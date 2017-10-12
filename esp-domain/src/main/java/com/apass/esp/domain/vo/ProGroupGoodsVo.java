@@ -46,6 +46,28 @@ public class ProGroupGoodsVo {
     
     private String status;
 
+	/**
+	 * 判断是否为第一个
+	 */
+	private Boolean isFirstOne;
+	/**
+	 * 判断是否为最后一个
+	 */
+	private Boolean isLastOne;
+
+	public Boolean getIsFirstOne() {
+		return isFirstOne;
+	}
+	public void setIsFirstOne(Boolean isFirstOne) {
+		this.isFirstOne = isFirstOne;
+	}
+	public Boolean getIsLastOne() {
+		return isLastOne;
+	}
+	public void setIsLastOne(Boolean isLastOne) {
+		this.isLastOne = isLastOne;
+	}
+
 	public Long getId() {
 		return id;
 	}
