@@ -2236,7 +2236,7 @@ function loadStockGoods(datagridId,goodsId,source){
                      	var grantedAuthority=$('#grantedAuthority').val();
                     	var content = "";
                     	if(grantedAuthority=='permission'){
-                    		if(source == null){
+                    		if(source != 'jd'){
                     			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' " +
                     			"onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">加库存</a>&nbsp;&nbsp;";
                     		}
