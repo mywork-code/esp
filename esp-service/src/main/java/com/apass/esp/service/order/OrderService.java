@@ -1601,8 +1601,8 @@ public class OrderService {
     		BigDecimal price = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
             if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber);
-                goodsInfo.setDisCountAmt(price.setScale(2, BigDecimal.ROUND_FLOOR));//每件商品的优惠金额（sprint 10）
+            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_FLOOR);
+                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
             }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
             if (null != goods) {
