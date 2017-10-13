@@ -979,7 +979,7 @@ public class OrderService {
             if(activityPayment.containsKey(purchase.getProActivityId())){
             	BigDecimal total = activityPayment.get(purchase.getProActivityId());
             	BigDecimal discountTotal = discountPayment.get(purchase.getProActivityId());
-            	BigDecimal discount = discountTotal.multiply(goodsSum).divide(total).setScale(2,BigDecimal.ROUND_HALF_UP);
+            	BigDecimal discount = discountTotal.multiply(goodsSum).divide(total,2,BigDecimal.ROUND_HALF_UP);
             	purchase.setDisCount(discount);
             	goodsSum = goodsSum.subtract(discount);
             }
