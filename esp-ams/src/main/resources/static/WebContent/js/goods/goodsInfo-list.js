@@ -195,7 +195,7 @@ $(function() {
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
                 	
-            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source ==null){
+            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source != 'jd'){
             			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
             				 + index +"');\">库存</a>&nbsp;&nbsp;";
             		 }
@@ -2186,7 +2186,7 @@ function loadStockGoods(datagridId,goodsId,source){
 		statusV = 'G02';
 	}
 	
-	if(source=='jd'){
+		if(source=='jd'){
 		$("#editGoodsStockAddButton").css('visibility','hidden');
 	}else{
 		$("#editGoodsStockAddButton").css('visibility','visible');
