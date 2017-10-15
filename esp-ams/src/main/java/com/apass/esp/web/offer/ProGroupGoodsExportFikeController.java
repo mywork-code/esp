@@ -23,20 +23,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.ProGroupGoodsBo;
-import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
-import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.domain.vo.GroupVo;
 import com.apass.esp.domain.vo.ProGroupGoodsTo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
+import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -65,7 +62,7 @@ public class ProGroupGoodsExportFikeController {
 	@Autowired
 	private GroupManagerService groupManagerService;
 	@Autowired
-	private ActivityCfgService activityCfgService;
+	private ProGroupManagerMapper groupManagerMapper;
 
 	/**
      * 商品池分页json
@@ -147,38 +144,37 @@ public class ProGroupGoodsExportFikeController {
 		int count = 0;
 		int countSuccess = 0;
 		int countFail = 0;
+		if (StringUtils.isEmpty(goodsId)) {
+			return Response.fail("请选择商品！");
+		}
 		try {
-			if (null != goodsId && goodsId != "") {
-				String[] goods = goodsId.split(",");
-				count = goods.length;
-				for (int i = 0; i < goods.length; i++) {
-					// 判断该商品是否在有效的活动下
-					ProGroupGoodsBo pggbo = proGroupGoodsService.getByGoodsIdStatus(Long.parseLong(goods[i]));
-					if (null != pggbo && pggbo.isValidActivity()) {
-						countFail++;
-					} else {
-						ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
-						ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
-						// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
-						if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
-							ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
-									Long.parseLong(goods[i]), Long.parseLong(activityId));
-							
-							int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
-							proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
-							proGroupGoods.setGroupId(Long.parseLong(groupNameId));
-							proGroupGoods.setStatus("S");
-							proGroupGoods.setUpdateDate(new Date());
-							proGroupGoodsService.updateProGroupGoods(proGroupGoods);
-							countSuccess++;
-						} else {
-							countFail++;
-						}
-					}
+			String[] goods = goodsId.split(",");
+			count = goods.length;
+			for (int i = 0; i < goods.length; i++) {
+				ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
+						Long.parseLong(goods[i]), Long.parseLong(activityId));
+				
+				if(null != proGroupGoods){
+					int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+					proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
+					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
+					proGroupGoods.setStatus("S");
+					proGroupGoods.setUpdateDate(new Date());
+					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
+					countSuccess++;
+				}else{
+					countFail++;
 				}
-			} else {
-				Response.fail("添加至该活动失败！");
 			}
+			//更新分组中商品的总个数
+			ProGroupManager group =	 groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
+			if(null != group){
+				group.setGoodsSum(group.getGoodsSum()+countSuccess); 
+				group.setUpdateDate(new Date());
+				group.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+				groupManagerMapper.updateByPrimaryKey(group);
+			}
+			
 		} catch (Exception e) {
 			LOG.error("添加至该活动失败！", e);
 			Response.fail("添加至该活动失败！");
