@@ -329,7 +329,9 @@ $(function () {
                     alert("添加失败！");
                 }
                 var params = {};
+                params['activityId'] = activityId;
                 $('#importFileList').datagrid('load', params);
+                $('#activityGroupList').datagrid('load', {"activityId":activityId});
             }
         });
     });
@@ -574,7 +576,11 @@ $(function () {
                             ifLogout(data);
                             if (data.status == "1") {
                                 $.messager.alert("提示", data.msg, 'info');
+                                //刷新分组编辑页面的商品列表
                                 $('#goodsList').datagrid('load',{"groupId": data.data.id});
+                                $('#activityGroupList').datagrid('load', {"activityId":data.data.activityId});
+                                //刷新活动编辑页面下的商品列表
+                                $('#importFileList').datagrid('load', {"activityId":data.data.activityId});
                             } else {
                                 $.messager.alert("错误",data.msg,'error');
                             }

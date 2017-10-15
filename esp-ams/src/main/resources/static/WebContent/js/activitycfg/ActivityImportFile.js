@@ -326,8 +326,8 @@ $(function(){
  				}else{
  					alert("添加失败！");
  				}
- 				var params = {};
-		    	$('#importFileList').datagrid('load', params);
+ 				$('#activityGroupList').datagrid('load', {"activityId":activityId});
+		    	$('#importFileList').datagrid('load', {"activityId":activityId});
  			}
  		});
 	 });
@@ -462,14 +462,9 @@ $(function(){
     				align : 'center',
     				formatter : function(value, row, index) {
     					var content = "";
-    					  	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
-                                 + row.goodsId +"','"+ row.activityId+ "');\">删除</a>&nbsp;&nbsp;";
-    					  	content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
-                                + row.goodsId +"','"+ row.activityId+ "');\">上移</a>&nbsp;&nbsp;";
-    					  	content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoodsAndActivity('"
-                               + row.goodsId +"','"+ row.activityId+ "');\">下移</a>&nbsp;&nbsp;";
-    					
-    				 return content;
+                        content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
+                        content += " onclick='$.optEdit(\"" + encodeURI(JSON.stringify(row)) + "\",\"" + index + "\");'>操作</a>&nbsp;";
+                        return content;
     			}}]],
     		queryParams:{"groupId":id},
             loader : function(param, success, error) {
@@ -528,6 +523,122 @@ $(function(){
 		});
     }
     
+    
+    var groupGoodsId,//分组id
+    groupGoodsIndex;//对应商品索引
+    // 操作菜单显示
+    $.optEdit = function (row, index) {
+        var response = JSON.parse(decodeURI(row));
+        groupGoodsId = response.id;
+        groupGoodsIndex = index;
+        isFirstOne = response.isFirstOne;
+        isLastOne = response.isLastOne;
+        $('#optMenu').menu('enableItem', '#moveCategory');
+        $('#optMenu').menu('enableItem', '#downCategory');
+
+        if (isFirstOne) {
+            $('#optMenu').menu('disableItem', '#moveCategory');
+        }
+        if (isLastOne) {
+            $('#optMenu').menu('disableItem', '#downCategory');
+        }
+        var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+        $('#optMenu').menu('show', {
+            left: evt.pageX,
+            top: evt.pageY
+        });
+    }
+
+    $('#optMenu').menu({
+        onClick: function (item) {
+            if (item.text == '删除') {
+                $.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function (r) {
+                    if (!r) {
+                        return;
+                    }
+                    var params = {
+                        "id": groupGoodsId
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: ctx + '/application/activity/removeGoods',
+                        data: params,
+                        dateType: "json",
+                        success: function (data) {
+                            debugger;
+                            ifLogout(data);
+                            if (data.status == "1") {
+                                $.messager.alert("提示", data.msg, 'info');
+                                //刷新分组编辑页面的商品列表
+                                $('#goodsList').datagrid('load',{"groupId": data.data.id});
+                                $('#activityGroupList').datagrid('load', {"activityId":data.data.activityId});
+                                //刷新活动编辑页面下的商品列表
+                                $('#importFileList').datagrid('load', {"activityId":data.data.activityId});
+                            } else {
+                                $.messager.alert("错误",data.msg,'error');
+                            }
+                        }
+                    });
+                });
+            } else if (item.text == '上移') {
+                debugger;
+                if (groupGoodsIndex != 0) {
+                    var toup = $('#goodsList').datagrid('getData').rows[groupGoodsIndex];//当前
+                    var todown = $('#goodsList').datagrid('getData').rows[new Number(groupGoodsIndex) - 1];
+                    var params = {
+                            "subjectId" : toup.id,
+                            "passiveId" : todown.id
+                    };
+                    $.ajax({
+                        type : "POST",
+                        url : ctx + '/application/activity/edit/sort/save',
+                        data : params,
+                        dateType : "json",
+                        success : function(data) {
+                            debugger;
+                            ifLogout(data);
+                            if (data.status == "1") {
+                                $.messager.alert("提示", data.msg, 'info');
+                                // 关闭弹出窗
+                                $('#goodsList').datagrid('load',{"groupId": data.data.groupId});
+                            } else {
+                                $.messager.alert("错误", data.msg, 'error');
+                            }
+                        }
+                    });
+                }
+
+            } else if (item.text == '下移') {
+                debugger;
+                var rows = $('#goodsList').datagrid('getRows').length;
+                if (groupGoodsIndex != rows - 1) {
+                    var toup = $('#goodsList').datagrid('getData').rows[groupGoodsIndex];//当前
+                    var todown = $('#goodsList').datagrid('getData').rows[new Number(groupGoodsIndex) + 1];
+                    var params = {
+                        "subjectId" : toup.id,
+                        "passiveId" : todown.id
+                    };
+                    $.ajax({
+                        type : "POST",
+                        url : ctx + '/application/activity/edit/sort/save',
+                        data : params,
+                        dateType : "json",
+                        success : function(data) {
+                            debugger;
+                            ifLogout(data);
+                            if (data.status == "1") {
+                                $.messager.alert("提示", data.msg, 'info');
+                                // 关闭弹出窗
+                                $('#goodsList').datagrid('load',{"groupId": data.data.groupId});
+                            } else {
+                                $.messager.alert("错误", data.msg, 'error');
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    });
     
     $.deleteGroups = function(id){
     	$.messager.confirm('确认','您确认想要删除当前分组吗？',function(r){
