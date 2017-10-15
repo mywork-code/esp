@@ -326,7 +326,9 @@ public class ProGroupGoodsExportFikeController {
 				}
 				switch (j) {
 				case 0:
-					pggt.setId(getValue(cell));
+					if (!StringUtils.isBlank(getValue(cell)) && ifLongString(getValue(cell))) {
+						pggt.setId(getValue(cell));
+					}
 					break;
 				case 1:
 					if (!StringUtils.isBlank(getValue(cell)) && ifBigDecimalString(getValue(cell))) {
@@ -359,8 +361,15 @@ public class ProGroupGoodsExportFikeController {
 			value = cell.getRichStringCellValue().getString();
 			break;
 		case HSSFCell.CELL_TYPE_NUMERIC:// 数字
-			long dd = (long) cell.getNumericCellValue();
-			value = dd + "";
+			BigDecimal big = new BigDecimal(cell.getNumericCellValue());
+			value = big.toString();
+			// 解决1234.0 去掉后面的.0
+			if (null != value && !"".equals(value.trim())) {
+				String[] item = value.split("[.]");
+				if (1 < item.length && "0".equals(item[1])) {
+					value = item[0];
+				}
+			}
 			break;
 		case HSSFCell.CELL_TYPE_BLANK:
 			value = "";
@@ -394,6 +403,17 @@ public class ProGroupGoodsExportFikeController {
 			return false;// 如果抛出异常，返回False
 		}
 	}
+	/**
+     * 判断字符串是否是Long类型数字
+     */
+    private boolean ifLongString(String str) {
+        try {
+            long num = Long.valueOf(str);// 把字符串强制转换为数字
+            return true;// 如果是数字，返回True
+        } catch (Exception e) {
+            return false;// 如果抛出异常，返回False
+        }
+    }
 	/**
 	 * 验证排序
 	 * @param vo

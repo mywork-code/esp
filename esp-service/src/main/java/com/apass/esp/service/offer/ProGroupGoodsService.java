@@ -113,11 +113,13 @@ public class ProGroupGoodsService {
 		if (null != list && list.size() > 0) {
 			for (ProGroupGoods proGroupGoods : list) {
 				ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoods.getActivityId());
-				ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
-				// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
-				if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
-					result = false;
-					break;
+				if (null != activityCfg) {
+					ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+					// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+					if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+						result = false;
+						break;
+					}
 				}
 			}
 
