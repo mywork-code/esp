@@ -98,6 +98,32 @@ public class ProGroupGoodsService {
 		return groupGoodsMapper.updateGoods(proGroupGoods);
 	}
 	
+	//查看该活动下是否已经存在成功添加到分组的商品
+	public Integer checkActivityGroupGoods(Long activityId){
+		return groupGoodsMapper.checkActivityGroupGoods(activityId);
+	}
+	//删除活动下的所有商品
+	public Integer delectGoodsByActivityId(Long activityId){
+		return groupGoodsMapper.delectGoodsByActivityId(activityId);
+	}
+	//判断商品是否存在其他有效的活动中
+	public Boolean selectEffectiveGoodsByGoodsId(Long goodsId) {
+		Boolean result = true;
+		List<ProGroupGoods> list = groupGoodsMapper.selectEffectiveGoodsByGoodsId(goodsId);
+		if (null != list && list.size() > 0) {
+			for (ProGroupGoods proGroupGoods : list) {
+				ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoods.getActivityId());
+				ActivityStatus activityStatus = activityCfgService.getActivityStatus(activityCfg);
+				// 当活动未开始或正在进行中时，活动下的商品不允许添加到其他活动
+				if (ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus) {
+					result = false;
+					break;
+				}
+			}
+
+		}
+		return result;
+	}
 	/**
 	 * 编辑排序
 	 * @param vo
@@ -157,8 +183,10 @@ public class ProGroupGoodsService {
 		ResponsePageBody<ProGroupGoodsVo> pageBody = new ResponsePageBody<ProGroupGoodsVo>();
 		List<ProGroupGoodsVo> configList = groupGoodsMapper.getProGroupGoodsListPage(query);
 		// 因为voList在数据库查询时就已经跟进order排序来查询
-		configList.get(0).setIsFirstOne(true);
-		configList.get(configList.size() - 1).setIsLastOne(true);
+		if(null !=configList && configList.size()!=0){
+			configList.get(0).setIsFirstOne(true);
+			configList.get(configList.size() - 1).setIsLastOne(true);
+		}
 
 		Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
 		

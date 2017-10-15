@@ -20,6 +20,9 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    ProGroupGoods selectOneByGoodsIdAndActivityId(@Param("goodsId") Long goodsId,
                                                  @Param("activityId") Long activityId);
    List<ProGroupGoods> selectGoodsByGroupId(@Param("groupId") Long groupId);
+   //查看商品是否存在其他有效的活动中
+   List<ProGroupGoods> selectEffectiveGoodsByGoodsId(@Param("goodsId") Long goodsId);
+
    
    Integer getMaxSortOrder(@Param("groupId") Long groupId);
 	//分页查询	
@@ -28,4 +31,10 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    Integer getProGroupGoodsListPageCount(ProGroupGoodsQuery query);
    
    Integer updateGoods(ProGroupGoods proGroupGoods);
+   
+   //查看该活动下是否已经存在成功添加到分组的商品
+   Integer checkActivityGroupGoods(@Param("activityId") Long activityId);
+   //删除活动下的商品
+   Integer delectGoodsByActivityId(@Param("activityId") Long activityId);
+   
 }
