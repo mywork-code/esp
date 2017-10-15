@@ -22,7 +22,9 @@ import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.kvattr.PaymentVo;
 import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -50,6 +52,8 @@ public class PaymentController {
     private PaymentService paymentService;
 	@Autowired
 	private OrderInfoRepository orderDao;
+	@Autowired
+	private KvattrService kvattrService;
     /**
      * 支付方式初始化
      * 
@@ -81,6 +85,7 @@ public class PaymentController {
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             resultMap = paymentService.initPaymentMethod(requestId,userId, orderList);
+            resultMap.put("payment", kvattrService.get(new PaymentVo()));
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
     			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());

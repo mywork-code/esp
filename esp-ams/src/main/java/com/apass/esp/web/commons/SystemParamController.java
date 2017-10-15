@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
+import com.apass.esp.domain.kvattr.PaymentVo;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.WeexInfoService;
 import com.apass.esp.utils.CronTools;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
+import com.apass.esp.domain.enums.PaymentStatusEnum;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -87,6 +89,64 @@ public class SystemParamController {
     @RequestMapping("/jdpage")
     public String jdPage(){
         return "common/param/jdSystemPage";
+    }
+    
+    @RequestMapping("/paymentPage")
+    public String paymentPage(){
+    	return "common/param/paymentPage";
+    }
+    
+    /**
+     * 配置支付宝支付方式选项是否显示
+     * @param request
+     * @return
+     */
+    @RequestMapping("/payment/query")
+    @ResponseBody
+    public ResponsePageBody<PaymentVo> queryPaymentParams(HttpServletRequest request){ 
+    	ResponsePageBody<PaymentVo> respBody = new ResponsePageBody<PaymentVo>();
+        try{
+        	PaymentVo paymentVo = kvattrService.get(new PaymentVo());
+            LOG.info("respBody：{}", GsonUtils.toJson(paymentVo));
+            List<PaymentVo> list = new ArrayList<PaymentVo>();
+            list.add(paymentVo);
+            for (PaymentVo payment : list) {
+				payment.setAlipay(PaymentStatusEnum.getCode(payment.getAlipay()));
+			}
+            respBody.setMsg("支付方式参数查询成功");
+            respBody.setStatus("1");
+            respBody.setRows(list);
+        }catch (Exception e){
+            LOG.error("支付方式管理，系统参数查询失败:{}",e);
+        }
+        return respBody;
+    }
+    
+    @RequestMapping("/payment/update")
+    @ResponseBody
+    @LogAnnotion(operationType = "支付方式编辑", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response updatePaymentParam(@RequestBody PaymentVo paymentVo){
+        try{
+        	PaymentVo paymentVo1 = kvattrService.get(new PaymentVo());
+            if (paymentVo1 == null) {
+                kvattrService.add(paymentVo1);
+            } else {
+                List<Kvattr> list = kvattrService.getTypeName(paymentVo1);
+                List<Kvattr> list2= new ArrayList<>();
+                for (Kvattr kvattr:list) {
+                    if(kvattr.getKey().equalsIgnoreCase("alipay")){
+                        String alipay = paymentVo.getAlipay();
+                        kvattr.setValue(alipay);
+                    }
+                    list2.add(kvattr);
+                }
+                kvattrService.update(list2);
+            }
+            return Response.successResponse();
+        }catch (Exception e){
+            LOG.error("修改支付方式系统参数失败:{}",e);
+            return Response.fail("修改支付方式系统参数失败");
+        }
     }
 
     @RequestMapping("/jd/query")
@@ -145,9 +205,6 @@ public class SystemParamController {
             LOG.error("修改京东价格系统参数失败:{}",e);
             return Response.fail("修改京东价格系统参数失败");
         }
-
-
-
     }
 
     /**
