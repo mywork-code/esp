@@ -94,12 +94,13 @@ public class ActivityCfgController {
  	@RequestMapping(value = "/edit")
     public ModelAndView activityEditConfig(ActivityCfgVo activityCfgVo) {
 		ModelAndView mv = new ModelAndView("activitycfg/activityEdit");
-		if(StringUtils.equals("无优惠",activityCfgVo.getActivityType())){
-			activityCfgVo.setActivityType("N");
-		}else if(StringUtils.equals("满减",activityCfgVo.getActivityType())){
-			activityCfgVo.setActivityType("Y");
+		ActivityCfgVo cfg = activityCfgService.getActivityCfgVo(activityCfgVo.getId()+"");
+		if(StringUtils.equals("无优惠",cfg.getActivityType())){
+			cfg.setActivityType("N");
+		}else if(StringUtils.equals("满减",cfg.getActivityType())){
+			cfg.setActivityType("Y");
 		}
-		mv.addObject("activityCfgVo",activityCfgVo);
+		mv.addObject("activityCfgVo",cfg);
 		return mv;
     }
  	/**
