@@ -16,9 +16,9 @@
    <select id="getGroupByActivityId" resultMap="BaseResultMap">
       select <include refid="Base_Column_List" />
         from t_esp_pro_group_manager 
-        <include refid="QueryGroupSql" />
+        where activity_id = #{activityId}
       <![CDATA[ 
-        order by create_date desc
+        order by order_sort
       ]]>
    </select>
    
@@ -27,7 +27,7 @@
        from t_esp_pro_group_manager 
         <include refid="QueryGroupSql" />
         <![CDATA[
-        order by create_date desc
+        order by order_sort
         ]]>
         <if test="startRecordIndex != null">
           <include refid="PAGINATION.MYSQL_PAGINATION" />

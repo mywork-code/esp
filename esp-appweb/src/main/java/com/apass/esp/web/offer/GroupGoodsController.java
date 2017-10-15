@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.service.offer.GroupManagerService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.google.common.collect.Maps;
 
@@ -36,8 +37,16 @@ public class GroupGoodsController {
 			return Response.fail("活动编号不能为空!");
 		}
 		Map<String,Object> maps = Maps.newHashMap();
-		List<GroupManagerVo> groupList = groupManagerService.getGroupAndGoodsByActivityId(activityId);
-		maps.put("groups", groupList);
-	    return Response.success("查询成功!", maps);
+		try {
+			List<GroupManagerVo> groupList = groupManagerService.getGroupsAndGoodsByActivityId(activityId);
+			maps.put("groups", groupList);
+			return Response.success("查询成功!", maps);
+		} catch(BusinessException e){
+			logger.error("business activityId :{}",e);
+			return Response.fail(e.getErrorDesc());
+		} catch (Exception e) {
+			logger.error("exception activityId :{}",e);
+			return Response.fail("活动查询失败!");
+		}
 	}
 }

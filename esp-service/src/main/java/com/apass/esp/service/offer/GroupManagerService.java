@@ -19,6 +19,7 @@ import com.apass.esp.domain.query.GroupQuery;
 import com.apass.esp.domain.vo.ActivityCfgVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -36,6 +37,9 @@ public class GroupManagerService {
 	
 	@Autowired
 	private ProGroupGoodsMapper groupGoodsMapper;
+	
+	@Autowired
+	private ProActivityCfgMapper activityCfgMapper;
 	
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
@@ -83,6 +87,46 @@ public class GroupManagerService {
 		}
 		return groupVoList;
 	}
+	
+	/**
+	 * 根据活动的id，获取下属分组和分组下的商品,如果分组下不存在商品则，不查询出来
+	 * @param activityId
+	 * @return
+	 * @throws BusinessException 
+	 */
+	public List<GroupManagerVo> getGroupsAndGoodsByActivityId(String activityId) throws BusinessException{
+		
+		ProActivityCfg activity =  activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
+		if(null == activity){
+			throw new BusinessException("活动不存在");
+		}
+		
+		Date currentTime = new Date();
+		
+		if(activity.getStartTime().getTime() > currentTime.getTime()){
+			throw new BusinessException("活动暂未开始!");
+		}
+		if(activity.getEndTime().getTime() < currentTime.getTime()){
+			throw new BusinessException("活动已经结束!");
+		}
+		
+		List<GroupManagerVo> groupVoList = getGroupByActivityId(activityId);
+		if(CollectionUtils.isEmpty(groupVoList)){
+			return groupVoList;
+		}
+		
+		for(int i = groupVoList.size() - 1;i >= 0;i--){
+			GroupManagerVo vo = groupVoList.get(i);
+			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
+			if(CollectionUtils.isNotEmpty(goodsList)){
+				vo.setGoodsList(goodsList);
+			}else{
+				groupVoList.remove(vo);
+			}
+		}
+		return groupVoList;
+	}
+	
 	
 	/**
 	 * 保存新添加分组信息
