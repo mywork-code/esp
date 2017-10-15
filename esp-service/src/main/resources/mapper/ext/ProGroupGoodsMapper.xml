@@ -48,7 +48,7 @@
         where goods_id = #{goodsId} and activity_id = #{activityId} and detail_desc = '1'
     </select>
     <!--查看该活动下是否已经存在成功添加到分组的商品 -->
-    <select id="checkActivityGroupGoods" resultType="java.lang.Long">
+    <select id="checkActivityGroupGoods" resultType="java.lang.Integer">
         SELECT COUNT(*) 
         FROM t_esp_pro_group_goods 
         WHERE group_id !=-1
