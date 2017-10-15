@@ -15,6 +15,14 @@
         from t_esp_pro_group_goods
         where group_id = #{groupId}
     </select>
+    <!-- 查看商品是否存在其他有效的活动中 -->
+    <select id="selectEffectiveGoodsByGoodsId" resultMap="BaseResultMap">
+       select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where detail_desc = '1' 
+          AND goods_id = #{goodsId} 
+    </select>
     <!-- 从分组中移除该商品 -->
 	<update id="updateGoods" parameterType="com.apass.esp.domain.entity.ProGroupGoods" >
 	     update t_esp_pro_group_goods
@@ -38,6 +46,19 @@
         from t_esp_pro_group_goods
         where goods_id = #{goodsId} and activity_id = #{activityId}
     </select>
+    <!--查看该活动下是否已经存在成功添加到分组的商品 -->
+    <select id="checkActivityGroupGoods" resultMap="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM t_esp_pro_group_goods 
+        WHERE group_id !=-1
+         and `status`='S'
+         and  activity_id = #{activityId}
+    </select>
+    <!-- 删除活动下的商品 -->
+   <delete id="delectGoodsByActivityId" parameterType="java.lang.Long" >
+    delete from t_esp_pro_group_goods
+    where activity_id = #{activityId}
+   </delete>
     <!-- 查询分组下，最大的level,在此基础上+1 -->
     <select id="getMaxSortOrder"  resultType="java.lang.Integer">
      select IFNULL(max(order_sort)+1,1) from t_esp_pro_group_goods

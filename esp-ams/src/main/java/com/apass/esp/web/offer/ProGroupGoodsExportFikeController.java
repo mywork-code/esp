@@ -229,6 +229,8 @@ public class ProGroupGoodsExportFikeController {
 		InputStream importFilein = null;
 		int count = 0;// 导入条数
 		int countSuccess = 0;// 导入成功条数
+		int countFail=0;//导入失败条数
+		int countExit=0;//已经存在其他有效活动中的商品条数
 		try {
 			importFilein = file.getInputStream();
 			String fileName = file.getOriginalFilename();
@@ -236,6 +238,13 @@ public class ProGroupGoodsExportFikeController {
 			String type = fileStrings[fileStrings.length - 1];
 			if (!type.equals("xlsx") && !type.equals("xls")) {
 				return Response.fail("导入文件类型不正确。");
+			}
+			//查看该活动下是否已经存在成功添加到分组的商品
+			int sum=proGroupGoodsService.checkActivityGroupGoods(Long.parseLong(activityId));
+			if(sum>0){
+				 return Response.fail("该活动下已有商品成功添加到分组，请移除后再导入！");
+			}else{//如果没有，则将其活动下是商品都删除
+				proGroupGoodsService.delectGoodsByActivityId(Long.parseLong(activityId));
 			}
 			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
 			count=list.size();
@@ -252,10 +261,9 @@ public class ProGroupGoodsExportFikeController {
 					String id=list.get(i).getId();
 					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
 					if (null != gbity && null != marketPrice && null != activityPrice && countSuccess <= 200) {
-						ProGroupGoods proGroupGoods = proGroupGoodsService
-								.selectOneByGoodsIdAndActivityId(gbity.getGoodId(), Long.parseLong(activityId));
-						//判断该商品在该活动下是否已经导入过
-						if (null == proGroupGoods) {
+						//判断该商品是否存在其他有效的活动中
+						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());		
+						if (result) {//允许导入
 							pggds.setMarketPrice(list.get(i).getMarketPrice());
 							pggds.setActivityPrice(list.get(i).getActivityPrice());
 							pggds.setGoodsId(gbity.getGoodId());
@@ -263,20 +271,29 @@ public class ProGroupGoodsExportFikeController {
 							pggds.setGoodsCode(gbity.getGoodsCode().toString());
 							pggds.setDetailDesc("1");// 1表示导入成功
 							pggds.setActivityId(Long.parseLong(activityId));
-							Integer res = proGroupGoodsService.insertSelective(pggds);
-							if (res == 1) {
-								countSuccess++;
-							}
+							proGroupGoodsService.insertSelective(pggds);
+						    countSuccess++;
+						}else{//该商品在其他有效活动中，导入失败
+							pggds.setGoodsId(gbity.getGoodId());
+							pggds.setSkuId(gbity.getExternalId());
+							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setMarketPrice(list.get(i).getMarketPrice());
+							pggds.setActivityPrice(list.get(i).getActivityPrice());
+							pggds.setDetailDesc("0");//0表示导入失败
+							pggds.setActivityId(Long.parseLong(activityId));
+							proGroupGoodsService.insertSelective(pggds);
+							countExit++;
 						}
-					}else if(null != gbity){
-						pggds.setGoodsId(gbity.getGoodId());
-						pggds.setSkuId(gbity.getExternalId());
-						pggds.setGoodsCode(gbity.getGoodsCode().toString());
+					}else{
+						pggds.setGoodsId(-1l);
+						pggds.setSkuId(id);
+						pggds.setGoodsCode(id);
 						pggds.setMarketPrice(list.get(i).getMarketPrice());
 						pggds.setActivityPrice(list.get(i).getActivityPrice());
 						pggds.setDetailDesc("0");//0表示导入失败
 						pggds.setActivityId(Long.parseLong(activityId));
 						proGroupGoodsService.insertSelective(pggds);
+						countFail++;
 					}
 				}
 			}
@@ -284,7 +301,7 @@ public class ProGroupGoodsExportFikeController {
 			 LOG.error("服务器忙，请稍后再试。", e);
 	         return Response.fail(e.getMessage());
 		}
-		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，导入失败"+(count-countSuccess)+"件");
+		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，已存在其他有效活动中"+countExit+"件，导入失败"+countFail+"件");
 	}
 	// 将上传文件读取到List中
 	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
