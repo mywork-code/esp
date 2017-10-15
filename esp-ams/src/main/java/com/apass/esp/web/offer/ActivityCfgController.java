@@ -169,6 +169,18 @@ public class ActivityCfgController {
  			ValidateUtils.isNullObject(vo.getOfferSill2(), "请填写第二个优惠门槛！");
  			ValidateUtils.isNullObject(vo.getDiscount1(), "请填写第一个优惠金额！");
  			ValidateUtils.isNullObject(vo.getDiscount2(), "请填写第二个优惠金额！");
+ 			if(vo.getOfferSill1() <= 0){
+ 				throw new BusinessException("第一个优惠门槛值应大于0！");
+ 			}
+ 			if(vo.getOfferSill2() <= 0){
+ 				throw new BusinessException("第二个优惠门槛值应大于0！");
+ 			}
+ 			if(vo.getDiscount1() <= 0){
+ 				throw new BusinessException("请填写第一个优惠金额应大于0！");
+ 			}
+ 			if(vo.getDiscount2() <= 0){
+ 				throw new BusinessException("请填写第二个优惠金额应大于0！");
+ 			}
  			
  			if(vo.getOfferSill1() == vo.getOfferSill2()){
  				throw new BusinessException("优惠门槛不能相同，请重新填写！");
