@@ -529,14 +529,13 @@ $(function () {
         });
     }
 
-    var groupGoodsId;//分组id
-    var groupGoodsIndex;//对应商品索引
+    var groupGoodsId,//分组id
+    groupGoodsIndex;//对应商品索引
     // 操作菜单显示
     $.optEdit = function (row, index) {
-        debugger;
-        var response = JSON.parse(decodeURI(row)),
-        groupGoodsId = response.id,
-        groupGoodsIndex = index,
+        var response = JSON.parse(decodeURI(row));
+        groupGoodsId = response.id;
+        groupGoodsIndex = index;
         isFirstOne = response.isFirstOne;
         isLastOne = response.isLastOne;
         $('#optMenu').menu('enableItem', '#moveCategory');
@@ -602,7 +601,7 @@ $(function () {
                             if (data.status == "1") {
                                 $.messager.alert("提示", data.msg, 'info');
                                 // 关闭弹出窗
-                                $('#goodsList').datagrid('load',{"groupId": data.data.goodsId});
+                                $('#goodsList').datagrid('load',{"groupId": data.data.groupId});
                             } else {
                                 $.messager.alert("错误", data.msg, 'error');
                             }
@@ -631,7 +630,7 @@ $(function () {
                             if (data.status == "1") {
                                 $.messager.alert("提示", data.msg, 'info');
                                 // 关闭弹出窗
-                                $('#goodsList').datagrid('load',{"groupId": data.data.goodsId});
+                                $('#goodsList').datagrid('load',{"groupId": data.data.groupId});
                             } else {
                                 $.messager.alert("错误", data.msg, 'error');
                             }

@@ -42,7 +42,7 @@ public class RandomUtils {
 	 */
 	public static final String getRandomExcept0ol1(int length) {
 		StringBuffer buffer = new StringBuffer();
-		String s = "23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ";
+		String s = "0123456789";
 		for (int i = 0; i < length; i++) {
 			buffer.append(s.charAt(random.nextInt(s.length())));
 		}

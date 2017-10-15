@@ -67,12 +67,8 @@ $(function(){
 
     $.editGroup = function (row) {
         var rows = JSON.parse(decodeURI(row));
-        var activityName = rows.activityName;
         var activityId = rows.id;
-        var startTime = rows.startTime;
-        var endTime = rows.endTime;
-        var activityType = rows.activityType;
-        window.location.href = ctx + "/activity/cfg/edit?id="+activityId+"&activityName="+activityName+"&startTime="+startTime+"&endTime="+endTime+"&activityType="+activityType;
+        window.location.href = ctx + "/activity/cfg/edit?id="+activityId;
     }
 
     $("#add").click(function(){
