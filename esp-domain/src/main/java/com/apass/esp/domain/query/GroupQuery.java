@@ -13,6 +13,11 @@ public class GroupQuery extends QueryParams {
 	 * 分组的Id
 	 */
 	private Long groupId;
+	
+	/**
+	 * 分组名称
+	 */
+	private String groupName;
 
 	public Long getActivityId() {
 		return activityId;
@@ -29,4 +34,25 @@ public class GroupQuery extends QueryParams {
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
 	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public GroupQuery(Long activityId, Long groupId, String groupName) {
+		super();
+		this.activityId = activityId;
+		this.groupId = groupId;
+		this.groupName = groupName;
+	}
+
+	public GroupQuery() {
+		super();
+	}
+	
+	
 }

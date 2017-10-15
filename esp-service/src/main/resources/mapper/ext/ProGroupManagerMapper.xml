@@ -10,6 +10,9 @@
             <if test="groupId != null and groupId != ''">
                and id = #{groupId}
             </if>
+            <if test="groupName != null and groupName != ''">
+               and group_name = #{groupName}
+            </if>
         </where>
     </sql>
    
@@ -20,6 +23,12 @@
       <![CDATA[ 
         order by order_sort
       ]]>
+   </select>
+   
+   <select id="getGroupByActiIdAndGroupName"  resultMap="BaseResultMap">
+   		select <include refid="Base_Column_List" />
+        from t_esp_pro_group_manager 
+        <include refid="QueryGroupSql" />
    </select>
    
    <select id="getGroupByActIdListPage"  resultMap="BaseResultMap">
@@ -38,14 +47,5 @@
        select count(*) from t_esp_pro_group_manager 
       <include refid="QueryGroupSql" />
     </select>
-   
-   <!-- 查询分组下，最大的level,在此基础上+1 -->
-    <select id="getMaxOrderSort"  resultType="java.lang.Long">
-     select IFNULL(max(order_sort)+1,1) from t_esp_pro_group_manager
-	   <where>
-		   <if test="activityId != null" >
-	         and activity_id = ${activityId}
-	       </if>
-	   </where>
-    </select>
+ 
 </mapper>

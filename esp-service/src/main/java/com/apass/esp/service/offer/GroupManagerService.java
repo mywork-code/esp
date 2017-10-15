@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,10 +133,15 @@ public class GroupManagerService {
 	 * 保存新添加分组信息
 	 * @param vo
 	 * @return
+	 * @throws BusinessException 
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Integer saveGroup(GroupManagerVo vo,String userName){
+	public Integer saveGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,true,userName);
+		List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
+		if(CollectionUtils.isNotEmpty(groupList)){
+			throw new BusinessException("分组名称重复!");
+		}
 		return groupManagerMapper.insertSelective(manager);
 	}
 
@@ -155,10 +161,18 @@ public class GroupManagerService {
 	 * 保存修改分组信息
 	 * @param vo
 	 * @return
+	 * @throws BusinessException 
 	 */
 	@Transactional(rollbackFor = { Exception.class})
-	public Integer editGroup(GroupManagerVo vo,String userName){
+	public Integer editGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,false,userName);
+		ProGroupManager exsit = groupManagerMapper.selectByPrimaryKey(vo.getId());
+		if(null != exsit && !StringUtils.equals(vo.getGroupName(), exsit.getGroupName())){
+			List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
+			if(CollectionUtils.isNotEmpty(groupList)){
+				throw new BusinessException("分组名称重复!");
+			}
+		}
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
 	}
 	
