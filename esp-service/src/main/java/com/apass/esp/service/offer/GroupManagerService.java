@@ -119,11 +119,11 @@ public class GroupManagerService {
 		for(int i = groupVoList.size() - 1;i >= 0;i--){
 			GroupManagerVo vo = groupVoList.get(i);
 			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
-			if(CollectionUtils.isNotEmpty(goodsList)){
-				vo.setGoodsList(goodsList);
-			}else{
+			if(CollectionUtils.isEmpty(goodsList)){
 				groupVoList.remove(vo);
+				continue;
 			}
+			vo.setGoodsList(goodsList);
 		}
 		return groupVoList;
 	}
