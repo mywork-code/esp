@@ -114,7 +114,7 @@ $(function(){
 		
 		var bannerId = $('#bannerId').val();
 		if(bannerId == ''|| null==bannerId){
-			$.messager.alert("<span style='color: black;'>提示</span>","bannerId还能为空","info");
+			$.messager.alert("<span style='color: black;'>提示</span>","bannerId不能为空","info");
 			return;
 		}
 		var bannerFile= $("#bannerFile").val();
