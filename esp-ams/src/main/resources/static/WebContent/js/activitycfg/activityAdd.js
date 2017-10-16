@@ -51,7 +51,7 @@ $(function(){
 		
 		if(startTime!=null && startTime!=''&&endTime!=null && endTime!=''){
 			if(startTime >= endTime){
-				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应大于结束时间，请重新填写！",'info');
+				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应小于结束时间，请重新填写！",'info');
 				return false;
 			}
 		}
@@ -90,7 +90,7 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写第一个优惠金额！",'info');
 			return false;
 		}
-		if(discount1 == '' || null == discount1){
+		if(discount1.length > 15){
 			$.messager.alert("<span style='color: black;'>提示</span>","第一个优惠金额长度要小于15位！",'info');
 			return false;
 		}
@@ -99,7 +99,7 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写第二个优惠金额！",'info');
 			return false;
 		}
-		if(discount2 == '' || null == discount2){
+		if(discount2.length > 15){
 			$.messager.alert("<span style='color: black;'>提示</span>","第二个优惠金额长度要小于15位！",'info');
 			return false;
 		}

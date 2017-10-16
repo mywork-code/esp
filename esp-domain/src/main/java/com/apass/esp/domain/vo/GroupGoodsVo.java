@@ -16,6 +16,8 @@ public class GroupGoodsVo {
     private String goodsTitle;
     //商品的图片路径
     private String goodsPic;
+    //商品的来源
+    private String source;
     
 	public Long getGroupId() {
 		return groupId;
@@ -63,6 +65,14 @@ public class GroupGoodsVo {
 
 	public void setGoodsPic(String goodsPic) {
 		this.goodsPic = goodsPic;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 }
