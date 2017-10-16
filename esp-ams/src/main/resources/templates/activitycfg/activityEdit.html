@@ -10,32 +10,11 @@
 		src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
 <script type="text/javascript"
 		src="${rc.contextPath}/WebContent/js/activitycfg/activityEdit.js"></script>
-<style>
-	#resetPasswordDetails+.window .panel-header>.panel-title {
-		color: #000;
-	}
-
-	.window>.panel-header>.panel-title {
-		color: #000;
-	}
-
-	#resetPasswordDetails table {
-		padding-top: 10px;
-	}
-
-	#resetPasswordDetails table td input {
-		border: 1px solid #B4CFFF;
-		text-indent: 5px;
-		box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-	}
-</style>
 </head>
 <body style="overflow:scroll">
 
 <input id="addGoodsToGroupActivityId" name="addGoodsToGroupActivityId" type="hidden" value="${activityCfgVo.id!}">
-<div id="tb" align="center">
+<div align="center">
 	<div style="width: 1000px;margin-bottom: 10px">
 			<span style="border: 1px solid grey;width: inherit;color: red">
 				<span class="firstStep" style="font-weight: bolder">&nbsp;基&nbsp;本&nbsp;信&nbsp;息&nbsp;</span>
@@ -43,7 +22,7 @@
 			<span class="secondStep" style="font-weight: bolder;color: red">&nbsp;选&nbsp;择&nbsp;商&nbsp;品&nbsp;</span></span>
 	</div>
 
-	<div style="width: 1000px;margin-bottom: 10px">
+	<div style="margin-bottom: 10px">
 		<table style="width: 80%;height: auto;" align="center">
 			<tr>
 				<td align="right">活动名称：</td>
@@ -86,23 +65,22 @@
 			</#if>
 		</table>
 	</div>
-	<div class="search">
-		<div>
-			<table style="float:left;">
-				<td align="right">分组管理:</td>
-				<td><a href="javascript:void(0);" id="createGroup"
-					   style="margin-right: 15px;" class="easyui-linkbutton">创&nbsp;建&nbsp;</a>
-				</td>
-			</table>
-			<div id="activityGroupList"></div>
-		</div>
 
+	<div id="tb2" align="left">
+		<table>
+			<td width="10%">分组管理</td>
+			<td width="80%"><a href="javascript:void(0);" id="createGroup"
+				   class="easyui-linkbutton">创&nbsp;建&nbsp;</a>
+			</td>
+		</table>
+	</div>
+	<div id="activityGroupList"></div>
 
-		<div>
-			<table style="min-width: 700px;">
+	<div id="tb">
+		<table>
 			<tr>
 				<td align="right">导入活动商品:</td>
-				<td align="left">
+				<td align="left" colspan="6">
 					<form id="ExcelFileForm"
 						  action="${rc.contextPath}/application/activity/importFile"
 						  method="POST" enctype="multipart/form-data">
@@ -113,9 +91,7 @@
 					</form>
 				</td>
 			</tr>
-			<tr>
-				<td align="right"><span style="font-weight: bolder">商品池</span></td>
-			</tr>
+
 			<tr>
 				<td align="right">商品编号:</td>
 				<td align="left"><input type="text" id="goodsCode"
@@ -126,21 +102,25 @@
 										class="easyui-textbox" style="width: 160px;" maxlength="15" /></td>
 				<td align="right">商品类目:</td>
 				<td><input id="goodsCategoryCombo" name="goodsCategoryCombo"
-						   class="easyui-combotree" style="width: 200px;" />
-				<td colspan="3"><a href="javascript:void(0);" id="searchGoods"
-								   style="margin-right: 15px;" class="easyui-linkbutton">查&nbsp;询&nbsp;</a>
-					<a href="javascript:void(0);" id="resetGoods"
-					   style="margin-right: 15px;" class="easyui-linkbutton">重&nbsp;置&nbsp;</a>
-					<a href="javascript:void(0);" id="addGoods"
-					   style="margin-right: 15px;" class="easyui-linkbutton">添&nbsp;加&nbsp;至</a>
+						   class="easyui-combotree" style="width: 200px;" /></td>
+				&nbsp;&nbsp;
+				<td align="left" style="padding-left: 10px">
+					<a href="javascript:void(0);" id="searchGoods"
+									   style="margin-right: 15px;" class="easyui-linkbutton">查&nbsp;询&nbsp;</a>
+						<a href="javascript:void(0);" id="resetGoods"
+						   style="margin-right: 15px;" class="easyui-linkbutton">重&nbsp;置&nbsp;</a>
+						<a href="javascript:void(0);" id="addGoods"
+						   style="margin-right: 15px;" class="easyui-linkbutton">添&nbsp;加&nbsp;至</a>
 				</td>
 			</tr>
 		</table>
-		</div>
 	</div>
+
 </div>
+
 <!-- 商品查询列表 -->
 <div id="importFileList"></div>
+
 <!--完成按钮-->
 <div style="padding-top: 20px;" align="center">
 	<input class="easyui-linkbutton" value="完成" id="okButton">
@@ -172,7 +152,6 @@
 
 <div style="display: none" id="addGroupDiv">
 	<table>
-		<tr>
 		<tr>
 			<td align="right">分组名称</td>
 			<td><input id="groupNameAdd" class="easyui-textbox" style="width: 200px;"/></td>
