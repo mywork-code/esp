@@ -2,12 +2,13 @@ $(function () {
     $("#addGoodsToGroup").window('close');
 
     $('#activityGroupList').datagrid({
-        fit: true,
+        fit: false,
         rownumbers: true,
         pagination: true,
         singleSelect: false, //允许选择多行
         selectOnCheck: true,
         checkOnSelect: false,
+
         striped: true,
         columns: [[
             {
@@ -196,7 +197,7 @@ $(function () {
         $("#sordGroupAdd").textbox('clear');
         $("#addGroupDiv").dialog({
             modal: true,
-            title: "创建分组",
+            title: "<span style='color: black'>创建分组</span>",
             resizable: true,
             width: 400,
             buttons: [{
@@ -340,7 +341,7 @@ $(function () {
     $("#addGoods").click(function () {
         var selRow = $('#importFileList').datagrid('getChecked');
         if (selRow.length == 0) {
-            $.messager.alert("提示", "至少勾选一条数据！", "info");
+            $.messager.alert("<span style='color:#000;'>提示</span>", "至少勾选一条数据！", "info");
             return;
         } else {
 //			var activityId= $("#addGoodsToGroupActivityId").val();
@@ -383,8 +384,9 @@ $(function () {
             fit: true,
             fitColumns: true,
             rownumbers: true,
-            pagination: true,
+            // pagination: true,
             singleSelect: true,
+            toolbar: '#tb2',
             striped: true,
             nowrap: false,
             rowStyler: function (rowIndex, rowData) {
@@ -495,10 +497,9 @@ $(function () {
 
         $("#editGroupDiv").dialog({
             modal: true,
-            title: "编辑",
+            title: "<span style='color: black'>编辑</span>",
             resizable: true,
-            width: 1100,
-            height: 500,
+            width: 800,
             buttons: [{
                 text: "确定",
                 handler: function () {
