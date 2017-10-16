@@ -665,6 +665,11 @@ $(function () {
             }
         });
     }
+
+
+    $("#okButton").click(function () {
+        window.location.href = ctx + "/activity/cfg/activity";
+    });
 });
 
 //判断是否超时
