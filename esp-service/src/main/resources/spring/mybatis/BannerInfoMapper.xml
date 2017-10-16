@@ -95,18 +95,22 @@
 		parameterType="Map">
 	<![CDATA[
 			SELECT COUNT(1) FROM t_esp_banner_info t
-		]]>
+	]]>
 		<where>
 			<if test="bannerType != null and bannerType != ''">
 				AND banner_type = #{bannerType, jdbcType=VARCHAR}
 			</if>
 			<if test="bannerType == null or bannerType == ''">
-				AND banner_type in ('index','sift')
+				AND banner_type in
+				<foreach  collection="bannerTypeParams" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
 			</if>
 			<if test="bannerOrder !=null and bannerOrder !=''">
 				AND banner_order =#{bannerOrder, jdbcType=BIGINT}
 			</if>
 		</where>
+
 	</select>
 	
 		<!-- 插入 -->

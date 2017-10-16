@@ -208,7 +208,11 @@ $(function(){
 			//跳转到商品详情页
 			$.previewProduct(id,source);
 		}else{
-			window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			if(acUrl.indexOf('http://') == -1){
+				window.location.href="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			}else{
+				window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			}
 		}
 	}
 
