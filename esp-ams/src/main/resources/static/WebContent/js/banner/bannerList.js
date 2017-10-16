@@ -112,11 +112,6 @@ $(function(){
 			return;
 		}
 		
-		var bannerId = $('#bannerId').val();
-		if(bannerId == ''|| null==bannerId){
-			$.messager.alert("<span style='color: black;'>提示</span>","bannerId不能为空","info");
-			return;
-		}
 		var bannerFile= $("#bannerFile").val();
 		if(bannerFile=='' || null==bannerFile){
 			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
