@@ -30,11 +30,19 @@ $ (function ()
 		            },
 		            
 		            {
-		                title : '支付宝',
+		                title : '支付宝支付',
 		                field : 'alipay',
 		                width : 200,
 		                align : 'center'
 		            },
+		            
+		            {
+		                title : '银联支付',
+		                field : 'backUnion',
+		                width : 200,
+		                align : 'center'
+		            }
+		            ,
 		            {
 		                title : '操作',
 		                field : 'opt',
@@ -75,8 +83,9 @@ $ (function ()
 	{
 		debugger;
 		id_o = data.id;
-		$ ("#paymentParamInfo").dialog("open");
-		$ ("#alipay").combobox('setValue',data.alipay);
+		$("#paymentParamInfo").dialog("open");
+		$("#alipay").combobox('setValue',data.alipay == '显示'?'1':'0');
+		$("#backUnion").combobox('setValue',data.backUnion == '显示'?'1':'0');
 	}
 });
 // 确认修改京东价格系统参数
@@ -87,10 +96,11 @@ function confirmBtn ()
 		if (r)
 		{
 			var alipay = $ ("#alipay").combobox('getValue');
+			var backUnion =  $ ("#backUnion").combobox('getValue');
 			var param =  {
-					alipay : alipay
+					alipay : alipay,
+					backUnion: backUnion
 			}
-
 			$.ajax (
 			{
 			    url : ctx + '/application/system/param/payment/update',
@@ -102,17 +112,13 @@ function confirmBtn ()
 			    {
 				    $.messager.alert ('消息', data.msg);
 				    closeBtn ();
-				    var params = {};
-				    $ ('#paymentParamlist').datagrid ('load', params);
+				    $ ('#paymentParamlist').datagrid ('load', {});
 			    }
 			})
 
 		}
 	});
-
-
 }
-// 关闭窗口
 function closeBtn ()
 {
 	$ ("#paymentParamInfo").dialog ("close");

@@ -8,18 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.apass.esp.domain.entity.Kvattr;
-import com.apass.esp.domain.entity.WeexInfoEntity;
-import com.apass.esp.domain.kvattr.JdSystemParamVo;
-import com.apass.esp.domain.kvattr.PaymentVo;
-import com.apass.esp.service.common.KvattrService;
-import com.apass.esp.service.common.WeexInfoService;
-import com.apass.esp.utils.CronTools;
-import com.apass.esp.utils.FileUtilsCommons;
-import com.apass.esp.utils.ImageTools;
-import com.apass.gfb.framework.environment.SystemEnvConfig;
-import com.apass.gfb.framework.utils.GsonUtils;
-import org.apache.commons.jexl2.UnifiedJEXL;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +18,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.Kvattr;
+import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.enums.PaymentStatusEnum;
+import com.apass.esp.domain.kvattr.JdSystemParamVo;
+import com.apass.esp.domain.kvattr.PaymentVo;
+import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.SystemParamService;
+import com.apass.esp.service.common.WeexInfoService;
+import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
@@ -43,8 +40,8 @@ import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.security.userdetails.ListeningCustomSecurityUserDetails;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 
@@ -97,7 +94,7 @@ public class SystemParamController {
     }
     
     /**
-     * 配置支付宝支付方式选项是否显示
+     * 配置支付方式选项是否显示
      * @param request
      * @return
      */
@@ -112,6 +109,7 @@ public class SystemParamController {
             list.add(paymentVo);
             for (PaymentVo payment : list) {
 				payment.setAlipay(PaymentStatusEnum.getCode(payment.getAlipay()));
+				payment.setBackUnion(PaymentStatusEnum.getCode(payment.getBackUnion()));
 			}
             respBody.setMsg("支付方式参数查询成功");
             respBody.setStatus("1");
@@ -137,6 +135,10 @@ public class SystemParamController {
                     if(kvattr.getKey().equalsIgnoreCase("alipay")){
                         String alipay = paymentVo.getAlipay();
                         kvattr.setValue(alipay);
+                    }
+                    if(kvattr.getKey().equalsIgnoreCase("backunion")){
+                    	String backUnion = paymentVo.getBackUnion();
+                        kvattr.setValue(backUnion);
                     }
                     list2.add(kvattr);
                 }
