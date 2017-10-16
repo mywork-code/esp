@@ -263,8 +263,8 @@ public class ProGroupGoodsExportFikeController {
 						//判断该商品是否存在其他有效的活动中
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());		
 						if (result) {//允许导入
-							pggds.setMarketPrice(list.get(i).getMarketPrice());
-							pggds.setActivityPrice(list.get(i).getActivityPrice());
+							pggds.setMarketPrice(list.get(i).getMarketPrice().setScale(2, BigDecimal.ROUND_HALF_UP));//对小数点第三位执行四舍五入
+							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(gbity.getExternalId());
 							pggds.setGoodsCode(gbity.getGoodsCode().toString());
