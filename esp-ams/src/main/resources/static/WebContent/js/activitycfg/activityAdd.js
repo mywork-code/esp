@@ -18,7 +18,8 @@ $(function(){
     				var respon=JSON.parse(data);
     				if(respon.status=="1"){
     					$.messager.alert("<span style='color: black;'>提示</span>",respon.msg,"info");
-    					window.location.href = ctx + "/activity/cfg/importInit?id="+respon.data+"&activityName="+activityName+"&startTime="+startTime+"&endTime="+endTime+"&activityType="+activityType;
+    					//window.location.href = ctx + "/activity/cfg/importInit?id="+respon.data+"&activityName="+activityName+"&startTime="+startTime+"&endTime="+endTime+"&activityType="+activityType;
+    					window.location.href = ctx + "/activity/cfg/edit?id="+respon.data;
     				}else{
     					$.messager.alert("<span style='color: black;'>警告</span>",respon.msg,"warning");
     				}
