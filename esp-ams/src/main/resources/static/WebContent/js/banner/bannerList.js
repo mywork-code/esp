@@ -13,46 +13,12 @@ $(function(){
         striped:true,
         toolbar : '#tb',
         columns :[[
-			//{
-			//title : '名称',
-			//field : 'bannerName',
-			//width : 150,
-			//align : 'center'
-			//},	
-			// {
-			// 	title : '图片地址',
-			// 	field : 'bannerImgUrl',
-			// 	width : 250,
-			// 	align : 'center',
-			// 	formatter : function(value, row, index) {
-			// 			 var content = "";
-			// 			 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-			// 			+ row.bannerImgUrl+ "');\">"+row.bannerImgUrl+"</a>";
-			// 	return content;
-			//     }
-			// },
 			{
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
 				align : 'center'
 			},
-// 			{
-// 				title : '活动地址',
-// 				field : 'activityUrl',
-// 				width : 250,
-// 				align : 'center',
-// 				formatter : function(value, row, index) {
-// 					 var content = "";
-// 					 if(row.activityUrl!=null){
-// 						 content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
-// 								+ row.activityUrl+ "');\">"+row.activityUrl+"</a>";
-//
-// //						 content += "<a class='easyui-linkedbutton' href='"+row.activityUrl+"'>"+row.activityUrl+"</a>";
-// 					 }
-// 			         return content;
-// 		        }
-// 			},
 			{
 				title : '排序',
 				field : 'bannerOrder',
@@ -71,7 +37,7 @@ $(function(){
 					    content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteBanner("
 							+ row.id+ ");\">删除</a>&nbsp;&nbsp;";
 					}  
-					     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
 						+ row.activityUrl+ "');\">预览</a>&nbsp;&nbsp;";
@@ -128,6 +94,7 @@ $(function(){
 	});
 	//确认   添加  banner信息
 	$("#agreeAdd").click(function(){
+		debugger;
 		var bannerType=$("#bannerType").combobox('getValue');
 		if(null == bannerType || bannerType==""){
 			$.messager.alert("<span style='color: black;'>提示</span>","类型不能为空！","info");
@@ -138,24 +105,24 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","排序不能为空！","info");
 			return;
 		}
-		var bannerFile= $("#bannerFile").val();
+		var activityName=$("#activityName").numberbox('getText');
+		var activityUrl=$("#activityUrl").numberbox('getValue');
+		if(null == activityUrl || activityUrl==""){
+			$.messager.alert("<span style='color: black;'>提示</span>",activityName+"不能为空！","info");
+			return;
+		}
+		
 		var bannerId = $('#bannerId').val();
-		if(bannerId == ''){
-			if(bannerFile=='' || null==bannerFile){
-				$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
-				return;
-			}
+		if(bannerId == ''|| null==bannerId){
+			$.messager.alert("<span style='color: black;'>提示</span>","bannerId还能为空","info");
+			return;
+		}
+		var bannerFile= $("#bannerFile").val();
+		if(bannerFile=='' || null==bannerFile){
+			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
+			return;
 		}
 
-//		 if(bannerFile!="" && null!= bannerFile){
-//				var pos = "." + bannerFile.replace(/.+\./, "");
-//				if(bannerFile!=null && pos!=".jpg" && pos!=".png"){
-//					$.messager.alert("提示","请选择.png或.jpg类型文件！","info");
-//					return;
-//				}
-//		 }
-		 
-		
 		//提交from
 		var theForm = $("#addBannerFile");
 		theForm.form("submit",{ 
@@ -228,10 +195,11 @@ $(function(){
 	}
 	//查看活动
 	$.showActivity = function(activityUrl) {
+		debugger;
 		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
-		if(acUrl.indexOf("id") != -1){
+		if(acUrl.indexOf("id=") != -1){
 			var id = acUrl.slice(acUrl.indexOf("=") +1,acUrl.indexOf("&"));
 			var source = '';
 			if(acUrl.indexOf("notJd") == -1){
@@ -240,19 +208,22 @@ $(function(){
 			//跳转到商品详情页
 			$.previewProduct(id,source);
 		}else{
-			window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
-
+			if(acUrl.indexOf('http://') == -1){
+				window.location.href="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			}else{
+				window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			}
 		}
 	}
 
 	//编辑
 	$.editBanner = function(bannerId){
-
 		$.ajax({
 			url : ctx + '/application/banner/management/getById?id='+ bannerId,
 			type : "get",
 			dataType : "json",
 			success : function(resp) {
+				debugger;
 				console.debug(resp)
 				var data = resp.data;
 				$('#addBannerInfor').window({
@@ -267,12 +238,14 @@ $(function(){
 				$("#bannerType").combobox('setValue',data.bannerType);
 				$("#bannerOrder").numberbox('setValue',data.bannerOrder);
 				$('#bannerId').val(data.id);
+
 			}
 		});
 
 	}
 
 	$.previewProduct = function(id,source) {
+		debugger;
 		var subtitle = "商品预览-" + id;
 		var parentTabs = parent.$('#tabs');
 		var destAddress="";
@@ -287,6 +260,7 @@ $(function(){
 			parentTabs.tabs('select', subtitle);
 			return;
 		}
+
 		parentTabs.tabs('add', {
 			title : subtitle,
 			content : function() {

@@ -70,6 +70,7 @@ $(function () {
         singleSelect: false, //允许选择多行  
         selectOnCheck: true,
         checkOnSelect: false,
+        height:500,
         striped: true,
         toolbar: '#tb',
         rowStyler: function (rowIndex, rowData) {
