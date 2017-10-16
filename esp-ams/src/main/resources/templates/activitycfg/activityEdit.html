@@ -32,7 +32,7 @@
 	}
 </style>
 </head>
-<body>
+<body style="overflow:scroll">
 
 <input id="addGoodsToGroupActivityId" name="addGoodsToGroupActivityId" type="hidden" value="${activityCfgVo.id!}">
 <div id="tb" align="center">
@@ -141,6 +141,12 @@
 </div>
 <!-- 商品查询列表 -->
 <div id="importFileList"></div>
+<!--完成按钮-->
+<div style="padding-top: 20px;" align="center">
+	<input type="button" value="完成" id="okButton">
+</div>
+
+
 <!-- 活动分组 -->
 <div id="addGoodsToGroup" class="easyui-window"
 	 data-options="iconCls:'icon-edit',modal:true,maximizable:false,minimizable:false,resizable:true,collapsible:false"
@@ -208,5 +214,7 @@
 		</tr>
 	</table>
 </div>
+
+
 </body>
 </html>
