@@ -51,7 +51,7 @@ $(function(){
 		
 		if(startTime!=null && startTime!=''&&endTime!=null && endTime!=''){
 			if(startTime >= endTime){
-				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应大于结束时间，请重新填写！",'info');
+				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应小于结束时间，请重新填写！",'info');
 				return false;
 			}
 		}
