@@ -175,6 +175,7 @@ $(function () {
                     return content;
                 }
             }]],
+        queryParams: {"activityId": $("#addGoodsToGroupActivityId").val()},
         loader: function (param, success, error) {
             $.ajax({
                 url: ctx + '/application/activity/list',
@@ -257,7 +258,8 @@ $(function () {
 
     //导入
     $("#import").click(function () {
-        $("#activityId").val("4");
+    	var actiId = $("#addGoodsToGroupActivityId").val();
+        $("#activityId").val(actiId);
         var form = $("#ExcelFileForm");
         var file = $("#Excelfile").val();
         if (file == null || file == '') {
@@ -272,7 +274,7 @@ $(function () {
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                     $('#Excelfile').val('');
                     var params = {};
-                    $('#importFileList').datagrid('load', params);
+                    $('#importFileList').datagrid('load', {"activityId":actiId});
                 } else {
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                 }
@@ -343,8 +345,7 @@ $(function () {
             $.messager.alert("提示", "至少勾选一条数据！", "info");
             return;
         } else {
-//			var activityId= $("#addGoodsToGroupActivityId").val();
-            var activityId = '4';
+			var activityId= $("#addGoodsToGroupActivityId").val();
             var goodsIdsString = selRow[0].goodsId;
             for (var i = 1; i < selRow.length; i++) {
                 goodsIdsString = goodsIdsString + ',' + selRow[i].goodsId;
