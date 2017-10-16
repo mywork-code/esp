@@ -329,10 +329,10 @@ public class TalkingDataScheduleTask {
         HSSFSheet sheet = wb.createSheet("sheet");
         // 获取标题样式，内容样式
         List<HSSFCellStyle> hssfCellStyle = getHSSFCellStyle(wb);
-        String[] headArr = {"日期", "终端", "活跃用户数","新增用户次日留存率",
-                "新增用户数", "活跃用户次日留存率","启动次数", "平均使用时长"};
-        String[] countKeyArr = {"date", "type", "activeUser","day1retention1", "newUser",
-                "dauday1retention1","qidongTime", "userTime"};
+        String[] headArr = {"日期", "终端", "活跃用户数","活跃用户次日留存率",
+                "新增用户数", "新增用户次日留存率","启动次数", "平均使用时长"};
+        String[] countKeyArr = {"date", "type", "activeUser","dauday1retention1", "newUser",
+                "day1retention1","qidongTime", "userTime"};
         // 第三步：创建第一行（也可以称为表头）
         HSSFRow row = sheet.createRow(0);
 
