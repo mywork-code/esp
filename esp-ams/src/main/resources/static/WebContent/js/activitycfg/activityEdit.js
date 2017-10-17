@@ -201,7 +201,7 @@ $(function () {
         rownumbers: true,
         pagination: true,
         singleSelect: true,
-        toolbar: '#tb2',
+        toolbar: '#goodsListtb',
         striped: true,
         nowrap: false,
         rowStyler: function (rowIndex, rowData) {
