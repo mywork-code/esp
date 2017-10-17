@@ -2342,7 +2342,7 @@ function initEditGoodsInfo(row){
 				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').attr("disabled","disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
-				$("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
+				// $("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
 				debugger;
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
@@ -2355,13 +2355,16 @@ function initEditGoodsInfo(row){
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
 
+			}
+
+			if(support7dRefundFinal != null && support7dRefundFinal != ""){
 				$("input[type=radio][name=editSupport7dRefund]").each(function() {
 					if ($(this).val() == support7dRefundFinal) {
 						$(this).attr("checked", "checked");
 					}
 				});
 			}
-			
+
 			$("#editid").val(row.id);
 			$("#editLogogoodsId").val(row.id);
 			
