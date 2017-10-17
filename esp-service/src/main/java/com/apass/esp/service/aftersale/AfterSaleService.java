@@ -152,10 +152,14 @@ public class AfterSaleService {
                     LOG.info(requestId, "商品库存id退货数量大于购买数量", String.valueOf(idNum.getGoodsStockId()));
                     throw new BusinessException("无效的商品数量", BusinessErrorCode.PARAM_VALUE_ERROR);
                 }
-
+                
+                BigDecimal price=resultMap.get(idNum.getGoodsStockId()).getGoodsPrice();
+                BigDecimal discountAmount=resultMap.get(idNum.getGoodsStockId()).getDiscountAmount();
+                BigDecimal goodsNum=new BigDecimal(resultMap.get(idNum.getGoodsStockId()).getGoodsNum());
+                BigDecimal eachDiscountAmount=discountAmount.divide(goodsNum,2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal eachPrice=price.subtract(eachDiscountAmount);
                 // 计算退货商品总金额
-                refundAmt = refundAmt.add(resultMap.get(idNum.getGoodsStockId()).getGoodsPrice()
-                        .multiply(BigDecimal.valueOf(idNum.getGoodsNum())));
+                refundAmt = refundAmt.add(eachPrice.multiply(BigDecimal.valueOf(idNum.getGoodsNum())));
                 // list 删除 已匹配到的 商品库存id
                 goodsStockIdList.remove(idNum.getGoodsStockId());
             } else {
