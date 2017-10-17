@@ -65,7 +65,7 @@ $(function () {
 
     $('#importFileList').datagrid({
         title: '商品池',
-        fit: true,
+        //fit: true,
         rownumbers: true,
         pagination: true,
         singleSelect: false, //允许选择多行  
@@ -381,13 +381,13 @@ $(function () {
         $("#goodsList").empty();
 
         $('#goodsList').datagrid({
-            title: '',
+            title: '编辑商品',
             fit: true,
             fitColumns: true,
             rownumbers: true,
             // pagination: true,
             singleSelect: true,
-            toolbar: '#tb2',
+            // toolbar: '#tb2',
             striped: true,
             nowrap: false,
             rowStyler: function (rowIndex, rowData) {
