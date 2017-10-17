@@ -140,7 +140,7 @@ public class ProGroupGoodsService {
 			return 0;
 		}
 		if(null == managerSub.getActivityId() || null == managerPassive.getActivityId() ||
-				managerSub.getActivityId() != managerPassive.getActivityId()){
+				managerSub.getActivityId().longValue() != managerPassive.getActivityId().longValue()){
 			return 0;
 		}
 		Long subSort = managerSub.getOrderSort();
