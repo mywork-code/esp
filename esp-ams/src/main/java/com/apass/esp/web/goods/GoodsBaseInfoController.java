@@ -21,11 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -984,6 +980,13 @@ public class GoodsBaseInfoController {
         map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue());
         map.put("view", view);
         return new ModelAndView("goods/goodsPreviewProductJD-view", map);
+    }
+
+    @RequestMapping("/getsupport7dRefund")
+    @ResponseBody
+    public Response getsupport7dRefund(String skuId){
+        String to7Return = goodsService.getsupport7dRefund(Long.valueOf(skuId));
+        return Response.success(to7Return);
     }
 
 }

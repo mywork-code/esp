@@ -22,6 +22,7 @@ import com.apass.esp.domain.vo.ProGroupGoodsVo;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
@@ -44,6 +45,9 @@ public class ProGroupGoodsService {
   
   @Autowired
   private ImageService imageService;
+  
+  @Autowired
+  private GoodsService goodsService;
 
   public ProGroupGoodsBo getByGoodsId(Long goodsId){
     ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -225,6 +229,7 @@ public class ProGroupGoodsService {
 			}
 			vo.setGoodsTitle(g.getGoodsName());
 			vo.setMarketPrice(goods.getMarketPrice());
+			vo.setOnShelf(goodsService.validateGoodOnShelf(goodsId));
 			voList.add(vo);
 		}
 		

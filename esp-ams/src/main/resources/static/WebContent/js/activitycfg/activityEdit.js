@@ -369,8 +369,7 @@ $(function () {
         $("#skuId").textbox('setValue', '');
         $("#goodsCategoryCombo").combotree('setValue', '');
         $("#goodsCategoryCombo").combotree('setValue', '请选择');
-        var params = {};
-        $('#importFileList').datagrid('load', params);
+        $('#importFileList').datagrid('load', {"activityId":$("#addGoodsToGroupActivityId").val()});
     });
 
     //导入
