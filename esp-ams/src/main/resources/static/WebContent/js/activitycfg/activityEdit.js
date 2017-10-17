@@ -361,6 +361,7 @@ $(function () {
             goodsCategoryCombo = "";
         }
         params['goodsCategory'] = goodsCategoryCombo;
+        params['activityId'] = $("#addGoodsToGroupActivityId").val();
         $('#importFileList').datagrid('load', params);
     });
     // 刷新列表
