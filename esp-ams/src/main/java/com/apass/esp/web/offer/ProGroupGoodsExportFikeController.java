@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -258,8 +260,10 @@ public class ProGroupGoodsExportFikeController {
 					Boolean activityPriceFalge=activityPrice.compareTo(zero)>0;
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=new GoodsBasicInfoEntity();
-					if(null !=id){
+					GoodsBasicInfoEntity gbity=null;
+					Pattern pattern = Pattern.compile("[0-9]*");   
+					Matcher isNum = pattern.matcher(id);  
+					if(null !=id && isNum.matches()){
 						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPriceFalge && null != activityPrice && activityPriceFalge && countSuccess <= 200) {
@@ -270,7 +274,7 @@ public class ProGroupGoodsExportFikeController {
 							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(gbity.getExternalId());
-							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setGoodsCode(gbity.getGoodsCodeString());
 							pggds.setDetailDesc("1");// 1表示导入成功
 							pggds.setActivityId(Long.parseLong(activityId));
 							proGroupGoodsService.insertSelective(pggds);
@@ -328,7 +332,7 @@ public class ProGroupGoodsExportFikeController {
 				}
 				switch (j) {
 				case 0:
-					if (!StringUtils.isBlank(getValue(cell)) && ifLongString(getValue(cell))) {
+					if (!StringUtils.isBlank(getValue(cell))) {
 						pggt.setId(getValue(cell));
 					}
 					break;

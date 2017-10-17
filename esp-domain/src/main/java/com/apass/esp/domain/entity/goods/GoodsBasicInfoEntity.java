@@ -36,6 +36,8 @@ public class GoodsBasicInfoEntity {
     private String goodsTitle;
     
     private Long goodsCode;
+    
+    private String goodsCodeString;
 
     /** 商品小标题 **/
     private String goodsSellPt;
@@ -306,4 +308,13 @@ public class GoodsBasicInfoEntity {
 	public void setGoodsCode(Long goodsCode) {
 		this.goodsCode = goodsCode;
 	}
+
+	public String getGoodsCodeString() {
+		return goodsCodeString;
+	}
+
+	public void setGoodsCodeString(String goodsCodeString) {
+		this.goodsCodeString = goodsCodeString;
+	}
+	
 }
