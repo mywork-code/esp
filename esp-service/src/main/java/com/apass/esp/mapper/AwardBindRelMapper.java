@@ -3,6 +3,7 @@ package com.apass.esp.mapper;
 import com.apass.esp.domain.entity.AwardBindRel;
 import com.apass.esp.domain.extentity.AwardBindRelStatistic;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.domain.vo.ActivityDetailStatisticsVo;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -81,4 +82,8 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    * 某段时间内某活动下的拉新总数
    */
   Integer newNums(ActivityBindRelStatisticQuery query); 
+  /**
+   *  查询某段时间内某活动下的推荐人及推荐人拉新人数 
+   */
+  List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query);
 }
