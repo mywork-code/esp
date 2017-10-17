@@ -780,13 +780,6 @@ $(function() {
 				success : function(data) {
 					debugger;
 					support7dRefundFinal = data.msg;
-					if(support7dRefundFinal != null && support7dRefundFinal != ""){
-						$("input[type=radio][name=editSupport7dRefund]").each(function() {
-							if ($(this).val() == support7dRefundFinal) {
-								$(this).attr("checked", "checked");
-							}
-						});
-					}
 				}
 			});
 		}
@@ -2374,6 +2367,13 @@ function initEditGoodsInfo(row){
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
 
+			}
+			if(support7dRefundFinal != null && support7dRefundFinal != ""){
+				$("input[type=radio][name=editSupport7dRefund]").each(function() {
+					if ($(this).val() == support7dRefundFinal) {
+						$(this).attr("checked", "checked");
+					}
+				});
 			}
 
 			$("#editid").val(row.id);
