@@ -100,6 +100,7 @@
 				t.un_support_province unSupportProvince,
 				t.source source,
 				t.external_id externalId,
+				t.support_7d_refund support7dRefund,
 				t.newCreat_date   newCreatDate
 			FROM
 				t_esp_goods_base_info t
