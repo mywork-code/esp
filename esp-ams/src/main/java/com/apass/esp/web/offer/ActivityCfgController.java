@@ -153,6 +153,9 @@ public class ActivityCfgController {
  			throw new BusinessException("开始时间应大于结束时间，请重新填写！");
  		}
  		
+ 		if(end.getTime() < new Date().getTime()){
+ 			throw new BusinessException("活动结束时间应大于系统当前时间，请重新填写");
+ 		}
  		String activityType = vo.getActivityType();
  		ValidateUtils.isNotBlank(activityType, "请选择活动类型！");
  		
