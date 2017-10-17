@@ -54,4 +54,13 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	Integer countAwardIntroList(Map<String, Object> paramMap);
 
 	BigDecimal getAllAwardByUserId(Long userId);
+	/**
+	 *  统计某段时间内某个活动总奖励金额
+	 */
+	BigDecimal getAllAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query);
+	/**
+	 *  统计某段时间内某个活动已返现金额
+	 */
+	BigDecimal getAllBackAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query);
+
 }

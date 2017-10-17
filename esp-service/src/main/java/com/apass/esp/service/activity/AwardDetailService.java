@@ -324,5 +324,16 @@ public class AwardDetailService {
 	public BigDecimal getAllAwardByUserId(Long userId){
 		return awardDetailMapper.getAllAwardByUserId(userId)==null?new BigDecimal(0):awardDetailMapper.getAllAwardByUserId(userId);
 	}
-
+	/**
+	 *  统计某段时间内某个活动总奖励金额
+	 */
+	public BigDecimal getAllAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query){
+		return awardDetailMapper.getAllAwardByActivityIdAndTime(query);
+	}
+	/**
+	 *  统计某段时间内某个活动已返现金额
+	 */
+	public BigDecimal getAllBackAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query){
+		return awardDetailMapper.getAllBackAwardByActivityIdAndTime(query);
+	}
 }
