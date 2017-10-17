@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,28 +36,27 @@ public class SAPService {
   public void sendCaiWuPingZhengCsv(String ip, int port, String username,
                                     String password, String path
                                     ){
-    generateCaiWuPingZhengCsv();
     try {
+      generateCaiWuPingZhengCsv();
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH));
       FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.CAIWUPINGZHENG_FILE_NAME,in);
-    } catch (FileNotFoundException e) {
-      LOG.error("caiwupingzheng csv file notfound",e);
+    } catch (Exception e) {
+      LOG.error("ftp caiwupingzheng csv error",e);
     }
   }
 
   /**
    * 财务凭证调整（首付款或全额）
    */
-  private void generateCaiWuPingZhengCsv(){
+  private void generateCaiWuPingZhengCsv() throws Exception{
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
 
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
 
-    try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH,',', Charset.forName("UTF-8"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH,',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{});
+      csvWriter.writeRecord(new String[]{""});
       //表头
       String[] headers = {"GUID","ERDAT","ZTZLX","KUNNR","ZSFQE","ZSFKBZ","ZPTMC","ZPTBM","ZPTLSH","ZZHH","ZZHH_COMP",
       "ZZHH_NO","ZPTFWF","ZDFF"};
@@ -100,13 +98,10 @@ public class SAPService {
 
         //TODO:退款流水
 
-        csvWriter.writeRecord((String[]) contentList.toArray());
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
       csvWriter.close();
 
-    }catch (Exception e){
-      LOG.error("generateCaiWuPingZhengCsv error...",e);
-    }
 
 
 
