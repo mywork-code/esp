@@ -223,7 +223,7 @@ public class ProGroupGoodsService {
 					vo.setGoodsPic("");
 				}
 			}
-			vo.setGoodsTitle(g.getGoodsTitle());
+			vo.setGoodsTitle(g.getGoodsName());
 			vo.setMarketPrice(goods.getMarketPrice());
 			voList.add(vo);
 		}
