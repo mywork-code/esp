@@ -69,6 +69,18 @@ public class TxnOrderInfo {
    */
   private String status;
 
+  /**
+   * 创建时间
+   */
+  private Date createDate;
+
+  public Date getCreateDate() {
+    return createDate;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
+  }
 
   public Long getTxnId() {
     return txnId;

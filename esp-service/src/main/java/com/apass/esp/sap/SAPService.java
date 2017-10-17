@@ -56,12 +56,12 @@ public class SAPService {
   public void sendPaymentOrFullPaymentCsv(String ip, int port, String username,
                                     String password, String path
   ){
-    generatePaymentOrFullPaymentCsv();
     try {
+      generatePaymentOrFullPaymentCsv();
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH));
       FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.CAIWUPINGZHENG_FILE_NAME,in);
-    } catch (FileNotFoundException e) {
-      LOG.error("caiwupingzheng csv file notfound",e);
+    } catch (Exception e) {
+      LOG.error("ftp caiwupingzheng csv error",e);
     }
   }
 
@@ -88,9 +88,10 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList();
         contentList.add(txn.getTxnId() + "'");
-        contentList.add(txn.getTxnId() + "'");
         contentList.add("");
-        contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),DateFormatUtil.YYYY_MM_DD));
+        contentList.add("收款");
+        contentList.add("S".equals(txn.getStatus())?"成功":"失败");
+        contentList.add(DateFormatUtil.dateToString(txn.getCre,DateFormatUtil.YYYY_MM_DD));
         contentList.add("2");
         contentList.add("3");
         if(txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -182,12 +183,8 @@ public class SAPService {
         contentList.add("6008");
 
         //TODO:退款流水
-<<<<<<< Updated upstream
 
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-=======
-        csvWriter.writeRecord((String[]) contentList.toArray());
->>>>>>> Stashed changes
       }
       csvWriter.close();
 
