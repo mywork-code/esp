@@ -97,7 +97,7 @@
 			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
-         order by a.order_sort desc
+         order by a.detail_desc desc
          ]]>
 		<if test="startRecordIndex != null">
 			<include refid="PAGINATION.MYSQL_PAGINATION" />
