@@ -215,10 +215,10 @@ $(function () {
                             ifLogout(data);
                             if (data.status == 1) {
                                 $("#addGroupDiv").dialog("close");
-                                $.messager.alert('提示', data.msg, 'success');
+                                $.messager.alert("<span style='color: black'>提示</span>", data.msg, 'success');
                                 $('#activityGroupList').datagrid("load", {"activityId": activityId});
                             } else {
-                                $.messager.alert('提示', data.msg, 'error');
+                                $.messager.alert("<span style='color: black'>提示</span>", data.msg, 'error');
                             }
                         }
                     });
