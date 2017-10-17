@@ -152,6 +152,7 @@ public class AfterSaleService {
                     LOG.info(requestId, "商品库存id退货数量大于购买数量", String.valueOf(idNum.getGoodsStockId()));
                     throw new BusinessException("无效的商品数量", BusinessErrorCode.PARAM_VALUE_ERROR);
                 }
+                
                 BigDecimal price=resultMap.get(idNum.getGoodsStockId()).getGoodsPrice();
                 BigDecimal discountAmount=resultMap.get(idNum.getGoodsStockId()).getDiscountAmount();
                 BigDecimal goodsNum=new BigDecimal(resultMap.get(idNum.getGoodsStockId()).getGoodsNum());
