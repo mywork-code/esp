@@ -38,17 +38,13 @@
 	<div id="bannerList"></div>
 	
 	<!-- 添加banner本信息弹出窗口 -->
-	<div id="addBannerInfor" class="easyui-window" title="<font color='black'>添加banner信息</font>" hidden="hidden"
+	<div id="addBannerInfor" class="easyui-window" title="<font color='black'>添加/编辑 banner信息</font>" hidden="hidden"
 		style="width: 430px; height: 200px; display: none; text-align: center;" >
-       <form id="addBannerFile"  action="${rc.contextPath}/application/banner/management/addBannerFile" method="POST" enctype="multipart/form-data">
+       <form id="addBannerFile" action="${rc.contextPath}/application/banner/management/addBannerFile" method="POST" enctype="multipart/form-data">
            <table class="details_table" style="width:92%">
 			<input type="hidden" name="bannerId" id="bannerId" value="" />
-<!--            	    <tr> -->
-<!-- 	            	<td width="30%" align="right" >名称:</td> -->
-<!-- 					<td align="left"><input  class="easyui-textbox" style="width: 180px;" type="text" id="bannerName" name="bannerName" /></td> -->
-<!-- 	      	    </tr> -->
-	      	    <tr>  
-	      	        <td width="30%" align="right"><font color="red">*</font>类型:</td>
+	      	    <tr>
+	      	        <td width="30%" align="right">类型:</td>
 					<td align="left"><select class="easyui-combobox" style="width: 175px;" id="bannerType" name="bannerType" required=true>
 	             		    <option value="">请选择</option>
 							<option value="index">首页</option>
@@ -56,28 +52,28 @@
 						<#list oneLevelCateList as cate>
 							<option label="cate.categoryName" value="category_${cate.categoryId}">${cate.categoryName}</option>
 						</#list>
-	             	 </select></td>
+	             	 </select><span style="color: red">*</span></td>
                  </tr>
             	<tr>
-            		<td width="30%" align="right"><font color="red">*</font>排序:</td>
-					<td align="left"><input  class="easyui-numberspinner" style="width: 180px;" data-options="min:1" type="text"  id="bannerOrder"  name="bannerOrder" required=true /></td>
+            		<td width="30%" align="right">排序:</td>
+					<td align="left"><input  class="easyui-numberspinner" style="width: 180px;" data-options="min:1" type="text"  id="bannerOrder"  name="bannerOrder" required=true /><span style="color: red">*</span></td>
             	</tr>
 				<tr>
 					<td width="30%" align="right">
-					   <select id="activityName" class="easyui-combobox" name="activityName" style="width:80px;" panelHeight="60">   
+					   <select id="activityName" class="easyui-combobox" name="activityName" style="width:100px;" panelHeight="60">
                                <option value="activity">活动地址</option>   
                                <option value="goodId">商品编号/skuid</option>
                        </select></td>
 					<td align="left"><input id="activityUrl" name="activityUrl"
-						class="easyui-textbox" style="width: 180px;" /></td>
+						class="easyui-textbox" style="width: 180px;" /><span style="color: red">*</span></td>
 				</tr>
 				<tr>
-               	 	<td width="30%" align="right"><font color="red">*</font>上传图片:</td>
-					<td align="left"><input type="file" style="width: 180px;" name="bannerFile" id="bannerFile"/></td>
+               	 	<td width="30%" align="right">上传图片:</td>
+					<td align="left"><input type="file" style="width: 180px;" name="bannerFile" id="bannerFile"/><span style="color: red">*</span></td>
             	</tr>
             	 <tr>
 	            	<td colspan="4">
-	            		<span id="fondSpan"><font color='red'>支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</font></span>
+	            		<span id="fondSpan"><span style="color: red">支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</span></span>
 	            	</td>
             	</tr>
 				<tr style="margin-top: 22px;">

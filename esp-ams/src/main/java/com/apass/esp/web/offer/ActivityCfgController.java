@@ -49,16 +49,7 @@ public class ActivityCfgController {
     public String activityConfig() {
       return "activitycfg/activity";
     }
- 	  /**
-     * 商品池初始化配置
-     * @return
-     */
- 	@RequestMapping(value = "/importInit")
-    public ModelAndView activityimportFileConfig(ActivityCfgVo activityCfgVo) {
-		ModelAndView mv = new ModelAndView("activitycfg/activityImportFile");
-		mv.addObject("activityCfgVo",activityCfgVo);
-		return mv;
-    }
+
  	/**
      * 活动配置分页json
      */
@@ -182,9 +173,15 @@ public class ActivityCfgController {
  			if(vo.getDiscount2() <= 0){
  				throw new BusinessException("请填写第二个优惠金额应大于0！");
  			}
- 			
  			if(vo.getOfferSill1() == vo.getOfferSill2()){
  				throw new BusinessException("优惠门槛不能相同，请重新填写！");
+ 			}
+ 			if(vo.getDiscount1() >= vo.getOfferSill1()){
+ 				throw new BusinessException("第一个优惠金额要小于第一个优惠门槛金额！");
+ 			}
+ 			
+ 			if(vo.getDiscount2() >= vo.getOfferSill2()){
+ 				throw new BusinessException("第二个优惠金额要小于第二个优惠门槛金额！");
  			}
  		}
  		

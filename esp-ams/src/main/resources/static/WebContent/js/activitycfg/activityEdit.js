@@ -2,12 +2,13 @@ $(function () {
     $("#addGoodsToGroup").window('close');
 
     $('#activityGroupList').datagrid({
-        fit: true,
+        fit: false,
         rownumbers: true,
         pagination: true,
         singleSelect: false, //允许选择多行
         selectOnCheck: true,
         checkOnSelect: false,
+
         striped: true,
         columns: [[
             {
@@ -70,6 +71,7 @@ $(function () {
         singleSelect: false, //允许选择多行  
         selectOnCheck: true,
         checkOnSelect: false,
+        height:500,
         striped: true,
         toolbar: '#tb',
         rowStyler: function (rowIndex, rowData) {
@@ -174,6 +176,7 @@ $(function () {
                     return content;
                 }
             }]],
+        queryParams: {"activityId": $("#addGoodsToGroupActivityId").val()},
         loader: function (param, success, error) {
             $.ajax({
                 url: ctx + '/application/activity/list',
@@ -195,7 +198,7 @@ $(function () {
         $("#sordGroupAdd").textbox('clear');
         $("#addGroupDiv").dialog({
             modal: true,
-            title: "创建分组",
+            title: "<span style='color: black'>创建分组</span>",
             resizable: true,
             width: 400,
             buttons: [{
@@ -212,10 +215,10 @@ $(function () {
                             ifLogout(data);
                             if (data.status == 1) {
                                 $("#addGroupDiv").dialog("close");
-                                $.messager.alert('提示', data.msg, 'success');
+                                $.messager.alert("<span style='color: black'>提示</span>", data.msg, 'success');
                                 $('#activityGroupList').datagrid("load", {"activityId": activityId});
                             } else {
-                                $.messager.alert('提示', data.msg, 'error');
+                                $.messager.alert("<span style='color: black'>提示</span>", data.msg, 'error');
                             }
                         }
                     });
@@ -256,7 +259,8 @@ $(function () {
 
     //导入
     $("#import").click(function () {
-        $("#activityId").val("4");
+    	var actiId = $("#addGoodsToGroupActivityId").val();
+        $("#activityId").val(actiId);
         var form = $("#ExcelFileForm");
         var file = $("#Excelfile").val();
         if (file == null || file == '') {
@@ -271,7 +275,7 @@ $(function () {
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                     $('#Excelfile').val('');
                     var params = {};
-                    $('#importFileList').datagrid('load', params);
+                    $('#importFileList').datagrid('load', {"activityId":actiId});
                 } else {
                     $.messager.alert("<font color='black'>提示</font>", data.msg, "info");
                 }
@@ -339,11 +343,10 @@ $(function () {
     $("#addGoods").click(function () {
         var selRow = $('#importFileList').datagrid('getChecked');
         if (selRow.length == 0) {
-            $.messager.alert("提示", "至少勾选一条数据！", "info");
+            $.messager.alert("<span style='color:#000;'>提示</span>", "至少勾选一条数据！", "info");
             return;
         } else {
-//			var activityId= $("#addGoodsToGroupActivityId").val();
-            var activityId = '4';
+			var activityId= $("#addGoodsToGroupActivityId").val();
             var goodsIdsString = selRow[0].goodsId;
             for (var i = 1; i < selRow.length; i++) {
                 goodsIdsString = goodsIdsString + ',' + selRow[i].goodsId;
@@ -382,8 +385,9 @@ $(function () {
             fit: true,
             fitColumns: true,
             rownumbers: true,
-            pagination: true,
+            // pagination: true,
             singleSelect: true,
+            toolbar: '#tb2',
             striped: true,
             nowrap: false,
             rowStyler: function (rowIndex, rowData) {
@@ -494,10 +498,9 @@ $(function () {
 
         $("#editGroupDiv").dialog({
             modal: true,
-            title: "编辑",
+            title: "<span style='color: black'>编辑</span>",
             resizable: true,
-            width: 1100,
-            height: 500,
+            width: 800,
             buttons: [{
                 text: "确定",
                 handler: function () {
@@ -664,6 +667,11 @@ $(function () {
             }
         });
     }
+
+
+    $("#okButton").click(function () {
+        window.location.href = ctx + "/activity/cfg/activity";
+    });
 });
 
 //判断是否超时

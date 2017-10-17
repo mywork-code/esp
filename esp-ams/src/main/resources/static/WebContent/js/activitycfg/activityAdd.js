@@ -95,6 +95,10 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","第一个优惠金额长度要小于15位！",'info');
 			return false;
 		}
+		if(parseInt(discount1) >= parseInt(offerSill1)){
+			$.messager.alert("<span style='color: black;'>提示</span>","第一个优惠金额要小于第一个优惠门槛金额！",'info');
+			return false;
+		}
 		var discount2 = $("#discount2").numberbox('getValue');
 		if(discount2 == '' || null == discount2){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写第二个优惠金额！",'info');
@@ -102,6 +106,10 @@ $(function(){
 		}
 		if(discount2.length > 15){
 			$.messager.alert("<span style='color: black;'>提示</span>","第二个优惠金额长度要小于15位！",'info');
+			return false;
+		}
+		if(parseInt(discount2) >= parseInt(offerSill2)){
+			$.messager.alert("<span style='color: black;'>提示</span>","第二个优惠金额要小于第二个优惠门槛金额！",'info');
 			return false;
 		}
 		return true;
