@@ -901,6 +901,7 @@ $(function() {
 	
 	 //编辑 -- 保存商品信息
 	$("#editgoodsAddinfo").click(function() {
+		debugger;
 		var id=$("#editid").val(),
 		editNewCreatDate=$("#editNewCreatDate").val(),
 		goodsModel=$("#editgoodsModel").textbox('getValue'),
@@ -1002,6 +1003,7 @@ $(function() {
 		formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
 		formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
 		formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
+		formObj.append("<input type='text' name='support7dRefund' value='"+editSupport7dRefund+"'/>");
 		formObj.css('display','none').appendTo("body");
 		formObj.form("submit",{ 
 			url : ctx + '/application/goods/management/edit',
@@ -2326,6 +2328,7 @@ function initEditGoodsInfo(row){
 			});
 			
 			if(externalsource == 'jd'){
+				debugger;
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
@@ -2338,6 +2341,7 @@ function initEditGoodsInfo(row){
 				$("#editsupNo").textbox('textbox').attr("disabled","disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
 			}else{
+				debugger;
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
 				$("#editgoodsSkuType").combobox('enable');
 				$("#editUnSupportProvince").combobox('enable');
