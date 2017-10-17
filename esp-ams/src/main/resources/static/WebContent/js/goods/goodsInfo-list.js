@@ -14,6 +14,7 @@
 	// 新增库存共用 id
 	var finalGoodId;
 	var externalsource;
+	var support7dRefundFinal;
 	
 	//添加商品--是否已经保存商品信息
 	var ifSaveGoodsFlag = false;
@@ -763,11 +764,13 @@ $(function() {
 	 * 编辑
 	 */
 	$.editGoods = function(index) {//编缉初始化
+		debugger;
 		$('#editGoodsInfo').window('open');
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
 		externalsource = rowData.source;
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
+		support7dRefundFinal = rowData.support7dRefund;
 		$("#editGoodsId").val(rowData.id);
 		//防止数据库中商品新建时间为空
 		if(null==rowData.newCreatDate || ''==rowData.newCreatDate){
@@ -2274,7 +2277,6 @@ function initGoodsInfo(){
 
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
-	debugger;
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
 	var unSupportPrivincesCodes;//省份编码 
 	$.ajax({
@@ -2340,6 +2342,7 @@ function initEditGoodsInfo(row){
 				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').attr("disabled","disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
+				$("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
 				debugger;
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
@@ -2351,6 +2354,12 @@ function initEditGoodsInfo(row){
 				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").removeClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
+
+				$("input[type=radio][name=editSupport7dRefund]").each(function() {
+					if ($(this).val() == support7dRefundFinal) {
+						$(this).attr("checked", "checked");
+					}
+				});
 			}
 			
 			$("#editid").val(row.id);
@@ -2382,6 +2391,7 @@ function initEditGoodsInfo(row){
 			$("#editsupNo").textbox('setValue',row.supNo);
 			$("#editkeepDate").textbox('setValue',row.keepDate);
 			$("#editsordNo").numberbox('setValue',row.sordNo);
+			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			
 		}
 	});
