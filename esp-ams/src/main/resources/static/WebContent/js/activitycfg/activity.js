@@ -1,5 +1,4 @@
 $(function(){
-	
     //Grid
     $('#list').datagrid({
         title : '活动配置',
