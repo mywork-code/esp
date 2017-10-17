@@ -200,6 +200,15 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         return getSqlSession().selectList("selectOrderByStatus", param);
     }
 
+
+    public  List<OrderInfoEntity> selectByStatusList(List<String> statusArray,String dateBegin,String dateEnd){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("statusArray", statusArray);
+        param.put("dateBegin", dateBegin);
+        param.put("dateEnd", dateEnd);
+        return getSqlSession().selectList("selectByStatusList", param);
+    }
+
     public  Integer  selectSumAmt(String dateBegin,String dateEnd){
         HashMap<Object, Object> param = new HashMap<>();
         param.put("dateBegin", dateBegin);

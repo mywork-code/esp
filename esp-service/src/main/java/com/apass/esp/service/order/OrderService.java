@@ -2916,4 +2916,8 @@ public class OrderService {
     public List<OrderInfoEntity> getchannelStatisticsOrders(String beginDate, String endDate){
     	return orderInfoRepository.getchannelStatisticsOrders(beginDate, endDate);
     }
+
+    public List<OrderInfoEntity> selectByStatusList(List<String> statusArray,String dateBegin,String dateEnd){
+        return orderInfoRepository.selectByStatusList(statusArray,dateBegin,dateEnd);
+    }
 }

@@ -341,7 +341,7 @@
 		]]>
 		<set>
 			is_delete = '01',
-			update_date = #{updateDate,jdbcType=TIMESTAMP}
+			update_date = CURRENT_TIMESTAMP
 		</set>
 	<![CDATA[
 		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
@@ -603,7 +603,7 @@
 	</select>
 	
 	<update id="updateOrderStatusAndPreDelivery" parameterType="OrderInfoEntity">
-		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR},update_date = #{updateDate,jdbcType=TIMESTAMP} WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR},update_date = CURRENT_TIMESTAMP WHERE order_id =  #{orderId, jdbcType=VARCHAR}
 	</update>
 
 
@@ -613,14 +613,14 @@
 
 	<select id="selectOrderCountByStatus" resultType="java.lang.Integer">
 		SELECT count(1) from t_esp_order_info
-		where  orderstatus =#{orderStatus}
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
 		and create_date &gt;= #{dateBegin}
         and create_date &lt; #{dateEnd}
 	</select>
 
 	<select id="selectOrderAmtByStatus" resultType="java.lang.Double">
 		SELECT sum(order_amt) from t_esp_order_info
-		where  orderstatus =#{orderStatus}
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
@@ -642,10 +642,41 @@
             last_acceptgoodsdate		lastAcceptGoodsDate,
             acceptgoodsdate			acceptGoodsDate
 	    from t_esp_order_info
-		where  orderstatus =#{orderStatus}
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
+
+
+	<select id="selectByStatusList" resultType="OrderInfoEntity">
+		SELECT
+		id	id,
+		order_id orderId,
+		user_id userId,
+		payType payType,
+		pay_time payTime,
+		order_amt orderAmt,
+		paystatus payStatus,
+		orderstatus status,
+		logistics_name logisticsName,
+		logistics_no logisticsNo,
+		acceptgoodstype		 acceptGoodsType,
+		extend_acceptgoodsNum  extendAcceptGoodsNum,
+		send_outgoodsdate      sendOutGoodsDate,
+		last_acceptgoodsdate		lastAcceptGoodsDate,
+		acceptgoodsdate			acceptGoodsDate
+		from t_esp_order_info
+		where  ext_parent_id!='-1'
+			AND orderstatus in
+			<foreach collection="statusArray" item="item" open="("
+					 separator="," close=")">
+				#{item}
+			</foreach>
+
+		<![CDATA[ and create_date >= #{dateBegin}]]>
+		<![CDATA[ and create_date < #{dateEnd}]]>
+	</select>
+
 
 	<select id="selectSumAmt" resultType="java.lang.Integer">
 		select sum(txn_amt) from t_apass_txn_info where txn_type in ('T01','T05') and status =  'S' and create_date  &gt;= #{dateBegin} and  create_date &lt; #{dateEnd}
@@ -733,7 +764,7 @@
 		update
 		t_esp_order_info 
 		<set>
-		  update_date = #{updateTime},
+		  update_date = CURRENT_TIMESTAMP,
 		 <if test="preStockStatus != null and preStockStatus != ''">
 		 	pre_stock_status = #{preStockStatus},
 		 </if>
@@ -828,7 +859,7 @@
 			t_esp_order_info
 		where
 		source = 'jd'
-		and orderstatus=#{orderStatus}
+		and orderstatus=#{orderStatus} and ext_parent_id!='-1'
 	</select>
 	
 	<select id="getConfirmOrderCount" resultType="java.lang.Integer">
