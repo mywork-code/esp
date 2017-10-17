@@ -106,12 +106,13 @@
 	<select id="getProGroupGoodsListPageCount" parameterType="com.apass.esp.domain.query.ProGroupGoodsQuery"
 		resultType="java.lang.Integer">
 				SELECT  count(*)
-				FROM
-						t_esp_pro_group_goods   a
-			LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
-			LEFT JOIN   t_esp_goods_stock_info  c ON c.goods_id =b.id
-			LEFT JOIN   t_esp_category          d ON b.category_id3 =d.id
-		<include refid="QueryConditionSql" />
+					FROM
+					t_esp_pro_group_goods   a
+					LEFT JOIN 	t_esp_goods_base_info   b ON a.goods_id = b.id
+					LEFT JOIN   t_esp_goods_stock_info  c ON c.goods_id =b.id
+					LEFT JOIN   t_esp_category          d ON b.category_id3 =d.id
+					LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
+				<include refid="QueryConditionSql" />
 	</select>
     <!-- 查询条件 -->
 	<sql id="QueryConditionSql">
