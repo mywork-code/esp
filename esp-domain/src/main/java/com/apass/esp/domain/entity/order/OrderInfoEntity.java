@@ -1,11 +1,10 @@
 package com.apass.esp.domain.entity.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.apass.gfb.framework.annotation.MyBatisEntity;
 import org.apache.commons.lang3.StringUtils;
 
-import com.apass.gfb.framework.annotation.MyBatisEntity;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 商品订单实体
@@ -34,6 +33,8 @@ public class OrderInfoEntity {
      * 支付状态
      */
     private String payStatus;
+
+    private Date payTime;
 
     /**
      * 订单编号
@@ -518,6 +519,12 @@ public class OrderInfoEntity {
     public void setExtParentId(String extParentId) {
         this.extParentId = extParentId;
     }
-    
- 
+
+    public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
+    }
 }
