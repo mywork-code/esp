@@ -107,7 +107,7 @@
           tx.orig_txn_id   origTxnId,
           tx.orig_trans_date origTransDate,
           tx.loan_id  loanId,
-          tx.status status,
+          tx.status status
       from t_apass_txn_info tx join t_esp_order_info ord on tx.order_id = ord.main_order_id
         where  ord.ext_parent_id!='-1'
         AND ord.orderstatus in
