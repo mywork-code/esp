@@ -2,6 +2,7 @@ package com.apass.esp.sap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,8 +60,8 @@ public class SAPService {
   ){
     try {
       generatePaymentOrFullPaymentCsv();
-      FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH));
-      FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.CAIWUPINGZHENG_FILE_NAME,in);
+      FileInputStream in = new FileInputStream(new File(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH));
+      FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME,in);
     } catch (Exception e) {
       LOG.error("ftp caiwupingzheng csv error",e);
     }
@@ -76,27 +77,27 @@ public class SAPService {
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH,',', Charset.forName("UTF-8"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH,',', Charset.forName("gbk"));
       //第一行空着
       csvWriter.writeRecord(new String[]{});
       //表头
-      String[] headers = {"GUID","ZYWH","ZTYPE","ZSTATUS","ERDAT","ERZET","ZSJLY","ITEM","WRBTR","ZZHH","ZZHH_COMP",
-              "ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
+      String[] headers = {"GUID","ZYWH","ZTYPE","ZSTATUS","ERDAT","ERZET","ITEM","WRBTR","ZZHH","ZZHH_COMP",
+              "ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
       csvWriter.writeRecord(headers);
+      int rowNum = 1;//行号
       for(TxnOrderInfo txn : txnList){
-        int rowNum = 1;
         if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
           continue;
         }
         List<String> contentList = new ArrayList();
-        contentList.add(txn.getTxnId() + "'");
+        contentList.add(txn.getTxnId().toString());
         contentList.add("");
         contentList.add("收款");
         contentList.add("S".equals(txn.getStatus())?"成功":"失败");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         contentList.add(String.valueOf(rowNum));
-        contentList.add(txn.getTxnAmt().toString());
+        contentList.add(txn.getTxnAmt().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
         if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
           || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
             //银联
@@ -127,9 +128,9 @@ public class SAPService {
           contentList.add(apassTxnAttr.getTxnId());
           contentList.add("支付宝");
         }
-
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+        rowNum = rowNum+1;
         //TODO:退款流水
-        csvWriter.writeRecord((String[]) contentList.toArray());
       }
       csvWriter.close();
 
@@ -189,7 +190,7 @@ public class SAPService {
           contentList.add("97990155300001887");
         }
         contentList.add("6008");
-        csvWriter.writeRecord((String[]) contentList.toArray());
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
       csvWriter.close();
 
