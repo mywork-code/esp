@@ -308,6 +308,46 @@ public class GoodsService {
   }
 
   /**
+   * 验证商品是否可售
+   * @param goodId
+   * @return
+   */
+  public boolean validateGoodOnShelf(Long goodId){
+	  GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodId);
+	  Date now = new Date();//获取当前时间
+	  if(null == goodsBasicInfo){
+		  return false;
+	  }
+	  
+	  if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+	        || !StringUtils.equals(goodsBasicInfo.getStatus(), GoodStatus.GOOD_UP.getCode())) {
+	      //下架
+	     return false;
+	  }
+	     
+	  if(StringUtils.isEmpty(goodsBasicInfo.getSource())){
+		  List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodId);
+		     for (GoodsStockInfoEntity goodsStock : goodsList) {
+		         if (goodsStock.getStockCurrAmt() > 0 ) {
+		           return true;
+		         }
+	         }
+	  }else{
+		  String externalId = goodsBasicInfo.getExternalId();// 外部商品id
+	      List<SkuNum> skuNumList=new ArrayList<>();
+	      SkuNum skuNum=new SkuNum();
+	      skuNum.setNum(1);
+	      skuNum.setSkuId(Long.parseLong(externalId));
+	      skuNumList.add(skuNum);
+	      //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+	      if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+	      	 return false;//商品下架
+	      }
+	  }
+	  return true;
+  }
+  
+  /**
    * 获取商品基本信息
    *
    * @param goodsId
