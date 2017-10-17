@@ -10,6 +10,8 @@ public class GroupManagerVo {
     private Long goodsSum;
 
     private Long activityId;
+    
+    private String activityName;
 
     private Long orderSort;
     
@@ -61,6 +63,14 @@ public class GroupManagerVo {
 
 	public void setGoodsList(List<GroupGoodsVo> goodsList) {
 		this.goodsList = goodsList;
+	}
+
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
 	}
     
 }

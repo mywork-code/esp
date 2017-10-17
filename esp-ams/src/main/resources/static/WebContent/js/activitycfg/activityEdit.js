@@ -192,6 +192,122 @@ $(function () {
             })
         }
     });
+    
+    
+    $('#goodsList').datagrid({
+        title: '编辑商品',
+        fit: true,
+        fitColumns: true,
+        rownumbers: true,
+        pagination: true,
+        singleSelect: true,
+        toolbar: '#goodsListtb',
+        striped: true,
+        nowrap: false,
+        rowStyler: function (rowIndex, rowData) {
+            if (rowData.colFalgt == '1') {
+                return 'background-color:#6293BB;';
+            }
+        },
+        columns: [[
+        {
+            title: '商品编号',
+            field: 'goodsCode',
+            width: 150,
+            align: 'center'
+        }, {
+            title: 'skuid',
+            field: 'skuId',
+            width: 150,
+            align: 'center'
+        }, {
+            title: '商品名称',
+            field: 'goodsName',
+            width: 120,
+            align: 'center',
+            formatter: function (value, row, index) {
+                if (null == value || "null" == value)
+                    value = "";
+                var msg = value + "";
+                return "<div  title='" + value + "'>" + value + "</div>";
+            }
+        },
+            {
+                title: '商品状态',
+                field: 'goodsStatus',
+                width: 120,
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (value == 'G00') {
+                        return "待上架";
+                    } else if (value == 'G01') {
+                        return "待审核";
+                    } else if (value == 'G02') {
+                        return "已上架";
+                    } else if (value == 'G03') {
+                        return "已下架";
+                    } else if (value == 'G04') {
+                        return "待审核";
+                    }
+                }
+            }, {
+                title: '商品类目（三级）',
+                field: 'goodsCategory',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '成本价',
+                field: 'goodsCostPrice',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '售价',
+                field: 'goodsPrice',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '市场价',
+                field: 'marketPrice',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '活动价',
+                field: 'activityPrice',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '分组',
+                field: 'groupName',
+                width: 120,
+                align: 'center'
+            }, {
+                title: '操作',
+                field: 'opt',
+                width: 120,
+                align: 'center',
+                formatter: function (value, row, index) {
+                    var content = "";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
+                    content += " onclick='$.optEdit(\"" + encodeURI(JSON.stringify(row)) + "\",\"" + index + "\");'>操作</a>&nbsp;";
+                    return content;
+                }
+            }]],
+        loader: function (param, success, error) {
+            $.ajax({
+                url: ctx + '/application/activity/list',
+                data: param,
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    $.validateResponse(data, function () {
+                        success(data);
+                    });
+                }
+            })
+        }
+    });
+    
 
     $("#createGroup").click(function () {
         $("#groupNameAdd").textbox('clear');
@@ -380,126 +496,13 @@ $(function () {
         $("#sordGroupEdit").textbox("setValue", orderSort);
         $("#goodsList").empty();
 
-        $('#goodsList').datagrid({
-            title: '编辑商品',
-            fit: true,
-            fitColumns: true,
-            rownumbers: true,
-            // pagination: true,
-            singleSelect: true,
-            // toolbar: '#tb2',
-            striped: true,
-            nowrap: false,
-            rowStyler: function (rowIndex, rowData) {
-                if (rowData.colFalgt == '1') {
-                    return 'background-color:#6293BB;';
-                }
-            },
-            columns: [[
-            {
-                title: '商品编号',
-                field: 'goodsCode',
-                width: 150,
-                align: 'center'
-            }, {
-                title: 'skuid',
-                field: 'skuId',
-                width: 150,
-                align: 'center'
-            }, {
-                title: '商品名称',
-                field: 'goodsName',
-                width: 120,
-                align: 'center',
-                formatter: function (value, row, index) {
-                    if (null == value || "null" == value)
-                        value = "";
-                    var msg = value + "";
-                    return "<div  title='" + value + "'>" + value + "</div>";
-                }
-            },
-                {
-                    title: '商品状态',
-                    field: 'goodsStatus',
-                    width: 120,
-                    align: 'center',
-                    formatter: function (value, row, index) {
-                        if (value == 'G00') {
-                            return "待上架";
-                        } else if (value == 'G01') {
-                            return "待审核";
-                        } else if (value == 'G02') {
-                            return "已上架";
-                        } else if (value == 'G03') {
-                            return "已下架";
-                        } else if (value == 'G04') {
-                            return "待审核";
-                        }
-                    }
-                }, {
-                    title: '商品类目（三级）',
-                    field: 'goodsCategory',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '成本价',
-                    field: 'goodsCostPrice',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '售价',
-                    field: 'goodsPrice',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '市场价',
-                    field: 'marketPrice',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '活动价',
-                    field: 'activityPrice',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '分组',
-                    field: 'groupName',
-                    width: 120,
-                    align: 'center'
-                }, {
-                    title: '操作',
-                    field: 'opt',
-                    width: 120,
-                    align: 'center',
-                    formatter: function (value, row, index) {
-                        var content = "";
-                        content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
-                        content += " onclick='$.optEdit(\"" + encodeURI(JSON.stringify(row)) + "\",\"" + index + "\");'>操作</a>&nbsp;";
-                        return content;
-                    }
-                }]],
-            queryParams: {"groupId": id},
-            loader: function (param, success, error) {
-                $.ajax({
-                    url: ctx + '/application/activity/list',
-                    data: param,
-                    type: "post",
-                    dataType: "json",
-                    success: function (data) {
-                        console.log(data);
-                        $.validateResponse(data, function () {
-                            success(data);
-                        });
-                    }
-                })
-            }
-        });
-
+        //此时应该填充分组编辑页面的商品列表
+        $('#goodsList').datagrid('load',{"groupId": id});
 
         $("#editGroupDiv").dialog({
             modal: true,
             title: "<span style='color: black'>编辑</span>",
-            resizable: true,
+            resizable: false,
             width: 800,
             buttons: [{
                 text: "确定",

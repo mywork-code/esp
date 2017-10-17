@@ -100,6 +100,7 @@
 				t.un_support_province unSupportProvince,
 				t.source source,
 				t.external_id externalId,
+				t.support_7d_refund support7dRefund,
 				t.newCreat_date   newCreatDate
 			FROM
 				t_esp_goods_base_info t
@@ -547,6 +548,9 @@
 			</if>
 			<if test="newCreatDate != null">
 				newCreat_date = #{newCreatDate, jdbcType=VARCHAR},
+			</if>
+			<if test="support7dRefund != null">
+				support_7d_refund = #{support7dRefund, jdbcType=VARCHAR},
 			</if>
 			<if test="attrDesc != null and attrDesc != ''">
 				attr_desc = #{attrDesc, jdbcType=VARCHAR},

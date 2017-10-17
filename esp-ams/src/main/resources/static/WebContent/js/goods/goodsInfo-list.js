@@ -14,6 +14,7 @@
 	// 新增库存共用 id
 	var finalGoodId;
 	var externalsource;
+	var support7dRefundFinal;
 	
 	//添加商品--是否已经保存商品信息
 	var ifSaveGoodsFlag = false;
@@ -763,11 +764,13 @@ $(function() {
 	 * 编辑
 	 */
 	$.editGoods = function(index) {//编缉初始化
+		debugger;
 		$('#editGoodsInfo').window('open');
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
 		externalsource = rowData.source;
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
+		support7dRefundFinal = rowData.support7dRefund;
 		$("#editGoodsId").val(rowData.id);
 		//防止数据库中商品新建时间为空
 		if(null==rowData.newCreatDate || ''==rowData.newCreatDate){
@@ -901,6 +904,7 @@ $(function() {
 	
 	 //编辑 -- 保存商品信息
 	$("#editgoodsAddinfo").click(function() {
+		debugger;
 		var id=$("#editid").val(),
 		editNewCreatDate=$("#editNewCreatDate").val(),
 		goodsModel=$("#editgoodsModel").textbox('getValue'),
@@ -1002,6 +1006,7 @@ $(function() {
 		formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
 		formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
 		formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
+		formObj.append("<input type='text' name='support7dRefund' value='"+editSupport7dRefund+"'/>");
 		formObj.css('display','none').appendTo("body");
 		formObj.form("submit",{ 
 			url : ctx + '/application/goods/management/edit',
@@ -2272,7 +2277,6 @@ function initGoodsInfo(){
 
 //编辑商品初始化商品信息
 function initEditGoodsInfo(row){
-	debugger;
 	var unSupportPrivinces = row.unSupportProvince;//省份汉字
 	var unSupportPrivincesCodes;//省份编码 
 	$.ajax({
@@ -2326,6 +2330,7 @@ function initEditGoodsInfo(row){
 			});
 			
 			if(externalsource == 'jd'){
+				debugger;
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
@@ -2337,7 +2342,9 @@ function initEditGoodsInfo(row){
 				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').attr("disabled","disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
+				// $("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
+				debugger;
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
 				$("#editgoodsSkuType").combobox('enable');
 				$("#editUnSupportProvince").combobox('enable');
@@ -2347,8 +2354,17 @@ function initEditGoodsInfo(row){
 				$("#editkeepDate").next("span").children(".textbox-addon-right").children("a").removeClass("textbox-icon-disabled");
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
+
 			}
-			
+
+			if(support7dRefundFinal != null && support7dRefundFinal != ""){
+				$("input[type=radio][name=editSupport7dRefund]").each(function() {
+					if ($(this).val() == support7dRefundFinal) {
+						$(this).attr("checked", "checked");
+					}
+				});
+			}
+
 			$("#editid").val(row.id);
 			$("#editLogogoodsId").val(row.id);
 			
@@ -2378,6 +2394,7 @@ function initEditGoodsInfo(row){
 			$("#editsupNo").textbox('setValue',row.supNo);
 			$("#editkeepDate").textbox('setValue',row.keepDate);
 			$("#editsordNo").numberbox('setValue',row.sordNo);
+			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			
 		}
 	});
