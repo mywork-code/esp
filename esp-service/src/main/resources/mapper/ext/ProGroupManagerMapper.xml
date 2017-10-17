@@ -36,7 +36,7 @@
        from t_esp_pro_group_manager 
         <include refid="QueryGroupSql" />
         <![CDATA[
-        order by order_sort
+        order by order_sort,update_date desc
         ]]>
         <if test="startRecordIndex != null">
           <include refid="PAGINATION.MYSQL_PAGINATION" />
