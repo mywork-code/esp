@@ -109,8 +109,7 @@
           tx.loan_id  loanId,
           tx.status status,
           tx.CREATED_DATE createDate
-      from t_apass_txn_info tx 
-      left join t_esp_order_info ord on tx.order_id = ord.main_order_id
+      from t_apass_txn_info tx join t_esp_order_info ord on tx.order_id = ord.main_order_id
         where  ord.ext_parent_id!='-1'
         AND ord.orderstatus in
         <foreach collection="statusArray" item="item" open="("
