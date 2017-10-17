@@ -1,17 +1,4 @@
 package com.apass.esp.sap;
-
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.FTPUtils;
-import com.csvreader.CsvWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,16 +8,28 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+import com.csvreader.CsvWriter;
 /**
  * Created by jie.xu on 17/10/16.
  */
 @Service
 public class SAPService {
-  private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
-
-  @Autowired
-  private TxnInfoService txnInfoService;
-
+	public static final String ZPTMC = "中原项目组（安家趣花）";
+	public static final String HH_MM_SS = "HH:mm:ss";
+	private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
+  	@Autowired
+  	private TxnInfoService txnInfoService;
   /**
    *
    */
@@ -67,7 +66,7 @@ public class SAPService {
         if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
           continue;
         }
-        List<String> contentList = new ArrayList();
+        List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId() + "'");
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),DateFormatUtil.YYYY_MM_DD));
         contentList.add("2");
@@ -80,7 +79,7 @@ public class SAPService {
           contentList.add("N");
         }
         contentList.add("1");
-        contentList.add("中原项目组（安家趣花）");
+        contentList.add(ZPTMC);
         contentList.add(SAPConstants.PLATFORM_CODE);
         contentList.add(txn.getMainOrderId());
         if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -97,9 +96,6 @@ public class SAPService {
           contentList.add("97990155300001887");
         }
         contentList.add("6008");
-
-        //TODO:退款流水
-
         csvWriter.writeRecord((String[]) contentList.toArray());
       }
       csvWriter.close();
@@ -107,19 +103,66 @@ public class SAPService {
     }catch (Exception e){
       LOG.error("generateCaiWuPingZhengCsv error...",e);
     }
-
-
-
   }
-
-  private String getDateBegin(){
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.DATE,-1);
-    return DateFormatUtil.dateToString(cal.getTime(),DateFormatUtil.YYYY_MM_DD);
-  }
-
-  private String getDateEnd(){
-    return DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
-  }
-
+	public void transVBSBusinessNumCvs(String ip, int port, String username,String password, String path){
+		transVBSBusinessNumCvs();
+		try {
+			FileInputStream in = new FileInputStream(new File(SAPConstants.VBSBUSINESS_FILE_PATH));
+			FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.VBSBUSINESS_FILE_NAME,in);
+		} catch (FileNotFoundException e) {
+			LOG.error("caiwupingzheng csv file notfound",e);
+		}
+	}
+  	/**
+	 * 对接VBS业务号（跑批）
+	 */
+	private void transVBSBusinessNumCvs(){
+		List<String> orderStatusList = new ArrayList<>();
+	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+	    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+	    try{
+	    	CsvWriter csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+	        //第一列空
+	        csvWriter.writeRecord(new String[]{});
+	        //必选表头
+	        String[] headers = {"GUID","ZPTMC","ZPTBM","ZLSH_DD","ZYWH_VBS","ERDAT","ERZET"};
+	        csvWriter.writeRecord(headers);
+	        for(TxnOrderInfo txn : txnList){
+	        	if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+	        		continue;
+	        	}
+	        	List<String> contentList = new ArrayList<String>();
+	        	/*GUID*/
+	        	contentList.add(txn.getTxnId() + "'");
+	        	/*ZPTMC*/
+	        	contentList.add(ZPTMC);
+	        	/*ZPTBM*/
+	            contentList.add(SAPConstants.PLATFORM_CODE);
+	            /*ZLSH_DD*/
+	            contentList.add(txn.getMainOrderId());
+	            /*ZYWH_VBS*/
+	            contentList.add(txn.getOrderId());
+	            String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
+	            String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(),HH_MM_SS);
+	            /*ERDAT*/
+	            contentList.add(createdDate);
+	            /*ERZET*/
+	            contentList.add(createdtime);
+	            /*可选表头UNAME,ZSJLY*/
+	            /*write*/
+	            csvWriter.writeRecord((String[]) contentList.toArray());
+	        }
+	        csvWriter.close();
+	    }catch (Exception e){
+	        LOG.error("generateCaiWuPingZhengCsv error...",e);
+	    }
+	}
+	private String getDateBegin(){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		return DateFormatUtil.dateToString(cal.getTime(),DateFormatUtil.YYYY_MM_DD);
+	}
+	private String getDateEnd(){
+		return DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
+	}
 }

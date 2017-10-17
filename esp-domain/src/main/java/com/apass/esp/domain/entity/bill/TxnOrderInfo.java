@@ -7,6 +7,10 @@ import java.util.Date;
  * Created by jie.xu on 17/10/16.
  */
 public class TxnOrderInfo {
+	/**
+	 * 系统创建日期时间
+	 */
+	private Date createDate;
   /**
    * 交易流水号(自增主键)
    */
@@ -190,4 +194,11 @@ public class TxnOrderInfo {
   public void setPayTime(Date payTime) {
     this.payTime = payTime;
   }
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 }
