@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.entity.ApassTxnAttr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,7 @@ public class SAPService {
               "ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
       csvWriter.writeRecord(headers);
       for(TxnOrderInfo txn : txnList){
+        int rowNum = 1;
         if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
           continue;
         }
@@ -92,33 +94,39 @@ public class SAPService {
         contentList.add("收款");
         contentList.add("S".equals(txn.getStatus())?"成功":"失败");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
-        contentList.add("2");
-        contentList.add("3");
-        if(txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-                || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
-
-          contentList.add("Y");
-        }else{
-          contentList.add("N");
-        }
-        contentList.add("1");
-        contentList.add("中原项目组（安家趣花）");
-        contentList.add(SAPConstants.PLATFORM_CODE);
-        contentList.add(txn.getMainOrderId());
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        contentList.add(String.valueOf(rowNum));
+        contentList.add(txn.getTxnAmt().toString());
         if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
-                || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
-          //银联
-          contentList.add("");
-          contentList.add("6008");
-          contentList.add("97990155300001887");
+          || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+            //银联
+            contentList.add("");
+            contentList.add("6008");
+            contentList.add("97990155300001887");
         }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
-                ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
-          //支付宝
-          contentList.add("cm2017082910000147");
-          contentList.add("6008");
-          contentList.add("97990155300001887");
+          ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+            //支付宝
+            contentList.add("cm2017082910000147");
+            contentList.add("6008");
+            contentList.add("97990155300001887");
         }
-        contentList.add("6008");
+        contentList.add(txn.getMainOrderId());
+        contentList.add(txn.getMainOrderId());
+
+
+        if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+              || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+          //银联
+          contentList.add(txn.getOrigTxnId());
+          contentList.add("银联");
+
+        }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+              ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+          //支付宝
+          ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
+          contentList.add(apassTxnAttr.getTxnId());
+          contentList.add("支付宝");
+        }
 
         //TODO:退款流水
         csvWriter.writeRecord((String[]) contentList.toArray());
@@ -126,7 +134,7 @@ public class SAPService {
       csvWriter.close();
 
     }catch (Exception e){
-      LOG.error("generateCaiWuPingZhengCsv error...",e);
+      LOG.error("generatePaymentOrFullPaymentCsv error...",e);
     }
   }
 

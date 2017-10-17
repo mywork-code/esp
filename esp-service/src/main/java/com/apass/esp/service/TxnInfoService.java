@@ -1,10 +1,12 @@
 package com.apass.esp.service;
 
+import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.service.refund.CashRefundService;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,6 +27,9 @@ public class TxnInfoService {
 
   @Autowired
   private CashRefundService cashRefundService;
+
+  @Autowired
+  private ApassTxnAttrMapper apassTxnAttrMapper;
 
   /**
    * 判断用户某笔订单是否进行了未出账主动还款
@@ -71,4 +76,7 @@ public class TxnInfoService {
     return txnInfoMapper.selectByOrderStatusList(orderStatusArray,dateBegin,dateEnd);
   }
 
+  public ApassTxnAttr getApassTxnAttrByTxnId(Long txnId) {
+    return apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
+  }
 }
