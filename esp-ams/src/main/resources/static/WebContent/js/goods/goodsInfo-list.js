@@ -829,8 +829,8 @@ $(function() {
 			$("#editUpLoadGoodsPicture").css('display','none');
 			$("#editGoodsStock").css('display','none');
 
-			$("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
-			$("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
+			// $("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
+			// $("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
 		}
 		
     	
@@ -844,7 +844,6 @@ $(function() {
 			url : ctx + '/application/goods/management/loalEditor',
 			data : params,
 			success : function(data) {
-				debugger;
 				UE.getEditor('editEditor').execCommand('inserthtml', data);//加载编辑器
 			}
 		});
@@ -2406,7 +2405,7 @@ function initEditGoodsInfo(row){
 			$("#editsupNo").textbox('setValue',row.supNo);
 			$("#editkeepDate").textbox('setValue',row.keepDate);
 			$("#editsordNo").numberbox('setValue',row.sordNo);
-			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
+			// $("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			
 		}
 	});
