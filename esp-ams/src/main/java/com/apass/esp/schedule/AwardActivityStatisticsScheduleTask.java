@@ -53,9 +53,9 @@ public class AwardActivityStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 	
-	@Scheduled(cron = "0 0/60 * * * ?")
+	@Scheduled(cron = "0 0 11 * * ?")
 	public void awardActivityStatistics(){
-		List<ActivityStatisticsVo> chanelStatistisList=chanelStatistisList();
+		List<ActivityStatisticsVo> chanelStatistisList=awardActivityStatisticsList();
 		String fileName = "转介绍奖励金额统计";
 		String[] rowHeadArr = {"统计日期","推荐人总数", "拉新总数", "总奖励金额", "已返现金额", "可返现金额"};
         String[] headKeyArr = {"des","refereeNums", "newNums", "awardAmount", "backAwardAmount", "haveAwardAmount"};
@@ -68,7 +68,7 @@ public class AwardActivityStatisticsScheduleTask {
 		model.sendMail(sendToAddress, copyToAddress, fileName);
 	}
 	
-	public List<ActivityStatisticsVo> chanelStatistisList(){
+	public List<ActivityStatisticsVo> awardActivityStatisticsList(){
 		List<ActivityStatisticsVo> list=new ArrayList<>();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
 		//获取当月第一天

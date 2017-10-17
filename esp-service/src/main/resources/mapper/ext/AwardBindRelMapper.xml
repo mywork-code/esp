@@ -150,4 +150,16 @@
 				GROUP BY
 					invite_user_id) a
 	</select>
+	<!-- 查询某段时间内某活动下的推荐人及推荐人拉新人数 -->
+	<select id="getUserIdListByActivityId" resultType="com.apass.esp.domain.vo.ActivityDetailStatisticsVo"
+		parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
+		SELECT
+			user_id userId,
+			COUNT(invite_user_id) newNums
+		FROM
+			t_esp_award_bind_rel
+		<include refid="queryCriteria" />
+		GROUP BY
+			user_id
+	</select>
 </mapper>
