@@ -55,6 +55,10 @@ $(function(){
 				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应小于结束时间，请重新填写！",'info');
 				return false;
 			}
+			if(endTime < new Date().Format("yyyy-MM-dd hh:mm:ss")){
+    			$.messager.alert("<span style='color: black;'>提示</span>","结束时间填写错误，请重新填写！",'info');
+    			return false;
+    		}
 		}
 		var activityType = $("#activityType").combobox('getValue');
 		if(activityType == '' || null == activityType){

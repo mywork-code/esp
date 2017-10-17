@@ -101,10 +101,10 @@ public class GroupManagerController {
 	public void validateParams(GroupManagerVo vo) throws BusinessException{
 		ValidateUtils.isNotBlank(vo.getGroupName(), "分组名称不能为空!");
 		if(!ListeningRegExpUtils.isChineseOrLetterOrMath(vo.getGroupName())){
- 			throw new BusinessException("分组名称格式不正确，只能输入汉字、字母和数字,请重新输入!");
+ 			throw new BusinessException("分组名称格式不正确，只能输入汉字、字母和数字,请重新填写!");
  		}
  		if (!ListeningRegExpUtils.lengthValue(vo.getGroupName(), 1, 12)) {
-            throw new BusinessException("分组名称格式不正确，最多只能输入6个汉字,请重新输入!");
+            throw new BusinessException("分组名称填写错误,请重新填写!");
         }
  		ValidateUtils.isNullObject(vo.getOrderSort(), "显示顺序不能为空!");
 	}
