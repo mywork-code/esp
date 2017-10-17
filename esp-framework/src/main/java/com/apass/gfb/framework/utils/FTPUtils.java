@@ -21,14 +21,14 @@ public class FTPUtils {
   /**
    * 文件上传
    */
-  public static void uploadFile(String url, int port, String username,
+  public static void uploadFile(String ip, int port, String username,
                                 String password, String path, String filename,
                                 InputStream input) {
 
     FTPClient ftp = new FTPClient();
     try {
       int reply;
-      ftp.connect(url, port);//连接FTP服务器
+      ftp.connect(ip, port);//连接FTP服务器
       ftp.login(username, password);//登录
       reply = ftp.getReplyCode();
       if (!FTPReply.isPositiveCompletion(reply)) {
