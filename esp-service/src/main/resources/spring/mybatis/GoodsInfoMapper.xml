@@ -548,6 +548,9 @@
 			<if test="newCreatDate != null">
 				newCreat_date = #{newCreatDate, jdbcType=VARCHAR},
 			</if>
+			<if test="support7dRefund != null">
+				support_7d_refund = #{support7dRefund, jdbcType=VARCHAR},
+			</if>
 			<if test="attrDesc != null and attrDesc != ''">
 				attr_desc = #{attrDesc, jdbcType=VARCHAR},
 			</if>
