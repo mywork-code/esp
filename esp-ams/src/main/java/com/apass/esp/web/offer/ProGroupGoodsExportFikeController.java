@@ -258,8 +258,11 @@ public class ProGroupGoodsExportFikeController {
 					Boolean activityPriceFalge=activityPrice.compareTo(zero)>0;
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if (null != gbity && null != marketPrice && marketPriceFalge && null != activityPrice && activityPriceFalge && countSuccess <= 200) {
+					GoodsBasicInfoEntity gbity=new GoodsBasicInfoEntity();
+					if(null !=id){
+						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+					}
+					if (null !=id && null != gbity && null != marketPrice && marketPriceFalge && null != activityPrice && activityPriceFalge && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());		
 						if (result) {//允许导入
