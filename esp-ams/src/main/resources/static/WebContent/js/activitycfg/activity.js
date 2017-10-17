@@ -45,8 +45,11 @@ $(function(){
 				align : 'center',
 				formatter : function(value, row, index) {
 					var content = "";
-                    content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroup('"
-                        + encodeURI(JSON.stringify(row)) +"');\">编辑</a>";
+					if(row.status != '已结束'){
+						content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroup('"
+	                        + encodeURI(JSON.stringify(row)) +"');\">编辑</a>";
+					}
+                    
 				 return content;
 			}}]],
         loader : function(param, success, error) {
