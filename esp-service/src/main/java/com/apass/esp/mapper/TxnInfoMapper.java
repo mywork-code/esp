@@ -3,6 +3,7 @@ package com.apass.esp.mapper;
 import java.util.Date;
 import java.util.List;
 
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import org.apache.ibatis.annotations.Param;
 
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
@@ -37,4 +38,8 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   void updateStatus(@Param("status") String status,@Param("orderId")String orderId,@Param("typeCode") String typeCode);
 
   TxnInfoEntity selectLatestTxnByUserId(@Param("userId") Long userId,@Param("txnType") String txnType);
+
+  List<TxnOrderInfo> selectByOrderStatusList(@Param("statusArray") List<String> statusArray,
+                                             @Param("dateBegin") String dateBegin,
+                                             @Param("dateEnd") String dateEnd);
 }

@@ -2,6 +2,7 @@ package com.apass.esp.service;
 
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.TxnInfoMapper;
@@ -62,6 +63,12 @@ public class TxnInfoService {
   public List<TxnInfoEntity> getByMainOrderId(String mainOrderId){
     List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(mainOrderId);
     return txnlinfoList;
+  }
+
+  public List<TxnOrderInfo> selectByOrderStatusList(List<String> orderStatusArray,
+                                             String dateBegin,
+                                              String dateEnd){
+    return txnInfoMapper.selectByOrderStatusList(orderStatusArray,dateBegin,dateEnd);
   }
 
 }

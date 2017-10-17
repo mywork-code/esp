@@ -91,4 +91,33 @@
         order by txn_id desc limit 1
     </select>
 
+    <select id ="selectByOrderStatusList" resultType="com.apass.esp.domain.entity.bill.TxnOrderInfo">
+      select
+          tx.txn_id txnId,
+          tx.order_id mainOrderId,
+          ord.order_id orderId,
+          ord.orderstatus orderStatus,
+          ord.pay_time  payTime,
+          tx.user_id userId,
+          tx.txn_type txnType,
+          tx.txn_date   txnDate,
+          tx.txn_amt   txnAmt,
+          tx.post_date   postDate,
+          tx.txn_desc  txnDesc,
+          tx.orig_txn_id   origTxnId,
+          tx.orig_trans_date origTransDate,
+          tx.loan_id  loanId,
+          tx.status status,
+          tx.CREATE_DATE createDate
+      from t_apass_txn_info tx join t_esp_order_info ord on tx.order_id = ord.main_order_id
+        where  ord.ext_parent_id!='-1'
+        AND ord.orderstatus in
+        <foreach collection="statusArray" item="item" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+
+        <![CDATA[ and ord.update_date >= #{dateBegin}]]>
+        <![CDATA[ and ord.update_date < #{dateEnd}]]>
+    </select>
 </mapper>
