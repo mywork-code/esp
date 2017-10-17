@@ -231,10 +231,10 @@ public class SAPService {
 	        	contentList.add(ZPTMC);
 	        	/*ZPTBM*/
 	            contentList.add(SAPConstants.PLATFORM_CODE);
-	            /*ZLSH_DD*/
-	            contentList.add(txn.getMainOrderId());
-	            /*ZYWH_VBS*/
+	            /*ZLSH_DD  子订单号*/
 	            contentList.add(txn.getOrderId());
+	            /*ZYWH_VBS*/
+	            contentList.add(txn.getLoanId().toString());
 	            String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
 	            String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(),HH_MM_SS);
 	            /*ERDAT*/
