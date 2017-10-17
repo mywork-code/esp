@@ -771,6 +771,26 @@ $(function() {
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		support7dRefundFinal = rowData.support7dRefund;
+
+		if(support7dRefundFinal == null || support7dRefundFinal == ''){
+			$.ajax({
+				type : "POST",
+				url : ctx + '/application/goods/management/getsupport7dRefund',
+				data : {'skuId':rowData.externalId},
+				success : function(data) {
+					debugger;
+					support7dRefundFinal = data.msg;
+					if(support7dRefundFinal != null && support7dRefundFinal != ""){
+						$("input[type=radio][name=editSupport7dRefund]").each(function() {
+							if ($(this).val() == support7dRefundFinal) {
+								$(this).attr("checked", "checked");
+							}
+						});
+					}
+				}
+			});
+		}
+
 		$("#editGoodsId").val(rowData.id);
 		//防止数据库中商品新建时间为空
 		if(null==rowData.newCreatDate || ''==rowData.newCreatDate){
@@ -2355,14 +2375,6 @@ function initEditGoodsInfo(row){
 				$("#editsupNo").textbox('textbox').removeAttr("disabled");
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
 
-			}
-
-			if(support7dRefundFinal != null && support7dRefundFinal != ""){
-				$("input[type=radio][name=editSupport7dRefund]").each(function() {
-					if ($(this).val() == support7dRefundFinal) {
-						$(this).attr("checked", "checked");
-					}
-				});
 			}
 
 			$("#editid").val(row.id);
