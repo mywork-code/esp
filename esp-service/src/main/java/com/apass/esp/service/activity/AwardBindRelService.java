@@ -76,4 +76,16 @@ public class AwardBindRelService {
 		query.setStartCreateDate(DateFormatUtil.dateToString(cal.getTime(),""));
 		return wihdrawBindRelMapper.getInviterUserCountByTime(query);
 	}
+	/**
+	 * 某段时间内某活动下的推荐人总数
+	 */
+	public  Integer refereeNums(ActivityBindRelStatisticQuery query){
+		return wihdrawBindRelMapper.refereeNums(query);
+	}
+	/**
+	 * 某段时间内某活动下的拉新人总数
+	 */
+	public  Integer newNums(ActivityBindRelStatisticQuery query){
+		return wihdrawBindRelMapper.newNums(query);
+	}
 }

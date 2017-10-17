@@ -73,4 +73,12 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
   Integer getInviterUserCountByTime(ActivityBindRelStatisticQuery query);
 
   List<AwardBindRel> selectByInviterUserId(@Param("userId") String userId);
+  /**
+   * 某段时间内某活动下的推荐人总数
+   */
+  Integer refereeNums(ActivityBindRelStatisticQuery query);   
+  /**
+   * 某段时间内某活动下的拉新总数
+   */
+  Integer newNums(ActivityBindRelStatisticQuery query); 
 }
