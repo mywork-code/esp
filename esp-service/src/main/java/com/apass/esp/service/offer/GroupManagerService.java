@@ -218,7 +218,7 @@ public class GroupManagerService {
 		List<ProGroupGoods> goodsList = groupGoodsMapper.selectGoodsByGroupId(id);
 		if(CollectionUtils.isNotEmpty(goodsList)){
 			logger.error("分组编号为{}下存在关联商品，不能删除!",id);
-			throw new BusinessException("该分组下存在关联的商品，不能删除!");
+			throw new BusinessException("请先将该分组下的商品删除后再次操作！");
 		}
 		return groupManagerMapper.deleteByPrimaryKey(id);
 	}
