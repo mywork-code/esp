@@ -83,7 +83,7 @@
         refundInfo.approval_user approvalUser,
         refundInfo.approval_comments approvalComments,
         detailInfo.goods_num goodsNum,
-        detailInfo.goods_price goodsPrice
+        refundInfo.refund_amt goodsPrice
         from  t_esp_refund_info  refundInfo  left join 
         t_esp_refund_detail_info detailInfo on detailInfo.order_id=refundInfo.order_id
 		]]>
