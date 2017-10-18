@@ -49,7 +49,19 @@ public class SAPService {
       LOG.error("ftp caiwupingzheng csv error",e);
     }
   }
-
+  /**
+   * 上传财务凭证调整明细
+   */
+  public void sendCaiWuPingZhengCsv2(String ip, int port, String username,
+                                    String password, String path ){
+    try {
+      generateCaiWuPingZhengCsv2();
+      FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH2));
+      FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.CAIWUPINGZHENG_FILE_NAME2,in);
+    } catch (Exception e) {
+      LOG.error("ftp caiwupingzheng csv error",e);
+    }
+  }
   /**
    * 首付款或全额（购买退货）流水
    * @param ip
@@ -373,4 +385,47 @@ public class SAPService {
 	private String getDateEnd(){
 		return DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
 	}
+	/**
+	   * 财务凭证调整明细
+	   */
+	  private void generateCaiWuPingZhengCsv2() throws Exception{
+	    List<String> orderStatusList = new ArrayList<>();
+	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+
+	    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+	    try{
+	      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2,',', Charset.forName("gbk"));
+	      //第一行空着
+	      csvWriter.writeRecord(new String[]{""});
+	      //表头
+	      String[] headers = {"GUID","P_GUID","ZPTLSH","ITEM","ZFYLX","WRBTR"};
+	      csvWriter.writeRecord(headers);
+	      int i = 0;
+	      for(TxnOrderInfo txn : txnList){
+	        ++i;
+	        if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+	          continue;
+	        }
+	        List<String> contentList = new ArrayList<String>();
+	        contentList.add(txn.getExtOrderId()+"");
+	        contentList.add(txn.getTxnId()+"");
+	        contentList.add(txn.getMainOrderId());
+	        contentList.add(i+"");
+	        if(txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+	            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+
+	          contentList.add("Z047");
+	        }else{
+	          contentList.add("Z044");
+	        }
+	          contentList.add(txn.getTxnAmt()+"");
+	        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+	      }
+
+	      csvWriter.close();
+
+	    }catch (Exception e){
+	      LOG.error("generateCaiWuPingZhengCsv2 error...",e);
+	    }
+	  }
 }
