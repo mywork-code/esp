@@ -1594,6 +1594,10 @@ public class OrderService {
                     goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
                 }
             }
+            //如果是京东的商品
+            if(StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
+            	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
             //单个商品的优惠价格
