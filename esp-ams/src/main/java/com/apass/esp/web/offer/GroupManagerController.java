@@ -106,6 +106,9 @@ public class GroupManagerController {
  		if (!ListeningRegExpUtils.lengthValue(vo.getGroupName(), 1, 12)) {
             throw new BusinessException("分组名称填写错误,请重新填写!");
         }
- 		ValidateUtils.isNullObject(vo.getOrderSort(), "显示顺序不能为空!");
+ 		ValidateUtils.isNullObject(vo.getOrderSort(), "分组排序不能为空!");
+ 		if(vo.getOrderSort() == 0){
+ 			throw new BusinessException("分组排序填写错误，请重新填写!");
+ 		}
 	}
 }
