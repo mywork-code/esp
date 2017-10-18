@@ -48,7 +48,7 @@ import java.util.*;
 public class ContractService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ContractService.class);
 	
-	private static final String CONTRACT_QUERYCASHSTAGESCONTRACT="/contract/queryCashStagesContract";
+	private static final String CONTRACT_QUERYCASHSTAGESCONTRACT="/contractInfoForEsp/queryCashStagesContract";
 	/**
      * 安家派服务地址
      */
