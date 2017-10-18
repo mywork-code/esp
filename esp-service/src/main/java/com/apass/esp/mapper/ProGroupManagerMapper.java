@@ -18,6 +18,11 @@ public interface ProGroupManagerMapper extends GenericMapper<ProGroupManager, Lo
 	
 	List<ProGroupManager> getGroupByActiIdAndGroupName(GroupQuery group);
 	
+	/**
+	 * 根据活动的id和分组的排序号，查询分组信息
+	 */
+	List<ProGroupManager> getGroupByActiIdAndOrderSort(GroupQuery group);
+	
 	List<ProGroupManager> getGroupByActIdListPage(GroupQuery group);
 	
 	Integer getGroupByActIdListPageCount(GroupQuery group);

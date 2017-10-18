@@ -137,13 +137,48 @@ public class GroupManagerService {
 	@Transactional(rollbackFor = { Exception.class})
 	public Integer saveGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,true,userName);
+		validateGroupName(vo, userName);
+		updateGroupOrderSort(vo, userName);
+		return groupManagerMapper.insertSelective(manager);
+	}
+
+	/**
+	 * 验证分组分组名称是否重复和更新分组的排序字段
+	 * @param vo
+	 * @param userName
+	 * @throws BusinessException
+	 */
+	public void validateGroupName(GroupManagerVo vo,String userName) throws BusinessException{
+		/**
+		 * 根据分组的名称查询，同一活动下是否存在相同的分组名称
+		 */
 		List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
 		if(CollectionUtils.isNotEmpty(groupList)){
 			throw new BusinessException("分组名称重复!");
 		}
-		return groupManagerMapper.insertSelective(manager);
 	}
-
+	
+	/**
+	 * 批量更新分组的排序字段
+	 * @param vo
+	 * @param userName
+	 */
+	@Transactional(rollbackFor = { Exception.class})
+	public void updateGroupOrderSort(GroupManagerVo vo,String userName){
+		/**
+		 * 首先根据活动的Id，查询出该活动下所有的分组信息
+		 */
+		List<ProGroupManager> groupSortList = groupManagerMapper.getGroupByActiIdAndOrderSort(new GroupQuery(vo.getActivityId(),vo.getId(),vo.getOrderSort()));
+		if(CollectionUtils.isNotEmpty(groupSortList)){
+			for (ProGroupManager group : groupSortList) {
+				group.setOrderSort(group.getOrderSort() +1);
+				group.setUpdateDate(new Date());
+				group.setUpdateUser(userName);
+				groupManagerMapper.updateByPrimaryKeySelective(group);
+			}
+		}
+	}
+	
 	/**
 	 * 创建分组
 	 * @param proGroupManager
@@ -166,11 +201,11 @@ public class GroupManagerService {
 	public Integer editGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,false,userName);
 		ProGroupManager exsit = groupManagerMapper.selectByPrimaryKey(vo.getId());
-		if(null != exsit && !StringUtils.equals(vo.getGroupName(), exsit.getGroupName())){
-			List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
-			if(CollectionUtils.isNotEmpty(groupList)){
-				throw new BusinessException("分组名称重复!");
-			}
+		if(!StringUtils.equals(vo.getGroupName(), exsit.getGroupName())){
+			validateGroupName(vo, userName);
+		}
+		if(vo.getOrderSort().longValue() != exsit.getOrderSort().longValue()){
+			updateGroupOrderSort(vo, userName);
 		}
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
 	}

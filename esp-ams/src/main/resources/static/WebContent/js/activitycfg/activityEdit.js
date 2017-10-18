@@ -514,7 +514,7 @@ $(function () {
                     $.ajax({
                         type: "POST",
                         url: ctx + '/group/manager/edit/save',
-                        data: {"groupName": groupName, "orderSort": orderSort, "id": id},
+                        data: {"groupName": groupName, "orderSort": orderSort, "id": id,"activityId":activityId},
                         success: function (data) {
                             ifLogout(data);
                             if (data.status == 1) {
