@@ -2,6 +2,7 @@ package com.apass.esp.service;
 
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.CashRefundStatus;
@@ -36,7 +37,7 @@ public class TxnInfoService {
    * true:是
    */
   public boolean isActiveRepayForConsumableCredit(Long userId, String mainOrderId) {
-
+      
     TxnInfoEntity txn = txnInfoMapper.selectLatestTxnByUserId(userId, TxnTypeCode.REPAY_CODE.getCode());
     if (txn == null) {
       return false;
@@ -79,4 +80,8 @@ public class TxnInfoService {
   public ApassTxnAttr getApassTxnAttrByTxnId(Long txnId) {
     return apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
   }
+
+    public List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd) {
+    	return txnInfoMapper.selectPurchaseOrderList(orderStatusList,dateBegin,dateEnd);
+    }
 }

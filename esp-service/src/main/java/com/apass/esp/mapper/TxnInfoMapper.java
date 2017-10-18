@@ -6,6 +6,7 @@ import java.util.List;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import org.apache.ibatis.annotations.Param;
 
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -42,4 +43,5 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   List<TxnOrderInfo> selectByOrderStatusList(@Param("statusArray") List<String> statusArray,
                                              @Param("dateBegin") String dateBegin,
                                              @Param("dateEnd") String dateEnd);
+    List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd);
 }

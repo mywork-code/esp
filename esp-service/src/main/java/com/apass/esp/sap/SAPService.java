@@ -2,6 +2,8 @@ package com.apass.esp.sap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
@@ -66,8 +69,83 @@ public class SAPService {
       LOG.error("ftp caiwupingzheng csv error",e);
     }
   }
+  	/**
+  	 * VBS业务号对应
+  	 * @param ip
+  	 * @param port
+  	 * @param username
+  	 * @param password
+  	 * @param path
+  	 */
+  	public void transVBSBusinessNumCvs(String ip, int port, String username,String password, String path){
+		InputStream fis = null;
+		try {
+			transVBSBusinessNumCvs();
+			fis = new FileInputStream(new File(SAPConstants.VBSBUSINESS_FILE_PATH));
+			FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.VBSBUSINESS_FILE_NAME,fis);
+		} catch (FileNotFoundException e) {
+			LOG.error("ftp VBSBusiness csv file notfound",e);
+		}finally {
+			try {
+				if(fis!=null)
+					fis.close();
+			} catch (IOException e) {
+				LOG.debug("IO Close error",e);
+			}
+		}
+	}
+  	/**
+  	 * 采购订单明细
+  	 * @param ip
+  	 * @param port
+  	 * @param username
+  	 * @param password
+  	 * @param path
+  	 */
+  	public void transPurchaseOrderCvs(String ip, int port, String username,String password, String path){
+		InputStream fis = null;
+		try {
+			transPurchaseOrderCvs();
+			fis = new FileInputStream(new File(SAPConstants.PURCHASEORDER_FILE_PATH));
+			FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.PURCHASEORDER_FILE_NAME,fis);
+		} catch (FileNotFoundException e) {
+			LOG.error("ftp PurchaseOrder csv file notfound",e);
+		}finally {
+			try {
+				if(fis!=null)
+					fis.close();
+			} catch (IOException e) {
+				LOG.debug("IO Close error",e);
+			}
+		}
+	}
+  	/**
+  	 * 采购订单（采购和退货）
+  	 * @param ip
+  	 * @param port
+  	 * @param username
+  	 * @param password
+  	 * @param path
+  	 */
+  	public void transPurchaseReturnSalesCvs(String ip, int port, String username,String password, String path){
+        InputStream fis = null;
+        try {
+            transPurchaseReturnSalesCvs();
+            fis = new FileInputStream(new File(SAPConstants.PURCHASERETURNSALES_FILE_PATH));
+            FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.PURCHASERETURNSALES_FILE_NAME,fis);
+        } catch (FileNotFoundException e) {
+            LOG.error("ftp PurchaseOrder csv file notfound",e);
+        }finally {
+            try {
+                if(fis!=null)
+                    fis.close();
+            } catch (IOException e) {
+                LOG.debug("IO Close error",e);
+            }
+        }
+    }
 
-  /**
+/**
    *首付款或全额（购买退货）流水
    */
   private void generatePaymentOrFullPaymentCsv() {
@@ -89,7 +167,7 @@ public class SAPService {
         if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
           continue;
         }
-        List<String> contentList = new ArrayList();
+        List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
         contentList.add("");
         contentList.add("收款");
@@ -130,7 +208,6 @@ public class SAPService {
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum+1;
-        //TODO:退款流水
       }
       csvWriter.close();
 
@@ -138,11 +215,6 @@ public class SAPService {
       LOG.error("generatePaymentOrFullPaymentCsv error...",e);
     }
   }
-
-
-  /**
-   * 财务凭证调整（首付款或全额）
-   */
   private void generateCaiWuPingZhengCsv() throws Exception{
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
@@ -198,24 +270,64 @@ public class SAPService {
       LOG.error("generateCaiWuPingZhengCsv error...",e);
     }
   }
-	public void transVBSBusinessNumCvs(String ip, int port, String username,String password, String path){
-		transVBSBusinessNumCvs();
-		try {
-			FileInputStream in = new FileInputStream(new File(SAPConstants.VBSBUSINESS_FILE_PATH));
-			FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.VBSBUSINESS_FILE_NAME,in);
-		} catch (FileNotFoundException e) {
-			LOG.error("caiwupingzheng csv file notfound",e);
+    private void transPurchaseReturnSalesCvs() {
+        CsvWriter csvWriter = null;
+        List<String> orderStatusList = new ArrayList<>();
+        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+        //List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatusList,getDateBegin(),getDateEnd());
+        try{
+            
+        }catch (Exception e) {
+            LOG.error("PurchaseReturnSalesCvs error...",e);
+        }finally {
+            if(csvWriter!=null)
+                csvWriter.close();
+        }
+    }
+  	private void transPurchaseOrderCvs() {
+  		CsvWriter csvWriter = null;
+		List<String> orderStatusList = new ArrayList<>();
+	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+	    List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatusList,getDateBegin(),getDateEnd());
+        try {
+        	csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+        	//第一列空
+			csvWriter.writeRecord(new String[]{});
+			csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+            //第一列空
+            csvWriter.writeRecord(new String[]{});
+            //必选表头
+            String[] headers = {"GUID","P_GUID","ZLSH_M","MATNR","MAKTX","NETPR","BSTME","KWMENG"};
+            csvWriter.writeRecord(headers);
+            Integer intnum = new Integer("1");
+            for(PurchaseOrderDetail txn : txnList){
+                List<String> contentList = new ArrayList<String>();
+                contentList.add(txn.getOrderInfoId() + "'");
+                contentList.add(txn.getOrderId());
+                contentList.add(intnum.toString());
+                contentList.add(txn.getGoodsCode());
+                contentList.add(txn.getGoodsName());
+                contentList.add(txn.getGoodsCostPrice().toString());
+                contentList.add(txn.getGoodsSkuAttr());
+                contentList.add(txn.getStockCurrAmt().toString());
+                /*write*/
+                csvWriter.writeRecord((String[]) contentList.toArray());
+                intnum++;
+            }
+		} catch (Exception e) {
+		    LOG.error("PurchaseOrderCvs error...",e);
+		}finally {
+			if(csvWriter!=null)
+				csvWriter.close();
 		}
 	}
-  	/**
-	 * 对接VBS业务号（跑批）
-	 */
 	private void transVBSBusinessNumCvs(){
+		CsvWriter csvWriter = null;
 		List<String> orderStatusList = new ArrayList<>();
 	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
 	    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
 	    try{
-	    	CsvWriter csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+	    	csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
 	        //第一列空
 	        csvWriter.writeRecord(new String[]{});
 	        //必选表头
@@ -246,10 +358,12 @@ public class SAPService {
 	            /*write*/
 	            csvWriter.writeRecord((String[]) contentList.toArray());
 	        }
-	        csvWriter.close();
 	    }catch (Exception e){
-	        LOG.error("generateCaiWuPingZhengCsv error...",e);
-	    }
+	        LOG.error("VBSBusinessCvs error...",e);
+	    }finally {
+	    	if(csvWriter!=null)
+	    		csvWriter.close();
+		}
 	}
 	private String getDateBegin(){
 		Calendar cal = Calendar.getInstance();
