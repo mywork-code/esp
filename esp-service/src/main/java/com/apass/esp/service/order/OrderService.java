@@ -1581,6 +1581,7 @@ public class OrderService {
             goodsSum += orderDetailInfo.getGoodsNum();
             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
+            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
