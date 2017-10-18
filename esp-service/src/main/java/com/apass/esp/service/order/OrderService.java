@@ -1796,6 +1796,7 @@ public class OrderService {
             goodInfo.setGoodsStockId(goodsStock.getGoodsStockId());
             goodInfo.setGoodsName(orderDetail.getGoodsName());
             goodInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+            goodInfo.setMerchantCode(goods.getMerchantCode());
             /**
              * 京东不需要验证数量
              */
@@ -1818,6 +1819,8 @@ public class OrderService {
             if (null != goods) {
                 goodInfo.setUnSupportProvince(goods.getUnSupportProvince());
             }
+            //设置活动Id
+            goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
             // 订单总金额
             totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));

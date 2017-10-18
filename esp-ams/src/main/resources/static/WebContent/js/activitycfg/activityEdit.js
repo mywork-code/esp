@@ -581,7 +581,7 @@ $(function () {
     $('#optMenu').menu({
         onClick: function (item) {
             if (item.text == '删除') {
-                $.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function (r) {
+                $.messager.confirm('删除确认', '确定要删除么?', function (r) {
                     if (!r) {
                         return;
                     }
