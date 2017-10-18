@@ -2344,7 +2344,7 @@ public class OrderService {
         			purchase.setUnStockDesc(true);
         		}
             }else{
-            	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,purchase.getBuyNum());
+            	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,1);
             	if ("无货".equals(stockDesc)) {
             		purchase.setUnStockDesc(true);
             	}
