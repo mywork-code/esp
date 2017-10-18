@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
+import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.service.common.ImageService;
@@ -48,6 +50,9 @@ public class ProGroupGoodsService {
   
   @Autowired
   private GoodsService goodsService;
+  
+  @Autowired
+  private ProActivityCfgMapper activityCfgMapper;
 
   public ProGroupGoodsBo getByGoodsId(Long goodsId){
     ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -258,4 +263,31 @@ public class ProGroupGoodsService {
 	public ProGroupGoods selectByPrimaryKey(Long id) {
 		return groupGoodsMapper.selectByPrimaryKey(id);
 	}
+	
+	/**
+     * 根据商品的Id,获取活动的Id(如果活动实效，返回空)
+     * @param goodId
+     * @return
+     */
+    public Long getActivityId(Long goodId){
+    	if(null == goodId){
+    		return null;
+    	}
+    	List<ProGroupGoods> goodList= groupGoodsMapper.selectEffectiveGoodsByGoodsId(goodId);
+    	Date now = new Date();
+    	if(CollectionUtils.isNotEmpty(goodList)){
+    		for(int i = goodList.size()-1;i>=0;i--){
+    			ProGroupGoods good = goodList.get(i);
+    			if(null != good.getActivityId()){
+    				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(good.getActivityId());
+    				if(cfg.getStartTime().getTime() >= now.getTime() 
+    						&& cfg.getEndTime().getTime() <= now.getTime()){
+    					return cfg.getId();
+    				}
+    			}
+    		}
+    	}
+    	
+    	return null;
+    }
 }
