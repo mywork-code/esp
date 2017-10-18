@@ -201,4 +201,12 @@ public class TxnOrderInfo {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+	public Long extOrderId;
+    public Long getExtOrderId() {
+        return extOrderId;
+    }
+
+    public void setExtOrderId(Long extOrderId) {
+        this.extOrderId = extOrderId;
+    }
 }

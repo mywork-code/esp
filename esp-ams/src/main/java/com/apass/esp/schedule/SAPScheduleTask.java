@@ -37,6 +37,7 @@ public class SAPScheduleTask {
 	    cal.add(Calendar.DATE,-1);
 	    String caiWuPingZhengPath = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
 	    sapService.sendCaiWuPingZhengCsv(ip,port,username,password,caiWuPingZhengPath);
+	    sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,caiWuPingZhengPath);
 	}
 	@RequestMapping("/test2")
 	public void exec2(){

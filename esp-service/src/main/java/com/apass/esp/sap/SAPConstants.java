@@ -9,6 +9,8 @@ public final class SAPConstants {
 	public static final String PLATFORM_CODE = "PT0004";
 	public static final String CAIWUPINGZHENG_FILE_PATH = "/财务凭证调整(首付款或全额).csv";
 	public static final String CAIWUPINGZHENG_FILE_NAME = "财务凭证调整(首付款或全额).csv";
+	public static final String CAIWUPINGZHENG_FILE_PATH2 = "/财务凭证调整明细.csv";
+    public static final String CAIWUPINGZHENG_FILE_NAME2 = "财务凭证调整明细.csv";
 	public static final String VBSBUSINESS_FILE_PATH = "/VBS业务号对应.csv";
 	public static final String VBSBUSINESS_FILE_NAME = "VBS业务号对应.csv";
 	public static final String PAYMENTORFULLPAYMENT_FILE_PATH = "/首付款或全额（购买退货）流水.csv";
