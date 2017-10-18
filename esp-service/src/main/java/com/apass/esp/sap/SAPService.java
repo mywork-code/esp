@@ -1,4 +1,17 @@
 package com.apass.esp.sap;
+import com.apass.esp.domain.entity.ApassTxnAttr;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+import com.csvreader.CsvWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,20 +21,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import com.apass.esp.domain.entity.ApassTxnAttr;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.FTPUtils;
-import com.csvreader.CsvWriter;
 /**
  * Created by jie.xu on 17/10/16.
  */
@@ -33,7 +32,7 @@ public class SAPService {
   	@Autowired
   	private TxnInfoService txnInfoService;
   /**
-   *财物凭证调整（首付款或全额）
+   *上传财物凭证调整（首付款或全额）
    */
   public void sendCaiWuPingZhengCsv(String ip, int port, String username,
                                     String password, String path
@@ -161,7 +160,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getTxnId() + "'");
+        contentList.add(txn.getTxnId() + "");
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),DateFormatUtil.YYYY_MM_DD));
         contentList.add("2");
         contentList.add("3");
@@ -192,6 +191,8 @@ public class SAPService {
         contentList.add("6008");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+
+      //TODO:退款流水
       csvWriter.close();
 
     }catch (Exception e){
@@ -259,4 +260,63 @@ public class SAPService {
 	private String getDateEnd(){
 		return DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
 	}
+
+
+  /**
+   * 上传财务凭证调整明细
+   */
+  public void sendCaiWuPingZhengCsv2(String ip, int port, String username,
+                                    String password, String path ){
+    try {
+      generateCaiWuPingZhengCsv2();
+      FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH2));
+      FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.CAIWUPINGZHENG_FILE_NAME2,in);
+    } catch (Exception e) {
+      LOG.error("ftp caiwupingzheng csv error",e);
+    }
+  }
+  /**
+   * 财务凭证调整明细
+   */
+  private void generateCaiWuPingZhengCsv2() throws Exception{
+    List<String> orderStatusList = new ArrayList<>();
+    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+
+    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+    try{
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2,',', Charset.forName("gbk"));
+      //第一行空着
+      csvWriter.writeRecord(new String[]{""});
+      //表头
+      String[] headers = {"GUID","P_GUID","ZPTLSH","ITEM","ZFYLX","WRBTR"};
+      csvWriter.writeRecord(headers);
+      int i = 0;
+      for(TxnOrderInfo txn : txnList){
+        ++i;
+        if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+          continue;
+        }
+        List<String> contentList = new ArrayList<String>();
+        contentList.add(txn.getExtOrderId()+"");
+        contentList.add(txn.getTxnId()+"");
+        contentList.add(txn.getMainOrderId());
+        contentList.add(i+"");
+        if(txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+
+          contentList.add("Z047");
+        }else{
+          contentList.add("Z044");
+        }
+          contentList.add(txn.getTxnAmt()+"");
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+      }
+
+      //TODO:退款流水
+      csvWriter.close();
+
+    }catch (Exception e){
+      LOG.error("generateCaiWuPingZhengCsv2 error...",e);
+    }
+  }
 }

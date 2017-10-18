@@ -98,6 +98,7 @@
           ord.order_id orderId,
           ord.orderstatus orderStatus,
           ord.pay_time  payTime,
+          ord.id extOrderId,
           tx.user_id userId,
           tx.txn_type txnType,
           tx.txn_date   txnDate,
