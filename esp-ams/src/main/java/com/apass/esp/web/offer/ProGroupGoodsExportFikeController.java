@@ -155,8 +155,14 @@ public class ProGroupGoodsExportFikeController {
 			for (int i = 0; i < goods.length; i++) {
 				ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
 						Long.parseLong(goods[i]), Long.parseLong(activityId));
-				
 				if(null != proGroupGoods){
+					if(proGroupGoods.getStatus().equals("S")){
+						if(count>1){
+							Response.fail("所选商品中有已经成功添加分组的商品！");
+						}else{
+							Response.fail("该商品已添加至其他分组！");
+						}
+					}
 					int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
