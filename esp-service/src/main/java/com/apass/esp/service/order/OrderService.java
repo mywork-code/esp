@@ -2340,12 +2340,9 @@ public class OrderService {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
             GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
             if(StringUtils.isBlank(goods.getSource())){
-            	if(purchase.getBuyNum() > stock.getStockCurrAmt()){
-            		if(stock.getStockCurrAmt() == 0){
-            			purchase.setUnStockDesc(true);
-            		}
-            		throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-            	}
+        		if(stock.getStockCurrAmt() == 0){
+        			purchase.setUnStockDesc(true);
+        		}
             }else{
             	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,purchase.getBuyNum());
             	if ("无货".equals(stockDesc)) {
