@@ -1,4 +1,18 @@
 package com.apass.esp.sap;
+import com.apass.esp.domain.entity.ApassTxnAttr;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+import com.csvreader.CsvWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,21 +24,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import com.apass.esp.domain.entity.ApassTxnAttr;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.FTPUtils;
-import com.csvreader.CsvWriter;
 /**
  * Created by jie.xu on 17/10/16.
  */
@@ -36,7 +35,7 @@ public class SAPService {
   	@Autowired
   	private TxnInfoService txnInfoService;
   /**
-   *财物凭证调整（首付款或全额）
+   *上传财物凭证调整（首付款或全额）
    */
   public void sendCaiWuPingZhengCsv(String ip, int port, String username,
                                     String password, String path
@@ -245,7 +244,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getTxnId() + "'");
+        contentList.add(txn.getTxnId() + "");
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),DateFormatUtil.YYYY_MM_DD));
         contentList.add("2");
         contentList.add("3");
@@ -276,6 +275,7 @@ public class SAPService {
         contentList.add("6008");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+
       csvWriter.close();
 
     }catch (Exception e){
