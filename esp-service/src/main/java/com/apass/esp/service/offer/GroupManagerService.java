@@ -154,7 +154,7 @@ public class GroupManagerService {
 		 */
 		List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
 		if(CollectionUtils.isNotEmpty(groupList)){
-			throw new BusinessException("分组名称重复!");
+			throw new BusinessException("该分组名称已经存在，请重新填写!");
 		}
 	}
 	

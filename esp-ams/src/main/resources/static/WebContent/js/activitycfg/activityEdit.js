@@ -413,7 +413,7 @@ $(function () {
                     $("#addGoodsToGroupActivityId").val(activityId);
                     $("#addGoodsToGroupGoodsId").val(goodsId);
                 } else {
-                    alert("请为该活动添加分组！");
+                    alert("请先创建分组！");
                 }
             },
             valueField: 'id',
@@ -480,7 +480,7 @@ $(function () {
                         $("#addGoodsToGroupActivityId").val(activityId);
                         $("#addGoodsToGroupGoodsId").val(goodsIdsString);
                     } else {
-                        alert("请为该活动添加分组！");
+                        alert("请先创建分组！");
                     }
                 },
                 valueField: 'id',
