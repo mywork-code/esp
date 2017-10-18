@@ -280,8 +280,8 @@ public class ProGroupGoodsService {
     			ProGroupGoods good = goodList.get(i);
     			if(null != good.getActivityId()){
     				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(good.getActivityId());
-    				if(cfg.getStartTime().getTime() >= now.getTime() 
-    						&& cfg.getEndTime().getTime() <= now.getTime()){
+    				if(cfg.getStartTime().getTime() <= now.getTime() 
+     						&& now.getTime()<= cfg.getEndTime().getTime()){
     					return cfg.getId();
     				}
     			}
