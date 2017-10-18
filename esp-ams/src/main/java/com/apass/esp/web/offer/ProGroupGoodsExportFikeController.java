@@ -200,6 +200,7 @@ public class ProGroupGoodsExportFikeController {
 			proGroupGoods.setOrderSort(Long.parseLong("1"));
 			proGroupGoods.setStatus("");
 			proGroupGoods.setUpdateDate(new Date());
+			proGroupGoods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 
 			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
 			int count  = proGroupGoodsService.updateGoods(proGroupGoods);
