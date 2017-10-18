@@ -197,6 +197,15 @@ public class ProGroupGoodsService {
 		if(null !=configList && configList.size()!=0){
 			configList.get(0).setIsFirstOne(true);
 			configList.get(configList.size() - 1).setIsLastOne(true);
+			for (ProGroupGoodsVo proGroupGoodsVo : configList) {
+				if(proGroupGoodsVo.getDetailDesc().equals("0")){
+					proGroupGoodsVo.setGoodsCategory(null);
+					proGroupGoodsVo.setGoodsName(null);
+					proGroupGoodsVo.setGoodsStatus(null);
+					proGroupGoodsVo.setGoodsCostPrice(null);
+					proGroupGoodsVo.setGoodsPrice(null);
+				}
+			}
 		}
 
 		Integer count = groupGoodsMapper.getProGroupGoodsListPageCount(query);
