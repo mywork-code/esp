@@ -581,7 +581,7 @@ $(function () {
     $('#optMenu').menu({
         onClick: function (item) {
             if (item.text == '删除') {
-                $.messager.confirm('删除确认', '确定要删除么?', function (r) {
+                $.messager.confirm('<font color="black">删除确认</font>', '确定要删除么?', function (r) {
                     if (!r) {
                         return;
                     }
@@ -670,7 +670,7 @@ $(function () {
     });
 
     $.deleteGroups = function ($this, id) {
-        $.messager.confirm('确认', '您确认想要删除当前分组吗？', function (r) {
+        $.messager.confirm('<font color="black">确认</font>', '您确认想要删除当前分组吗？', function (r) {
             if (r) {
                 var activityId = $("#addGoodsToGroupActivityId").val();
                 $.ajax({
