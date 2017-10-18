@@ -473,7 +473,7 @@ public class GoodsService {
 	  String activityCfgDesc="";
 	  if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	      ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
-	      if(null !=activityCfg ){
+	      if(null !=activityCfg && activityCfg.getActivityType().equals("Y")){
 	    	  if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
 	    		  String  offer1   =activityCfg.getOfferSill1().toString();
 	    		  String  discount1=activityCfg.getDiscountAmonut1().toString();
