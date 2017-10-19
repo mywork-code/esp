@@ -181,6 +181,11 @@ public class ProGroupGoodsService {
 	public ProGroupGoods selectOneByGoodsIdAndActivityId(Long goodsId,Long activityId){
 		return groupGoodsMapper.selectOneByGoodsIdAndActivityId(goodsId,activityId);
 	}
+	
+	public ProGroupGoods selectOneByGodsIdAndGroupId(Long goodsId,Long groupId){
+		return groupGoodsMapper.selectOneByGodsIdAndGroupId(goodsId, groupId);
+	}
+	
 	public int getMaxSortOrder(Long groupId){
 		return groupGoodsMapper.getMaxSortOrder(groupId);
 	}

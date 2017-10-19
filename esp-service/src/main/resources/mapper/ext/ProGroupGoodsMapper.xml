@@ -9,6 +9,14 @@
         where goods_id = #{goodsId} and status = 'S' order by id desc limit 1
     </select>
     
+    <select id="selectOneByGodsIdAndGroupId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where group_id = #{groupId} and goods_id =#{goodsId}
+        order by order_sort
+    </select>
+    
     <select id="selectGoodsByGroupId" resultMap="BaseResultMap">
        select
         <include refid="Base_Column_List" />

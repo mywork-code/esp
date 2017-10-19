@@ -155,7 +155,8 @@ public class ProGroupGoodsExportFikeController {
 			for (int i = 0; i < goods.length; i++) {
 				ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
 						Long.parseLong(goods[i]), Long.parseLong(activityId));
-				if(null != proGroupGoods){
+				ProGroupGoods exsit = proGroupGoodsService.selectOneByGodsIdAndGroupId(Long.parseLong(goods[i]), Long.parseLong(groupNameId));
+				if(null != proGroupGoods && null == exsit){
 					if(proGroupGoods.getStatus().equals("S")){
 						if(count>1){
 							Response.fail("所选商品中有已经成功添加分组的商品！");
