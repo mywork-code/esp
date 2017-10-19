@@ -13,6 +13,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.dto.cart.ListCartDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -75,6 +77,8 @@ public class ShoppingCartService {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private ProGroupGoodsMapper groupGoodsMapper;
+    @Autowired
+    private ActivityCfgService activityCfgService;
     /**
      * 添加商品到购物车
      * 
@@ -375,16 +379,19 @@ public class ShoppingCartService {
                 Long  goodsId=goodsInfoInCart.getGoodsId();
                 ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 				if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
-				    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
-				    Long activityId=groupGoods.getActivityId();
-				    String act="activity_"+activityId.toString();//防止商户编码与活动id重复
-				    goodsInfoInCart.setProActivityId(activityId);//活动id
-					if (resultMap.containsKey(act)) {
-						resultMap.get(act).add(goodsInfoInCart);
-					} else {
-						List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
-						list.add(goodsInfoInCart);
-						resultMap.put(act, list);
+					ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
+					Long activityId = groupGoods.getActivityId();
+					ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+					if (null != activityCfg && activityCfg.getActivityType().equals("Y")) {//无优惠的活动不显示在前端
+						String act = "activity_" + activityId.toString();// 防止商户编码与活动id重复
+						goodsInfoInCart.setProActivityId(activityId);// 活动id
+						if (resultMap.containsKey(act)) {
+							resultMap.get(act).add(goodsInfoInCart);
+						} else {
+							List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+							list.add(goodsInfoInCart);
+							resultMap.put(act, list);
+						}
 					}
 				} else if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
 					resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
