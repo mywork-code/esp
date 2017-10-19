@@ -346,7 +346,7 @@ $(function () {
                 if (data.status == '1') {
                     alert(data.msg);
                 } else {
-                    alert("添加失败！");
+                	alert(data.msg);
                 }
                 var params = {};
                 params['activityId'] = activityId;

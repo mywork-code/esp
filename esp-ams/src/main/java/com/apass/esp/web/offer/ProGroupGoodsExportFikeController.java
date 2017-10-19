@@ -158,9 +158,9 @@ public class ProGroupGoodsExportFikeController {
 				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
 					if (proGroupGoods.getStatus().equals("S")) {
 						if (count > 1) {
-							Response.fail("所选商品中有已经成功添加分组的商品！");
+							return Response.fail("其中有些商品已添加至其他分组！");
 						} else {
-							Response.fail("该商品已添加至其他分组！");
+							return Response.fail("该商品已添加至其他分组！");
 						}
 					}
 					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
