@@ -204,7 +204,7 @@ $(function(){
 			$.previewProduct(id,source);
 		}else{
 			debugger;
-			var subtitle = "活动预览-" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			var subtitle = "活动预览-";
 			var parentTabs = parent.$('#tabs');
 			var address = "";
 			if(acUrl.indexOf('http://') == -1){
@@ -246,7 +246,6 @@ $(function(){
 			type : "get",
 			dataType : "json",
 			success : function(resp) {
-				debugger;
 				console.debug(resp)
 				var data = resp.data;
 				$('#addBannerInfor').window({
@@ -268,12 +267,10 @@ $(function(){
 	}
 
 	$.previewProduct = function(id,source) {
-		debugger;
 		var subtitle = "商品预览-" + id;
 		var parentTabs = parent.$('#tabs');
 		var destAddress="";
 		if("jd"==source){
-			subtitle = "商品预览-" + id;
 			destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
 		}else{
 			destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
