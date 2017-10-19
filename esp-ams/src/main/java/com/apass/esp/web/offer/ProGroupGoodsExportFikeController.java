@@ -153,42 +153,41 @@ public class ProGroupGoodsExportFikeController {
 			String[] goods = goodsId.split(",");
 			count = goods.length;
 			for (int i = 0; i < goods.length; i++) {
-				ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
-						Long.parseLong(goods[i]), Long.parseLong(activityId));
-				ProGroupGoods exsit = proGroupGoodsService.selectOneByGodsIdAndGroupId(Long.parseLong(goods[i]), Long.parseLong(groupNameId));
-				if(null != proGroupGoods && null == exsit){
-					if(proGroupGoods.getStatus().equals("S")){
-						if(count>1){
+				ProGroupGoods proGroupGoods = proGroupGoodsService
+						.selectOneByGoodsIdAndActivityId(Long.parseLong(goods[i]), Long.parseLong(activityId));
+				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
+					if (proGroupGoods.getStatus().equals("S")) {
+						if (count > 1) {
 							Response.fail("所选商品中有已经成功添加分组的商品！");
-						}else{
+						} else {
 							Response.fail("该商品已添加至其他分组！");
 						}
 					}
-					int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
-					proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
+					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 					proGroupGoods.setStatus("S");
 					proGroupGoods.setUpdateDate(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
 					countSuccess++;
-				}else{
+				} else {
 					countFail++;
 				}
 			}
-			//更新分组中商品的总个数
-			ProGroupManager group =	 groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
-			if(null != group){
-				group.setGoodsSum(group.getGoodsSum()+countSuccess); 
+			// 更新分组中商品的总个数
+			ProGroupManager group = groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
+			if (null != group && countSuccess>0) {
+				group.setGoodsSum(group.getGoodsSum() + countSuccess);
 				group.setUpdateDate(new Date());
 				group.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 				groupManagerMapper.updateByPrimaryKey(group);
 			}
-			
+
 		} catch (Exception e) {
 			LOG.error("添加至该活动失败！", e);
 			Response.fail("添加至该活动失败！");
 		}
-		return Response.success("共"+count+"件商品，关联成功"+countSuccess+"件，失败"+countFail+"件");
+		return Response.success("共" + count + "件商品，关联成功" + countSuccess + "件，失败" + countFail + "件");
 	}
 	/**
 	 *从分组中移除该商品(恢复到导入时的状态)
