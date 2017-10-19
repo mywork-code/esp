@@ -170,11 +170,14 @@ public class GroupManagerService {
 		 */
 		List<ProGroupManager> groupSortList = groupManagerMapper.getGroupByActiIdAndOrderSort(new GroupQuery(vo.getActivityId(),vo.getId(),vo.getOrderSort()));
 		if(CollectionUtils.isNotEmpty(groupSortList)){
-			for (ProGroupManager group : groupSortList) {
-				group.setOrderSort(group.getOrderSort() +1);
-				group.setUpdateDate(new Date());
-				group.setUpdateUser(userName);
-				groupManagerMapper.updateByPrimaryKeySelective(group);
+			ProGroupManager manager = groupSortList.get(0);
+			if(manager.getOrderSort().equals(vo.getOrderSort())){
+				for (ProGroupManager group : groupSortList) {
+					group.setOrderSort(group.getOrderSort() +1);
+					group.setUpdateDate(new Date());
+					group.setUpdateUser(userName);
+					groupManagerMapper.updateByPrimaryKeySelective(group);
+				}
 			}
 		}
 	}
