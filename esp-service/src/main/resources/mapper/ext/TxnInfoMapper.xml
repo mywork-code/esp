@@ -123,8 +123,8 @@
     </select>
     <select id ="selectPurchaseOrderList" resultType="com.apass.esp.domain.entity.bill.PurchaseOrderDetail">
       SELECT 
-        A.id orderInfoId,
-		A.order_id orderId,
+        B.id orderInfoId,
+		B.order_id orderId,
 		C.goods_name goodsName,
 		C.goods_code goodsCode,
 		D.goods_sku_attr goodsSkuAttr,
