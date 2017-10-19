@@ -302,9 +302,6 @@ public class SAPService {
 	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
 	    List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatusList,getDateBegin(),getDateEnd());
         try {
-        	csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
-        	//第一列空
-			csvWriter.writeRecord(new String[]{});
 			csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
             //第一列空
             csvWriter.writeRecord(new String[]{});
