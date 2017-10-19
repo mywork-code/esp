@@ -515,7 +515,7 @@ public class ContractService {
 			 map.put("capital", capital);
 			 map.put("paymentType", paymentType);
 	         String requestUrl = ajpBaseUrl + CONTRACT_QUERYCASHSTAGESCONTRACT;
-	         String reqJson = GsonUtils.toJson(map);
+			 String reqJson = GsonUtils.toJson(map);
 	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
 	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
 	         Response   response=GsonUtils.convertObj(responseJson, Response.class);
