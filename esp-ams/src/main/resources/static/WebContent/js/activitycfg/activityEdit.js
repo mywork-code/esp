@@ -8,7 +8,6 @@ $(function () {
         singleSelect: false, //允许选择多行
         selectOnCheck: true,
         checkOnSelect: false,
-
         striped: true,
         columns: [[
             {
@@ -79,7 +78,12 @@ $(function () {
                 return 'background-color:#6293BB;';
             }
         },
-        columns: [[{field: 'ck', checkbox: true, width: '30'},  //复选框
+        columns: [[
+            {
+            	field: 'ck', 
+            	checkbox: true, 
+            	width: '30'
+            },  //复选框
             {
                 title: '商品编号',
                 field: 'goodsCode',
@@ -177,6 +181,17 @@ $(function () {
                 }
             }]],
         queryParams: {"activityId": $("#addGoodsToGroupActivityId").val()},
+        onLoadSuccess: function(data){//加载完毕后获取所有的checkbox遍历
+            if (data.rows.length > 0) {
+                //循环判断操作为新增的不能选择
+                for (var i = 0; i < data.rows.length; i++) {
+                	var group = data.rows[i];
+                    if (group.detailDesc == '0' || group.groupName.length != 0) {
+                        $("input[type='checkbox']")[i + 1].disabled = true;
+                    }
+                }
+            }
+        },
         loader: function (param, success, error) {
             $.ajax({
                 url: ctx + '/application/activity/list',
