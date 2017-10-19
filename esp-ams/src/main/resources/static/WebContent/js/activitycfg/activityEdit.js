@@ -186,7 +186,7 @@ $(function () {
                 //循环判断操作为新增的不能选择
                 for (var i = 0; i < data.rows.length; i++) {
                 	var group = data.rows[i];
-                    if (group.detailDesc == "0" || group.groupName != '') {
+                    if (group.detailDesc == '0' || group.groupName.length != 0) {
                         $("input[type='checkbox']")[i + 1].disabled = true;
                     }
                 }
