@@ -1,7 +1,7 @@
 $(function(){
 	$("#addBannerInfor").window('close');
 	$("#showBannerPoto").window('close');
-	
+
 	//Grid
 	$('#bannerList').datagrid({
 		title : 'banner信息',
@@ -36,7 +36,7 @@ $(function(){
 					if(grantedAuthority=='permission'){
 					    content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteBanner("
 							+ row.id+ ");\">删除</a>&nbsp;&nbsp;";
-					}  
+					}
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
@@ -61,20 +61,20 @@ $(function(){
             })
         }
 	});
-	
-	
+
+
 	$("#bannerType").combobox({
 		onSelect:function(){
 			if($("#bannerType").combobox('getValue') == "index"){
 				$("#fondSpan").empty();
 				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</font>");
 			}else{
-				$("#fondSpan").empty();	
+				$("#fondSpan").empty();
 				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</font>");
 			}
 		}
 	});
-	
+
 	//添加  banner信息
 	$("#add").click(function(){
 		$('#addBannerInfor').window({
@@ -85,16 +85,17 @@ $(function(){
             top:$(document).scrollTop() + ($(window).height()-250) * 0.5
 		});
 		$("#addBannerInfor").window('open');
-		
+
 		$("#bannerName").textbox('setValue','');
 		$("#bannerType").combobox('setValue','');
 		$("#bannerOrder").numberbox('setValue','');
 		$("#bannerFile").val('');
 		$("#activityUrl").textbox('setValue','');
 	});
+
 	//确认   添加  banner信息
 	$("#agreeAdd").click(function(){
-		debugger;
+		// debugger;
 		var bannerType=$("#bannerType").combobox('getValue');
 		if(null == bannerType || bannerType==""){
 			$.messager.alert("<span style='color: black;'>提示</span>","类型不能为空！","info");
@@ -111,7 +112,7 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>",activityName+"不能为空！","info");
 			return;
 		}
-		
+
 		var bannerFile= $("#bannerFile").val();
 		if(bannerFile=='' || null==bannerFile){
 			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
@@ -120,7 +121,7 @@ $(function(){
 
 		//提交from
 		var theForm = $("#addBannerFile");
-		theForm.form("submit",{ 
+		theForm.form("submit",{
 			url : ctx + '/application/banner/management/addBannerFile',
 			success : function(data) {
 				debugger;
@@ -144,6 +145,7 @@ $(function(){
 			}
 		});
 	});
+
 	//取消   添加  banner信息
 	$("#cancelAdd").click(function(){
 		$("#addBannerInfor").window('close');
@@ -181,7 +183,7 @@ $(function(){
 			}
 		})
 	};
-	
+
 	//查看图片
 	$.show = function(bannerImgUrl) {
 		$("#showPicture").attr("src","");
