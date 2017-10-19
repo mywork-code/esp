@@ -3,14 +3,21 @@ package com.apass.esp.sap;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.MerchantCode;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
 import com.csvreader.CsvWriter;
+import org.apache.commons.lang3.StringUtils;
+import freemarker.template.utility.StringUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +33,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -398,37 +406,55 @@ public class SAPService {
     private void transPurchaseOrderCvs() {
         CsvWriter csvWriter = null;
         List<String> orderStatusList = new ArrayList<>();
-        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-        List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatusList, getDateBegin(), getDateEnd());
-        try {
-            csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
+
+        List<String> orderStatus = new ArrayList<String>();
+        orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
+        List<String> returnStatus = new ArrayList<String>();
+        returnStatus.add(RefundStatus.REFUND_STATUS05.getCode());
+        List<String> returnType = new ArrayList<String>();
+        returnType.add("0");
+        List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderStatus,returnStatus,returnType,getDateBegin(),getDateEnd());
+        try{
+            csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
             //第一列空
             csvWriter.writeRecord(new String[]{});
             //必选表头
-            String[] headers = {"GUID", "P_GUID", "ZLSH_M", "MATNR", "MAKTX", "NETPR", "BSTME", "KWMENG"};
+            String[] headers = {"GUID","BUKRS","ZDDH_XMZ","BSART","LIFNR","NAME1","ZYF","ZLSH_YDD","ERDAT","ERZET"};
             csvWriter.writeRecord(headers);
-            Integer intnum = new Integer("1");
-            for (PurchaseOrderDetail txn : txnList) {
+            for(Iterator<PurchaseReturnOrder> it = txnList.iterator();it.hasNext();){
+                PurchaseReturnOrder entity = it.next();
                 List<String> contentList = new ArrayList<String>();
-                contentList.add(txn.getOrderInfoId() + "'");
-                contentList.add(txn.getOrderId());
-                contentList.add(intnum.toString());
-                contentList.add(txn.getGoodsCode());
-                contentList.add(txn.getGoodsName());
-                contentList.add(txn.getGoodsCostPrice().toString());
-                contentList.add(txn.getGoodsSkuAttr());
-                contentList.add(txn.getStockCurrAmt().toString());
-                /*write*/
+                contentList.add(entity.getOrderInfoId().toString());
+                contentList.add(entity.getCompanyCode());
+                contentList.add(entity.getOrderId());
+                contentList.add(entity.getOrderType());
+                String merchantCode = entity.getMerchantCode();
+                String shuNo = entity.getSupNo();
+                MerchantCode[] codeArr = MerchantCode.values();
+                for(MerchantCode merchant : codeArr){
+                    if(StringUtils.equals(merchant.getCode(), merchantCode)){
+                        shuNo = merchant.getName();
+                        break;
+                    }
+                }
+                contentList.add(merchantCode);
+                contentList.add(shuNo);
+                contentList.add(entity.getCarriage());
+                contentList.add(entity.getOldOrderId());
+                String createdDate = DateFormatUtil.dateToString(entity.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
+                String createdtime = DateFormatUtil.dateToString(entity.getCreateDate(),HH_MM_SS);
+                contentList.add(createdDate);
+                contentList.add(createdtime);
                 csvWriter.writeRecord((String[]) contentList.toArray());
-                intnum++;
             }
-        } catch (Exception e) {
-            LOG.error("PurchaseOrderCvs error...", e);
-        } finally {
-            if (csvWriter != null)
+        }catch (Exception e) {
+            LOG.error("PurchaseReturnSalesCvs error...",e);
+        }finally {
+            if(csvWriter!=null)
                 csvWriter.close();
         }
     }
+
 
     private void transVBSBusinessNumCvs() {
         CsvWriter csvWriter = null;

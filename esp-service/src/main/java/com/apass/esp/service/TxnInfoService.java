@@ -1,5 +1,5 @@
 package com.apass.esp.service;
-
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
@@ -83,5 +83,9 @@ public class TxnInfoService {
 
     public List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd) {
     	return txnInfoMapper.selectPurchaseOrderList(orderStatusList,dateBegin,dateEnd);
+    }
+
+    public List<PurchaseReturnOrder> selectPurchaseReturnSalesList(List<String> orderStatus, List<String> returnStatus, List<String> returnType, String dateBegin, String dateEnd) {
+        return txnInfoMapper.selectPurchaseReturnSalesList(orderStatus,returnStatus,returnType,dateBegin,dateEnd);
     }
 }
