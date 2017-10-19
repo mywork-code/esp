@@ -705,7 +705,7 @@ $(function() {
 //		var len = $editMerchantPostcode.textbox('getValue').length;
 //		$edit_last.html(len);
 //	})
-	if(!externalsource == 'jd'){
+	if(!(externalsource == 'jd')){
 		debugger;
 		$("input",$("#editgoodsName").next("span")).keyup(function(){ 
 			var len = $("#editgoodsName").textbox('getText').length;
@@ -929,8 +929,12 @@ $(function() {
 		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
 		keepDate=$("#editkeepDate").textbox('getValue'),sordNo=$("#editsordNo").numberbox('getValue'),
 		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
+
+		if(!editSupport7dRefund){
+			editSupport7dRefund = "";
+		}
 		//字段效验
-		if ((!externalsource == 'jd') &&(null == goodsModel || ("") == goodsModel)) {
+		if (!(externalsource == 'jd') &&(null == goodsModel || ("") == goodsModel)) {
 			$.messager.alert("提示", "商品型号不能为空！", "info");
 			return;
 		}
@@ -938,7 +942,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsName.length>30) {
+
+		if (!(externalsource == 'jd') && goodsName.length>30) {
 			$.messager.alert("提示", "商品名称最多30字！", "info");
 			return;
 		}
@@ -947,11 +952,11 @@ $(function() {
 			$.messager.alert("提示", "商品小标题不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsTitle.length>25) {
+		if (!(externalsource == 'jd') && goodsTitle.length>25) {
 			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
-		if (((!externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
+		if ((!(externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
 			$.messager.alert("提示", "商品规格类型不能为空！", "info");
 			return;
 		}
@@ -975,7 +980,7 @@ $(function() {
 			$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
+		if (!(externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
 			$.messager.alert("提示", "商品排序不能为空！", "info");
 			return;
 		}
