@@ -1,7 +1,9 @@
 package com.apass.esp.schedule;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -51,7 +53,7 @@ public class AwardActivityDetailStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 
-	@Scheduled(cron = "0 0 11 * * ?")
+	@Scheduled(cron = "0 0 7 * * ?")
 	public void awardActivityStatistics() {
 		List<ActivityDetailStatisticsVo> chanelStatistisList = activityDetailStatisList();
 		String fileName = "转介绍奖励金额明细";
@@ -81,9 +83,16 @@ public class AwardActivityDetailStatisticsScheduleTask {
 				logger.error("获取信息失败,活动已经结束！");
 				return null;
 			}
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
+			//获取前一天时间
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(new Date());
+	        calendar.add(Calendar.DAY_OF_MONTH, -1);
+	        String BeforeDay = format.format(calendar.getTime());
+	        String BeforeDay2=BeforeDay+" 00:00:00";
 			ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
 			query.setActivityId(aInfoVo.getId());
-			query.setEndCreateDate(new Date().toString());
+			query.setEndCreateDate(BeforeDay2);
 			List<ActivityDetailStatisticsVo> userIdList = awardBindRelService.getUserIdListByActivityId(query);
 			Iterator<ActivityDetailStatisticsVo> it = userIdList.iterator();
 			while (it.hasNext()) {
