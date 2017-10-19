@@ -390,10 +390,6 @@ $(function () {
     });
 
     $.editGroups = function (groupName,goodsSum, orderSort, id) {
-    	 if(goodsSum==0){
-    		  alert("请先向该组添加商品！");
-    		  return;
-    	 }
         //首先清空input 和 div内容
         $("#groupNameEdit").textbox("setValue", groupName);
         $("#groupIdEdit").val(id);
@@ -499,6 +495,12 @@ $(function () {
                     }
                 }]],
                 queryParams:{"groupId": id},
+                onLoadSuccess:function(data){  
+                    if(data.total == 0){  
+                    	var body = $(this).data().datagrid.dc.body2;
+                        body.find('table tbody').append('<tr><td colspan="11" style="height: 35px; text-align: center;border:0px solid;"><h1>请先向该分组添加商品!</h1></td></tr>'); 
+                    }
+              }, 
             loader: function (param, success, error) {
                 $.ajax({
                     url: ctx + '/application/activity/list',
