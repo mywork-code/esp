@@ -340,11 +340,11 @@ public class GoodsService {
 	      skuNum.setSkuId(Long.parseLong(externalId));
 	      skuNumList.add(skuNum);
 	      //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-	      if(!orderService.checkGoodsSalesOrNot(skuNumList)){
-	      	 return false;//商品下架
+	      if(orderService.checkGoodsSalesOrNot(skuNumList)){
+	      	 return true;//商品可售
 	      }
 	  }
-	  return true;
+	  return false;
   }
   
   /**
