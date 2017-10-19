@@ -44,7 +44,7 @@ public class SAPScheduleTask {
 	    Calendar cal = Calendar.getInstance();
 	    cal.add(Calendar.DATE,-1);
 	    String caiWuPingZhengPath = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
-	    sapService.sendPaymentOrFullPaymentCsv(ip,port,username,password,caiWuPingZhengPath);
+	    sapService.commodityReturnFlow(ip,port,username,password,caiWuPingZhengPath);
 	}
 	@RequestMapping("/testVBS")
 	public void execVBS(){
@@ -52,5 +52,13 @@ public class SAPScheduleTask {
 	    cal.add(Calendar.DATE,-1);
 	    String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
 	    sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+	}
+
+	@RequestMapping("/test3")
+	public void execSaleOrder(){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+		sapService.salesOrderInfo(ip, port, username, password, path);
 	}
 }
