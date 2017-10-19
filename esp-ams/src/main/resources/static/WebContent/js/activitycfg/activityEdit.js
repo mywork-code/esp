@@ -39,7 +39,7 @@ $(function () {
                 formatter: function (value, row, index) {
                     var content = "";
                     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGroups('"
-                        + row.groupName + "','" + row.orderSort + "','" + row.id + "');\">编辑</a>&nbsp;&nbsp;";
+                        + row.groupName + "','"+ row.goodsSum + "','" + row.orderSort + "','" + row.id + "');\">编辑</a>&nbsp;&nbsp;";
                     content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteGroups('" + this + "','" + row.id + "');\">删除</a>&nbsp;&nbsp;";
                     return content;
                 }
@@ -389,7 +389,11 @@ $(function () {
         }
     });
 
-    $.editGroups = function (groupName, orderSort, id) {
+    $.editGroups = function (groupName,goodsSum, orderSort, id) {
+    	 if(goodsSum==0){
+    		  alert("请先向该组添加商品！");
+    		  return;
+    	 }
         //首先清空input 和 div内容
         $("#groupNameEdit").textbox("setValue", groupName);
         $("#groupIdEdit").val(id);
