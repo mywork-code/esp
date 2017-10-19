@@ -19,4 +19,6 @@ public final class SAPConstants {
 	public static final String PURCHASEORDER_FILE_NAME = "采购订单明细.csv";
 	public static final String PURCHASERETURNSALES_FILE_PATH = "/采购订单（采购和退货）.csv";
     public static final String PURCHASERETURNSALES_FILE_NAME = "采购订单（采购和退货）.csv";
+    public static final String PURCHASEORRETURN_FILE_PATH = "/(采购,退货）流水.csv";
+    public static final String PURCHASEORRETURN_FILE_NAME = "(采购,退货）流水.csv";
 }
