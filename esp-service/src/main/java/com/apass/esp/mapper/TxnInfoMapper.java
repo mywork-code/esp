@@ -7,6 +7,7 @@ import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import org.apache.ibatis.annotations.Param;
 
 import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
@@ -43,5 +44,12 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   List<TxnOrderInfo> selectByOrderStatusList(@Param("statusArray") List<String> statusArray,
                                              @Param("dateBegin") String dateBegin,
                                              @Param("dateEnd") String dateEnd);
-    List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd);
+    List<PurchaseOrderDetail> selectPurchaseOrderList(@Param("statusArray")List<String> orderStatusList,
+                                                    @Param("dateBegin")String dateBegin,
+                                                    @Param("dateEnd")String dateEnd);
+    List<PurchaseReturnOrder> selectPurchaseReturnSalesList(@Param("orderArray")List<String> orderStatus,
+                                                    @Param("returnStatusArray")List<String> returnStatus,
+                                                    @Param("returnTypeArray")List<String> returnType,
+                                                    @Param("dateBegin")String dateBegin,
+                                                    @Param("dateEnd")String dateEnd);
 }

@@ -142,4 +142,53 @@
         <![CDATA[ and A.update_date >= #{dateBegin}]]>
         <![CDATA[ and A.update_date < #{dateEnd}]]>
     </select>
+    <!-- 查采购退货  UNION ALL 查采购订单 -->
+    <select id ="selectPurchaseReturnSalesList" resultType="com.apass.esp.domain.entity.bill.PurchaseReturnOrder">
+      SELECT A.id orderInfoId,'6008' companyCode,D.id orderId,
+        'Z001' orderType,C.sup_no supNo,C.merchant_code merchantCode,
+        '0' carriage,A.order_id oldOrderId,A.create_date createDate
+		FROM t_esp_order_info A 
+		JOIN t_esp_order_detail_info B ON A.order_id = B.order_id
+		LEFT JOIN t_esp_goods_base_info C ON C.id = B.goods_id
+		JOIN t_esp_refund_info D ON D.order_id = A.order_id
+	  WHERE A.ext_parent_id!='-1' 
+		AND A.orderstatus in
+		<foreach collection="orderArray" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+		AND D.status in
+		<foreach collection="returnStatusArray" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND D.refund_type = '0'
+		<![CDATA[ AND A.update_date >= #{dateBegin}]]>
+        <![CDATA[ AND A.update_date < #{dateEnd}]]>
+    UNION ALL
+	  SELECT A.id orderInfoId,'6008' companyCode,A.order_id orderId,
+        'Z002' orderType,C.sup_no supNo,C.merchant_code merchantCode,
+        '0' carriage,'00000000000' oldOrderId,A.create_date createDate
+		FROM t_esp_order_info A 
+		JOIN t_esp_order_detail_info B ON A.order_id = B.order_id
+		LEFT JOIN t_esp_goods_base_info C ON C.id = B.goods_id
+	  WHERE A.ext_parent_id!='-1' 
+	    AND A.orderstatus in
+        <foreach collection="orderArray" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+		AND A.order_id not in 
+		(SELECT D.order_id FROM t_esp_order_info D 
+		JOIN t_esp_refund_info F ON F.order_id = D.order_id
+		WHERE 
+		AND D.orderstatus in
+        <foreach collection="orderArray" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND F.status in
+        <foreach collection="returnStatusArray" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+		AND F.refund_type = '0')
+		<![CDATA[ AND A.update_date >= #{dateBegin}]]>
+        <![CDATA[ AND A.update_date < #{dateEnd}]]>
+    </select>
 </mapper>
