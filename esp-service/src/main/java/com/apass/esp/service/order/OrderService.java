@@ -1820,6 +1820,10 @@ public class OrderService {
             if (null != goods) {
                 goodInfo.setUnSupportProvince(goods.getUnSupportProvince());
             }
+            if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+            	goodInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goods.getGoodsLogoUrl());
+            	goodInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            }
             //设置活动Id
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
