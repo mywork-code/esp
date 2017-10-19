@@ -14,6 +14,11 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -251,7 +256,7 @@ public class ProGroupGoodsExportFikeController {
 			}else{//如果没有，则将其活动下是商品都删除
 				proGroupGoodsService.delectGoodsByActivityId(Long.parseLong(activityId));
 			}
-			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
+			List<ProGroupGoodsTo> list = readImportExcel(importFilein,type.equals("xls"));
 			count=list.size();
 			if(null !=list){
 				for(int i=0;i<list.size();i++){
@@ -315,23 +320,34 @@ public class ProGroupGoodsExportFikeController {
 		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，已存在其他有效活动中"+countExit+"件，导入失败"+countFail+"件");
 	}
 	// 将上传文件读取到List中
-	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
+	private List<ProGroupGoodsTo> readImportExcel(InputStream in,boolean isExcel2003) throws IOException {
+		Workbook hssfWorkbook = null;
+		if(isExcel2003){
+			hssfWorkbook = new HSSFWorkbook(in);
+		}else{
+			hssfWorkbook = new XSSFWorkbook(in); 
+		}
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
-		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
+		Sheet hssfSheet = hssfWorkbook.getSheetAt(0);
 		// 第一行为标题，数据从第二行开始获取
 		// 得到总行数
 		int rowNum = hssfSheet.getLastRowNum() + 1;
-		for (int i = 1; i < rowNum; i++) {
-			HSSFRow hssfRow = hssfSheet.getRow(i);
-			if (hssfRow == null) {
+		int count = 0;
+  		for (int i = 1; i < rowNum; i++) {
+			Row hssfRow = hssfSheet.getRow(i);
+			if(count == 3){
 				break;
 			}
+			if (hssfRow == null) {
+				count ++;
+				continue;
+			}
+			count = 0;
 			ProGroupGoodsTo pggt = new ProGroupGoodsTo();
 			// 表格中共有3列（商品编号/skuid,市场价,活动价）
 			for (int j = 0; j < 3; j++) {
-				HSSFCell cell = hssfRow.getCell(j);
+				Cell cell = hssfRow.getCell(j);
 				if (cell == null) {
 					continue;
 				}
@@ -364,14 +380,14 @@ public class ProGroupGoodsExportFikeController {
 	 * @param cell
 	 * @return Excel中每一个格子中的值
 	 */
-	private String getValue(HSSFCell cell) {
+	private String getValue(Cell cell) {
 		String value = null;
 		// 简单的查检列类型
 		switch (cell.getCellType()) {
-		case HSSFCell.CELL_TYPE_STRING:// 字符串
+		case Cell.CELL_TYPE_STRING:// 字符串
 			value = cell.getRichStringCellValue().getString();
 			break;
-		case HSSFCell.CELL_TYPE_NUMERIC:// 数字
+		case Cell.CELL_TYPE_NUMERIC:// 数字
 			BigDecimal big = new BigDecimal(cell.getNumericCellValue());
 			value = big.toString();
 			// 解决1234.0 去掉后面的.0
@@ -382,16 +398,16 @@ public class ProGroupGoodsExportFikeController {
 				}
 			}
 			break;
-		case HSSFCell.CELL_TYPE_BLANK:
+		case Cell.CELL_TYPE_BLANK:
 			value = "";
 			break;
-		case HSSFCell.CELL_TYPE_FORMULA:
+		case Cell.CELL_TYPE_FORMULA:
 			value = String.valueOf(cell.getCellFormula());
 			break;
-		case HSSFCell.CELL_TYPE_BOOLEAN:// boolean型值
+		case Cell.CELL_TYPE_BOOLEAN:// boolean型值
 			value = String.valueOf(cell.getBooleanCellValue());
 			break;
-		case HSSFCell.CELL_TYPE_ERROR:
+		case Cell.CELL_TYPE_ERROR:
 			value = String.valueOf(cell.getErrorCellValue());
 			break;
 		default:
