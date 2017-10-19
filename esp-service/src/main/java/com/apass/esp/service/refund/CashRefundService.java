@@ -624,7 +624,7 @@ public class CashRefundService {
                 firstAmount = txnInfoEntity.getTxnAmt();
             }
         }
-        dto.setSfAmt(orderAmt.multiply(firstAmount).divide(txtAmount).setScale(3, ROUND_HALF_UP));
+        dto.setSfAmt(orderAmt.multiply(firstAmount).divide(txtAmount,3, ROUND_HALF_UP));
         dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
         return dto;
 
