@@ -203,11 +203,39 @@ $(function(){
 			//跳转到商品详情页
 			$.previewProduct(id,source);
 		}else{
+			debugger;
+			var subtitle = "活动预览-" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+			var parentTabs = parent.$('#tabs');
+			var address = "";
 			if(acUrl.indexOf('http://') == -1){
-				window.location.href="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+				address="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+
 			}else{
-				window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+				address=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
 			}
+
+			if (parentTabs.tabs('exists', subtitle)) {
+				parentTabs.tabs('select', subtitle);
+				return;
+			}
+
+			parentTabs.tabs('add', {
+				title : subtitle,
+				content : function() {
+					var array = new Array();
+					array.push('<iframe name="mainFrame" ');
+					array.push('scrolling="auto" ');
+					array.push('frameborder="0" ');
+					array.push('src="' + address + '" ');
+					array.push(' style="width:100%;height:100%;" ');
+					array.push(' ></iframe>');
+					return array.join('');
+				},
+				closable : true
+			});
+
+
+
 		}
 	}
 
