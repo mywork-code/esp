@@ -21,6 +21,7 @@ import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
+import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -43,6 +44,9 @@ public class GroupManagerService {
 	
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
+	
+	@Autowired
+	private BannerInfoRepository bannerMapper;
 	
 	/**
 	 * 获取活动配置信息
@@ -93,7 +97,7 @@ public class GroupManagerService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public List<GroupManagerVo> getGroupsAndGoodsByActivityId(String activityId) throws BusinessException{
+	public List<GroupManagerVo> getGroupsAndGoodsByActivityId(String activityId,String bannerId) throws BusinessException{
 		
 		ProActivityCfg activity =  activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
 		if(null == activity){
@@ -106,6 +110,10 @@ public class GroupManagerService {
 			throw new BusinessException("活动暂未开始!");
 		}
 		if(activity.getEndTime().getTime() < currentTime.getTime()){
+			//如果banner下配置的活动已结束，就删掉banner
+			if(StringUtils.isNotBlank(bannerId)){
+				bannerMapper.delete(Long.parseLong(bannerId));
+			}
 			throw new BusinessException("活动已经结束!");
 		}
 		
