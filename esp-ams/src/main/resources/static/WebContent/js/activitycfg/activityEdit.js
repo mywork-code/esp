@@ -9,21 +9,22 @@ $(function () {
         selectOnCheck: true,
         checkOnSelect: false,
         striped: true,
+        fitColumns: true,
         columns: [[
             {
                 title: '分组名称',
                 field: 'groupName',
-                width: 150,
+                width: 250,
                 align: 'center'
             }, {
                 title: '分组下商品数量',
                 field: 'goodsSum',
-                width: 150,
+                width: 250,
                 align: 'center'
             }, {
                 title: '排序',
                 field: 'orderSort',
-                width: 120,
+                width: 220,
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (null == value || "null" == value)
@@ -34,7 +35,7 @@ $(function () {
             }, {
                 title: '操作',
                 field: 'opt',
-                width: 120,
+                width: 220,
                 align: 'center',
                 formatter: function (value, row, index) {
                     var content = "";
@@ -359,7 +360,7 @@ $(function () {
     $("#addGoods").click(function () {
         var selRow = $('#importFileList').datagrid('getChecked');
         if (selRow.length == 0) {
-            $.messager.alert("<span style='color:#000;'>提示</span>", "至少勾选一条数据！", "info");
+            $.messager.alert("<span style='color:#000;'>提示</span>", "至少要勾选一件商品！", "info");
             return;
         } else {
 			var activityId= $("#addGoodsToGroupActivityId").val();
