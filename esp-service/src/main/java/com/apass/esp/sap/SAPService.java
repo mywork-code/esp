@@ -1,37 +1,41 @@
 package com.apass.esp.sap;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.apass.esp.domain.entity.ApassTxnAttr;
-import com.apass.esp.domain.entity.bill.*;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.MerchantCode;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
 import com.csvreader.CsvWriter;
-import org.apache.commons.lang3.StringUtils;
-import freemarker.template.utility.StringUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.*;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.util.*;
-
 /**
  * Created by jie.xu on 17/10/16.
  */
 @Service
 public class SAPService {
     public static final String ZPTMC = "中原项目组（安家趣花）";
-    public static final String HH_MM_SS = "HH:mm:ss";
     private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
     @Autowired
     private TxnInfoService txnInfoService;
@@ -64,7 +68,6 @@ public class SAPService {
             LOG.error("ftp caiwupingzheng2 csv error", e);
         }
     }
-
     /**
      * 首付款或全额（购买退货）流水
      *
@@ -94,10 +97,8 @@ public class SAPService {
             }
         }
     }
-
     /**
      * 销售订单(通过,退货)
-     *
      * @param ip
      * @param port
      * @param username
@@ -124,7 +125,6 @@ public class SAPService {
             }
         }
     }
-
     /**
      * 销售订单明细
      *
@@ -154,10 +154,8 @@ public class SAPService {
             }
         }
     }
-
     /**
      * VBS业务号对应
-     *
      * @param ip
      * @param port
      * @param username
@@ -288,7 +286,7 @@ public class SAPService {
                 contentList.add("收款");
                 contentList.add("S".equals(txn.getStatus()) ? "成功" : "失败");
                 contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
-                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), HH_MM_SS));
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
                 contentList.add(String.valueOf(rowNum));
                 contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -403,7 +401,7 @@ public class SAPService {
                 contentList.add(salOrder.getOrderId());
                 contentList.add(salOrder.getTotalDiscountAmount().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
                 contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
-                contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(),HH_MM_SS));
+                contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
                 contentList.add(salOrder.getName());
                 csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
@@ -489,8 +487,6 @@ public class SAPService {
 
     private void transPurchaseOrderCvs() {
         CsvWriter csvWriter = null;
-        List<String> orderStatusList = new ArrayList<>();
-
         List<String> orderStatus = new ArrayList<String>();
         orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
         List<String> returnStatus = new ArrayList<String>();
