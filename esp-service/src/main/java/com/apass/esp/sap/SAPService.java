@@ -1,25 +1,4 @@
 package com.apass.esp.sap;
-import com.apass.esp.domain.entity.ApassTxnAttr;
-import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
-import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.MerchantCode;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.RefundStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.domain.enums.YesNo;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.FTPUtils;
-import com.csvreader.CsvWriter;
-import org.apache.commons.lang3.StringUtils;
-import freemarker.template.utility.StringUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,13 +11,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.apass.esp.domain.entity.ApassTxnAttr;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.MerchantCode;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+import com.csvreader.CsvWriter;
 /**
  * Created by jie.xu on 17/10/16.
  */
 @Service
 public class SAPService {
 	public static final String ZPTMC = "中原项目组（安家趣花）";
-	public static final String HH_MM_SS = "HH:mm:ss";
 	private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
   	@Autowired
   	private TxnInfoService txnInfoService;
@@ -163,7 +160,31 @@ public class SAPService {
             }
         }
     }
-
+  	/**
+  	 * (采购,退货）流水   现阶段只有采购
+  	 * @param ip
+  	 * @param port
+  	 * @param username
+  	 * @param password
+  	 * @param path
+  	 */
+  	public void transPurchaseOrReturnCvs(String ip, int port, String username,String password, String path){
+        InputStream fis = null;
+        try {
+            transPurchaseOrReturnCvs();
+            fis = new FileInputStream(new File(SAPConstants.PURCHASEORRETURN_FILE_PATH));
+            FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.PURCHASEORRETURN_FILE_NAME,fis);
+        } catch (FileNotFoundException e) {
+            LOG.error("ftp PurchaseOrder csv file notfound",e);
+        }finally {
+            try {
+                if(fis!=null)
+                    fis.close();
+            } catch (IOException e) {
+                LOG.debug("IO Close error",e);
+            }
+        }
+    }
 /**
    *首付款或全额（购买退货）流水
    */
@@ -327,7 +348,7 @@ public class SAPService {
                 contentList.add(entity.getCarriage());
                 contentList.add(entity.getOldOrderId());
                 String createdDate = DateFormatUtil.dateToString(entity.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
-                String createdtime = DateFormatUtil.dateToString(entity.getCreateDate(),HH_MM_SS);
+                String createdtime = DateFormatUtil.dateToString(entity.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
                 contentList.add(createdDate);
                 contentList.add(createdtime);
                 csvWriter.writeRecord((String[]) contentList.toArray());
@@ -356,7 +377,7 @@ public class SAPService {
                 List<String> contentList = new ArrayList<String>();
                 contentList.add(txn.getOrderInfoId().toString());
                 contentList.add(txn.getOrderId());
-                contentList.add(intnum.toString());
+                contentList.add(String.valueOf(intnum));
                 contentList.add(txn.getGoodsCode());
                 contentList.add(txn.getGoodsName());
                 contentList.add(txn.getGoodsCostPrice().toString());
@@ -401,7 +422,7 @@ public class SAPService {
 	            /*ZYWH_VBS*/
 	            contentList.add(txn.getLoanId().toString());
 	            String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
-	            String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(),HH_MM_SS);
+	            String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
 	            /*ERDAT*/
 	            contentList.add(createdDate);
 	            /*ERZET*/
@@ -467,5 +488,67 @@ public class SAPService {
 	    }catch (Exception e){
 	      LOG.error("generateCaiWuPingZhengCsv2 error...",e);
 	    }
-	  }
+	}
+	private void transPurchaseOrReturnCvs() {
+        List<String> orderStatusList = new ArrayList<>();
+        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+        List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+        CsvWriter csvWriter = null;
+        try {
+            csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH,',', Charset.forName("gbk"));
+            //第一行空着
+            csvWriter.writeRecord(new String[]{});
+            //表头
+            String[] headers = {"GUID","ZTYPE","ZSTATUS","ERDAT","ERZET","ITEM","WRBTR","ZZHH","ZZHH_COMP","ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
+            csvWriter.writeRecord(headers);
+            Integer rowNum = new Integer("1");//行号
+            for(TxnOrderInfo txn : txnList){
+                if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+                    continue;
+                }
+                List<String> contentList = new ArrayList<String>();
+                contentList.add(txn.getTxnId().toString());
+                contentList.add("收款");
+                contentList.add("S".equals(txn.getStatus())?"收款成功":"收款失败");
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                contentList.add(String.valueOf(rowNum));
+                contentList.add(txn.getTxnAmt().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+                    || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+                      //银联
+                    contentList.add("");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
+                }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                    ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+                     //支付宝
+                    contentList.add("cm2017082910000147");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
+                }
+                contentList.add(txn.getMainOrderId());
+                contentList.add(txn.getMainOrderId());
+                if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+                    || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+                    //银联
+                    contentList.add(txn.getOrigTxnId());
+                    contentList.add("银联");
+                }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                    ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+                    //支付宝
+                    ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
+                    contentList.add(apassTxnAttr.getTxnId());
+                    contentList.add("支付宝");
+                }
+                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+                rowNum ++;
+            }
+        }catch (Exception e){
+            LOG.error("generatePaymentOrFullPaymentCsv error...",e);
+        }finally {
+            if(csvWriter!=null)
+                csvWriter.close();
+        }
+	}
 }
