@@ -382,7 +382,7 @@ public class ShoppingCartService {
 					ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
 					Long activityId = groupGoods.getActivityId();
 					ProActivityCfg activityCfg = activityCfgService.getById(activityId);
-					if (null != activityCfg && activityCfg.getActivityType().equals("Y")) {//无优惠的活动不显示在前端
+					if (null != activityCfg) {
 						String act = "activity_" + activityId.toString();// 防止商户编码与活动id重复
 						goodsInfoInCart.setProActivityId(activityId);// 活动id
 						if (resultMap.containsKey(act)) {
@@ -430,7 +430,12 @@ public class ShoppingCartService {
                 	String discountAmonut1=(String) activityCfgMap.get("discountAmonut1");
                 	String offerSill2=(String) activityCfgMap.get("offerSill2");
                 	String discountAmonut2=(String) activityCfgMap.get("discountAmonut2");
-                	listCart.setActivityCfg(activityCfgDesc);
+					ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+                	if( activityCfg.getActivityType().equals("Y")){
+                		listCart.setActivityCfg(activityCfgDesc);
+                	}else{
+                		listCart.setActivityCfg(null);//无优惠不显示满减描述
+                	}
                 	listCart.setOfferSill1(offerSill1);
                 	listCart.setDiscountAmonut1(discountAmonut1);
                 	listCart.setOfferSill2(offerSill2);
