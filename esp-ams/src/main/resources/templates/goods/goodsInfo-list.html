@@ -67,74 +67,70 @@
 <input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
 <input id="goodCostpriceIf" type="hidden" value="${goodCostpriceIf!}">
 
-	<div id="tb" style="display:none;">
-		<div class="search">
-			<table style="min-width: 700px;">
-				<tr>
-					<td width="10%" align="right">商户名称：</td>
-			    	<td width="20%"><input id="merchantName"  class="easyui-textbox" 
-			    		style="width: 200px;"  ></td>
-				    <td width="10%" align="right">商户类型：</td>
-				    <td>
-					    <select class="easyui-combobox" style="width: 150px;" id="merchantType">
-						   <option value="" class="" selected="selected">请选择</option>
-						   <option label="个人" value="1">个人</option>
-						   <option label="企业" value="2">企业</option>
-						</select>
-				  	</td>
-				  	<td width="10%" align="right">商品类目：</td>
-				  	 <td><input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 200px;" />
-				  	</td>
-					<td width="10%" align="right">商品编号：</td>
-					<td width="20%"><input id="goodsCode"  class="easyui-textbox"
-										   style="width: 200px;"  data-options="prompt:'请输入商品编号/skuid'"></td>
-				</tr>
-				<tr>
-					<td width="10%" align="right" nowrap="nowrap">商品名称：</td>
-					<td width="20%"><input id="goodsNames" class="easyui-textbox"
-						style="width: 200px;" /></td>
-					<td width="10%" align="right" nowrap="nowrap">商品类型：</td>
-					<td width="10%" align="left" nowrap="nowrap">
-						<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;" editable="false">   
-						  <option value="" selected="selected">请选择</option>   
-						  <option label="正常" value="1">正常</option>   
-						  <option label="精选" value="2">精选</option>   
-						</select>
-					</td>
-					<td width="10%" align="right">商品状态：</td>
-					<td>
-						<select class="easyui-combobox" style="width: 150px;" id="goodsStatus">
-							<option value="" class="" selected="selected">请选择</option>
-							<option value="G00">待上架</option>
-							<option value="G01,G04">待审核</option>
-							<option value="G02">已上架</option>
-							<option value="G03">已下架</option>
-						</select>
-					</td>
+	<div id="tb" style="display:none; ">
+		<table style="margin-right: 20px;">
+			<tr>
+				<td style="width: 100px; text-align:right">商户名称:</td>
+				<td><input id="merchantName"  class="easyui-textbox" style="width: 180px;" type="text"></td>
+				<td style="width: 100px; text-align:right">商户类型：</td>
+				<td>
+					<select class="easyui-combobox" style="width: 150px;" id="merchantType" editable="false">
+						<option value="" class="" selected="selected">请选择</option>
+						<option label="个人" value="1">个人</option>
+						<option label="企业" value="2">企业</option>
+					</select>
+				</td>
+				<td style="width: 100px; text-align:right">商品类目：</td>
+				<td><input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 180px;" />
+				</td>
+				<td style="width: 100px; text-align:right">商品编号：</td>
+				<td><input id="goodsCode" class="easyui-textbox"
+						   style="width: 180px;"  data-options="prompt:'请输入商品编号/skuid'"></td>
+			</tr>
+			<tr>
+				<td style="width: 100px; text-align:right">商品名称:</td>
+				<td><input id="goodsNames" class="easyui-textbox" style="width: 180px;" type="text"/></td>
 
+				<td style="width: 100px; text-align:right">商品类型：</td>
+				<td>
+					<select id="goodsTypes" name='goodsTypes' class="easyui-combobox" style="width: 150px;" editable="false">
+						<option value="" selected="selected">请选择</option>
+						<option label="正常" value="1">正常</option>
+						<option label="精选" value="2">精选</option>
+					</select>
+				</td>
 
-				</tr>
-				<tr>
-					<td colspan="8" align="right">
-						<a href="javascript:void(0);"
-						   class="easyui-linkbutton search-btn"
-						   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
-						<@apass.role value="GOODS_INFO_ADD">
-						<#if merchantStatus??&&merchantStatus=="1">
-							<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
-							   data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
-						</#if>
-						</@apass.role>
-						<@apass.role value="GOODS_INFO_EXPORT">
-						<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
-						   data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
-						</@apass.role>
-						<a href="javascript:void(0);" class="easyui-linkbutton" id="flush"
-						   data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
-					</td>
-				</tr>
-			</table>
-		</div>
+				<td style="width: 100px; text-align:right">商品状态：</td>
+				<td>
+					<select class="easyui-combobox" style="width: 180px;" id="goodsStatus">
+						<option value="" class="" selected="selected">请选择</option>
+						<option value="G00">待上架</option>
+						<option value="G01,G04">待审核</option>
+						<option value="G02">已上架</option>
+						<option value="G03">已下架</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="8" align="right">
+					<a href="javascript:void(0);"
+					   class="easyui-linkbutton search-btn"
+					   data-options="iconCls:'icon-search'">查&nbsp;询&nbsp;</a>&nbsp;&nbsp;
+					<@apass.role value="GOODS_INFO_ADD">
+					<#if merchantStatus??&&merchantStatus=="1">
+						<a href="javascript:void(0);" class="easyui-linkbutton add-btn"
+						   data-options="iconCls:'icon-add'">添&nbsp;加&nbsp;</a>&nbsp;&nbsp;
+					</#if>
+				</@apass.role>
+				<@apass.role value="GOODS_INFO_EXPORT">
+				<a href="javascript:void(0);" class="easyui-linkbutton export-btn"
+				   data-options="iconCls:'icon-add'">导&nbsp;出&nbsp;</a>&nbsp;&nbsp;
+				</@apass.role>
+				<a href="javascript:void(0);" class="easyui-linkbutton" id="flush"
+				   data-options="iconCls:'icon-add'">刷&nbsp;新&nbsp;</a>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<!-- 商品查询列表 -->
 	<div id="tablelist"></div>
