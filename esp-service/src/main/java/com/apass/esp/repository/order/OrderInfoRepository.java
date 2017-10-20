@@ -1,10 +1,13 @@
 package com.apass.esp.repository.order;
 
 import com.apass.esp.domain.dto.aftersale.IdNum;
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
+import com.google.common.collect.Maps;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -339,5 +342,13 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         param.put("beginDate", beginDate);
         param.put("endDate", endDate);
         return getSqlSession().selectList("channelStatistics",param);
+    }
+
+    public List<SalesOrderPassOrRefund> selectSalesOrderStatusList(List<String> statusArray, String dateBegin, String dateEnd) {
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("statusArray",statusArray);
+        paramMap.put("dateBegin",dateBegin);
+        paramMap.put("dateEnd",dateEnd);
+        return getSqlSession().selectList(getSQL("salesOrderPassOrRefund"),paramMap);
     }
 }

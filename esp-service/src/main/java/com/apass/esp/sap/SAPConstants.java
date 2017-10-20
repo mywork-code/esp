@@ -17,6 +17,8 @@ public final class SAPConstants {
 	public static final String PAYMENTORFULLPAYMENT_FILE_NAME = "CommodityReturnFlow.csv";
 	public static final String SALESORDERINFO_FILE_PATH = "/salesorderinfo.csv";
 	public static final String SALESORDERINFO_FILE_NAME = "salesorderinfo.csv";
+	public static final String SALESORDER_FILE_PATH = "/salesorder.csv";
+	public static final String SALESORDER_FILE_NAME = "salesorder.csv";
 	public static final String PURCHASEORDER_FILE_PATH = "/采购订单明细.csv";
 	public static final String PURCHASEORDER_FILE_NAME = "采购订单明细.csv";
 	public static final String PURCHASERETURNSALES_FILE_PATH = "/采购订单（采购和退货）.csv";

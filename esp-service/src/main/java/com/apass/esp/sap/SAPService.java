@@ -1,10 +1,7 @@
 package com.apass.esp.sap;
 
 import com.apass.esp.domain.entity.ApassTxnAttr;
-import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
-import com.apass.esp.domain.entity.bill.SalesOrderInfo;
-import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.entity.bill.*;
 import com.apass.esp.domain.enums.MerchantCode;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
@@ -98,6 +95,36 @@ public class SAPService {
             FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME, in);
         } catch (Exception e) {
             LOG.error("ftp commodityreturnflow csv error", e);
+        }finally {
+            try {
+                if(in != null){
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 销售订单(通过,退货)
+     *
+     * @param ip
+     * @param port
+     * @param username
+     * @param password
+     * @param path
+     */
+    public void salesOrder(String ip, int port, String username,
+                               String password, String path
+    ) {
+        FileInputStream in = null;
+        try {
+            generateSalesOrderCsv();
+            in = new FileInputStream(new File(SAPConstants.SALESORDER_FILE_PATH));
+            FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.SALESORDER_FILE_NAME, in);
+        } catch (Exception e) {
+            LOG.error("ftp salesOrder csv error", e);
         }finally {
             try {
                 if(in != null){
@@ -329,6 +356,50 @@ public class SAPService {
         } catch (Exception e) {
             LOG.error("generateSalesOrderInfoCsv error...", e);
         }
+    }
+
+    /**
+     * 销售订单(通过,退货)
+     */
+    private void generateSalesOrderCsv() {
+        List<String> orderStatusList = new ArrayList<>();
+        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+
+        List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+
+        try {
+            CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("gbk"));
+            //第一行空着
+            csvWriter.writeRecord(new String[]{""});
+            //表头
+            String[] headers = {"GUID", "VKORG", "ZDDH", "AUART", "ZTEL_NO", "ZDDZT", "ZLSH_YDD", "ZZK", "ERDAT", "ERZET", "UNAME"};
+            csvWriter.writeRecord(headers);
+            for (SalesOrderPassOrRefund salOrder : salOrderList) {
+
+                List<String> contentList = new ArrayList<String>();
+                contentList.add(salOrder.getOrderPrimayId().toString());
+                contentList.add("6008");
+                contentList.add(salOrder.getOrderId());
+                if(StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(),salOrder.getRefundOrderId())){
+                    contentList.add("Y002");
+                }else{
+                    contentList.add("Y001");
+                }
+                contentList.add(salOrder.getTelephone());
+                contentList.add("通过");
+                contentList.add(salOrder.getOrderId());
+                contentList.add(salOrder.getTotalDiscountAmount().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
+                contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(),HH_MM_SS));
+                contentList.add(salOrder.getName());
+                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+            }
+            csvWriter.close();
+
+        } catch (Exception e) {
+            LOG.error("generateSalesOrderCsv error...", e);
+        }
+
     }
 
     private void generateCaiWuPingZhengCsv() throws Exception {

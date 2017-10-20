@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -2922,7 +2923,17 @@ public class OrderService {
         return orderInfoRepository.selectByStatusList(statusArray,dateBegin,dateEnd);
     }
 
+    /**
+     * 销售订单明细
+     */
     public List<SalesOrderInfo> selectByOrderStatusList(List<String> orderStatusList, String dateBegin, String dateEnd) {
         return orderDetailInfoRepository.selectByOrderStatusList(orderStatusList,dateBegin,dateEnd);
+    }
+
+    /**
+     * 销售订单(通过，退货)
+     */
+    public List<SalesOrderPassOrRefund> selectSalesOrderStatusList(List<String> orderStatusList, String dateBegin, String dateEnd) {
+        return orderInfoRepository.selectSalesOrderStatusList(orderStatusList,dateBegin,dateEnd);
     }
 }

@@ -61,4 +61,12 @@ public class SAPScheduleTask {
 		String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
 		sapService.salesOrderInfo(ip, port, username, password, path);
 	}
+
+	@RequestMapping("/test4")
+	public void execSaleOrder2(){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+		sapService.salesOrder(ip, port, username, password, path);
+	}
 }
