@@ -20,18 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jie.xu on 17/10/16.
@@ -45,8 +37,6 @@ public class SAPService {
     private TxnInfoService txnInfoService;
     @Autowired
     private OrderService orderService;
-
-
     /**
      * 上传财物凭证调整（首付款或全额）
      */
@@ -61,7 +51,6 @@ public class SAPService {
             LOG.error("ftp caiwupingzheng csv error", e);
         }
     }
-
     /**
      * 上传财务凭证调整明细
      */
@@ -192,7 +181,31 @@ public class SAPService {
             }
         }
     }
-
+  	/**
+  	 * (采购,退货）流水   现阶段只有采购
+  	 * @param ip
+  	 * @param port
+  	 * @param username
+  	 * @param password
+  	 * @param path
+  	 */
+  	public void transPurchaseOrReturnCvs(String ip, int port, String username,String password, String path){
+        InputStream fis = null;
+        try {
+            transPurchaseOrReturnCvs();
+            fis = new FileInputStream(new File(SAPConstants.PURCHASEORRETURN_FILE_PATH));
+            FTPUtils.uploadFile(ip,port,username,password,path,SAPConstants.PURCHASEORRETURN_FILE_NAME,fis);
+        } catch (FileNotFoundException e) {
+            LOG.error("ftp PurchaseOrder csv file notfound",e);
+        }finally {
+            try {
+                if(fis!=null)
+                    fis.close();
+            } catch (IOException e) {
+                LOG.debug("IO Close error",e);
+            }
+        }
+    }
     /**
      * 采购订单明细
      *
@@ -492,7 +505,7 @@ public class SAPService {
             //必选表头
             String[] headers = {"GUID","BUKRS","ZDDH_XMZ","BSART","LIFNR","NAME1","ZYF","ZLSH_YDD","ERDAT","ERZET"};
             csvWriter.writeRecord(headers);
-            for(Iterator<PurchaseReturnOrder> it = txnList.iterator();it.hasNext();){
+            for(Iterator<PurchaseReturnOrder> it = txnList.iterator(); it.hasNext();){
                 PurchaseReturnOrder entity = it.next();
                 List<String> contentList = new ArrayList<String>();
                 contentList.add(entity.getOrderInfoId().toString());
@@ -513,7 +526,7 @@ public class SAPService {
                 contentList.add(entity.getCarriage());
                 contentList.add(entity.getOldOrderId());
                 String createdDate = DateFormatUtil.dateToString(entity.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
-                String createdtime = DateFormatUtil.dateToString(entity.getCreateDate(),HH_MM_SS);
+                String createdtime = DateFormatUtil.dateToString(entity.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
                 contentList.add(createdDate);
                 contentList.add(createdtime);
                 csvWriter.writeRecord((String[]) contentList.toArray());
@@ -525,25 +538,25 @@ public class SAPService {
                 csvWriter.close();
         }
     }
-
-
-    private void transVBSBusinessNumCvs() {
-        CsvWriter csvWriter = null;
-        List<String> orderStatusList = new ArrayList<>();
-        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-        List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-        try {
-            csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
-            //第一列空
-            csvWriter.writeRecord(new String[]{});
-            //必选表头
-            String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET"};
-            csvWriter.writeRecord(headers);
-            for (TxnOrderInfo txn : txnList) {
-                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-                    continue;
-                }
-                List<String> contentList = new ArrayList<String>();
+	private void transVBSBusinessNumCvs(){
+		CsvWriter csvWriter = null;
+		List<String> orderStatusList = new ArrayList<>();
+	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+	    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+	    try{
+	    	csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+	        //第一列空
+	        csvWriter.writeRecord(new String[]{});
+	        //必选表头
+	        String[] headers = {"GUID","ZPTMC","ZPTBM","ZLSH_DD","ZYWH_VBS","ERDAT","ERZET"};
+	        csvWriter.writeRecord(headers);
+	        for(TxnOrderInfo txn : txnList){
+	        	if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+	        		continue;
+	        	}
+	        	List<String> contentList = new ArrayList<String>();
+	        	/*GUID*/
+	        	contentList.add(txn.getTxnId() + "'");
                 /*GUID*/
                 contentList.add(txn.getTxnId() + "'");
 	        	/*ZPTMC*/
@@ -553,76 +566,135 @@ public class SAPService {
 	            /*ZLSH_DD  子订单号*/
                 contentList.add(txn.getOrderId());
 	            /*ZYWH_VBS*/
-                contentList.add(txn.getLoanId().toString());
-                String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD);
-                String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), HH_MM_SS);
+	            contentList.add(txn.getLoanId().toString());
+	            String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD);
+	            String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
 	            /*ERDAT*/
                 contentList.add(createdDate);
 	            /*ERZET*/
                 contentList.add(createdtime);
 	            /*可选表头UNAME,ZSJLY*/
 	            /*write*/
-                csvWriter.writeRecord((String[]) contentList.toArray());
-            }
-        } catch (Exception e) {
-            LOG.error("VBSBusinessCvs error...", e);
-        } finally {
-            if (csvWriter != null)
-                csvWriter.close();
-        }
-    }
+	            csvWriter.writeRecord((String[]) contentList.toArray());
+	        }
+	    }catch (Exception e){
+	        LOG.error("VBSBusinessCvs error...",e);
+	    }finally {
+	    	if(csvWriter!=null)
+	    		csvWriter.close();
+		}
+	}
+	private String getDateBegin(){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		return DateFormatUtil.dateToString(cal.getTime(),DateFormatUtil.YYYY_MM_DD);
+	}
+	private String getDateEnd(){
+		return DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
+	}
+	/**
+	   * 财务凭证调整明细
+	   */
+	  private void generateCaiWuPingZhengCsv2() throws Exception{
+	    List<String> orderStatusList = new ArrayList<>();
+	    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
 
-    private String getDateBegin() {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-        return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
-    }
+	    List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+	    try{
+	      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2,',', Charset.forName("gbk"));
+	      //第一行空着
+	      csvWriter.writeRecord(new String[]{""});
+	      //表头
+	      String[] headers = {"GUID","P_GUID","ZPTLSH","ITEM","ZFYLX","WRBTR"};
+	      csvWriter.writeRecord(headers);
+	      int i = 0;
+	      for(TxnOrderInfo txn : txnList){
+	        ++i;
+	        if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+	          continue;
+	        }
+	        List<String> contentList = new ArrayList<String>();
+	        contentList.add(txn.getExtOrderId()+"");
+	        contentList.add(txn.getTxnId()+"");
+	        contentList.add(txn.getMainOrderId());
+	        contentList.add(i+"");
+	        if(txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
+	            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
 
-    private String getDateEnd() {
-        return DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
-    }
+	          contentList.add("Z047");
+	        }else{
+	          contentList.add("Z044");
+	        }
+	          contentList.add(txn.getTxnAmt()+"");
+	        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+	      }
 
-    /**
-     * 财务凭证调整明细
-     */
-    private void generateCaiWuPingZhengCsv2() throws Exception {
+	      csvWriter.close();
+
+	    }catch (Exception e){
+	      LOG.error("generateCaiWuPingZhengCsv2 error...",e);
+	    }
+	}
+	private void transPurchaseOrReturnCvs() {
         List<String> orderStatusList = new ArrayList<>();
         orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-
-        List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+        List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList,getDateBegin(),getDateEnd());
+        CsvWriter csvWriter = null;
         try {
-            CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("gbk"));
+            csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH,',', Charset.forName("gbk"));
             //第一行空着
-            csvWriter.writeRecord(new String[]{""});
+            csvWriter.writeRecord(new String[]{});
             //表头
-            String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR"};
+            String[] headers = {"GUID","ZTYPE","ZSTATUS","ERDAT","ERZET","ITEM","WRBTR","ZZHH","ZZHH_COMP","ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
             csvWriter.writeRecord(headers);
-            int i = 0;
-            for (TxnOrderInfo txn : txnList) {
-                ++i;
-                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+            Integer rowNum = new Integer("1");//行号
+            for(TxnOrderInfo txn : txnList){
+                if(txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
                     continue;
                 }
                 List<String> contentList = new ArrayList<String>();
-                contentList.add(txn.getExtOrderId() + "");
-                contentList.add(txn.getTxnId() + "");
-                contentList.add(txn.getMainOrderId());
-                contentList.add(i + "");
-                if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-                        || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-
-                    contentList.add("Z047");
-                } else {
-                    contentList.add("Z044");
+                contentList.add(txn.getTxnId().toString());
+                contentList.add("收款");
+                contentList.add("S".equals(txn.getStatus())?"收款成功":"收款失败");
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD));
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                contentList.add(String.valueOf(rowNum));
+                contentList.add(txn.getTxnAmt().setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+                    || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+                      //银联
+                    contentList.add("");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
+                }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                    ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+                     //支付宝
+                    contentList.add("cm2017082910000147");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
                 }
-                contentList.add(txn.getTxnAmt() + "");
+                contentList.add(txn.getMainOrderId());
+                contentList.add(txn.getMainOrderId());
+                if(txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
+                    || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())){
+                    //银联
+                    contentList.add(txn.getOrigTxnId());
+                    contentList.add("银联");
+                }else if(txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                    ||txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())){
+                    //支付宝
+                    ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
+                    contentList.add(apassTxnAttr.getTxnId());
+                    contentList.add("支付宝");
+                }
                 csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+                rowNum ++;
             }
-
-            csvWriter.close();
-
-        } catch (Exception e) {
-            LOG.error("generateCaiWuPingZhengCsv2 error...", e);
+        }catch (Exception e){
+            LOG.error("generatePaymentOrFullPaymentCsv error...",e);
+        }finally {
+            if(csvWriter!=null)
+                csvWriter.close();
         }
-    }
+	}
 }
