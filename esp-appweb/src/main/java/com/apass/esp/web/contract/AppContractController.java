@@ -28,7 +28,7 @@ public class AppContractController {
 
 	@Autowired
 	public ContractService contractService;
-
+	
 	/**
 	 * 查询赊销合同数据
 	 * @param paramMap
@@ -37,6 +37,34 @@ public class AppContractController {
 	@POST
 	@Path("/queryCreditContract")
 	public Response queryCreditContract(Map<String, Object> paramMap){
+		//订单ID字符串
+		String orderIdStr = CommonUtils.getValue(paramMap, "orderIdStr");
+		String[] orderIdArray=orderIdStr.split(",");
+		if(orderIdArray==null||orderIdArray.length<=0){
+			LOGGER.error("订单ID信息不能为空");
+			return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+		}
+
+		try{
+			BuySellContractDTO bsc=contractService.getContractParamModelByOrderIdList(orderIdArray);
+			return Response.successResponse(bsc);
+		} catch (BusinessException e) {
+			LOGGER.error(e.getErrorDesc(),e);
+			return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+		}catch(Exception e){
+			LOGGER.error("查询合同信息失败",e);
+			return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+		}
+
+	}
+	/**
+	 * 查询赊销合同数据
+	 * @param paramMap
+	 * @return
+	 */
+	@POST
+	@Path("/queryCreditContract2")
+	public Response queryCreditContract2(Map<String, Object> paramMap){
 		//信贷请求数据（查询实物分期合同数据）
 		// 用户id
 		String userId = CommonUtils.getValue(paramMap, "userId");
