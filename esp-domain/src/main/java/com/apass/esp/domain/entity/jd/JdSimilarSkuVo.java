@@ -11,6 +11,7 @@ public class JdSimilarSkuVo {
 	private BigDecimal priceFirst;
 	private String stockDesc;
 	private String activityCfg;
+	private Long proActivityId;
 	private String support7dRefund;
 	public String getSkuId() {
 		return skuId;
@@ -65,6 +66,12 @@ public class JdSimilarSkuVo {
 	}
 	public void setSupport7dRefund(String support7dRefund) {
 		this.support7dRefund = support7dRefund;
+	}
+	public Long getProActivityId() {
+		return proActivityId;
+	}
+	public void setProActivityId(Long proActivityId) {
+		this.proActivityId = proActivityId;
 	}
 	
 }
