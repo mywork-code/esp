@@ -360,7 +360,7 @@ $(function () {
     $("#addGoods").click(function () {
         var selRow = $('#importFileList').datagrid('getChecked');
         if (selRow.length == 0) {
-            $.messager.alert("<span style='color:#000;'>提示</span>", "至少勾选一条数据！", "info");
+            $.messager.alert("<span style='color:#000;'>提示</span>", "至少要勾选一件商品！", "info");
             return;
         } else {
 			var activityId= $("#addGoodsToGroupActivityId").val();

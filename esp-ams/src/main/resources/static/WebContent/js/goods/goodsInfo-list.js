@@ -706,8 +706,7 @@ $(function() {
 //		$edit_last.html(len);
 //	})
 	if(!(externalsource == 'jd')){
-		debugger;
-		$("input",$("#editgoodsName").next("span")).keyup(function(){ 
+		$("input",$("#editgoodsName").next("span")).keyup(function(){
 			var len = $("#editgoodsName").textbox('getText').length;
 			var canLen;
 			console.log(len);
@@ -1219,8 +1218,6 @@ $(function() {
 	
 	//确定 获取编辑器的html
 	$("#editGetAllHtml").click(function() {
-		debugger;
-
 		var params = {};
 		params['id']=editGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
