@@ -408,7 +408,7 @@ public class GoodsService {
     }
     //返回活动id
 	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-	if(null !=proGroupGoodsBo){
+	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
 	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
