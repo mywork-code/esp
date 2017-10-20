@@ -9,21 +9,22 @@ $(function () {
         selectOnCheck: true,
         checkOnSelect: false,
         striped: true,
+        fitColumns: true,
         columns: [[
             {
                 title: '分组名称',
                 field: 'groupName',
-                width: 150,
+                width: 250,
                 align: 'center'
             }, {
                 title: '分组下商品数量',
                 field: 'goodsSum',
-                width: 150,
+                width: 250,
                 align: 'center'
             }, {
                 title: '排序',
                 field: 'orderSort',
-                width: 120,
+                width: 220,
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (null == value || "null" == value)
@@ -34,7 +35,7 @@ $(function () {
             }, {
                 title: '操作',
                 field: 'opt',
-                width: 120,
+                width: 220,
                 align: 'center',
                 formatter: function (value, row, index) {
                     var content = "";
