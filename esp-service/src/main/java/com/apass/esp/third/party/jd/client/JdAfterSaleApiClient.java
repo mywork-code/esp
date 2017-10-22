@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.PUT;
+
 /**
  * type: class
  *
@@ -30,6 +32,7 @@ public class JdAfterSaleApiClient  extends JdApiClient{
         jsonObject.put("questionDesc", afsApply.getQuestionDesc());
         jsonObject.put("isNeedDetectionReport", afsApply.getIsNeedDetectionReport());
         jsonObject.put("questionPic", afsApply.getQuestionPic());
+        jsonObject.put("questionPic",afsApply.getQuestionPic());
         jsonObject.put("isHasPackage", afsApply.getIsHasPackage());
         jsonObject.put("packageDesc", afsApply.getPackageDesc());
         jsonObject.put("asCustomerDto", afsApply.getAsCustomerDtok());
