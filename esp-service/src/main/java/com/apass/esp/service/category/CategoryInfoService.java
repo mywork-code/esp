@@ -500,6 +500,7 @@ public class CategoryInfoService {
                         SimpleBannerVo bv = new SimpleBannerVo();
                         bv.setImg(imageService.getImageUrl(bannerInfoEntity.getBannerImgUrl()));
                         bv.setLinkUrl(bannerInfoEntity.getActivityUrl());
+                        bv.setId(bannerInfoEntity.getId()+"");
                         bannerVoList.add(bv);
                     }
                     categoryVo.setBannerList(bannerVoList);
