@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +68,8 @@ public class AfterSaleService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AfterSaleService.class);
 
+    @Value("${esp.image.uri}")
+    private String espImageUri;
     @Autowired
     private OrderInfoRepository orderInfoDao;
 
@@ -227,7 +230,26 @@ public class AfterSaleService {
             asReturnwareDto.setReturnwareAddress(addressInfoEntity.getAddress());
 
             afsApply.setAsReturnwareDtok(asReturnwareDto);
-
+            /** 售后图片地址数据 */
+            StringBuilder imageUrl = new StringBuilder();
+            for (int i = 0; i < imageNum; i++) {
+                if (i == 0) {
+                    imageUrl.append(espImageUri + "/static" +"/eshop/refund/");
+                    imageUrl.append(userId);
+                    imageUrl.append("/");
+                    imageUrl.append(orderId);
+                    imageUrl.append("/refundimage_0.jpg");
+                } else {
+                    imageUrl.append(","+espImageUri + "/static" +"/eshop/refund/");
+                    imageUrl.append(userId);
+                    imageUrl.append("/");
+                    imageUrl.append(orderId);
+                    imageUrl.append("/refundimage_");
+                    imageUrl.append(i);
+                    imageUrl.append(".jpg");
+                }
+            }
+            afsApply.setQuestionPic(imageUrl.toString());
             /** 申请单明细 */
             AsDetailDto asDetailDto = new AsDetailDto();
 
