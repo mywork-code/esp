@@ -17,6 +17,7 @@ import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -37,6 +38,7 @@ public class GroupGoodsController {
 			logger.error("活动编号不能为空!");
 			return Response.fail("活动编号不能为空!");
 		}
+		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		Map<String,Object> maps = Maps.newHashMap();
 		try {
 			List<GroupManagerVo> groupList = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
