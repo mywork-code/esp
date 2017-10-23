@@ -550,7 +550,7 @@ public class OrderService {
          * 验证商品是否可售
          */
         if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
-        	throw new BusinessException("下单失败!");
+        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
         }
         /**
          * 批量获取库存接口
