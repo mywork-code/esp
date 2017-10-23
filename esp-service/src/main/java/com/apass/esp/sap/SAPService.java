@@ -481,7 +481,7 @@ public class SAPService {
         returnTypeList.add("0");
         List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderList,returnStatusList,returnTypeList,getDateBegin(),getDateEnd());
         try {
-            csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("gbk"));
+            csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("gbk"));
             //第一行空
             csvWriter.writeRecord(new String[]{""});
             //表头
@@ -524,7 +524,7 @@ public class SAPService {
         orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
         List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus,getDateBegin(),getDateEnd());
         try{
-            csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
+            csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH,',', Charset.forName("UTF-8"));
             //第一列空
             csvWriter.writeRecord(new String[]{});
             //必选表头
