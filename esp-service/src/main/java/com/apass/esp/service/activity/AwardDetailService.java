@@ -328,12 +328,14 @@ public class AwardDetailService {
 	 *  统计某段时间内某个活动总奖励金额
 	 */
 	public BigDecimal getAllAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query){
+		query.setType("0");//获得奖励
 		return awardDetailMapper.getAllAwardByActivityIdAndTime(query);
 	}
 	/**
 	 *  统计某段时间内某个活动已返现金额
 	 */
 	public BigDecimal getAllBackAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query){
-		return awardDetailMapper.getAllBackAwardByActivityIdAndTime(query);
+		query.setType("1");//提取奖励
+		return awardDetailMapper.getAllAwardByActivityIdAndTime(query);
 	}
 }

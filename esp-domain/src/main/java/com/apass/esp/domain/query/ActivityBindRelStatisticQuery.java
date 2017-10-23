@@ -9,6 +9,7 @@ public class ActivityBindRelStatisticQuery extends QueryParams {
 
 	private String startCreateDate;
 	private String endCreateDate;
+	private String type;
 	private long activityId;
 	private long userId;
 
@@ -44,4 +45,12 @@ public class ActivityBindRelStatisticQuery extends QueryParams {
 		this.userId = userId;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 }
