@@ -35,7 +35,7 @@ public class SAPScheduleTask {
 	public void exec(){
 	    Calendar cal = Calendar.getInstance();
 	    cal.add(Calendar.DATE,-1);
-	    String caiWuPingZhengPath = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+	    String caiWuPingZhengPath = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 	    sapService.sendCaiWuPingZhengCsv(ip,port,username,password,caiWuPingZhengPath);
 //	    sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,caiWuPingZhengPath);
 	}
@@ -43,14 +43,14 @@ public class SAPScheduleTask {
 	public void exec2(){
 	    Calendar cal = Calendar.getInstance();
 	    cal.add(Calendar.DATE,-1);
-	    String caiWuPingZhengPath = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+	    String caiWuPingZhengPath = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 	    sapService.commodityReturnFlow(ip,port,username,password,caiWuPingZhengPath);
 	}
 	@RequestMapping("/testVBS")
 	public void execVBS(){
 	    Calendar cal = Calendar.getInstance();
 	    cal.add(Calendar.DATE,-1);
-	    String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+	    String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 	    sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
 	}
 
@@ -58,7 +58,7 @@ public class SAPScheduleTask {
 	public void execSaleOrder(){
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE,-1);
-		String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 		sapService.salesOrderInfo(ip, port, username, password, path);
 	}
 
@@ -66,7 +66,7 @@ public class SAPScheduleTask {
 	public void execSaleOrder2(){
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE,-1);
-		String path = basePath + "/" + DateFormatUtil.dateToString(cal.getTime(),"yyyy/MM/dd") + "/";
+		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 		sapService.salesOrder(ip, port, username, password, path);
 	}
 }

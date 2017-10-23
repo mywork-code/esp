@@ -34,6 +34,7 @@ public class FTPUtils {
       if (!FTPReply.isPositiveCompletion(reply)) {
         ftp.disconnect();
       }
+      ftp.makeDirectory(path);
       ftp.changeWorkingDirectory(path);
       ftp.storeFile(filename, input);
       input.close();
