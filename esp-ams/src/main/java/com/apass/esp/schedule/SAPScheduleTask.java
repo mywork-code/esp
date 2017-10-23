@@ -52,6 +52,9 @@ public class SAPScheduleTask {
 	    cal.add(Calendar.DATE,-1);
 	    String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
 	    sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+	    sapService.transPurchaseOrReturnCvs(ip, port, username, password, path);
+	    sapService.transPurchaseOrderCvs(ip, port, username, password, path);
+	    sapService.transPurchaseReturnSalesCvs(ip, port, username, password, path);
 	}
 
 	@RequestMapping("/test3")

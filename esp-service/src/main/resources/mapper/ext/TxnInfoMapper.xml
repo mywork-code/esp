@@ -210,7 +210,7 @@
 		AND A.order_id not in 
 		(SELECT D.order_id FROM t_esp_order_info D 
 		JOIN t_esp_refund_info F ON F.order_id = D.order_id
-		WHERE 
+		WHERE D.ext_parent_id!='-1'
 		AND D.orderstatus in
         <foreach collection="orderArray" item="item" open="(" separator="," close=")">
             #{item}
