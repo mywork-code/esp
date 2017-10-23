@@ -472,11 +472,43 @@ public class SAPService {
 
     private void transPurchaseReturnSalesCvs() {
         CsvWriter csvWriter = null;
-        List<String> orderStatusList = new ArrayList<>();
-        orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
-        //List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatusList,getDateBegin(),getDateEnd());
+        List<String> orderList = new ArrayList<>();
+        orderList.add(OrderStatus.ORDER_COMPLETED.getCode());
+        List<String> returnStatusList = new ArrayList<>();
+        returnStatusList.add(RefundStatus.REFUND_STATUS05.getCode());
+        List<String> returnTypeList = new ArrayList<>();
+        returnTypeList.add("0");
+        List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderList,returnStatusList,returnTypeList,getDateBegin(),getDateEnd());
         try {
-
+            csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("gbk"));
+            //第一行空
+            csvWriter.writeRecord(new String[]{""});
+            //表头
+            String[] headers = {"GUID", "BUKRS", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD","ERDAT", "ERZET"};
+            csvWriter.writeRecord(headers);
+            for (PurchaseReturnOrder txn : txnList) {
+                List<String> contentList = new ArrayList<String>();
+                contentList.add(txn.getOrderInfoId().toString());
+                contentList.add(txn.getCompanyCode());
+                contentList.add(txn.getOrderId());
+                contentList.add(txn.getOrderType());
+                String suqNo = txn.getSupNo();
+                String merchantCode = txn.getMerchantCode();
+                MerchantCode[] codeArr = MerchantCode.values();
+                for(MerchantCode entity : codeArr){
+                    if(StringUtils.equals(merchantCode, entity.getCode())){
+                        suqNo = entity.getName();
+                        break;
+                    }
+                }
+                contentList.add(merchantCode);
+                contentList.add(suqNo);
+                contentList.add(txn.getCarriage());
+                contentList.add(txn.getOldOrderId());
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
+                contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+            }
         } catch (Exception e) {
             LOG.error("PurchaseReturnSalesCvs error...", e);
         } finally {
