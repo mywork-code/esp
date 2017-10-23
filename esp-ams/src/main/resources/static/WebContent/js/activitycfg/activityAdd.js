@@ -5,6 +5,7 @@ $(function(){
 	 */
 	$("#agreeAdd").click(function(){
     	if(checkParams()){
+    		$("#agreeAdd").attr("disabled","true");
     		var theForm = $("#configForm");
 			var activityName = $("#activityName").textbox("getValue");
 			var startTime = $("#startTime").datetimebox("getValue");
