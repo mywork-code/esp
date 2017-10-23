@@ -11,6 +11,12 @@ $(function(){
         nowrap:false,
         toolbar : '#tb',
         columns :[[
+			{
+			    title : '活动ID',
+			    field : 'id',
+			    width : 150,
+			    align : 'center'
+			}, 
             {
                 title : '活动名称',
                 field : 'activityName',
