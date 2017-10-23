@@ -158,12 +158,12 @@ public class ProGroupGoodsService {
 		
 		
 		managerSub.setOrderSort(passiveSort);
-		managerSub.setUpdateDate(date);
+		managerSub.setUpdatedTime(date);
 		managerSub.setUpdateUser(vo.getUserName());
 		
 		
 		managerPassive.setOrderSort(subSort);
-		managerPassive.setUpdateDate(date);
+		managerPassive.setUpdatedTime(date);
 		managerPassive.setUpdateUser(vo.getUserName());
 		try {
 			groupGoodsMapper.updateByPrimaryKeySelective(managerSub);

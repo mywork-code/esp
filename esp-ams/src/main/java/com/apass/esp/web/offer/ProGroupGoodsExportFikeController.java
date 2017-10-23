@@ -172,7 +172,7 @@ public class ProGroupGoodsExportFikeController {
 					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 					proGroupGoods.setStatus("S");
-					proGroupGoods.setUpdateDate(new Date());
+					proGroupGoods.setUpdatedTime(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
 					countSuccess++;
 				} else {
@@ -183,7 +183,7 @@ public class ProGroupGoodsExportFikeController {
 			ProGroupManager group = groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
 			if (null != group && countSuccess>0) {
 				group.setGoodsSum(group.getGoodsSum() + countSuccess);
-				group.setUpdateDate(new Date());
+				group.setUpdatedTime(new Date());
 				group.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 				groupManagerMapper.updateByPrimaryKey(group);
 			}
@@ -210,7 +210,7 @@ public class ProGroupGoodsExportFikeController {
 			proGroupGoods.setGroupId(-1l);
 			proGroupGoods.setOrderSort(Long.parseLong("1"));
 			proGroupGoods.setStatus("");
-			proGroupGoods.setUpdateDate(new Date());
+			proGroupGoods.setUpdatedTime(new Date());
 			proGroupGoods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 
 			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
@@ -263,8 +263,8 @@ public class ProGroupGoodsExportFikeController {
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-					pggds.setCreateDate(new Date());
-					pggds.setUpdateDate(new Date());
+					pggds.setCreatedTime(new Date());
+					pggds.setUpdatedTime(new Date());
 					BigDecimal zero=BigDecimal.ZERO;
 					BigDecimal marketPrice=list.get(i).getMarketPrice();
 					BigDecimal activityPrice=list.get(i).getActivityPrice();
@@ -478,8 +478,8 @@ public class ProGroupGoodsExportFikeController {
 		String currentUser = SpringSecurityUtils.getCurrentUser();
 		proGroupManager.setCreateUser(currentUser);
 		proGroupManager.setUpdateUser(currentUser);
-		proGroupManager.setCreateDate(new Date());
-		proGroupManager.setUpdateDate(new Date());
+		proGroupManager.setCreatedTime(new Date());
+		proGroupManager.setUpdatedTime(new Date());
 
 		groupManagerService.addGroup(proGroupManager);
 

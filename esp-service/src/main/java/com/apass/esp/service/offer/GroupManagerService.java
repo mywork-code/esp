@@ -182,7 +182,7 @@ public class GroupManagerService {
 			if(manager.getOrderSort().equals(vo.getOrderSort())){
 				for (ProGroupManager group : groupSortList) {
 					group.setOrderSort(group.getOrderSort() +1);
-					group.setUpdateDate(new Date());
+					group.setUpdatedTime(new Date());
 					group.setUpdateUser(userName);
 					groupManagerMapper.updateByPrimaryKeySelective(group);
 				}
@@ -258,12 +258,12 @@ public class GroupManagerService {
 		group.setGroupName(vo.getGroupName());
 		group.setOrderSort(vo.getOrderSort());
 		if(bl){
-			group.setCreateDate(new Date());
+			group.setCreatedTime(new Date());
 			group.setCreateUser(userName);
 			group.setActivityId(vo.getActivityId());
 			group.setGoodsSum(vo.getGoodsSum());
 		}
-		group.setUpdateDate(new Date());
+		group.setUpdatedTime(new Date());
 		group.setUpdateUser(userName);
 		group.setId(vo.getId());
 		return group;

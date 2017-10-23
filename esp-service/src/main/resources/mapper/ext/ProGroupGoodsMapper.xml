@@ -38,7 +38,7 @@
 	      set 
 	      group_id = -1,
 	      order_sort = #{orderSort,jdbcType=BIGINT},
-	      update_date = #{updateDate,jdbcType=TIMESTAMP},
+	      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
 	      status = #{status,jdbcType=VARCHAR}
 	    where id = #{id,jdbcType=BIGINT}
 	 </update>
@@ -105,7 +105,7 @@
 			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
-         order by a.detail_desc desc,a.order_sort,  a.update_date desc
+         order by a.detail_desc desc,a.order_sort,  a.updated_time desc
          ]]>
 		<if test="startRecordIndex != null">
 			<include refid="PAGINATION.MYSQL_PAGINATION" />
