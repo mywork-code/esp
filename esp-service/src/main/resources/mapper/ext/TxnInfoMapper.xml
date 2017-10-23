@@ -142,8 +142,11 @@
           tx.CREATE_DATE createDate
       from t_apass_txn_info tx 
       left join t_esp_order_info ord on tx.order_id = ord.main_order_id 
-      where tx.txn_type = 'T04' AND tx.status = 'S' AND tx.settle_flag != 0
-      ord.ext_parent_id!='-1' AND ord.orderstatus in
+      where tx.txn_type = 'T04' 
+      AND tx.status = 'S' 
+      AND tx.settle_flag != 0
+      AND ord.ext_parent_id!='-1' 
+      AND ord.orderstatus in
         <foreach collection="statusArray" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
