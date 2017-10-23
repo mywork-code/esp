@@ -526,7 +526,7 @@ public class SAPService {
         try{
             csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH,',', Charset.forName("UTF-8"));
             //第一列空
-            csvWriter.writeRecord(new String[]{});
+            csvWriter.writeRecord(new String[]{""});
             //必选表头
             String[] headers = {"GUID","P_GUID","ZLSH_M","MATNR","MAKTX","NETPR","BSTME","KWMENG"};
             csvWriter.writeRecord(headers);
@@ -560,7 +560,7 @@ public class SAPService {
 	    try{
 	    	csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH,',', Charset.forName("UTF-8"));
 	        //第一列空
-	        csvWriter.writeRecord(new String[]{});
+	        csvWriter.writeRecord(new String[]{""});
 	        //必选表头
 	        String[] headers = {"GUID","ZPTMC","ZPTBM","ZLSH_DD","ZYWH_VBS","ERDAT","ERZET"};
 	        csvWriter.writeRecord(headers);
@@ -655,7 +655,7 @@ public class SAPService {
         try {
             csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH,',', Charset.forName("gbk"));
             //第一行空着
-            csvWriter.writeRecord(new String[]{});
+            csvWriter.writeRecord(new String[]{""});
             //表头
             String[] headers = {"GUID","ZTYPE","ZSTATUS","ERDAT","ERZET","ITEM","WRBTR","ZZHH","ZZHH_COMP","ZZHH_NO","ZDZ_LSH","ZKK_LSH","ZSF_LSH","ZSFTD"};
             csvWriter.writeRecord(headers);
