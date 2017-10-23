@@ -1912,27 +1912,7 @@ $(function() {
             closable : true
         });
 	};
-//	$('#marketPrice').numberspinner({  
-//	    onChange:function(newValue,oldValue){ 
-//	    	var goodsPriceRate=$("#goodsPriceRate").val();
-//	    	if(goodsPriceRate==''){
-//	    		$("#goodsPrice").textbox('setValue',newValue);
-//	    	}else{
-//	    		$("#goodsPrice").textbox('setValue',FormatAfterDotNumber((newValue*goodsPriceRate).toFixed(1),2));
-//	    	}
-//	    }  
-//	});
-//	$('#editmarketPrice').numberspinner({  
-//	    onChange:function(newValue,oldValue){ 
-//	    	var goodsPriceRate=$("#goodsPriceRate").val();
-//	    	if(goodsPriceRate==''){
-//	    		$("#editgoodsPrice").textbox('setValue',newValue);
-//	    	}else{
-//	    		$("#editgoodsPrice").textbox('setValue',FormatAfterDotNumber((newValue*goodsPriceRate).toFixed(1),2));
-//	    	}
-//	    }  
-//	});
-	
+
 	// 导出商品列表
 	$ (".export-btn").click (function (){
 		debugger;
