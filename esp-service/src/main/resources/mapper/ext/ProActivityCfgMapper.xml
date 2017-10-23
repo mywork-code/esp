@@ -23,7 +23,7 @@
         from t_esp_pro_activity_cfg
         <include refid="QueryGoodsSql" />
         <![CDATA[
-        order by create_date desc
+        order by create_date desc,id desc
         ]]>
         <if test="startRecordIndex != null">
           <include refid="PAGINATION.MYSQL_PAGINATION" />
