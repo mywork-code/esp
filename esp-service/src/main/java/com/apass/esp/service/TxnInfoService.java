@@ -80,12 +80,36 @@ public class TxnInfoService {
   public ApassTxnAttr getApassTxnAttrByTxnId(Long txnId) {
     return apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
   }
-
+    /**
+     * 采购订单明细
+     * @param orderStatusList
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
     public List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd) {
     	return txnInfoMapper.selectPurchaseOrderList(orderStatusList,dateBegin,dateEnd);
     }
-
+    /**
+     * 采购订单（采购和退货）
+     * @param orderStatus
+     * @param returnStatus
+     * @param returnType
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
     public List<PurchaseReturnOrder> selectPurchaseReturnSalesList(List<String> orderStatus, List<String> returnStatus, List<String> returnType, String dateBegin, String dateEnd) {
         return txnInfoMapper.selectPurchaseReturnSalesList(orderStatus,returnStatus,returnType,dateBegin,dateEnd);
+    }
+    /**
+     * VBS业务号对应 
+     * @param orderStatusList
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
+    public List<TxnOrderInfo> selectVBSBusinessNumList(List<String> orderStatusList, String dateBegin, String dateEnd) {
+        return txnInfoMapper.selectVBSBusinessNumList(orderStatusList,dateBegin,dateEnd);
     }
 }
