@@ -570,14 +570,9 @@ public class OrderService {
          */
         JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
         LOGGER.info(orderResponse.toString());
-        if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode()))
-                && !"3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
-            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
-            throw new BusinessException("下单失败!");
+        if ((!orderResponse.isSuccess())) {
 
-        } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("call jd comfireOrder is failed ! ", orderResponse.toString());
+            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
             LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
             throw new BusinessException("下单失败!");
         }
