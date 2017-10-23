@@ -19,7 +19,7 @@
     <result column="status" property="status" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code, 
+    id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code,
     detail_desc, create_user, update_user, created_time, updated_time, activity_id, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
