@@ -1,4 +1,29 @@
 package com.apass.esp.sap;
+
+import com.apass.esp.domain.entity.ApassTxnAttr;
+import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.enums.CashRefundTxnStatus;
+import com.apass.esp.domain.enums.MerchantCode;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.mapper.CashRefundTxnMapper;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+import com.csvreader.CsvWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,26 +36,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.apass.esp.domain.entity.ApassTxnAttr;
-import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
-import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
-import com.apass.esp.domain.entity.bill.SalesOrderInfo;
-import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.MerchantCode;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.RefundStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.esp.service.order.OrderService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.FTPUtils;
-import com.csvreader.CsvWriter;
 /**
  * Created by jie.xu on 17/10/16.
  */
@@ -42,6 +47,11 @@ public class SAPService {
     private TxnInfoService txnInfoService;
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private CashRefundTxnMapper cashRefundTxnMapper;
+
+
     /**
      * 上传财物凭证调整（首付款或全额）
      */
@@ -464,6 +474,48 @@ public class SAPService {
                 csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
 
+            //获取退款单号，银联：CR+订单id；支付宝：订单id
+            List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
+                getDateBegin(), getDateEnd());
+            for(CashRefundTxn cashRefundTxn : cashRefundTxnList){
+
+                if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                    continue;
+                }
+                List<String> contentList = new ArrayList<String>();
+                contentList.add(cashRefundTxn.getId() + "");
+                contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), DateFormatUtil.YYYY_MM_DD));
+                contentList.add("2");
+                contentList.add("3");
+                if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
+                    || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+
+                    contentList.add("Y");
+                } else {
+                    contentList.add("N");
+                }
+                contentList.add("2");
+                contentList.add(ZPTMC);
+                contentList.add(SAPConstants.PLATFORM_CODE);
+                if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
+                    || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
+                    contentList.add("CR" + cashRefundTxn.getOrderId());
+                    //银联
+                    contentList.add("");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
+                } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+                    || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+                    //支付宝
+                    contentList.add(cashRefundTxn.getOrderId());
+                    contentList.add("cm2017082910000147");
+                    contentList.add("6008");
+                    contentList.add("97990155300001887");
+                }
+                contentList.add("6008");
+                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+
+            }
             csvWriter.close();
 
         } catch (Exception e) {

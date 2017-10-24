@@ -65,5 +65,4 @@
       from t_esp_cash_refund where main_order_id = #{mainOrderId} and status = #{status}
   </select>
 
-  
 </mapper>
