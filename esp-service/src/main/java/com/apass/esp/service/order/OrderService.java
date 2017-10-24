@@ -575,7 +575,7 @@ public class OrderService {
 
             LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
             LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
-            throw new BusinessException("下单失败!");
+            throw new BusinessException("抱歉,该订单暂时无法结算!");
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
 

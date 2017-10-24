@@ -10,15 +10,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,7 +253,7 @@ public class ProGroupGoodsExportFikeController {
 			}else{//如果没有，则将其活动下是商品都删除
 				proGroupGoodsService.delectGoodsByActivityId(Long.parseLong(activityId));
 			}
-			List<ProGroupGoodsTo> list = readImportExcel(importFilein,type.equals("xls"));
+			List<ProGroupGoodsTo> list = readImportExcel(importFilein);
 			count=list.size();
 			if(null !=list){
 				for(int i=0;i<list.size();i++){
@@ -320,13 +317,9 @@ public class ProGroupGoodsExportFikeController {
 		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，已存在其他有效活动中"+countExit+"件，导入失败"+countFail+"件");
 	}
 	// 将上传文件读取到List中
-	private List<ProGroupGoodsTo> readImportExcel(InputStream in,boolean isExcel2003) throws IOException {
-		Workbook hssfWorkbook = null;
-		if(isExcel2003){
-			hssfWorkbook = new HSSFWorkbook(in);
-		}else{
-			hssfWorkbook = new XSSFWorkbook(in); 
-		}
+	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException, InvalidFormatException {
+		Workbook hssfWorkbook = WorkbookFactory.create(in); 
+		//hssfWorkbook = new HSSFWorkbook(in);
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
 		Sheet hssfSheet = hssfWorkbook.getSheetAt(0);
