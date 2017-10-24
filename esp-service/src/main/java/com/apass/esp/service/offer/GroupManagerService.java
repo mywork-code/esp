@@ -3,6 +3,7 @@ package com.apass.esp.service.offer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.google.common.collect.Maps;
 
 
 @Service
@@ -97,7 +99,9 @@ public class GroupManagerService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public List<GroupManagerVo> getGroupsAndGoodsByActivityId(String activityId,String bannerId) throws BusinessException{
+	public Map<String,Object> getGroupsAndGoodsByActivityId(String activityId,String bannerId) throws BusinessException{
+		
+		Map<String,Object> maps = Maps.newHashMap();
 		
 		ProActivityCfg activity =  activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
 		if(null == activity){
@@ -109,30 +113,35 @@ public class GroupManagerService {
 		if(activity.getStartTime().getTime() > currentTime.getTime()){
 			throw new BusinessException("活动暂未开始!");
 		}
+		//活动的状态
+		String status = "";
 		if(activity.getEndTime().getTime() < currentTime.getTime()){
 			//如果banner下配置的活动已结束，就删掉banner
 			if(StringUtils.isNotBlank(bannerId)){
 				bannerMapper.delete(Long.parseLong(bannerId));
 			}
-			throw new BusinessException("活动已经结束!");
+			status = "end";
 		}
-		
-		List<GroupManagerVo> groupVoList = getGroupByActivityId(activityId);
-		if(CollectionUtils.isEmpty(groupVoList)){
-			return groupVoList;
-		}
-		
-		for(int i = groupVoList.size() - 1;i >= 0;i--){
-			GroupManagerVo vo = groupVoList.get(i);
-			vo.setActivityName(activity.getActivityName());
-			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
-			if(CollectionUtils.isEmpty(goodsList)){
-				groupVoList.remove(vo);
-				continue;
+		List<GroupManagerVo> groupVoList = new ArrayList<GroupManagerVo>();
+		if(StringUtils.isEmpty(status)){
+			groupVoList = getGroupByActivityId(activityId);
+			if(CollectionUtils.isNotEmpty(groupVoList)){
+				for(int i = groupVoList.size() - 1;i >= 0;i--){
+					GroupManagerVo vo = groupVoList.get(i);
+					vo.setActivityName(activity.getActivityName());
+					List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
+					if(CollectionUtils.isEmpty(goodsList)){
+						groupVoList.remove(vo);
+						continue;
+					}
+					vo.setGoodsList(goodsList);
+				}
 			}
-			vo.setGoodsList(goodsList);
 		}
-		return groupVoList;
+		
+		maps.put("groups", groupVoList);
+		maps.put("status",status);
+		return maps;
 	}
 	
 	

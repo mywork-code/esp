@@ -4,14 +4,13 @@ import com.apass.esp.sap.SAPService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 
 /**
  * Created by jie.xu on 17/10/17.
  */
-@Component
+//@Component
 public class SAPScheduleTask {
 
   @Value("${ftp.ip}")

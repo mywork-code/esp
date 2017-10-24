@@ -39,10 +39,8 @@ public class GroupGoodsController {
 			return Response.fail("活动编号不能为空!");
 		}
 		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
-		Map<String,Object> maps = Maps.newHashMap();
 		try {
-			List<GroupManagerVo> groupList = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
-			maps.put("groups", groupList);
+			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
