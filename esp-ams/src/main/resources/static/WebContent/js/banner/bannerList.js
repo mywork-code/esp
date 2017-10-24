@@ -192,7 +192,6 @@ $(function(){
 	}
 	//查看活动
 	$.showActivity = function(activityUrl) {
-		debugger;
 		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
@@ -205,7 +204,6 @@ $(function(){
 			//跳转到商品详情页
 			$.previewProduct(id,source);
 		}else{
-			debugger;
 			var subtitle = "活动预览-";
 			var parentTabs = parent.$('#tabs');
 			var address = "";
