@@ -1188,4 +1188,17 @@ public class GoodsService {
     return null;
   }
 
+    /**
+     * 添加banner使用
+     * @param param
+     * @return
+     */
+    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
+        GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+        entity.setGoodsCode(Long.parseLong(param));
+        entity.setExternalId(param);
+        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+    }
+
+
 }
