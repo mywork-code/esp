@@ -1,115 +1,146 @@
 package com.apass.esp.domain.vo;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 public class CheckAccountOrderDetail {
-	private Long id;
+    /**
+     * 用户id
+     */
+    private Long userId;
+    /**
+     * 订单号
+     */
+	private String orderId;
+    /**
+     * 商户名称
+     */
+    private String merchantName;
 
-    private String activityName;
+    /**
+     * 用户名:注册手机
+     */
+    private String telephone;
 
-    private String activityType;
+    /**
+     *下单时间
+     */
+    private Date createDate;
 
-    private String startTime;
+    /**
+     * 付款时间
+     */
+    private Date payTime;
 
-    private String endTime;
+    /**
+     * 订单状态
+     */
+    private String orderstatus;
+    /**
+     * 购买价格
+     */
+    private BigDecimal orderAmt;
 
-    private Long offerSill1;
+    /**
+     * 首付金额
+     */
+    private BigDecimal partPayment;
 
-    private Long discount1;
+    /**
+     * 额度支付
+     */
+    private BigDecimal anotherPayment;
 
-    private Long offerSill2;
+    /**
+     * 首付支付方式
+     */
+    private String txnType;
 
-    private Long discount2;
-    
-    private String status;
-    
-    private String userName;
-
-
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public String getActivityName() {
-        return activityName;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setActivityName(String activityName) {
-        this.activityName = activityName;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public String getActivityType() {
-        return activityType;
+    public String getMerchantName() {
+        return merchantName;
     }
 
-    public void setActivityType(String activityType) {
-        this.activityType = activityType;
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
     }
 
-    public String getStartTime() {
-        return startTime;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Long getOfferSill1() {
-        return offerSill1;
+    public Date getPayTime() {
+        return payTime;
     }
 
-    public void setOfferSill1(Long offerSill1) {
-        this.offerSill1 = offerSill1;
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
     }
 
-    public Long getDiscount1() {
-        return discount1;
+    public String getOrderstatus() {
+        return orderstatus;
     }
 
-    public void setDiscount1(Long discount1) {
-        this.discount1 = discount1;
+    public void setOrderstatus(String orderstatus) {
+        this.orderstatus = orderstatus;
     }
 
-    public Long getOfferSill2() {
-        return offerSill2;
+    public BigDecimal getOrderAmt() {
+        return orderAmt;
     }
 
-    public void setOfferSill2(Long offerSill2) {
-        this.offerSill2 = offerSill2;
+    public void setOrderAmt(BigDecimal orderAmt) {
+        this.orderAmt = orderAmt;
     }
 
-    public Long getDiscount2() {
-		return discount2;
-	}
+    public BigDecimal getPartPayment() {
+        return partPayment;
+    }
 
-	public void setDiscount2(Long discount2) {
-		this.discount2 = discount2;
-	}
+    public void setPartPayment(BigDecimal partPayment) {
+        this.partPayment = partPayment;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public BigDecimal getAnotherPayment() {
+        return anotherPayment;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setAnotherPayment(BigDecimal anotherPayment) {
+        this.anotherPayment = anotherPayment;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public String getTxnType() {
+        return txnType;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
+    public void setTxnType(String txnType) {
+        this.txnType = txnType;
+    }
 }
