@@ -930,5 +930,35 @@
 		    ]]> 
 		</if>
 	</select>
+
+	<select id="getCheckOrderDetail" resultType="com.apass.esp.domain.vo.CheckAccountOrderDetail">
+		SELECT
+			orderInfo.order_id 'orderId',
+			orderInfo.main_order_id 'mainOrderId',
+			merchant.merchant_name 'merchantName',
+			orderInfo.user_id userId,
+			orderInfo.create_date 'createDate',
+			orderInfo.pay_time 'payTime',
+			orderInfo.orderstatus orderstatus,
+			MAX(txnInfo.txn_type) txnType,
+			orderInfo.order_amt 'orderAmt'
+		FROM
+			t_esp_order_info orderInfo
+		LEFT JOIN t_esp_merchant_info merchant ON orderInfo.merchant_code = merchant.merchant_code
+		LEFT JOIN t_apass_txn_info txnInfo ON orderInfo.main_order_id = txnInfo.order_id
+		WHERE
+			orderInfo.orderstatus in ('D02','D03','D04','D05')
+			<if test="beginDate != null and beginDate != ''">
+				<![CDATA[
+				AND orderInfo.create_date >= #{beginDate}
+				]]>
+			</if>
+			AND orderInfo.create_date &lt; CURRENT_TIMESTAMP
+		GROUP BY orderInfo.order_id
+		ORDER BY
+			orderInfo.orderstatus,
+			orderInfo.create_date,
+			orderInfo.order_id DESC
+	</select>
 	
 </mapper>

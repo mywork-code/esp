@@ -13,6 +13,11 @@ public class CheckAccountOrderDetail {
      */
 	private String orderId;
     /**
+     * 主订单id
+     */
+    private String mainOrderId;
+
+    /**
      * 商户名称
      */
     private String merchantName;
@@ -52,9 +57,30 @@ public class CheckAccountOrderDetail {
     private BigDecimal anotherPayment;
 
     /**
-     * 首付支付方式
+     * 支付方式
      */
     private String txnType;
+
+    /**
+     * 首付支付方式
+     */
+    private String parTxnType;
+
+    public String getMainOrderId() {
+        return mainOrderId;
+    }
+
+    public void setMainOrderId(String mainOrderId) {
+        this.mainOrderId = mainOrderId;
+    }
+
+    public String getParTxnType() {
+        return parTxnType;
+    }
+
+    public void setParTxnType(String parTxnType) {
+        this.parTxnType = parTxnType;
+    }
 
     public Long getUserId() {
         return userId;
