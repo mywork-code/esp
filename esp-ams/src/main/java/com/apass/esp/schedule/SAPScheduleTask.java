@@ -1,6 +1,8 @@
 package com.apass.esp.schedule;
 import com.apass.esp.sap.SAPService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.FTPUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,7 +58,14 @@ public class SAPScheduleTask {
 	    sapService.transPurchaseOrderCvs(ip, port, username, password, path);
 	    sapService.transPurchaseReturnSalesCvs(ip, port, username, password, path);
 	}
-
+	@RequestMapping("/testDownLoad")
+    public void execDownLoad(){
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE,-1);
+        String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
+        sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+        FTPUtils.downloadFile(ip, port, username, password, path, "VBSAndShopping.csv", "C:\\Users\\Administrator\\Documents\\WeChat Files\\weiciduanqing\\Files");
+    }
 	@RequestMapping("/test3")
 	public void execSaleOrder(){
 		Calendar cal = Calendar.getInstance();
