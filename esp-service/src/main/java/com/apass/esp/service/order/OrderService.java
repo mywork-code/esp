@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.apass.esp.domain.vo.CheckAccountOrderDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -2928,5 +2929,9 @@ public class OrderService {
 
     public List<OrderInfoEntity> selectByStatusList(List<String> statusArray,String dateBegin,String dateEnd){
         return orderInfoRepository.selectByStatusList(statusArray,dateBegin,dateEnd);
+    }
+
+    public List<CheckAccountOrderDetail> getCheckOrderDetail(String beginDate) {
+        return orderInfoRepository.getCheckOrderDetail(beginDate);
     }
 }
