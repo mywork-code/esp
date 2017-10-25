@@ -637,11 +637,8 @@ public class OrderInfoController {
 
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {
-        String province = list.getProvince();
-        if (StringUtils.isNotEmpty(province)) {
-          if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+        if (StringUtils.isNotEmpty(list.getProvince()) && CityEnums.isContains(list.getProvince())) {
             list.setProvince("");
-          }
         }
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
@@ -700,11 +697,8 @@ public class OrderInfoController {
           statusStr);
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {
-        String province = list.getProvince();
-        if (StringUtils.isNotEmpty(province)) {
-          if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+        if (StringUtils.isNotEmpty(list.getProvince()) && CityEnums.isContains(list.getProvince())) {
             list.setProvince("");
-          }
         }
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
