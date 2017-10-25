@@ -1594,7 +1594,7 @@ public class OrderService {
                 }
             }
             //如果是京东的商品
-            if(StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
+            if(null != goods && StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
             	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
