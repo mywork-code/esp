@@ -811,86 +811,60 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       for (RepayFlow repayFlow : repayFlowList) {
         int i = 0;
+        Long userId = repayFlow.getUserId();
+        List<Long> userIdList = new ArrayList<>();
+        if (userIdList.contains(userId)) {
+          continue;
+        } else {
+          userIdList.add(userId);
+        }
+        Response responseCredit = commonHttpClient.getCustomerCreditInfo("", userId);
+
+        if(!(responseCredit != null && responseCredit.statusResult())){
+          continue;
+        }
+        Map<String, List<String>> repayMap = new HashMap<>();
+        Map<String,TxnInfoEntity> repayDateMap = new HashMap<>();
         if (repayFlow.getScheduleId() == null) {
           //统计未出账
-          Long userId = repayFlow.getUserId();
-          List<Long> userIdList = new ArrayList<>();
-          if (userIdList.contains(userId)) {
-            continue;
-          } else {
-            userIdList.add(userId);
-          }
-
-          Response responseCredit = commonHttpClient.getCustomerCreditInfo("", userId);
-          if (responseCredit != null && responseCredit.statusResult()) {
-            CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
-            if (customerCreditInfo != null) {
-              Integer billDate = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
-              Calendar cal = Calendar.getInstance();
-              cal.add(Calendar.DATE, -1);
-              Integer currentRepayDate = cal.get(Calendar.DATE);
-              Map<String, List<String>> repayMap = new HashMap<>();
-              Map<String,TxnInfoEntity> repayDateMap = new HashMap<>();
-              if (currentRepayDate > billDate) {
-                //还款时间 >  账单日
-                String endDate = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
-                cal.set(Calendar.DATE, billDate);
-                String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
-                List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
-                for (TxnInfoEntity txn : txnList) {
-                  List<String> mainOrderIdList = new ArrayList<>();
-                  if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-                    mainOrderIdList.add(txn.getOrderId());
-                  } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
-                    repayMap.put(txn.getOrderId(), mainOrderIdList);
-                    repayDateMap.put(txn.getOrderId(),txn);
-                  }
-                }
-              } else {
-                cal.set(Calendar.DATE, billDate);
-                cal.add(Calendar.DATE, 1);
-                String endDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
-                cal.add(Calendar.MONTH, -1);
-                cal.set(Calendar.DATE, billDate);
-                String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
-                List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
-
-                for (TxnInfoEntity txn : txnList) {
-                  List<String> mainOrderIdList = new ArrayList<>();
-                  if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-                    mainOrderIdList.add(txn.getOrderId());
-                  } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
-                    repayMap.put(txn.getOrderId(), mainOrderIdList);
-                    repayDateMap.put(txn.getOrderId(),txn);
-                  }
+          CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
+          if (customerCreditInfo != null) {
+            Integer billDate = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
+            //每天零晨跑，故天数-1
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, -1);
+            Integer currentRepayDate = cal.get(Calendar.DATE);
+            if (currentRepayDate > billDate) {
+              //还款时间 >  账单日
+              String endDate = DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD);
+              cal.set(Calendar.DATE, billDate);
+              String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+              for (TxnInfoEntity txn : txnList) {
+                List<String> mainOrderIdList = new ArrayList<>();
+                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                  mainOrderIdList.add(txn.getOrderId());
+                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
+                  repayMap.put(txn.getOrderId(), mainOrderIdList);
+                  repayDateMap.put(txn.getOrderId(),txn);
                 }
               }
+            } else {
+              cal.set(Calendar.DATE, billDate);
+              cal.add(Calendar.DATE, 1);
+              String endDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+              cal.add(Calendar.MONTH, -1);
+              cal.set(Calendar.DATE, billDate);
+              String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
-              for (Map.Entry<String, List<String>> entry : repayMap.entrySet()) {
-                for (String mainOrderId : entry.getValue()) {
-                  String repayId = entry.getKey();
-                  List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
-
-                  for (OrderInfoEntity order : orderList) {
-                    ++i;
-                    List<String> contentList = new ArrayList<String>();
-                    contentList.add(order.getId() + "");
-                    contentList.add("B");
-                    contentList.add("03");
-                    contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
-                    contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
-                    contentList.add(i + "");
-                    contentList.add(repayDateMap.get(repayId).getTxnAmt() + "");
-                    //银联
-                    contentList.add("");
-                    contentList.add("6008");
-                    contentList.add("97990155300001887");
-                    contentList.add(repayId);
-                    contentList.add(order.getOrderId());
-                    contentList.add(repayId);
-                    contentList.add("银联");
-                    csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-                  }
+              for (TxnInfoEntity txn : txnList) {
+                List<String> mainOrderIdList = new ArrayList<>();
+                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                  mainOrderIdList.add(txn.getOrderId());
+                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
+                  repayMap.put(txn.getOrderId(), mainOrderIdList);
+                  repayDateMap.put(txn.getOrderId(),txn);
                 }
               }
             }
@@ -898,8 +872,73 @@ public class SAPService {
 
         } else {
           //TODO:统计已出账
+          CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
+          if (customerCreditInfo != null) {
+            Integer billDay = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
+            String nowDay = DateFormatUtil.getNowDay();//当日
+            Integer currReplayDay = Integer.valueOf(DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1)
+                    ,DateFormatUtil.DD));//还款日
+            Date billDate = DateFormatUtil.mergeDate(new Date(), billDay);//当月帐单日期xxxx-xx-xx
 
+            //还款日大于帐单日
+            if(currReplayDay > billDay){
+              String endDate = DateFormatUtil.dateToString(billDate,DateFormatUtil.YYYY_MM_DD);
+              String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
+              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+              for (TxnInfoEntity txn : txnList) {
+                List<String> mainOrderIdList = new ArrayList<>();
+                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                  mainOrderIdList.add(txn.getOrderId());
+                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
+                  repayMap.put(txn.getOrderId(), mainOrderIdList);
+                  repayDateMap.put(txn.getOrderId(),txn);
+                }
+              }
+            }else{
+              String endDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
+              String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1), DateFormatUtil.YYYY_MM_DD);
+              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
+              for (TxnInfoEntity txn : txnList) {
+                List<String> mainOrderIdList = new ArrayList<>();
+                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                  mainOrderIdList.add(txn.getOrderId());
+                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
+                  repayMap.put(txn.getOrderId(), mainOrderIdList);
+                  repayDateMap.put(txn.getOrderId(),txn);
+                }
+              }
+            }
+
+          }
+        }
+
+        for (Map.Entry<String, List<String>> entry : repayMap.entrySet()) {
+          for (String mainOrderId : entry.getValue()) {
+            String repayId = entry.getKey();
+            List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+
+            for (OrderInfoEntity order : orderList) {
+              ++i;
+              List<String> contentList = new ArrayList<String>();
+              contentList.add(order.getId() + "");
+              contentList.add("B");
+              contentList.add("03");
+              contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
+              contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
+              contentList.add(i + "");
+              contentList.add(repayDateMap.get(repayId).getTxnAmt() + "");
+              //银联
+              contentList.add("");
+              contentList.add("6008");
+              contentList.add("97990155300001887");
+              contentList.add(repayId);
+              contentList.add(order.getOrderId());
+              contentList.add(repayId);
+              contentList.add("银联");
+              csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+            }
+          }
         }
       }
 
