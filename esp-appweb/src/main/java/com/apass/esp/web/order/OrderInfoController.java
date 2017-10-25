@@ -1,6 +1,7 @@
 package com.apass.esp.web.order;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -625,29 +626,15 @@ public class OrderInfoController {
     Map<String, Object> resultMap = new HashMap<String, Object>();
 
     try {
-
-      List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
-          statusStr);
+      List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,statusStr);
       //如果订单的状态为待发货，应该把订单的状态为退款中的并到待发货中
-      if (StringUtils.isNotBlank(statusStr) && StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())) {
-        List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,
-            OrderStatus.ORDER_REFUNDPROCESSING.getCode());
-        if (!CollectionUtils.isEmpty(dtoList)) {
-          if (CollectionUtils.isEmpty(resultList)) {
-            resultList = dtoList;
-          } else {
-            resultList.addAll(dtoList);
-          }
-
-        }
+      if (StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())) {
+        List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+        for (OrderDetailInfoDto orderDetailInfoDto : dtoList) {
+        	orderDetailInfoDto.setStatus(OrderStatus.ORDER_PAYED.getCode());
+		}
+        resultList.addAll(dtoList);
       }
-
-      for (OrderDetailInfoDto order : resultList) {
-        if (StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())) {
-          order.setStatus(OrderStatus.ORDER_PAYED.getCode());
-        }
-      }
-
 
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {

@@ -1450,7 +1450,7 @@ public class OrderService {
         List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
 
         if (null == orderList || orderList.isEmpty()) {
-            return Collections.emptyList();
+            return returnOrders;
         }
 
         for (OrderInfoEntity order : orderList) {
