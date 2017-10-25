@@ -1,19 +1,13 @@
 package com.apass.esp.schedule.exportcontroller;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.bill.TxnInfoEntity;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.domain.vo.CheckAccountOrderDetail;
-import com.apass.esp.repository.httpClient.CommonHttpClient;
-import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
-import com.apass.esp.sap.SAPConstants;
-import com.apass.esp.service.TxnInfoService;
-import com.apass.esp.service.order.OrderService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.HttpWebUtils;
-import com.csvreader.CsvWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.apass.esp.sap.SAPService.ZPTMC;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.service.TxnInfoService;
+import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.csvreader.CsvWriter;
 
 /**
  * Created by xiaohai on 2017/10/23.
