@@ -112,4 +112,8 @@ public class TxnInfoService {
     public List<TxnOrderInfo> selectVBSBusinessNumList(List<String> orderStatusList, String dateBegin, String dateEnd) {
         return txnInfoMapper.selectVBSBusinessNumList(orderStatusList,dateBegin,dateEnd);
     }
+
+    public List<TxnInfoEntity> selectRepayTxnByUserId(Long userId,String startDate,String endDate){
+      return txnInfoMapper.queryRepayTxnByUserId(userId,startDate,endDate);
+    }
 }

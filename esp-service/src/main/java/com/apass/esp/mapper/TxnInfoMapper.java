@@ -56,4 +56,8 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
     List<TxnOrderInfo> selectVBSBusinessNumList(@Param("statusArray") List<String> statusArray,
                                              @Param("dateBegin") String dateBegin,
                                              @Param("dateEnd") String dateEnd);
+
+  List<TxnInfoEntity> queryRepayTxnByUserId(@Param("userId") Long userId,
+                                            @Param("dateBegin") String dateBegin,
+                                            @Param("dateEnd") String dateEnd);
 }

@@ -223,4 +223,18 @@
 		<![CDATA[ AND A.update_date >= #{dateBegin}]]>
         <![CDATA[ AND A.update_date < #{dateEnd}]]>
     </select>
+
+
+    <select id="queryRepayTxnByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_apass_txn_info
+        WHERE
+        user_id = #{userId} and txn_type IN ('T02', 'T06')
+        <![CDATA[ AND txn_date >= #{dateBegin}]]>
+        <![CDATA[ AND txn_date < #{dateEnd}]]>
+        order by txn_id asc
+    </select>
+
 </mapper>
