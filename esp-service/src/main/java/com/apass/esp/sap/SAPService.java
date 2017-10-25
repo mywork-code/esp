@@ -595,7 +595,7 @@ public class SAPService {
                 contentList.add(entity.getGoodsCostPrice().toString());
                 contentList.add(entity.getAcceptGoodsType());
                 contentList.add(entity.getStockCurrAmt().toString());
-                csvWriter.writeRecord((String[]) contentList.toArray());
+                csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
         }catch (Exception e) {
             LOG.error("PurchaseReturnSalesCvs error...",e);
@@ -639,7 +639,7 @@ public class SAPService {
                 contentList.add(createdtime);
 	            /*可选表头UNAME,ZSJLY*/
 	            /*write*/
-	            csvWriter.writeRecord((String[]) contentList.toArray());
+	            csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
 	        }
 	    }catch (Exception e){
 	        LOG.error("VBSBusinessCvs error...",e);
