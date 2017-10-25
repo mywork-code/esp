@@ -593,7 +593,7 @@ public class SAPService {
                 contentList.add(entity.getGoodsCode());
                 contentList.add(entity.getGoodsName());
                 contentList.add(entity.getGoodsCostPrice().toString());
-                contentList.add(entity.getAcceptGoodsType());
+                contentList.add(entity.getGoodsSkuAttr());
                 contentList.add(entity.getStockCurrAmt().toString());
                 csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
