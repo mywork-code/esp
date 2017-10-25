@@ -629,12 +629,16 @@ public class OrderInfoController {
       //如果订单的状态为待发货，应该把订单的状态为退款中的并到待发货中
       if (StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())) {
         List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,OrderStatus.ORDER_REFUNDPROCESSING.getCode());
-        for (OrderDetailInfoDto orderDetailInfoDto : dtoList) {
-        	orderDetailInfoDto.setStatus(OrderStatus.ORDER_PAYED.getCode());
-		}
         resultList.addAll(dtoList);
       }
-
+      /**
+       * 处理退款中的订单
+       */
+      for (OrderDetailInfoDto order : resultList) {
+    	  if(StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())){
+    		  order.setStatus(OrderStatus.ORDER_PAYED.getCode());
+    	  }
+	   }
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {
         if (StringUtils.isNotEmpty(list.getProvince()) && CityEnums.isContains(list.getProvince())) {
