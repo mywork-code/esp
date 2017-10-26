@@ -4,6 +4,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
+import com.apass.esp.domain.entity.RepaySchedule.RepayScheduleEntity;
 import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
@@ -20,6 +21,7 @@ import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
+import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -66,6 +68,9 @@ public class SAPService {
 
   @Autowired
   private CommonHttpClient commonHttpClient;
+
+  @Autowired
+  private RepayScheduleRepository repayScheduleRepository;
 
   /**
    * 上传财物凭证调整（首付款或全额）
@@ -871,44 +876,30 @@ public class SAPService {
           }
 
         } else {
-          //TODO:统计已出账
+          //统计已出账
           CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
           if (customerCreditInfo != null) {
             Integer billDay = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
-            String nowDay = DateFormatUtil.getNowDay();//当日
-            Integer currReplayDay = Integer.valueOf(DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(), -1)
-                    ,DateFormatUtil.DD));//还款日
-            Date billDate = DateFormatUtil.mergeDate(new Date(), billDay);//当月帐单日期xxxx-xx-xx
+            //根据schedule_id查询还款计划表
+            RepayScheduleEntity repayScheduleEntity =repayScheduleRepository.selectByPrimaryKey(repayFlow.getScheduleId());
 
-            //还款日大于帐单日
-            if(currReplayDay > billDay){
-              String endDate = DateFormatUtil.dateToString(billDate,DateFormatUtil.YYYY_MM_DD);
-              String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
-              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
-              for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
-                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-                  mainOrderIdList.add(txn.getOrderId());
-                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
-                  repayMap.put(txn.getOrderId(), mainOrderIdList);
-                  repayDateMap.put(txn.getOrderId(),txn);
-                }
-              }
-            }else{
-              String endDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
-              String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1), DateFormatUtil.YYYY_MM_DD);
-              List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+            //根据还款计划中的loanPmtDueDate（最后还款日期查询交易流水表对应的订单）
+            Date billDate = DateFormatUtil.mergeDate(repayScheduleEntity.getLoanPmtDueDate(), billDay);//对应当月的帐单日
 
-              for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
-                if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-                  mainOrderIdList.add(txn.getOrderId());
-                } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
-                  repayMap.put(txn.getOrderId(), mainOrderIdList);
-                  repayDateMap.put(txn.getOrderId(),txn);
-                }
+            String endDate = DateFormatUtil.dateToString(billDate,DateFormatUtil.YYYY_MM_DD);
+            String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
+            List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+
+            for (TxnInfoEntity txn : txnList) {
+              List<String> mainOrderIdList = new ArrayList<>();
+              if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+                mainOrderIdList.add(txn.getOrderId());
+              } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
+                repayMap.put(txn.getOrderId(), mainOrderIdList);
+                repayDateMap.put(txn.getOrderId(),txn);
               }
             }
+
 
           }
         }

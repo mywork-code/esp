@@ -3,6 +3,29 @@
 
 <!-- 还款计划表 -->
 <mapper namespace="RepayScheduleEntity">
+	<!-- 查询条件 -->
+	<sql id="QueryRepayScheduleSql">
+		<where>
+			<if test="scheduleId != null and scheduleId != ''">
+				AND schedule_id = #{scheduleId,jdbcType=BIGINT}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND user_id = #{userId,jdbcType=BIGINT}
+			</if>
+			<if test="loanId != null and loanId != ''">
+				AND loan_id = #{loanId,jdbcType=BIGINT}
+			</if>
+			<if test="loanPmtDueDate != null and loanPmtDueDate != ''">
+				AND loan_pmt_due_date = #{loanPmtDueDate, jdbcType=DATE}
+			</if>
+			<if test="loanStatus != null and loanStatus != ''">
+				AND loan_status = #{loanStatus,VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+
+
 	<!-- 根据vbsid查询到期还款日期 -->	
 	<select id="selectByVbsid" parameterType="Long" resultType="String">
 		SELECT
@@ -12,6 +35,42 @@
 		 WHERE
 				loan_init_term = '1'
 		  AND   loan_id =#{value}
+	</select>
+
+
+
+	<!-- 根据vbsid查询到期还款日期 -->
+	<select id="scheduleId" parameterType="Long" resultType="RepayScheduleEntity">
+		<![CDATA[
+	      SELECT
+		    SCHEDULE_ID AS scheduleId,
+			USER_ID AS userId,
+			LOAN_ID AS loanId,
+			LOAN_INIT_PRIN AS loanInitPrin,
+			LOAN_INIT_TERM AS loanInitTerm,
+			CURR_TERM AS currTerm,
+			LOAN_TERM_PRIN AS loanTermPrin,
+			LOAN_TERM_INT AS loanTermInt,
+			LOAN_TERM_FEE AS loanTermfee,
+			LOAN_SVC_FEE AS loanSvcFee,
+			loan_assure_fee AS loanAssureFee,
+			loan_formalities_fee AS loanFormalitiesFee,
+			loan_plat_fee AS loanPlatFee,
+			LOAN_INTEREST_AMT AS loanInterestAmt,
+			LOAN_PMT_DUE_DATE AS loanPmtDueDate,
+			STMT_FLAG AS stmtFlag,
+			CREATE_USER AS createUser,
+			CREATE_DATE AS createDate,
+			UPDATE_USER AS updateUser,
+			UPDATE_DATE AS updateDate,
+			LOAN_STATUS AS loanStatus
+		  FROM
+		    T_APASS_REPAY_SCHEDULE
+	    ]]>
+		<include refid="QueryRepayScheduleSql" />
+		<![CDATA[
+			ORDER BY loan_pmt_due_date DESC,CURR_TERM DESC
+		]]>
 	</select>
 	
 </mapper> 

@@ -12,4 +12,9 @@ public class RepayScheduleRepository  extends BaseMybatisRepository<RepaySchedul
     public String selectByVbsid(Long vbsid) {
         return getSqlSession().selectOne(getSQL("selectByVbsid"), vbsid);
     }
+
+
+    public RepayScheduleEntity selectByPrimaryKey(Long scheduleId) {
+        return  getSqlSession().selectOne(getSQL("selectByPrimaryKey"),scheduleId);
+    }
 }
