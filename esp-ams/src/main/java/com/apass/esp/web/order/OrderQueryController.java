@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.logistics.JdTrack;
 import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
 import com.apass.esp.domain.entity.datadic.DataDicInfoEntity;
@@ -26,7 +24,6 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PreDeliveryType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.service.datadic.DataDicService;
 import com.apass.esp.service.jd.JdLogisticsService;
