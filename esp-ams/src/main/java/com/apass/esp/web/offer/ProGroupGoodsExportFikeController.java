@@ -43,6 +43,8 @@ import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 
@@ -120,6 +122,7 @@ public class ProGroupGoodsExportFikeController {
      */
 	@ResponseBody
     @RequestMapping(value ="/edit/sort/save",method = RequestMethod.POST)
+	@LogAnnotion(operationType = "分组商品上移下移", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response groupEditSortSave(GoodsOrderSortVo vo){
 		ProGroupGoods proGroupGoods = null;
 		try {
@@ -143,6 +146,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/addOneGoods")
+	@LogAnnotion(operationType = "商品添加至分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
 			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
 		int count = 0;
@@ -196,6 +200,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/removeGoods")
+	@LogAnnotion(operationType = "从分组移除商品", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response RemoveGoodsFromGroup(@RequestParam("id") String id) {
 		ProGroupManager proGroupManager = null;
 		try {
@@ -232,6 +237,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping("/importFile")
+	@LogAnnotion(operationType = "导入商品到活动", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
 		int count = 0;// 导入条数

@@ -16,6 +16,8 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 
@@ -48,6 +50,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
+	@LogAnnotion(operationType = "添加分组信息", valueType = LogValueTypeEnum.VALUE_DTO)
  	public Response groupAddSave(GroupManagerVo vo){
 		try {
 			validateParams(vo);
@@ -64,6 +67,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
+	@LogAnnotion(operationType = "编辑分组信息", valueType = LogValueTypeEnum.VALUE_DTO)
  	public Response groupEditSave(GroupManagerVo vo){
 		try {
 			validateParams(vo);
@@ -79,6 +83,7 @@ public class GroupManagerController {
 	
 	@ResponseBody
     @RequestMapping(value ="/delete",method = RequestMethod.POST)
+	@LogAnnotion(operationType = "删除分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response groupDelete(GroupManagerVo vo){
 		try {
 			ValidateUtils.isNullObject(vo.getId(), "分组编号不能为空！");
