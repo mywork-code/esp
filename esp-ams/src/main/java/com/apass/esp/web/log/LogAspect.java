@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.log.LogInfoEntity;
 import com.apass.esp.service.log.LogService;
 import com.apass.gfb.framework.log.LogAnnotion;
@@ -99,23 +100,22 @@ public class LogAspect {
         String operationType = annotion.operationType();
         LogValueTypeEnum valueType = annotion.valueType();
         
-        if(valueType == LogValueTypeEnum.VALUE_FILE){
-        	Object obj = arguments[0];
-        	if(obj instanceof MultipartFile){
-        		CommonsMultipartFile file = (CommonsMultipartFile)obj;
-                content.append("文件名:"+file.getOriginalFilename() + "####");
-        	}
-        }else if(valueType == LogValueTypeEnum.VALUE_REQUEST || valueType == LogValueTypeEnum.VALUE_EXPORT){
-        	if(valueType == LogValueTypeEnum.VALUE_EXPORT){
-        		operationType = request.getParameter("fileName");
-        	}
-        	content.append(JSON.toJSONString(request.getParameterMap()));
+        if(valueType == LogValueTypeEnum.VALUE_EXPORT){
+        	operationType = request.getParameter("fileName");
+        	content.append(JSON.toJSONString(request.getParameter("params")));
         }else{
         	for (Object ss : arguments) {
         		if(null == ss){
         			continue;
         		}
-            	content.append("#"+ss.toString()+"#");
+        		if(ss instanceof MultipartFile){
+        			MultipartFile file = (MultipartFile)ss;
+                    content.append("文件名:"+file.getOriginalFilename() + "####");
+        		}else if(ss instanceof HttpServletRequest){
+        			content.append(JSONObject.toJSONString(request.getParameterMap()));
+        		}else{
+        			content.append("#"+ JSONObject.toJSONString(ss)+"#");
+        		}
         	}
         }
         logInfo.setContent(content.toString());
