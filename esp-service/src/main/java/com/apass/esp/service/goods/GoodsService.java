@@ -1095,6 +1095,7 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
+      goods.setSordNo(g.getSordNo());
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));

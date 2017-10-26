@@ -98,7 +98,20 @@ public class Goods implements IdAble{
      */
     private String goodsSkuAttrPinyin;
 
+	/**
+	 * 排序字段
+	 */
+	private Integer sordNo;
+
     private String goodsDetail;
+
+	public Integer getSordNo() {
+		return sordNo;
+	}
+
+	public void setSordNo(Integer sordNo) {
+		this.sordNo = sordNo;
+	}
 
 	public String getGoodsDetail() {
 		return goodsDetail;
