@@ -2332,7 +2332,7 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
-    public List<PurchaseRequestDto> validateGoodsStock(Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException {
+    public List<PurchaseRequestDto> validateGoodsStock(Long addreesId,List<PurchaseRequestDto> purchaseList,boolean exsitJdGoods) throws BusinessException {
     	/**
     	 * 获取地址信息
     	 */
@@ -2340,12 +2340,16 @@ public class OrderService {
     	if(null == address){
     		return null;
     	}
-    	Region region = new Region(Integer.parseInt(address.getProvinceCode()), Integer.parseInt(address.getCityCode()), 
-    			Integer.parseInt(address.getDistrictCode()), Integer.parseInt(address.getTownsCode()));
+    	Region region = null;
+    	if(exsitJdGoods){
+    		region = new Region(Integer.parseInt(address.getProvinceCode()), Integer.parseInt(address.getCityCode()), 
+        			Integer.parseInt(address.getDistrictCode()), Integer.parseInt(address.getTownsCode()));
+    	}
+    	
     	for (PurchaseRequestDto purchase : purchaseList) {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
-            GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
             if(StringUtils.isBlank(goods.getSource())){
+            	GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
         		if(stock.getStockCurrAmt() == 0){
         			purchase.setUnStockDesc(true);
         		}
