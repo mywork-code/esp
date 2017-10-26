@@ -1,7 +1,6 @@
 package com.apass.esp.web.offer;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.google.common.collect.Maps;
 
 /**
  * 活动配置
