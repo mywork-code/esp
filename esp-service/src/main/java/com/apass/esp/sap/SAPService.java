@@ -299,6 +299,34 @@ public class SAPService {
     }
   }
 
+
+  /**
+   * 客户全额还款流水（未出帐+已出帐）
+   *
+   * @param ip
+   * @param port
+   * @param username
+   * @param password
+   * @param path
+   */
+  public void generateQuanEnHuanKuanCsv(String ip, int port, String username, String password, String path) {
+    InputStream fis = null;
+    try {
+      generateQuanEnHuanKuanCsv();
+      fis = new FileInputStream(new File(SAPConstants.QUANENHUANKUAN_FILE_PATH));
+      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.QUANENHUANKUAN_FILE_NAME, fis);
+    } catch (Exception e) {
+      LOG.error("ftp generateQuanEnHuanKuanCsv csv file notfound", e);
+    } finally {
+      try {
+        if (fis != null)
+          fis.close();
+      } catch (IOException e) {
+        LOG.debug("IO Close error", e);
+      }
+    }
+  }
+
   /**
    * 首付款或全额（购买退货）流水
    */
@@ -807,7 +835,7 @@ public class SAPService {
   private void generateQuanEnHuanKuanCsv() throws Exception {
     List<RepayFlow> repayFlowList = repayFlowMapper.querySuccessByDate(getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
       csvWriter.writeRecord(new String[]{""});
       //表头

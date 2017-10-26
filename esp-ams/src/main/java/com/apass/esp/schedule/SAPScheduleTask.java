@@ -79,6 +79,9 @@ public class SAPScheduleTask {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE,-1);
 		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
+		sapService.commodityReturnFlow(ip, port, username, password, path);
 		sapService.salesOrder(ip, port, username, password, path);
+		sapService.salesOrderInfo(ip, port, username, password, path);
+		sapService.generateQuanEnHuanKuanCsv(ip, port, username, password, path);
 	}
 }

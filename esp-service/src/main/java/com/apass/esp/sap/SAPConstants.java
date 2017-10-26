@@ -25,4 +25,6 @@ public final class SAPConstants {
     public static final String PURCHASERETURNSALES_FILE_NAME = "PurchaseOrder.csv";
     public static final String PURCHASEORRETURN_FILE_PATH = "/PurchaseOrderFlow.csv";
     public static final String PURCHASEORRETURN_FILE_NAME = "PurchaseOrderFlow.csv";
+	public static final String QUANENHUANKUAN_FILE_PATH = "/FullRepaymentFlow.csv";
+	public static final String QUANENHUANKUAN_FILE_NAME = "FullRepaymentFlow.csv";
 }

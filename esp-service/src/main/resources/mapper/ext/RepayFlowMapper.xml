@@ -28,7 +28,7 @@
 	 from  t_apass_repay_flow
 	 where status = 'S'
 	   <![CDATA[ and repay_date >= #{dateBegin}]]>
-        <![CDATA[ and repay_date < #{dateEnd}]]>
+        <![CDATA[ and repay_date < #{endDate}]]>
 	</select>
 
 </mapper>
