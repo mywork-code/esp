@@ -352,8 +352,8 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
         contentList.add("");
-        contentList.add("收款");
-        contentList.add("S".equals(txn.getStatus()) ? "成功" : "失败");
+        contentList.add("B");
+        contentList.add("S".equals(txn.getStatus()) ? "03" : "06");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         contentList.add(String.valueOf(rowNum));
