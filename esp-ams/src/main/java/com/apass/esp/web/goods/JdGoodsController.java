@@ -50,7 +50,7 @@ public class JdGoodsController {
     }
 
     /**
-     * 管理京东类目
+     * 关联京东类目
      * @param param
      * @return
      */

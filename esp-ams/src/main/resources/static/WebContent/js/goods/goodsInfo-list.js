@@ -1975,7 +1975,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
 	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
 	addSupport7dRefund=$("input[name='addSupport7dRefund']:checked").val(),
-	sordNo=$("#sordNo").textbox('getValue');
+	sordNo=$("#sordNo").numberbox('getValue');
 	debugger;
 	//字段效验
 	if (null == categoryId1 || ("") == categoryId1) {
@@ -2054,10 +2054,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "是否支持7天退货还能为空！", "info");
 		return;
 	}
-	if (null == sordNo || ("") == sordNo) {
-		$.messager.alert("提示", "排序不能为空！", "info");
-		return;
-	}
+	// if (null == sordNo || ("") == sordNo) {
+	// 	$.messager.alert("提示", "排序不能为空！", "info");
+	// 	return;
+	// }
 	debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
@@ -2266,7 +2266,7 @@ function initGoodsInfo(){
 	$("#addsupNo").textbox('clear');
 	$('#addgoodsSkuType').combobox('setValue','');
 	$('#addUnSupportProvince').combobox('setValue','');
-	$("#sordNo").numberbox('setValue','');  
+	$("#sordNo").numberbox('setValue','');
 }
 
 //编辑商品初始化商品信息
