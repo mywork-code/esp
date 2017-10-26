@@ -21,6 +21,8 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.jwt.common.ListeningRegExpUtils;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -98,6 +100,7 @@ public class ActivityCfgController {
  	 */
  	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
+ 	@LogAnnotion(operationType = "添加活动信息", valueType = LogValueTypeEnum.VALUE_DTO)
  	public Response activityAddSave(ActivityCfgVo vo){
  		try {
  			validateParams(vo, false);
