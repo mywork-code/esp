@@ -15,10 +15,12 @@
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="coupon" property="coupon" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, activity_name, activity_type, start_time, end_time, offer_sill1, discount_amonut1, 
-    offer_sill2, discount_amount2, create_user, update_user, created_time, updated_time
+    offer_sill2, discount_amount2, create_user, update_user, created_time, updated_time, 
+    coupon
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -34,13 +36,13 @@
     insert into t_esp_pro_activity_cfg (activity_name, activity_type, start_time, 
       end_time, offer_sill1, discount_amonut1, 
       offer_sill2, discount_amount2, create_user, 
-      update_user, created_time, updated_time
-      )
+      update_user, created_time, updated_time, 
+      coupon)
     values (#{activityName,jdbcType=VARCHAR}, #{activityType,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
       #{endTime,jdbcType=TIMESTAMP}, #{offerSill1,jdbcType=DECIMAL}, #{discountAmonut1,jdbcType=DECIMAL}, 
       #{offerSill2,jdbcType=DECIMAL}, #{discountAmount2,jdbcType=DECIMAL}, #{createUser,jdbcType=VARCHAR}, 
-      #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}
-      )
+      #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{coupon,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProActivityCfg" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_pro_activity_cfg
@@ -81,6 +83,9 @@
       <if test="updatedTime != null" >
         updated_time,
       </if>
+      <if test="coupon != null" >
+        coupon,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="activityName != null" >
@@ -118,6 +123,9 @@
       </if>
       <if test="updatedTime != null" >
         #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="coupon != null" >
+        #{coupon,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -160,6 +168,9 @@
       <if test="updatedTime != null" >
         updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="coupon != null" >
+        coupon = #{coupon,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -176,7 +187,8 @@
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
-      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      coupon = #{coupon,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
