@@ -17,10 +17,11 @@ import java.util.List;
 /**
  * @description
  *
- * 				商品基本信息表 t_ajp_goods_base_info
+ *  商品基本信息表 t_ajp_goods_base_info
  *
  * @author liuchao01
  * @version $Id: ProductInfo.java, v 0.1 2016年12月19日 下午1:46:38 liuchao01 Exp $
+ * 20171027 ht 新增精选商品排序字段sift_sort
  */
 @MyBatisEntity
 public class GoodsInfoEntity {
@@ -645,60 +646,66 @@ public class GoodsInfoEntity {
         this.pageSize = pageSize;
     }
     
-	public String getGoodsSkuAttr() {
-		return goodsSkuAttr;
-	}
+    public String getGoodsSkuAttr() {
+        return goodsSkuAttr;
+    }
 
-	public void setGoodsSkuAttr(String goodsSkuAttr) {
-		this.goodsSkuAttr = goodsSkuAttr;
-	}
+    public void setGoodsSkuAttr(String goodsSkuAttr) {
+        this.goodsSkuAttr = goodsSkuAttr;
+    }
 
-	public BigDecimal getMarketPrice() {
-		return marketPrice;
-	}
+    public BigDecimal getMarketPrice() {
+        return marketPrice;
+    }
 
-	public void setMarketPrice(BigDecimal marketPrice) {
-		this.marketPrice = marketPrice;
-	}
+    public void setMarketPrice(BigDecimal marketPrice) {
+        this.marketPrice = marketPrice;
+    }
 
-	public BigDecimal getGoodsCostPrice() {
-		return goodsCostPrice;
-	}
+    public BigDecimal getGoodsCostPrice() {
+        return goodsCostPrice;
+    }
 
-	public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
-		this.goodsCostPrice = goodsCostPrice;
-	}
-
-	@Override
-	public String toString() {
-		return "GoodsInfoEntity [id=" + id + ", goodId=" + goodId
-				+ ", goodsCode=" + goodsCode + ", categoryCode=" + categoryCode
-				+ ", goodsName=" + goodsName + ", goodsTitle=" + goodsTitle
-				+ ", goodsSellPt=" + goodsSellPt + ", goodsType=" + goodsType
-				+ ", goodsTypeDesc=" + goodsTypeDesc + ", goodsLogoUrl="
-				+ goodsLogoUrl + ", goodsLogoUrlNew=" + goodsLogoUrlNew
-				+ ", goodsSiftUrl=" + goodsSiftUrl + ", goodsSiftUrlNew="
-				+ goodsSiftUrlNew + ", listTime=" + listTime
-				+ ", listTimeString=" + listTimeString + ", delistTime="
-				+ delistTime + ", delistTimeString=" + delistTimeString
-				+ ", newCreatDate=" + newCreatDate + ", proDate=" + proDate
-				+ ", keepDate=" + keepDate + ", supNo=" + supNo
-				+ ", createUser=" + createUser + ", updateUser=" + updateUser
-				+ ", createDate=" + createDate + ", updateDate=" + updateDate
-				+ ", merchantCode=" + merchantCode + ", remark=" + remark
-				+ ", isDelete=" + isDelete + ", status=" + status
-				+ ", statuList=" + statuList + ", statusDesc=" + statusDesc
-				+ ", googsDetail=" + googsDetail + ", goodsSkuType="
-				+ goodsSkuType + ", goodsModel=" + goodsModel
-				+ ", merchantName=" + merchantName + ", merchantType="
-				+ merchantType + ", categoryId1=" + categoryId1
-				+ ", categoryId2=" + categoryId2 + ", categoryId3="
-				+ categoryId3 + ", categoryName3=" + categoryName3
-				+ ", unSupportProvince=" + unSupportProvince + ", source="
-				+ source + ", externalId=" + externalId + ", goodsPrice="
-				+ goodsPrice + ", firstPrice=" + firstPrice + ", attrDesc="
-				+ attrDesc + ", begin=" + begin + ", pageSize=" + pageSize
-				+ ", colFalgt=" + colFalgt + ", sordNo=" + sordNo + "]";
-	}
-
+    public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
+        this.goodsCostPrice = goodsCostPrice;
+    }
+    private Integer siftSort;//精选商品排序字段
+    public Integer getSiftSort() {
+            return siftSort;
+    }
+    public void setSiftSort(Integer siftSort) {
+        this.siftSort = siftSort;
+    }
+    @Override
+    public String toString() {
+        return "GoodsInfoEntity [id=" + id + ", goodId=" + goodId
+                + ", goodsCode=" + goodsCode + ", categoryCode=" + categoryCode
+                + ", goodsName=" + goodsName + ", goodsTitle=" + goodsTitle
+                + ", goodsSellPt=" + goodsSellPt + ", goodsType=" + goodsType
+                + ", goodsTypeDesc=" + goodsTypeDesc + ", goodsLogoUrl="
+                + goodsLogoUrl + ", goodsLogoUrlNew=" + goodsLogoUrlNew
+                + ", goodsSiftUrl=" + goodsSiftUrl + ", goodsSiftUrlNew="
+                + goodsSiftUrlNew + ", listTime=" + listTime
+                + ", listTimeString=" + listTimeString + ", delistTime="
+                + delistTime + ", delistTimeString=" + delistTimeString
+                + ", newCreatDate=" + newCreatDate + ", proDate=" + proDate
+                + ", keepDate=" + keepDate + ", supNo=" + supNo
+                + ", createUser=" + createUser + ", updateUser=" + updateUser
+                + ", createDate=" + createDate + ", updateDate=" + updateDate
+                + ", merchantCode=" + merchantCode + ", remark=" + remark
+                + ", isDelete=" + isDelete + ", status=" + status
+                + ", statuList=" + statuList + ", statusDesc=" + statusDesc
+                + ", googsDetail=" + googsDetail + ", goodsSkuType="
+                + goodsSkuType + ", goodsModel=" + goodsModel
+                + ", merchantName=" + merchantName + ", merchantType="
+                + merchantType + ", categoryId1=" + categoryId1
+                + ", categoryId2=" + categoryId2 + ", categoryId3="
+                + categoryId3 + ", categoryName3=" + categoryName3
+                + ", unSupportProvince=" + unSupportProvince + ", source="
+                + source + ", externalId=" + externalId + ", goodsPrice="
+                + goodsPrice + ", firstPrice=" + firstPrice + ", attrDesc="
+                + attrDesc + ", begin=" + begin + ", pageSize=" + pageSize
+                + ", colFalgt=" + colFalgt + ", sordNo=" + sordNo + ", siftSort="
+                + siftSort + "]";
+    }
 }

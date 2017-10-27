@@ -76,7 +76,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
      * 搜索商品
      */
     public Pagination<GoodsInfoEntity> searchList(GoodsInfoEntity domain, Page page){
-    	return this.pageBykey(domain, page,"searchGoodsList");
+        return this.pageBykey(domain, page,"searchGoodsList");
     }
 
     /**
@@ -111,11 +111,11 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
      */
     public GoodsDetailInfoEntity loadContainGoodsAndGoodsStockAndMerchant(Long goodsStockId) {
 
-    	/**
-    	 * 根据stockId获取goodsId
-    	 */
-    	GoodsStockInfoEntity stock =  stockRepository.select(goodsStockId);
-    	HashMap<String, Object> param = new HashMap<>();
+        /**
+         * 根据stockId获取goodsId
+         */
+        GoodsStockInfoEntity stock =  stockRepository.select(goodsStockId);
+        HashMap<String, Object> param = new HashMap<>();
         param.put("goodsId", stock.getGoodsId());
         param.put("goodsStockId", goodsStockId);
         return this.getSqlSession().selectOne("loadContainGoodsAndGoodsStockAndMerchant", param);
@@ -248,7 +248,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         HashMap<String, Object> param = new HashMap<>();
         param.put("index", index);
         param.put("size", size);
-    	return getSqlSession().selectList("selectUpGoods",param);
+        return getSqlSession().selectList("selectUpGoods",param);
     }
 
 
@@ -258,9 +258,15 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         param.put("size", size);
         return getSqlSession().selectList("selectJdGoods",param);
     }
-
+    /**
+     * 精选商品列表
+     * @param goodsInfoEntity
+     * @return
+     */
+    public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+        return getSqlSession().selectList("pageForSiftList", entity);
+    }
     public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String, Object> params) {
         return this.getSqlSession().selectList("selectByCategoryId2AndsordNo", params);
     }
-
 }
