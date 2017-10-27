@@ -1202,4 +1202,7 @@ public class GoodsService {
     }
 
 
+    public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {
+        return goodsDao.selectByCategoryId2AndsordNo(params);
+    }
 }
