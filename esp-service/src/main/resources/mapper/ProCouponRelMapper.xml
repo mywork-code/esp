@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ProCouponRelMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProCouponRel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="pro_activity_id" property="proActivityId" jdbcType="BIGINT" />
+    <result column="coupon_id" property="couponId" jdbcType="BIGINT" />
+    <result column="total_num" property="totalNum" jdbcType="INTEGER" />
+    <result column="remain_num" property="remainNum" jdbcType="INTEGER" />
+    <result column="limit_num" property="limitNum" jdbcType="INTEGER" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, pro_activity_id, coupon_id, total_num, remain_num, limit_num, created_time, updated_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_pro_coupon_rel
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_pro_coupon_rel
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ProCouponRel" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_coupon_rel (pro_activity_id, coupon_id, total_num, 
+      remain_num, limit_num, created_time, 
+      updated_time)
+    values (#{proActivityId,jdbcType=BIGINT}, #{couponId,jdbcType=BIGINT}, #{totalNum,jdbcType=INTEGER}, 
+      #{remainNum,jdbcType=INTEGER}, #{limitNum,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, 
+      #{updatedTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProCouponRel" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_coupon_rel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="proActivityId != null" >
+        pro_activity_id,
+      </if>
+      <if test="couponId != null" >
+        coupon_id,
+      </if>
+      <if test="totalNum != null" >
+        total_num,
+      </if>
+      <if test="remainNum != null" >
+        remain_num,
+      </if>
+      <if test="limitNum != null" >
+        limit_num,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="proActivityId != null" >
+        #{proActivityId,jdbcType=BIGINT},
+      </if>
+      <if test="couponId != null" >
+        #{couponId,jdbcType=BIGINT},
+      </if>
+      <if test="totalNum != null" >
+        #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainNum != null" >
+        #{remainNum,jdbcType=INTEGER},
+      </if>
+      <if test="limitNum != null" >
+        #{limitNum,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProCouponRel" >
+    update t_esp_pro_coupon_rel
+    <set >
+      <if test="proActivityId != null" >
+        pro_activity_id = #{proActivityId,jdbcType=BIGINT},
+      </if>
+      <if test="couponId != null" >
+        coupon_id = #{couponId,jdbcType=BIGINT},
+      </if>
+      <if test="totalNum != null" >
+        total_num = #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="remainNum != null" >
+        remain_num = #{remainNum,jdbcType=INTEGER},
+      </if>
+      <if test="limitNum != null" >
+        limit_num = #{limitNum,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProCouponRel" >
+    update t_esp_pro_coupon_rel
+    set pro_activity_id = #{proActivityId,jdbcType=BIGINT},
+      coupon_id = #{couponId,jdbcType=BIGINT},
+      total_num = #{totalNum,jdbcType=INTEGER},
+      remain_num = #{remainNum,jdbcType=INTEGER},
+      limit_num = #{limitNum,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
