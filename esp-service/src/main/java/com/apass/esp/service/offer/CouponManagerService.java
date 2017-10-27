@@ -1,7 +1,13 @@
 package com.apass.esp.service.offer;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.mapper.ProCouponMapper;
 
 /**
  * 
@@ -15,11 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = { Exception.class })
 public class CouponManagerService {
 
+	@Autowired
+	private ProCouponMapper couponMapper;
 	/**
-	 * 获取优惠券
-	 * @param userId
+	 * 根据活动的Id，获取优惠券
+	 * @param activityId
+	 * @return
 	 */
-	public void getCoupon(String userId,String couponId){
+	public List<ProCoupon> getCouponsByActivityId(String activityId){
 		
+		return null;
 	}
+	
+	
 }
