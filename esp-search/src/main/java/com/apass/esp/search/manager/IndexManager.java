@@ -72,8 +72,9 @@ public class IndexManager<T> {
             multiMatchQueryBuilder.field("categoryName3", 1.5f);
             multiMatchQueryBuilder.field("goodsName", 2f);
             multiMatchQueryBuilder.field("goodsSkuAttr", 0.8f);
+            //TODO
             Pagination<Goods> goodsPagination =
-                    search(multiMatchQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+                    search(multiMatchQueryBuilder, IndexType.GOODS, desc, from, size, sortField);
             if (!CollectionUtils.isEmpty(goodsPagination.getDataList())) {
                 return goodsPagination;
             }
@@ -85,12 +86,18 @@ public class IndexManager<T> {
      * 二级类目查询
      * http://blog.csdn.net/xiaohulunb/article/details/37877435
      */
-	public static <Goods> Pagination<Goods> goodSearchCategoryId2(String categoryId2, String sortField, boolean desc,
+	public static <Goods> Pagination<Goods> goodSearchCategoryId2(String categoryId2, String sortField1, boolean desc,
 			int from, int size) {
         TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("categoryId2", categoryId2);
-		Pagination<Goods> goodsPagination = search(termQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+		Pagination<Goods> goodsPagination = search(termQueryBuilder, IndexType.GOODS, desc, from, size, sortField1);
         return goodsPagination;
 	}
+    public static <Goods> Pagination<Goods> goodSearchCategoryId2ForOtherCategory(String categoryId2, String sortField1,String sortField2, boolean desc,
+                                                                  int from, int size) {
+        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("categoryId2", categoryId2);
+        Pagination<Goods> goodsPagination = search(termQueryBuilder, IndexType.GOODS, desc, from, size, sortField1,sortField2);
+        return goodsPagination;
+    }
 
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -110,7 +117,7 @@ public class IndexManager<T> {
                 .should(QueryBuilders.termQuery("categoryName2Pinyin", value).boost(1f))
                 .should(QueryBuilders.termQuery("categoryName3Pinyin", value).boost(1.5f))
                 .should(QueryBuilders.termQuery("goodsSkuAttrPinyin", value).boost(0.8f));
-        return search(boolQueryBuilder, IndexType.GOODS, sortField, desc, from, size);
+        return search(boolQueryBuilder, IndexType.GOODS, desc, from, size, sortField);
     }
 
     /**
@@ -199,13 +206,18 @@ public class IndexManager<T> {
      * @param size         页面大小
      * @return
      */
-    private static <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, String sortField, boolean desc, int from, int size) {
+    private static <T> Pagination<T> search(QueryBuilder queryBuilder, IndexType type, boolean desc, int from, int size, String ...sortFields) {
         List<T> results = new ArrayList<>();
         SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())//不同的索引 变量 代码通用
                 .setTypes(type.getDataName())
                 .setQuery(queryBuilder);
-        if (!StringUtils.isEmpty(sortField)) {
-            serachBuilder.addSort(sortField, desc ? SortOrder.DESC : SortOrder.ASC);
+        if (sortFields != null) {
+            for (int i = 0; i <sortFields.length ; i++) {
+                if(StringUtils.equals("sordNo",sortFields[i])){
+                    serachBuilder.addSort(sortFields[i],SortOrder.ASC);
+                }
+                serachBuilder.addSort(sortFields[i], desc ? SortOrder.DESC : SortOrder.ASC);
+            }
         }
         serachBuilder.addSort("_score", SortOrder.DESC);
         if (0 != size) {
@@ -223,6 +235,5 @@ public class IndexManager<T> {
         pagination.setTotalCount(total);
         return pagination;
     }
-
 
 }

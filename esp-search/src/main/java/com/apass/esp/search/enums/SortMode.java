@@ -21,7 +21,10 @@ public enum SortMode implements Serializable {
     TIMECREATED_ASC("createDate", false),//创建时间
     TIMECREATED_DESC("createDate", true),
     PRICE_ASC("goodsPrice", false),//创建时间
-    PRICE_DESC("goodsPrice", true);
+    PRICE_DESC("goodsPrice", true),
+    SORD_ASC("sordNo",false),//排序字段
+    SORD_DESC("sordNo",true);
+
 
     private final String sortField;
     private final boolean desc;
