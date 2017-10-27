@@ -1,10 +1,13 @@
 package com.apass.esp.service;
-
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
+import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.service.refund.CashRefundService;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,12 +29,15 @@ public class TxnInfoService {
   @Autowired
   private CashRefundService cashRefundService;
 
+  @Autowired
+  private ApassTxnAttrMapper apassTxnAttrMapper;
+
   /**
    * 判断用户某笔订单是否进行了未出账主动还款
    * true:是
    */
   public boolean isActiveRepayForConsumableCredit(Long userId, String mainOrderId) {
-
+      
     TxnInfoEntity txn = txnInfoMapper.selectLatestTxnByUserId(userId, TxnTypeCode.REPAY_CODE.getCode());
     if (txn == null) {
       return false;
@@ -71,4 +77,43 @@ public class TxnInfoService {
     return txnInfoMapper.selectByOrderStatusList(orderStatusArray,dateBegin,dateEnd);
   }
 
+  public ApassTxnAttr getApassTxnAttrByTxnId(Long txnId) {
+    return apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
+  }
+    /**
+     * 采购订单明细
+     * @param orderStatusList
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
+    public List<PurchaseOrderDetail> selectPurchaseOrderList(List<String> orderStatusList, String dateBegin, String dateEnd) {
+    	return txnInfoMapper.selectPurchaseOrderList(orderStatusList,dateBegin,dateEnd);
+    }
+    /**
+     * 采购订单（采购和退货）
+     * @param orderStatus
+     * @param returnStatus
+     * @param returnType
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
+    public List<PurchaseReturnOrder> selectPurchaseReturnSalesList(List<String> orderStatus, List<String> returnStatus, List<String> returnType, String dateBegin, String dateEnd) {
+        return txnInfoMapper.selectPurchaseReturnSalesList(orderStatus,returnStatus,returnType,dateBegin,dateEnd);
+    }
+    /**
+     * VBS业务号对应 
+     * @param orderStatusList
+     * @param dateBegin
+     * @param dateEnd
+     * @return
+     */
+    public List<TxnOrderInfo> selectVBSBusinessNumList(List<String> orderStatusList, String dateBegin, String dateEnd) {
+        return txnInfoMapper.selectVBSBusinessNumList(orderStatusList,dateBegin,dateEnd);
+    }
+
+    public List<TxnInfoEntity> selectRepayTxnByUserId(Long userId,String startDate,String endDate){
+      return txnInfoMapper.queryRepayTxnByUserId(userId,startDate,endDate);
+    }
 }

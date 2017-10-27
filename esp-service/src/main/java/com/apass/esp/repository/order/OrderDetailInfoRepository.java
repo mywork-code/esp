@@ -1,11 +1,15 @@
 package com.apass.esp.repository.order;
 
 import java.util.List;
+import java.util.Map;
 
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
+import com.google.common.collect.Maps;
+import org.apache.ibatis.annotations.Param;
 
 @MyBatisRepository
 public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetailInfoEntity, Long> {
@@ -58,4 +62,12 @@ public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetail
 			List<Long> skuIds) {
 		return getSqlSession().selectList(getSQL("queryOrderDetailBySkuIds"), skuIds);
 	}
+
+    public List<SalesOrderInfo> selectByOrderStatusList(List<String> statusArray,String dateBegin,String dateEnd){
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("statusArray",statusArray);
+        paramMap.put("dateBegin",dateBegin);
+        paramMap.put("dateEnd",dateEnd);
+        return getSqlSession().selectList(getSQL("salesorderinfoList"),paramMap);
+    }
 }

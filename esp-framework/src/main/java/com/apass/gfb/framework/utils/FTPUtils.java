@@ -17,6 +17,7 @@ import java.io.OutputStream;
  */
 public class FTPUtils {
   private static final Logger LOG = LoggerFactory.getLogger(FTPUtils.class);
+  private static final FTPClient ftp = new FTPClient();
 
   /**
    * 文件上传
@@ -25,7 +26,6 @@ public class FTPUtils {
                                 String password, String path, String filename,
                                 InputStream input) {
 
-    FTPClient ftp = new FTPClient();
     try {
       int reply;
       ftp.connect(ip, port);//连接FTP服务器
@@ -34,6 +34,7 @@ public class FTPUtils {
       if (!FTPReply.isPositiveCompletion(reply)) {
         ftp.disconnect();
       }
+      ftp.makeDirectory(path);
       ftp.changeWorkingDirectory(path);
       ftp.storeFile(filename, input);
       input.close();
@@ -57,7 +58,6 @@ public class FTPUtils {
   public static void downloadFile(String url, int port, String username,
                                   String password, String remotePath,
                                   String fileName, String localPath) {
-    FTPClient ftp = new FTPClient();
     try {
       int reply;
       ftp.connect(url, port);

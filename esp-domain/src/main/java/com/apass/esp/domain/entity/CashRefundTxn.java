@@ -24,6 +24,8 @@ public class CashRefundTxn {
 
     private BigDecimal amt;
 
+    private String orderId;
+
     public Long getId() {
         return id;
     }
@@ -102,5 +104,13 @@ public class CashRefundTxn {
 
     public void setAmt(BigDecimal amt) {
         this.amt = amt;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }

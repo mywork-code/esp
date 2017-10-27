@@ -930,7 +930,28 @@
 		    ]]> 
 		</if>
 	</select>
-
+	<select id="salesOrderPassOrRefund" resultType="com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund">
+		SELECT
+			orderinfo.id orderPrimayId,
+			orderinfo.order_id orderId,
+			refundinfo.order_id refundOrderId,
+			orderinfo.telephone telephone,
+			sum(orderinfordetail.discount_amount) totalDiscountAmount,
+			orderinfo.create_date createDate,
+			orderinfo.`name` name
+		from t_esp_order_info orderinfo
+		LEFT JOIN t_esp_refund_info refundinfo on orderinfo.order_id = refundinfo.order_id
+		LEFT JOIN t_esp_order_detail_info orderinfordetail on orderinfo.order_id = orderinfordetail.order_id
+		where orderinfo.orderstatus in
+		<foreach collection="statusArray" item="item" open="("
+				 separator="," close=")">
+			#{item}
+		</foreach>
+		<![CDATA[ and orderinfo.update_date >= #{dateBegin}]]>
+		<![CDATA[ and orderinfo.update_date < #{dateEnd}]]>
+		GROUP BY orderinfo.order_id
+		ORDER BY orderinfo.order_id
+	</select>
 	<select id="getCheckOrderDetail" resultType="com.apass.esp.domain.vo.CheckAccountOrderDetail">
 		SELECT
 			orderInfo.order_id 'orderId',

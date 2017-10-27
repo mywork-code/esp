@@ -43,4 +43,23 @@
         where
         cash_refund_id = #{cashRefunId} and type_code = #{typeCode}
     </select>
+
+    <select id="queryByStatusAndDate" resultMap="BaseResultMap">
+        select
+        rt.id id,
+        rt.create_date createDate,
+        rt.update_date updateDate,
+        rt.type_code typeCode,
+        rt.cash_refund_id  cashRefundId,
+        rt.ori_txn_code oriTxnCode,
+        rt.txn_code  txnCode,
+        rt.status status,
+        cr.order_id  orderId
+        from t_esp_refund_txn rt
+        left join t_esp_cash_refund cr
+        on rt.cash_refund_id = cr.id
+        where rt.status = #{status}
+         <![CDATA[ and rt.update_date >= #{dateBegin}]]>
+        <![CDATA[ and rt.update_date < #{dateEnd}]]>
+    </select>
 </mapper>

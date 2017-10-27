@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SiftGoodFileModel {
     private Long siftGoodsId;// 商品Id
     private MultipartFile siftGoodsFile;// sift文件 精选商品上传图片
+
     public Long getSiftGoodsId() {
         return siftGoodsId;
     }

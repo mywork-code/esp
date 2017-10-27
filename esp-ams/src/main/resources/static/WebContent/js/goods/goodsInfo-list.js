@@ -1906,7 +1906,11 @@ $(function() {
             closable : true
         });
 	};
+<<<<<<< HEAD
+
+=======
 	
+>>>>>>> cc462ccbf9311ce6787ba3ecf37501a666a0d8b3
 	// 导出商品列表
 	$ (".export-btn").click (function (){
 		debugger;

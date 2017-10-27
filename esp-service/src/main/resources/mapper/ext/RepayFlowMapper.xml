@@ -14,4 +14,21 @@
 	 from  t_apass_repay_flow	
 	 where status = 'S' and user_id = #{userId} ORDER BY createDate DESC limit 1
   </select>
+
+	<select id="querySuccessByDate" resultMap="BaseResultMap">
+		select
+	        flow_id id,
+			schedule_id scheduleId,
+			user_id userId,
+			repay_amt repayAmt,
+			repay_date repayDate,
+			status status,
+			create_date createDate,
+			update_date updateDate
+	 from  t_apass_repay_flow
+	 where status = 'S'
+	   <![CDATA[ and repay_date >= #{dateBegin}]]>
+        <![CDATA[ and repay_date < #{endDate}]]>
+	</select>
+
 </mapper>

@@ -1,74 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- insert,select,selectByPK,count, delete, update,updateAll -->
 <mapper namespace="GoodsInfoEntity">
     <!-- 查询条件 -->
     <sql id="QueryGoodsSql">
         <where>
-        <if test="categoryId1 != null and categoryId1 != ''">
-            AND t.category_id1 = #{categoryId1, jdbcType=BIGINT}
-        </if>
-        <if test="categoryId2 != null and categoryId2 != ''">
-            AND t.category_id2 = #{categoryId2, jdbcType=BIGINT}
-        </if>
-        <if test="categoryId3 != null and categoryId3 != ''">
-            AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
-        </if>
-        <if test="id != null and id != ''">
-            AND t.id = #{id, jdbcType=BIGINT}
-        </if>
-         <if test="merchantCode != null and merchantCode != ''">
-            AND t.merchant_code = #{merchantCode}
-        </if>
-        <if test="goodsName != null and goodsName != ''">
-            AND t.goods_name LIKE concat("%" #{goodsName} "%")
-        </if>
-        <if test="goodsTitle != null and goodsTitle != ''">
-            AND t.goods_title = #{goodsTitle}
-        </if>
-        <if test="goodsType != null and goodsType != ''">
-            AND t.goods_type = #{goodsType}
-        </if>
-        <if test="status != null and status != ''">
+            <if test="categoryId1 != null and categoryId1 != ''">
+                AND t.category_id1 = #{categoryId1, jdbcType=BIGINT}
+            </if>
+            <if test="categoryId2 != null and categoryId2 != ''">
+                AND t.category_id2 = #{categoryId2, jdbcType=BIGINT}
+            </if>
+            <if test="categoryId3 != null and categoryId3 != ''">
+                AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
+            </if>
+            <if test="id != null and id != ''">
+                AND t.id = #{id, jdbcType=BIGINT}
+            </if>
+            <if test="merchantCode != null and merchantCode != ''">
+                AND t.merchant_code = #{merchantCode}
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                AND t.goods_name LIKE concat("%" #{goodsName} "%")
+            </if>
+            <if test="goodsTitle != null and goodsTitle != ''">
+                AND t.goods_title = #{goodsTitle}
+            </if>
+            <if test="goodsType != null and goodsType != ''">
+                AND t.goods_type = #{goodsType}
+            </if>
+            <if test="status != null and status != ''">
                 AND t.status = #{status}
-        </if>
-        <if test="statuList != null and statuList != ''">
-            AND t.status in
-            <foreach collection="statuList" item="statu" separator="," open="(" close=")">
-                #{statu}
-            </foreach>
-        </if>
-        <if test="listTime != null and listTime != ''">
-            AND t.list_time &gt;= #{listTime, jdbcType=DATE}
-        </if>
-        <if test="delistTime != null and delistTime != ''">
-            AND t.EXPIRE_DATE &lt;= #{delistTime, jdbcType=DATE}
-        </if>
-        <if test="isDelete != null and isDelete != ''">
-            AND t.is_delete = #{isDelete}
-        </if>
-        <if test="merchantName != null and merchantName != ''">
-            AND t2.merchant_name LIKE '%${merchantName}%'
-        </if>
-        <if test="merchantType != null and merchantType != ''">
-            AND t2.merchant_type = #{merchantType}
-        </if>
-        <if test="source != null and source != ''">
-            AND t.source = #{source}
-        </if>
-        <if test="goodsCode != null and goodsCode != ''">
-            AND (t.goods_code = #{goodsCode} OR t.external_id = #{goodsCode})
-        </if>
-        <if test="sordNo != null">
-            AND t.sord_no >= #{sordNo}
-        </if>
+            </if>
+            <if test="statuList != null and statuList != ''">
+                AND t.status in
+                <foreach collection="statuList" item="statu" separator="," open="(" close=")">
+                    #{statu}
+                </foreach>
+            </if>
+            <if test="listTime != null and listTime != ''">
+                AND t.list_time &gt;= #{listTime, jdbcType=DATE}
+            </if>
+            <if test="delistTime != null and delistTime != ''">
+                AND t.EXPIRE_DATE &lt;= #{delistTime, jdbcType=DATE}
+            </if>
+            <if test="isDelete != null and isDelete != ''">
+                AND t.is_delete = #{isDelete}
+            </if>
+            <if test="merchantName != null and merchantName != ''">
+                AND t2.merchant_name LIKE '%${merchantName}%'
+            </if>
+            <if test="merchantType != null and merchantType != ''">
+                AND t2.merchant_type = #{merchantType}
+            </if>
+            <if test="source != null and source != ''">
+                AND t.source = #{source}
+            </if>
+            <if test="goodsCode != null and goodsCode != ''">
+                AND (t.goods_code = #{goodsCode} OR t.external_id = #{goodsCode})
+            </if>
+            <if test="sordNo != null">
+                AND t.sord_no >= #{sordNo}
+            </if>
         </where>
     </sql>
     <!-- 商品管理分页查询 -->
     <select id="goodsPageList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
-    <![CDATA[
+        <![CDATA[
          SELECT
                 t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -107,18 +106,18 @@
                 t.newCreat_date   newCreatDate
             FROM
                 t_esp_goods_base_info t
-            LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
+            LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
     ]]>
-    <include refid="QueryGoodsSql" />
-    <![CDATA[
-        ORDER BY t.update_date DESC 
+        <include refid="QueryGoodsSql" />
+        <![CDATA[
+        ORDER BY t.update_date DESC
     ]]>
         limit #{begin},#{pageSize}
     </select>
-    
+
     <!-- 商品导出 -->
     <select id="pageListForExport" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
-    <![CDATA[
+        <![CDATA[
          SELECT
                 t.category_id1 categoryId1,
                 t.category_id2 categoryId2,
@@ -161,19 +160,19 @@
             FROM
                 t_esp_goods_base_info t
             LEFT JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
-            LEFT JOIN t_esp_goods_stock_info t3 ON t3.goods_id =t.id 
+            LEFT JOIN t_esp_goods_stock_info t3 ON t3.goods_id =t.id
     ]]>
-    <include refid="QueryGoodsSql" />
-    <![CDATA[
-        ORDER BY t.update_date DESC 
+        <include refid="QueryGoodsSql" />
+        <![CDATA[
+        ORDER BY t.update_date DESC
     ]]>
     </select>
-    
-    
+
+
     <!-- 商品精选分页查询 -->
     <!-- 删除排序字段 t.update_date DESC, 用商品非精选  精选以及排序字段排序 -->
     <select id="pageForSiftList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
         t.ID id,
         t.category_id3 categoryId3,
@@ -233,20 +232,20 @@
         <if test="categoryId3 != null and categoryId3 != ''">
             AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
         </if>
-    <![CDATA[
+        <![CDATA[
         ORDER BY t.goods_type ASC,t.sift_sort ASC,t.sord_no ASC
     ]]>
     </select>
     <!-- 商品管理count -->
     <select id="goodsPageListCount" parameterType="GoodsInfoEntity" resultType="Integer">
         <![CDATA[
-            SELECT  COUNT(1) 
+            SELECT  COUNT(1)
             FROM    t_esp_goods_base_info t
-            LEFT    JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code 
+            LEFT    JOIN t_esp_merchant_info t2 on t2.merchant_code=t.merchant_code
         ]]>
         <include refid="QueryGoodsSql" />
     </select>
-    
+
     <!-- 商品精选count -->
     <select id="pageForSiftListCount" parameterType="GoodsInfoEntity" resultType="Integer">
         <![CDATA[
@@ -262,7 +261,7 @@
             AND t.is_delete = #{isDelete}
         </if>
     </select>
-    
+
     <!-- 商品精选的数量 -->
     <select id="countByGoodsType" parameterType="String" resultType="Integer">
         <![CDATA[
@@ -270,10 +269,10 @@
             and t.status IN ('G02', 'G01') and  t.is_delete ='01'
         ]]>
     </select>
-    
+
     <!-- 插入 -->
     <insert id="insert" parameterType="GoodsInfoEntity" useGeneratedKeys="true" keyProperty="id">
-    <![CDATA[
+        <![CDATA[
         insert into t_esp_goods_base_info
             (goods_Model,
              goods_name,
@@ -322,7 +321,7 @@
             #{keepDate, jdbcType=VARCHAR},
             #{supNo, jdbcType=VARCHAR},
             #{createUser, jdbcType=VARCHAR},
-            #{updateUser, jdbcType=VARCHAR}, 
+            #{updateUser, jdbcType=VARCHAR},
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP,
             #{merchantCode, jdbcType=VARCHAR},
@@ -339,74 +338,74 @@
             )
     ]]>
     </insert>
-    
+
     <!-- 插入京东商品 -->
     <insert id="insertJdGoods" parameterType="java.util.List" useGeneratedKeys="true" >
         insert into t_esp_goods_base_info
-            (goods_model,
-             goods_name,
-             category_id1,
-             category_id2,
-             category_id3,
-             goods_title,
-             goods_type,
-             goods_code,
-             goods_logo_url,
-             list_time,
-             delist_time,
-             pro_date,
-             keep_date,
-             sup_no,
-             create_user,
-             update_user,
-             create_date,
-             update_date,
-             merchant_code,
-             `status`,
-             is_delete,
-             goods_detail,
-             goods_sku_type,
-             sord_no,
-             un_support_province,
-             source,
-             external_id)
-            values 
-        <foreach collection="list" item="item" index="index" separator="," >  
+        (goods_model,
+        goods_name,
+        category_id1,
+        category_id2,
+        category_id3,
+        goods_title,
+        goods_type,
+        goods_code,
+        goods_logo_url,
+        list_time,
+        delist_time,
+        pro_date,
+        keep_date,
+        sup_no,
+        create_user,
+        update_user,
+        create_date,
+        update_date,
+        merchant_code,
+        `status`,
+        is_delete,
+        goods_detail,
+        goods_sku_type,
+        sord_no,
+        un_support_province,
+        source,
+        external_id)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
             (
-             #{item.goodsModel},
-             #{item.goodsName},
-             #{item.categoryId1},
-             #{item.categoryId2},
-             #{item.categoryId3},
-             #{item.goodsTitle},
-             #{item.goodsType},
-             #{item.goodsCode},
-             #{item.goodsLogoUrl},
-             #{item.listTime},
-             #{item.delistTime},
-             #{item.proDate},
-             #{item.keepDate},
-             #{item.supNo},
-             #{item.createUser},
-             #{item.updateUser},
-             CURRENT_TIMESTAMP,
-             CURRENT_TIMESTAMP,
-             #{item.merchantCode},
-             #{item.status},
-             #{item.isDelete},
-             #{item.googsDetail},
-             #{item.goodsSkuType},
-             #{item.sordNo},
-             #{item.unSupportProvince},
-             #{item.source},
-             #{item.externalId}
-             )  
-        </foreach>  
+            #{item.goodsModel},
+            #{item.goodsName},
+            #{item.categoryId1},
+            #{item.categoryId2},
+            #{item.categoryId3},
+            #{item.goodsTitle},
+            #{item.goodsType},
+            #{item.goodsCode},
+            #{item.goodsLogoUrl},
+            #{item.listTime},
+            #{item.delistTime},
+            #{item.proDate},
+            #{item.keepDate},
+            #{item.supNo},
+            #{item.createUser},
+            #{item.updateUser},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            #{item.merchantCode},
+            #{item.status},
+            #{item.isDelete},
+            #{item.googsDetail},
+            #{item.goodsSkuType},
+            #{item.sordNo},
+            #{item.unSupportProvince},
+            #{item.source},
+            #{item.externalId}
+            )
+        </foreach>
     </insert>
     <!-- 更新 -->
     <update id="update" parameterType="GoodsInfoEntity">
         <![CDATA[
-        UPDATE t_esp_goods_base_info 
+        UPDATE t_esp_goods_base_info
         ]]>
         <set>
             update_date = CURRENT_TIMESTAMP,
@@ -423,7 +422,7 @@
                 goods_type = #{goodsType, jdbcType=VARCHAR},
             </if>
             <if test="goodsLogoUrl != null and goodsLogoUrl != ''">
-                goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},        
+                goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},
             </if>
             <if test="listTime != null and listTime != ''">
                 list_time = #{listTime, jdbcType=VARCHAR},
@@ -434,11 +433,11 @@
             <if test="proDate != null and proDate != ''">
                 pro_date = #{proDate, jdbcType=VARCHAR},
             </if>
-            <if test="keepDate != null and keepDate != ''"> 
+            <if test="keepDate != null and keepDate != ''">
                 keep_date = #{keepDate, jdbcType=VARCHAR},
             </if>
             <if test="updateUser != null and updateUser != ''">
-                update_user = #{updateUser, jdbcType=VARCHAR},  
+                update_user = #{updateUser, jdbcType=VARCHAR},
             </if>
             <if test="status != null and status != ''">
                 status = #{status, jdbcType=VARCHAR},
@@ -462,19 +461,19 @@
                 goods_sift_url = #{goodsSiftUrl, jdbcType=VARCHAR},
             </if>
         </set>
-    <![CDATA[
+        <![CDATA[
         WHERE ID =  #{id, jdbcType=BIGINT}
     ]]>
     </update>
-    
+
     <!--商品编辑 -->
     <update id="updateGoods" parameterType="GoodsInfoEntity">
         <![CDATA[
-        UPDATE t_esp_goods_base_info 
+        UPDATE t_esp_goods_base_info
         ]]>
         <set>
-            
-            update_date = CURRENT_TIMESTAMP,        
+
+            update_date = CURRENT_TIMESTAMP,
             <if test="updateDate != null and categoryId1 != ''">
                 update_date=#{updateDate, jdbcType=TIMESTAMP},
             </if>
@@ -506,7 +505,7 @@
                 goods_type = #{goodsType, jdbcType=VARCHAR},
             </if>
             <if test="goodsLogoUrl != null and goodsLogoUrl != ''">
-                goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},        
+                goods_logo_url = #{goodsLogoUrl, jdbcType=VARCHAR},
             </if>
             <if test="listTime != null and listTime != ''">
                 list_time = #{listTime, jdbcType=VARCHAR},
@@ -515,13 +514,13 @@
                 delist_time = #{delistTime, jdbcType=VARCHAR},
             </if>
             <if test="proDate != null and proDate != ''">
-            pro_date = #{proDate, jdbcType=VARCHAR},
+                pro_date = #{proDate, jdbcType=VARCHAR},
             </if>
             <if test="keepDate != null and keepDate != ''">
-            keep_date = #{keepDate, jdbcType=VARCHAR},
+                keep_date = #{keepDate, jdbcType=VARCHAR},
             </if>
             <if test="updateUser != null and updateUser != ''">
-                update_user = #{updateUser, jdbcType=VARCHAR},  
+                update_user = #{updateUser, jdbcType=VARCHAR},
             </if>
             <if test="status != null and status != ''">
                 status = #{status, jdbcType=VARCHAR},
@@ -533,10 +532,10 @@
                 goods_detail = #{googsDetail, jdbcType=VARCHAR},
             </if>
             <if test="supNo != null and supNo != ''">
-            sup_no = #{supNo, jdbcType=VARCHAR},
+                sup_no = #{supNo, jdbcType=VARCHAR},
             </if>
             <if test="sordNo != null and sordNo != ''">
-            sord_no = #{sordNo, jdbcType=VARCHAR},
+                sord_no = #{sordNo, jdbcType=VARCHAR},
             </if>
             <if test="remark != null and remark != ''">
                 remark = #{remark, jdbcType=VARCHAR},
@@ -563,28 +562,28 @@
                 sift_sort = #{siftSort},
             </if>
         </set>
-    <![CDATA[
+        <![CDATA[
         WHERE ID =  #{id, jdbcType=BIGINT}
     ]]>
     </update>
-    
+
     <!-- 当有些值为空时，数据库更新为空 -->
     <update id="updateGoodsEdit" parameterType="GoodsInfoEntity">
         <![CDATA[
-        UPDATE t_esp_goods_base_info 
+        UPDATE t_esp_goods_base_info
         ]]>
         <set>
             update_date = CURRENT_TIMESTAMP,
             goods_detail = #{googsDetail, jdbcType=VARCHAR},
         </set>
-    <![CDATA[
+        <![CDATA[
         WHERE ID =  #{id, jdbcType=BIGINT}
     ]]>
     </update>
-    
+
     <!-- 加载 首页精选商品 -->
     <select id="loadRecommendGoods"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             a.ID goodId,
             c.goodsStockId goodsStockId,
@@ -618,7 +617,7 @@
             AND a.goods_price = b.minprice
             GROUP BY
                 a.goods_id
-        ) c 
+        ) c
         WHERE
             a.id = c.goodsId
         AND a.goods_type = '2'
@@ -629,54 +628,53 @@
         limit #{pageIndex},#{pageSize}
     ]]>
     </select>
-
     <select id="loadRecommendGoodsCount" resultType="java.lang.Integer">
         SELECT COUNT(1) from
         (
         SELECT
-            a.ID goodId,
-            c.goodsStockId goodsStockId,
-            a.goods_name goodsName,
-            a.goods_title goodsTitle,
-            a.goods_sell_pt goodsSellPt,
-            a.goods_sift_url goodsSiftUrl,
-            c.minPrice goodsPrice
+        a.ID goodId,
+        c.goodsStockId goodsStockId,
+        a.goods_name goodsName,
+        a.goods_title goodsTitle,
+        a.goods_sell_pt goodsSellPt,
+        a.goods_sift_url goodsSiftUrl,
+        c.minPrice goodsPrice
         FROM
-            t_esp_goods_base_info a,
-         (
-            SELECT
-                a.goods_id goodsId,
-                a.id goodsStockId,
-                b.minprice minPrice
-            FROM
-                t_esp_goods_stock_info a,
-                (
-                    SELECT
-                        goods_id goodsId,
-                        MIN(goods_price) minprice
-                    FROM
-                        t_esp_goods_stock_info
-                    GROUP BY
-                        goods_id
-                ) b
-            WHERE
-                a.goods_id = b.goodsId
-            AND a.goods_price = b.minprice
-            GROUP BY
-                a.goods_id
+        t_esp_goods_base_info a,
+        (
+        SELECT
+        a.goods_id goodsId,
+        a.id goodsStockId,
+        b.minprice minPrice
+        FROM
+        t_esp_goods_stock_info a,
+        (
+        SELECT
+        goods_id goodsId,
+        MIN(goods_price) minprice
+        FROM
+        t_esp_goods_stock_info
+        GROUP BY
+        goods_id
+        ) b
+        WHERE
+        a.goods_id = b.goodsId
+        AND a.goods_price = b.minprice
+        GROUP BY
+        a.goods_id
         ) c
         WHERE
-            a.id = c.goodsId
+        a.id = c.goodsId
         AND a.goods_type = '2'
         AND CURRENT_TIMESTAMP > a.list_time
         AND a.`status` = 'G02'
         AND a.is_delete = '01'
-    )d
+        )d
     </select>
-    
+
     <!-- 加载 精选商品列表 -->
     <select id="loadRecommendGoodsList"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             a.ID goodId,
             c.goodsStockId goodsStockId,
@@ -709,7 +707,7 @@
             AND a.goods_price = b.minprice
             GROUP BY
                 a.goods_id
-        ) c 
+        ) c
         WHERE
             a.id = c.goodsId
         AND a.goods_type = '2'
@@ -720,25 +718,25 @@
         ORDER BY a.update_date DESC
     ]]>
     </select>
-    
+
     <!-- 查询商品上架期内 -->
     <select id="count"  resultType="Integer">
-    <![CDATA[
+        <![CDATA[
         SELECT
             count(1)
         FROM
             t_esp_goods_base_info
-            where 
+            where
                 CURRENT_TIMESTAMP > list_time
             AND CURRENT_TIMESTAMP < delist_time
             AND status='G02'
             AND is_delete = '01'
     ]]>
     </select>
-    
+
     <!-- 分页查询  商品上架期内-->
     <select id="select" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             a.category_id1 categoryId1,
             a.category_id2 categoryId2,
@@ -752,13 +750,13 @@
             a.goods_type goodsType,
             a.goods_logo_url goodsLogoUrl,
             a.list_time listTime,
-            a.delist_time delistTime,       
+            a.delist_time delistTime,
             a.pro_date proDate,
             a.keep_date keepDate,
-            a.sup_no supNo          
+            a.sup_no supNo
         FROM
-            t_esp_goods_base_info a LEFT JOIN 
-    
+            t_esp_goods_base_info a LEFT JOIN
+
             ( SELECT
                 a.ID goodsId,
                 MIN(goods_price) minPrice,
@@ -775,20 +773,20 @@
             GROUP BY
                 a.id) c
         ON a.id=c.goodsId
-            where 
+            where
          CURRENT_TIMESTAMP > a.list_time
         AND CURRENT_TIMESTAMP < a.delist_time
         AND status='G02'
         AND is_delete = '01'
     ]]>
-    <![CDATA[
-        ORDER BY a.update_date DESC 
+        <![CDATA[
+        ORDER BY a.update_date DESC
     ]]>
     </select>
-    
+
     <!--  商品列表展示-->
     <select id="loadGoodsList" resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             a.ID goodId,
             c.goodsStockId goodsStockId,
@@ -831,15 +829,15 @@
         AND STATUS = 'G02'
         AND is_delete = '01'
     ]]>
-    <![CDATA[
-        ORDER BY a.update_date DESC 
+        <![CDATA[
+        ORDER BY a.update_date DESC
     ]]>
     </select>
-    
-    
+
+
     <!-- 主键查询基本信息 -->
     <select id="selectByPK" parameterType="Long" resultType="GoodsInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             category_id1 categoryId1,
             category_id2 categoryId2,
@@ -879,17 +877,17 @@
             id=#{value}
     ]]>
     </select>
-    
+
     <update id="updateGoodsStatus" parameterType="Map">
-            update t_esp_goods_base_info set goods_type = #{goodsType} 
+        update t_esp_goods_base_info set goods_type = #{goodsType}
         <where>
-            id = #{goodsId} 
+            id = #{goodsId}
         </where>
     </update>
-    
+
     <!-- 商品基本信息+商户信息+库存信息 -->
     <select id="loadContainGoodsAndGoodsStockAndMerchant" parameterType="HashMap" resultType="GoodsDetailInfoEntity">
-    <![CDATA[
+        <![CDATA[
         SELECT
             a.id goodsId,
             b.id goodsStockId,
@@ -904,7 +902,7 @@
             a.list_time listTime,
             a.delist_time delistTime,
             a.status status,
-            a.un_support_province unSupportProvince 
+            a.un_support_province unSupportProvince
         FROM
             t_esp_goods_base_info a,
             t_esp_goods_stock_info b,
@@ -916,17 +914,16 @@
         AND b.id = #{goodsStockId}
     ]]>
     </select>
-
     <!--修改已上架的商品状态(已经到下架时间的商品) -->
     <update id="updateGoodsStatusByDelisttime" parameterType="String">
         <![CDATA[
-        UPDATE t_esp_goods_base_info 
+        UPDATE t_esp_goods_base_info
         ]]>
         <set>
             status = 'G03'
         </set>
-    <![CDATA[
-        WHERE delist_time<=DATE_FORMAT(now(),'%Y-%m-%d') 
+        <![CDATA[
+        WHERE delist_time<=DATE_FORMAT(now(),'%Y-%m-%d')
     ]]>
     </update>
     <select id="getBelongCategoryGoodsNumber" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -948,7 +945,7 @@
         <![CDATA[
         SELECT
                 a.ID id
-        FROM  
+        FROM
                 t_esp_goods_base_info a
         WHERE
                 a.status = 'G03'
@@ -960,173 +957,172 @@
     </select>
     <!-- 更新已经下架商品的类目 -->
     <update id="updateGoodsCategoryStatus" parameterType="java.lang.Long">
-           UPDATE  t_esp_goods_base_info 
-             SET   update_date = CURRENT_TIMESTAMP,
-                   category_id1 = null,
-                   category_id2 = null,
-                   category_id3 = null
-           WHERE   ID =  #{id}
+        UPDATE  t_esp_goods_base_info
+        SET   update_date = CURRENT_TIMESTAMP,
+        category_id1 = null,
+        category_id2 = null,
+        category_id3 = null
+        WHERE   ID =  #{id}
     </update>
-    
+
     <!-- 批量删除商品 -->
     <delete id="deleteJDGoodsBatch">
         delete from t_esp_goods_base_info where external_id in (
         <foreach collection="list" item="externalId" separator=",">
             #{externalId}
         </foreach>
-        )  
+        )
     </delete>
-    
+
     <select id="selectGoodsByExternalId" parameterType="java.lang.String" resultType="GoodsInfoEntity">
-         SELECT
-                t.category_id1 categoryId1,
-                t.category_id2 categoryId2,
-                t.category_id3 categoryId3,
-                t.ID id,
-                t.category_code categoryCode,
-                t.goods_name goodsName,
-                t.goods_title goodsTitle,
-                t.goods_sell_pt goodsSellPt,
-                t.goods_type goodsType,
-                t.goods_type goodsTypeDesc,
-                t.goods_logo_url goodsLogoUrl,
-                t.list_time listTime,
-                t.delist_time delistTime,
-                t.pro_date proDate,
-                t.keep_date keepDate,
-                t.sup_no supNo,
-                t.create_user createUser,
-                t.update_user updateUser,
-                t.create_date createDate,
-                t.update_date updateDate,
-                t.merchant_code merchantCode,
-                t.status status,
-                t.status statusDesc,
-                t.goods_Sku_Type goodsSkuType,
-                t.goods_Model goodsModel,
-                t.goods_sift_url goodsSiftUrl,
-                t.sord_no sordNo,
-                t.un_support_province unSupportProvince,
-                t.source source,
-                t.external_id externalId,
-                t.attr_desc     attrDesc
-            from t_esp_goods_base_info t
-            where external_id = #{externalId}
+        SELECT
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.ID id,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_type goodsTypeDesc,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.merchant_code merchantCode,
+        t.status status,
+        t.status statusDesc,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_Model goodsModel,
+        t.goods_sift_url goodsSiftUrl,
+        t.sord_no sordNo,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId,
+        t.attr_desc     attrDesc
+        from t_esp_goods_base_info t
+        where external_id = #{externalId}
     </select>
     <!-- 根据京东id查询改商品是否已经上架 -->
     <select id="selectGoodsInfoByExternalId" parameterType="java.lang.String" resultType="GoodsInfoEntity">
-         SELECT
-                    a.id goodId,
-                    b.id goodsStockId,
-                    a.goods_name goodsName,
-                    a.goods_title goodsTitle,
-                    a.goods_logo_url goodsLogoUrl,
-                    a.source       source
-                FROM
-                    t_esp_goods_base_info a,
-                    (
-                        SELECT
-                            min(goods_price) AS goods_price,
-                            goods_id,
-                            id
-                        FROM
-                            t_esp_goods_stock_info
-                        WHERE
-                            stock_curr_amt != 0
-                        GROUP BY
-                            goods_id
-                    ) b
-                WHERE
-                     a.id = b.goods_id
-                AND  a.`status`='G02'
-                AND  a.is_delete ='01'
-                AND  CURRENT_TIMESTAMP > a.list_time
-                AND  external_id = #{externalId}
+        SELECT
+        a.id goodId,
+        b.id goodsStockId,
+        a.goods_name goodsName,
+        a.goods_title goodsTitle,
+        a.goods_logo_url goodsLogoUrl,
+        a.source       source
+        FROM
+        t_esp_goods_base_info a,
+        (
+        SELECT
+        min(goods_price) AS goods_price,
+        goods_id,
+        id
+        FROM
+        t_esp_goods_stock_info
+        WHERE
+        stock_curr_amt != 0
+        GROUP BY
+        goods_id
+        ) b
+        WHERE
+        a.id = b.goods_id
+        AND  a.`status`='G02'
+        AND  a.is_delete ='01'
+        AND  CURRENT_TIMESTAMP > a.list_time
+        AND  external_id = #{externalId}
     </select>
     <!-- 根据二级类目id查询其下所有商品 -->
     <select id="selectByCategoryId2" resultType="GoodsInfoEntity">
         SELECT
-                t.category_id1 categoryId1,
-                t.category_id2 categoryId2,
-                t.category_id3 categoryId3,
-                t.ID id,
-                t.category_code categoryCode,
-                t.goods_name goodsName,
-                t.goods_title goodsTitle,
-                t.goods_sell_pt goodsSellPt,
-                t.goods_type goodsType,
-                t.goods_type goodsTypeDesc,
-                t.goods_logo_url goodsLogoUrl,
-                t.list_time listTime,
-                t.delist_time delistTime,
-                t.pro_date proDate,
-                t.keep_date keepDate,
-                t.sup_no supNo,
-                t.create_user createUser,
-                t.update_user updateUser,
-                t.create_date createDate,
-                t.update_date updateDate,
-                t.merchant_code merchantCode,
-                t.status status,
-                t.status statusDesc,
-                t.goods_Sku_Type goodsSkuType,
-                t.goods_Model goodsModel,
-                t.goods_sift_url goodsSiftUrl,
-                t.sord_no sordNo,
-                t.un_support_province unSupportProvince,
-                t.source source,
-                t.external_id externalId
-            FROM
-                t_esp_goods_base_info t
-            WHERE
-                t.status = 'G02' and
-                t.category_id2 = #{categoryId}
-            ORDER BY
-                list_time desc
-            LIMIT 0,10
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.ID id,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_type goodsTypeDesc,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.merchant_code merchantCode,
+        t.status status,
+        t.status statusDesc,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_Model goodsModel,
+        t.goods_sift_url goodsSiftUrl,
+        t.sord_no sordNo,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId
+        FROM
+        t_esp_goods_base_info t
+        WHERE
+        t.status = 'G02' and
+        t.category_id2 = #{categoryId}
+        ORDER BY
+        list_time desc
+        LIMIT 0,10
     </select>
-    
+
     <!-- 根据三级类目id查询其下已下架或待上架商品 -->
     <select id="selectGoodsByExternalIdAndStatus" resultType="GoodsInfoEntity">
         SELECT
-                t.category_id1 categoryId1,
-                t.category_id2 categoryId2,
-                t.category_id3 categoryId3,
-                t.ID id,
-                t.category_code categoryCode,
-                t.goods_name goodsName,
-                t.goods_title goodsTitle,
-                t.goods_sell_pt goodsSellPt,
-                t.goods_type goodsType,
-                t.goods_type goodsTypeDesc,
-                t.goods_logo_url goodsLogoUrl,
-                t.list_time listTime,
-                t.delist_time delistTime,
-                t.pro_date proDate,
-                t.keep_date keepDate,
-                t.sup_no supNo,
-                t.create_user createUser,
-                t.update_user updateUser,
-                t.create_date createDate,
-                t.update_date updateDate,
-                t.merchant_code merchantCode,
-                t.status status,
-                t.status statusDesc,
-                t.goods_Sku_Type goodsSkuType,
-                t.goods_Model goodsModel,
-                t.goods_sift_url goodsSiftUrl,
-                t.sord_no sordNo,
-                t.un_support_province unSupportProvince,
-                t.source source,
-                t.external_id externalId
-            FROM
-                t_esp_goods_base_info t
-            WHERE
-                t.status in('G01','G02','G04') and
-                t.source = 'jd' and
-                t.external_id = #{skuId}
+        t.category_id1 categoryId1,
+        t.category_id2 categoryId2,
+        t.category_id3 categoryId3,
+        t.ID id,
+        t.category_code categoryCode,
+        t.goods_name goodsName,
+        t.goods_title goodsTitle,
+        t.goods_sell_pt goodsSellPt,
+        t.goods_type goodsType,
+        t.goods_type goodsTypeDesc,
+        t.goods_logo_url goodsLogoUrl,
+        t.list_time listTime,
+        t.delist_time delistTime,
+        t.pro_date proDate,
+        t.keep_date keepDate,
+        t.sup_no supNo,
+        t.create_user createUser,
+        t.update_user updateUser,
+        t.create_date createDate,
+        t.update_date updateDate,
+        t.merchant_code merchantCode,
+        t.status status,
+        t.status statusDesc,
+        t.goods_Sku_Type goodsSkuType,
+        t.goods_Model goodsModel,
+        t.goods_sift_url goodsSiftUrl,
+        t.sord_no sordNo,
+        t.un_support_province unSupportProvince,
+        t.source source,
+        t.external_id externalId
+        FROM
+        t_esp_goods_base_info t
+        WHERE
+        t.status in('G01','G02','G04') and
+        t.source = 'jd' and
+        t.external_id = #{skuId}
     </select>
-
     <select id="getBelongCategoryGoods" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
         <![CDATA[
         SELECT
@@ -1170,8 +1166,8 @@
         OR t.category_id3 = #{categroyId})
       ]]>
     </select>
-    
-    
+
+
     <select id="selectUpGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
         SELECT
@@ -1218,7 +1214,6 @@
             limit #{index},#{size}
       ]]>
     </select>
-
     <select id="selectJdGoods"  parameterType="HashMap" resultType="GoodsInfoEntity">
         <![CDATA[
         SELECT
@@ -1232,7 +1227,6 @@
             limit #{index},#{size}
       ]]>
     </select>
-
     <!-- 根据二级类目id查询其下所有商品 -->
     <select id="selectByCategoryId2AndsordNo" resultType="GoodsInfoEntity">
         SELECT

@@ -20,6 +20,10 @@ public class TxnOrderInfo {
    */
   private String mainOrderId;
 
+  /**
+   * order表主键
+   */
+  private Long extOrderId;
   private String orderId;
 
   private String orderStatus;
@@ -201,4 +205,12 @@ public class TxnOrderInfo {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+
+  public Long getExtOrderId() {
+    return extOrderId;
+  }
+
+  public void setExtOrderId(Long extOrderId) {
+    this.extOrderId = extOrderId;
+  }
 }
