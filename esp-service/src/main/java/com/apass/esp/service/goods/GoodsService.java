@@ -313,38 +313,38 @@ public class GoodsService {
    * @return
    */
   public boolean validateGoodOnShelf(Long goodId){
-	  GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodId);
-	  Date now = new Date();//获取当前时间
-	  if(null == goodsBasicInfo){
-		  return false;
-	  }
-	  
-	  if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
-	        || !StringUtils.equals(goodsBasicInfo.getStatus(), GoodStatus.GOOD_UP.getCode())) {
-	      //下架
-	     return false;
-	  }
-	     
-	  if(StringUtils.isEmpty(goodsBasicInfo.getSource())){
-		  List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodId);
-		     for (GoodsStockInfoEntity goodsStock : goodsList) {
-		         if (goodsStock.getStockCurrAmt() > 0 ) {
-		           return true;
-		         }
-	         }
-	  }else{
-		  String externalId = goodsBasicInfo.getExternalId();// 外部商品id
-	      List<SkuNum> skuNumList=new ArrayList<>();
-	      SkuNum skuNum=new SkuNum();
-	      skuNum.setNum(1);
-	      skuNum.setSkuId(Long.parseLong(externalId));
-	      skuNumList.add(skuNum);
-	      //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-	      if(orderService.checkGoodsSalesOrNot(skuNumList)){
-	      	 return true;//商品可售
-	      }
-	  }
-	  return false;
+      GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodId);
+      Date now = new Date();//获取当前时间
+      if(null == goodsBasicInfo){
+          return false;
+      }
+      
+      if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+            || !StringUtils.equals(goodsBasicInfo.getStatus(), GoodStatus.GOOD_UP.getCode())) {
+          //下架
+         return false;
+      }
+         
+      if(StringUtils.isEmpty(goodsBasicInfo.getSource())){
+          List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodId);
+             for (GoodsStockInfoEntity goodsStock : goodsList) {
+                 if (goodsStock.getStockCurrAmt() > 0 ) {
+                   return true;
+                 }
+             }
+      }else{
+          String externalId = goodsBasicInfo.getExternalId();// 外部商品id
+          List<SkuNum> skuNumList=new ArrayList<>();
+          SkuNum skuNum=new SkuNum();
+          skuNum.setNum(1);
+          skuNum.setSkuId(Long.parseLong(externalId));
+          skuNumList.add(skuNum);
+          //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+          if(orderService.checkGoodsSalesOrNot(skuNumList)){
+             return true;//商品可售
+          }
+      }
+      return false;
   }
   
   /**
@@ -407,10 +407,10 @@ public class GoodsService {
       }
     }
     //返回活动id
-	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-	}
+    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+    }
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
@@ -469,103 +469,103 @@ public class GoodsService {
    * (满减活动)通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
    */
   public String getActivityInfo(Long goodsId){
-	  ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-	  String activityCfgDesc="";
-	  if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	      ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
-	      if(null !=activityCfg && activityCfg.getActivityType().equals("Y")){
-	    	  if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
-	    		  String  offer1   =activityCfg.getOfferSill1().toString();
-	    		  String  discount1=activityCfg.getDiscountAmonut1().toString();
-	    		  activityCfgDesc="满"+offer1+"元，支付立减"+discount1+"元现金\n";
-	    	  }
-	    	  if(null !=activityCfg.getOfferSill2() && null !=activityCfg.getDiscountAmount2()){
-	    		  String  offer2   =activityCfg.getOfferSill2().toString();
-	    		  String  discount2=activityCfg.getDiscountAmount2().toString();
-	    		  activityCfgDesc=activityCfgDesc+"满"+offer2+"元，支付立减"+discount2+"元现金";
-	    	  }
-	          return activityCfgDesc;
-	        }
-	  }
-	  return null;
+      ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+      String activityCfgDesc="";
+      if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+          ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
+          if(null !=activityCfg && activityCfg.getActivityType().equals("Y")){
+              if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
+                  String  offer1   =activityCfg.getOfferSill1().toString();
+                  String  discount1=activityCfg.getDiscountAmonut1().toString();
+                  activityCfgDesc="满"+offer1+"元，支付立减"+discount1+"元现金\n";
+              }
+              if(null !=activityCfg.getOfferSill2() && null !=activityCfg.getDiscountAmount2()){
+                  String  offer2   =activityCfg.getOfferSill2().toString();
+                  String  discount2=activityCfg.getDiscountAmount2().toString();
+                  activityCfgDesc=activityCfgDesc+"满"+offer2+"元，支付立减"+discount2+"元现金";
+              }
+              return activityCfgDesc;
+            }
+      }
+      return null;
   }
 
-	/**
-	 * (满减活动)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
-	 */
-	public Map<String,Object> getActivityInfoByActivityId(Long activityId) {
-		Map<String,Object> resultMap=new HashMap<>();
-		String activityCfgDesc = "";
-		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
-		if (activityCfg == null) {
-			return null;
-		}
-		if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
-			if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
-				String offer1 = activityCfg.getOfferSill1().toString();
-				String discount1 = activityCfg.getDiscountAmonut1().toString();
-				activityCfgDesc = "满" + offer1 + "元，支付立减" + discount1 + "元现金\n";
-				resultMap.put("offerSill1", offer1);
-				resultMap.put("discountAmonut1", discount1);
-			}
-			if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
-				String offer2 = activityCfg.getOfferSill2().toString();
-				String discount2 = activityCfg.getDiscountAmount2().toString();
-				activityCfgDesc = activityCfgDesc + "满" + offer2 + "元，支付立减" + discount2 + "元现金";
-				resultMap.put("offerSill2", offer2);
-				resultMap.put("discountAmonut2", discount2);
-			}
-			resultMap.put("activityCfgDesc", activityCfgDesc);
-			return resultMap;
-		}
-		return null;
-	}
-	/**
-	 * (满减活动购物车列表)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
-	 */
-	public Map<String,Object> getCarActivityInfoByActivityId(Long activityId) {
-		Map<String,Object> resultMap=new HashMap<>();
-		String activityCfgDesc = "";
-		ProActivityCfg activityCfg = activityCfgService.getById(activityId);
-		if (activityCfg == null) {
-			return null;
-		}
-		if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
-			if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
-				String offer1 = activityCfg.getOfferSill1().toString();
-				String discount1 = activityCfg.getDiscountAmonut1().toString();
-				activityCfgDesc = "满" + offer1 + "元减" + discount1 + "元";
-				resultMap.put("offerSill1", offer1);
-				resultMap.put("discountAmonut1", discount1);
-			}
-			if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
-				String offer2 = activityCfg.getOfferSill2().toString();
-				String discount2 = activityCfg.getDiscountAmount2().toString();
-				activityCfgDesc = activityCfgDesc + "，满" + offer2 + "元减" + discount2 + "元";
-				resultMap.put("offerSill2", offer2);
-				resultMap.put("discountAmonut2", discount2);
-			}
-			resultMap.put("activityCfgDesc", activityCfgDesc);
-			return resultMap;
-		}
-		return null;
-	}
-	/**
-	 * 京东商品是否支持7天无理由退货,Y、N
-	 */
-	public String getsupport7dRefund(Long skuId) {
-		String value = "N";
-		List<SkuNum> skuNumList = new ArrayList<>();
-		SkuNum skuNum = new SkuNum();
-		skuNum.setNum(1);
-		skuNum.setSkuId(skuId);
-		skuNumList.add(skuNum);
-		// 验证京东商品是否支持7天退货
-		if (orderService.checkGoodsIs7ToReturn(skuNumList)) {
-			value = "Y";
-		}
-		return value;
-	}
+    /**
+     * (满减活动)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
+     */
+    public Map<String,Object> getActivityInfoByActivityId(Long activityId) {
+        Map<String,Object> resultMap=new HashMap<>();
+        String activityCfgDesc = "";
+        ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+        if (activityCfg == null) {
+            return null;
+        }
+        if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
+            if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
+                String offer1 = activityCfg.getOfferSill1().toString();
+                String discount1 = activityCfg.getDiscountAmonut1().toString();
+                activityCfgDesc = "满" + offer1 + "元，支付立减" + discount1 + "元现金\n";
+                resultMap.put("offerSill1", offer1);
+                resultMap.put("discountAmonut1", discount1);
+            }
+            if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
+                String offer2 = activityCfg.getOfferSill2().toString();
+                String discount2 = activityCfg.getDiscountAmount2().toString();
+                activityCfgDesc = activityCfgDesc + "满" + offer2 + "元，支付立减" + discount2 + "元现金";
+                resultMap.put("offerSill2", offer2);
+                resultMap.put("discountAmonut2", discount2);
+            }
+            resultMap.put("activityCfgDesc", activityCfgDesc);
+            return resultMap;
+        }
+        return null;
+    }
+    /**
+     * (满减活动购物车列表)通过activityId查看该商品是否参加有效活动，如果参加返回相关数据
+     */
+    public Map<String,Object> getCarActivityInfoByActivityId(Long activityId) {
+        Map<String,Object> resultMap=new HashMap<>();
+        String activityCfgDesc = "";
+        ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+        if (activityCfg == null) {
+            return null;
+        }
+        if (ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)) {//活动在进行中
+            if (null != activityCfg.getOfferSill1() && null != activityCfg.getDiscountAmonut1()) {
+                String offer1 = activityCfg.getOfferSill1().toString();
+                String discount1 = activityCfg.getDiscountAmonut1().toString();
+                activityCfgDesc = "满" + offer1 + "元减" + discount1 + "元";
+                resultMap.put("offerSill1", offer1);
+                resultMap.put("discountAmonut1", discount1);
+            }
+            if (null != activityCfg.getOfferSill2() && null != activityCfg.getDiscountAmount2()) {
+                String offer2 = activityCfg.getOfferSill2().toString();
+                String discount2 = activityCfg.getDiscountAmount2().toString();
+                activityCfgDesc = activityCfgDesc + "，满" + offer2 + "元减" + discount2 + "元";
+                resultMap.put("offerSill2", offer2);
+                resultMap.put("discountAmonut2", discount2);
+            }
+            resultMap.put("activityCfgDesc", activityCfgDesc);
+            return resultMap;
+        }
+        return null;
+    }
+    /**
+     * 京东商品是否支持7天无理由退货,Y、N
+     */
+    public String getsupport7dRefund(Long skuId) {
+        String value = "N";
+        List<SkuNum> skuNumList = new ArrayList<>();
+        SkuNum skuNum = new SkuNum();
+        skuNum.setNum(1);
+        skuNum.setSkuId(skuId);
+        skuNumList.add(skuNum);
+        // 验证京东商品是否支持7天退货
+        if (orderService.checkGoodsIs7ToReturn(skuNumList)) {
+            value = "Y";
+        }
+        return value;
+    }
   /**
    * 获取商品最低价所对应的库存id
    *
@@ -770,7 +770,14 @@ public class GoodsService {
     result.setTotalCount(response.getTotalCount());
     return result;
   }
-
+  /**
+   * 精选商品列表
+   * @param goodsInfoEntity
+   * @return
+   */
+  public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+      return goodsDao.goodsSiftList(entity);
+  }
   /**
    * 说明：查询商品精选数量
    *
@@ -1184,7 +1191,7 @@ public class GoodsService {
     entity.setExternalId(param);
     List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
     if(null !=result && result.size()==1){
-    	return result.get(0);
+        return result.get(0);
     }
     return null;
   }
