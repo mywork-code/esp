@@ -97,6 +97,35 @@
 					</table>
 				</div>
 				<table style="width: 80%;height: auto;">
+					<tr>
+						<td align="right">是否使用优惠券:</td>
+						<td align="left"><input type="radio" name="isCoupon" value="Y"/> 是
+							<input type="radio" name="isCoupon" value="N"/> 否</td>
+					</tr>
+				</table>
+				<div id="couponsDiv" style="display: none">
+					<table style="width: 80%;height: auto;">
+						<tr>
+							<td align="right"><span style="color: red">*</span>选择发放优惠券：</td>
+							<td align="left">
+							<input id="choseCoupon"  class="easyui-combobox" style="width: 50%;" /></td>
+						</tr>
+						<tr>
+							<td align="right"><span style="color: red">*</span>发放总量：</td>
+							<td align="left">
+								<input type="text" id="issueCoupon"
+													class="easyui-textbox" style="width: 160px;"/></td>
+						</tr>
+						<tr>
+							<td align="right"><span style="color: red">*</span>每人限定张数：</td>
+							<td align="left">
+								<input type="text" id="limitCount"
+									   class="easyui-textbox" style="width: 160px;"/></td>
+						</tr>
+					</table>
+				</div>
+
+				<table style="width: 80%;height: auto;">
 					<tr style="margin-top: 22px;" align="right">
 						<td colspan="2">
 							<a href="javascript:void(0);" id="agreeAdd" style="margin-right: 15px;" class="easyui-linkbutton">下&nbsp;一&nbsp;步&nbsp;</a>
