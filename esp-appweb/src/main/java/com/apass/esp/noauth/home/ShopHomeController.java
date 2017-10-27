@@ -804,7 +804,7 @@ public class ShopHomeController {
                 
                 //添加活动id
             	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-            	if(null !=proGroupGoodsBo){
+            	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
             	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称

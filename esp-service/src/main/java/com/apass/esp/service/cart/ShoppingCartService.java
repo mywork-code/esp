@@ -13,6 +13,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.dto.cart.ListCartDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
@@ -75,6 +77,8 @@ public class ShoppingCartService {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private ProGroupGoodsMapper groupGoodsMapper;
+    @Autowired
+    private ActivityCfgService activityCfgService;
     /**
      * 添加商品到购物车
      * 
@@ -375,16 +379,19 @@ public class ShoppingCartService {
                 Long  goodsId=goodsInfoInCart.getGoodsId();
                 ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 				if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
-				    ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
-				    Long activityId=groupGoods.getActivityId();
-				    String act="activity_"+activityId.toString();//防止商户编码与活动id重复
-				    goodsInfoInCart.setProActivityId(activityId);//活动id
-					if (resultMap.containsKey(act)) {
-						resultMap.get(act).add(goodsInfoInCart);
-					} else {
-						List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
-						list.add(goodsInfoInCart);
-						resultMap.put(act, list);
+					ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
+					Long activityId = groupGoods.getActivityId();
+					ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+					if (null != activityCfg) {
+						String act = "activity_" + activityId.toString();// 防止商户编码与活动id重复
+						goodsInfoInCart.setProActivityId(activityId);// 活动id
+						if (resultMap.containsKey(act)) {
+							resultMap.get(act).add(goodsInfoInCart);
+						} else {
+							List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+							list.add(goodsInfoInCart);
+							resultMap.put(act, list);
+						}
 					}
 				} else if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
 					resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
@@ -423,7 +430,12 @@ public class ShoppingCartService {
                 	String discountAmonut1=(String) activityCfgMap.get("discountAmonut1");
                 	String offerSill2=(String) activityCfgMap.get("offerSill2");
                 	String discountAmonut2=(String) activityCfgMap.get("discountAmonut2");
-                	listCart.setActivityCfg(activityCfgDesc);
+					ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+                	if( activityCfg.getActivityType().equals("Y")){
+                		listCart.setActivityCfg(activityCfgDesc);
+                	}else{
+                		listCart.setActivityCfg(null);//无优惠不显示满减描述
+                	}
                 	listCart.setOfferSill1(offerSill1);
                 	listCart.setDiscountAmonut1(discountAmonut1);
                 	listCart.setOfferSill2(offerSill2);

@@ -139,7 +139,8 @@
 						a.external_id externalId,
 						a.goods_name   goodsName,
 						a.source       source,
-						a.goods_code goodsCode
+						a.goods_code   goodsCode,
+						a.goods_code   goodsCodeString
 				FROM
 					    t_esp_goods_base_info  a
 			LEFT JOIN   t_esp_goods_stock_info b ON b.goods_id = a.id
@@ -720,6 +721,9 @@
         AND CURRENT_TIMESTAMP < teg.delist_time
         ]]>
     </select>
+
+
+
 
 
 </mapper>

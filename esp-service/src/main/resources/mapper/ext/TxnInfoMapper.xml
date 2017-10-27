@@ -31,6 +31,7 @@
         <include refid="Base_Column_List"/>
         from t_apass_txn_info
         where order_id = #{value}
+        order by txn_type asc
     </select>
     
     <select id="queryTxnInfoByOrderidAndTxntypeInSql" resultMap="BaseResultMap" parameterType="java.lang.String">

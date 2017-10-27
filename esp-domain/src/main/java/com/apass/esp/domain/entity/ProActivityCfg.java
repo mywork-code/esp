@@ -25,9 +25,9 @@ public class ProActivityCfg {
 
     private String updateUser;
 
-    private Date createDate;
+    private Date createdTime;
 
-    private Date updateDate;
+    private Date updatedTime;
 
     public Long getId() {
         return id;
@@ -117,19 +117,19 @@ public class ProActivityCfg {
         this.updateUser = updateUser;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public Date getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 
-    public Date getUpdateDate() {
-        return updateDate;
+    public Date getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 }

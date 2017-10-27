@@ -46,6 +46,7 @@
 		orderdetail.CREATE_DATE createDate,
 		orderdetail.source source,
 		orderdetail.sku_id skuId,
+		orderdetail.discount_amount  discountAmount,
 		orderdetail.UPDATE_DATE updateDate
 		FROM
 			t_esp_order_detail_info orderdetail

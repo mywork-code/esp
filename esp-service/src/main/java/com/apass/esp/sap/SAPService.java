@@ -1,5 +1,4 @@
 package com.apass.esp.sap;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +45,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 /**
  * Created by jie.xu on 17/10/16.
  */
@@ -299,6 +296,34 @@ public class SAPService {
     }
   }
 
+
+  /**
+   * 客户全额还款流水（未出帐+已出帐）
+   *
+   * @param ip
+   * @param port
+   * @param username
+   * @param password
+   * @param path
+   */
+  public void generateQuanEnHuanKuanCsv(String ip, int port, String username, String password, String path) {
+    InputStream fis = null;
+    try {
+      generateQuanEnHuanKuanCsv();
+      fis = new FileInputStream(new File(SAPConstants.QUANENHUANKUAN_FILE_PATH));
+      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.QUANENHUANKUAN_FILE_NAME, fis);
+    } catch (Exception e) {
+      LOG.error("ftp generateQuanEnHuanKuanCsv csv file notfound", e);
+    } finally {
+      try {
+        if (fis != null)
+          fis.close();
+      } catch (IOException e) {
+        LOG.debug("IO Close error", e);
+      }
+    }
+  }
+
   /**
    * 首付款或全额（购买退货）流水
    */
@@ -324,8 +349,8 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
         contentList.add("");
-        contentList.add("收款");
-        contentList.add("S".equals(txn.getStatus()) ? "成功" : "失败");
+        contentList.add("B");
+        contentList.add("S".equals(txn.getStatus()) ? "03" : "06");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
         contentList.add(String.valueOf(rowNum));
@@ -807,7 +832,7 @@ public class SAPService {
   private void generateQuanEnHuanKuanCsv() throws Exception {
     List<RepayFlow> repayFlowList = repayFlowMapper.querySuccessByDate(getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
       csvWriter.writeRecord(new String[]{""});
       //表头

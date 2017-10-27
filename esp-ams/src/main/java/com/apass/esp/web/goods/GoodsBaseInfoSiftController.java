@@ -1,5 +1,7 @@
 package com.apass.esp.web.goods;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -172,7 +174,8 @@ public class GoodsBaseInfoSiftController {
 			if (StringUtils.isBlank(goodsType)) {
 				return Response.fail("要修改的商品类型不能为空");
 			}
-			
+			String siftGoodsSort = HttpWebUtils.getValue(request, "siftGoodsSort");
+			//精选排序字段前端已经正整数验证 见 sift.js
 			// 根据id查询商品
 			GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(Long.valueOf(goodsId));
 			
@@ -194,11 +197,33 @@ public class GoodsBaseInfoSiftController {
 			GoodsInfoEntity entity = new GoodsInfoEntity();
 			entity.setId(Long.valueOf(goodsId));
 			entity.setGoodsType(goodsType);
+			Integer count = 0;
 			//当商品由精选商品变为普通商品时 更新时间变为商品创建时间
 			if(goodsType.equals(GoodsType.GOOD_NORMAL.getCode())){
+			    entity.setSiftSort(0);
 				entity.setUpdateDate(goodsInfoEntity.getCreateDate());
+				count = goodsService.updateService(entity);
 			}
-			Integer count = goodsService.updateService(entity);
+			//当商品由普通商品变为精选商品   更新精选商品排序字段   并且更新其余重复精选排序字段
+			if (goodsType.equals(GoodsType.GOOD_SIFT.getCode())) {
+			    Integer sort = Integer.parseInt(siftGoodsSort);
+			    Integer sort2 = sort;
+	            entity.setSiftSort(sort);
+	            count = goodsService.updateService(entity);
+			    GoodsInfoEntity entityTwo = new GoodsInfoEntity();
+	            entityTwo.setGoodsType(goodsType);
+	            List<GoodsInfoEntity> lsit = goodsService.goodsSiftList(entityTwo);
+	            for(GoodsInfoEntity en : lsit){
+	                if(en.getSiftSort()<sort||en.getId().equals(Long.valueOf(goodsId))){
+	                    continue;
+	                }
+	                en.setSiftSort(++sort2);
+	                en.setUpdateDate(new Date());
+	                goodsService.updateService(en);
+	            }
+			    
+			}
+			
 			if (count != 1) {
 				return Response.fail("商品状态修改失败");
 			}
@@ -223,7 +248,6 @@ public class GoodsBaseInfoSiftController {
 			String random = RandomUtils.getRandom(10);
 			String fileName = "sift_" + siftGoodFileModel.getSiftGoodsId() +random+ "." + imgType;
 			String url = nfsGoods + siftGoodFileModel.getSiftGoodsId() + "/" + fileName;
-
 			/**
 			 * 图片校验
 			 */
@@ -238,7 +262,6 @@ public class GoodsBaseInfoSiftController {
 				file.getInputStream().close();
 				return Response.fail("文件不能大于500kb!");
 			}
-
 			/**
 			 * 上传文件
 			 */

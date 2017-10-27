@@ -308,6 +308,46 @@ public class GoodsService {
   }
 
   /**
+   * 验证商品是否可售
+   * @param goodId
+   * @return
+   */
+  public boolean validateGoodOnShelf(Long goodId){
+	  GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodId);
+	  Date now = new Date();//获取当前时间
+	  if(null == goodsBasicInfo){
+		  return false;
+	  }
+	  
+	  if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+	        || !StringUtils.equals(goodsBasicInfo.getStatus(), GoodStatus.GOOD_UP.getCode())) {
+	      //下架
+	     return false;
+	  }
+	     
+	  if(StringUtils.isEmpty(goodsBasicInfo.getSource())){
+		  List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodId);
+		     for (GoodsStockInfoEntity goodsStock : goodsList) {
+		         if (goodsStock.getStockCurrAmt() > 0 ) {
+		           return true;
+		         }
+	         }
+	  }else{
+		  String externalId = goodsBasicInfo.getExternalId();// 外部商品id
+	      List<SkuNum> skuNumList=new ArrayList<>();
+	      SkuNum skuNum=new SkuNum();
+	      skuNum.setNum(1);
+	      skuNum.setSkuId(Long.parseLong(externalId));
+	      skuNumList.add(skuNum);
+	      //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+	      if(orderService.checkGoodsSalesOrNot(skuNumList)){
+	      	 return true;//商品可售
+	      }
+	  }
+	  return false;
+  }
+  
+  /**
    * 获取商品基本信息
    *
    * @param goodsId
@@ -368,7 +408,7 @@ public class GoodsService {
     }
     //返回活动id
 	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-	if(null !=proGroupGoodsBo){
+	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
 	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
@@ -433,7 +473,7 @@ public class GoodsService {
 	  String activityCfgDesc="";
 	  if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	      ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
-	      if(null !=activityCfg ){
+	      if(null !=activityCfg && activityCfg.getActivityType().equals("Y")){
 	    	  if(null !=activityCfg.getOfferSill1() && null !=activityCfg.getDiscountAmonut1()){
 	    		  String  offer1   =activityCfg.getOfferSill1().toString();
 	    		  String  discount1=activityCfg.getDiscountAmonut1().toString();
@@ -730,7 +770,14 @@ public class GoodsService {
     result.setTotalCount(response.getTotalCount());
     return result;
   }
-
+  /**
+   * 精选商品列表
+   * @param goodsInfoEntity
+   * @return
+   */
+  public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+      return goodsDao.goodsSiftList(entity);
+  }
   /**
    * 说明：查询商品精选数量
    *
@@ -1055,6 +1102,7 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
+      goods.setSordNo(g.getSordNo());
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));
@@ -1148,4 +1196,20 @@ public class GoodsService {
     return null;
   }
 
+    /**
+     * 添加banner使用
+     * @param param
+     * @return
+     */
+    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
+        GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+        entity.setGoodsCode(Long.parseLong(param));
+        entity.setExternalId(param);
+        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+    }
+
+
+    public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {
+        return goodsDao.selectByCategoryId2AndsordNo(params);
+    }
 }

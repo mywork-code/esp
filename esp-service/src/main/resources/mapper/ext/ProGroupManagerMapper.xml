@@ -25,6 +25,18 @@
       ]]>
    </select>
    
+   <select id="getGroupByActiIdAndOrderSort" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List" />
+        from t_esp_pro_group_manager 
+        where activity_id = #{activityId} and order_sort >= #{orderSort}
+        <if test="groupId != null and groupId != ''">
+           and id != #{groupId}
+        </if>
+      <![CDATA[ 
+        order by order_sort,updated_time desc
+      ]]>
+   </select>
+   
    <select id="getGroupByActiIdAndGroupName"  resultMap="BaseResultMap">
    		select <include refid="Base_Column_List" />
         from t_esp_pro_group_manager 
@@ -36,7 +48,7 @@
        from t_esp_pro_group_manager 
         <include refid="QueryGroupSql" />
         <![CDATA[
-        order by order_sort,update_date desc
+        order by order_sort,updated_time desc
         ]]>
         <if test="startRecordIndex != null">
           <include refid="PAGINATION.MYSQL_PAGINATION" />

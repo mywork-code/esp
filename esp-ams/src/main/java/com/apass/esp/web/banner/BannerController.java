@@ -233,7 +233,7 @@ public class BannerController extends BaseController {
             		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
-                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode(activityUrl);
+                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl);
                   if(goodsInfo == null){
                       return Response.fail("请添加已上架的商品");
                   }

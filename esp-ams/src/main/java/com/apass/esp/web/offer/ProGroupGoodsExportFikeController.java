@@ -6,12 +6,16 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,8 @@ import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 
@@ -116,6 +122,7 @@ public class ProGroupGoodsExportFikeController {
      */
 	@ResponseBody
     @RequestMapping(value ="/edit/sort/save",method = RequestMethod.POST)
+	@LogAnnotion(operationType = "分组商品上移下移", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response groupEditSortSave(GoodsOrderSortVo vo){
 		ProGroupGoods proGroupGoods = null;
 		try {
@@ -139,6 +146,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/addOneGoods")
+	@LogAnnotion(operationType = "商品添加至分组", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsPageList(@RequestParam("activityId") String activityId,
 			@RequestParam("groupNameId") String groupNameId, @RequestParam("goodsId") String goodsId) {
 		int count = 0;
@@ -151,41 +159,48 @@ public class ProGroupGoodsExportFikeController {
 			String[] goods = goodsId.split(",");
 			count = goods.length;
 			for (int i = 0; i < goods.length; i++) {
-				ProGroupGoods proGroupGoods = proGroupGoodsService.selectOneByGoodsIdAndActivityId(
-						Long.parseLong(goods[i]), Long.parseLong(activityId));
-				
-				if(null != proGroupGoods){
-					int groupSortId=proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
-					proGroupGoods.setOrderSort(Long.parseLong(groupSortId+""));
+				ProGroupGoods proGroupGoods = proGroupGoodsService
+						.selectOneByGoodsIdAndActivityId(Long.parseLong(goods[i]), Long.parseLong(activityId));
+				if (null != proGroupGoods && !proGroupGoods.getGroupId().equals(groupNameId)) {
+					if (proGroupGoods.getStatus().equals("S")) {
+						if (count > 1) {
+							return Response.fail("其中有些商品已添加至其他分组！");
+						} else {
+							return Response.fail("该商品已添加至其他分组！");
+						}
+					}
+					int groupSortId = proGroupGoodsService.getMaxSortOrder(Long.parseLong(groupNameId));
+					proGroupGoods.setOrderSort(Long.parseLong(groupSortId + ""));
 					proGroupGoods.setGroupId(Long.parseLong(groupNameId));
 					proGroupGoods.setStatus("S");
-					proGroupGoods.setUpdateDate(new Date());
+					proGroupGoods.setUpdatedTime(new Date());
 					proGroupGoodsService.updateProGroupGoods(proGroupGoods);
 					countSuccess++;
-				}else{
+				} else {
 					countFail++;
 				}
 			}
-			//更新分组中商品的总个数
-			ProGroupManager group =	 groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
-			if(null != group){
-				group.setGoodsSum(group.getGoodsSum()+countSuccess); 
-				group.setUpdateDate(new Date());
+			// 更新分组中商品的总个数
+			ProGroupManager group = groupManagerMapper.selectByPrimaryKey(Long.parseLong(groupNameId));
+			if (null != group && countSuccess>0) {
+				group.setGoodsSum(group.getGoodsSum() + countSuccess);
+				group.setUpdatedTime(new Date());
 				group.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 				groupManagerMapper.updateByPrimaryKey(group);
 			}
-			
+
 		} catch (Exception e) {
 			LOG.error("添加至该活动失败！", e);
 			Response.fail("添加至该活动失败！");
 		}
-		return Response.success("共"+count+"件商品，关联成功"+countSuccess+"件，失败"+countFail+"件");
+		return Response.success("共" + count + "件商品，关联成功" + countSuccess + "件，失败" + countFail + "件");
 	}
 	/**
 	 *从分组中移除该商品(恢复到导入时的状态)
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/removeGoods")
+	@LogAnnotion(operationType = "从分组移除商品", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response RemoveGoodsFromGroup(@RequestParam("id") String id) {
 		ProGroupManager proGroupManager = null;
 		try {
@@ -197,7 +212,8 @@ public class ProGroupGoodsExportFikeController {
 			proGroupGoods.setGroupId(-1l);
 			proGroupGoods.setOrderSort(Long.parseLong("1"));
 			proGroupGoods.setStatus("");
-			proGroupGoods.setUpdateDate(new Date());
+			proGroupGoods.setUpdatedTime(new Date());
+			proGroupGoods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 
 			ProGroupGoods entity = proGroupGoodsService.selectByPrimaryKey(Long.valueOf(id));
 			int count  = proGroupGoodsService.updateGoods(proGroupGoods);
@@ -221,6 +237,7 @@ public class ProGroupGoodsExportFikeController {
 	 */
 	@ResponseBody
 	@RequestMapping("/importFile")
+	@LogAnnotion(operationType = "导入商品到活动", valueType = LogValueTypeEnum.VALUE_DTO)
 	public Response ProGroupGoodsImportFile(@RequestParam("file") MultipartFile file,@RequestParam("activityId") String activityId) {
 		InputStream importFilein = null;
 		int count = 0;// 导入条数
@@ -249,17 +266,20 @@ public class ProGroupGoodsExportFikeController {
 					ProGroupGoods pggds=new ProGroupGoods();
 					pggds.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 创建人
 					pggds.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-					pggds.setCreateDate(new Date());
-					pggds.setUpdateDate(new Date());
+					pggds.setCreatedTime(new Date());
+					pggds.setUpdatedTime(new Date());
 					BigDecimal zero=BigDecimal.ZERO;
 					BigDecimal marketPrice=list.get(i).getMarketPrice();
 					BigDecimal activityPrice=list.get(i).getActivityPrice();
-					Boolean marketPriceFalge=marketPrice.compareTo(zero)>0;
-					Boolean activityPriceFalge=activityPrice.compareTo(zero)>0;
 					//判断该商品是否符合导入条件
 					String id=list.get(i).getId();
-					GoodsBasicInfoEntity gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
-					if (null != gbity && null != marketPrice && marketPriceFalge && null != activityPrice && activityPriceFalge && countSuccess <= 200) {
+					GoodsBasicInfoEntity gbity=null;
+					Pattern pattern = Pattern.compile("[0-9]*");   
+					Matcher isNum = pattern.matcher(id);  
+					if(null !=id && isNum.matches()){
+						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+					}
+					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中
 						Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(gbity.getGoodId());		
 						if (result) {//允许导入
@@ -267,7 +287,7 @@ public class ProGroupGoodsExportFikeController {
 							pggds.setActivityPrice(list.get(i).getActivityPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
 							pggds.setGoodsId(gbity.getGoodId());
 							pggds.setSkuId(gbity.getExternalId());
-							pggds.setGoodsCode(gbity.getGoodsCode().toString());
+							pggds.setGoodsCode(gbity.getGoodsCodeString());
 							pggds.setDetailDesc("1");// 1表示导入成功
 							pggds.setActivityId(Long.parseLong(activityId));
 							proGroupGoodsService.insertSelective(pggds);
@@ -303,29 +323,36 @@ public class ProGroupGoodsExportFikeController {
 		return Response.success("本次共导入"+count+"件商品，导入成功"+countSuccess+"件，已存在其他有效活动中"+countExit+"件，导入失败"+countFail+"件");
 	}
 	// 将上传文件读取到List中
-	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException {
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(in);
+	private List<ProGroupGoodsTo> readImportExcel(InputStream in) throws IOException, InvalidFormatException {
+		Workbook hssfWorkbook = WorkbookFactory.create(in); 
+		//hssfWorkbook = new HSSFWorkbook(in);
 		List<ProGroupGoodsTo> list = new ArrayList<ProGroupGoodsTo>();
 		// 获取第一页（sheet）
-		HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
+		Sheet hssfSheet = hssfWorkbook.getSheetAt(0);
 		// 第一行为标题，数据从第二行开始获取
 		// 得到总行数
 		int rowNum = hssfSheet.getLastRowNum() + 1;
-		for (int i = 1; i < rowNum; i++) {
-			HSSFRow hssfRow = hssfSheet.getRow(i);
-			if (hssfRow == null) {
+		int count = 0;
+  		for (int i = 1; i < rowNum; i++) {
+			Row hssfRow = hssfSheet.getRow(i);
+			if(count == 3){
 				break;
 			}
+			if (hssfRow == null) {
+				count ++;
+				continue;
+			}
+			count = 0;
 			ProGroupGoodsTo pggt = new ProGroupGoodsTo();
 			// 表格中共有3列（商品编号/skuid,市场价,活动价）
 			for (int j = 0; j < 3; j++) {
-				HSSFCell cell = hssfRow.getCell(j);
+				Cell cell = hssfRow.getCell(j);
 				if (cell == null) {
 					continue;
 				}
 				switch (j) {
 				case 0:
-					if (!StringUtils.isBlank(getValue(cell)) && ifLongString(getValue(cell))) {
+					if (!StringUtils.isBlank(getValue(cell))) {
 						pggt.setId(getValue(cell));
 					}
 					break;
@@ -352,14 +379,14 @@ public class ProGroupGoodsExportFikeController {
 	 * @param cell
 	 * @return Excel中每一个格子中的值
 	 */
-	private String getValue(HSSFCell cell) {
+	private String getValue(Cell cell) {
 		String value = null;
 		// 简单的查检列类型
 		switch (cell.getCellType()) {
-		case HSSFCell.CELL_TYPE_STRING:// 字符串
+		case Cell.CELL_TYPE_STRING:// 字符串
 			value = cell.getRichStringCellValue().getString();
 			break;
-		case HSSFCell.CELL_TYPE_NUMERIC:// 数字
+		case Cell.CELL_TYPE_NUMERIC:// 数字
 			BigDecimal big = new BigDecimal(cell.getNumericCellValue());
 			value = big.toString();
 			// 解决1234.0 去掉后面的.0
@@ -370,16 +397,16 @@ public class ProGroupGoodsExportFikeController {
 				}
 			}
 			break;
-		case HSSFCell.CELL_TYPE_BLANK:
+		case Cell.CELL_TYPE_BLANK:
 			value = "";
 			break;
-		case HSSFCell.CELL_TYPE_FORMULA:
+		case Cell.CELL_TYPE_FORMULA:
 			value = String.valueOf(cell.getCellFormula());
 			break;
-		case HSSFCell.CELL_TYPE_BOOLEAN:// boolean型值
+		case Cell.CELL_TYPE_BOOLEAN:// boolean型值
 			value = String.valueOf(cell.getBooleanCellValue());
 			break;
-		case HSSFCell.CELL_TYPE_ERROR:
+		case Cell.CELL_TYPE_ERROR:
 			value = String.valueOf(cell.getErrorCellValue());
 			break;
 		default:
@@ -450,8 +477,8 @@ public class ProGroupGoodsExportFikeController {
 		String currentUser = SpringSecurityUtils.getCurrentUser();
 		proGroupManager.setCreateUser(currentUser);
 		proGroupManager.setUpdateUser(currentUser);
-		proGroupManager.setCreateDate(new Date());
-		proGroupManager.setUpdateDate(new Date());
+		proGroupManager.setCreatedTime(new Date());
+		proGroupManager.setUpdatedTime(new Date());
 
 		groupManagerService.addGroup(proGroupManager);
 

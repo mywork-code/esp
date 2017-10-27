@@ -9,11 +9,11 @@
     <result column="status" property="status" jdbcType="VARCHAR" />
     <result column="error_massage" property="errorMassage" jdbcType="VARCHAR" />
     <result column="result" property="result" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, type, skuId, orderId, status, error_massage, result, create_date, update_date
+    id, type, skuId, orderId, status, error_massage, result, created_time, updated_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -28,10 +28,10 @@
   <insert id="insert" parameterType="com.apass.esp.domain.entity.MessageListener" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_message_listener (type, skuId, orderId, 
       status, error_massage, result, 
-      create_date, update_date)
+      created_time, updated_time)
     values (#{type,jdbcType=VARCHAR}, #{skuid,jdbcType=VARCHAR}, #{orderid,jdbcType=VARCHAR}, 
       #{status,jdbcType=VARCHAR}, #{errorMassage,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+      #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.MessageListener" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_message_listener
@@ -54,11 +54,11 @@
       <if test="result != null" >
         result,
       </if>
-      <if test="createDate != null" >
-        create_date,
+      <if test="createdTime != null" >
+        created_time,
       </if>
-      <if test="updateDate != null" >
-        update_date,
+      <if test="updatedTime != null" >
+        updated_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -80,11 +80,11 @@
       <if test="result != null" >
         #{result,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -109,11 +109,11 @@
       <if test="result != null" >
         result = #{result,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        create_date = #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -126,8 +126,8 @@
       status = #{status,jdbcType=VARCHAR},
       error_massage = #{errorMassage,jdbcType=VARCHAR},
       result = #{result,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
-      update_date = #{updateDate,jdbcType=TIMESTAMP}
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

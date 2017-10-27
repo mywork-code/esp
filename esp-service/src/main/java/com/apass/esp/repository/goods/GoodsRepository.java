@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -256,6 +257,18 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         param.put("index", index);
         param.put("size", size);
         return getSqlSession().selectList("selectJdGoods",param);
+    }
+    /**
+     * 精选商品列表
+     * @param goodsInfoEntity
+     * @return
+     */
+    public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+        return getSqlSession().selectList("pageForSiftList", entity);
+    }
+
+    public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String, Object> params) {
+        return this.getSqlSession().selectList("selectByCategoryId2AndsordNo", params);
     }
 
 }

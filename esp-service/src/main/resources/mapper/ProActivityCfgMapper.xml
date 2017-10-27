@@ -13,12 +13,12 @@
     <result column="discount_amount2" property="discountAmount2" jdbcType="DECIMAL" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, activity_name, activity_type, start_time, end_time, offer_sill1, discount_amonut1, 
-    offer_sill2, discount_amount2, create_user, update_user, create_date, update_date
+    offer_sill2, discount_amount2, create_user, update_user, created_time, updated_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -34,12 +34,12 @@
     insert into t_esp_pro_activity_cfg (activity_name, activity_type, start_time, 
       end_time, offer_sill1, discount_amonut1, 
       offer_sill2, discount_amount2, create_user, 
-      update_user, create_date, update_date
+      update_user, created_time, updated_time
       )
     values (#{activityName,jdbcType=VARCHAR}, #{activityType,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
       #{endTime,jdbcType=TIMESTAMP}, #{offerSill1,jdbcType=DECIMAL}, #{discountAmonut1,jdbcType=DECIMAL}, 
       #{offerSill2,jdbcType=DECIMAL}, #{discountAmount2,jdbcType=DECIMAL}, #{createUser,jdbcType=VARCHAR}, 
-      #{updateUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
+      #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProActivityCfg" useGeneratedKeys="true" keyProperty="id" >
@@ -75,11 +75,11 @@
       <if test="updateUser != null" >
         update_user,
       </if>
-      <if test="createDate != null" >
-        create_date,
+      <if test="createdTime != null" >
+        created_time,
       </if>
-      <if test="updateDate != null" >
-        update_date,
+      <if test="updatedTime != null" >
+        updated_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -113,11 +113,11 @@
       <if test="updateUser != null" >
         #{updateUser,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -154,11 +154,11 @@
       <if test="updateUser != null" >
         update_user = #{updateUser,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        create_date = #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -175,8 +175,8 @@
       discount_amount2 = #{discountAmount2,jdbcType=DECIMAL},
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
-      update_date = #{updateDate,jdbcType=TIMESTAMP}
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

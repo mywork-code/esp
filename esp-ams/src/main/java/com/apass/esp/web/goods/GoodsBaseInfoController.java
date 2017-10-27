@@ -340,6 +340,7 @@ public class GoodsBaseInfoController {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
+
         try {
             pageModel.setStatus(GoodStatus.GOOD_NEW.getCode());
             pageModel.setIsDelete("01");
@@ -349,6 +350,25 @@ public class GoodsBaseInfoController {
             pageModel.setNewCreatDate(new Date());
             pageModel.setSource("");
             pageModel.setExternalId("");
+            Integer sordNo = pageModel.getSordNo();
+            if(sordNo != null){
+                List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
+                for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
+                    if(sordNo == goodsInfoEntity.getSordNo()){
+                        Map<String,Object> params = Maps.newHashMap();
+                        params.put("categoryId2",pageModel.getCategoryId2());
+                        params.put("sordNo",sordNo);
+                        params.put("status",GoodStatus.GOOD_UP.getCode());
+                        List<GoodsInfoEntity> goods= goodsService.selectByCategoryId2AndsordNo(params);
+                        for (GoodsInfoEntity good: goods) {
+                            good.setSordNo(good.getSordNo()+1);
+                            good.setUpdateDate(new Date());
+                            good.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                            goodsService.updateService(good);
+                        }
+                    }
+                }
+            }
             goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
             LOGGER.error("商品添加失败", e);

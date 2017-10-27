@@ -13,14 +13,14 @@
     <result column="detail_desc" property="detailDesc" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="activity_id" property="activityId" jdbcType="BIGINT" />
     <result column="status" property="status" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code, 
-    detail_desc, create_user, update_user, create_date, update_date, activity_id, status
+    id, goods_id, sku_id, group_id, market_price, activity_price, order_sort, goods_code,
+    detail_desc, create_user, update_user, created_time, updated_time, activity_id, status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -36,12 +36,12 @@
     insert into t_esp_pro_group_goods (goods_id, sku_id, group_id, 
       market_price, activity_price, order_sort, 
       goods_code, detail_desc, create_user, 
-      update_user, create_date, update_date, 
+      update_user, created_time, updated_time, 
       activity_id, status)
     values (#{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, #{groupId,jdbcType=BIGINT}, 
       #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{orderSort,jdbcType=BIGINT}, 
       #{goodsCode,jdbcType=VARCHAR}, #{detailDesc,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
-      #{updateUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
       #{activityId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProGroupGoods" useGeneratedKeys="true" keyProperty="id" >
@@ -77,11 +77,11 @@
       <if test="updateUser != null" >
         update_user,
       </if>
-      <if test="createDate != null" >
-        create_date,
+      <if test="createdTime != null" >
+        created_time,
       </if>
-      <if test="updateDate != null" >
-        update_date,
+      <if test="updatedTime != null" >
+        updated_time,
       </if>
       <if test="activityId != null" >
         activity_id,
@@ -121,11 +121,11 @@
       <if test="updateUser != null" >
         #{updateUser,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
       </if>
       <if test="activityId != null" >
         #{activityId,jdbcType=BIGINT},
@@ -168,11 +168,11 @@
       <if test="updateUser != null" >
         update_user = #{updateUser,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
-        create_date = #{createDate,jdbcType=TIMESTAMP},
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
-        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
       <if test="activityId != null" >
         activity_id = #{activityId,jdbcType=BIGINT},
@@ -195,8 +195,8 @@
       detail_desc = #{detailDesc,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
-      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       activity_id = #{activityId,jdbcType=BIGINT},
       status = #{status,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}

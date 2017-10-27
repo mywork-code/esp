@@ -705,9 +705,8 @@ $(function() {
 //		var len = $editMerchantPostcode.textbox('getValue').length;
 //		$edit_last.html(len);
 //	})
-	if(!externalsource == 'jd'){
-		debugger;
-		$("input",$("#editgoodsName").next("span")).keyup(function(){ 
+	if(!(externalsource == 'jd')){
+		$("input",$("#editgoodsName").next("span")).keyup(function(){
 			var len = $("#editgoodsName").textbox('getText').length;
 			var canLen;
 			console.log(len);
@@ -780,13 +779,6 @@ $(function() {
 				success : function(data) {
 					debugger;
 					support7dRefundFinal = data.msg;
-					if(support7dRefundFinal != null && support7dRefundFinal != ""){
-						$("input[type=radio][name=editSupport7dRefund]").each(function() {
-							if ($(this).val() == support7dRefundFinal) {
-								$(this).attr("checked", "checked");
-							}
-						});
-					}
 				}
 			});
 		}
@@ -829,8 +821,8 @@ $(function() {
 			$("#editUpLoadGoodsPicture").css('display','none');
 			$("#editGoodsStock").css('display','none');
 
-			$("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
-			$("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
+			// $("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
+			// $("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
 		}
 		
     	
@@ -844,7 +836,6 @@ $(function() {
 			url : ctx + '/application/goods/management/loalEditor',
 			data : params,
 			success : function(data) {
-				debugger;
 				UE.getEditor('editEditor').execCommand('inserthtml', data);//加载编辑器
 			}
 		});
@@ -937,8 +928,12 @@ $(function() {
 		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
 		keepDate=$("#editkeepDate").textbox('getValue'),sordNo=$("#editsordNo").numberbox('getValue'),
 		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
+
+		if(!editSupport7dRefund){
+			editSupport7dRefund = "";
+		}
 		//字段效验
-		if ((!externalsource == 'jd') &&(null == goodsModel || ("") == goodsModel)) {
+		if (!(externalsource == 'jd') &&(null == goodsModel || ("") == goodsModel)) {
 			$.messager.alert("提示", "商品型号不能为空！", "info");
 			return;
 		}
@@ -946,7 +941,8 @@ $(function() {
 			$.messager.alert("提示", "商品名称不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsName.length>30) {
+
+		if (!(externalsource == 'jd') && goodsName.length>30) {
 			$.messager.alert("提示", "商品名称最多30字！", "info");
 			return;
 		}
@@ -955,11 +951,11 @@ $(function() {
 			$.messager.alert("提示", "商品小标题不能为空！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd') && goodsTitle.length>25) {
+		if (!(externalsource == 'jd') && goodsTitle.length>25) {
 			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
-		if (((!externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
+		if ((!(externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
 			$.messager.alert("提示", "商品规格类型不能为空！", "info");
 			return;
 		}
@@ -983,7 +979,7 @@ $(function() {
 			$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
 			return;
 		}
-		if ((!externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
+		if (!(externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
 			$.messager.alert("提示", "商品排序不能为空！", "info");
 			return;
 		}
@@ -1222,8 +1218,6 @@ $(function() {
 	
 	//确定 获取编辑器的html
 	$("#editGetAllHtml").click(function() {
-		debugger;
-
 		var params = {};
 		params['id']=editGoodId;
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
@@ -1912,7 +1906,11 @@ $(function() {
             closable : true
         });
 	};
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> cc462ccbf9311ce6787ba3ecf37501a666a0d8b3
 	// 导出商品列表
 	$ (".export-btn").click (function (){
 		debugger;
@@ -1981,7 +1979,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
 	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
 	addSupport7dRefund=$("input[name='addSupport7dRefund']:checked").val(),
-	sordNo=$("#sordNo").textbox('getValue');
+	sordNo=$("#sordNo").numberbox('getValue');
 	debugger;
 	//字段效验
 	if (null == categoryId1 || ("") == categoryId1) {
@@ -2060,10 +2058,10 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "是否支持7天退货还能为空！", "info");
 		return;
 	}
-	if (null == sordNo || ("") == sordNo) {
-		$.messager.alert("提示", "排序不能为空！", "info");
-		return;
-	}
+	// if (null == sordNo || ("") == sordNo) {
+	// 	$.messager.alert("提示", "排序不能为空！", "info");
+	// 	return;
+	// }
 	debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
@@ -2272,7 +2270,7 @@ function initGoodsInfo(){
 	$("#addsupNo").textbox('clear');
 	$('#addgoodsSkuType').combobox('setValue','');
 	$('#addUnSupportProvince').combobox('setValue','');
-	$("#sordNo").numberbox('setValue','');  
+	$("#sordNo").numberbox('setValue','');
 }
 
 //编辑商品初始化商品信息
@@ -2356,6 +2354,13 @@ function initEditGoodsInfo(row){
 				$("#editsordNo").next("span").children(".validatebox-text").removeAttr("disabled");
 
 			}
+			if(support7dRefundFinal != null && support7dRefundFinal != ""){
+				$("input[type=radio][name=editSupport7dRefund]").each(function() {
+					if ($(this).val() == support7dRefundFinal) {
+						$(this).attr("checked", "checked");
+					}
+				});
+			}
 
 			$("#editid").val(row.id);
 			$("#editLogogoodsId").val(row.id);
@@ -2386,7 +2391,7 @@ function initEditGoodsInfo(row){
 			$("#editsupNo").textbox('setValue',row.supNo);
 			$("#editkeepDate").textbox('setValue',row.keepDate);
 			$("#editsordNo").numberbox('setValue',row.sordNo);
-			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
+			// $("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			
 		}
 	});

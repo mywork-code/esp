@@ -51,6 +51,10 @@ public class GoodsInfoInOrderDto {
      */
     private BigDecimal disCountAmt;
     /**
+     * 每个订单详情的优惠金额
+     */
+    private BigDecimal orderDetailDisCountAmt;
+    /**
      * 市场价
      */
     private BigDecimal marketPrice;
@@ -148,4 +152,13 @@ public class GoodsInfoInOrderDto {
 	public void setDisCountAmt(BigDecimal disCountAmt) {
 		this.disCountAmt = disCountAmt;
 	}
+
+	public BigDecimal getOrderDetailDisCountAmt() {
+		return orderDetailDisCountAmt;
+	}
+
+	public void setOrderDetailDisCountAmt(BigDecimal orderDetailDisCountAmt) {
+		this.orderDetailDisCountAmt = orderDetailDisCountAmt;
+	}
+	
 }

@@ -668,7 +668,13 @@ public class GoodsInfoEntity {
 	public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
 		this.goodsCostPrice = goodsCostPrice;
 	}
-
+	private Integer siftSort;//精选商品排序字段
+	public Integer getSiftSort() {
+	        return siftSort;
+    }
+    public void setSiftSort(Integer siftSort) {
+        this.siftSort = siftSort;
+    }
 	@Override
 	public String toString() {
 		return "GoodsInfoEntity [id=" + id + ", goodId=" + goodId
@@ -698,7 +704,7 @@ public class GoodsInfoEntity {
 				+ source + ", externalId=" + externalId + ", goodsPrice="
 				+ goodsPrice + ", firstPrice=" + firstPrice + ", attrDesc="
 				+ attrDesc + ", begin=" + begin + ", pageSize=" + pageSize
-				+ ", colFalgt=" + colFalgt + ", sordNo=" + sordNo + "]";
+				+ ", colFalgt=" + colFalgt + ", sordNo=" + sordNo + ", siftSort="
+				+ siftSort + "]";
 	}
-
 }

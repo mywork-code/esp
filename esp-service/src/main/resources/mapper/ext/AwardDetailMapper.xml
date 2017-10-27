@@ -84,4 +84,21 @@
 	    	<if test="activityId !=null and activityId != ''">and activity_id = #{activityId}</if>
 	   </where>
     </select>
+    <!-- c -->
+    <sql id="queryCriteria">
+    	<where>
+    		status=1
+    		<if test="type !=null and type !='' ">and type = #{type}</if>
+    		<if test="activityId !=null and activityId !='' ">and activity_id = #{activityId}</if>
+    		<if test="userId !=null and userId !='' ">and user_id = #{userId}</if>
+    		<if test="startCreateDate !=null and startCreateDate !='' "><![CDATA[and create_date > #{startCreateDate}]]></if>
+    		<if test="endCreateDate !=null and endCreateDate !='' "><![CDATA[and create_date <= #{endCreateDate}]]></if>
+    		
+    	</where>
+    </sql>
+    <select id="getAllAwardByActivityIdAndTime" resultType="java.math.BigDecimal" parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery" >
+    	SELECT SUM(amount) 
+    	  FROM t_esp_award_detail
+    	<include refid="queryCriteria" />
+    </select>
 </mapper>

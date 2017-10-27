@@ -9,6 +9,14 @@
         where goods_id = #{goodsId} and status = 'S' order by id desc limit 1
     </select>
     
+    <select id="selectOneByGodsIdAndGroupId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_group_goods
+        where group_id = #{groupId} and goods_id =#{goodsId}
+        order by order_sort
+    </select>
+    
     <select id="selectGoodsByGroupId" resultMap="BaseResultMap">
        select
         <include refid="Base_Column_List" />
@@ -30,7 +38,7 @@
 	      set 
 	      group_id = -1,
 	      order_sort = #{orderSort,jdbcType=BIGINT},
-	      update_date = #{updateDate,jdbcType=TIMESTAMP},
+	      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
 	      status = #{status,jdbcType=VARCHAR}
 	    where id = #{id,jdbcType=BIGINT}
 	 </update>
@@ -97,7 +105,7 @@
 			LEFT JOIN   t_esp_pro_group_manager e ON a.group_id=e.id
 	    <include refid="QueryConditionSql" />
         <![CDATA[ 
-         order by a.order_sort, a.detail_desc desc, a.update_date desc
+         order by a.detail_desc desc,a.order_sort,  a.updated_time desc
          ]]>
 		<if test="startRecordIndex != null">
 			<include refid="PAGINATION.MYSQL_PAGINATION" />

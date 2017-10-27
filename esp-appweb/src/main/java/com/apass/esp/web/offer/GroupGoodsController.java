@@ -17,6 +17,7 @@ import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -32,14 +33,14 @@ public class GroupGoodsController {
 	@ResponseBody
 	public Response getGroupAndGoodsByGroupId(@RequestBody Map<String, Object> paramMap){
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
+		String bannerId = CommonUtils.getValue(paramMap, "bannerId");
 		if(StringUtils.isBlank(activityId)){
 			logger.error("活动编号不能为空!");
 			return Response.fail("活动编号不能为空!");
 		}
-		Map<String,Object> maps = Maps.newHashMap();
+		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		try {
-			List<GroupManagerVo> groupList = groupManagerService.getGroupsAndGoodsByActivityId(activityId);
-			maps.put("groups", groupList);
+			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);

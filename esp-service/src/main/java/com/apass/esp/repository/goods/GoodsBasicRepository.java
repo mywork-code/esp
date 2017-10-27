@@ -9,6 +9,7 @@ import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @MyBatisRepository
 public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEntity, Long> {

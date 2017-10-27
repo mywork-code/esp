@@ -3,6 +3,7 @@ package com.apass.esp.service.offer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,20 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.query.GroupQuery;
-import com.apass.esp.domain.vo.ActivityCfgVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
+import com.apass.esp.repository.banner.BannerInfoRepository;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.google.common.collect.Maps;
 
 
 @Service
@@ -45,6 +47,8 @@ public class GroupManagerService {
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
 	
+	@Autowired
+	private BannerInfoRepository bannerMapper;
 	
 	/**
 	 * 获取活动配置信息
@@ -95,7 +99,9 @@ public class GroupManagerService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public List<GroupManagerVo> getGroupsAndGoodsByActivityId(String activityId) throws BusinessException{
+	public Map<String,Object> getGroupsAndGoodsByActivityId(String activityId,String bannerId) throws BusinessException{
+		
+		Map<String,Object> maps = Maps.newHashMap();
 		
 		ProActivityCfg activity =  activityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
 		if(null == activity){
@@ -107,26 +113,35 @@ public class GroupManagerService {
 		if(activity.getStartTime().getTime() > currentTime.getTime()){
 			throw new BusinessException("活动暂未开始!");
 		}
+		//活动的状态
+		String status = "";
 		if(activity.getEndTime().getTime() < currentTime.getTime()){
-			throw new BusinessException("活动已经结束!");
-		}
-		
-		List<GroupManagerVo> groupVoList = getGroupByActivityId(activityId);
-		if(CollectionUtils.isEmpty(groupVoList)){
-			return groupVoList;
-		}
-		
-		for(int i = groupVoList.size() - 1;i >= 0;i--){
-			GroupManagerVo vo = groupVoList.get(i);
-			vo.setActivityName(activity.getActivityName());
-			List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
-			if(CollectionUtils.isEmpty(goodsList)){
-				groupVoList.remove(vo);
-				continue;
+			//如果banner下配置的活动已结束，就删掉banner
+			if(StringUtils.isNotBlank(bannerId)){
+				bannerMapper.delete(Long.parseLong(bannerId));
 			}
-			vo.setGoodsList(goodsList);
+			status = "end";
 		}
-		return groupVoList;
+		List<GroupManagerVo> groupVoList = new ArrayList<GroupManagerVo>();
+		if(StringUtils.isEmpty(status)){
+			groupVoList = getGroupByActivityId(activityId);
+			if(CollectionUtils.isNotEmpty(groupVoList)){
+				for(int i = groupVoList.size() - 1;i >= 0;i--){
+					GroupManagerVo vo = groupVoList.get(i);
+					vo.setActivityName(activity.getActivityName());
+					List<GroupGoodsVo> goodsList = proGroupGoodsService.getGroupGoodsByGroupId(vo.getId());
+					if(CollectionUtils.isEmpty(goodsList)){
+						groupVoList.remove(vo);
+						continue;
+					}
+					vo.setGoodsList(goodsList);
+				}
+			}
+		}
+		
+		maps.put("groups", groupVoList);
+		maps.put("status",status);
+		return maps;
 	}
 	
 	
@@ -139,13 +154,51 @@ public class GroupManagerService {
 	@Transactional(rollbackFor = { Exception.class})
 	public Integer saveGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,true,userName);
-		List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
-		if(CollectionUtils.isNotEmpty(groupList)){
-			throw new BusinessException("分组名称重复!");
-		}
+		validateGroupName(vo, userName);
+		updateGroupOrderSort(vo, userName);
 		return groupManagerMapper.insertSelective(manager);
 	}
 
+	/**
+	 * 验证分组分组名称是否重复和更新分组的排序字段
+	 * @param vo
+	 * @param userName
+	 * @throws BusinessException
+	 */
+	public void validateGroupName(GroupManagerVo vo,String userName) throws BusinessException{
+		/**
+		 * 根据分组的名称查询，同一活动下是否存在相同的分组名称
+		 */
+		List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
+		if(CollectionUtils.isNotEmpty(groupList)){
+			throw new BusinessException("该分组名称已经存在，请重新填写!");
+		}
+	}
+	
+	/**
+	 * 批量更新分组的排序字段
+	 * @param vo
+	 * @param userName
+	 */
+	@Transactional(rollbackFor = { Exception.class})
+	public void updateGroupOrderSort(GroupManagerVo vo,String userName){
+		/**
+		 * 首先根据活动的Id，查询出该活动下所有的分组信息
+		 */
+		List<ProGroupManager> groupSortList = groupManagerMapper.getGroupByActiIdAndOrderSort(new GroupQuery(vo.getActivityId(),vo.getId(),vo.getOrderSort()));
+		if(CollectionUtils.isNotEmpty(groupSortList)){
+			ProGroupManager manager = groupSortList.get(0);
+			if(manager.getOrderSort().equals(vo.getOrderSort())){
+				for (ProGroupManager group : groupSortList) {
+					group.setOrderSort(group.getOrderSort() +1);
+					group.setUpdatedTime(new Date());
+					group.setUpdateUser(userName);
+					groupManagerMapper.updateByPrimaryKeySelective(group);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 创建分组
 	 * @param proGroupManager
@@ -168,11 +221,11 @@ public class GroupManagerService {
 	public Integer editGroup(GroupManagerVo vo,String userName) throws BusinessException{
 		ProGroupManager manager = getProGroupManager(vo,false,userName);
 		ProGroupManager exsit = groupManagerMapper.selectByPrimaryKey(vo.getId());
-		if(null != exsit && !StringUtils.equals(vo.getGroupName(), exsit.getGroupName())){
-			List<ProGroupManager> groupList = groupManagerMapper.getGroupByActiIdAndGroupName(new GroupQuery(vo.getActivityId(),null,vo.getGroupName()));
-			if(CollectionUtils.isNotEmpty(groupList)){
-				throw new BusinessException("分组名称重复!");
-			}
+		if(!StringUtils.equals(vo.getGroupName(), exsit.getGroupName())){
+			validateGroupName(vo, userName);
+		}
+		if(vo.getOrderSort().longValue() != exsit.getOrderSort().longValue()){
+			updateGroupOrderSort(vo, userName);
 		}
 		return groupManagerMapper.updateByPrimaryKeySelective(manager);
 	}
@@ -185,7 +238,7 @@ public class GroupManagerService {
 		List<ProGroupGoods> goodsList = groupGoodsMapper.selectGoodsByGroupId(id);
 		if(CollectionUtils.isNotEmpty(goodsList)){
 			logger.error("分组编号为{}下存在关联商品，不能删除!",id);
-			throw new BusinessException("该分组下存在关联的商品，不能删除!");
+			throw new BusinessException("请先将该分组下的商品删除后再次操作！");
 		}
 		return groupManagerMapper.deleteByPrimaryKey(id);
 	}
@@ -214,12 +267,12 @@ public class GroupManagerService {
 		group.setGroupName(vo.getGroupName());
 		group.setOrderSort(vo.getOrderSort());
 		if(bl){
-			group.setCreateDate(new Date());
+			group.setCreatedTime(new Date());
 			group.setCreateUser(userName);
 			group.setActivityId(vo.getActivityId());
 			group.setGoodsSum(vo.getGoodsSum());
 		}
-		group.setUpdateDate(new Date());
+		group.setUpdatedTime(new Date());
 		group.setUpdateUser(userName);
 		group.setId(vo.getId());
 		return group;
