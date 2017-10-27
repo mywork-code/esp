@@ -22,6 +22,7 @@ CREATE TABLE `t_esp_pro_coupon` (
   `update_user` varchar(50) NOT NULL COMMENT '修改人',
   `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_time` datetime NOT NULL COMMENT '修改时间',
+  `is_delete` varchar(2) NOT NULL DEFAULT 'N' COMMENT '是否删除，Y：是；N：否',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='优惠券信息表';
 
