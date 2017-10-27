@@ -11,6 +11,12 @@ $(function(){
         nowrap:false,
         toolbar : '#tb',
         columns :[[
+			{
+			    title : '活动ID',
+			    field : 'id',
+			    width : 150,
+			    align : 'center'
+			}, 
             {
                 title : '活动名称',
                 field : 'activityName',
@@ -74,12 +80,10 @@ $(function(){
     }
 
     $("#add").click(function(){
-        debugger;
     	window.location.href= ctx + '/activity/cfg/add';
     })
 
     $(".search-btn").click(function() {
-        debugger;
         var params = {'status':$('#status').combobox('getValue')};
         var stat = $('#status').combobox('getValue');
 

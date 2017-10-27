@@ -53,9 +53,9 @@ public class AwardActivityStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 	
-	@Scheduled(cron = "0 0/60 * * * ?")
+	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
 	public void awardActivityStatistics(){
-		List<ActivityStatisticsVo> chanelStatistisList=chanelStatistisList();
+		List<ActivityStatisticsVo> chanelStatistisList=awardActivityStatisticsList();
 		String fileName = "转介绍奖励金额统计";
 		String[] rowHeadArr = {"统计日期","推荐人总数", "拉新总数", "总奖励金额", "已返现金额", "可返现金额"};
         String[] headKeyArr = {"des","refereeNums", "newNums", "awardAmount", "backAwardAmount", "haveAwardAmount"};
@@ -68,7 +68,7 @@ public class AwardActivityStatisticsScheduleTask {
 		model.sendMail(sendToAddress, copyToAddress, fileName);
 	}
 	
-	public List<ActivityStatisticsVo> chanelStatistisList(){
+	public List<ActivityStatisticsVo> awardActivityStatisticsList(){
 		List<ActivityStatisticsVo> list=new ArrayList<>();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
 		//获取当月第一天
@@ -76,7 +76,13 @@ public class AwardActivityStatisticsScheduleTask {
         calendar1.set(Calendar.DAY_OF_MONTH,1);
         String firstDay = format.format(calendar1.getTime());
         String firstDay2=firstDay+" 00:00:00";
-
+        //获取前一天时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        String BeforeDay = format.format(calendar.getTime());
+        String BeforeDay2=BeforeDay+" 00:00:00";
+        
         ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 		try {
 			AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
@@ -91,11 +97,11 @@ public class AwardActivityStatisticsScheduleTask {
 				return null;
 			}
 			//当月
-			ActivityStatisticsVo astvo1=getActivityStatisticsVo(aInfoVo.getId(),firstDay2,new Date().toString());
+			ActivityStatisticsVo astvo1=getActivityStatisticsVo(aInfoVo.getId(),firstDay2,BeforeDay2);
 			astvo1.setDes("活动当月");
 			list.add(astvo1);
 			//活动上线至今
-			ActivityStatisticsVo astvo2=getActivityStatisticsVo(aInfoVo.getId(),null,new Date().toString());
+			ActivityStatisticsVo astvo2=getActivityStatisticsVo(aInfoVo.getId(),null,BeforeDay2);
 			astvo2.setDes("活动上线至今");
 			list.add(astvo2);
 			

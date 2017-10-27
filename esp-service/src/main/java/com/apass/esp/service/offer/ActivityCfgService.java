@@ -94,10 +94,10 @@ public class ActivityCfgService {
 		record.setOfferSill2(vo.getOfferSill2());
 		record.setStartTime(DateFormatUtil.string2date(vo.getStartTime(),""));
 		if(bl){
-			record.setCreateDate(new Date());
+			record.setCreatedTime(new Date());
 			record.setCreateUser(vo.getUserName());
 		}
-		record.setUpdateDate(new Date());
+		record.setUpdatedTime(new Date());
 		record.setUpdateUser(vo.getUserName());
 		record.setId(vo.getId());
 		return record;

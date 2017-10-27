@@ -27,9 +27,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -44,6 +47,13 @@ import java.util.*;
 @Component
 public class ContractService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ContractService.class);
+	
+	private static final String CONTRACT_QUERYCASHSTAGESCONTRACT="/contractInfoForEsp/queryCashStagesContract";
+	/**
+     * 安家派服务地址
+     */
+    @Value("${ajp.base.url}")
+    protected String              ajpBaseUrl;
     /**
      * 签章Client
      */
@@ -494,6 +504,26 @@ public class ContractService {
         model.setPayBankCardNo(customerBasicInfo.getCardNo());// 还款卡号
         model.setContractDate(DateFormatUtil.datetime2String(new Date())); // 合同签署日期
         return model;
+    }
+	 /**
+     * 信贷请求数据（查询实物分期合同数据）
+     */
+    public Response querycashstagescontract(String userId,String capital,String paymentType){
+    	try {
+			 Map<String,Object> map=new HashMap<String,Object>();
+			 map.put("userId", userId);
+			 map.put("capital", capital);
+			 map.put("paymentType", paymentType);
+	         String requestUrl = ajpBaseUrl + CONTRACT_QUERYCASHSTAGESCONTRACT;
+			 String reqJson = GsonUtils.toJson(map);
+	         StringEntity entity = new StringEntity(reqJson, ContentType.APPLICATION_JSON);
+	         String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+	         Response   response=GsonUtils.convertObj(responseJson, Response.class);
+	         return response;
+    	} catch (Exception e) {
+			LOGGER.error("信贷请求数据（查询实物分期合同数据）失败！", e);
+		}
+		return null;
     }
 
 }

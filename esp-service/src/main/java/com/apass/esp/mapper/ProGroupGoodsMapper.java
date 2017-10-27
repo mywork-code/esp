@@ -23,6 +23,7 @@ public interface ProGroupGoodsMapper extends GenericMapper<ProGroupGoods, Long>{
    //查看商品是否存在其他有效的活动中
    List<ProGroupGoods> selectEffectiveGoodsByGoodsId(@Param("goodsId") Long goodsId);
 
+   ProGroupGoods selectOneByGodsIdAndGroupId(@Param("goodsId") Long goodsId,@Param("groupId") Long groupId);
    
    Integer getMaxSortOrder(@Param("groupId") Long groupId);
 	//分页查询	

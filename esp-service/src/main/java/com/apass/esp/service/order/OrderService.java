@@ -1,5 +1,4 @@
 package com.apass.esp.service.order;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,9 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
+import com.apass.esp.domain.vo.CheckAccountOrderDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -552,7 +551,7 @@ public class OrderService {
          * 验证商品是否可售
          */
         if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
-        	throw new BusinessException("下单失败!");
+        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
         }
         /**
          * 批量获取库存接口
@@ -572,14 +571,11 @@ public class OrderService {
          */
         JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
         LOGGER.info(orderResponse.toString());
-        if ((!orderResponse.isSuccess() || "0008".equals(orderResponse.getResultCode()))
-                && !"3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
-            throw new BusinessException("下单失败!");
+        if ((!orderResponse.isSuccess())) {
 
-        } else if (!orderResponse.isSuccess() || "3004".equals(orderResponse.getResultCode())) {
-            LOGGER.warn("call jd comfireOrder is failed ! ", orderResponse.toString());
-            throw new BusinessException("下单失败!");
+            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
+            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
+            throw new BusinessException("抱歉,该订单暂时无法结算!");
         }
         String jdOrderId = orderResponse.getResult().getString("jdOrderId");
 
@@ -1454,7 +1450,7 @@ public class OrderService {
         List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
 
         if (null == orderList || orderList.isEmpty()) {
-            return Collections.emptyList();
+            return returnOrders;
         }
 
         for (OrderInfoEntity order : orderList) {
@@ -1583,6 +1579,7 @@ public class OrderService {
             goodsSum += orderDetailInfo.getGoodsNum();
             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
+            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
@@ -1596,6 +1593,10 @@ public class OrderService {
                     goodsInfo.setGoodsLogoUrl(goods.getGoodsLogoUrl());
                 }
             }
+            //如果是京东的商品
+            if(null != goods && StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
+            	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
             //单个商品的优惠价格
@@ -1603,7 +1604,7 @@ public class OrderService {
     		BigDecimal price = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
             if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_FLOOR);
+            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
                 goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
             }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
@@ -1794,6 +1795,7 @@ public class OrderService {
             goodInfo.setGoodsStockId(goodsStock.getGoodsStockId());
             goodInfo.setGoodsName(orderDetail.getGoodsName());
             goodInfo.setGoodsLogoUrl(goodsStock.getStockLogo());
+            goodInfo.setMerchantCode(goods.getMerchantCode());
             /**
              * 京东不需要验证数量
              */
@@ -1816,6 +1818,12 @@ public class OrderService {
             if (null != goods) {
                 goodInfo.setUnSupportProvince(goods.getUnSupportProvince());
             }
+            if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+            	goodInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goods.getGoodsLogoUrl());
+            	goodInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            }
+            //设置活动Id
+            goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
             // 订单总金额
             totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
@@ -2324,7 +2332,7 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
-    public List<PurchaseRequestDto> validateGoodsStock(Long addreesId,List<PurchaseRequestDto> purchaseList) throws BusinessException {
+    public List<PurchaseRequestDto> validateGoodsStock(Long addreesId,List<PurchaseRequestDto> purchaseList,boolean exsitJdGoods) throws BusinessException {
     	/**
     	 * 获取地址信息
     	 */
@@ -2332,17 +2340,21 @@ public class OrderService {
     	if(null == address){
     		return null;
     	}
-    	Region region = new Region(Integer.parseInt(address.getProvinceCode()), Integer.parseInt(address.getCityCode()), 
-    			Integer.parseInt(address.getDistrictCode()), Integer.parseInt(address.getTownsCode()));
+    	Region region = null;
+    	if(exsitJdGoods){
+    		region = new Region(Integer.parseInt(address.getProvinceCode()), Integer.parseInt(address.getCityCode()), 
+        			Integer.parseInt(address.getDistrictCode()), Integer.parseInt(address.getTownsCode()));
+    	}
+    	
     	for (PurchaseRequestDto purchase : purchaseList) {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
-            GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
             if(StringUtils.isBlank(goods.getSource())){
-            	if(purchase.getBuyNum() > stock.getStockCurrAmt()){
-            		purchase.setUnStockDesc(true);
-            	}
+            	GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
+        		if(stock.getStockCurrAmt() == 0){
+        			purchase.setUnStockDesc(true);
+        		}
             }else{
-            	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,purchase.getBuyNum());
+            	String stockDesc = goodsInfoService.getStockBySkuNum(goods.getExternalId(), region,1);
             	if ("无货".equals(stockDesc)) {
             		purchase.setUnStockDesc(true);
             	}
@@ -2922,7 +2934,6 @@ public class OrderService {
     public List<OrderInfoEntity> selectByStatusList(List<String> statusArray,String dateBegin,String dateEnd){
         return orderInfoRepository.selectByStatusList(statusArray,dateBegin,dateEnd);
     }
-
     /**
      * 销售订单明细
      */
@@ -2935,5 +2946,8 @@ public class OrderService {
      */
     public List<SalesOrderPassOrRefund> selectSalesOrderStatusList(List<String> orderStatusList, String dateBegin, String dateEnd) {
         return orderInfoRepository.selectSalesOrderStatusList(orderStatusList,dateBegin,dateEnd);
+    }
+    public List<CheckAccountOrderDetail> getCheckOrderDetail(String beginDate) {
+        return orderInfoRepository.getCheckOrderDetail(beginDate);
     }
 }

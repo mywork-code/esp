@@ -259,9 +259,9 @@ public class OrderInfoController {
 	  if(StringUtils.isBlank(buyInfo)){
 		  return Response.fail("参数值传递有误!");
 	  }
-	  
+	  boolean exitstJDGood = false;
 	  if(StringUtils.isNotBlank(addressId)){
-		  boolean exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
+		  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
 		  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
 		  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
 			  return Response.fail("您填写的收货地址所在地址不完整，请重新填写！");
@@ -273,7 +273,7 @@ public class OrderInfoController {
 			  //验证是否支持配送区域
 			  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
 			  //验证是否有货
-			  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList);
+			  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood);
 		  }
 		  //计算商品数量和金额
 		  Map<String,Object> param = orderService.calcGoodsBuyNum(purchaseList);
@@ -625,37 +625,24 @@ public class OrderInfoController {
     Map<String, Object> resultMap = new HashMap<String, Object>();
 
     try {
-
-      List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,
-          statusStr);
+      List<OrderDetailInfoDto> resultList = orderService.getOrderDetailInfo(requestId, userId,statusStr);
       //如果订单的状态为待发货，应该把订单的状态为退款中的并到待发货中
-      if (StringUtils.isNotBlank(statusStr) && StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())) {
-        List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,
-            OrderStatus.ORDER_REFUNDPROCESSING.getCode());
-        if (!CollectionUtils.isEmpty(dtoList)) {
-          if (CollectionUtils.isEmpty(resultList)) {
-            resultList = dtoList;
-          } else {
-            resultList.addAll(dtoList);
-          }
-
-        }
+      if (StringUtils.equals(statusStr, OrderStatus.ORDER_PAYED.getCode())) {
+        List<OrderDetailInfoDto> dtoList = orderService.getOrderDetailInfo(requestId, userId,OrderStatus.ORDER_REFUNDPROCESSING.getCode());
+        resultList.addAll(dtoList);
       }
-
+      /**
+       * 处理退款中的订单
+       */
       for (OrderDetailInfoDto order : resultList) {
-        if (StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())) {
-          order.setStatus(OrderStatus.ORDER_PAYED.getCode());
-        }
-      }
-
-
+    	  if(StringUtils.equals(order.getStatus(), OrderStatus.ORDER_REFUNDPROCESSING.getCode())){
+    		  order.setStatus(OrderStatus.ORDER_PAYED.getCode());
+    	  }
+	   }
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {
-        String province = list.getProvince();
-        if (StringUtils.isNotEmpty(province)) {
-          if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+        if (StringUtils.isNotEmpty(list.getProvince()) && CityEnums.isContains(list.getProvince())) {
             list.setProvince("");
-          }
         }
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
@@ -714,11 +701,8 @@ public class OrderInfoController {
           statusStr);
       //添加新的图片地址
       for (OrderDetailInfoDto list : resultList) {
-        String province = list.getProvince();
-        if (StringUtils.isNotEmpty(province)) {
-          if (province.equals(CityEnums.BEIJING.getName()) || province.equals(CityEnums.TIANJIN.getName()) || province.equals(CityEnums.CHONGQING.getName()) || province.equals(CityEnums.SHANGHAI.getName())) {
+        if (StringUtils.isNotEmpty(list.getProvince()) && CityEnums.isContains(list.getProvince())) {
             list.setProvince("");
-          }
         }
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {

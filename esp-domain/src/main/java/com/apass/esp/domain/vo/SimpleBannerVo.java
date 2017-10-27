@@ -6,6 +6,7 @@ package com.apass.esp.domain.vo;
 public class SimpleBannerVo {
   private String img; //banner图片
   private String linkUrl; //跳转链接
+  private String id;//bannerId
 
   public String getImg() {
     return img;
@@ -22,4 +23,13 @@ public class SimpleBannerVo {
   public void setLinkUrl(String linkUrl) {
     this.linkUrl = linkUrl;
   }
+
+	public String getId() {
+		return id;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+  
 }

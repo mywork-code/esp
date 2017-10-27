@@ -86,7 +86,7 @@
 			</where>
 	<![CDATA[
 		ORDER BY
-				update_date DESC
+				banner_type ASC,banner_order ASC,update_date DESC
 	]]>
 	</select>
 

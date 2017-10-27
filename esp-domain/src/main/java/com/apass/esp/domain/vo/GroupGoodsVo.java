@@ -18,6 +18,8 @@ public class GroupGoodsVo {
     private String goodsPic;
     //商品的来源
     private String source;
+    //可售
+    private boolean onShelf;
     
 	public Long getGroupId() {
 		return groupId;
@@ -73,6 +75,14 @@ public class GroupGoodsVo {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public boolean isOnShelf() {
+		return onShelf;
+	}
+
+	public void setOnShelf(boolean onShelf) {
+		this.onShelf = onShelf;
 	}
 	
 }

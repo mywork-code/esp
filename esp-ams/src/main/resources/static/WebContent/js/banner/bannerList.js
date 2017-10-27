@@ -1,7 +1,7 @@
 $(function(){
 	$("#addBannerInfor").window('close');
 	$("#showBannerPoto").window('close');
-	
+
 	//Grid
 	$('#bannerList').datagrid({
 		title : 'banner信息',
@@ -36,7 +36,7 @@ $(function(){
 					if(grantedAuthority=='permission'){
 					    content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteBanner("
 							+ row.id+ ");\">删除</a>&nbsp;&nbsp;";
-					}  
+					}
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
 							+ row.bannerImgUrl+ "');\">查看图片</a>&nbsp;&nbsp;";
 					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.showActivity('"
@@ -61,20 +61,20 @@ $(function(){
             })
         }
 	});
-	
-	
+
+
 	$("#bannerType").combobox({
 		onSelect:function(){
 			if($("#bannerType").combobox('getValue') == "index"){
 				$("#fondSpan").empty();
 				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</font>");
 			}else{
-				$("#fondSpan").empty();	
+				$("#fondSpan").empty();
 				$("#fondSpan").append("<font color='red'>支持格式：.png或.jpg;宽：750px,高：300px;大小：≤500kb</font>");
 			}
 		}
 	});
-	
+
 	//添加  banner信息
 	$("#add").click(function(){
 		$('#addBannerInfor').window({
@@ -85,16 +85,17 @@ $(function(){
             top:$(document).scrollTop() + ($(window).height()-250) * 0.5
 		});
 		$("#addBannerInfor").window('open');
-		
+
 		$("#bannerName").textbox('setValue','');
 		$("#bannerType").combobox('setValue','');
 		$("#bannerOrder").numberbox('setValue','');
 		$("#bannerFile").val('');
 		$("#activityUrl").textbox('setValue','');
 	});
+
 	//确认   添加  banner信息
 	$("#agreeAdd").click(function(){
-		debugger;
+		// debugger;
 		var bannerType=$("#bannerType").combobox('getValue');
 		if(null == bannerType || bannerType==""){
 			$.messager.alert("<span style='color: black;'>提示</span>","类型不能为空！","info");
@@ -111,7 +112,7 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>",activityName+"不能为空！","info");
 			return;
 		}
-		
+
 		var bannerFile= $("#bannerFile").val();
 		if(bannerFile=='' || null==bannerFile){
 			$.messager.alert("<span style='color: black;'>提示</span>","请选择上传图片！","info");
@@ -120,7 +121,7 @@ $(function(){
 
 		//提交from
 		var theForm = $("#addBannerFile");
-		theForm.form("submit",{ 
+		theForm.form("submit",{
 			url : ctx + '/application/banner/management/addBannerFile',
 			success : function(data) {
 				debugger;
@@ -144,6 +145,7 @@ $(function(){
 			}
 		});
 	});
+
 	//取消   添加  banner信息
 	$("#cancelAdd").click(function(){
 		$("#addBannerInfor").window('close');
@@ -181,7 +183,7 @@ $(function(){
 			}
 		})
 	};
-	
+
 	//查看图片
 	$.show = function(bannerImgUrl) {
 		$("#showPicture").attr("src","");
@@ -190,7 +192,6 @@ $(function(){
 	}
 	//查看活动
 	$.showActivity = function(activityUrl) {
-		debugger;
 		var index = activityUrl.indexOf("?");
 		var end=activityUrl.length;
 		var acUrl=activityUrl.slice(index+1,end);
@@ -203,11 +204,38 @@ $(function(){
 			//跳转到商品详情页
 			$.previewProduct(id,source);
 		}else{
+			var subtitle = "活动预览-";
+			var parentTabs = parent.$('#tabs');
+			var address = "";
 			if(acUrl.indexOf('http://') == -1){
-				window.location.href="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+				address="http://" + acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+
 			}else{
-				window.location.href=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
+				address=acUrl.slice(acUrl.indexOf("=") + 1,acUrl.length);
 			}
+
+			if (parentTabs.tabs('exists', subtitle)) {
+				parentTabs.tabs('select', subtitle);
+				return;
+			}
+
+			parentTabs.tabs('add', {
+				title : subtitle,
+				content : function() {
+					var array = new Array();
+					array.push('<iframe name="mainFrame" ');
+					array.push('scrolling="auto" ');
+					array.push('frameborder="0" ');
+					array.push('src="' + address + '" ');
+					array.push(' style="width:100%;height:100%;" ');
+					array.push(' ></iframe>');
+					return array.join('');
+				},
+				closable : true
+			});
+
+
+
 		}
 	}
 
@@ -218,7 +246,6 @@ $(function(){
 			type : "get",
 			dataType : "json",
 			success : function(resp) {
-				debugger;
 				console.debug(resp)
 				var data = resp.data;
 				$('#addBannerInfor').window({
@@ -240,12 +267,10 @@ $(function(){
 	}
 
 	$.previewProduct = function(id,source) {
-		debugger;
 		var subtitle = "商品预览-" + id;
 		var parentTabs = parent.$('#tabs');
 		var destAddress="";
 		if("jd"==source){
-			subtitle = "商品预览-" + id;
 			destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
 		}else{
 			destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";

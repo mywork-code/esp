@@ -11,8 +11,11 @@ import java.util.Calendar;
 /**
  * Created by jie.xu on 17/10/17.
  */
+<<<<<<< HEAD
 @Component
 @RequestMapping("/sap/test")
+=======
+//@Component
 public class SAPScheduleTask {
 
 	@Value("${ftp.ip}")

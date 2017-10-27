@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -42,6 +43,7 @@ import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -68,6 +70,8 @@ public class JdGoodsInfoService {
 	private GoodsStockInfoRepository goodsStockInfoRepository;
 	@Autowired
 	private CommonService commonService;
+	@Autowired
+	private ProGroupGoodsService proGroupGoodsService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -244,6 +248,11 @@ public class JdGoodsInfoService {
 			String support7dRefund=goodsService.getsupport7dRefund(Long.parseLong(skuId));
 			//满减活动字段
 			String activityCfg = goodsService.getActivityInfo(goodsId);
+			  //添加活动id
+        	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+        	if(null !=proGroupGoodsBo){
+        		jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
+        	}
 			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);
 			jdSimilarSkuVo.setStockDesc(jdGoodStock);

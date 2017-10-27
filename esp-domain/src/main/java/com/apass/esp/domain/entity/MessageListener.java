@@ -23,7 +23,7 @@ public class MessageListener extends QueryParams{
     
     private String createDateString;
     
-    private Date updateDate;
+    private Date updatedTime;
 
     public Long getId() {
         return id;
@@ -88,14 +88,14 @@ public class MessageListener extends QueryParams{
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
+    
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
 	public String getCreateDateString() {
 		return createDateString;
