@@ -930,8 +930,6 @@
 		    ]]> 
 		</if>
 	</select>
-
-<<<<<<< HEAD
 	<select id="salesOrderPassOrRefund" resultType="com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund">
 		SELECT
 			orderinfo.id orderPrimayId,
@@ -953,7 +951,7 @@
 		<![CDATA[ and orderinfo.update_date < #{dateEnd}]]>
 		GROUP BY orderinfo.order_id
 		ORDER BY orderinfo.order_id
-=======
+	</select>
 	<select id="getCheckOrderDetail" resultType="com.apass.esp.domain.vo.CheckAccountOrderDetail">
 		SELECT
 			orderInfo.order_id 'orderId',
@@ -982,7 +980,6 @@
 			orderInfo.orderstatus,
 			orderInfo.create_date,
 			orderInfo.order_id DESC
->>>>>>> cc462ccbf9311ce6787ba3ecf37501a666a0d8b3
 	</select>
 	
 </mapper>
