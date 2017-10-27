@@ -7,7 +7,7 @@ public class ProMyCoupon {
 
     private Long userId;
 
-    private String extendType;
+    private Long couponRelId;
 
     private String status;
 
@@ -41,12 +41,12 @@ public class ProMyCoupon {
         this.userId = userId;
     }
 
-    public String getExtendType() {
-        return extendType;
+    public Long getCouponRelId() {
+        return couponRelId;
     }
 
-    public void setExtendType(String extendType) {
-        this.extendType = extendType;
+    public void setCouponRelId(Long couponRelId) {
+        this.couponRelId = couponRelId;
     }
 
     public String getStatus() {

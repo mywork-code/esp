@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.CategoryAttrRelMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.CategoryAttrRel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="category_id1" property="categoryId1" jdbcType="BIGINT" />
+    <result column="goods_attr_id" property="goodsAttrId" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, category_id1, goods_attr_id, created_time, updated_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_category_attr_rel
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_category_attr_rel
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_category_attr_rel (category_id1, goods_attr_id, created_time, 
+      updated_time)
+    values (#{categoryId1,jdbcType=BIGINT}, #{goodsAttrId,jdbcType=BIGINT}, #{createdTime,jdbcType=TIMESTAMP}, 
+      #{updatedTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_category_attr_rel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="categoryId1 != null" >
+        category_id1,
+      </if>
+      <if test="goodsAttrId != null" >
+        goods_attr_id,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="categoryId1 != null" >
+        #{categoryId1,jdbcType=BIGINT},
+      </if>
+      <if test="goodsAttrId != null" >
+        #{goodsAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" >
+    update t_esp_category_attr_rel
+    <set >
+      <if test="categoryId1 != null" >
+        category_id1 = #{categoryId1,jdbcType=BIGINT},
+      </if>
+      <if test="goodsAttrId != null" >
+        goods_attr_id = #{goodsAttrId,jdbcType=BIGINT},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" >
+    update t_esp_category_attr_rel
+    set category_id1 = #{categoryId1,jdbcType=BIGINT},
+      goods_attr_id = #{goodsAttrId,jdbcType=BIGINT},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

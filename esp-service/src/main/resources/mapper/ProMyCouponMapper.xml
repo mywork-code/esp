@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProMyCoupon" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
-    <result column="extend_type" property="extendType" jdbcType="VARCHAR" />
+    <result column="coupon_rel_id" property="couponRelId" jdbcType="BIGINT" />
     <result column="status" property="status" jdbcType="VARCHAR" />
     <result column="coupon_id" property="couponId" jdbcType="BIGINT" />
     <result column="telephone" property="telephone" jdbcType="VARCHAR" />
@@ -15,7 +15,7 @@
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, extend_type, status, coupon_id, telephone, start_date, end_date, remarks, 
+    id, user_id, coupon_rel_id, status, coupon_id, telephone, start_date, end_date, remarks, 
     created_time, updated_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -29,11 +29,11 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.ProMyCoupon" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_pro_mycoupon (user_id, extend_type, status, 
+    insert into t_esp_pro_mycoupon (user_id, coupon_rel_id, status, 
       coupon_id, telephone, start_date, 
       end_date, remarks, created_time, 
       updated_time)
-    values (#{userId,jdbcType=BIGINT}, #{extendType,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+    values (#{userId,jdbcType=BIGINT}, #{couponRelId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, 
       #{couponId,jdbcType=BIGINT}, #{telephone,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, 
       #{endDate,jdbcType=TIMESTAMP}, #{remarks,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
       #{updatedTime,jdbcType=TIMESTAMP})
@@ -44,8 +44,8 @@
       <if test="userId != null" >
         user_id,
       </if>
-      <if test="extendType != null" >
-        extend_type,
+      <if test="couponRelId != null" >
+        coupon_rel_id,
       </if>
       <if test="status != null" >
         status,
@@ -76,8 +76,8 @@
       <if test="userId != null" >
         #{userId,jdbcType=BIGINT},
       </if>
-      <if test="extendType != null" >
-        #{extendType,jdbcType=VARCHAR},
+      <if test="couponRelId != null" >
+        #{couponRelId,jdbcType=BIGINT},
       </if>
       <if test="status != null" >
         #{status,jdbcType=VARCHAR},
@@ -111,8 +111,8 @@
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
       </if>
-      <if test="extendType != null" >
-        extend_type = #{extendType,jdbcType=VARCHAR},
+      <if test="couponRelId != null" >
+        coupon_rel_id = #{couponRelId,jdbcType=BIGINT},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=VARCHAR},
@@ -144,7 +144,7 @@
   <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProMyCoupon" >
     update t_esp_pro_mycoupon
     set user_id = #{userId,jdbcType=BIGINT},
-      extend_type = #{extendType,jdbcType=VARCHAR},
+      coupon_rel_id = #{couponRelId,jdbcType=BIGINT},
       status = #{status,jdbcType=VARCHAR},
       coupon_id = #{couponId,jdbcType=BIGINT},
       telephone = #{telephone,jdbcType=VARCHAR},
