@@ -17,7 +17,7 @@ CREATE TABLE `t_esp_pro_coupon` (
   `category_id1` varchar(20) DEFAULT '' NOT NULL  COMMENT '一级类目id',
   `category_id2` varchar(20) DEFAULT '' NOT NULL COMMENT '二级类目id',
   `goods_code` varchar(10) DEFAULT '' NOT NULL COMMENT '商品编码',
-  `similar_goods_code` varchar(255) DEFAULT '' NOT NULL COMMENT '相类似的商品编码',
+  `sku_id` varchar(64) DEFAULT '' NOT NULL COMMENT 'skuid',
   `memo` varchar(255) DEFAULT '' NOT NULL COMMENT '备注',
   `create_user` varchar(50) NOT NULL COMMENT '创建人',
   `update_user` varchar(50) NOT NULL COMMENT '修改人',
