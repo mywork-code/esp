@@ -56,3 +56,23 @@ CREATE TABLE `t_esp_pro_coupon_rel` (
 
 ALTER TABLE `t_esp_order_detail_info`
 ADD COLUMN `coupon_money`  decimal(15,4) NOT NULL DEFAULT 0 comment '优惠券优惠金额 ';
+
+
+CREATE TABLE `t_esp_goods_attr` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '商品属性表主键',
+ `name` varchar(64) NOT NULL COMMENT '商品属性名称',
+ `created_user` varchar(32) NOT NULL DEFAULT '' COMMENT '创建人',
+ `updated_user` varchar(32) NOT NULL DEFAULT '' COMMENT '修改人',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品属性表';
+
+CREATE TABLE `t_esp_category_attr_rel` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '商品属性表主键',
+   `category_id1` bigint(20) NOT NULL COMMENT '商品一级类目Id',
+   `goods_attr_id` bigint(20) NOT NULL COMMENT '商品属性Id',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品类目属性关联表';
