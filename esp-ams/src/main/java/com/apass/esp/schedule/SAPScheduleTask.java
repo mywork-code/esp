@@ -5,6 +5,7 @@ import com.apass.gfb.framework.utils.FTPUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Calendar;
@@ -33,6 +34,24 @@ public class SAPScheduleTask {
 	@Autowired
 	private SAPService sapService;
 
+
+
+	@Scheduled(cron = "0 0 8 * * ?")
+	public void task() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
+		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
+		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
+		sapService.commodityReturnFlow(ip,port,username,password,path);
+		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+		sapService.transPurchaseOrReturnCvs(ip, port, username, password, path);
+		sapService.transPurchaseOrderCvs(ip, port, username, password, path);
+		sapService.transPurchaseReturnSalesCvs(ip, port, username, password, path);
+		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
+		sapService.salesOrderInfo(ip, port, username, password, path);
+		sapService.salesOrder(ip, port, username, password, path);
+	}
 	@RequestMapping("/test1")
 	public void exec(){
 	    Calendar cal = Calendar.getInstance();
