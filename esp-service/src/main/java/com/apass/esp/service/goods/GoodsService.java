@@ -1102,6 +1102,7 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
+      goods.setSordNo(g.getSordNo());
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));
@@ -1208,4 +1209,7 @@ public class GoodsService {
     }
 
 
+    public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {
+        return goodsDao.selectByCategoryId2AndsordNo(params);
+    }
 }

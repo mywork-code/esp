@@ -512,7 +512,7 @@ public class CategoryInfoService {
             Pagination<Goods> pagination = null;
             List<GoodsCategoryDto> goodsCategoryDtos = Lists.newArrayList();
             try {
-                pagination = IndexManager.goodSearchCategoryId2(categoryVo.getCategoryIdSecond().toString(), SortMode.ORDERVALUE_DESC.getSortField(), true, 0, 10);
+                pagination = IndexManager.goodSearchCategoryId2ForOtherCategory(categoryVo.getCategoryIdSecond().toString(), SortMode.SORD_ASC.getSortField(),SortMode.ORDERVALUE_DESC.getSortField(), true, 0, 10);
                 List<Goods> goodsList = pagination.getDataList();
                 if (CollectionUtils.isNotEmpty(goodsList)) {
                     for (Goods goods : goodsList) {
