@@ -168,6 +168,7 @@
 	
 	
 	<!-- 商品精选分页查询 -->
+	<!-- 删除排序字段 t.update_date DESC, 用商品非精选  精选以及排序字段排序 -->
 	<select id="pageForSiftList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">
 	<![CDATA[
 		SELECT
@@ -196,6 +197,7 @@
 		t.goods_Sku_Type goodsSkuType,
 		t.goods_Model goodsModel,
 		t.goods_sift_url goodsSiftUrl,
+		t.sift_sort siftSort,
 		sord_no SordNo,
 		un_support_province
 	FROM
@@ -229,10 +231,9 @@
 			AND t.category_id3 = #{categoryId3, jdbcType=BIGINT}
 		</if>
 	<![CDATA[
-		ORDER BY t.update_date DESC 
+		ORDER BY t.goods_type ASC,t.sift_sort ASC,t.sord_no ASC
 	]]>
 	</select>
-	
 	<!-- 商品管理count -->
 	<select id="goodsPageListCount" parameterType="GoodsInfoEntity" resultType="Integer">
 		<![CDATA[
@@ -555,6 +556,9 @@
 			<if test="attrDesc != null and attrDesc != ''">
 				attr_desc = #{attrDesc, jdbcType=VARCHAR},
 			</if>
+			<if test="siftSort != null">
+                sift_sort = #{siftSort},
+            </if>
 		</set>
 	<![CDATA[
 		WHERE ID =  #{id, jdbcType=BIGINT}

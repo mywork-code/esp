@@ -730,7 +730,14 @@ public class GoodsService {
     result.setTotalCount(response.getTotalCount());
     return result;
   }
-
+  /**
+   * 精选商品列表
+   * @param goodsInfoEntity
+   * @return
+   */
+  public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+      return goodsDao.goodsSiftList(entity);
+  }
   /**
    * 说明：查询商品精选数量
    *

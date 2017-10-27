@@ -195,7 +195,6 @@ $(function() {
 
     // 查询列表
     $(".search-btn").click(function() {
-    	//debugger;
         var params = {};
         var goodsType=$("#goodsTypeId").combobox('getValue');
         params['goodsName'] = $("#goodsName").textbox('getValue');
@@ -228,12 +227,12 @@ $(function() {
     var goodsId = null;
     //全局变量商品类型
 	var goodsType = null;
+	//全局变量商品精选排序
+	var siftGoodsSort = null;
     // 设置商品为精选弹窗
     $.userGoodsSettings = function(goodsId2,goodsType2) {
-    	debugger;
-
     	$("#siftGoodsFile").val("");//点击设置商品为精选时置空文件，让用户重新选择
-
+    	$("#siftGoodsSortInput").val('');//点击设置商品排序为精选时置空，让用户重新选择
     	goodsId = goodsId2;
     	goodsType = goodsType2;
     	if(goodsType=='1'){
@@ -268,7 +267,8 @@ $(function() {
         }
         $.getJSON(address, {
             "goodsId" : goodsId,
-            "goodsType":goodsType
+            "goodsType":goodsType,
+            "siftGoodsSort":siftGoodsSort
         }, function(resp) {
             $.validateResponse(resp, function() {
                 $(".search-btn").click();
@@ -282,14 +282,20 @@ $(function() {
     
     //确认  
 	$("#agreeEdit").click(function() {	
-		debugger;
 		var siftGoodsFile=$('#siftGoodsFile').val();//结果:siftGoodsFile = "C:\fakepath\Capture001.png"
-		$("#siftGoodsId").val(goodsId);//赋值商品id
-		
+		var siftGoodsSortInput=$("#siftGoodsSortInput").val();
+		var r = /^\+?[1-9][0-9]*$/;//正整数 
+	    var falg = r.test(siftGoodsSortInput);
+	    if(!falg){
+	    	$.messager.alert("提示", "精选商品排序字段请用正整数维护！", "info");
+			return;
+	    }
 		if (null == siftGoodsFile || ("") == siftGoodsFile) {
 			$.messager.alert("提示", "请选择文件！", "info");
 			return;
 		}
+		$("#siftGoodsId").val(goodsId);//赋值商品id
+		siftGoodsSort = siftGoodsSortInput;//赋值精选商品排序字段
 //		var pos = "." + siftGoodsFile.replace(/.+\./, "");//结果:pos = ".png"
 //		if(pos!=".png" && pos!=".jpg" ){
 //			$.messager.alert("提示", '请选择.png或.jpg类型文件！', "info");
@@ -300,7 +306,6 @@ $(function() {
 		thisForm.form("submit",{
 			url : ctx + '/application/goods/sift/upSiftFile',
 			success : function(data) {
-				debugger;
 				var res = JSON.parse(data);//字符串解析成json对象
 				$.messager.alert("提示", res.msg, "info");
 				if(res.status == '1'){

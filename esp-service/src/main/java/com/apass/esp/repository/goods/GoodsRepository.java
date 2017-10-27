@@ -257,5 +257,13 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         param.put("size", size);
         return getSqlSession().selectList("selectJdGoods",param);
     }
+    /**
+     * 精选商品列表
+     * @param goodsInfoEntity
+     * @return
+     */
+    public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {
+        return getSqlSession().selectList("pageForSiftList", entity);
+    }
 
 }
