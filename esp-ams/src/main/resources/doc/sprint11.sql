@@ -76,3 +76,20 @@ CREATE TABLE `t_esp_category_attr_rel` (
   `updated_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品类目属性关联表';
+
+
+CREATE TABLE `t_esp_goods_attr_val` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '商品属性表主键',
+ `goods_id`  bigint(20) NOT NULL COMMENT '商品id' ,
+ `attr_id` bigint(20) NOT NULL COMMENT 't_esp_goods_attr 表主键',
+  `attr_val` varchar(64) NOT NULL DEFAULT '' COMMENT '属性值，比如：红色，白色',
+  `sort` int NOT NULL comment '排序字段',
+  `created_time` datetime NOT NULL COMMENT '创建时间',
+  `updated_time` datetime NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品不同规格下对应值表';
+
+
+
+alter table t_esp_goods_stock_info  ADD COLUMN `sku_id` varchar(20) not null default '' COMMENT 'skuid',
+ADD COLUMN attr_val_ids varchar(32) not null default '' comment '多规格属性组合,-分隔(100-103)';
