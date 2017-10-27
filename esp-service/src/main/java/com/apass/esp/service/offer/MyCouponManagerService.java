@@ -17,14 +17,25 @@ import com.apass.esp.domain.entity.ProCoupon;
  */
 @Service
 @Transactional(rollbackFor = { Exception.class })
-public class CouponManagerService {
+public class MyCouponManagerService {
 
 	/**
-	 * 根据活动的Id，获取优惠券
-	 * @param activityId
+	 * 点击领取优惠券
+	 * @param userId 用户Id
+	 * @param couponId 优惠券Id
+	 * @param activityId 活动Id 可为空
+	 */
+	public void giveCouponToUser(String userId,String couponId,String activityId){
+		
+		
+	}
+	
+	/**
+	 * 根据用户的Id，获取用户所属的优惠券
+	 * @param userId
 	 * @return
 	 */
-	public List<ProCoupon> getCouponsByActivityId(String activityId){
+	public List<ProCoupon> getCouponsByUserId(String userId){
 		
 		return null;
 	}
