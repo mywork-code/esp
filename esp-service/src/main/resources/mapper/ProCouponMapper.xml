@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.ProCouponMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.ProCoupon" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="extend_type" property="extendType" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="effective_time" property="effectiveTime" jdbcType="INTEGER" />
+    <result column="sill_type" property="sillType" jdbcType="VARCHAR" />
+    <result column="coupon_sill" property="couponSill" jdbcType="DECIMAL" />
+    <result column="discount_amonut" property="discountAmonut" jdbcType="DECIMAL" />
+    <result column="category_id1" property="categoryId1" jdbcType="VARCHAR" />
+    <result column="category_id2" property="categoryId2" jdbcType="VARCHAR" />
+    <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, extend_type, type, effective_time, sill_type, coupon_sill, discount_amonut, 
+    category_id1, category_id2, goods_code, memo, create_user, update_user, created_time, 
+    updated_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_pro_coupon
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_pro_coupon
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.ProCoupon" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_coupon (name, extend_type, type, 
+      effective_time, sill_type, coupon_sill, 
+      discount_amonut, category_id1, category_id2, 
+      goods_code, memo, create_user, 
+      update_user, created_time, updated_time
+      )
+    values (#{name,jdbcType=VARCHAR}, #{extendType,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{effectiveTime,jdbcType=INTEGER}, #{sillType,jdbcType=VARCHAR}, #{couponSill,jdbcType=DECIMAL}, 
+      #{discountAmonut,jdbcType=DECIMAL}, #{categoryId1,jdbcType=VARCHAR}, #{categoryId2,jdbcType=VARCHAR}, 
+      #{goodsCode,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.ProCoupon" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_pro_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="extendType != null" >
+        extend_type,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="effectiveTime != null" >
+        effective_time,
+      </if>
+      <if test="sillType != null" >
+        sill_type,
+      </if>
+      <if test="couponSill != null" >
+        coupon_sill,
+      </if>
+      <if test="discountAmonut != null" >
+        discount_amonut,
+      </if>
+      <if test="categoryId1 != null" >
+        category_id1,
+      </if>
+      <if test="categoryId2 != null" >
+        category_id2,
+      </if>
+      <if test="goodsCode != null" >
+        goods_code,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="extendType != null" >
+        #{extendType,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null" >
+        #{effectiveTime,jdbcType=INTEGER},
+      </if>
+      <if test="sillType != null" >
+        #{sillType,jdbcType=VARCHAR},
+      </if>
+      <if test="couponSill != null" >
+        #{couponSill,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmonut != null" >
+        #{discountAmonut,jdbcType=DECIMAL},
+      </if>
+      <if test="categoryId1 != null" >
+        #{categoryId1,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId2 != null" >
+        #{categoryId2,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsCode != null" >
+        #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.ProCoupon" >
+    update t_esp_pro_coupon
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="extendType != null" >
+        extend_type = #{extendType,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null" >
+        effective_time = #{effectiveTime,jdbcType=INTEGER},
+      </if>
+      <if test="sillType != null" >
+        sill_type = #{sillType,jdbcType=VARCHAR},
+      </if>
+      <if test="couponSill != null" >
+        coupon_sill = #{couponSill,jdbcType=DECIMAL},
+      </if>
+      <if test="discountAmonut != null" >
+        discount_amonut = #{discountAmonut,jdbcType=DECIMAL},
+      </if>
+      <if test="categoryId1 != null" >
+        category_id1 = #{categoryId1,jdbcType=VARCHAR},
+      </if>
+      <if test="categoryId2 != null" >
+        category_id2 = #{categoryId2,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsCode != null" >
+        goods_code = #{goodsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.ProCoupon" >
+    update t_esp_pro_coupon
+    set name = #{name,jdbcType=VARCHAR},
+      extend_type = #{extendType,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      effective_time = #{effectiveTime,jdbcType=INTEGER},
+      sill_type = #{sillType,jdbcType=VARCHAR},
+      coupon_sill = #{couponSill,jdbcType=DECIMAL},
+      discount_amonut = #{discountAmonut,jdbcType=DECIMAL},
+      category_id1 = #{categoryId1,jdbcType=VARCHAR},
+      category_id2 = #{categoryId2,jdbcType=VARCHAR},
+      goods_code = #{goodsCode,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

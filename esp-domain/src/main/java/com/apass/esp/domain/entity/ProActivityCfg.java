@@ -29,6 +29,8 @@ public class ProActivityCfg {
 
     private Date updatedTime;
 
+    private String coupon;
+
     public Long getId() {
         return id;
     }
@@ -131,5 +133,13 @@ public class ProActivityCfg {
 
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(String coupon) {
+        this.coupon = coupon;
     }
 }
