@@ -2,7 +2,9 @@ package com.apass.esp.web.log;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -74,9 +75,6 @@ public class LogAspect {
      */
     public static LogInfoEntity getControllerMethodLog(JoinPoint joinPoint)  throws Exception {  
         
-        //获取request对象
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
         
         LogInfoEntity logInfo =  new LogInfoEntity();
         
@@ -100,24 +98,25 @@ public class LogAspect {
         String operationType = annotion.operationType();
         LogValueTypeEnum valueType = annotion.valueType();
         
-        if(valueType == LogValueTypeEnum.VALUE_EXPORT){
-        	operationType = request.getParameter("fileName");
-        	content.append(JSON.toJSONString(request.getParameter("params")));
-        }else{
-        	for (Object ss : arguments) {
-        		if(null == ss){
-        			continue;
-        		}
-        		if(ss instanceof MultipartFile){
-        			MultipartFile file = (MultipartFile)ss;
-                    content.append("文件名:"+file.getOriginalFilename() + "####");
-        		}else if(ss instanceof HttpServletRequest){
-        			content.append(JSONObject.toJSONString(request.getParameterMap()));
-        		}else{
-        			content.append("#"+ JSONObject.toJSONString(ss)+"#");
-        		}
-        	}
-        }
+    	for (Object ss : arguments) {
+    		if(null == ss){
+    			continue;
+    		}
+    		if(ss instanceof MultipartFile){//参数中为上传文件的，则获取上传文件的名字
+    			MultipartFile file = (MultipartFile)ss;
+                content.append("文件名:"+file.getOriginalFilename() + "####");
+    		}else if(ss instanceof HttpServletRequest){//httpquest 则获取所有的参数和值
+    			HttpServletRequest req = (HttpServletRequest)ss;
+    			if(valueType == LogValueTypeEnum.VALUE_EXPORT){//如果为导出，则获取文件名字，然后获取所有参数和值
+    				operationType = req.getParameter("fileName");
+    			}
+    			content.append(JSONObject.toJSONString(req.getParameterMap()));
+    		}else{
+    			if(ss instanceof HttpServletResponse)//忽略
+					continue;
+    			content.append("#"+ JSONObject.toJSONString(ss)+"#");
+    		}
+    	}
         logInfo.setContent(content.toString());
         logInfo.setOperationType(operationType);
         logInfo.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());

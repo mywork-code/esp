@@ -305,7 +305,7 @@ $(function() {
 				$.messager.alert("提示", res.msg, "info");
 				if(res.status == '1'){
 					updataGoodsType();
-				}
+				} 
 			}
 		});
 	});
