@@ -14,6 +14,8 @@
 			banner_img_url bannerImgUrl,
 			banner_category bannerCategory,
 			activity_url activityUrl,
+			attr,attr,
+			attr_val,attrVal,
 			banner_type bannerType,
 			banner_order bannerOrder,
 			create_user createUser,
@@ -38,6 +40,8 @@
 			banner_img_url bannerImgUrl,
 			banner_category bannerCategory,
 			activity_url activityUrl,
+			attr,attr,
+			attr_val,attrVal,
 			banner_type bannerType,
 			banner_order bannerOrder,
 			create_user createUser,
@@ -63,6 +67,8 @@
 			activity_url activityUrl,
 			banner_order bannerOrder,
 			activity_url activityUrl,
+			attr,attr,
+			attr_val,attrVal,
 			create_user createUser,
 			create_date createDate,
 			update_user updateUser,
@@ -124,6 +130,8 @@
              banner_type,
              banner_order,
              activity_url,
+             attr,
+             attr_val,
              create_user,
              create_date,
              update_user,
@@ -137,6 +145,8 @@
 	        #{bannerType, jdbcType=VARCHAR},
 	        #{bannerOrder, jdbcType=BIGINT},
 	        #{activityUrl, jdbcType=VARCHAR},
+	        #{attr,jdbcType=VARCHAR},
+	        #{attrVal,jdbcType=VARCHAR},
 	        #{createUser, jdbcType=VARCHAR},
              CURRENT_TIMESTAMP,
 	        #{updateUser, jdbcType=VARCHAR}, 
@@ -172,6 +182,12 @@
 			</if>
 			<if test="activityUrl != null and activityUrl != ''" >
 				activity_url = #{activityUrl},
+			</if>
+			<if test="attr != null and attr != ''" >
+				attr = #{attr},
+			</if>
+			<if test="attrVal != null and attrVal != ''" >
+				attr_val = #{attrVal},
 			</if>
 			<if test="updateUser != null" >
 				update_user = #{updateUser},
