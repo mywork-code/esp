@@ -23,7 +23,6 @@ import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -413,7 +412,7 @@ public class GoodsService {
         returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
     }
 	//获取商品的优惠券
-	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
 	if(proCoupons.size()>3){
 		returnMap.put("proCouponList",proCoupons.subList(0, 3));
 	}else{
