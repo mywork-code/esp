@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -419,6 +420,19 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
 		return map;
+	}
+	/**
+	 * 获取商品的优惠券
+	 */
+	public List<ProCoupon> getProCouponList(Long activityId,Long goodsId){
+		List<ProCoupon> coupons=new ArrayList<>();
+        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		//获取与活动向关联的优惠券
+		if(null !=activityId){
+			
+		}
+		//获取平台指点的商品优惠券
+		return coupons;
 	}
 	/**
 	 * 获取京东商品本身的规格描述
