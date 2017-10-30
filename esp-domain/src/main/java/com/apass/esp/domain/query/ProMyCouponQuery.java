@@ -13,6 +13,10 @@ public class ProMyCouponQuery {
 	 * 活动和券的关系表ID
 	 */
 	private Long couponRelId;
+	/**
+	 * 优惠券Id
+	 */
+	private Long couponId;
 	
 	/**
 	 * 最大时间
@@ -91,6 +95,14 @@ public class ProMyCouponQuery {
 		this.userId = userId;
 		this.minDate = minDate;
 		this.status = status;
+	}
+
+	public Long getCouponId() {
+		return couponId;
+	}
+
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
 	}
 	
 }
