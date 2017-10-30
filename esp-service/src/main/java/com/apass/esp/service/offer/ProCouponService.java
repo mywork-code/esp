@@ -20,11 +20,17 @@ public class ProCouponService {
     @Autowired
     private ProCouponMapper couponMapper;
 
+    /**
+     * 分页查询优惠券列表
+     * @param paramMap
+     * @return
+     */
     public Pagination<ProCoupon> pageList(Map<String, Object> paramMap) {
-    	Pagination<ProCoupon> proCouponList = couponMapper.pageList(paramMap);
-        return proCouponList;
-    }
-    public List<ProCoupon> getProCouponListByGoodsCode(String goodsCode) {
-    	return couponMapper.getProCouponListByGoodsCode(goodsCode);
+        Pagination<ProCoupon> pagination = new Pagination<>();
+        List<ProCoupon> proCouponList = couponMapper.getProCouponListByGoodsCode(paramMap);
+        Integer count = couponMapper.pageListCount(paramMap);
+        pagination.setDataList(proCouponList);
+        pagination.setTotalCount(count);
+        return pagination;
     }
 }
