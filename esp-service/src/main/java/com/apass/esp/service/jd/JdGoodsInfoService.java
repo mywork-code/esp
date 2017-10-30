@@ -436,7 +436,7 @@ public class JdGoodsInfoService {
 	    		}
 	    	}
 	        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-	        goodsInfo.getGoodsCode();
+	        String goodCode=goodsInfo.getGoodsCode();
 	        
 		}
 		return coupons;
