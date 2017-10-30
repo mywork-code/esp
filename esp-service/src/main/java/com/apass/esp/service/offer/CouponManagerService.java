@@ -61,9 +61,5 @@ public class CouponManagerService {
 		}
 		return couponList;
 	}
-<<<<<<< Updated upstream
-	
-=======
 
->>>>>>> Stashed changes
 }
