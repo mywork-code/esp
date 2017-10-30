@@ -9,7 +9,7 @@ CREATE TABLE `t_esp_pro_coupon` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '主键id',
   `name` varchar(32) NOT NULL DEFAULT '' COMMENT '优惠券名称',
   `extend_type` varchar(16) NOT NULL DEFAULT '' COMMENT '推广方式:用户领取:YHLQ；平台发放:PTFF；新用户专享:XYH',
-  `type` varchar(16) NOT NULL DEFAULT '' COMMENT '优惠券类型:全品类:QPL;指定品类:ZDPL；指定商品:ZDSP',
+  `type` varchar(16) NOT NULL DEFAULT '' COMMENT '优惠券类型:全品类:QPL;指定品类:ZDPL；指定商品:ZDSP;活动商品：HDSP',
   `effective_time` int(11) NOT NULL COMMENT '有效时间',
   `sill_type` varchar(2) NOT NULL DEFAULT '' COMMENT '有无门槛：Y：有门槛；N：无门槛',
   `coupon_sill` decimal(15,2) NOT NULL DEFAULT '0' COMMENT '优惠门槛',
@@ -95,3 +95,11 @@ CREATE TABLE `t_esp_goods_attr_val` (
 
 alter table t_esp_goods_stock_info  ADD COLUMN `sku_id` varchar(20) not null default '' COMMENT 'skuid',
 ADD COLUMN attr_val_ids varchar(32) not null default '' comment '多规格属性组合,-分隔(100-103)';
+
+
+ALTER TABLE `t_esp_order_info`
+ADD COLUMN `coupon_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '优惠券Id';
+
+alter table t_esp_banner_info add column `attr` varchar(32) not null default '' comment '活动地址：activity;商品编号/skuid:good',
+ add column `attr_val` varchar(32) not null default '' comment '属性值';
+

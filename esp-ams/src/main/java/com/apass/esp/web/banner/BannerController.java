@@ -230,9 +230,12 @@ public class BannerController extends BaseController {
             //电商3期511 20170519 banner 添加设置商品链接
             if(StringUtils.isNotBlank(activityUrl)){
             	if("activity".equals(activityName)){
+                  entity.setAttrVal(activityUrl);
             		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
+                  entity.setAttr("activity");
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
+                  entity.setAttrVal(activityUrl);
                   GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl);
                   if(goodsInfo == null){
                       return Response.fail("请添加已上架的商品");
@@ -242,8 +245,11 @@ public class BannerController extends BaseController {
             		}else{
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
             		}
+                  entity.setAttr("goodId");
+
             		
             	}
+
                 entity.setActivityUrl(activityUrl);
             }
             entity.setBannerName(bannerName);

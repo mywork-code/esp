@@ -49,6 +49,9 @@ public class BannerInfoEntity {
     @JsonIgnore
     private Date updateDate;
 
+    private String attr;
+    private String attrVal;
+
     public Long getId() {
         return id;
     }
@@ -137,5 +140,19 @@ public class BannerInfoEntity {
         this.updateDate = updateDate;
     }
 
-    
+    public String getAttr() {
+        return attr;
+    }
+
+    public void setAttr(String attr) {
+        this.attr = attr;
+    }
+
+    public String getAttrVal() {
+        return attrVal;
+    }
+
+    public void setAttrVal(String attrVal) {
+        this.attrVal = attrVal;
+    }
 }
