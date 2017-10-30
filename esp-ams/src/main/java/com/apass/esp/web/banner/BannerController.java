@@ -231,6 +231,7 @@ public class BannerController extends BaseController {
             if(StringUtils.isNotBlank(activityUrl)){
             	if("activity".equals(activityName)){
             		activityUrl="ajqh://cn.apass.ajqh/web?url="+activityUrl;
+                  entity.setAttr("activity");
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
                   GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl);
@@ -242,8 +243,11 @@ public class BannerController extends BaseController {
             		}else{
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
             		}
+                  entity.setAttr("good");
+
             		
             	}
+                entity.setAttrVal(activityUrl);
                 entity.setActivityUrl(activityUrl);
             }
             entity.setBannerName(bannerName);
