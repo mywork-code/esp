@@ -7,7 +7,6 @@ import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.mapper.GoodsAttrMapper;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 /**
  * 商品属性
  * @author ht
@@ -36,9 +35,8 @@ public class GoodsAttrService {
      * @param name
      * @return
      */
-    public int addGoodsAttr(String name) {
+    public int addGoodsAttr(String name,String user) {
         GoodsAttr entity = new GoodsAttr();
-        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
         entity.setName(name);
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
@@ -52,9 +50,8 @@ public class GoodsAttrService {
      * @param name
      * @return
      */
-    public int editGoodsAttr(Long id, String name) {
+    public int editGoodsAttr(Long id, String name,String user) {
         GoodsAttr entity = new GoodsAttr();
-        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
         entity.setId(id);
         entity.setName(name);
         entity.setUpdatedTime(new Date());
@@ -67,9 +64,9 @@ public class GoodsAttrService {
      * @return
      */
     public int editGoodsAttr(GoodsAttr entity) {
-        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
+//        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
         entity.setUpdatedTime(new Date());
-        entity.setUpdatedUser(user);
+//        entity.setUpdatedUser(user);
         return goodsAttrMapper.updateByPrimaryKeySelective(entity);
     }
     /**

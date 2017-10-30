@@ -17,6 +17,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 /**
@@ -86,7 +87,8 @@ public class GoodsAttrController {
     public Response addGoodsAttr(HttpServletRequest request) {
         try{
             String name = HttpWebUtils.getValue(request, "name");
-            int result = goodsAttrService.addGoodsAttr(name);
+            String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            int result = goodsAttrService.addGoodsAttr(name,user);
             if (result == 1) {
                 return Response.success("商品属性新增成功！");
               } else {
@@ -105,7 +107,8 @@ public class GoodsAttrController {
             String idedit = HttpWebUtils.getValue(request, "id");
             Long id = Long.parseLong(idedit);
             String name = HttpWebUtils.getValue(request, "name");
-            int result = goodsAttrService.editGoodsAttr(id,name);
+            String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            int result = goodsAttrService.editGoodsAttr(id,name,user);
             if (result == 1) {
                 return Response.success("商品属性维护成功！");
               } else {
