@@ -3,15 +3,30 @@
 <mapper namespace="com.apass.esp.mapper.ProMyCouponMapper" >
    <sql id="paramSql">
         <where>
-            <if test="userId != null">
+            <if test="userId != null and userId != ''">
                 userId = #{userId}
             </if>
-            <if test="couponRelId != null">
+            <if test="couponRelId != null and couponRelId != ''">
                 coupon_rel_id = #{couponRelId}
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status}
+            </if>
+            <if test="minDate != null and minDate != ''">
+                end_date &gt #{minDate}
+            </if>
+            <if test="maxDate !=null and maxDate != ''">
+                end_date &It #{maxDate}
             </if>
         </where>
     </sql>
    <select id="getCouponByUserIdAndRelId" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <include refid="paramSql" />
+   </select>
+   
+   <select id="getCouponByStatusAndDate" resultMap="BaseResultMap">
        select <include refid="Base_Column_List" />
         from t_esp_pro_mycoupon
         <include refid="paramSql" />

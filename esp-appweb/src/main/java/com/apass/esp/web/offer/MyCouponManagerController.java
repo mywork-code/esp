@@ -27,9 +27,19 @@ public class MyCouponManagerController {
 	@Autowired
 	private MyCouponManagerService myCouponManagerService;
 	
+	@RequestMapping("/list")
+	@ResponseBody
+	public Response getMyCoupons(Map<String, Object> paramMap){
+		
+		
+		return Response.successResponse(null);
+	}
+	
+	
+	
 	@RequestMapping("/saveCoupon")
 	@ResponseBody
-	public Response giveCouponToUser(@RequestBody Map<String, Object> paramMap){
+	public Response giveCouponToUser(Map<String, Object> paramMap){
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String couponId = CommonUtils.getValue(paramMap, "couponId");
