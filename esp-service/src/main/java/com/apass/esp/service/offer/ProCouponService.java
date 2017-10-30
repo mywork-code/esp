@@ -3,6 +3,7 @@ package com.apass.esp.service.offer;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.service.goods.GoodsService;
 import org.apache.commons.lang3.StringUtils;
@@ -48,9 +49,13 @@ public class ProCouponService {
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
-            //goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+            if(StringUtils.equals(goodsInfoEntity.getSource(),"jd")){
+                proCoupon.setSkuId(goodsInfoEntity.getExternalId());
+            }
         }
-        return null;
+        //TODO  优惠券名称不能重复，加载类目树
+        return couponMapper.insert(proCoupon);
     }
 
 }

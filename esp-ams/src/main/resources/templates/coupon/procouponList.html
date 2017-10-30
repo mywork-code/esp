@@ -17,7 +17,7 @@
 
 	<!--添加优惠券-->
 	<div style="display: none" id="addCouponDiv">
-		<form id="addCouponForm">
+		<form id="addCouponForm" method="POST" enctype="multipart/form-data" modelAttribute=activityProductModel>
 			<table align="center" style="margin-top: 10px;margin-bottom: 10px">
 				<tr>
 					<td>优惠券名称 </td>
@@ -68,13 +68,13 @@
 				</tr>
 
 				<tr style="display: none" id="goosCategoryTr">
-					<td style="width: 100px; text-align:right">商品类目：</td>
+					<td>商品类目：</td>
 					<td colspan="2">
-						<input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 180px;" />
+						<input id="goodsCategoryCombo" name="categoryId" class="easyui-combotree" style="width: 220px;" required/>
 						<span style="color: red">*</span>
 					</td>
 				</tr>
-				<tr style="display: none" id="effectiveTimeTr">
+				<tr style="display: none" id="goodsCodeTr">
 					<td>商品编号 </td>
 					<td colspan="2">
 						<input class="easyui-textbox" style="width: 220px;"
@@ -93,7 +93,7 @@
 						<span style="color: red">*</span>
 
 					</td>
-					<td><input type="checkbox" id="ifCouponSill"/></td>
+					<td><input type="checkbox" id="ifCouponSill"/>无门槛</td>
 				</tr>
 				<tr>
 					<td>优惠金额 </td>
@@ -101,6 +101,7 @@
 						<input class="easyui-textbox" style="width: 220px;"
 							   type="text" id="addDiscountAmonut" name="discountAmonut" required/>
 						元
+						<span style="color: red">*</span>
 					</td>
 				</tr>
 
