@@ -3,6 +3,9 @@ package com.apass.esp.service.offer;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.service.goods.GoodsService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,8 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 public class ProCouponService {
     @Autowired
     private ProCouponMapper couponMapper;
+    @Autowired
+    private GoodsService goodsService;
 
     /**
      * 分页查询优惠券列表
@@ -40,4 +45,12 @@ public class ProCouponService {
     public List<ProCoupon> getProCouponList(String goodsCode) {
         return couponMapper.getProCouponListByGoodsCode(goodsCode);
     }
+
+    public Integer inserProcoupon(ProCoupon proCoupon) {
+        if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
+            //goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+        }
+        return null;
+    }
+
 }

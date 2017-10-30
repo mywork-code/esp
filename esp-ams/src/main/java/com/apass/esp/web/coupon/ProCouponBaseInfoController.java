@@ -81,9 +81,7 @@ public class ProCouponBaseInfoController {
     public Response addCoupon(ProCoupon proCoupon){
         try{
             if(validate(proCoupon)){
-                //proCouponService.inserProcoupon(proCoupon);
-            }else{
-
+                Integer count = proCouponService.inserProcoupon(proCoupon);
             }
 
         }catch (Exception e){
@@ -92,7 +90,7 @@ public class ProCouponBaseInfoController {
         }
 
 
-        return null;
+        return Response.success("添加优惠券成功");
     }
 
     private boolean validate(ProCoupon proCoupon) {
