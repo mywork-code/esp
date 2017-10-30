@@ -1,6 +1,9 @@
 package com.apass.esp.domain.entity.jd;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.apass.esp.domain.entity.ProCoupon;
 
 public class JdSimilarSkuVo {
 	private String skuId;
@@ -12,6 +15,7 @@ public class JdSimilarSkuVo {
 	private String stockDesc;
 	private String activityCfg;
 	private Long proActivityId;
+	private List<ProCoupon> proCouponList;
 	private String support7dRefund;
 	public String getSkuId() {
 		return skuId;
@@ -72,6 +76,12 @@ public class JdSimilarSkuVo {
 	}
 	public void setProActivityId(Long proActivityId) {
 		this.proActivityId = proActivityId;
+	}
+	public List<ProCoupon> getProCouponList() {
+		return proCouponList;
+	}
+	public void setProCouponList(List<ProCoupon> proCouponList) {
+		this.proCouponList = proCouponList;
 	}
 	
 }

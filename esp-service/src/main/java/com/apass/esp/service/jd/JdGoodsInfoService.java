@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdCss;
@@ -42,6 +41,7 @@ import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.offer.CouponManagerService;
+import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -73,6 +73,8 @@ public class JdGoodsInfoService {
 	private ProGroupGoodsService proGroupGoodsService;
 	@Autowired
 	private CouponManagerService couponManagerService;
+	@Autowired
+	private ProCouponService proCouponService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -254,6 +256,17 @@ public class JdGoodsInfoService {
         	if(null !=proGroupGoodsBo){
         		jdSimilarSkuVo.setProActivityId(proGroupGoodsBo.getActivityId());
         	}
+        	//获取商品的优惠券
+        	List<ProCoupon> proCoupons=getProCouponList(goodsId);
+        	if(null !=proCoupons && proCoupons.size()>0){
+        		if(proCoupons.size()<=3){
+        			jdSimilarSkuVo.setProCouponList(proCoupons);
+        		}else{
+        			jdSimilarSkuVo.setProCouponList(proCoupons.subList(0, 3));
+        		}
+        	}else{
+    			jdSimilarSkuVo.setProCouponList(null);
+        	}
 			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);
 			jdSimilarSkuVo.setStockDesc(jdGoodStock);
@@ -422,7 +435,7 @@ public class JdGoodsInfoService {
 		return map;
 	}
 	/**
-	 * 获取商品的优惠券
+	 * 获取商品的优惠券并按大小排序
 	 */
 	public List<ProCoupon> getProCouponList(Long goodsId){
 		List<ProCoupon> coupons=new ArrayList<>();
@@ -435,9 +448,25 @@ public class JdGoodsInfoService {
 	    			coupons.addAll(proCoupons);
 	    		}
 	    	}
+	    	//获取平台指定的商品优惠券
 	        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-	        String goodCode=goodsInfo.getGoodsCode();
-	        
+	        if(null !=goodsInfo.getGoodsCode()){
+	        	List<ProCoupon> ProCouponList= proCouponService.getProCouponList(goodsInfo.getGoodsCode());
+	        	coupons.addAll(ProCouponList);
+	        }
+		}
+		//排序（按优惠力度的从大小排序）
+		if(coupons.size()>0){
+			for(int i=0;i<coupons.size()-1;i++){
+				for(int j=i+1;j<coupons.size();j++){
+					ProCoupon proCoupon1=coupons.get(i);
+					ProCoupon proCoupon2=coupons.get(j);
+					if(proCoupon1.getDiscountAmonut().compareTo(proCoupon2.getDiscountAmonut())<0){
+						coupons.set(i, proCoupon2);
+						coupons.set(j, proCoupon1);
+					}
+				}
+			}
 		}
 		return coupons;
 	}
