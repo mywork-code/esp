@@ -1,7 +1,6 @@
 package com.apass.esp.service.jd;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import com.apass.esp.domain.enums.kvattrKey;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
-import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdCss;
@@ -43,6 +41,7 @@ import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -72,6 +71,8 @@ public class JdGoodsInfoService {
 	private CommonService commonService;
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
+	@Autowired
+	private CouponRelService couponRelService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -419,6 +420,28 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
 		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
 		return map;
+	}
+	/**
+	 * 获取商品的优惠券
+	 */
+	public List<ProCoupon> getProCouponList(Long goodsId){
+		List<ProCoupon> coupons=new ArrayList<>();
+        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+		//获取与活动向关联的优惠券
+		if(null !=goodsId){
+	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+	    		Long activityId=proGroupGoodsBo.getActivityId();
+				List<ProCouponRel> proCouponRels=couponRelService.getCouponRelList(activityId.toString());
+				if(null !=proCouponRels){
+					for (ProCouponRel proCouponRel : proCouponRels) {
+						
+					}
+				}
+	    	}
+			
+		}
+		return coupons;
 	}
 	/**
 	 * 获取京东商品本身的规格描述

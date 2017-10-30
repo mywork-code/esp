@@ -23,7 +23,6 @@ import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
 import com.apass.esp.repository.banner.BannerInfoRepository;
-import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
