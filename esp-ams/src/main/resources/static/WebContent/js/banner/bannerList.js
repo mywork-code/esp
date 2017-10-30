@@ -256,9 +256,11 @@ $(function(){
 					top:$(document).scrollTop() + ($(window).height()-250) * 0.5
 				});
 				$("#addBannerInfor").window('open');
-
 				$("#bannerType").combobox('setValue',data.bannerType);
 				$("#bannerOrder").numberbox('setValue',data.bannerOrder);
+				$('#activityUrl').textbox('setValue',data.attrVal);
+				$('#activityName').combobox('setValue',data.attr);
+
 				$('#bannerId').val(data.id);
 
 			}
