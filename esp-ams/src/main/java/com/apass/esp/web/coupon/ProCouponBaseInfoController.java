@@ -1,7 +1,10 @@
 package com.apass.esp.web.coupon;
 
 import com.alibaba.druid.support.logging.Log;
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -10,6 +13,7 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +63,79 @@ public class ProCouponBaseInfoController {
             Pagination<ProCoupon> pagination = proCouponService.pageList(paramMap);
             responseBody.setTotal(pagination.getTotalCount()==null ? 0 : pagination.getTotalCount());
             responseBody.setRows(pagination.getDataList());
+            responseBody.setMsg("优惠券查询成功");
             responseBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
 
         }catch (Exception e){
+            responseBody.setTotal(0);
             responseBody.setStatus(BaseConstants.CommonCode.ERROR_CODE);
+            responseBody.setMsg("优惠券查询失败！");
             LOGGER.error("优惠券查询异常,....Exception...",e);
         }
 
         return responseBody;
     }
+
+    @RequestMapping("/add")
+    @ResponseBody
+    public Response addCoupon(ProCoupon proCoupon){
+        try{
+            if(validate(proCoupon)){
+                //proCouponService.inserProcoupon(proCoupon);
+            }else{
+
+            }
+
+        }catch (Exception e){
+            LOGGER.error("添加优惠券异常，Exception-----",e);
+            return Response.fail(e.getMessage());
+        }
+
+
+        return null;
+    }
+
+    private boolean validate(ProCoupon proCoupon) {
+        if(StringUtils.isBlank(proCoupon.getName())){
+           throw new RuntimeException("优惠券名称不能为空");
+        }
+        if(proCoupon.getName().length()>20 ){
+            throw new RuntimeException("优惠券名称必须小于等于20字符");
+        }
+        if(StringUtils.isBlank(proCoupon.getExtendType())){
+            throw new RuntimeException("推广方式不能为空");
+        }
+
+        if(StringUtils.equals(proCoupon.getExtendType(), CouponExtendType.COUPON_PTFF.getCode())
+                ||StringUtils.equals(proCoupon.getExtendType(),CouponExtendType.COUPON_XYH.getCode())){
+            if(proCoupon.getEffectiveTime() == null){
+                throw new RuntimeException("有效期不能为空");
+            }
+        }
+        if(StringUtils.isBlank(proCoupon.getType())){
+            throw new RuntimeException("优惠券类型不能为空");
+        }
+        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_ZDPL.getCode())){
+            if(StringUtils.isBlank(proCoupon.getCategoryId1())
+                    &&StringUtils.isBlank(proCoupon.getCategoryId2())){
+                throw new RuntimeException("商品类目不能为空");
+            }
+        }
+        if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_ZDSP.getCode())){
+            if(StringUtils.isBlank(proCoupon.getGoodsCode())){
+                throw new RuntimeException("商品类目不能为空");
+            }
+        }
+
+        if(proCoupon.getCouponSill() == null){
+            throw new RuntimeException("优惠门槛不能为空");
+        }
+        if(proCoupon.getDiscountAmonut() == null){
+            throw new RuntimeException("优惠金额不能为空");
+        }
+
+        return true;
+    }
+
+
 }
