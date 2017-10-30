@@ -151,7 +151,21 @@ public class MyCouponManagerService {
 		params.put("expire",expireList);
 		return params;
 	}
-	
+	/**
+	 * 根据用户的Id和优惠券Id查询对应的信息
+	 * @param query
+	 * @return
+	 */
+	public List<ProMyCoupon> getCouponByUserIdAndCouponId(Long userId,Long couponId){
+		ProMyCouponQuery query=new ProMyCouponQuery();
+		if(null !=userId && null !=couponId){
+			query.setUserId(userId);
+			query.setCouponId(couponId);
+			return myCouponMapper.getCouponByUserIdAndCouponId(query);
+		}
+		return null;
+	};
+
 	/**
 	 * 根据用户的Id，获取用户未使用的优惠券
 	 * @param userId

@@ -1,10 +1,31 @@
 package com.apass.esp.noauth.home;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -39,6 +60,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.nation.NationService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -51,24 +73,6 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 首页
@@ -131,7 +135,8 @@ public class ShopHomeController {
     
     @Autowired
     private ProGroupGoodsService proGroupGoodsService;
-
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -872,7 +877,35 @@ public class ShopHomeController {
             return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         }
     }
-
+    /**
+     * 
+     *获取商品优惠券列表
+     * @return
+     */
+    @POST
+    @Path("/v3/getProCouponsList")
+    public Response getProCouponsList(Map<String, Object> paramMap) {
+    	Map<String, Object> returnMap = new HashMap<>();
+        Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+        String userId = CommonUtils.getValue(paramMap, "userId");
+        List<ProCoupon> reProCouponList=new ArrayList<>();
+        List<ProCoupon> proCouponList=new ArrayList<>();
+        //获取商品的优惠券
+    	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+    	if(null !=proCoupons && proCoupons.size()>0){
+    		for (ProCoupon proCoupon : proCoupons) {
+    			List<ProMyCoupon> proMyCoupons=myCouponManagerService.getCouponByUserIdAndCouponId(Long.parseLong(userId), proCoupon.getId());
+    			if(null !=proMyCoupons && proMyCoupons.size()>0){
+    				reProCouponList.add(proCoupon);
+    			}else{
+    				proCouponList.add(proCoupon);
+    			}
+    		}
+    	}
+    	returnMap.put("reProCouponList", reProCouponList);
+    	returnMap.put("proCouponList", proCouponList);
+        return Response.success("获取商品优惠券列表成功！", returnMap);
+    }
     /**
      * 地址改变，查看是否有货
      *
