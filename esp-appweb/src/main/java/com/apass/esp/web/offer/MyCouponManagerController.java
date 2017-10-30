@@ -49,14 +49,16 @@ public class MyCouponManagerController {
 		}
 		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		try {
-			myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
-			return Response.success("领取成功!");
+			int count = myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
+			if(count > 0){
+				return Response.success("领取成功!");
+			}
 		} catch(BusinessException e){
 			logger.error("business giveCouponToUser :{}",e);
 			return Response.fail(e.getErrorDesc());
 		} catch (Exception e) {
 			logger.error("exception giveCouponToUser :{}",e);
-			return Response.fail("领取失败!");
 		}
+		return Response.fail("领取失败!");
 	}
 }
