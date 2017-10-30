@@ -27,7 +27,7 @@ public class ProCouponService {
      */
     public Pagination<ProCoupon> pageList(Map<String, Object> paramMap) {
         Pagination<ProCoupon> pagination = new Pagination<>();
-        List<ProCoupon> proCouponList = couponMapper.getProCouponListByGoodsCode(paramMap);
+        List<ProCoupon> proCouponList = couponMapper.pageList(paramMap);
         Integer count = couponMapper.pageListCount(paramMap);
         pagination.setDataList(proCouponList);
         pagination.setTotalCount(count);
