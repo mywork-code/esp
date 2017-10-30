@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.apass.esp.mapper.ProCouponMapper" >
-    <select id="pageList" resultType="com.apass.esp.domain.entity.ProCoupon">
-        SELECT <include refid="BaseResultMap" />
+    <select id="pageList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
         from t_esp_pro_coupon
         <![CDATA[
-          ORDER BY t.update_date DESC
+          ORDER BY updated_time DESC
         ]]>
         limit #{pageBegin},#{pageSize}
     </select>
 
     <select id="pageListCount" resultType="java.lang.Integer">
-        SELECT count(1) FROM  from t_esp_pro_coupon
+      <![CDATA[
+        SELECT COUNT(1) FROM t_esp_pro_coupon
+      ]]>
     </select>
-  
+
 </mapper>
