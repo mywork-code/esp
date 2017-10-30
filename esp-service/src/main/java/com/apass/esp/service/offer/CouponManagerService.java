@@ -2,7 +2,10 @@ package com.apass.esp.service.offer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +47,7 @@ public class CouponManagerService {
 		}
 		return couponList;
 	}
-	
+
 	public List<ProCouponVo> getCouponVos(String activityId){
 		List<ProCouponVo> couponList = new ArrayList<ProCouponVo>();
 		List<ProCoupon> coupons = getCouponsByActivityId(activityId);
