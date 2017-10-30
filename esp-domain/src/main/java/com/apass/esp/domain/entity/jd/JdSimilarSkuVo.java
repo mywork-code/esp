@@ -3,8 +3,6 @@ package com.apass.esp.domain.entity.jd;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.apass.esp.domain.entity.ProCoupon;
-
 public class JdSimilarSkuVo {
 	private String skuId;
 	private String goodsId;
@@ -15,7 +13,7 @@ public class JdSimilarSkuVo {
 	private String stockDesc;
 	private String activityCfg;
 	private Long proActivityId;
-	private List<ProCoupon> proCouponList;
+	private List<String> proCouponList;
 	private String support7dRefund;
 	public String getSkuId() {
 		return skuId;
@@ -77,10 +75,10 @@ public class JdSimilarSkuVo {
 	public void setProActivityId(Long proActivityId) {
 		this.proActivityId = proActivityId;
 	}
-	public List<ProCoupon> getProCouponList() {
+	public List<String> getProCouponList() {
 		return proCouponList;
 	}
-	public void setProCouponList(List<ProCoupon> proCouponList) {
+	public void setProCouponList(List<String> proCouponList) {
 		this.proCouponList = proCouponList;
 	}
 	

@@ -24,8 +24,6 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -814,7 +812,7 @@ public class ShopHomeController {
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
             	}
             	//获取商品的优惠券
-            	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
             	if(proCoupons.size()>3){
             		returnMap.put("proCouponList",proCoupons.subList(0, 3));
             	}else{
@@ -881,25 +879,10 @@ public class ShopHomeController {
     @POST
     @Path("/v3/getProCouponsList")
     public Response getProCouponsList(Map<String, Object> paramMap) {
-    	Map<String, Object> returnMap = new HashMap<>();
         Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
         String userId = CommonUtils.getValue(paramMap, "userId");
-        List<ProCoupon> reProCouponList=new ArrayList<>();
-        List<ProCoupon> proCouponList=new ArrayList<>();
         //获取商品的优惠券
-    	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-    	if(null !=proCoupons && proCoupons.size()>0){
-    		for (ProCoupon proCoupon : proCoupons) {
-    			List<ProMyCoupon> proMyCoupons=myCouponManagerService.getCouponByUserIdAndCouponId(Long.parseLong(userId), proCoupon.getId());
-    			if(null !=proMyCoupons && proMyCoupons.size()>0){
-    				reProCouponList.add(proCoupon);
-    			}else{
-    				proCouponList.add(proCoupon);
-    			}
-    		}
-    	}
-    	returnMap.put("reProCouponList", reProCouponList);
-    	returnMap.put("proCouponList", proCouponList);
+        Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
         return Response.success("获取商品优惠券列表成功！", returnMap);
     }
     /**
