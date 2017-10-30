@@ -12,22 +12,22 @@ $(function(){
         columns :[[
 			{
 				title : '优惠券名称',
-				field : 'bannerType',
+				field : 'name',
 				width : 100,
 				align : 'center'
 			},{
 				title : '推广方式',
-				field : 'bannerOrder',
+				field : 'extendType',
 				width : 120,
 				align : 'center'
 			},{
 				title : '有效时间',
-				field : 'bannerOrder',
+				field : 'effectiveTime',
 				width : 120,
 				align : 'center'
 			},{
 				title : '优惠券类型',
-				field : 'bannerOrder',
+				field : 'type',
 				width : 120,
 				align : 'center'
 			},{
@@ -37,17 +37,17 @@ $(function(){
 				align : 'center'
 			},{
 				title : '优惠金额',
-				field : 'bannerOrder',
+				field : 'couponSill',
 				width : 120,
 				align : 'center'
 			},{
 				title : '创建时间',
-				field : 'bannerOrder',
+				field : 'createdTime',
 				width : 120,
 				align : 'center'
 			},{
 				title : '创建人',
-				field : 'bannerOrder',
+				field : 'createUser',
 				width : 120,
 				align : 'center'
 			},{
