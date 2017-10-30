@@ -247,4 +247,9 @@ public class MyCouponManagerService {
 		vo.setUserId(p.getUserId());
 		return vo;
 	}
+
+
+	public void updateStatus(String status,Long userId,Long couponId){
+		myCouponMapper.updateStatusByUserIdAndCouponId(status,userId,couponId);
+	}
 }
