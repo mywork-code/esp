@@ -412,16 +412,12 @@ public class GoodsService {
     if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
         returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
     }
-    //获取商品的优惠券
+	//获取商品的优惠券
 	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-	if(null !=proCoupons && proCoupons.size()>0){
-		if(proCoupons.size()<=3){
-			returnMap.put("proCouponList",proCoupons);
-		}else{
-			returnMap.put("proCouponList",proCoupons.subList(0, 3));
-		}
+	if(proCoupons.size()>3){
+		returnMap.put("proCouponList",proCoupons.subList(0, 3));
 	}else{
-		 returnMap.put("proCouponList",null);
+		 returnMap.put("proCouponList",proCoupons);
 	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
