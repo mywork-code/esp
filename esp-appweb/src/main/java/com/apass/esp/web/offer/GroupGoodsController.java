@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/activity/group")
@@ -28,6 +28,9 @@ public class GroupGoodsController {
 	
 	@Autowired
 	private GroupManagerService groupManagerService;
+	
+	@Autowired
+	private CouponManagerService couponManagerService;
 	
 	@RequestMapping("/getGroupAndGoods")
 	@ResponseBody
@@ -41,6 +44,11 @@ public class GroupGoodsController {
 		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		try {
 			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
+			/**
+			 * sprint 11 根据活动的Id，获取对应优惠券的信息
+			 */
+			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(activityId);
+			maps.put("coupons", couponVos);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);

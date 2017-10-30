@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.ProMyCouponMapper" >
- 
+   <sql id="paramSql">
+        <where>
+            <if test="userId != null">
+                userId = #{userId}
+            </if>
+            <if test="couponRelId != null">
+                coupon_rel_id = #{couponRelId}
+            </if>
+        </where>
+    </sql>
+   <select id="getCouponByUserIdAndRelId" resultMap="BaseResultMap">
+       select <include refid="Base_Column_List" />
+        from t_esp_pro_mycoupon
+        <include refid="paramSql" />
+   </select>
 </mapper>
