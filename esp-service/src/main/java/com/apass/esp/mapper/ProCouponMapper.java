@@ -13,10 +13,10 @@ import com.apass.gfb.framework.mybatis.page.Pagination;
  */
 public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
-    Pagination<ProCoupon> pageList(Map<String, Object> paramMap);
+	List<ProCoupon> pageList(Map<String, Object> paramMap);
     //
-    List<ProCoupon> getProCouponListByGoodsCode(Map<String, Object> paramMap);
+    List<ProCoupon> getProCouponListByGoodsCode(String goodsCode);
 
     Integer pageListCount(Map<String, Object> paramMap);
-
+    
 }
