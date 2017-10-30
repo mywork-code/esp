@@ -15,4 +15,6 @@ public interface GenericMapper<T,PK> {
   int updateByPrimaryKeySelective(T record);
 
   int updateByPrimaryKey(T record);
+
+
 }
