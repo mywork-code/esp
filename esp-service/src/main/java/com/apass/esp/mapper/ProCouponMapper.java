@@ -12,6 +12,7 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
  */
 public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
+
 	List<ProCoupon> pageList(Map<String, Object> paramMap);
     //根据商品code查询优惠券
     List<ProCoupon> getProCouponListByGoodsCode(String goodsCode);
