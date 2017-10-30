@@ -34,10 +34,10 @@ public class ProCouponService {
         return pagination;
     }
     /**
-     * 
+     * 根据商品code查询优惠券
      * @return
      */
     public List<ProCoupon> getProCouponList(String goodsCode){
-    	
+    	return couponMapper.getProCouponListByGoodsCode(goodsCode);
     }
 }
