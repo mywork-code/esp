@@ -23,6 +23,7 @@ import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -411,6 +412,17 @@ public class GoodsService {
     if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
         returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
     }
+    //获取商品的优惠券
+	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+	if(null !=proCoupons && proCoupons.size()>0){
+		if(proCoupons.size()<=3){
+			returnMap.put("proCouponList",proCoupons);
+		}else{
+			returnMap.put("proCouponList",proCoupons.subList(0, 3));
+		}
+	}else{
+		 returnMap.put("proCouponList",null);
+	}
     returnMap.put("totalCurrentAmt", totalCurrentAmt);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段

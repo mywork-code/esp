@@ -4,6 +4,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -806,14 +807,18 @@ public class ShopHomeController {
             	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
             	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-            	    //TODO 根据活动id活动与活动相关的有效优惠券(这些优惠券对应的是goodstockId)
-            	    
-            	    
             	}
-            	//TODO对优惠券进行排序，优化力度越大越在前面
-            	
-            	
-            	
+            	//获取商品的优惠券
+            	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+            	if(null !=proCoupons && proCoupons.size()>0){
+            		if(proCoupons.size()<=3){
+            			returnMap.put("proCouponList",proCoupons);
+            		}else{
+            			returnMap.put("proCouponList",proCoupons.subList(0, 3));
+            		}
+            	}else{
+            		 returnMap.put("proCouponList",null);
+            	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
