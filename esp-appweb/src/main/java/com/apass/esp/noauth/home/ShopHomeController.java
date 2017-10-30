@@ -806,7 +806,14 @@ public class ShopHomeController {
             	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
             	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
             	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+            	    //TODO 根据活动id活动与活动相关的有效优惠券(这些优惠券对应的是goodstockId)
+            	    
+            	    
             	}
+            	//TODO对优惠券进行排序，优化力度越大越在前面
+            	
+            	
+            	
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段

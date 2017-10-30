@@ -41,7 +41,7 @@ import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.service.offer.CouponRelService;
+import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
@@ -72,7 +72,7 @@ public class JdGoodsInfoService {
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
 	@Autowired
-	private CouponRelService couponRelService;
+	private CouponManagerService couponManagerService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -426,20 +426,18 @@ public class JdGoodsInfoService {
 	 */
 	public List<ProCoupon> getProCouponList(Long goodsId){
 		List<ProCoupon> coupons=new ArrayList<>();
-        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
 		//获取与活动向关联的优惠券
 		if(null !=goodsId){
 	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	    		Long activityId=proGroupGoodsBo.getActivityId();
-				List<ProCouponRel> proCouponRels=couponRelService.getCouponRelList(activityId.toString());
-				if(null !=proCouponRels){
-					for (ProCouponRel proCouponRel : proCouponRels) {
-						
-					}
-				}
+	    		List<ProCoupon> proCoupons=couponManagerService.getCouponsByActivityId(proGroupGoodsBo.getActivityId().toString());
+	    		if(null !=proCoupons){
+	    			coupons.addAll(proCoupons);
+	    		}
 	    	}
-			
+	        GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+	        String goodCode=goodsInfo.getGoodsCode();
+	        
 		}
 		return coupons;
 	}

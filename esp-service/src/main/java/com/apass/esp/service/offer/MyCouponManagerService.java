@@ -1,11 +1,8 @@
 package com.apass.esp.service.offer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,14 +115,44 @@ public class MyCouponManagerService {
 		
 		return coupon;
 	}
+	
 	/**
-	 * 根据用户的Id，获取用户所属的优惠券
+	 * 根据用户的Id，获取用户未使用的优惠券
 	 * @param userId
 	 * @return
+	 *  未使用的券
+	 * 条件： 
+	 *   1.首先是status = 'N'
+	 *   2.当前日期应该小于end_date
 	 */
-	public List<ProMyCoupon> getCouponsByUserId(String userId){
-		
-		return null;
+	public List<ProMyCoupon> getCouponsUnused(String userId){
+		Date now = new Date();
+		Long userID = Long.parseLong(userId);
+		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,now,"N"));
+	}
+	/**
+	 * 
+	 * @param userId
+	 * @return
+	 * *
+	 * 已使用的券
+	 * 1.status = 'Y'
+	 */
+	public List<ProMyCoupon> getCouponsUsed(String userId){
+		Long userID = Long.parseLong(userId);
+		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,null,"Y"));
 	}
 	
+	/**
+	 * @param userId
+	 * @return
+	 * 已过期的券
+	 * 1.首先是status = 'N'
+	 * 2.当前日期应该大于end_date
+	 */
+	public List<ProMyCoupon> getExpire(String userId){
+		Date now = new Date();
+		Long userID = Long.parseLong(userId);
+		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,"N",now));
+	}
 }
