@@ -40,6 +40,10 @@ public class ProCouponVo {
      * 结束时间
      */
     private String endTime;
+    /**
+     * 有效时间
+     */
+    private String effectiveTiem;
 
 	public Long getId() {
 		return id;
@@ -88,5 +92,10 @@ public class ProCouponVo {
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-    
+	public void setEffectiveTiem() {
+		this.effectiveTiem = startTime+"-"+endTime;
+	}
+	public String getEffectiveTiem() {
+		return effectiveTiem;
+	}
 }
