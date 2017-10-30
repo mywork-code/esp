@@ -32,12 +32,12 @@ $(function(){
 				align : 'center'
 			},{
 				title : '优惠门槛',
-				field : 'bannerOrder',
+				field : 'couponSill',
 				width : 120,
 				align : 'center'
 			},{
 				title : '优惠金额',
-				field : 'couponSill',
+				field : 'discountAmonut',
 				width : 120,
 				align : 'center'
 			},{
@@ -75,6 +75,32 @@ $(function(){
                 }
             })
         }
+	});
+
+
+	$("#addCouponButton").click(function () {
+		$("#addCouponDiv").dialog({
+			title:'<span style="color: black">添加优惠券</span>',
+			resizable:true,
+			width : 400,
+			modal:true,
+			buttons:[
+				{
+					text : "确定",
+					handler : function() {
+						$.messager.alert('<span style="color: black">提示</span>',"有问题");
+					},
+					iconCls : "l-btn-icon icon-ok"
+				},{
+					text : "取消",
+					handler : function() {
+						$('#addCouponDiv').dialog('close');
+					}
+				}
+			]
+		});
+
+
 	});
 
 });

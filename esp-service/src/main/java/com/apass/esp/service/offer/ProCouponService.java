@@ -37,7 +37,7 @@ public class ProCouponService {
      * 根据商品code查询优惠券
      * @return
      */
-    public List<ProCoupon> getProCouponList(String goodsCode){
-    	return couponMapper.getProCouponListByGoodsCode(goodsCode);
+    public List<ProCoupon> getProCouponList(String goodsCode) {
+        return couponMapper.getProCouponListByGoodsCode(goodsCode);
     }
 }

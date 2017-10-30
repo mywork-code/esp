@@ -7,31 +7,105 @@
 	src="${rc.contextPath}/WebContent/js/coupon/procouponList.js"></script>
 </head>
 <body>
-	<div id="tb">
-		<div class="search">
-				  <a href="javascript:void(0);" class="easyui-linkbutton" id="addCouponButton">添&nbsp;加&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
-				  <a href="javascript:void(0);" class="easyui-linkbutton"  id="issueCouponButton">手&nbsp;动&nbsp;发&nbsp;放&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
-				</tr>
-		</div>
+	<div id="tb" style="margin-left: 20px">
+		<a href="javascript:void(0);" class="easyui-linkbutton" id="addCouponButton">添&nbsp;加&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
+		<a href="javascript:void(0);" class="easyui-linkbutton"  id="issueCouponButton">手&nbsp;动&nbsp;发&nbsp;放&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
 	</div>
-	<!-- banner查询列表 -->
+	<!-- 优惠券查询列表 -->
 	<div id="couponList"></div>
 
 
 	<!--添加优惠券-->
-	<div style="display: none">
-		<table>
-			<tr>
-				<td>优惠券名称</td>
-				<td>
-					<select>
-						<option value="yhlq">用户领取</option>
-						<option value="ptff">平台发放</option>
-						<option value="xyh">新用户专享</option>
-					</select>
-				</td>
-			</tr>
-		</table>
+	<div style="display: none" id="addCouponDiv">
+		<form id="addCouponForm">
+			<table align="center" style="margin-top: 10px;margin-bottom: 10px">
+				<tr>
+					<td>优惠券名称 </td>
+					<td colspan="2">
+						<input class="easyui-textbox" style="width: 220px;"
+							   type="text" id="addCouponName" name="name" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+				<tr>
+					<td>推广方式 </td>
+					<td colspan="2">
+						<select class="easyui-combobox" style="width: 220px;"
+								data-options="prompt:'请选择'" editable="false" required
+								id="addExtendType" name="extendType">
+							<option value=""></option>
+							<option value="YHLQ">用户领取</option>
+							<option value="PTFF">平台发放</option>
+							<option value="XYH">新用户专享</option>
+						</select>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr style="display: none" id="effectiveTimeTr">
+					<td>有效时间 </td>
+					<td colspan="2">
+						<input class="easyui-textbox" style="width: 220px;"
+							   type="text" id="addEffectiveTime" name="effectiveTime" required/>
+						天
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr>
+					<td>优惠券类型 </td>
+					<td colspan="2">
+						<select class="easyui-combobox" style="width: 220px;"
+								data-options="prompt:'请选择'" editable="false" required
+								id="addType" name="type">
+							<option value=""></option>
+							<option value="QPL">全品类</option>
+							<option value="ZDPL">指定品类</option>
+							<option value="ZDSP">指定商品</option>
+						</select>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr style="display: none" id="goosCategoryTr">
+					<td style="width: 100px; text-align:right">商品类目：</td>
+					<td colspan="2">
+						<input id="goodsCategoryCombo" name="goodsCategoryCombo" class="easyui-combotree" style="width: 180px;" />
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+				<tr style="display: none" id="effectiveTimeTr">
+					<td>商品编号 </td>
+					<td colspan="2">
+						<input class="easyui-textbox" style="width: 220px;"
+							   type="text" id="addGoodsCode" name="goodsCode" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+
+				<tr>
+					<td>优惠门槛 </td>
+					<td>
+						<input class="easyui-textbox" style="width: 220px;"
+							   type="text" id="addCouponSill" name="couponSill" required/>
+						元
+						<span style="color: red">*</span>
+
+					</td>
+					<td><input type="checkbox" id="ifCouponSill"/></td>
+				</tr>
+				<tr>
+					<td>优惠金额 </td>
+					<td colspan="2">
+						<input class="easyui-textbox" style="width: 220px;"
+							   type="text" id="addDiscountAmonut" name="discountAmonut" required/>
+						元
+					</td>
+				</tr>
+
+			</table>
+		</form>
 	</div>
 </body>
 </html>
