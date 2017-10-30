@@ -1,7 +1,14 @@
 package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
-
+/**
+ * 
+ * @author pyc
+ * @email  E-mail: pengyingchao@apass.cn
+ * @version V2.0
+ * @createTime：2017年10月30日 下午2:32:02 
+ * @description 此类用于封装前台所需信息
+ */
 public class ProCouponVo {
 	
 	/**
@@ -23,6 +30,16 @@ public class ProCouponVo {
      * 优惠金额
      */
     private BigDecimal discountAmonut;
+    
+    /**
+     * 开始时间
+     */
+    private String startTime;
+    
+    /**
+     * 结束时间
+     */
+    private String endTime;
 
 	public Long getId() {
 		return id;
@@ -54,6 +71,22 @@ public class ProCouponVo {
 
 	public void setDiscountAmonut(BigDecimal discountAmonut) {
 		this.discountAmonut = discountAmonut;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
     
 }
