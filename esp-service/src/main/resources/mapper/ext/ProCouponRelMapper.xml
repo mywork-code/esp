@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.apass.esp.mapper.ProCouponRelMapper" >
-
+<mapper namespace="com.apass.esp.mapper.ProCouponRelMapper">
+	<!--根据活动id查询与该活动相关的优惠券  -->
+	<select id="queryProCouponRelListByActivityId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_esp_pro_coupon_rel
+		where pro_activity_id = #{proActivityId}
+	</select>
 </mapper>
