@@ -18,5 +18,10 @@
         from t_esp_pro_coupon_rel
         <include refid="paramSql" />
     </select>
-
+	<!-- 根据活动的Id，查询对应的所属活动下的优惠券的记录 -->
+    <select id="getCouponByActivityId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_pro_coupon_rel
+        <include refid="paramSql" />
+    </select>
 </mapper>
