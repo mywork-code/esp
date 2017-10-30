@@ -258,14 +258,10 @@ public class JdGoodsInfoService {
         	}
         	//获取商品的优惠券
         	List<ProCoupon> proCoupons=getProCouponList(goodsId);
-        	if(null !=proCoupons && proCoupons.size()>0){
-        		if(proCoupons.size()<=3){
-        			jdSimilarSkuVo.setProCouponList(proCoupons);
-        		}else{
-        			jdSimilarSkuVo.setProCouponList(proCoupons.subList(0, 3));
-        		}
+        	if(proCoupons.size()>3){
+    			jdSimilarSkuVo.setProCouponList(proCoupons.subList(0, 3));
         	}else{
-    			jdSimilarSkuVo.setProCouponList(null);
+    			jdSimilarSkuVo.setProCouponList(proCoupons);
         	}
 			// 查询商品是否有货
 			jdSimilarSkuVo.setSkuId(skuId);

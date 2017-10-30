@@ -815,14 +815,10 @@ public class ShopHomeController {
             	}
             	//获取商品的优惠券
             	List<ProCoupon> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-            	if(null !=proCoupons && proCoupons.size()>0){
-            		if(proCoupons.size()<=3){
-            			returnMap.put("proCouponList",proCoupons);
-            		}else{
-            			returnMap.put("proCouponList",proCoupons.subList(0, 3));
-            		}
+            	if(proCoupons.size()>3){
+            		returnMap.put("proCouponList",proCoupons.subList(0, 3));
             	}else{
-            		 returnMap.put("proCouponList",null);
+            		 returnMap.put("proCouponList",proCoupons);
             	}
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
