@@ -1,22 +1,29 @@
 package com.apass.esp.service.offer;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.MyCouponVo;
+import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.ProActivityCfgMapper;
+import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
 
 /**
  * 
@@ -39,6 +46,9 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
+	
+	@Autowired
+	private ProCouponMapper couponMapper;
 	
 	/**
 	 * 点击领取优惠券
@@ -117,6 +127,32 @@ public class MyCouponManagerService {
 	}
 	
 	/**
+	 * 根据用户的Id，获取用户的未使用、已使用、已过期的优惠券信息
+	 * @param userId
+	 * @return
+	 */
+	public Map<String,Object> getCoupons(String userId){
+		/**
+		 * 未使用
+		 */
+		List<ProMyCouponVo> unUsedList = getCouponsUnused(userId);
+		/**
+		 * 已使用
+		 */
+		List<ProMyCouponVo> usedList = getCouponsUsed(userId);
+		/**
+		 * 已过期
+		 */
+		List<ProMyCouponVo> expireList = getExpire(userId);
+		
+		Map<String,Object> params = Maps.newHashMap();
+		params.put("unUsed", unUsedList);
+		params.put("used",usedList);
+		params.put("expire",expireList);
+		return params;
+	}
+	
+	/**
 	 * 根据用户的Id，获取用户未使用的优惠券
 	 * @param userId
 	 * @return
@@ -125,11 +161,13 @@ public class MyCouponManagerService {
 	 *   1.首先是status = 'N'
 	 *   2.当前日期应该小于end_date
 	 */
-	public List<ProMyCoupon> getCouponsUnused(String userId){
+	public List<ProMyCouponVo> getCouponsUnused(String userId){
 		Date now = new Date();
 		Long userID = Long.parseLong(userId);
-		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,now,"N"));
+		List<ProMyCoupon> list = myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,now,"N"));
+		return getVoByPos(list);   
 	}
+	
 	/**
 	 * 
 	 * @param userId
@@ -138,9 +176,10 @@ public class MyCouponManagerService {
 	 * 已使用的券
 	 * 1.status = 'Y'
 	 */
-	public List<ProMyCoupon> getCouponsUsed(String userId){
+	public List<ProMyCouponVo> getCouponsUsed(String userId){
 		Long userID = Long.parseLong(userId);
-		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,null,"Y"));
+		List<ProMyCoupon> list =  myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,null,"Y"));
+		return getVoByPos(list);
 	}
 	
 	/**
@@ -150,9 +189,48 @@ public class MyCouponManagerService {
 	 * 1.首先是status = 'N'
 	 * 2.当前日期应该大于end_date
 	 */
-	public List<ProMyCoupon> getExpire(String userId){
+	public List<ProMyCouponVo> getExpire(String userId){
 		Date now = new Date();
 		Long userID = Long.parseLong(userId);
-		return myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,"N",now));
+		List<ProMyCoupon> list = myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userID,"N",now));
+		return getVoByPos(list);
+	}
+	
+	/**
+	 * List po 2 vo
+	 * @param list
+	 * @return
+	 */
+	public List<ProMyCouponVo> getVoByPos(List<ProMyCoupon> list){
+		List<ProMyCouponVo> voList = new ArrayList<>();
+		for (ProMyCoupon p : list) {
+			voList.add(getVoByPo(p));
+		}
+		return voList;
+	}
+	
+	/**
+	 * po 2 vo
+	 * @param p
+	 * @return
+	 */
+	public ProMyCouponVo getVoByPo(ProMyCoupon p){
+		ProMyCouponVo vo = new ProMyCouponVo();
+		vo.setId(p.getId());
+		if(null == p.getCouponRelId()){
+			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(p.getCouponRelId());
+			vo.setActivityId(null != rel ? rel.getProActivityId() : -1L);
+		}
+		vo.setCouponRelId(p.getCouponRelId());
+		vo.setCouponId(p.getCouponId());
+		ProCoupon coupon = couponMapper.selectByPrimaryKey(p.getCouponId());
+		vo.setCouponName(null != coupon ? coupon.getName():"");
+		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
+		vo.setRemarks(p.getRemarks());
+		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
+		vo.setStatus(p.getStatus());
+		vo.setTelephone(p.getTelephone());
+		vo.setUserId(p.getUserId());
+		return vo;
 	}
 }

@@ -294,28 +294,6 @@
 						GROUP BY
 							goods_id
 					) c ON a.id = c.goods_id
-					LEFT JOIN (
-						SELECT
-							m.goods_id goods_id,
-							m.id id,
-							n.minprice goods_price
-						FROM
-							t_esp_goods_stock_info m,
-							(
-								SELECT
-									goods_id goodsId,
-									MIN(goods_price) minprice
-								FROM
-									t_esp_goods_stock_info					
-								GROUP BY
-									goods_id
-							) n
-						WHERE
-							m.goods_id = n.goodsId
-						AND m.goods_price = n.minprice
-						GROUP BY
-							m.goods_id
-					) b ON a.id = b.goods_id
 					WHERE
 						a.`status` = 'G02'
 					AND a.is_delete = '01'
