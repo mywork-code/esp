@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,9 +29,19 @@ public class MyCouponManagerController {
 	@RequestMapping("/list")
 	@ResponseBody
 	public Response getMyCoupons(Map<String, Object> paramMap){
-		
-		
-		return Response.successResponse(null);
+		logger.info("getMyCoupons:--------->{}",GsonUtils.toJson(paramMap));
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		if(StringUtils.isBlank(userId)){
+			logger.error("用户编号不能为空!");
+			return Response.fail("用户编号不能为空!");
+		}
+		try {
+			Map<String,Object> params = myCouponManagerService.getCoupons(userId);
+			return Response.successResponse(params);
+		} catch (Exception e) {
+			logger.error("get mycoupons is failed------{}", e);
+		}
+		return Response.fail("我的优惠券获取失败!");
 	}
 	
 	
