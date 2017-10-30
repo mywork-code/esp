@@ -1,5 +1,6 @@
 package com.apass.esp.service.offer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProCouponMapper;
 
 /**
@@ -23,15 +26,37 @@ public class CouponManagerService {
 
 	@Autowired
 	private ProCouponMapper couponMapper;
+	
+	@Autowired
+	private CouponRelService couponRelService;
+	
 	/**
 	 * 根据活动的Id，获取优惠券
 	 * @param activityId
 	 * @return
 	 */
 	public List<ProCoupon> getCouponsByActivityId(String activityId){
-		
-		return null;
+		List<ProCoupon> couponList = new ArrayList<ProCoupon>();
+		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		for (ProCouponRel rel : relList) {
+			ProCoupon pro = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			couponList.add(pro);
+		}
+		return couponList;
 	}
 	
+	public List<ProCouponVo> getCouponVos(String activityId){
+		List<ProCouponVo> couponList = new ArrayList<ProCouponVo>();
+		List<ProCoupon> coupons = getCouponsByActivityId(activityId);
+		for (ProCoupon proCoupon : coupons) {
+			ProCouponVo vo  = new ProCouponVo();
+			vo.setId(proCoupon.getId());
+			vo.setName(proCoupon.getName());
+			vo.setCouponSill(proCoupon.getCouponSill());
+			vo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+			couponList.add(vo);
+		}
+		return couponList;
+	}
 	
 }
