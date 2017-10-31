@@ -279,7 +279,7 @@ public class StaticFileController {
         return Response.successResponse(commissionWalletVos);
     }
 
-    @RequestMapping(value = "v5/app_weex")
+    @RequestMapping(value = "ajp/v1/app_weex")
     @ResponseBody
     public Response getMd5ByFile5() {
         LOGGER.info("weex,v5自动部署程序开始执行.....查询安家派weex,运行环境:{}",systemEnvConfig.getEve());

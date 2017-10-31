@@ -7,19 +7,19 @@
                and user_id = #{userId}
             </if>
             <if test="couponRelId != null and couponRelId != ''">
-               and coupon_rel_id = #{couponRelId}
+                and coupon_rel_id = #{couponRelId}
             </if>
             <if test="couponId != null and couponId != ''">
-               and coupon_id = #{couponId}
+                and coupon_id = #{couponId}
             </if>
             <if test="status != null and status != ''">
-               and status = #{status}
+                and status = #{status}
             </if>
             <if test="minDate != null and minDate != ''">
-               and end_date &gt; #{minDate}
+                and end_date &gt; #{minDate}
             </if>
             <if test="maxDate !=null and maxDate != ''">
-               and end_date &lt; #{maxDate}
+                and end_date &lt; #{maxDate}
             </if>
         </where>
     </sql>
