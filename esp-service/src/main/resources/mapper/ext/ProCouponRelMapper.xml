@@ -5,11 +5,11 @@
    <sql id="paramSql">
         <where>
             <if test="activityId != null">
-                and pro_activity_id = #{activityId}
+              and  pro_activity_id = #{activityId}
             </if>
             <if test="couponId != null">
-               and coupon_id = #{couponId}
-            </if>	
+              and  coupon_id = #{couponId}
+            </if>
         </where>
     </sql>
     
