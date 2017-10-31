@@ -38,8 +38,10 @@ public class CouponRelService {
 	 * @param couponRel
 	 * @return
 	 */
-	public ProCouponRel getRelByActivityIdAndCouponId(String activityId,String couponId){
+	public ProCouponRel getRelByActivityIdAndCouponId(Long activityId,Long couponId){
 		ProCouponRelQuery couponRel=new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		couponRel.setCouponId(couponId);
 		return couponRelMapper.getRelByActivityIdAndCouponId(couponRel);
 	};
 }
