@@ -92,7 +92,7 @@ public class ProCouponVo {
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	public void setEffectiveTiem() {
+	public void setEffectiveTiem(String startTime,String endTime) {
 		this.effectiveTiem = startTime+"-"+endTime;
 	}
 	public String getEffectiveTiem() {
