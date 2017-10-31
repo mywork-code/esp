@@ -77,6 +77,7 @@ $(function(){
         }
 	});
 
+	//单击添加优惠券按钮
 	$("#addCouponButton").click(function () {
 		$("#addCouponDiv").dialog({
 			title:'<span style="color: black">添加优惠券</span>',
@@ -87,6 +88,7 @@ $(function(){
 				{
 					text : "保存",
 					handler : function() {
+						debugger;
 						var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
 						if("请选择"==goodsCategoryCombo){
 							goodsCategoryCombo="";
@@ -117,7 +119,6 @@ $(function(){
 							"discountAmonut":$("#addDiscountAmonut").textbox("getValue")
 						}
 
-						console.log($("#addType").combobox("getValue"));
 						console.log(param);
 						$.ajax({
 							url : ctx + '/application/coupon/management/add',
@@ -169,7 +170,6 @@ $(function(){
 				$("#addType").combobox({ disabled: false });
 				$("#addType").combobox('setValue','');
 				$("#effectiveTimeTr").show()
-				couponTypeValue = null;
 			}
 		}
 	});
@@ -191,6 +191,5 @@ $(function(){
 			}
 		}
 	});
-
 
 });
