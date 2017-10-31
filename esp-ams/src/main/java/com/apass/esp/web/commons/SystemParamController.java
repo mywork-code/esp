@@ -370,15 +370,15 @@ public class SystemParamController {
             String url = null;
             if(StringUtils.equals("ajqh",weexInfoEntity.getWeexBlong())){
                 if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
-                    url = nfsWeexRoot + "/prod/commission.weex_sit.js";
+                    url = nfsWeexRoot + "/prod/commission.weex_prod.js";
                 }else {
-                    url = nfsWeexRoot + "/prod/wallet.weex_sit.js";
+                    url = nfsWeexRoot + "/prod/wallet.weex_prod.js";
                 }
             }else{
                 if(!StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                     return  Response.fail("安家派js无commision.js文件");
                 }
-                url = nfsWeexRoot + "/prodajp/wallet.weex_sit.js";
+                url = nfsWeexRoot + "/prodajp/wallet.weex_prod.js";
             }
 
             //修改数据库内容
