@@ -692,6 +692,30 @@ public class JdGoodsInfoService {
 		}
 		return JdSimilarSkuList;
 	}
+
+	/**
+	 * 京东商品：根据skuId返回相似skuId
+	 * @param sku
+	 * @return
+     */
+	public TreeSet<String> getJdSimilarSkuIdList(String skuId) {
+		if(StringUtils.isBlank(skuId)){
+			return null;
+		}
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(Long.valueOf(skuId));
+
+		TreeSet<String> skusSet = new TreeSet<String>();
+
+		for (JdSimilarSku jdsk : jdSimilarSkuList) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+
+			for (JdSaleAttr jdsa : saleAttrList) {
+				skusSet.addAll(jdsa.getSkuIds());
+			}
+		}
+
+		return skusSet;
+	}
 	/**
 	 * 判断单个京东商品是否上下架
 	 * @return

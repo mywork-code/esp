@@ -1223,4 +1223,8 @@ public class GoodsService {
     public GoodsInfoEntity selectGoodsByGoodsCode(String goodsCode) {
         return goodsDao.selectGoodsByGoodsCode(goodsCode);
     }
+
+    public List<GoodsInfoEntity> getGoodsListBySkuIds(List<String> skuIdList) {
+        return goodsDao.getGoodsListBySkuIds(skuIdList);
+    }
 }

@@ -91,8 +91,6 @@ public class ProCouponBaseInfoController {
                     proCoupon.setEffectiveTime(-1);
                 }
                 Integer count = proCouponService.inserProcoupon(proCoupon);
-            }else{
-                //TODO
             }
 
         }catch (Exception e){
