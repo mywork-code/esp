@@ -307,7 +307,7 @@ public class StaticFileController {
 
             commissionWalletVo.setVer(ver);
             commissionWalletVo.setFlag(true);
-            commissionWalletVo.setId("commission");
+            commissionWalletVo.setId("wallet");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath);
             commissionWalletVo.setMd5(md5);
             commissionWalletVo.setOffLine(false);
