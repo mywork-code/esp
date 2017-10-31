@@ -16,10 +16,10 @@
                 and status = #{status}
             </if>
             <if test="minDate != null and minDate != ''">
-                and end_date &gt; #{minDate}
+                and end_date &lt;#{minDate}
             </if>
             <if test="maxDate !=null and maxDate != ''">
-                and end_date &lt; #{maxDate}
+                and end_date &gt; #{maxDate}
             </if>
         </where>
     </sql>
