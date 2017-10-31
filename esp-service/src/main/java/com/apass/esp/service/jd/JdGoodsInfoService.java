@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -686,6 +688,9 @@ public class JdGoodsInfoService {
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
 		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
+		if(jdSimilarResponse.getResult() == null){
+			return Collections.emptyList();
+		}
 		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
 			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
 			jp.update(jp.getSaleAttrList());
