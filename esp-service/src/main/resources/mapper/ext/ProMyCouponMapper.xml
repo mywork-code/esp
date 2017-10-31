@@ -4,22 +4,22 @@
    <sql id="paramSql">
         <where>
             <if test="userId != null and userId != ''">
-                userId = #{userId}
+               and user_id = #{userId}
             </if>
             <if test="couponRelId != null and couponRelId != ''">
-                coupon_rel_id = #{couponRelId}
+                and coupon_rel_id = #{couponRelId}
             </if>
             <if test="couponId != null and couponId != ''">
-                coupon_id = #{couponId}
+                and coupon_id = #{couponId}
             </if>
             <if test="status != null and status != ''">
-                status = #{status}
+                and status = #{status}
             </if>
             <if test="minDate != null and minDate != ''">
-                end_date &gt; #{minDate}
+                and end_date &gt; #{minDate}
             </if>
             <if test="maxDate !=null and maxDate != ''">
-                end_date &lt; #{maxDate}
+                and end_date &lt; #{maxDate}
             </if>
         </where>
     </sql>

@@ -2,13 +2,17 @@ package com.apass.esp.web.offer;
 
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -17,8 +21,9 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 
-@Controller
-@RequestMapping("/my/coupon")
+@Path("/my/coupon")
+@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class MyCouponManagerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MyCouponManagerController.class);
@@ -26,8 +31,8 @@ public class MyCouponManagerController {
 	@Autowired
 	private MyCouponManagerService myCouponManagerService;
 	
-	@RequestMapping("/list")
-	@ResponseBody
+	@POST
+    @Path("/list")
 	public Response getMyCoupons(Map<String, Object> paramMap){
 		logger.info("getMyCoupons:--------->{}",GsonUtils.toJson(paramMap));
 		String userId = CommonUtils.getValue(paramMap, "userId");
@@ -44,11 +49,9 @@ public class MyCouponManagerController {
 		return Response.fail("我的优惠券获取失败!");
 	}
 	
-	
-	
-	@RequestMapping("/saveCoupon")
-	@ResponseBody
-	public Response giveCouponToUser(Map<String, Object> paramMap){
+	@POST
+    @Path("/saveCoupon")
+	public Response giveCouponToUser(@RequestBody Map<String, Object> paramMap){
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String couponId = CommonUtils.getValue(paramMap, "couponId");
