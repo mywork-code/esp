@@ -1599,7 +1599,8 @@ public class OrderService {
         BigDecimal disCount = BigDecimal.ZERO;
         for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
             goodsSum += orderDetailInfo.getGoodsNum();
-            disCount = disCount.add(orderDetailInfo.getDiscountAmount());
+            //优惠总金额=活动优惠金额+优惠券金额
+            disCount = disCount.add(orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney()));
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
             goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
