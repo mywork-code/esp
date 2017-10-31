@@ -1,18 +1,18 @@
 package com.apass.esp.service.offer;
 
-import java.util.List;
-import java.util.Map;
-
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.gfb.framework.mybatis.page.Pagination;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xiaohai on 2017/10/30.
@@ -48,9 +48,13 @@ public class ProCouponService {
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
-            //goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+            GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+            if(StringUtils.equals(goodsInfoEntity.getSource(),"jd")){
+
+            }
         }
-        return null;
+        //TODO  优惠券名称不能重复，加载类目树
+        return couponMapper.insert(proCoupon);
     }
 
 }

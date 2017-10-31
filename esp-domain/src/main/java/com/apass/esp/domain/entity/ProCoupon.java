@@ -26,7 +26,7 @@ public class ProCoupon {
 
     private String goodsCode;
 
-    private String skuId;
+    private String similarGoodsCode;
 
     private String memo;
 
@@ -128,12 +128,12 @@ public class ProCoupon {
         this.goodsCode = goodsCode;
     }
 
-    public String getSkuId() {
-        return skuId;
+    public String getSimilarGoodsCode() {
+        return similarGoodsCode;
     }
 
-    public void setSkuId(String skuId) {
-        this.skuId = skuId;
+    public void setSimilarGoodsCode(String similarGoodsCode) {
+        this.similarGoodsCode = similarGoodsCode;
     }
 
     public String getMemo() {

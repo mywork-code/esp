@@ -10,6 +10,7 @@ import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Maps;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -81,18 +83,32 @@ public class ProCouponBaseInfoController {
     public Response addCoupon(ProCoupon proCoupon){
         try{
             if(validate(proCoupon)){
+                proCoupon.setCreateUser(SpringSecurityUtils.getCurrentUser());
+                proCoupon.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+                proCoupon.setCreatedTime(new Date());
+                proCoupon.setUpdatedTime(new Date());
+                if(proCoupon.getEffectiveTime() == null){
+                    proCoupon.setEffectiveTime(-1);
+                }
                 Integer count = proCouponService.inserProcoupon(proCoupon);
+            }else{
+                //TODO
             }
 
         }catch (Exception e){
             LOGGER.error("添加优惠券异常，Exception-----",e);
+            System.out.println(e.getMessage());
             return Response.fail(e.getMessage());
         }
-
 
         return Response.success("添加优惠券成功");
     }
 
+    /**
+     * 添加优惠券参数验证
+     * @param proCoupon
+     * @return
+     */
     private boolean validate(ProCoupon proCoupon) {
         if(StringUtils.isBlank(proCoupon.getName())){
            throw new RuntimeException("优惠券名称不能为空");
