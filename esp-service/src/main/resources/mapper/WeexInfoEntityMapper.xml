@@ -11,10 +11,11 @@
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     <result column="weex_type" property="weexType" jdbcType="VARCHAR" />
+    <result column="weex_blong" property="weexBlong" jdbcType="VARCHAR" />
   </resultMap>
 
   <sql id="Base_Column_List" >
-    ID, WEEX_PATH, WEEX_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE
+    ID, WEEX_PATH, WEEX_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE,WEEX_BLONG
   </sql>
 
   <insert id="insert" parameterType="com.apass.esp.domain.entity.WeexInfoEntity" useGeneratedKeys="true" keyProperty="id" >

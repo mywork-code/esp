@@ -35,6 +35,20 @@ public class SystemEnvConfig {
         return checkProfileMatch("dev");
     }
 
+    public String getEve(){
+        if(isDEV()){
+            return "sit";
+        }
+        if(isUAT()){
+            return "uat";
+        }
+        if(isPROD()){
+            return "prod";
+        }
+
+        return "环境有误 ";
+    }
+
     // Check Profiles
     private boolean checkProfileMatch(String compare) {
         if (StringUtils.isBlank(activeProfile)) {
