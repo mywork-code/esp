@@ -21,6 +21,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -47,6 +48,7 @@ import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.CouponManagerService;
+import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
@@ -86,6 +88,8 @@ public class JdGoodsInfoService {
 	private ActivityCfgService activityCfgService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    @Autowired
+    private CouponRelService couponRelService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -451,7 +455,7 @@ public class JdGoodsInfoService {
 		if(null !=goodsId){
 	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	    		List<ProCoupon> proCoupons=couponManagerService.getCouponsByActivityId(proGroupGoodsBo.getActivityId().toString());
+	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListByActivityId(proGroupGoodsBo.getActivityId().toString());
     			for (ProCoupon proCoupon : proCoupons) {
     				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
     				proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());
@@ -474,7 +478,7 @@ public class JdGoodsInfoService {
 			}
 		}
 		for (ProCouponGoodsDetailVo proCouponGoodsDetailVo : proCouponGoodsDetailVos) {
-			proCouponStringList.add("满"+proCouponGoodsDetailVo.getClass()+"-"+proCouponGoodsDetailVo.getDiscountAmonut());
+			proCouponStringList.add("满"+proCouponGoodsDetailVo.getCouponSill().intValue()+"-"+proCouponGoodsDetailVo.getDiscountAmonut().intValue());
 		}
 		return proCouponStringList;
 	}
@@ -486,23 +490,26 @@ public class JdGoodsInfoService {
 		List<ProCouponVo> proCouponVos=new ArrayList<>();
 		List<ProCouponVo> reProCouponList=new ArrayList<>();
         List<ProCouponVo> proCouponList=new ArrayList<>();
+        String activityId="";
 		//获取与活动向关联的优惠券
 		if(null !=goodsId){
 	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
 	    	    ProActivityCfg activityCfg = activityCfgService.getById(proGroupGoodsBo.getActivityId());
-	    		List<ProCoupon> proCoupons=couponManagerService.getCouponsByActivityId(proGroupGoodsBo.getActivityId().toString());
+	    	    activityId= proGroupGoodsBo.getActivityId().toString();
+	    		List<ProCoupon> proCoupons=couponManagerService.getCouponsByActivityId(activityId);
     			for (ProCoupon proCoupon : proCoupons) {
     				ProCouponVo proCouponVo=new ProCouponVo();
     				proCouponVo.setId(proCoupon.getId());
     				proCouponVo.setName(proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
-    				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
     				String startTimeString = formatter.format(activityCfg.getStartTime());
     				String endTimeTimeString = formatter.format(activityCfg.getEndTime());
     				proCouponVo.setStartTime(startTimeString);
     				proCouponVo.setEndTime(endTimeTimeString);
+    				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
     				proCouponVos.add(proCouponVo);
 				}
 	    	}
@@ -520,12 +527,18 @@ public class JdGoodsInfoService {
 				}
 			}
 		}
-		for (ProCouponVo proCouponVo : proCouponList) {
-			List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId, proCouponVo.getId());
-			if(null !=proMyCouponList && proMyCouponList.size()>0) {
-				reProCouponList.add(proCouponVo);
-			}else{
-				proCouponList.add(proCouponVo);
+		for (ProCouponVo proCouponVo : proCouponVos) {
+			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(Long.parseLong(activityId), proCouponVo.getId());
+			if(null !=proCouponRel && proCouponRel.getRemainNum()>0){//優惠券的剩餘數量大於零
+				List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId, proCouponVo.getId());
+				if(null !=proMyCouponList && proMyCouponList.size()>0){
+					reProCouponList.add(proCouponVo);
+					if(proMyCouponList.size()<proCouponRel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
+						proCouponList.add(proCouponVo);
+					}
+				}else{
+					proCouponList.add(proCouponVo);
+				}
 			}
 		}
 		resultMap.put("reProCouponList", reProCouponList);

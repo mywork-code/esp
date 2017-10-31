@@ -1,30 +1,14 @@
 package com.apass.esp.web.payment;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
-import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.kvattr.PaymentVo;
-import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -33,6 +17,19 @@ import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *  支付
@@ -51,9 +48,12 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 	@Autowired
-	private OrderInfoRepository orderDao;
-	@Autowired
 	private KvattrService kvattrService;
+
+  @Autowired
+  private OrderService orderService;
+
+
     /**
      * 支付方式初始化
      * 
@@ -88,7 +88,7 @@ public class PaymentController {
             resultMap.put("payment", kvattrService.get(new PaymentVo()));
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+            orderService.updateOrderCancel(e.getErrorCode());
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
         	}else{
@@ -146,7 +146,9 @@ public class PaymentController {
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+            orderService.updateOrderCancel(e.getErrorCode());
+
+
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
         	}else{
@@ -208,7 +210,7 @@ public class PaymentController {
             
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+            orderService.updateOrderCancel(e.getErrorCode());
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
         	}else{

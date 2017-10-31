@@ -59,7 +59,8 @@
 			update_date updateDate,
 			pre_delivery preDelivery,
 			source source,
-			main_order_id mainOrderId
+			main_order_id mainOrderId,
+			coupon_id  couponId
 		FROM
 			t_esp_order_info
 		]]>
@@ -103,7 +104,8 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			coupon_id  couponId
 		FROM
 			t_esp_order_info
 		where main_order_id=#{value} and ext_parent_id!='-1'
@@ -139,7 +141,8 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			coupon_id  couponId
 		FROM
 			t_esp_order_info
 		where 1=1 and ext_parent_id!='-1'
@@ -186,7 +189,8 @@
             down_payment_amount    downPaymentAmount,
 			create_date createDate,
 			update_date updateDate,
-			pre_delivery preDelivery
+			pre_delivery preDelivery,
+			coupon_id  couponId
 		FROM
 			t_esp_order_info
 			WHERE 1=1 and ext_parent_id!='-1'
@@ -242,7 +246,8 @@
 			pre_delivery preDelivery,
 			source source,
 			ext_order_id extOrderId,
-			ext_parent_id extParentId
+			ext_parent_id extParentId,
+			coupon_id  couponId
 		FROM
 			t_esp_order_info
 			WHERE 1=1 and ext_parent_id!='-1'
@@ -809,7 +814,8 @@
 			pre_delivery preDelivery,
 			source source,
 			ext_order_id extOrderId,
-			pre_stock_status preStockStatus
+			pre_stock_status preStockStatus,
+			coupon_id couponId
 		FROM
 			t_esp_order_info
 		where ext_order_id = #{extOrderId}
@@ -854,7 +860,8 @@
 			update_date updateDate,
 			pre_delivery preDelivery,
 			source source,
-			ext_order_id extOrderId
+			ext_order_id extOrderId,
+			coupon_id couponId
 		FROM
 			t_esp_order_info
 		where

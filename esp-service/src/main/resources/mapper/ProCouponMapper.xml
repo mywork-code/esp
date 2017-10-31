@@ -13,7 +13,7 @@
     <result column="category_id1" property="categoryId1" jdbcType="VARCHAR" />
     <result column="category_id2" property="categoryId2" jdbcType="VARCHAR" />
     <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
-    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="similar_goods_code" property="similarGoodsCode" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
@@ -23,8 +23,8 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, extend_type, type, effective_time, sill_type, coupon_sill, discount_amonut, 
-    category_id1, category_id2, goods_code, sku_id, memo, create_user, update_user, created_time, 
-    updated_time, is_delete
+    category_id1, category_id2, goods_code, similar_goods_code, memo, create_user, update_user, 
+    created_time, updated_time, is_delete
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -40,13 +40,13 @@
     insert into t_esp_pro_coupon (name, extend_type, type, 
       effective_time, sill_type, coupon_sill, 
       discount_amonut, category_id1, category_id2, 
-      goods_code, sku_id, memo, 
+      goods_code, similar_goods_code, memo, 
       create_user, update_user, created_time, 
       updated_time, is_delete)
     values (#{name,jdbcType=VARCHAR}, #{extendType,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{effectiveTime,jdbcType=INTEGER}, #{sillType,jdbcType=VARCHAR}, #{couponSill,jdbcType=DECIMAL}, 
       #{discountAmonut,jdbcType=DECIMAL}, #{categoryId1,jdbcType=VARCHAR}, #{categoryId2,jdbcType=VARCHAR}, 
-      #{goodsCode,jdbcType=VARCHAR}, #{skuId,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
+      #{goodsCode,jdbcType=VARCHAR}, #{similarGoodsCode,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
       #{updatedTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=VARCHAR})
   </insert>
@@ -83,8 +83,8 @@
       <if test="goodsCode != null" >
         goods_code,
       </if>
-      <if test="skuId != null" >
-        sku_id,
+      <if test="similarGoodsCode != null" >
+        similar_goods_code,
       </if>
       <if test="memo != null" >
         memo,
@@ -136,8 +136,8 @@
       <if test="goodsCode != null" >
         #{goodsCode,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null" >
-        #{skuId,jdbcType=VARCHAR},
+      <if test="similarGoodsCode != null" >
+        #{similarGoodsCode,jdbcType=VARCHAR},
       </if>
       <if test="memo != null" >
         #{memo,jdbcType=VARCHAR},
@@ -192,8 +192,8 @@
       <if test="goodsCode != null" >
         goods_code = #{goodsCode,jdbcType=VARCHAR},
       </if>
-      <if test="skuId != null" >
-        sku_id = #{skuId,jdbcType=VARCHAR},
+      <if test="similarGoodsCode != null" >
+        similar_goods_code = #{similarGoodsCode,jdbcType=VARCHAR},
       </if>
       <if test="memo != null" >
         memo = #{memo,jdbcType=VARCHAR},
@@ -228,7 +228,7 @@
       category_id1 = #{categoryId1,jdbcType=VARCHAR},
       category_id2 = #{categoryId2,jdbcType=VARCHAR},
       goods_code = #{goodsCode,jdbcType=VARCHAR},
-      sku_id = #{skuId,jdbcType=VARCHAR},
+      similar_goods_code = #{similarGoodsCode,jdbcType=VARCHAR},
       memo = #{memo,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},

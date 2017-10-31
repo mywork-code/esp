@@ -6,29 +6,29 @@ import java.util.Date;
 public class ProCoupon {
     private Long id;
 
-    private String name="";
+    private String name;
 
-    private String extendType="";
+    private String extendType;
 
-    private String type="";
+    private String type;
 
-    private Integer effectiveTime=-1;
+    private Integer effectiveTime;
 
-    private String sillType="";
+    private String sillType;
 
-    private BigDecimal couponSill=new BigDecimal("0.00");
+    private BigDecimal couponSill;
 
-    private BigDecimal discountAmonut=new BigDecimal("0.00");
+    private BigDecimal discountAmonut;
 
-    private String categoryId1="";
+    private String categoryId1;
 
-    private String categoryId2="";
+    private String categoryId2;
 
-    private String goodsCode="";
+    private String goodsCode;
 
-    private String skuId="";
+    private String similarGoodsCode;
 
-    private String memo="";
+    private String memo;
 
     private String createUser;
 
@@ -38,7 +38,7 @@ public class ProCoupon {
 
     private Date updatedTime;
 
-    private String isDelete="N";
+    private String isDelete;
 
     public Long getId() {
         return id;
@@ -128,12 +128,12 @@ public class ProCoupon {
         this.goodsCode = goodsCode;
     }
 
-    public String getSkuId() {
-        return skuId;
+    public String getSimilarGoodsCode() {
+        return similarGoodsCode;
     }
 
-    public void setSkuId(String skuId) {
-        this.skuId = skuId;
+    public void setSimilarGoodsCode(String similarGoodsCode) {
+        this.similarGoodsCode = similarGoodsCode;
     }
 
     public String getMemo() {
