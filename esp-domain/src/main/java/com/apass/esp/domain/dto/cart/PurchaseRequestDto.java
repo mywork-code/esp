@@ -42,6 +42,8 @@ public class PurchaseRequestDto {
      */
     private BigDecimal disCount;
     
+    private BigDecimal payMoney;//实际支付金额 - 优惠金额  （不包含优惠券）
+    
     public String getProActivityId() {
         return proActivityId;
     }
@@ -102,5 +104,13 @@ public class PurchaseRequestDto {
 	public void setDisCount(BigDecimal disCount) {
 		this.disCount = disCount;
 	}
-    
+
+	public BigDecimal getPayMoney() {
+		return payMoney;
+	}
+
+	public void setPayMoney(BigDecimal payMoney) {
+		this.payMoney = payMoney;
+	}
+	
 }
