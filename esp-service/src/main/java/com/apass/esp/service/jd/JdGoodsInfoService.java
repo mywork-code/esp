@@ -501,6 +501,7 @@ public class JdGoodsInfoService {
     			for (ProCoupon proCoupon : proCoupons) {
     				ProCouponVo proCouponVo=new ProCouponVo();
     				proCouponVo.setId(proCoupon.getId());
+    				proCouponVo.setActivityId(Long.parseLong(activityId));
     				proCouponVo.setName(proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
