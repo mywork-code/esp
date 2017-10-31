@@ -863,9 +863,9 @@ $ (function ()
 		refundTypeAll = data.refundType;
 		isAgree = data.isAgree,
 		$("#serviceDetailList").dialog ('open');
-		var goodsRefundPrice = data.goodsPrice*data.goodsNum;
+//		var goodsRefundPrice = data.goodsPrice*data.goodsNum;
 		$ ("#serviceDetailList #refundReason").val (data.refundReasonDes);
-		$ ("#serviceDetailList #goodsPrice").val (goodsRefundPrice);
+		$ ("#serviceDetailList #goodsPrice").val (data.goodsPrice);
 		$ ("#serviceDetailList #goodsNum").val (data.goodsNum);
 		$ ("#serviceDetailList #status").val (data.statusDesc);
 		$ ("#serviceDetailList #sLogisticsNo").val (data.sLogisticsNo);

@@ -43,9 +43,15 @@ $ (function ()
 		            {
 		                title : '版本号',
 		                field : 'weexVer',
-		                width : 200,
+		                width : 100,
 		                align : 'center'
 		            },
+					{
+						title : '归属项目',
+						field : 'weexBlong',
+						width : 100,
+						align : 'center'
+					},
 
 		            {
 		                title : '修改人',
@@ -103,6 +109,7 @@ $ (function ()
 		$ ("#weexType").combobox ('setValue',data.weexType);
 		$ ("#weexFile").val (data.weexFile);
 		$ ("#weexId").val (data.id);
+		$ ("#weexEve").val (data.weexEve);
 	}
 
 
@@ -115,11 +122,13 @@ function confirmWeexBtn ()
 	{
 		if (r)
 		{
+			debugger;
 			var weexVer = $ ("#weexVer").val ();
 			var weexType = $ ("#weexType").combobox ('getValue');
 			var weexFile = $ ("#weexFile").val ();
 			var weexId = $ ("#weexId").val ();
-
+			var weexEve = $ ("#weexEve").val ();
+			var weexBlong = $("#weexBlong").val();
 
 			
 			// 验证参数
@@ -139,38 +148,13 @@ function confirmWeexBtn ()
 				return false;
 			}
 
-			// var param = {
-			// 	"weexVer":weexVer,
-			// 	"weexType":weexType,
-			// 	"weexFile":weexFile,
-			// 	"weexId":weexId
-			// };
-
-			// var fd = new FormData(document.querySelector("form"));
-			// $.ajax (
-			// {
-			//     url : ctx + '/application/system/param/updateWeex',
-			//     data :fd,
-			//     type : "post",
-			// 	contentType: 'application/json',
-			//     success : function (data)
-			//     {
-			// 		debugger;
-			// 	    $.messager.alert ('消息', data.msg);
-			// 	    closeBtn ();
-			// 	    var params = {};
-			// 	    $ ('#weexJslist').datagrid ('load', params);
-			//     }
-			// })
 			var theForm = $("#weexJsForm");
 			theForm.form("submit",{
-				url : ctx + '/application/system/param/updateWeex',
+				url : ctx + '/application/system/param/updateWeex2',
 				success : function(data) {
-					debugger;
 					var response = JSON.parse(data);
 					console.log(response);
 					if(response.status=="1"){
-						debugger;
 						$.messager.alert ('消息', response.msg);
 						closeWeexBtn ();
 						var params = {};

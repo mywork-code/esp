@@ -32,7 +32,7 @@ CREATE TABLE `t_esp_pro_mycoupon` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '主键id',
   `user_id` bigint(20) NOT NULL COMMENT '用户id',
   `coupon_rel_id`   bigint(20) NOT NULL DEFAULT 0 COMMENT '优惠券与活动关联主键id',
-  `status` varchar(8) NOT NULL COMMENT '状态：未使用：Y;已使用：N',
+  `status` varchar(8) NOT NULL COMMENT '状态：未使用：N;已使用：Y',
   `coupon_id` bigint(20) NOT NULL COMMENT '优惠券id',
   `telephone` varchar(15) NOT NULL DEFAULT''  COMMENT '用户手机号',
   `start_date` datetime NOT NULL DEFAULT '1900-01-01 00:00:00' COMMENT '开始时间',
@@ -103,3 +103,6 @@ ADD COLUMN `coupon_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '优惠券Id';
 alter table t_esp_banner_info add column `attr` varchar(32) not null default '' comment '活动地址：activity;商品编号/skuid:good',
  add column `attr_val` varchar(32) not null default '' comment '属性值';
 
+
+ALTER TABLE `t_esp_weex_info`
+ADD COLUMN `weex_blong` varchar(12)  NOT NULL DEFAULT '' COMMENT 'weex所属项目(ajqh,ajp)';

@@ -796,9 +796,9 @@ function refundDeal(orderId, refundId, refundType) {
                 if (data.status == "1" && data.rows.length > 0) {
                     var dataObject = data.rows[0];
                     // 填写售后详细信息
-                    var goodsRefundPrice = dataObject.goodsPrice * dataObject.goodsNum;
+//                    var goodsRefundPrice = dataObject.goodsPrice * dataObject.goodsNum;
                     $("#serviceDetailList #refundReason").val(dataObject.refundReasonDes);
-                    $("#serviceDetailList #goodsPrice").val(goodsRefundPrice);
+                    $("#serviceDetailList #goodsPrice").val(dataObject.goodsPrice);
                     $("#serviceDetailList #goodsNum").val(dataObject.goodsNum);
                     $("#serviceDetailList #status").val(dataObject.statusDesc);
                     $("#serviceDetailList #sLogisticsName").val(dataObject.sLogisticsName);

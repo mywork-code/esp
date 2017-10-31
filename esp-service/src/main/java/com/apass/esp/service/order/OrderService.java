@@ -12,6 +12,7 @@ import java.util.Set;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.search.DocValueFormat.Decimal;
@@ -234,6 +235,9 @@ public class OrderService {
     
     @Autowired
     private ProCouponRelMapper couponRelMapper;
+
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1234,8 +1238,7 @@ public class OrderService {
         String orderId = order.getOrderId();
         // 更新订单状态
         LOG.info(requestId, "取消订单,更改订单状态为订单失效", orderId);
-        orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
-
+        updateOrderCancel(orderId);
         if (SourceType.JD.getCode().equals(order.getSource())) {
             return;
         }
@@ -2094,8 +2097,8 @@ public class OrderService {
         }
 
         reOrder("", orderId, userId);
-        // 删除订单
-        orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_CANCEL.getCode());
+        // 订单失效
+        updateOrderCancel(orderId);
     }
 
     /**
@@ -2773,7 +2776,7 @@ public class OrderService {
                         + "不支持配送");
                 message = "抱歉，暂不支持该地区发货！";
                 // 订单的状态置为无效
-                updateProperties(order.getId());
+                updateOrderCancel(order.getOrderId());
             }
         }
         resultMap.put("unSupportProvince", bl);
@@ -2816,10 +2819,16 @@ public class OrderService {
         return resultMap;
     }
 
-    public void updateProperties(Long id) {
+    public void updateOrderCancel(String orderId) {
+        OrderInfoEntity order =   orderInfoRepository.selectByOrderId(orderId);
         OrderInfoEntity entity = new OrderInfoEntity();
-        entity.setId(id);
+        entity.setId(order.getId());
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+
+        if(order.getCouponId() != null && order.getCouponId() > 0 ){
+            //订单失效 则返回优惠券
+            myCouponManagerService.updateStatus("N",order.getUserId(),order.getCouponId());
+        }
         orderInfoRepository.update(entity);
     }
 

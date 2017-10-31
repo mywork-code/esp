@@ -33,5 +33,15 @@ public class CouponRelService {
 		List<ProCouponRel> relList = couponRelMapper.getCouponByActivityId(new ProCouponRelQuery(Long.parseLong(activityId)));
 		return relList;
 	}
-	
+	/**
+	 * 根据活动和优惠券的Id，查找对应的关系表中的记录
+	 * @param couponRel
+	 * @return
+	 */
+	public ProCouponRel getRelByActivityIdAndCouponId(Long activityId,Long couponId){
+		ProCouponRelQuery couponRel=new ProCouponRelQuery();
+		couponRel.setActivityId(activityId);
+		couponRel.setCouponId(couponId);
+		return couponRelMapper.getRelByActivityIdAndCouponId(couponRel);
+	};
 }
