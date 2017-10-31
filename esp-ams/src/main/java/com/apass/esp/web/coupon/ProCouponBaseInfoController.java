@@ -91,7 +91,8 @@ public class ProCouponBaseInfoController {
                     proCoupon.setEffectiveTime(-1);
                 }
                 Integer count = proCouponService.inserProcoupon(proCoupon);
-
+            }else{
+                //TODO
             }
 
         }catch (Exception e){
@@ -100,10 +101,14 @@ public class ProCouponBaseInfoController {
             return Response.fail(e.getMessage());
         }
 
-
         return Response.success("添加优惠券成功");
     }
 
+    /**
+     * 添加优惠券参数验证
+     * @param proCoupon
+     * @return
+     */
     private boolean validate(ProCoupon proCoupon) {
         if(StringUtils.isBlank(proCoupon.getName())){
            throw new RuntimeException("优惠券名称不能为空");
