@@ -478,7 +478,7 @@ public class JdGoodsInfoService {
 			}
 		}
 		for (ProCouponGoodsDetailVo proCouponGoodsDetailVo : proCouponGoodsDetailVos) {
-			proCouponStringList.add("满"+proCouponGoodsDetailVo.getCouponSill()+"-"+proCouponGoodsDetailVo.getDiscountAmonut());
+			proCouponStringList.add("满"+proCouponGoodsDetailVo.getCouponSill().intValue()+"-"+proCouponGoodsDetailVo.getDiscountAmonut().intValue());
 		}
 		return proCouponStringList;
 	}
@@ -504,11 +504,12 @@ public class JdGoodsInfoService {
     				proCouponVo.setName(proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
-    				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
     				String startTimeString = formatter.format(activityCfg.getStartTime());
     				String endTimeTimeString = formatter.format(activityCfg.getEndTime());
     				proCouponVo.setStartTime(startTimeString);
     				proCouponVo.setEndTime(endTimeTimeString);
+    				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
     				proCouponVos.add(proCouponVo);
 				}
 	    	}
@@ -527,7 +528,7 @@ public class JdGoodsInfoService {
 			}
 		}
 		for (ProCouponVo proCouponVo : proCouponVos) {
-			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(activityId, proCouponVo.getId().toString());
+			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(Long.parseLong(activityId), proCouponVo.getId());
 			if(null !=proCouponRel && proCouponRel.getRemainNum()>0){//優惠券的剩餘數量大於零
 				List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId, proCouponVo.getId());
 				if(null !=proMyCouponList && proMyCouponList.size()>0){

@@ -5,21 +5,21 @@
    <sql id="paramSql">
         <where>
             <if test="activityId != null">
-                pro_activity_id = #{activityId}
+                and pro_activity_id = #{activityId}
             </if>
             <if test="couponId != null">
-                coupon_id = #{couponId}
+               and coupon_id = #{couponId}
             </if>	
         </where>
     </sql>
     
-    <select id="getRelByActivityIdAndCouponId" resultMap="BaseResultMap">
+    <select id="getRelByActivityIdAndCouponId"   parameterType="com.apass.esp.domain.query.ProCouponRelQuery"  resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />
         from t_esp_pro_coupon_rel
         <include refid="paramSql" />
     </select>
 	<!-- 根据活动的Id，查询对应的所属活动下的优惠券的记录 -->
-    <select id="getCouponByActivityId" resultMap="BaseResultMap">
+    <select id="getCouponByActivityId" parameterType="com.apass.esp.domain.query.ProCouponRelQuery" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />
         from t_esp_pro_coupon_rel
         <include refid="paramSql" />
