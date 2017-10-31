@@ -71,6 +71,7 @@ public class StaticFileController {
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
+    @Deprecated
     public Response getMd5ByFile() {
         InputStream in  =  StaticFileController.class.getClassLoader().getResourceAsStream("static/WebContent/js/commission/commission.weex_v17.js");
         String md5 = MD5Utils.getMd5ByFile(in);
@@ -88,10 +89,10 @@ public class StaticFileController {
 
     @RequestMapping(value = "v2/app_weex")
     @ResponseBody
+    @Deprecated
     public Response getMd5ByFile2() {
         ClassLoader classLoader = StaticFileController.class.getClassLoader();
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
-
 
         InputStream in  =  classLoader.getResourceAsStream("static/WebContent/js/commission/commission.weex_prd_v27.js");
 
@@ -124,6 +125,7 @@ public class StaticFileController {
 
     @RequestMapping(value = "v3/app_weex")
     @ResponseBody
+    @Deprecated
     public Response getMd5ByFile3() {
         LOGGER.info("weex,v3自动部署程序开始执行.....");
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
@@ -213,6 +215,110 @@ public class StaticFileController {
         }
 
         return Response.successResponse(commissionWalletVos);
+    }
+
+    @RequestMapping(value = "v4/app_weex")
+    @ResponseBody
+    public Response getMd5ByFile4() {
+        LOGGER.info("weex,v4自动部署程序开始执行.....");
+        List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
+        File file1 = null;
+        File file2 = null;
+        String ver1 = null;
+        String ver2 = null;
+        String weexPath1 = null;
+        String weexPath2 = null;
+
+        try {
+            List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
+
+            for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
+                if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
+                    file1 = new File(rootPath+weexInfoEntity.getWeexPath());
+                    ver1 = weexInfoEntity.getWeexVer();
+                    weexPath1 = weexInfoEntity.getWeexPath();
+                }
+                if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
+                    file2 = new File(rootPath+weexInfoEntity.getWeexPath());
+                    ver2 = weexInfoEntity.getWeexVer();
+                    weexPath2 = weexInfoEntity.getWeexPath();
+                }
+            }
+
+            LOGGER.info("file:{},file2:{}",file1.getPath(),file2.getPath());
+            FileInputStream in1 = new FileInputStream(file1);
+            String md5 = MD5Utils.getMd5ByFile(in1);
+            CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
+            commissionWalletVo.setVer(ver1);
+            commissionWalletVo.setFlag(true);
+            commissionWalletVo.setId("commission");
+            commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath1);
+            commissionWalletVo.setMd5(md5);
+            commissionWalletVo.setOffLine(false);
+            commissionWalletVos.add(commissionWalletVo);
+
+            FileInputStream in2 = new FileInputStream(file2);
+            String md52 = MD5Utils.getMd5ByFile(in2);
+            CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
+            commissionWalletVo2.setVer(ver2);
+            commissionWalletVo2.setFlag(true);
+            commissionWalletVo2.setId("wallet");
+            commissionWalletVo2.setUrl(appWebDomain+"/static"+weexPath2);
+            commissionWalletVo2.setMd5(md52);
+            commissionWalletVo2.setOffLine(false);
+            commissionWalletVos.add(commissionWalletVo2);
+
+            IOUtils.closeQuietly(in1);
+            IOUtils.closeQuietly(in2);
+
+            return Response.successResponse(commissionWalletVos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return Response.successResponse(commissionWalletVos);
+    }
+
+    @RequestMapping(value = "v5/app_weex")
+    @ResponseBody
+    public Response getMd5ByFile5() {
+        LOGGER.info("weex,v5自动部署程序开始执行.....查询安家派weex,运行环境:{}",systemEnvConfig.getEve());
+        File file = null;
+        String ver = null;
+        String weexPath = null;
+        CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
+
+        try {
+            List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
+
+
+            for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
+                if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajp")&&StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve())
+                        && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
+                    file = new File(rootPath+weexInfoEntity.getWeexPath());
+                    ver = weexInfoEntity.getWeexVer();
+                    weexPath = weexInfoEntity.getWeexPath();
+                }
+            }
+
+            LOGGER.info("安家派wallet.js的绝对路径{}",file.getPath());
+            FileInputStream in = new FileInputStream(file);
+            String md5 = MD5Utils.getMd5ByFile(in);
+
+            commissionWalletVo.setVer(ver);
+            commissionWalletVo.setFlag(true);
+            commissionWalletVo.setId("commission");
+            commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath);
+            commissionWalletVo.setMd5(md5);
+            commissionWalletVo.setOffLine(false);
+
+            IOUtils.closeQuietly(in);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return Response.successResponse(commissionWalletVo);
     }
 
     @RequestMapping(value = "jsUtils/test1", method = RequestMethod.POST)
