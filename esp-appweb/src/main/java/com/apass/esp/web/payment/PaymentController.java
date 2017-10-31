@@ -4,13 +4,11 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.LogStashKey;
-import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentType;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.kvattr.PaymentVo;
-import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.common.KvattrService;
-import com.apass.esp.service.offer.MyCouponManagerService;
+import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -50,12 +48,11 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 	@Autowired
-	private OrderInfoRepository orderDao;
-	@Autowired
 	private KvattrService kvattrService;
 
   @Autowired
-  private MyCouponManagerService myCouponManagerService;
+  private OrderService orderService;
+
 
     /**
      * 支付方式初始化
@@ -91,7 +88,7 @@ public class PaymentController {
             resultMap.put("payment", kvattrService.get(new PaymentVo()));
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+            orderService.updateOrderCancel(e.getErrorCode());
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
         	}else{
@@ -149,8 +146,7 @@ public class PaymentController {
             resultMap.put("resultMap", payInfo);
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
-          //订单失效，退还优惠券
+            orderService.updateOrderCancel(e.getErrorCode());
 
 
     			LOGGER.error(e.getErrorDesc(), e);
@@ -214,7 +210,7 @@ public class PaymentController {
             
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
-    			orderDao.updateStatusByOrderId(e.getErrorCode(), OrderStatus.ORDER_CANCEL.getCode());
+            orderService.updateOrderCancel(e.getErrorCode());
     			LOGGER.error(e.getErrorDesc(), e);
     			return Response.fail("商品价格已变动，请重新下单");
         	}else{

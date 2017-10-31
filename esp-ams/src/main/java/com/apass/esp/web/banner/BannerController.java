@@ -339,7 +339,7 @@ public class BannerController extends BaseController {
         if (banners.size() >= 0 && banners.size() < 5) {
             for (BannerInfoEntity banner : banners) {
                 if (bannerOrder == banner.getBannerOrder()) { // 判断是否存在重复
-                    return  "该banner类型中该图片已经存在！";
+                    return  "该排序值已经存在！";
                 }
             }
         } else {

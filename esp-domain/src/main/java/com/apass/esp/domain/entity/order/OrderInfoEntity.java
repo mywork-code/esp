@@ -203,6 +203,8 @@ public class OrderInfoEntity {
     
     /** 是否删除 **/
     private String isDelete;
+
+    private Long couponId;
     
 	public String getIsDelete() {
 		return isDelete;
@@ -526,5 +528,13 @@ public class OrderInfoEntity {
 
     public void setPayTime(Date payTime) {
         this.payTime = payTime;
+    }
+
+    public Long getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Long couponId) {
+        this.couponId = couponId;
     }
 }
