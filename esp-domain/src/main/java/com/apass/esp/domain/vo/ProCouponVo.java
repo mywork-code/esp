@@ -15,6 +15,10 @@ public class ProCouponVo {
 	 * 优惠券的Id
 	 */
     private Long id;
+    /**
+     * 与优惠券有关的活动id
+     */
+    private Long activityId;
 
     /**
      * 优惠券名称
@@ -98,4 +102,13 @@ public class ProCouponVo {
 	public String getEffectiveTiem() {
 		return effectiveTiem;
 	}
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+	
 }
