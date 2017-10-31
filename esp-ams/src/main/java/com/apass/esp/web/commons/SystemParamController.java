@@ -301,6 +301,8 @@ public class SystemParamController {
         }
         return respBody;
     }
+
+    @Deprecated
     @ResponseBody
     @RequestMapping("/updateWeex")
     public Response updateWeexJs(@ModelAttribute("weexInfoEntity")WeexInfoEntity weexInfoEntity) {
@@ -328,6 +330,55 @@ public class SystemParamController {
                 }
             }else {
                 return Response.fail("发布有误，无法区分是什么环境");
+            }
+
+            //修改数据库内容
+            weexInfoEntity.setWeexPath(url);
+            weexInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
+            Integer count = weexInfoService.updateWeexJs(weexInfoEntity);
+            if(count != 1){
+                return Response.fail("更新weex失败");
+            }
+
+            /**
+             * 上传文件
+             */
+            FileUtilsCommons.uploadFilesUtil(rootPath, url, weexFile);
+
+        }catch (Exception e){
+            LOG.error("--------Exception--------",e);
+            return Response.fail("更新weex失败");
+        }
+
+        //修改数据库存版本号
+        return Response.success("更新weex成功");
+    }
+
+    @ResponseBody
+    @RequestMapping("/updateWeex2")
+    public Response updateWeexJs2(@ModelAttribute("weexInfoEntity")WeexInfoEntity weexInfoEntity) {
+        try{
+            if(systemEnvConfig.isDEV() && StringUtils.equals("uat",weexInfoEntity.getWeexEve())){
+                return  Response.fail("sit环境不能操作uat文件");
+            }
+            if(systemEnvConfig.isUAT() && StringUtils.equals("sit",weexInfoEntity.getWeexEve())){
+                return  Response.fail("uat环境不能操作sit文件");
+            }
+
+            //上传js到服务端，覆盖之前js,名称不变
+            MultipartFile weexFile = weexInfoEntity.getWeexFile();
+            String url = null;
+            if(StringUtils.equals("ajqh",weexInfoEntity.getWeexBlong())){
+                if(StringUtils.equals("commission",weexInfoEntity.getWeexType())){
+                    url = nfsWeexRoot + "/prod/commission.weex_sit.js";
+                }else {
+                    url = nfsWeexRoot + "/prod/wallet.weex_sit.js";
+                }
+            }else{
+                if(!StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
+                    return  Response.fail("安家派js无commision.js文件");
+                }
+                url = nfsWeexRoot + "/prodajp/wallet.weex_sit.js";
             }
 
             //修改数据库内容

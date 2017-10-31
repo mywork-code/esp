@@ -103,3 +103,6 @@ ADD COLUMN `coupon_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '优惠券Id';
 alter table t_esp_banner_info add column `attr` varchar(32) not null default '' comment '活动地址：activity;商品编号/skuid:good',
  add column `attr_val` varchar(32) not null default '' comment '属性值';
 
+
+ALTER TABLE `t_esp_weex_info`
+ADD COLUMN `weex_blong` varchar(12)  NOT NULL DEFAULT '' COMMENT 'weex所属项目(ajqh,ajp)';

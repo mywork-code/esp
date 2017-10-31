@@ -25,6 +25,16 @@ public class WeexInfoEntity {
 
     private String weexType;
 
+    private String weexBlong;
+
+    public String getWeexBlong() {
+        return weexBlong;
+    }
+
+    public void setWeexBlong(String weexBlong) {
+        this.weexBlong = weexBlong;
+    }
+
     public String getWeexType() {
         return weexType;
     }
