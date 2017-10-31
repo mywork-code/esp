@@ -156,6 +156,9 @@ public class OrderDetailInfoEntity {
     //优惠金额
     private BigDecimal discountAmount;
     
+    //优惠券优惠金额
+    private BigDecimal couponMoney;
+    
     //促销活动id
     private String proActivityId;
 
@@ -411,4 +414,12 @@ public class OrderDetailInfoEntity {
 		this.discountAmount = discountAmount;
 	}
 
+	public BigDecimal getCouponMoney() {
+		return couponMoney;
+	}
+
+	public void setCouponMoney(BigDecimal couponMoney) {
+		this.couponMoney = couponMoney;
+	}
+	
 }

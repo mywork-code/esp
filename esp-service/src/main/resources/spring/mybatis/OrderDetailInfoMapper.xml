@@ -212,6 +212,7 @@
                     CREATE_DATE                  createDate,
                     UPDATE_DATE                  updateDate,
                     discount_amount				 discountAmount,
+                    coupon_money                 couponMoney,
                     pro_activity_id			     proActivityId
             FROM T_ESP_ORDER_DETAIL_INFO 
     ]]>
