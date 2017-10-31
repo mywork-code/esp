@@ -173,7 +173,7 @@
 	]]>
     </select>
          <!--  查询可上架的商品-->
-    <select id="selectUpGoods" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+    <select id="selectUpGoodsList" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
         <![CDATA[
 				SELECT
 						a.id goodId,
