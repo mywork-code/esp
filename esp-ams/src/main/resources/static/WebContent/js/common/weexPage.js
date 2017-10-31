@@ -110,6 +110,7 @@ $ (function ()
 		$ ("#weexFile").val (data.weexFile);
 		$ ("#weexId").val (data.id);
 		$ ("#weexEve").val (data.weexEve);
+		$ ("#weexBlong").val (data.weexBlong);
 	}
 
 
