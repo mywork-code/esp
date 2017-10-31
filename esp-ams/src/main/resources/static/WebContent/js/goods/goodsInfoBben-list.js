@@ -170,13 +170,14 @@ $(function() {
                     width : 100,
                     align : 'center',
                     formatter : function(value, row, index) {
+                        debugger;
                     	// 授权标示
                     	 var grantedAuthority=$('#grantedAuthority').val();
                     	 var content = "";
                     	
                     	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton chectDetailWL' data-id='"+row.id+"' data-source='"+row.source+"'\">查看详情</a>&nbsp;&nbsp;";
                     	 if(grantedAuthority=='permission'){
-                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.checkOne("
+                    	    content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.checkOne("
                              + row.id + ");\">审核</a>&nbsp;&nbsp;";
                     	 }
                     	 
