@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -285,8 +287,18 @@ public class MyCouponManagerService {
 		myCouponMapper.insertProMyCoupoBach(paramMap);
 	}
 	
-	
-	public void deleteMyCoupon(){
-		
+	/**
+	 * 逻辑删除券
+	 * @param mycouponId
+	 */
+	public void deleteMyCoupon(String mycouponId){
+		if(StringUtils.isNotBlank(mycouponId)){
+			ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(mycouponId));
+			if(null != myCoupon){
+				myCoupon.setStatus(CouponStatus.COUPON_D.getCode());
+				myCoupon.setUpdatedTime(new Date());
+				myCouponMapper.updateByPrimaryKeySelective(myCoupon);
+			}
+		}
 	}
 }
