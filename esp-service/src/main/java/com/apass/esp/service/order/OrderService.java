@@ -12,6 +12,7 @@ import java.util.Set;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -464,12 +465,12 @@ public class OrderService {
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class,
             BusinessException.class })
     public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment,BigDecimal discountMoneydiscountMoney, Long addressId,
-            List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType)
+            List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType,String myCouponId)
             throws BusinessException {
         int index = 0;
         String[] goodsStockArray = new String[purchaseList.size()];
         // 1 校验信息
-        validateCorrectInfo(requestId, totalPayment,discountMoneydiscountMoney, addressId, userId, purchaseList, sourceFlag);
+        validateCorrectInfo(requestId, totalPayment,discountMoneydiscountMoney, addressId, userId, purchaseList, sourceFlag,myCouponId);
         // 2 修改商品数目
         for (PurchaseRequestDto purchase : purchaseList) {
             goodsStockArray[index++] = String.valueOf(purchase.getGoodsStockId());
@@ -489,7 +490,7 @@ public class OrderService {
         }
         // 4 生成订单
         List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
-                deviceType);
+                deviceType,myCouponId);
 
         /**
          * 设置预占库存和修改订单的信息
@@ -788,11 +789,11 @@ public class OrderService {
      */
     @Transactional(rollbackFor = { Exception.class, BusinessException.class })
     public List<String> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
-            List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType)
+            List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId)
             throws BusinessException {
         List<String> orderList = Lists.newArrayList();
         // 每商户订单金额
-        Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList);
+        Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList,myCouponId);
         AddressInfoEntity address = addressInfoDao.select(addressId);
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
             String merchantCode = merchant.getKey();
@@ -962,7 +963,7 @@ public class OrderService {
      * @param purchaseList
      * @return
      */
-    public Map<String, BigDecimal> sumMerchantAndActivityIdPayment(List<PurchaseRequestDto> purchaseList) {
+    public Map<String, BigDecimal> sumMerchantAndActivityIdPayment(List<PurchaseRequestDto> purchaseList,String myCouponId) {
     	//根据活动分组，计算活动下的所有商品总额
         Map<String,BigDecimal> activityPayment = Maps.newHashMap();
         for (PurchaseRequestDto purchase : purchaseList) {
@@ -1025,7 +1026,7 @@ public class OrderService {
      * @throws BusinessException
      */
     public void validateCorrectInfo(String requestId, BigDecimal totalPayment,BigDecimal discountMoney, Long addressId, Long userId,
-            List<PurchaseRequestDto> purchaseList, String sourceFlag) throws BusinessException {
+            List<PurchaseRequestDto> purchaseList, String sourceFlag,String myCouponId) throws BusinessException {
         // 校验商品的价格是否已经更改
         for (PurchaseRequestDto purchase : purchaseList) {
             BigDecimal price = commonService.calculateGoodsPrice(purchase.getGoodsId(),
@@ -1043,6 +1044,14 @@ public class OrderService {
             countTotalPrice = countTotalPrice.add(purchase.getPrice().multiply(BigDecimal.valueOf(buyNum)));
         }
         totalPayment = totalPayment.add(discountMoney);
+        /**
+         * 如果优惠券Id不为空
+         */
+        if(StringUtils.isNotBlank(myCouponId)){
+        	ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
+        	ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
+        	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
+        }
         
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
@@ -2501,42 +2510,42 @@ public class OrderService {
             	discount = discountTotal.multiply(goodsSum).divide(total,2,BigDecimal.ROUND_HALF_UP);
             	purchase.setDisCount(discount);
     		}
-    		purchase.setPayMoney(goodsSum.subtract(discount));
+    		purchase.setPayMoney(goodsSum.subtract(discount));//商品价格 * 数量 - 活动优惠金额
     	}
-    	
-    	//当前时间
-    	Date now = new Date();
     	/**
     	 * 根据用户的Id,获取该用户下所有未使用的券
     	 */
+    	Date now = new Date();
     	List<ProMyCoupon> coupons = myCouponMapper.getCouponByStatusAndDate(new ProMyCouponQuery(userId,now,"N"));
+    	List<ProMyCouponVo> couponVos = myCouponManagerService.getVoByPos(coupons);
     	
     	/**
     	 * 券分三类  1、全品类  2、指定品类 3、指定商品   4、活动商品
     	 * 首先，查询用户的券中是否包含四种券
     	 */
-    	List<ProCoupon> qpl = new ArrayList<>();//全品类优惠券
-    	List<ProCoupon> zdpl = new ArrayList<>();//指定品类优惠券
-    	List<ProCoupon> zdsp = new ArrayList<>();//指定商品优惠券
-    	List<ProMyCoupon> hdsp = new ArrayList<>();//活动商品优惠券
+    	List<ProMyCouponVo> qpl = new ArrayList<>();//全品类优惠券
+    	List<ProMyCouponVo> zdpl = new ArrayList<>();//指定品类优惠券
+    	List<ProMyCouponVo> zdsp = new ArrayList<>();//指定商品优惠券
+    	List<ProMyCouponVo> hdsp = new ArrayList<>();//活动商品优惠券
     	
-    	List<ProCoupon> unUsedList = new ArrayList<>();
-    	for (ProMyCoupon coupon : coupons) {
+    	List<ProMyCouponVo> unAvaliable = new ArrayList<>();
+    	for (ProMyCouponVo coupon : couponVos) {
 			ProCoupon p = couponMapper.selectByPrimaryKey(coupon.getCouponId());
 			/**
-			 * 开始使用日期，小于当前日期，结束日期 大于当前日期，都不能使用
+			 * 开始使用日期，小于当前日期
 			 */
-			if(coupon.getStartDate().getTime() < now.getTime() || coupon.getEndDate().getTime() > now.getTime()){
-				unUsedList.add(p);
+			Date start = DateFormatUtil.string2date(coupon.getStartDate());
+			if(start.getTime() < now.getTime()){
+				unAvaliable.add(coupon);
 			}
 			if(StringUtils.equals(p.getType(), CouponType.COUPON_QPL.getCode())){
-				qpl.add(p);
+				qpl.add(coupon);
 			}
 			if(StringUtils.equals(p.getType(), CouponType.COUPON_ZDPL.getCode())){
-				zdpl.add(p);		
+				zdpl.add(coupon);		
 			}
 			if(StringUtils.equals(p.getType(), CouponType.COUPON_ZDSP.getCode())){
-				zdsp.add(p);
+				zdsp.add(coupon);
 			}
 			if(StringUtils.equals(p.getType(), CouponType.COUPON_HDSP.getCode())){
 				hdsp.add(coupon);
@@ -2547,21 +2556,21 @@ public class OrderService {
       	/**
     	 * 指定商品分类
     	 */
-    	Map<String,List<ProCoupon>> categroy1 = Maps.newHashMap();
-    	Map<String,List<ProCoupon>> categroy2 = Maps.newHashMap();
+    	Map<String,List<ProMyCouponVo>> categroy1 = Maps.newHashMap();
+    	Map<String,List<ProMyCouponVo>> categroy2 = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(zdpl)){
-    		for (ProCoupon coupon : zdpl) {
+    		for (ProMyCouponVo coupon : zdpl) {
     			if(categroy1.containsKey(coupon.getCategoryId1())){
     				categroy1.get(coupon.getCategoryId1()).add(coupon);
     			}else{
-    				List<ProCoupon> set = new ArrayList<>();
+    				List<ProMyCouponVo> set = new ArrayList<>();
     				set.add(coupon);
     				categroy1.put(coupon.getCategoryId1(), set);
     			}
     			if(categroy2.containsKey(coupon.getCategoryId2())){
     				categroy2.get(coupon.getCategoryId2()).add(coupon);
     			}else{
-    				List<ProCoupon> set = new ArrayList<>();
+    				List<ProMyCouponVo> set = new ArrayList<>();
     				set.add(coupon);
     				categroy2.put(coupon.getCategoryId2(), set);
     			}
@@ -2571,15 +2580,15 @@ public class OrderService {
     	/**
     	 * 指定商品
     	 */
-    	Map<String,List<ProCoupon>> goodsCode = Maps.newHashMap();
+    	Map<String,List<ProMyCouponVo>> goodsCode = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(zdsp)){
-    		for (ProCoupon coupon : zdsp) {
-    			if(goodsCode.containsKey(coupon.getGoodsCode())){
-    				goodsCode.get(coupon.getGoodsCode()).add(coupon);
+    		for (ProMyCouponVo coupon : zdsp) {
+    			if(goodsCode.containsKey(coupon.getSimilarGoodsCode())){
+    				goodsCode.get(coupon.getSimilarGoodsCode()).add(coupon);
     			}else{
-    				List<ProCoupon> set = new ArrayList<>();
+    				List<ProMyCouponVo> set = new ArrayList<>();
     				set.add(coupon);
-    				goodsCode.put(coupon.getGoodsCode(), set);
+    				goodsCode.put(coupon.getSimilarGoodsCode(), set);
     			}
     		}
     	}
@@ -2587,49 +2596,50 @@ public class OrderService {
     	/**
     	 * 活动商品
     	 */
-    	Map<String,List<ProCoupon>> activity = Maps.newHashMap();
+    	Map<String,List<ProMyCouponVo>> activity = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(hdsp)){
-    		for (ProMyCoupon coupon : hdsp) {
-    		   ProCouponRel rel = couponRelMapper.selectByPrimaryKey(coupon.getCouponRelId());
-    		   ProCoupon c = couponMapper.selectByPrimaryKey(coupon.getCouponId());
-    		   String activityId = rel.getProActivityId()+"";
+    		for (ProMyCouponVo coupon : hdsp) {
+    		   String activityId = coupon.getActivityId()+"";
 	    	   if(activity.containsKey(activityId)){
-	   				goodsCode.get(activityId).add(c);
+	    		   activity.get(activityId).add(coupon);
 	   		   }else{
-	   			    List<ProCoupon> set = new ArrayList<>();
-	   				set.add(c);
-	   				goodsCode.put(activityId, set);
+	   			    List<ProMyCouponVo> set = new ArrayList<>();
+	   				set.add(coupon);
+	   				activity.put(activityId, set);
 	   		   }
     		}
     	}    	
     	
-    	
     	/**
     	 * 商品
     	 */
-    	List<ProCoupon> avalible = new ArrayList<ProCoupon>();//可用的券
+    	List<ProMyCouponVo> avalible = new ArrayList<>();//可用的券
     	Map<String,BigDecimal> categroy11 = Maps.newHashMap();
     	Map<String,BigDecimal> categroy22 = Maps.newHashMap();
     	for (PurchaseRequestDto purchase : purchaseList) {
     		GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId()); 
     		String categroy1111 = goods.getCategoryId1()+"";
     		String categroy2222 = goods.getCategoryId2()+"";
-    		if(goodsCode.containsKey(goods.getGoodsCode())){
-    			List<ProCoupon> set =  goodsCode.get(goods.getGoodsCode());
-    			for (ProCoupon proCoupon : set) {//指定商品类
-    				if(proCoupon.getCouponSill().compareTo(purchase.getPayMoney()) < 0 ){
-    					avalible.add(proCoupon);
-    				}else{
-    					unUsedList.add(proCoupon);
-    				}
-				}
-    		}
     		
-    		for (ProCoupon proCoupon : qpl) {//全品类
-    			if(proCoupon.getCouponSill().compareTo(purchase.getPayMoney()) < 0 ){
+    		
+    		for (String key : goodsCode.keySet()) {
+				if(key.contains(goods.getGoodsCode())){
+					List<ProMyCouponVo> set =  goodsCode.get(key);
+	    			for (ProMyCouponVo proCoupon : set) {//指定商品类
+	    				if(proCoupon.getCouponSill().compareTo(purchase.getPayMoney()) <= 0 ){
+	    					avalible.add(proCoupon);
+	    				}else{
+	    					unAvaliable.add(proCoupon);
+	    				}
+					}
+				}
+			}
+    		
+    		for (ProMyCouponVo proCoupon : qpl) {//全品类
+    			if(proCoupon.getCouponSill().compareTo(purchase.getPayMoney()) <= 0 ){
 					avalible.add(proCoupon);
 				}else{
-					unUsedList.add(proCoupon);
+					unAvaliable.add(proCoupon);
 				}
 			}
     		//统计同一类型的商品的应付总金额
@@ -2650,12 +2660,12 @@ public class OrderService {
     	 * 一级类目的券集合
     	 */
     	for (String category1 : categroy1.keySet()) {
-			List<ProCoupon> coupon = categroy1.get(category1);
-    		for (ProCoupon proCoupon : coupon) {
-				if(proCoupon.getCouponSill().compareTo(categroy11.get(category1)) < 0){
+			List<ProMyCouponVo> coupon = categroy1.get(category1);
+    		for (ProMyCouponVo proCoupon : coupon) {
+				if(proCoupon.getCouponSill().compareTo(categroy11.get(category1)) <= 0){
 					avalible.add(proCoupon);
 				}else{
-					unUsedList.add(proCoupon);
+					unAvaliable.add(proCoupon);
 				}
 			}
     		
@@ -2665,12 +2675,12 @@ public class OrderService {
     	 * 二级类目的券集合
     	 */
     	for (String category2 : categroy2.keySet()) {
-    		List<ProCoupon> coupon = categroy1.get(category2);
-    		for (ProCoupon proCoupon : coupon) {
-				if(proCoupon.getCouponSill().compareTo(categroy22.get(category2)) < 0){
+    		List<ProMyCouponVo> coupon = categroy1.get(category2);
+    		for (ProMyCouponVo proCoupon : coupon) {
+				if(proCoupon.getCouponSill().compareTo(categroy22.get(category2)) <= 0){
 					avalible.add(proCoupon);
 				}else{
-					unUsedList.add(proCoupon);
+					unAvaliable.add(proCoupon);
 				}
 			}
 		}
@@ -2679,21 +2689,21 @@ public class OrderService {
     	 * 活动商品的券
     	 */
     	for (String actiId : activity.keySet()) {
-    		List<ProCoupon> coupon = activity.get(actiId);
+    		List<ProMyCouponVo> coupon = activity.get(actiId);
     		//当前活动的总金额 - 优惠的金额
     		BigDecimal sum = activityDecimal.get(actiId).subtract(discountPayment.get(actiId));
-    		for (ProCoupon proCoupon : coupon) {
-				if(proCoupon.getCouponSill().compareTo(sum) < 0){
+    		for (ProMyCouponVo proCoupon : coupon) {
+				if(proCoupon.getCouponSill().compareTo(sum) <= 0){
 					avalible.add(proCoupon);
 				}else{
-					unUsedList.add(proCoupon);
+					unAvaliable.add(proCoupon);
 				}
 			}
     	}
     	
     	//为券排序，获取最大面值得全
-    	Collections.sort(avalible, new Comparator<ProCoupon>() {  
-            public int compare(ProCoupon obj1, ProCoupon obj2) {   
+    	Collections.sort(avalible, new Comparator<ProMyCouponVo>() {  
+            public int compare(ProMyCouponVo obj1, ProMyCouponVo obj2) {   
                 int retVal = 0;  
                 try {  
                 	retVal = obj2.getDiscountAmonut().compareTo(obj1.getDiscountAmonut());
@@ -2704,20 +2714,29 @@ public class OrderService {
             }  
         });
     	
+    	//实际支付金额
+    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	/**
+    	 * 此处用来过滤掉，所有的优惠券优惠金额大于总金额的优惠券
+    	 */
+    	for (ProMyCouponVo coupon : avalible) {
+			if(coupon.getDiscountAmonut().compareTo(paySum) > 0){
+				unAvaliable.add(coupon);
+			}
+		}
+    	
     	BigDecimal coupon = BigDecimal.ZERO;
     	if(CollectionUtils.isNotEmpty(avalible)){
     		coupon = avalible.get(0).getDiscountAmonut();
     	}
     	
-    	//实际支付金额
-    	BigDecimal paySum = totalSum.subtract(discountSum);
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
     	maps.put("paySum",paySum.subtract(coupon));//实际支付金额
     	maps.put("totalSum", totalSum);//总金额（算上优惠金额）
     	maps.put("coupon",coupon);//优惠券金额（默认）
     	maps.put("used",avalible);//可供选择的券
-    	maps.put("unused",unUsedList);//不可使用的券
+    	maps.put("unused",unAvaliable);//不可使用的券
     	return maps;
     }
     

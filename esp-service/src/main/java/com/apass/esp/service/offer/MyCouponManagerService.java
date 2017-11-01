@@ -13,6 +13,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -50,6 +51,9 @@ public class MyCouponManagerService {
 	@Autowired
 	private ProCouponMapper couponMapper;
 	
+	@Autowired
+	private ActivityCfgService activityCfgService;
+	
 	/**
 	 * 点击领取优惠券
 	 * @param userId 用户Id
@@ -58,6 +62,16 @@ public class MyCouponManagerService {
 	 * @throws BusinessException 
 	 */
 	public int giveCouponToUser(MyCouponVo vo) throws BusinessException{
+		/**
+		 * 判断活动是否已经结束
+		 */
+	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
+	    if(null==activityCfg){
+	    	throw new BusinessException("领取失败，活动已经结束!");
+	    }
+	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
+	    	throw new BusinessException("领取失败，活动已经结束!");
+	    }
 		/**
 		 * 首先，根据活动的Id和优惠券的id ,查询此活动和优惠券的关系表信息
 		 */
@@ -80,13 +94,15 @@ public class MyCouponManagerService {
 		/**
 		 * 如果用户领取张数，小于限制张数，则可以领取
 		 */
-		if(couponsNum < limitNum){
-			couponRel.setRemainNum(couponRel.getRemainNum() - 1);
-			int count = couponRelMapper.updateByPrimaryKeySelective(couponRel);
-			if(count > 0){
-				ProMyCoupon coupon = couponVoToPojo(vo);
-				return myCouponMapper.insertSelective(coupon);
-			}
+		if(couponsNum >= limitNum){
+			throw new BusinessException("您已领取该券!");
+		}
+		
+		couponRel.setRemainNum(couponRel.getRemainNum() - 1);
+		int count = couponRelMapper.updateByPrimaryKeySelective(couponRel);
+		if(count > 0){
+			ProMyCoupon coupon = couponVoToPojo(vo);
+			return myCouponMapper.insertSelective(coupon);
 		}
 		return 0;
 	}
@@ -238,6 +254,12 @@ public class MyCouponManagerService {
 		vo.setCouponRelId(p.getCouponRelId());
 		vo.setCouponId(p.getCouponId());
 		ProCoupon coupon = couponMapper.selectByPrimaryKey(p.getCouponId());
+		vo.setCategoryId1(coupon.getCategoryId1());
+		vo.setCategoryId2(coupon.getCategoryId2());
+		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
+		vo.setType(coupon.getType());
+		vo.setCouponSill(coupon.getCouponSill());
+		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
 		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());

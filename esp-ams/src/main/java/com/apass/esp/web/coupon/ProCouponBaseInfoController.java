@@ -144,7 +144,7 @@ public class ProCouponBaseInfoController {
 
         Set<Map.Entry<Long, List<ProMyCoupon>>> entries = proMycouponMap.entrySet();
         for (Map.Entry<Long, List<ProMyCoupon>> entry:entries) {
-            prom
+            //prom
         }
 
         return null;
