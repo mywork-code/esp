@@ -7,6 +7,7 @@ public class MQConstants {
 
   public enum MQRouting {
     JD_MSG("esp.topic.notification", "esp.routing.jdmsg", "esp.queue.jdmsg"),
+    CREDIT_AUTH_ACTIVITY("ajqh.credit.auth", "", "queue.ajqh.credit.auth.activity"),
     ;
 
 
