@@ -34,4 +34,12 @@
     select count(*) from t_esp_pro_activity_cfg
     <include refid="QueryGoodsSql" />
     </select>
+
+
+    <select id="selectProActivityCfgByEntity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        from t_esp_pro_activity_cfg t1
+        LEFT JOIN t_esp_pro_coupon_rel t2 ON t1.id = t2.pro_activity_id
+        LEFT JOIN t_esp_pro_coupon t3 ON t2.coupon_id = #{values}
+    </select>
 </mapper>

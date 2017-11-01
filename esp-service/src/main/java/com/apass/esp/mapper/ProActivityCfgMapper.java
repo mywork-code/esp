@@ -18,4 +18,6 @@ public interface ProActivityCfgMapper extends GenericMapper<ProActivityCfg, Long
 	 * @return
 	 */
 	Integer getActivityCfgListPageCount(ActivityfgDto activityfgDto);
+
+	List<ProActivityCfg> selectProActivityCfgByEntity(Long id);
 }
