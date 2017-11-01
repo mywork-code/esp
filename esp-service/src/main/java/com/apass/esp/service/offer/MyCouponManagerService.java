@@ -286,7 +286,7 @@ public class MyCouponManagerService {
 		paramMap.put("proMyCouponList",lists);
 		myCouponMapper.insertProMyCoupoBach(paramMap);
 	}
-	
+
 	/**
 	 * 逻辑删除券
 	 * @param mycouponId

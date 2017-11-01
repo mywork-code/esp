@@ -58,8 +58,8 @@ $(function(){
 				align : 'center',
 				formatter : function(value, row, index) {
 					var content = "";
-					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.deleteCoupon("
-						+ row.id+ ");\">删除</a>&nbsp;&nbsp;";
+					content += "<a href='javascript:void(0);' class='easyui-linkedbutton' " +
+						"onclick=\"$.deleteCoupon('"+ row.id+"','" +  row.extendType + "');\">删除</a>&nbsp;&nbsp;";
 				 return content;
 			}
 			}]],
@@ -80,6 +80,8 @@ $(function(){
 
 	//单击添加优惠券按钮
 	$("#addCouponButton").click(function () {
+		clearFunction();
+
 		$("#addCouponDiv").dialog({
 			title:'<span style="color: black">添加优惠券</span>',
 			resizable:true,
@@ -89,7 +91,6 @@ $(function(){
 				{
 					text : "保存",
 					handler : function() {
-						debugger;
 						var goodsCategoryCombo=$("#goodsCategoryCombo").combotree('getValue');
 						if("请选择"==goodsCategoryCombo){
 							goodsCategoryCombo="";
@@ -121,7 +122,6 @@ $(function(){
 							"sillType":sillType
 						}
 
-						console.log(param);
 						$.ajax({
 							url : ctx + '/application/coupon/management/add',
 							data : param,
@@ -146,12 +146,68 @@ $(function(){
 				}
 			]
 		});
-
 	});
+	//单击手动发放优惠券按钮
+	$("#issueCouponButton").click(function () {
+		$("#issueCouponDiv").dialog({
+			title:'<span style="color: black">添加优惠券</span>',
+			resizable:true,
+			width : 400,
+			modal:true,
+			buttons:[
+				{
+					text : "保存",
+					handler : function() {
+					}
+				},{
+					text : "取消",
+					handler : function() {
+						$('#issueCouponDiv').dialog('close');
+					}
+				}
+			]
+		});
+		});
 
-	//是否
-	$("#ifCouponSill").click(function () {
+	$.deleteCoupon = function (id,extendType) {
 		debugger;
+		$.messager.confirm('<span style="color: black">提示</span>',"你确认要删除吗？",function (r) {
+			if(r){
+				var param = {
+					"id":id,
+					"extendType":extendType
+				}
+				$.ajax({
+					url : ctx + '/application/coupon/management/delete',
+					data : param,
+					type : "post",
+					dataType : "json",
+					success : function(data) {
+						if(data.status){
+							$.messager.alert('<span style="color: black">提示</span>',data.msg);
+							$('#couponList').datagrid('load',{});
+						}else{
+							$.messager.alert('<span style="color: black">提示</span>',data.msg);
+						}
+					}
+				})
+			}
+		});
+
+	}
+
+
+	function clearFunction() {
+		$("#addCouponName").textbox("clear");
+		$("#addExtendType").textbox("clear");
+		$("#addEffectiveTime").textbox("clear");
+		$("#goodsCategoryCombo").combobox("clear");
+		$("#addGoodsCode").textbox("clear");
+		$("#addCouponSill").textbox("clear");
+		$("#addDiscountAmonut").textbox("clear");
+	}
+	//有无门槛是否选中
+	$("#ifCouponSill").click(function () {
 		if($('#ifCouponSill').is(':checked')){
 			$("#addCouponSill").textbox({disabled: true});
 			$("#addCouponSill").textbox('clear');

@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
@@ -25,7 +26,7 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 	 */
 	List<ProMyCoupon> getCouponByStatusAndDate(ProMyCouponQuery query);
 	/**
-	 * 根据用户的Id和优惠券Id查询对应的信息
+	 * 根据用户的Id和优惠券Id查询对应的信息:通用
 	 * @param query
 	 * @return
 	 */
@@ -35,4 +36,5 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 																			 @Param("couponId") Long couponId);
 
 	Integer insertProMyCoupoBach(Map<String, Object> paramMap);
+
 }

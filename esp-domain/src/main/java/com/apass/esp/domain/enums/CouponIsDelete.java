@@ -2,16 +2,15 @@ package com.apass.esp.domain.enums;
 
 /**
  * Created by xiaohai on 2017/10/27.
- * 优惠券推广方式
+ * 优惠券是否已删除
  */
-public enum  CouponExtendType {
-    COUPON_YHLQ("YHLQ","用户领取"),
-    COUPON_PTFF("PTFF","平台发放"),
-    COUPON_XYH("XYH","新用户专享");
+public enum CouponIsDelete {
+    COUPON_Y("Y","是"),
+    COUPON_N("N","否");
 
     private String code;
     private String message;
-    CouponExtendType(String code,String message){
+    CouponIsDelete(String code, String message){
         this.code = code;
         this.message = message;
     }

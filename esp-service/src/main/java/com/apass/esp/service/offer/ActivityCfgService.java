@@ -162,4 +162,13 @@ public class ActivityCfgService {
 		}
 	    return ActivityStatus.END;
 	}
+
+	/**
+	 * 根据优惠券id关联查询是否有对应活动
+	 * @param id
+	 * @return
+     */
+	public List<ProActivityCfg> selectProActivityCfgByEntity(Long id) {
+		return activityCfgMapper.selectProActivityCfgByEntity(id);
+	}
 }
