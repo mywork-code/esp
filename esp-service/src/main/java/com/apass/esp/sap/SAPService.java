@@ -78,7 +78,8 @@ public class SAPService {
     try {
       generateCaiWuPingZhengCsv();
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.CAIWUPINGZHENG_FILE_NAME, in);
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.CAIWUPINGZHENG_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp caiwupingzheng csv error", e);
     }
@@ -91,8 +92,9 @@ public class SAPService {
                                      String password, String path) {
     try {
       generateCaiWuPingZhengCsv2();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH2));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.CAIWUPINGZHENG_FILE_NAME2, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.CAIWUPINGZHENG_FILE_NAME2,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp caiwupingzheng2 csv error", e);
     }
@@ -113,8 +115,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generatePaymentOrFullPaymentCsv();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp commodityreturnflow csv error", e);
     } finally {
@@ -143,8 +146,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generateSalesOrderCsv();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.SALESORDER_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.SALESORDER_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.SALESORDER_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp salesOrder csv error", e);
     } finally {
@@ -173,8 +177,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generateSalesOrderInfoCsv();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.SALESORDERINFO_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.SALESORDERINFO_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.SALESORDERINFO_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp salesOrderInfo csv error", e);
     } finally {
@@ -201,8 +206,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transVBSBusinessNumCvs();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.VBSBUSINESS_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.VBSBUSINESS_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.VBSBUSINESS_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp VBSBusiness csv file notfound", e);
     } finally {
@@ -228,8 +234,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseOrReturnCvs();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASEORRETURN_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASEORRETURN_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASEORRETURN_FILE_NAME,dateStr), fis);
     } catch (Exception e) {
       LOG.error("ftp PurchaseOrder csv file error", e);
     } finally {
@@ -255,8 +262,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseOrderCvs();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASEORDER_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASEORDER_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASEORDER_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp PurchaseOrder csv file notfound", e);
     } finally {
@@ -282,8 +290,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseReturnSalesCvs();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASERETURNSALES_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASERETURNSALES_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASERETURNSALES_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp PurchaseOrder csv file notfound", e);
     } finally {
@@ -310,8 +319,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       generateQuanEnHuanKuanCsv();
+      String dateStr = DateFormatUtil.dateToString(new Date(),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.QUANENHUANKUAN_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.QUANENHUANKUAN_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.QUANENHUANKUAN_FILE_NAME,dateStr), fis);
     } catch (Exception e) {
       LOG.error("ftp generateQuanEnHuanKuanCsv csv file notfound", e);
     } finally {
