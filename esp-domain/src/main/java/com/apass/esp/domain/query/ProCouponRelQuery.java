@@ -39,6 +39,6 @@ public class ProCouponRelQuery {
 	public ProCouponRelQuery(Long activityId) {
 		super();
 		this.activityId = activityId;
-	}
+	}	
 	
 }

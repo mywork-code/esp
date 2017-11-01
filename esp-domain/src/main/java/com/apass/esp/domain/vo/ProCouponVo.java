@@ -48,6 +48,16 @@ public class ProCouponVo {
      * 有效时间
      */
     private String effectiveTiem;
+    
+    /**
+     * 剩余券张数
+     */
+    private Integer remainNum;
+    
+    /**
+     * 是否已领取
+     */
+    private boolean receiveFlag;
 
 	public Long getId() {
 		return id;
@@ -109,6 +119,22 @@ public class ProCouponVo {
 
 	public void setActivityId(Long activityId) {
 		this.activityId = activityId;
+	}
+
+	public Integer getRemainNum() {
+		return remainNum;
+	}
+
+	public void setRemainNum(Integer remainNum) {
+		this.remainNum = remainNum;
+	}
+
+	public boolean isReceiveFlag() {
+		return receiveFlag;
+	}
+
+	public void setReceiveFlag(boolean receiveFlag) {
+		this.receiveFlag = receiveFlag;
 	}
 	
 }
