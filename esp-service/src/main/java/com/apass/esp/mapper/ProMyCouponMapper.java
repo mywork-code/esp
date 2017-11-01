@@ -6,6 +6,7 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jie.xu on 17/10/27.
@@ -30,6 +31,8 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 	 */
 	List<ProMyCoupon> getCouponByUserIdAndCouponId(ProMyCouponQuery query);
 
-	void updateStatusByUserIdAndCouponId(@Param("status") String status,@Param("userId") Long userId,
+	Integer updateStatusByUserIdAndCouponId(@Param("status") String status,@Param("userId") Long userId,
 																			 @Param("couponId") Long couponId);
+
+	Integer insertProMyCoupoBach(Map<String, Object> paramMap);
 }

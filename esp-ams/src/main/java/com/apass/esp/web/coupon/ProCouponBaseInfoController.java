@@ -11,6 +11,7 @@ import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.service.offer.CouponManagerService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -46,6 +47,8 @@ public class ProCouponBaseInfoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProCouponBaseInfoController.class);
     @Autowired
     private ProCouponService proCouponService;
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
 
     @RequestMapping("/page")
     public ModelAndView page(){
@@ -144,7 +147,8 @@ public class ProCouponBaseInfoController {
 
         Set<Map.Entry<Long, List<ProMyCoupon>>> entries = proMycouponMap.entrySet();
         for (Map.Entry<Long, List<ProMyCoupon>> entry:entries) {
-            //prom
+            List<ProMyCoupon> lists = entry.getValue();
+            myCouponManagerService.insertProMyCoupoBach(lists);
         }
 
         return null;
