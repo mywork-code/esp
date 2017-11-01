@@ -283,12 +283,12 @@ public class StaticFileController {
 
     @RequestMapping(value = "ajp/v1/app_weex")
     @ResponseBody
-    public Response getMd5ByFile5() {
+    public Response getMd5ByFileAjp() {
         LOGGER.info("weex,v5自动部署程序开始执行.....查询安家派weex,运行环境:{}",systemEnvConfig.getEve());
+        List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file = null;
         String ver = null;
         String weexPath = null;
-        CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
 
         try {
             List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
@@ -307,12 +307,14 @@ public class StaticFileController {
             FileInputStream in = new FileInputStream(file);
             String md5 = MD5Utils.getMd5ByFile(in);
 
+            CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
             commissionWalletVo.setVer(ver);
             commissionWalletVo.setFlag(true);
             commissionWalletVo.setId("wallet");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath);
             commissionWalletVo.setMd5(md5);
             commissionWalletVo.setOffLine(false);
+            commissionWalletVos.add(commissionWalletVo);
 
             IOUtils.closeQuietly(in);
 
@@ -320,7 +322,7 @@ public class StaticFileController {
             e.printStackTrace();
         }
 
-        return Response.successResponse(commissionWalletVo);
+        return Response.successResponse(commissionWalletVos);
     }
 
     @RequestMapping(value = "jsUtils/test1", method = RequestMethod.POST)
