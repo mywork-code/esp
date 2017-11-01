@@ -2,17 +2,15 @@ package com.apass.esp.domain.enums;
 
 /**
  * Created by xiaohai on 2017/10/27.
- * 优惠券类型
+ * 优惠券推有无门槛
  */
-public enum CouponType {
-    COUPON_QPL("QPL","全品类"),
-    COUPON_ZDPL("ZDPL","指定品类"),
-    COUPON_ZDSP("ZDSP","指定商品"),
-    COUPON_HDSP("HDSP","活动商品");
+public enum CouponSillType {
+    COUPON_Y("Y","有"),
+    COUPON_N("N","无");
 
     private String code;
     private String message;
-    CouponType(String code, String message){
+    CouponSillType(String code, String message){
         this.code = code;
         this.message = message;
     }
