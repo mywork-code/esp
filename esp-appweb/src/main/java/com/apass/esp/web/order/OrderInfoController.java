@@ -13,11 +13,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -50,6 +52,8 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
+
+import net.sf.json.util.JSONUtils;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -254,10 +258,15 @@ public class OrderInfoController {
 	  
 	  String addressId = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
 	  String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
+	  String userId = CommonUtils.getValue(paramMap,"userId");//用户ID
+	  LOGGER.error("/v2/validateGoodsByAddressId---------->{}",JsonUtil.toJsonString(paramMap));
 	  Map<String,Object> params = Maps.newHashMap();
 	  List<PurchaseRequestDto> purchaseList = GsonUtils.convertList(buyInfo, PurchaseRequestDto.class);
 	  
-	  if(StringUtils.isBlank(buyInfo)){
+	  if(StringUtils.isEmpty(buyInfo)){
+		  return Response.fail("参数值传递有误!");
+	  }
+	  if(StringUtils.isEmpty(userId)){
 		  return Response.fail("参数值传递有误!");
 	  }
 	  boolean exitstJDGood = false;
@@ -277,7 +286,7 @@ public class OrderInfoController {
 			  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood);
 		  }
 		  //计算商品数量和金额
-		  Map<String,Object> param = orderService.calcGoodsBuyNum(purchaseList);
+		  Map<String,Object> param = orderService.calcGoodsBuyNum1(Long.parseLong(userId),purchaseList);
 		  params.putAll(param);
 		  params.put("purchaseList", purchaseList);
 	  } catch(BusinessException e){
@@ -290,6 +299,9 @@ public class OrderInfoController {
 	  
 	  return Response.success("验证成功!",params);
   }
+  
+  
+  
   
   /**
    * 取消订单

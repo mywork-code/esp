@@ -2609,7 +2609,7 @@ public class OrderService {
 		}
     	
     	/**
-    	 * 把优惠金额，平分到每个商品中
+    	 * 把优惠金额，平分到每种商品中
     	 */
     	for (PurchaseRequestDto purchase : purchaseList) {
     		BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
@@ -2645,7 +2645,7 @@ public class OrderService {
 			 * 开始使用日期，小于当前日期
 			 */
 			Date start = DateFormatUtil.string2date(coupon.getStartDate());
-			if(start.getTime() < now.getTime()){
+			if(start.getTime() > now.getTime()){
 				unAvaliable.add(coupon);
 			}
 			if(StringUtils.equals(p.getType(), CouponType.COUPON_QPL.getCode())){
@@ -2670,19 +2670,23 @@ public class OrderService {
     	Map<String,List<ProMyCouponVo>> categroy2 = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(zdpl)){
     		for (ProMyCouponVo coupon : zdpl) {
-    			if(categroy1.containsKey(coupon.getCategoryId1())){
-    				categroy1.get(coupon.getCategoryId1()).add(coupon);
-    			}else{
-    				List<ProMyCouponVo> set = new ArrayList<>();
-    				set.add(coupon);
-    				categroy1.put(coupon.getCategoryId1(), set);
+    			if(StringUtils.isNotBlank(coupon.getCategoryId1())){
+    				if(categroy1.containsKey(coupon.getCategoryId1())){
+        				categroy1.get(coupon.getCategoryId1()).add(coupon);
+        			}else{
+        				List<ProMyCouponVo> set = new ArrayList<>();
+        				set.add(coupon);
+        				categroy1.put(coupon.getCategoryId1(), set);
+        			}
     			}
-    			if(categroy2.containsKey(coupon.getCategoryId2())){
-    				categroy2.get(coupon.getCategoryId2()).add(coupon);
-    			}else{
-    				List<ProMyCouponVo> set = new ArrayList<>();
-    				set.add(coupon);
-    				categroy2.put(coupon.getCategoryId2(), set);
+    			if(StringUtils.isNotBlank(coupon.getCategoryId2())){
+    				if(categroy2.containsKey(coupon.getCategoryId2())){
+        				categroy2.get(coupon.getCategoryId2()).add(coupon);
+        			}else{
+        				List<ProMyCouponVo> set = new ArrayList<>();
+        				set.add(coupon);
+        				categroy2.put(coupon.getCategoryId2(), set);
+        			}
     			}
 			}
     	}
@@ -2731,7 +2735,6 @@ public class OrderService {
     		String categroy1111 = goods.getCategoryId1()+"";
     		String categroy2222 = goods.getCategoryId2()+"";
     		
-    		
     		for (String key : goodsCode.keySet()) {
 				if(key.contains(goods.getGoodsCode())){
 					List<ProMyCouponVo> set =  goodsCode.get(key);
@@ -2753,18 +2756,20 @@ public class OrderService {
 				}
 			}
     		//统计同一类型的商品的应付总金额
-    		if(categroy11.containsKey(categroy1111)){
+			if(categroy11.containsKey(categroy1111)){
     			BigDecimal sum = categroy11.get(categroy1111);
     			categroy11.put(categroy1111, sum.add(purchase.getPayMoney()));
     		}else{
     			categroy11.put(categroy1111, purchase.getPayMoney());
     		}
-    		if(categroy22.containsKey(categroy2222)){
+    		
+			if(categroy22.containsKey(categroy2222)){
     			BigDecimal sum = categroy22.get(categroy2222);
     			categroy22.put(categroy2222, sum.add(purchase.getPayMoney()));
     		}else{
     			categroy22.put(categroy2222, purchase.getPayMoney());
     		}
+    		
 		}
     	/**
     	 * 一级类目的券集合
