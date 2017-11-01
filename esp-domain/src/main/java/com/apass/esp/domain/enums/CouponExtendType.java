@@ -2,6 +2,7 @@ package com.apass.esp.domain.enums;
 
 /**
  * Created by xiaohai on 2017/10/27.
+ * 优惠券推广方式
  */
 public enum  CouponExtendType {
     COUPON_YHLQ("yhlq","用户领取"),

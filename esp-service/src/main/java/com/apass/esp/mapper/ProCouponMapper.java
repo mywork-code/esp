@@ -19,5 +19,5 @@ public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
     Integer pageListCount(Map<String, Object> paramMap);
 
-    List<ProCoupon> setProCouponByName(String name);
+    List<ProCoupon> getProCouponByName(String name);
 }
