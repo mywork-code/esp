@@ -113,6 +113,32 @@ public class OrderDetailInfoDto {
      */
     private BigDecimal totalAmt;
     
+    /**
+     * 优惠券优惠金额
+     */
+    private BigDecimal couponAmt;
+    
+    /**
+     * 总优惠金额
+     */
+    private BigDecimal totalDisCount;
+    
+	public BigDecimal getTotalDisCount() {
+		return totalDisCount;
+	}
+
+	public void setTotalDisCount(BigDecimal totalDisCount) {
+		this.totalDisCount = totalDisCount;
+	}
+
+	public BigDecimal getCouponAmt() {
+		return couponAmt;
+	}
+
+	public void setCouponAmt(BigDecimal couponAmt) {
+		this.couponAmt = couponAmt;
+	}
+
 	public String getSource() {
         return source;
     }

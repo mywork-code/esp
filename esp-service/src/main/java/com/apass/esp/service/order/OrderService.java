@@ -801,6 +801,7 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
+            orderInfo.setCouponId(Long.parseLong(myCouponId));
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
@@ -851,6 +852,7 @@ public class OrderService {
                     }
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
+                    orderDetail.setCouponMoney(purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                         orderDetail.setSource(SourceType.JD.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
@@ -989,34 +991,133 @@ public class OrderService {
 			}
 			discountPayment.put(activityId, BigDecimal.valueOf(discount));
 		}
-    	
-        //计算每个商户的订单金额
-        Map<String, BigDecimal> merchantPayment = Maps.newHashMap();
+        
         for (PurchaseRequestDto purchase : purchaseList) {
-            // 查询商品商户详情
-            GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsStockId());
-            String merchantCode = goodsDetail.getMerchantCode();
             BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
-            
+            BigDecimal discount = BigDecimal.ZERO;
             if(activityPayment.containsKey(purchase.getProActivityId())){
             	BigDecimal total = activityPayment.get(purchase.getProActivityId());
             	BigDecimal discountTotal = discountPayment.get(purchase.getProActivityId());
-            	BigDecimal discount = discountTotal.multiply(goodsSum).divide(total,2,BigDecimal.ROUND_HALF_UP);
-            	purchase.setDisCount(discount);
-            	goodsSum = goodsSum.subtract(discount);
+            	discount = discountTotal.multiply(goodsSum).divide(total,2,BigDecimal.ROUND_HALF_UP);
             }
-            
-            if (merchantPayment.containsKey(merchantCode)) {
+            purchase.setDisCount(discount);
+            goodsSum = goodsSum.subtract(discount);
+        	purchase.setPayMoney(goodsSum);
+        }
+        
+        /**
+         * 如果有优惠券
+         */
+        if(StringUtils.isNotBlank(myCouponId)){
+    		ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
+    		ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
+    		//活动商品
+    		if(StringUtils.equals(coupon.getType(), CouponType.COUPON_HDSP.getCode())){
+    			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(mycoupon.getCouponRelId());
+    			for (PurchaseRequestDto purchase : purchaseList) {
+    	            if(activityPayment.containsKey(purchase.getProActivityId())  && StringUtils.equals(purchase.getProActivityId(), rel.getProActivityId()+"")){
+    	            	BigDecimal total = activityPayment.get(purchase.getProActivityId());
+    	            	BigDecimal discountTotal = discountPayment.get(purchase.getProActivityId());
+    	            	total = total.subtract(discountTotal);
+    	            	BigDecimal couponMoney = purchase.getPayMoney().multiply(coupon.getDiscountAmonut()).divide(total,2,BigDecimal.ROUND_HALF_UP);
+    	            	purchase.setCouponMoney(couponMoney);
+    	            }
+    	        }
+    		}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_QPL.getCode())){
+    			BigDecimal total = BigDecimal.ZERO;
+    			for (PurchaseRequestDto purchase : purchaseList) {
+    				total = total.add(purchase.getPayMoney());
+				}
+    			for (PurchaseRequestDto purchase : purchaseList) {
+					BigDecimal couponMoney = purchase.getPayMoney().multiply(coupon.getDiscountAmonut()).divide(total,2,BigDecimal.ROUND_HALF_UP);
+					purchase.setCouponMoney(couponMoney);
+    			}
+    			
+    		}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDPL.getCode())){
+    			
+    			if(StringUtils.isNotBlank(coupon.getCategoryId1())){
+    				List<Long> goodsId = new ArrayList<>();
+        			BigDecimal total = BigDecimal.ZERO;
+    				for (PurchaseRequestDto purchase : purchaseList) {
+        				GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+        				if(StringUtils.equals(goods.getCategoryId1()+"",coupon.getCategoryId1())){
+        					goodsId.add(goods.getId());
+        					total = total.add(purchase.getPayMoney());
+        				}
+        			}
+    				for (PurchaseRequestDto purchase : purchaseList) {
+    					GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+    					if(StringUtils.equals(goods.getCategoryId1()+"",coupon.getCategoryId1())){
+    						BigDecimal couponMoney = purchase.getPayMoney().multiply(coupon.getDiscountAmonut()).divide(total,2,BigDecimal.ROUND_HALF_UP);
+    						purchase.setCouponMoney(couponMoney);
+    					}
+					}
+    			}
+    			
+    			if(StringUtils.isNotBlank(coupon.getCategoryId2())){
+    				List<Long> goodsId = new ArrayList<>();
+        			BigDecimal total = BigDecimal.ZERO;
+    				for (PurchaseRequestDto purchase : purchaseList) {
+        				GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+        				if(StringUtils.equals(goods.getCategoryId2()+"",coupon.getCategoryId2())){
+        					goodsId.add(goods.getId());
+        					total = total.add(purchase.getPayMoney());
+        				}
+        			}
+    				for (PurchaseRequestDto purchase : purchaseList) {
+    					GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+    					if(StringUtils.equals(goods.getCategoryId2()+"",coupon.getCategoryId2())){
+    						BigDecimal couponMoney = purchase.getPayMoney().multiply(coupon.getDiscountAmonut()).divide(total,2,BigDecimal.ROUND_HALF_UP);
+    						purchase.setCouponMoney(couponMoney);
+    					}
+					}
+    			}
+    			
+    		}else if(StringUtils.equals(coupon.getType(), CouponType.COUPON_ZDSP.getCode())){
+    			List<Long> goodsId = new ArrayList<>();
+    			BigDecimal total = BigDecimal.ZERO;
+    			for (PurchaseRequestDto purchase : purchaseList) {
+    				String similarCode = coupon.getSimilarGoodsCode();
+    				GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+    				if(similarCode.contains(goods.getGoodsCode())){
+    					goodsId.add(goods.getId());
+    					total = total.add(purchase.getPayMoney());
+    				}
+    			}
+    			
+    			for (PurchaseRequestDto purchase : purchaseList) {
+					BigDecimal couponMoney = purchase.getPayMoney().multiply(coupon.getDiscountAmonut()).divide(total,2,BigDecimal.ROUND_HALF_UP);
+					purchase.setCouponMoney(couponMoney);
+    			}
+    		}
+    	}
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //计算每个商户的订单金额
+        Map<String, BigDecimal> merchantPayment = Maps.newHashMap();
+        for (PurchaseRequestDto purchase : purchaseList) {
+        	// 查询商品商户详情
+        	GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsStockId());
+            String merchantCode = goodsDetail.getMerchantCode();
+            BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
+        	if (merchantPayment.containsKey(merchantCode)) {
                 BigDecimal haveSum = merchantPayment.get(merchantCode);
                 haveSum = haveSum.add(goodsSum);
                 merchantPayment.put(merchantCode, haveSum);
             } else {
                 merchantPayment.put(merchantCode,goodsSum);
             }
-        }
+		}
         return merchantPayment;
     }
-
+    
     /**
      * 生成订单前校验
      *
@@ -1606,10 +1707,12 @@ public class OrderService {
         // 每笔订单商品数目
         int goodsSum = 0;
         BigDecimal disCount = BigDecimal.ZERO;
+        BigDecimal couponCount = BigDecimal.ZERO;
         for (OrderDetailInfoEntity orderDetailInfo : orderDetailInfoList) {
             goodsSum += orderDetailInfo.getGoodsNum();
             //优惠总金额=活动优惠金额+优惠券金额
-            disCount = disCount.add(orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney()));
+            disCount = disCount.add(orderDetailInfo.getDiscountAmount());
+            couponCount = couponCount.add(orderDetailInfo.getCouponMoney());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
             goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
@@ -1705,7 +1808,9 @@ public class OrderService {
         orderDetailInfoDto.setSource(order.getSource());
         orderDetailInfoDto.setPayType(PaymentType.getMessage(order.getPayType()));//支付方式
         orderDetailInfoDto.setDisCountAmt(disCount);//优惠金额
-        orderDetailInfoDto.setTotalAmt(disCount.add(order.getOrderAmt()));//总金额
+        orderDetailInfoDto.setCouponAmt(couponCount);//优惠券金额
+        orderDetailInfoDto.setTotalDisCount(disCount.add(couponCount));//优惠金额 + 优惠券金额
+        orderDetailInfoDto.setTotalAmt(disCount.add(order.getOrderAmt()).add(couponCount));//总金额
         
         return orderDetailInfoDto;
     }
