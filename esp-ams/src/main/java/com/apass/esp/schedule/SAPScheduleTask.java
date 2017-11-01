@@ -67,6 +67,7 @@ public class SAPScheduleTask {
 		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
 		sapService.salesOrderInfo(ip, port, username, password, path);
 		sapService.salesOrder(ip, port, username, password, path);
+		sapService.generateQuanEnHuanKuanCsv(ip,port,username,password,path);
 	}
 
 }
