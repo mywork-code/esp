@@ -4,6 +4,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
@@ -98,7 +99,7 @@ public class ProCouponService {
     public Integer deleteByCouponId(ProCoupon proCoupon) {
         if(StringUtils.isNotBlank(proCoupon.getId().toString())){
             //TODO 如果是活动优惠券，在活动有效期内不可删除
-            if(StringUtils.equalsIgnoreCase("用户领取",proCoupon.getExtendType())){
+            if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getMessage(),proCoupon.getExtendType())){
                 //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
                 List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
                 if(CollectionUtils.isNotEmpty(proActivityCfgList)){
@@ -112,6 +113,7 @@ public class ProCouponService {
             }
 
             //物理删除
+            proCoupon.setExtendType(null);
             return couponMapper.updateByPrimaryKeySelective(proCoupon);
         }else {
             throw new RuntimeException("优惠券id不存在！");

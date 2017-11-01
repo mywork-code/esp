@@ -165,7 +165,7 @@ public class ProCouponBaseInfoController {
 
         }catch (Exception e){
             LOGGER.error("删除优惠券异常，Exception-----",e);
-            return Response.fail("删除优惠券失败");
+            return Response.fail(e.getMessage());
         }
 
         return Response.success("删除优惠券成功");

@@ -170,7 +170,16 @@ $(function(){
 		});
 
 	$.deleteCoupon = function (id,extendType) {
-		debugger;
+		if(extendType == "用户领取"){
+			extendType = "YHLQ"
+		}else if(extendType == "平台发放"){
+			extendType = "PTFF"
+		}else if(extendType == "新用户专享"){
+			extendType = "XYH"
+		}else{
+			$.messager.alert('<span style="color: black">提示</span>',"推广方式数据有误？");
+			return;
+		}
 		$.messager.confirm('<span style="color: black">提示</span>',"你确认要删除吗？",function (r) {
 			if(r){
 				var param = {

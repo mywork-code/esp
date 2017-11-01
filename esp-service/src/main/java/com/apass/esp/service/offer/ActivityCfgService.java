@@ -3,8 +3,10 @@ package com.apass.esp.service.offer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,6 +171,8 @@ public class ActivityCfgService {
 	 * @return
      */
 	public List<ProActivityCfg> selectProActivityCfgByEntity(Long id) {
-		return activityCfgMapper.selectProActivityCfgByEntity(id);
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("id",id);
+		return activityCfgMapper.selectProActivityCfgByEntity(paramMap);
 	}
 }
