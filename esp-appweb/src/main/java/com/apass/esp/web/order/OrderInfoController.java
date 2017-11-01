@@ -103,6 +103,7 @@ public class OrderInfoController {
     String userIdStr = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
     String totalPaymentStr = CommonUtils.getValue(paramMap, "totalPayment"); // 订单总金额(支付金额)
     String discountMoneyStr = CommonUtils.getValue(paramMap,"discountAmt");//订单优惠的金额
+    String myCouponId = CommonUtils.getValue(paramMap,"mycouponId");// 优惠券ID
     String addressIdStr = CommonUtils.getValue(paramMap, "addressId"); // 收货地址Id
     String buyInfo = CommonUtils.getValue(paramMap, "buyInfo"); // 购买商品列表
 
@@ -117,8 +118,8 @@ public class OrderInfoController {
     Map<String, Object> resultMap = Maps.newHashMap();
     try {
 
-      BigDecimal totalPayment = null;
-      BigDecimal discountMoney = null;
+      BigDecimal totalPayment = BigDecimal.ZERO;
+      BigDecimal discountMoney = BigDecimal.ZERO;
       if (null == userIdStr) {
         LOGGER.error("对不起!用户号不能为空");
         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
@@ -174,7 +175,7 @@ public class OrderInfoController {
           //如果map为空，则说明订单下，不存在不支持配送的区域
           if(resultMap.isEmpty()){
          		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment,discountMoney, addressId,
-         			        purchaseList, sourceFlag, deviceType);
+         			        purchaseList, sourceFlag, deviceType,myCouponId);
          		 List<String> merchantCodeList = orderService.merchantCodeList(orders);
          			     resultMap.put("orderList", orders);
          			     resultMap.put("merchantCodeList", merchantCodeList);
