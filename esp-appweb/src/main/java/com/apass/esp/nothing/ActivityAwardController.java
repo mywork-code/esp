@@ -59,6 +59,7 @@ public class ActivityAwardController {
 	 */
     @POST
     @Path("/saveAwardInfo")
+    @Deprecated
 	public Response saveAwardInfo(@RequestBody Map<String, Object> paramMap) {
 		String customerId = CommonUtils.getValue(paramMap, "customerId");
 		LOGGER.info("-----用户获得额度时调用奖励邀请人接口：customerId="+customerId);
