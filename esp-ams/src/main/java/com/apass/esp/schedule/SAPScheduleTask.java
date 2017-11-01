@@ -39,7 +39,7 @@ public class SAPScheduleTask {
 
 	@Scheduled(cron = "0 0 8 * * ?")
 	public void task() {
-		String path = basePath + "\\" + DateFormatUtil.dateToString(new Date(),"yyyy\\MM\\dd") + "\\";
+		String path = basePath;
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
 		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
 		sapService.commodityReturnFlow(ip,port,username,password,path);
@@ -53,7 +53,8 @@ public class SAPScheduleTask {
 	}
 	@RequestMapping("/test1")
 	public void exec(){
-		String path = basePath + "\\" + DateFormatUtil.dateToString(new Date(),"yyyy\\MM\\dd") + "\\";
+//		String path = basePath + "\\" + "2017\\11";
+		String path = basePath;
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
 		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
 		sapService.commodityReturnFlow(ip,port,username,password,path);
