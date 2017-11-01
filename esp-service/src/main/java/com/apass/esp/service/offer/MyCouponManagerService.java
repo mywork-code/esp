@@ -13,6 +13,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -50,6 +51,9 @@ public class MyCouponManagerService {
 	@Autowired
 	private ProCouponMapper couponMapper;
 	
+	@Autowired
+	private ActivityCfgService activityCfgService;
+	
 	/**
 	 * 点击领取优惠券
 	 * @param userId 用户Id
@@ -58,6 +62,16 @@ public class MyCouponManagerService {
 	 * @throws BusinessException 
 	 */
 	public int giveCouponToUser(MyCouponVo vo) throws BusinessException{
+		/**
+		 * 判断活动是否已经结束
+		 */
+	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
+	    if(null==activityCfg){
+	    	throw new BusinessException("领取失败，活动已经结束!");
+	    }
+	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
+	    	throw new BusinessException("领取失败，活动已经结束!");
+	    }
 		/**
 		 * 首先，根据活动的Id和优惠券的id ,查询此活动和优惠券的关系表信息
 		 */

@@ -220,7 +220,7 @@ public class StaticFileController {
     @RequestMapping(value = "v4/app_weex")
     @ResponseBody
     public Response getMd5ByFile4() {
-        LOGGER.info("weex,v4自动部署程序开始执行.....");
+        LOGGER.info("weex,v4自动部署程序开始执行.....,运行环境:{}",systemEnvConfig.getEve());
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
@@ -233,19 +233,21 @@ public class StaticFileController {
             List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
 
             for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
-                    file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                    ver1 = weexInfoEntity.getWeexVer();
-                    weexPath1 = weexInfoEntity.getWeexPath();
-                }
-                if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                    file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                    ver2 = weexInfoEntity.getWeexVer();
-                    weexPath2 = weexInfoEntity.getWeexPath();
+                if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajqh")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
+                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
+                        ver1 = weexInfoEntity.getWeexVer();
+                        weexPath1 = weexInfoEntity.getWeexPath();
+                    }
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
+                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
+                        ver2 = weexInfoEntity.getWeexVer();
+                        weexPath2 = weexInfoEntity.getWeexPath();
+                    }
                 }
             }
 
-            LOGGER.info("file:{},file2:{}",file1.getPath(),file2.getPath());
+            LOGGER.info("file1:{},file2:{}",file1.getPath(),file2.getPath());
             FileInputStream in1 = new FileInputStream(file1);
             String md5 = MD5Utils.getMd5ByFile(in1);
             CommissionWalletVo commissionWalletVo = new CommissionWalletVo();

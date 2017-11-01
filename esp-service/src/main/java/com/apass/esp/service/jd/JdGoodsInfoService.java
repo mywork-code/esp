@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -501,6 +503,7 @@ public class JdGoodsInfoService {
     			for (ProCoupon proCoupon : proCoupons) {
     				ProCouponVo proCouponVo=new ProCouponVo();
     				proCouponVo.setId(proCoupon.getId());
+    				proCouponVo.setActivityId(Long.parseLong(activityId));
     				proCouponVo.setName(proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
@@ -685,12 +688,39 @@ public class JdGoodsInfoService {
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
 		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
+		if(jdSimilarResponse.getResult() == null){
+			return Collections.emptyList();
+		}
 		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
 			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
 			jp.update(jp.getSaleAttrList());
 			JdSimilarSkuList.add(jp);
 		}
 		return JdSimilarSkuList;
+	}
+
+	/**
+	 * 京东商品：根据skuId返回相似skuId
+	 * @param sku
+	 * @return
+     */
+	public TreeSet<String> getJdSimilarSkuIdList(String skuId) {
+		if(StringUtils.isBlank(skuId)){
+			return null;
+		}
+		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(Long.valueOf(skuId));
+
+		TreeSet<String> skusSet = new TreeSet<String>();
+
+		for (JdSimilarSku jdsk : jdSimilarSkuList) {
+			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
+
+			for (JdSaleAttr jdsa : saleAttrList) {
+				skusSet.addAll(jdsa.getSkuIds());
+			}
+		}
+
+		return skusSet;
 	}
 	/**
 	 * 判断单个京东商品是否上下架
