@@ -247,7 +247,7 @@ public class MyCouponManagerService {
 	public ProMyCouponVo getVoByPo(ProMyCoupon p){
 		ProMyCouponVo vo = new ProMyCouponVo();
 		vo.setId(p.getId());
-		if(null == p.getCouponRelId()){
+		if(null != p.getCouponRelId()){
 			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(p.getCouponRelId());
 			vo.setActivityId(null != rel ? rel.getProActivityId() : -1L);
 		}
@@ -283,5 +283,10 @@ public class MyCouponManagerService {
 		Map<String,Object> paramMap = Maps.newHashMap();
 		paramMap.put("proMyCouponList",lists);
 		myCouponMapper.insertProMyCoupoBach(paramMap);
+	}
+	
+	
+	public void deleteMyCoupon(){
+		
 	}
 }
