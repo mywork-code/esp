@@ -37,6 +37,8 @@ public class ProMyCouponVo {
 
     private String remarks;
     
+    private String goodsIdStr;
+    
     public String getType() {
 		return type;
 	}
@@ -171,5 +173,13 @@ public class ProMyCouponVo {
 
 	public void setSimilarGoodsCode(String similarGoodsCode) {
 		this.similarGoodsCode = similarGoodsCode;
+	}
+
+	public String getGoodsIdStr() {
+		return goodsIdStr;
+	}
+
+	public void setGoodsIdStr(String goodsIdStr) {
+		this.goodsIdStr = goodsIdStr;
 	}
 }

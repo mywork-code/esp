@@ -44,6 +44,8 @@ public class PurchaseRequestDto {
     
     private BigDecimal payMoney;//实际支付金额 - 优惠金额  （不包含优惠券）
     
+    private BigDecimal couponMoney;//优惠券优惠金额
+    
     public String getProActivityId() {
         return proActivityId;
     }
@@ -111,6 +113,14 @@ public class PurchaseRequestDto {
 
 	public void setPayMoney(BigDecimal payMoney) {
 		this.payMoney = payMoney;
+	}
+
+	public BigDecimal getCouponMoney() {
+		return couponMoney;
+	}
+
+	public void setCouponMoney(BigDecimal couponMoney) {
+		this.couponMoney = couponMoney;
 	}
 	
 }
