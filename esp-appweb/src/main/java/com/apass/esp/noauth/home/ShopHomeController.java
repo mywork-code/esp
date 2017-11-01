@@ -909,6 +909,7 @@ public class ShopHomeController {
 			if(count > 0){
 		      //获取商品的优惠券
 		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+		      LOGGER.info("giveCouponToUser:--------->{}",GsonUtils.toJson(returnMap));
 			  return Response.success("领取成功!",returnMap);
 			}
 		} catch(BusinessException e){
