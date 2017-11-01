@@ -642,7 +642,7 @@ public class SAPService {
     orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("gbk"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //必选表头
@@ -677,7 +677,7 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
+      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("gbk"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //必选表头
