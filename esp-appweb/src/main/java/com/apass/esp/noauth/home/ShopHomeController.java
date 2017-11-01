@@ -24,7 +24,6 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
-import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -44,7 +43,6 @@ import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
-import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.condition.GoodsSearchCondition;
@@ -61,8 +59,6 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.nation.NationService;
-import com.apass.esp.service.offer.CouponManagerService;
-import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
@@ -140,10 +136,6 @@ public class ShopHomeController {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
-    @Autowired
-    private CouponRelService  couponRelService;
-    @Autowired
-    private CouponManagerService couponManagerService;
     /**
      * 首页初始化 加载banner和精品商品
      *
