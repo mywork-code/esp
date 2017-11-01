@@ -78,7 +78,8 @@ public class SAPService {
     try {
       generateCaiWuPingZhengCsv();
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.CAIWUPINGZHENG_FILE_NAME, in);
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.CAIWUPINGZHENG_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp caiwupingzheng csv error", e);
     }
@@ -91,8 +92,9 @@ public class SAPService {
                                      String password, String path) {
     try {
       generateCaiWuPingZhengCsv2();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       FileInputStream in = new FileInputStream(new File(SAPConstants.CAIWUPINGZHENG_FILE_PATH2));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.CAIWUPINGZHENG_FILE_NAME2, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.CAIWUPINGZHENG_FILE_NAME2,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp caiwupingzheng2 csv error", e);
     }
@@ -113,8 +115,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generatePaymentOrFullPaymentCsv();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PAYMENTORFULLPAYMENT_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp commodityreturnflow csv error", e);
     } finally {
@@ -143,8 +146,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generateSalesOrderCsv();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.SALESORDER_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.SALESORDER_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.SALESORDER_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp salesOrder csv error", e);
     } finally {
@@ -173,8 +177,9 @@ public class SAPService {
     FileInputStream in = null;
     try {
       generateSalesOrderInfoCsv();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       in = new FileInputStream(new File(SAPConstants.SALESORDERINFO_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.SALESORDERINFO_FILE_NAME, in);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.SALESORDERINFO_FILE_NAME,dateStr), in);
     } catch (Exception e) {
       LOG.error("ftp salesOrderInfo csv error", e);
     } finally {
@@ -201,8 +206,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transVBSBusinessNumCvs();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.VBSBUSINESS_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.VBSBUSINESS_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.VBSBUSINESS_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp VBSBusiness csv file notfound", e);
     } finally {
@@ -228,8 +234,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseOrReturnCvs();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASEORRETURN_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASEORRETURN_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASEORRETURN_FILE_NAME,dateStr), fis);
     } catch (Exception e) {
       LOG.error("ftp PurchaseOrder csv file error", e);
     } finally {
@@ -255,8 +262,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseOrderCvs();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASEORDER_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASEORDER_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASEORDER_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp PurchaseOrder csv file notfound", e);
     } finally {
@@ -282,8 +290,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       transPurchaseReturnSalesCvs();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.PURCHASERETURNSALES_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.PURCHASERETURNSALES_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.PURCHASERETURNSALES_FILE_NAME,dateStr), fis);
     } catch (FileNotFoundException e) {
       LOG.error("ftp PurchaseOrder csv file notfound", e);
     } finally {
@@ -310,8 +319,9 @@ public class SAPService {
     InputStream fis = null;
     try {
       generateQuanEnHuanKuanCsv();
+      String dateStr = DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1),"yyyyMMdd");
       fis = new FileInputStream(new File(SAPConstants.QUANENHUANKUAN_FILE_PATH));
-      FTPUtils.uploadFile(ip, port, username, password, path, SAPConstants.QUANENHUANKUAN_FILE_NAME, fis);
+      FTPUtils.uploadFile(ip, port, username, password, path, String.format(SAPConstants.QUANENHUANKUAN_FILE_NAME,dateStr), fis);
     } catch (Exception e) {
       LOG.error("ftp generateQuanEnHuanKuanCsv csv file notfound", e);
     } finally {
@@ -336,7 +346,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "ZYWH", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP",
           "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
@@ -407,7 +417,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "ZP_GUID", "ZLSH_M", "MATNR", "MAKTX", "ZSPGG", "NETPR", "BSTME", "KWMENG"};
       csvWriter.writeRecord(headers);
@@ -447,7 +457,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "VKORG", "ZDDH", "AUART", "ZTEL_NO", "ZDDZT", "ZLSH_YDD", "ZZK", "ERDAT", "ERZET", "UNAME"};
       csvWriter.writeRecord(headers);
@@ -487,7 +497,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "ERDAT", "ZTZLX", "KUNNR", "ZSFQE", "ZSFKBZ", "ZPTMC", "ZPTBM", "ZPTLSH", "ZZHH", "ZZHH_COMP",
           "ZZHH_NO", "ZPTFWF", "ZDFF"};
@@ -591,7 +601,7 @@ public class SAPService {
     try {
       csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "BUKRS", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD", "ERDAT", "ERZET"};
       csvWriter.writeRecord(headers);
@@ -632,9 +642,9 @@ public class SAPService {
     orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("gbk"));
       //第一列空
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //必选表头
       String[] headers = {"GUID", "P_GUID", "ZLSH_M", "MATNR", "MAKTX", "NETPR", "BSTME", "KWMENG"};
       csvWriter.writeRecord(headers);
@@ -667,9 +677,9 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
+      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("gbk"));
       //第一列空
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //必选表头
       String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET"};
       csvWriter.writeRecord(headers);
@@ -727,7 +737,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR"};
       csvWriter.writeRecord(headers);
@@ -769,7 +779,7 @@ public class SAPService {
     try {
       csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
@@ -834,7 +844,7 @@ public class SAPService {
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("gbk"));
       //第一行空着
-      csvWriter.writeRecord(new String[]{""});
+      csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(DateFormatUtil.addDays(new Date(),-1))});
       //表头
       String[] headers = {"GUID", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO",
           "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};

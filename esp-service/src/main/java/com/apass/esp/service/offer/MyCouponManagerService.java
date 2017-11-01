@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.query.ProCouponRelQuery;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -247,7 +249,7 @@ public class MyCouponManagerService {
 	public ProMyCouponVo getVoByPo(ProMyCoupon p){
 		ProMyCouponVo vo = new ProMyCouponVo();
 		vo.setId(p.getId());
-		if(null == p.getCouponRelId()){
+		if(null != p.getCouponRelId()){
 			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(p.getCouponRelId());
 			vo.setActivityId(null != rel ? rel.getProActivityId() : -1L);
 		}
@@ -261,9 +263,9 @@ public class MyCouponManagerService {
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
-		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
+		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
 		vo.setRemarks(p.getRemarks());
-		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
+		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd"));
 		vo.setStatus(p.getStatus());
 		vo.setTelephone(p.getTelephone());
 		vo.setUserId(p.getUserId());
@@ -283,5 +285,20 @@ public class MyCouponManagerService {
 		Map<String,Object> paramMap = Maps.newHashMap();
 		paramMap.put("proMyCouponList",lists);
 		myCouponMapper.insertProMyCoupoBach(paramMap);
+	}
+	
+	/**
+	 * 逻辑删除券
+	 * @param mycouponId
+	 */
+	public void deleteMyCoupon(String mycouponId){
+		if(StringUtils.isNotBlank(mycouponId)){
+			ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(mycouponId));
+			if(null != myCoupon){
+				myCoupon.setStatus(CouponStatus.COUPON_D.getCode());
+				myCoupon.setUpdatedTime(new Date());
+				myCouponMapper.updateByPrimaryKeySelective(myCoupon);
+			}
+		}
 	}
 }

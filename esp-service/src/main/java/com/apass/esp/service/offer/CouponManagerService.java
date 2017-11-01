@@ -15,9 +15,14 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
+
 import com.apass.esp.domain.enums.ActivityStatus;
+
+import com.apass.esp.domain.query.ProMyCouponQuery;
+
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProMyCouponMapper;
 
 /**
  * 
@@ -33,6 +38,9 @@ public class CouponManagerService {
 
 	@Autowired
 	private ProCouponMapper couponMapper;
+	
+	@Autowired
+	private ProMyCouponMapper myCouponMapper;
 	
 	@Autowired
 	private CouponRelService couponRelService;
@@ -112,11 +120,19 @@ public class CouponManagerService {
 		return proCouponList;
 	}
 	
-	public List<ProCouponVo> getCouponVos(String activityId){
+
+	
+	public List<ProCouponVo> getCouponVos(String userId,String activityId){
 		List<ProCouponVo> couponList = new ArrayList<ProCouponVo>();
-		List<ProCoupon> coupons = getCouponsByActivityId(activityId);
-		for (ProCoupon proCoupon : coupons) {
+		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
+			if(rel.getLimitNum() <= myCoupons.size()){
+				vo.setReceiveFlag(true);
+			}
+			vo.setRemainNum(rel.getRemainNum());
 			vo.setId(proCoupon.getId());
 			vo.setName(proCoupon.getName());
 			vo.setCouponSill(proCoupon.getCouponSill());

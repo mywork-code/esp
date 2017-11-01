@@ -6,7 +6,8 @@ package com.apass.esp.domain.enums;
  */
 public enum CouponStatus {
     COUPON_Y("Y","已使用"),
-    COUPON_N("N","未使用");
+    COUPON_N("N","未使用"),
+    COUPON_D("D","已删除");
 
     private String code;
     private String message;

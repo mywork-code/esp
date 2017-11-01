@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.service.offer.CouponManagerService;
@@ -37,9 +38,10 @@ public class GroupGoodsController {
 	public Response getGroupAndGoodsByGroupId(@RequestBody Map<String, Object> paramMap){
 		String activityId = CommonUtils.getValue(paramMap, "activityId");
 		String bannerId = CommonUtils.getValue(paramMap, "bannerId");
-		if(StringUtils.isBlank(activityId)){
-			logger.error("活动编号不能为空!");
-			return Response.fail("活动编号不能为空!");
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
+		if(StringUtils.isEmpty(activityId) || StringUtils.isEmpty(userId) ){
+			return Response.fail("参数传递有误!");
 		}
 		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		try {
@@ -47,7 +49,7 @@ public class GroupGoodsController {
 			/**
 			 * sprint 11 根据活动的Id，获取对应优惠券的信息
 			 */
-			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(activityId);
+			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
 			maps.put("coupons", couponVos);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
