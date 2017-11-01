@@ -34,6 +34,10 @@ public class ProMyCouponVo {
     private String startDate;
 
     private String endDate;
+    
+    private String effectiveTime;
+    
+    private String rule;//优惠券规则
 
     private String remarks;
     
@@ -173,4 +177,16 @@ public class ProMyCouponVo {
 		this.similarGoodsCode = similarGoodsCode;
 	}
 
+	public String getEffectiveTime() {
+		return getStartDate() + "-" + getEndDate();
+	}
+
+	public String getRule() {
+		return rule;
+	}
+
+	public void setRule(String rule) {
+		this.rule = rule;
+	}
+	
 }

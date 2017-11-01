@@ -263,9 +263,9 @@ public class MyCouponManagerService {
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
-		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
+		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
 		vo.setRemarks(p.getRemarks());
-		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
+		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd"));
 		vo.setStatus(p.getStatus());
 		vo.setTelephone(p.getTelephone());
 		vo.setUserId(p.getUserId());

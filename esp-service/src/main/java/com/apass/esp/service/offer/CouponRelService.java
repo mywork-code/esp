@@ -44,4 +44,11 @@ public class CouponRelService {
 		couponRel.setCouponId(couponId);
 		return couponRelMapper.getRelByActivityIdAndCouponId(couponRel);
 	};
+	/**
+	 * 获取优惠券剩余数量大于0的优惠券列表
+	 * @return
+	 */
+	public List<ProCouponRel> getCouponList(){
+		return couponRelMapper.getCouponList();
+	};
 }

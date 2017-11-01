@@ -8,7 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by jie.xu on 17/10/17.
  */
@@ -38,9 +39,7 @@ public class SAPScheduleTask {
 
 	@Scheduled(cron = "0 0 8 * * ?")
 	public void task() {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE,-1);
-		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
+		String path = basePath + "\\" + DateFormatUtil.dateToString(new Date(),"yyyy\\MM\\dd") + "\\";
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
 		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
 		sapService.commodityReturnFlow(ip,port,username,password,path);
@@ -54,9 +53,7 @@ public class SAPScheduleTask {
 	}
 	@RequestMapping("/test1")
 	public void exec(){
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE,-1);
-		String path = basePath + "\\" + DateFormatUtil.dateToString(cal.getTime(),"yyyy\\MM\\dd") + "\\";
+		String path = basePath + "\\" + DateFormatUtil.dateToString(new Date(),"yyyy\\MM\\dd") + "\\";
 		sapService.sendCaiWuPingZhengCsv(ip,port,username,password,path);
 		sapService.sendCaiWuPingZhengCsv2(ip,port,username,password,path);
 		sapService.commodityReturnFlow(ip,port,username,password,path);
@@ -67,6 +64,7 @@ public class SAPScheduleTask {
 		sapService.transVBSBusinessNumCvs(ip, port, username, password, path);
 		sapService.salesOrderInfo(ip, port, username, password, path);
 		sapService.salesOrder(ip, port, username, password, path);
+		sapService.generateQuanEnHuanKuanCsv(ip,port,username,password,path);
 	}
 
 }

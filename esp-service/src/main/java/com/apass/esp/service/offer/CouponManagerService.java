@@ -1,5 +1,6 @@
 package com.apass.esp.service.offer;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProMyCoupon;
+
+import com.apass.esp.domain.enums.ActivityStatus;
+
+import com.apass.esp.domain.query.ProMyCouponQuery;
+
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProMyCouponMapper;
 
 /**
  * 
@@ -31,7 +40,16 @@ public class CouponManagerService {
 	private ProCouponMapper couponMapper;
 	
 	@Autowired
+	private ProMyCouponMapper myCouponMapper;
+	
+	@Autowired
 	private CouponRelService couponRelService;
+	
+	@Autowired
+	private ActivityCfgService activityCfgService;
+	
+	@Autowired
+	private MyCouponManagerService myCouponManagerService;
 	
 	/**
 	 * 根据活动的Id，获取优惠券
@@ -63,11 +81,58 @@ public class CouponManagerService {
 		}
 		return couponList;
 	}
-	public List<ProCouponVo> getCouponVos(String activityId){
+	/**
+	 * 获取有效活动优惠券(过滤优惠券剩余数量为0的优惠券和用户已经领取的优惠券)
+	 * @return
+	 */
+	public List<ProCouponVo> getCouponList(Long userId){
+		List<ProCouponVo> proCouponList = new ArrayList<ProCouponVo>();//可以领取的优惠券列表
+		List<ProCouponRel> relList = couponRelService.getCouponList();
+		for (ProCouponRel rel : relList) {
+		   ProActivityCfg activityCfg = activityCfgService.getById(rel.getProActivityId());
+		   //判断活动是否有效（正在进行中）
+		   if(null !=activityCfg && ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)){
+				//获取优惠券信息
+			    ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+				ProCouponVo proCouponVo=new ProCouponVo();
+				proCouponVo.setId(proCoupon.getId());
+				proCouponVo.setActivityId(rel.getProActivityId());
+				proCouponVo.setName(proCoupon.getName());
+				proCouponVo.setCouponSill(proCoupon.getCouponSill());
+				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
+				String startTimeString = formatter.format(activityCfg.getStartTime());
+				String endTimeTimeString = formatter.format(activityCfg.getEndTime());
+				proCouponVo.setStartTime(startTimeString);
+				proCouponVo.setEndTime(endTimeTimeString);
+				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
+			   //判断该用户是否已经领取了该优惠券
+			   List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId,rel.getCouponId());
+			   if(null !=proMyCouponList && proMyCouponList.size()>0){
+					if(proMyCouponList.size()<rel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
+						proCouponList.add(proCouponVo);
+					}
+				}else{
+					proCouponList.add(proCouponVo);
+				}
+		      }
+		}
+		return proCouponList;
+	}
+	
+
+	
+	public List<ProCouponVo> getCouponVos(String userId,String activityId){
 		List<ProCouponVo> couponList = new ArrayList<ProCouponVo>();
-		List<ProCoupon> coupons = getCouponsByActivityId(activityId);
-		for (ProCoupon proCoupon : coupons) {
+		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
+			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
+			if(rel.getLimitNum() <= myCoupons.size()){
+				vo.setReceiveFlag(true);
+			}
+			vo.setRemainNum(rel.getRemainNum());
 			vo.setId(proCoupon.getId());
 			vo.setName(proCoupon.getName());
 			vo.setCouponSill(proCoupon.getCouponSill());
