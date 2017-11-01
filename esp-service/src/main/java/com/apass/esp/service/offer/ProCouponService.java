@@ -1,6 +1,7 @@
 package com.apass.esp.service.offer;
 
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.mapper.ProCouponMapper;
@@ -78,12 +79,15 @@ public class ProCouponService {
                 proCoupon.setSimilarGoodsCode(proCoupon.getGoodsCode());
             }
         }
-        List<ProCoupon> couList = couponMapper.setProCouponByName(proCoupon.getName());
+        List<ProCoupon> couList = couponMapper.getProCouponByName(proCoupon.getName());
         if(CollectionUtils.isNotEmpty(couList)){
             LOGGER.error("优惠券名称重复，name:{}",proCoupon.getName());
             throw new RuntimeException("优惠券名称已存在，不能重复！");
         }
-        return couponMapper.insert(proCoupon);
+        return couponMapper.insertSelective(proCoupon);
     }
 
+    public ProCoupon selectProCouponByPrimaryID(Long couponId) {
+        return couponMapper.selectByPrimaryKey(couponId);
+    }
 }
