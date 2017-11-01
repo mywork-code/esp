@@ -1,4 +1,5 @@
 $(function(){
+	var sillType = null;
 	//Grid
 	$('#couponList').datagrid({
 		title : '优惠券管理',
@@ -116,7 +117,8 @@ $(function(){
 							"categoryId2":categoryId1,
 							"goodsCode":$("#addGoodsCode").textbox("getValue"),
 							"couponSill":$("#addCouponSill").textbox("getValue"),
-							"discountAmonut":$("#addDiscountAmonut").textbox("getValue")
+							"discountAmonut":$("#addDiscountAmonut").textbox("getValue"),
+							"sillType":sillType
 						}
 
 						console.log(param);
@@ -149,11 +151,14 @@ $(function(){
 
 	//是否
 	$("#ifCouponSill").click(function () {
+		debugger;
 		if($('#ifCouponSill').is(':checked')){
 			$("#addCouponSill").textbox({disabled: true});
 			$("#addCouponSill").textbox('clear');
+			sillType = "N";
 		}else{
 			$("#addCouponSill").textbox({disabled: false});
+			sillType = "Y";
 		}
 	});
 

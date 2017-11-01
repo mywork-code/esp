@@ -274,4 +274,14 @@ public class MyCouponManagerService {
 	public void updateStatus(String status,Long userId,Long couponId){
 		myCouponMapper.updateStatusByUserIdAndCouponId(status,userId,couponId);
 	}
+
+	/**
+	 * 批量插入优惠券
+	 * @param lists
+     */
+	public void insertProMyCoupoBach(List<ProMyCoupon> lists) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("proMyCouponList",lists);
+		myCouponMapper.insertProMyCoupoBach(paramMap);
+	}
 }

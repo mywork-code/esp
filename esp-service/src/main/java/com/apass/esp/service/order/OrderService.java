@@ -1635,10 +1635,15 @@ public class OrderService {
             BigDecimal goodsPriceDisCount = BigDecimal.ZERO;
     		BigDecimal price = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
-            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
+            if(orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0 || orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount) >0){
+            	BigDecimal priceDisCount=orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney());//优惠总金额
+            	price=priceDisCount.divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 11）
             }
+//            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
+//            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+//                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
+//            }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
             if (null != goods) {
                 goodsInfo.setUnSupportProvince(goods.getUnSupportProvince());
