@@ -1,5 +1,6 @@
 package com.apass.esp.web.offer;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.MyCouponVo;
+import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -27,6 +30,9 @@ public class MyCouponManagerController {
 	
 	@Autowired
 	private MyCouponManagerService myCouponManagerService;
+	
+	@Autowired
+	private CouponManagerService couponManagerService;
 	
 	@ResponseBody
 	@RequestMapping("/list")
@@ -86,5 +92,21 @@ public class MyCouponManagerController {
 			logger.error("exception giveCouponToUser :{}",e);
 			return Response.success("删除失败!");
 		}
+	}
+	  /**
+     * 您还有优惠券未领取
+     * @param paramMap
+     * @return
+     */
+	@ResponseBody
+	@RequestMapping("/noGetCoupons")
+	public Response noGetCoupons(@RequestBody Map<String, Object> paramMap){
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		if(StringUtils.isBlank(userId)){
+			logger.error("用户id不能为空!");
+			return Response.fail("用户id不能为空!");
+		}
+		List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
+		 return Response.success("加载未领取优惠券成功!",proCouponRelList);
 	}
 }
