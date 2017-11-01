@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.service.offer.MyCouponManagerService;
@@ -29,7 +30,7 @@ public class MyCouponManagerController {
 	
 	@ResponseBody
 	@RequestMapping("/list")
-	public Response getMyCoupons(Map<String, Object> paramMap){
+	public Response getMyCoupons(@RequestBody Map<String, Object> paramMap){
 		logger.info("getMyCoupons:--------->{}",GsonUtils.toJson(paramMap));
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		if(StringUtils.isBlank(userId)){
@@ -71,10 +72,19 @@ public class MyCouponManagerController {
 	}
 	
 	@ResponseBody
-	@RequestMapping("/saveCoupon")
+	@RequestMapping("/deleteMyCoupon")
 	public Response deleteMyCoupon(@RequestBody Map<String, Object> paramMap){
-		
-		
-		return Response.success("删除成功!");
+		logger.info("deleteMyCoupon---------------------->{}",JsonUtil.toJsonString(paramMap));
+		String mycouponId = CommonUtils.getValue(paramMap, "mycouponId");
+		if(StringUtils.isEmpty(mycouponId)){
+			return Response.fail("参数传递有误!");
+		}
+		try {
+			myCouponManagerService.deleteMyCoupon(mycouponId);
+			return Response.success("删除成功!");
+		} catch (Exception e) {
+			logger.error("exception giveCouponToUser :{}",e);
+			return Response.success("删除失败!");
+		}
 	}
 }
