@@ -118,8 +118,8 @@ public class OrderInfoController {
     Map<String, Object> resultMap = Maps.newHashMap();
     try {
 
-      BigDecimal totalPayment = null;
-      BigDecimal discountMoney = null;
+      BigDecimal totalPayment = BigDecimal.ZERO;
+      BigDecimal discountMoney = BigDecimal.ZERO;
       if (null == userIdStr) {
         LOGGER.error("对不起!用户号不能为空");
         return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
