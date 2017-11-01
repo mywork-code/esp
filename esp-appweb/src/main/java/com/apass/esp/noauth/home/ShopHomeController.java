@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
@@ -41,6 +42,7 @@ import com.apass.esp.domain.enums.CityJdEnums;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -885,6 +887,38 @@ public class ShopHomeController {
         Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
         return Response.success("获取商品优惠券列表成功！", returnMap);
     }
+    /**
+     * 商品优惠券列表领取优惠券接口
+     * @param paramMap
+     * @return
+     */
+	@POST
+    @Path("/v3/saveCoupon")
+	public Response giveCouponToUser(Map<String, Object> paramMap){
+        Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		String activityId = CommonUtils.getValue(paramMap, "activityId");
+		String couponId = CommonUtils.getValue(paramMap, "couponId");
+		if(StringUtils.isBlank(activityId)){
+			LOGGER.error("活动编号不能为空!");
+			return Response.fail("活动编号不能为空!");
+		}
+		LOGGER.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
+		try {
+			int count = myCouponManagerService.giveCouponToUser(new MyCouponVo(Long.parseLong(userId),Long.parseLong(couponId),Long.parseLong(activityId)));
+			if(count > 0){
+		      //获取商品的优惠券
+		      Map<String,Object>  returnMap=jdGoodsInfoService.getProCoupons(goodsId,Long.parseLong(userId));
+			  return Response.success("领取成功!",returnMap);
+			}
+		} catch(BusinessException e){
+			LOGGER.error("business giveCouponToUser :{}",e);
+			return Response.fail(e.getErrorDesc());
+		} catch (Exception e) {
+			LOGGER.error("exception giveCouponToUser :{}",e);
+		}
+		return Response.fail("商品优惠券列表优惠券领取失败!");
+	}
     /**
      * 地址改变，查看是否有货
      *
