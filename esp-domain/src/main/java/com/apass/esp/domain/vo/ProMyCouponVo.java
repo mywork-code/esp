@@ -1,6 +1,6 @@
 package com.apass.esp.domain.vo;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
 public class ProMyCouponVo {
     private Long id;
@@ -13,8 +13,18 @@ public class ProMyCouponVo {
     
     private Long activityId;
     
-    //private String activityName;
+    private String categoryId1;
+    
+    private String categoryId2;
+    
+    private String similarGoodsCode;
+    
+    private String type;
 
+    private BigDecimal couponSill;
+
+    private BigDecimal discountAmonut;
+    
     private String status;
 
     private Long couponId;
@@ -26,8 +36,32 @@ public class ProMyCouponVo {
     private String endDate;
 
     private String remarks;
+    
+    public String getType() {
+		return type;
+	}
 
-    public Long getId() {
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public BigDecimal getCouponSill() {
+		return couponSill;
+	}
+
+	public void setCouponSill(BigDecimal couponSill) {
+		this.couponSill = couponSill;
+	}
+
+	public BigDecimal getDiscountAmonut() {
+		return discountAmonut;
+	}
+
+	public void setDiscountAmonut(BigDecimal discountAmonut) {
+		this.discountAmonut = discountAmonut;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -115,12 +149,27 @@ public class ProMyCouponVo {
 		this.activityId = activityId;
 	}
 
-//	public String getActivityName() {
-//		return activityName;
-//	}
-//
-//	public void setActivityName(String activityName) {
-//		this.activityName = activityName;
-//	}
+	public String getCategoryId1() {
+		return categoryId1;
+	}
 
+	public void setCategoryId1(String categoryId1) {
+		this.categoryId1 = categoryId1;
+	}
+
+	public String getCategoryId2() {
+		return categoryId2;
+	}
+
+	public void setCategoryId2(String categoryId2) {
+		this.categoryId2 = categoryId2;
+	}
+
+	public String getSimilarGoodsCode() {
+		return similarGoodsCode;
+	}
+
+	public void setSimilarGoodsCode(String similarGoodsCode) {
+		this.similarGoodsCode = similarGoodsCode;
+	}
 }

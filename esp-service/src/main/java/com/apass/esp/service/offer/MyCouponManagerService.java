@@ -80,13 +80,15 @@ public class MyCouponManagerService {
 		/**
 		 * 如果用户领取张数，小于限制张数，则可以领取
 		 */
-		if(couponsNum < limitNum){
-			couponRel.setRemainNum(couponRel.getRemainNum() - 1);
-			int count = couponRelMapper.updateByPrimaryKeySelective(couponRel);
-			if(count > 0){
-				ProMyCoupon coupon = couponVoToPojo(vo);
-				return myCouponMapper.insertSelective(coupon);
-			}
+		if(couponsNum >= limitNum){
+			throw new BusinessException("您已领取该券!");
+		}
+		
+		couponRel.setRemainNum(couponRel.getRemainNum() - 1);
+		int count = couponRelMapper.updateByPrimaryKeySelective(couponRel);
+		if(count > 0){
+			ProMyCoupon coupon = couponVoToPojo(vo);
+			return myCouponMapper.insertSelective(coupon);
 		}
 		return 0;
 	}
@@ -238,6 +240,12 @@ public class MyCouponManagerService {
 		vo.setCouponRelId(p.getCouponRelId());
 		vo.setCouponId(p.getCouponId());
 		ProCoupon coupon = couponMapper.selectByPrimaryKey(p.getCouponId());
+		vo.setCategoryId1(coupon.getCategoryId1());
+		vo.setCategoryId2(coupon.getCategoryId2());
+		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
+		vo.setType(coupon.getType());
+		vo.setCouponSill(coupon.getCouponSill());
+		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
 		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());
