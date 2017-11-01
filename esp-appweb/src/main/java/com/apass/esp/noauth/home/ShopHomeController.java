@@ -927,22 +927,6 @@ public class ShopHomeController {
 		}
 		return Response.fail("商品优惠券列表优惠券领取失败!");
 	}
-	  /**
-     * 您还有优惠券未领取
-     * @param paramMap
-     * @return
-     */
-	@POST
-    @Path("/v3/noGetCoupons")
-	public Response noGetCoupons(Map<String, Object> paramMap){
-		String userId = CommonUtils.getValue(paramMap, "userId");
-		if(StringUtils.isBlank(userId)){
-			LOGGER.error("用户id不能为空!");
-			return Response.fail("用户id不能为空!");
-		}
-		List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
-		 return Response.success("加载未领取优惠券成功!",proCouponRelList);
-	}
     /**
      * 地址改变，查看是否有货
      *
