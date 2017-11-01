@@ -1809,6 +1809,7 @@ public class OrderService {
         orderDetailInfoDto.setPayType(PaymentType.getMessage(order.getPayType()));//支付方式
         orderDetailInfoDto.setDisCountAmt(disCount);//优惠金额
         orderDetailInfoDto.setCouponAmt(couponCount);//优惠券金额
+        orderDetailInfoDto.setTotalDisCount(disCount.add(couponCount));//优惠金额 + 优惠券金额
         orderDetailInfoDto.setTotalAmt(disCount.add(order.getOrderAmt()).add(couponCount));//总金额
         
         return orderDetailInfoDto;
