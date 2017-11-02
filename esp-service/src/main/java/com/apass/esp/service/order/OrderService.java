@@ -2555,7 +2555,7 @@ public class OrderService {
     	/**
     	 * 把优惠金额，平分到每种商品中
     	 */
-    	for (PurchaseRequestDto purchase : purchaseList) {
+    	for (PurchaseRequestDto purchase : available) {
     		BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
     		BigDecimal discount = BigDecimal.ZERO;
     		if(activityDecimal.containsKey(purchase.getProActivityId())){
@@ -2593,7 +2593,7 @@ public class OrderService {
     		for (ProMyCouponVo coupon : couponVos) {
     			List<String> goodslist = new ArrayList<>();
     			BigDecimal total = BigDecimal.ZERO;
-    			for (PurchaseRequestDto purchase : purchaseList) {
+    			for (PurchaseRequestDto purchase : available) {
     				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId()); 
 	    			if(StringUtils.isNotBlank(coupon.getCategoryId1())){//指定分类（一级类目)
 	    				if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"")){
