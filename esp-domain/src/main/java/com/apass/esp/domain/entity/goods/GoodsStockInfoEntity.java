@@ -95,7 +95,7 @@ public class GoodsStockInfoEntity {
     
     /**比价链接2URL**/
     private String     goodsCompareUrl2;
-
+    private String deleteFlag;
     /**
      * 保本率
      */
@@ -275,5 +275,12 @@ public class GoodsStockInfoEntity {
 
     public void setPriceCostRate(BigDecimal priceCostRate) {
         this.priceCostRate = priceCostRate;
+    }
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
     }
 }

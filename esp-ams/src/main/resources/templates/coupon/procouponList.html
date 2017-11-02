@@ -108,5 +108,65 @@
 			</table>
 		</form>
 	</div>
+
+
+
+	<!--手动发放优惠券-->
+	<div style="display: none" id="issueCouponDiv">
+			<table align="center" style="margin-top: 10px;margin-bottom: 10px">
+				<tr>
+					<td align="right">选择发放优惠券 </td>
+					<td>
+						<input class="easyui-combobox" style="width: 220px;" type="text" id="chooseCoupon" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">发放数量 </td>
+					<td>
+						<input class="easyui-textbox" style="width: 220px;" type="text" id="issueCouponNum" required/>
+						张
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2" align="center">
+						<a id="btn" href="#" class="easyui-linkbutton" id="issueAddCoupon">添加优惠券种类</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a id="btn" href="#" class="easyui-linkbutton" id="issueDeleteCoupon">删除优惠券种类</a>
+					</td>
+				</tr>
+
+				<tr style="display: none" id="effectiveTimeTr">
+					<td align="right">发放人群 </td>
+					<td>
+						<select class="easyui-combobox" style="width: 220px;"
+								data-options="prompt:'请选择'" editable="false" required
+								id="issueUserGroup">
+							<option value=""></option>
+							<option value="ZDYH">指定用户</option>
+						</select>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="right">发放手机号 </td>
+					<td>
+						<input class="easyui-textbox" style="width: 220px;" type="text" id="issueTelephone" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+
+				<tr>
+					<td align="right">备注 </td>
+					<td>
+						<input class="easyui-textbox" style="width: 220px;" type="text" id="issueRemark" required/>
+						<span style="color: red">*</span>
+					</td>
+				</tr>
+			</table>
+	</div>
 </body>
 </html>

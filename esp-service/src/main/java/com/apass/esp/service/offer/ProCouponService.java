@@ -1,9 +1,11 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -31,6 +33,8 @@ public class ProCouponService {
     private GoodsService goodsService;
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private ActivityCfgService activityCfgService;
 
     /**
      * 分页查询优惠券列表
@@ -89,5 +93,28 @@ public class ProCouponService {
 
     public ProCoupon selectProCouponByPrimaryID(Long couponId) {
         return couponMapper.selectByPrimaryKey(couponId);
+    }
+
+    public Integer deleteByCouponId(ProCoupon proCoupon) {
+        if(StringUtils.isNotBlank(proCoupon.getId().toString())){
+            //TODO 如果是活动优惠券，在活动有效期内不可删除
+            if(StringUtils.equalsIgnoreCase("用户领取",proCoupon.getExtendType())){
+                //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
+                List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
+                if(CollectionUtils.isNotEmpty(proActivityCfgList)){
+                    for (ProActivityCfg proActivityCfg:proActivityCfgList) {
+                        if(!(proActivityCfg.getStartTime().getTime()> new Date().getTime() ||
+                                proActivityCfg.getEndTime().getTime()<new Date().getTime())){
+                            throw new RuntimeException("该优惠券正在参与活动!");
+                        }
+                    }
+                }
+            }
+
+            //物理删除
+            return couponMapper.updateByPrimaryKeySelective(proCoupon);
+        }else {
+            throw new RuntimeException("优惠券id不存在！");
+        }
     }
 }

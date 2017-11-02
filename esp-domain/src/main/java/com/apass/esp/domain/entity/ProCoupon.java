@@ -1,5 +1,8 @@
 package com.apass.esp.domain.entity;
 
+import com.apass.esp.domain.enums.CouponExtendType;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -61,7 +64,13 @@ public class ProCoupon {
     }
 
     public void setExtendType(String extendType) {
-        this.extendType = extendType;
+        String content = "";
+        for (CouponExtendType couponExtendType : CouponExtendType.values()) {
+            if(StringUtils.equals(extendType,couponExtendType.getCode())){
+                content = couponExtendType.getMessage();
+            }
+        }
+        this.extendType = content;
     }
 
     public String getType() {
