@@ -1778,6 +1778,9 @@ public class OrderService {
         if(awardDetails != null && awardDetails.size()>0){
             totalCount = withdrawService.getTotalCount(awardDetails);
         }
+        /**
+         * sprint11 可用优惠券的张数
+         */
         List<ProMyCouponVo> unUsedList = myCouponManagerService.getCouponsUnused(userId);
         map.put("totalCount",totalCount.toString());
         map.put("couponCount",unUsedList.size()+"");
