@@ -4,10 +4,7 @@ import com.alibaba.druid.support.logging.Log;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponSillType;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.service.offer.CouponManagerService;
@@ -32,10 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by xiaohai on 2017/10/27.
@@ -94,6 +88,7 @@ public class ProCouponBaseInfoController {
     public Response addCoupon(ProCoupon proCoupon){
         try{
             if(validate(proCoupon)){
+                proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
                 proCoupon.setCreateUser(SpringSecurityUtils.getCurrentUser());
                 proCoupon.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 proCoupon.setCreatedTime(new Date());
@@ -106,7 +101,6 @@ public class ProCouponBaseInfoController {
 
         }catch (Exception e){
             LOGGER.error("添加优惠券异常，Exception-----",e);
-            System.out.println(e.getMessage());
             return Response.fail(e.getMessage());
         }
 
@@ -117,41 +111,64 @@ public class ProCouponBaseInfoController {
     @RequestMapping("/issue")
     @ResponseBody
     public Response issueCoupon(ProMyCouponAmsVo proMyCouponAmsVo){
-        //优惠券id作为key，每个id对应的优惠券数量作为list
-        Map<Long,List<ProMyCoupon>> proMycouponMap = Maps.newHashMap();
+        try{
+            //优惠券id作为key，每个id对应的优惠券数量作为list
+            Map<Long,List<ProMyCoupon>> proMycouponMap = Maps.newHashMap();
 
-        List<ProMyCoupon> proMycouponList = Lists.newArrayList();
-        List<Long> couponIdList = proMyCouponAmsVo.getCouponIdList();
-
-        //封装数据 map
-        for(Long couponId: couponIdList){
-            ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(couponId);
-            int i = 0;
-            while (i<proMyCouponAmsVo.getCouponNum()){
-                ProMyCoupon proMyCoupon = new ProMyCoupon();
-                proMyCoupon.setCouponId(couponId);
-                proMyCoupon.setTelephone(proMyCouponAmsVo.getTelephone());
-                proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
-                proMyCoupon.setStartDate(new Date());
-                proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()==-1?0:proCoupon.getEffectiveTime()));
-                proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
-                proMyCoupon.setCreatedTime(new Date());
-                proMyCoupon.setUpdatedTime(new Date());
-                proMycouponList.add(proMyCoupon);
-                i++;
+            List<ProMyCoupon> proMycouponList = Lists.newArrayList();
+            List<Long> couponIdList = proMyCouponAmsVo.getCouponIdList();
+            if(new TreeSet<Long>(couponIdList).size() != couponIdList.size()){
+                return Response.fail("本次发放存在重复优惠券种类，请修改后重试");
             }
-            proMycouponMap.put(couponId,proMycouponList);
+            //封装数据 map
+            for(Long couponId: couponIdList){
+                ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(couponId);
+                int i = 0;
+                while (i<proMyCouponAmsVo.getCouponNum()){
+                    ProMyCoupon proMyCoupon = new ProMyCoupon();
+                    proMyCoupon.setCouponId(couponId);
+                    proMyCoupon.setTelephone(proMyCouponAmsVo.getTelephone());
+                    proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
+                    proMyCoupon.setStartDate(new Date());
+                    proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()==-1?0:proCoupon.getEffectiveTime()));
+                    proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+                    proMyCoupon.setCreatedTime(new Date());
+                    proMyCoupon.setUpdatedTime(new Date());
+                    proMycouponList.add(proMyCoupon);
+                    i++;
+                }
+                proMycouponMap.put(couponId,proMycouponList);
+            }
+
+            //便利，批量插入数据
+
+            Set<Map.Entry<Long, List<ProMyCoupon>>> entries = proMycouponMap.entrySet();
+            for (Map.Entry<Long, List<ProMyCoupon>> entry:entries) {
+                List<ProMyCoupon> lists = entry.getValue();
+                myCouponManagerService.insertProMyCoupoBach(lists);
+            }
+
+        }catch (Exception e){
+            LOGGER.error("手动发放优惠券异常，Exception-----",e);
+            return Response.fail(e.getMessage());
         }
 
-        //便利，批量插入数据
+        return Response.success("手动添加优惠券成功.");
+    }
 
-        Set<Map.Entry<Long, List<ProMyCoupon>>> entries = proMycouponMap.entrySet();
-        for (Map.Entry<Long, List<ProMyCoupon>> entry:entries) {
-            List<ProMyCoupon> lists = entry.getValue();
-            myCouponManagerService.insertProMyCoupoBach(lists);
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Response deleteByCouponId(ProCoupon proCoupon){
+        try{
+            proCoupon.setIsDelete(CouponIsDelete.COUPON_Y.getCode());
+            Integer count = proCouponService.deleteByCouponId(proCoupon);
+
+        }catch (Exception e){
+            LOGGER.error("删除优惠券异常，Exception-----",e);
+            return Response.fail(e.getMessage());
         }
 
-        return null;
+        return Response.success("删除优惠券成功");
     }
 
     /**
@@ -187,7 +204,7 @@ public class ProCouponBaseInfoController {
         }
         if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_ZDSP.getCode())){
             if(StringUtils.isBlank(proCoupon.getGoodsCode())){
-                throw new RuntimeException("商品类目不能为空");
+                throw new RuntimeException("商品编码不能为空");
             }
         }
         if(StringUtils.equals(CouponSillType.COUPON_Y.getCode(),proCoupon.getSillType())){

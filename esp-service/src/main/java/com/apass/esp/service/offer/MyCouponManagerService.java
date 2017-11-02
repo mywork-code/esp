@@ -263,9 +263,10 @@ public class MyCouponManagerService {
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
-		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
+		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());
-		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd"));
+		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
+		vo.setEffectiveTime(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd")+"-"+DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
 		vo.setStatus(p.getStatus());
 		vo.setTelephone(p.getTelephone());
 		vo.setUserId(p.getUserId());
@@ -286,7 +287,7 @@ public class MyCouponManagerService {
 		paramMap.put("proMyCouponList",lists);
 		myCouponMapper.insertProMyCoupoBach(paramMap);
 	}
-	
+
 	/**
 	 * 逻辑删除券
 	 * @param mycouponId

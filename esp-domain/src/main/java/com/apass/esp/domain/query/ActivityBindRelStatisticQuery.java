@@ -10,8 +10,8 @@ public class ActivityBindRelStatisticQuery extends QueryParams {
 	private String startCreateDate;
 	private String endCreateDate;
 	private String type;
-	private long activityId;
-	private long userId;
+	private Long activityId;
+	private Long userId;
 
 	public String getStartCreateDate() {
 		return startCreateDate;
@@ -29,19 +29,19 @@ public class ActivityBindRelStatisticQuery extends QueryParams {
 		this.endCreateDate = endCreateDate;
 	}
 
-	public long getActivityId() {
+	public Long getActivityId() {
 		return activityId;
 	}
 
-	public void setActivityId(long activityId) {
+	public void setActivityId(Long activityId) {
 		this.activityId = activityId;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

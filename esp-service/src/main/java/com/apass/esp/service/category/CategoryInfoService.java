@@ -281,6 +281,31 @@ public class CategoryInfoService {
 
         return IdAndLevelTo(categoryDoListFirst);
     }
+    /**
+     * 后台查询商品类目列表:只查前两级类目
+     *
+     * @return
+     */
+    public List<CategoryDo> goodsCategoryList2() {
+        List<Category> goodsCaListFirst = categoryMapper.goodsCategoryList(Long.parseLong("1"));
+        List<Category> goodsCaListFirst2 = new ArrayList<>();
+        Category category = new Category();
+        category.setId(Long.parseLong("-1"));
+        category.setCategoryName("请选择");
+        category.setSortOrder(Long.parseLong("0"));
+        category.setLevel(Long.parseLong("1"));
+        goodsCaListFirst2.add(category);
+        goodsCaListFirst2.addAll(goodsCaListFirst);
+        List<CategoryDo> categoryDoListFirst = categroyToCathgroyDo(goodsCaListFirst2);
+
+        for (int i = 0; i < categoryDoListFirst.size(); i++) {
+            List<CategoryDo> categoryDoListSecond = goodsCategoryListByParentId(Long
+                    .parseLong(categoryDoListFirst.get(i).getId()));
+            categoryDoListFirst.get(i).setChildren(IdAndLevelTo(categoryDoListSecond));
+        }
+
+        return IdAndLevelTo(categoryDoListFirst);
+    }
 
     public List<CategoryDo> goodsCategoryListByParentId(Long parentId) {
         List<Category> goodsCaList = categoryMapper.goodsCategoryListById(parentId);

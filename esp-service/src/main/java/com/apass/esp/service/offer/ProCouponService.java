@@ -1,9 +1,12 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -31,6 +34,8 @@ public class ProCouponService {
     private GoodsService goodsService;
     @Autowired
     private JdGoodsInfoService jdGoodsInfoService;
+    @Autowired
+    private ActivityCfgService activityCfgService;
 
     /**
      * 分页查询优惠券列表
@@ -40,6 +45,22 @@ public class ProCouponService {
     public Pagination<ProCoupon> pageList(Map<String, Object> paramMap) {
         Pagination<ProCoupon> pagination = new Pagination<>();
         List<ProCoupon> proCouponList = couponMapper.pageList(paramMap);
+        if(CollectionUtils.isNotEmpty(proCouponList)){
+            for (ProCoupon proCoupon:proCouponList) {
+                for (CouponExtendType couponExtendType : CouponExtendType.values()) {
+                    if(StringUtils.equalsIgnoreCase(proCoupon.getExtendType(),couponExtendType.getCode())){
+                        proCoupon.setExtendType(couponExtendType.getMessage());
+                    }
+                }
+
+                for (CouponType couponType : CouponType.values()) {
+                    if(StringUtils.equalsIgnoreCase(proCoupon.getType(),couponType.getCode())){
+                        proCoupon.setType(couponType.getMessage());
+                    }
+                }
+            }
+
+        }
         Integer count = couponMapper.pageListCount(paramMap);
         pagination.setDataList(proCouponList);
         pagination.setTotalCount(count);
@@ -79,7 +100,10 @@ public class ProCouponService {
                 proCoupon.setSimilarGoodsCode(proCoupon.getGoodsCode());
             }
         }
-        List<ProCoupon> couList = couponMapper.getProCouponByName(proCoupon.getName());
+
+        ProCoupon coupon2 = new ProCoupon();
+        coupon2.setName(proCoupon.getName());
+        List<ProCoupon> couList = couponMapper.getProCouponByName(coupon2);
         if(CollectionUtils.isNotEmpty(couList)){
             LOGGER.error("优惠券名称重复，name:{}",proCoupon.getName());
             throw new RuntimeException("优惠券名称已存在，不能重复！");
@@ -89,5 +113,28 @@ public class ProCouponService {
 
     public ProCoupon selectProCouponByPrimaryID(Long couponId) {
         return couponMapper.selectByPrimaryKey(couponId);
+    }
+
+    public Integer deleteByCouponId(ProCoupon proCoupon) {
+        if(StringUtils.isNotBlank(proCoupon.getId().toString())){
+            if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType())){
+                //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
+                List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
+                if(CollectionUtils.isNotEmpty(proActivityCfgList)){
+                    for (ProActivityCfg proActivityCfg:proActivityCfgList) {
+                        if(!(proActivityCfg.getStartTime().getTime()> new Date().getTime() ||
+                                proActivityCfg.getEndTime().getTime()<new Date().getTime())){
+                            throw new RuntimeException("该优惠券正在参与活动!");
+                        }
+                    }
+                }
+            }
+
+            //物理删除
+            proCoupon.setExtendType(null);
+            return couponMapper.updateByPrimaryKeySelective(proCoupon);
+        }else {
+            throw new RuntimeException("优惠券id不存在！");
+        }
     }
 }
