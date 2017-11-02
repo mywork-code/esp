@@ -1654,7 +1654,8 @@ public class OrderService {
             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             couponCount = couponCount.add(orderDetailInfo.getCouponMoney());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
-            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
+            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的活动优惠金额
+            goodsInfo.setOrderDetailCouponDisCountAmt(orderDetailInfo.getCouponMoney());//每个订单详情的优惠券优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
@@ -1677,16 +1678,18 @@ public class OrderService {
             //单个商品的优惠价格
             BigDecimal goodsPriceDisCount = BigDecimal.ZERO;
     		BigDecimal price = BigDecimal.ZERO;
+    		BigDecimal price2 = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
-            if(orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0 || orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount) >0){
-            	BigDecimal priceDisCount=orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney());//优惠总金额
-            	price=priceDisCount.divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 11）
+            //每件商品的活动优惠金额（sprint 10）
+            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
+            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setDisCountAmt(price);//每件商品的活动优惠金额（sprint 10）
             }
-//            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-//            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-//                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
-//            }
+            //每件商品的优惠券优惠金额（sprint 11）
+            if(null !=orderDetailInfo.getCouponMoney() && orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount)>0){
+            	price2=orderDetailInfo.getCouponMoney().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setCouponDisCountAmt(price2);
+            }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
             if (null != goods) {
                 goodsInfo.setUnSupportProvince(goods.getUnSupportProvince());
