@@ -2,6 +2,8 @@ package com.apass.esp.service.offer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -117,6 +119,18 @@ public class CouponManagerService {
 				}
 		      }
 		}
+		//根据ProCouponVo里面的开始时间排序
+		Collections.sort(proCouponList,new Comparator<ProCouponVo>(){
+			@Override
+			public int compare(ProCouponVo o1, ProCouponVo o2) {
+				if(o1.getStartTimeDate().getTime() > o2.getStartTimeDate().getTime()){
+					return -1;
+				}else{
+					return 1;
+				}
+			}
+			
+		});
 		return proCouponList;
 	}
 	
