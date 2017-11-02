@@ -1,6 +1,7 @@
 package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
+import java.util.Date;
 /**
  * 
  * @author pyc
@@ -39,6 +40,8 @@ public class ProCouponVo {
      * 开始时间
      */
     private String startTime;
+    
+    private  Date  startTimeDate;
     
     /**
      * 结束时间
@@ -137,4 +140,11 @@ public class ProCouponVo {
 		this.receiveFlag = receiveFlag;
 	}
 	
+	public Date getStartTimeDate() {
+		return startTimeDate;
+	}
+
+	public void setStartTimeDate(Date startTimeDate) {
+		this.startTimeDate = startTimeDate;
+	}
 }
