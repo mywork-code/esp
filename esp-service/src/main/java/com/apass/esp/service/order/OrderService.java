@@ -803,7 +803,9 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
-            orderInfo.setCouponId(Long.parseLong(myCouponId));
+            if(StringUtils.isNotBlank(myCouponId)){
+            	orderInfo.setCouponId(Long.parseLong(myCouponId));
+            }
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
@@ -2608,10 +2610,13 @@ public class OrderService {
 	    					goodslist.add(purchase.getGoodsStockId()+"");
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
-	    				if(coupon.getSimilarGoodsCode().contains(goods.getGoodsCode())){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
+	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
+	    				for (String str : strs) {
+							if(StringUtils.equals(goods.getGoodsCode(), str)){
+								total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+							}
+						}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
@@ -2645,16 +2650,14 @@ public class OrderService {
         });
     	
     	ProMyCouponVo coupon = null;
-    	BigDecimal couponMoney = BigDecimal.ZERO;
     	if(CollectionUtils.isNotEmpty(yes)){
     		coupon = yes.get(0);
-    		couponMoney = coupon.getDiscountAmonut();
     	}
     	//实际支付金额
     	BigDecimal paySum = totalSum.subtract(discountSum);
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
-    	maps.put("paySum",paySum.subtract(couponMoney));//实际支付金额
+    	maps.put("paySum",paySum);//实际支付金额
     	maps.put("totalSum", totalSum);//总金额（算上优惠金额）
     	maps.put("coupon",coupon);//优惠券金额（默认）
     	maps.put("used",yes);//可供选择的券
