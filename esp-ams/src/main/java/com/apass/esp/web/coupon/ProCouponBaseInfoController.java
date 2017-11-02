@@ -204,7 +204,7 @@ public class ProCouponBaseInfoController {
         }
         if(StringUtils.equals(proCoupon.getType(),CouponType.COUPON_ZDSP.getCode())){
             if(StringUtils.isBlank(proCoupon.getGoodsCode())){
-                throw new RuntimeException("商品类目不能为空");
+                throw new RuntimeException("商品编码不能为空");
             }
         }
         if(StringUtils.equals(CouponSillType.COUPON_Y.getCode(),proCoupon.getSillType())){

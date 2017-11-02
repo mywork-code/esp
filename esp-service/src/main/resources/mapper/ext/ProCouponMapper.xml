@@ -11,9 +11,6 @@
             <if test="name != null and name != ''">
                 AND name= #{name}
             </if>
-            <if test="userId != null and userId != ''">
-                and user_id = #{userId}
-            </if>
         </where>
     </sql>
 

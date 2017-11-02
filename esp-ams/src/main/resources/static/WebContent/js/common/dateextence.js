@@ -183,7 +183,6 @@ function getLenString(str){
 	return len;
 }
 function goodsCategoryComboFun() {
-	debugger;
 	$("#goodsCategoryCombo").combotree({
 //        required : true,
 		loader : function(param, success, error) {

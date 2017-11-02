@@ -45,6 +45,22 @@ public class ProCouponService {
     public Pagination<ProCoupon> pageList(Map<String, Object> paramMap) {
         Pagination<ProCoupon> pagination = new Pagination<>();
         List<ProCoupon> proCouponList = couponMapper.pageList(paramMap);
+        if(CollectionUtils.isNotEmpty(proCouponList)){
+            for (ProCoupon proCoupon:proCouponList) {
+                for (CouponExtendType couponExtendType : CouponExtendType.values()) {
+                    if(StringUtils.equalsIgnoreCase(proCoupon.getExtendType(),couponExtendType.getCode())){
+                        proCoupon.setExtendType(couponExtendType.getMessage());
+                    }
+                }
+
+                for (CouponType couponType : CouponType.values()) {
+                    if(StringUtils.equalsIgnoreCase(proCoupon.getType(),couponType.getCode())){
+                        proCoupon.setType(couponType.getMessage());
+                    }
+                }
+            }
+
+        }
         Integer count = couponMapper.pageListCount(paramMap);
         pagination.setDataList(proCouponList);
         pagination.setTotalCount(count);
@@ -84,7 +100,10 @@ public class ProCouponService {
                 proCoupon.setSimilarGoodsCode(proCoupon.getGoodsCode());
             }
         }
-        List<ProCoupon> couList = couponMapper.getProCouponByName(proCoupon.getName());
+
+        ProCoupon coupon2 = new ProCoupon();
+        coupon2.setName(proCoupon.getName());
+        List<ProCoupon> couList = couponMapper.getProCouponByName(coupon2);
         if(CollectionUtils.isNotEmpty(couList)){
             LOGGER.error("优惠券名称重复，name:{}",proCoupon.getName());
             throw new RuntimeException("优惠券名称已存在，不能重复！");
@@ -98,8 +117,7 @@ public class ProCouponService {
 
     public Integer deleteByCouponId(ProCoupon proCoupon) {
         if(StringUtils.isNotBlank(proCoupon.getId().toString())){
-            //TODO 如果是活动优惠券，在活动有效期内不可删除
-            if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getMessage(),proCoupon.getExtendType())){
+            if(StringUtils.equalsIgnoreCase(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType())){
                 //根据优惠券id关联查询 t_esp_pro_coupon_rel和t_esp_pro_activity_cfg,再判断当前是否在有效期内
                 List<ProActivityCfg> proActivityCfgList = activityCfgService.selectProActivityCfgByEntity(proCoupon.getId());
                 if(CollectionUtils.isNotEmpty(proActivityCfgList)){

@@ -41,7 +41,7 @@ public class ProCoupon {
 
     private Date updatedTime;
 
-    private String isDelete="N";
+    private String isDelete;
 
     public Long getId() {
         return id;
@@ -64,13 +64,7 @@ public class ProCoupon {
     }
 
     public void setExtendType(String extendType) {
-        String content = "";
-        for (CouponExtendType couponExtendType : CouponExtendType.values()) {
-            if(StringUtils.equalsIgnoreCase(extendType,couponExtendType.getCode())){
-                content = couponExtendType.getMessage();
-            }
-        }
-        this.extendType = content;
+        this.extendType = extendType;
     }
 
     public String getType() {
