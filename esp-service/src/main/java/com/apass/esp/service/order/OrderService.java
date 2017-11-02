@@ -803,7 +803,9 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
-            orderInfo.setCouponId(Long.parseLong(myCouponId));
+            if(StringUtils.isNotBlank(myCouponId)){
+            	orderInfo.setCouponId(Long.parseLong(myCouponId));
+            }
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
@@ -1654,7 +1656,8 @@ public class OrderService {
             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             couponCount = couponCount.add(orderDetailInfo.getCouponMoney());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
-            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
+            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的活动优惠金额
+            goodsInfo.setOrderDetailCouponDisCountAmt(orderDetailInfo.getCouponMoney());//每个订单详情的优惠券优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
@@ -1677,16 +1680,18 @@ public class OrderService {
             //单个商品的优惠价格
             BigDecimal goodsPriceDisCount = BigDecimal.ZERO;
     		BigDecimal price = BigDecimal.ZERO;
+    		BigDecimal price2 = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
-            if(orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0 || orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount) >0){
-            	BigDecimal priceDisCount=orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney());//优惠总金额
-            	price=priceDisCount.divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 11）
+            //每件商品的活动优惠金额（sprint 10）
+            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
+            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setDisCountAmt(price);//每件商品的活动优惠金额（sprint 10）
             }
-//            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-//            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-//                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
-//            }
+            //每件商品的优惠券优惠金额（sprint 11）
+            if(null !=orderDetailInfo.getCouponMoney() && orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount)>0){
+            	price2=orderDetailInfo.getCouponMoney().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setCouponDisCountAmt(price2);
+            }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
             if (null != goods) {
                 goodsInfo.setUnSupportProvince(goods.getUnSupportProvince());
@@ -2605,10 +2610,13 @@ public class OrderService {
 	    					goodslist.add(purchase.getGoodsStockId()+"");
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
-	    				if(coupon.getSimilarGoodsCode().contains(goods.getGoodsCode())){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
+	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
+	    				for (String str : strs) {
+							if(StringUtils.equals(goods.getGoodsCode(), str)){
+								total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+							}
+						}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
@@ -2642,16 +2650,14 @@ public class OrderService {
         });
     	
     	ProMyCouponVo coupon = null;
-    	BigDecimal couponMoney = BigDecimal.ZERO;
     	if(CollectionUtils.isNotEmpty(yes)){
     		coupon = yes.get(0);
-    		couponMoney = coupon.getDiscountAmonut();
     	}
     	//实际支付金额
     	BigDecimal paySum = totalSum.subtract(discountSum);
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
-    	maps.put("paySum",paySum.subtract(couponMoney));//实际支付金额
+    	maps.put("paySum",paySum);//实际支付金额
     	maps.put("totalSum", totalSum);//总金额（算上优惠金额）
     	maps.put("coupon",coupon);//优惠券金额（默认）
     	maps.put("used",yes);//可供选择的券

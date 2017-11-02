@@ -4,27 +4,27 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class ProMyCouponVo {
-    private Long id;
+    private Long id;//我的优惠券的Id
 
-    private Long userId;
+    private Long userId;//用户的Id
 
     private Long couponRelId;
     
-    private String couponName;
+    private String couponName;//优惠券名字
     
-    private Long activityId;
+    private Long activityId;//活动的Id
     
-    private String categoryId1;
+    private String categoryId1;//一级类目的Id
     
-    private String categoryId2;
+    private String categoryId2;//二级类目的Id
     
-    private String similarGoodsCode;
+    private String similarGoodsCode;//商品的相似code
     
-    private String type;
+    private String type;//我的优惠券的Id
 
-    private BigDecimal couponSill;
+    private BigDecimal couponSill;//优惠券门槛
 
-    private BigDecimal discountAmonut;
+    private BigDecimal discountAmonut;//优惠券优惠金额
     
     private String status;
 
@@ -36,13 +36,13 @@ public class ProMyCouponVo {
 
     private String endDate;
     
-    private String effectiveTime;
+    private String effectiveTime;//优惠券的有效时间段
     
     private String rule;//优惠券规则
 
     private String remarks;
     
-    private List<String> goodStockIds;
+    private List<String> goodStockIds;//商品库存的id 集合
     
     public List<String> getGoodStockIds() {
 		return goodStockIds;

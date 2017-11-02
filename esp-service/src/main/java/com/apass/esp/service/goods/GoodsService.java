@@ -346,7 +346,112 @@ public class GoodsService {
       }
       return false;
   }
-  
+  /**
+   * 获取商品基本信息（sprint 11） 非京东商品变成多规格商品
+   *
+   * @param goodsId
+   * @return
+   * @throws BusinessException
+   */
+  public void loadGoodsBasicInfoById2(Long goodsId, Map<String, Object> returnMap) throws BusinessException {
+    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+    Long totalCurrentAmt = 0L;
+    Long CurrentAmtDesc = 11L;
+    if (null == goodsBasicInfo) {
+      LOGGER.error("商品信息不存在:{}", goodsId);
+      throw new BusinessException("商品信息不存在");
+    }
+    Date now = new Date();
+    if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+        || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
+      goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+    }
+    List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
+    boolean offShelfFlag = true;
+    for (GoodsStockInfoEntity goodsStock : goodsList) {
+      if (goodsStock.getStockCurrAmt() > 0) {
+        offShelfFlag = false;
+        break;
+      }
+    }
+    if (offShelfFlag) {
+      goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+    }
+
+    goodsBasicInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
+    goodsBasicInfo.setGoodsSiftUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsSiftUrl()));
+
+    // 20170322
+    goodsBasicInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsLogoUrl()));
+    goodsBasicInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsSiftUrl()));
+
+    returnMap.put("goodsBasicInfo", goodsBasicInfo);
+    List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+    for (GoodsStockInfoEntity goodsStock : goodsStockList) {
+      BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
+          goodsStock.getGoodsStockId());
+      goodsStock.setGoodsPrice(price);
+      goodsStock.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+          BigDecimal.ROUND_DOWN));// 对接京东后新增字段（商品首付价）
+      totalCurrentAmt += goodsStock.getStockCurrAmt();
+      // 20170322
+
+      goodsStock.setStockLogoNew(imageService.getImageUrl(goodsStock.getStockLogo()));
+      goodsStock.setStockLogo(EncodeUtils.base64Encode(goodsStock.getStockLogo()));
+      // 接入京东商品修改
+      if (CurrentAmtDesc - goodsStock.getStockCurrAmt() > 0) {
+        goodsStock.setStockCurrAmtDesc("库存紧张");
+      } else {
+        goodsStock.setStockCurrAmtDesc("库存充足");
+      }
+    }
+    //返回活动id
+    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+    }
+	//获取商品的优惠券
+    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+	if(proCoupons.size()>3){
+		returnMap.put("proCouponList",proCoupons.subList(0, 3));
+	}else{
+		 returnMap.put("proCouponList",proCoupons);
+	}
+    returnMap.put("totalCurrentAmt", totalCurrentAmt);
+    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
+    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
+    returnMap.put("goodsStockList", goodsStockList);
+    returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
+    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+    // 20170322
+    for (BannerInfoEntity banner : goodsBannerList) {
+      banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
+      banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
+      banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
+    }
+
+    returnMap.put("goodsBannerList", goodsBannerList);
+    BigDecimal maxPrice = BigDecimal.ZERO;
+    BigDecimal minPrice = BigDecimal.ZERO;
+    if (null != goodsStockList && goodsStockList.size() > 0) {
+      minPrice = goodsStockList.get(0).getGoodsPrice();
+      for (GoodsStockInfoEntity stock : goodsStockList) {
+        if (stock.getGoodsPrice().compareTo(maxPrice) > 0) {
+          maxPrice = stock.getGoodsPrice();
+        }
+        if (minPrice.compareTo(stock.getGoodsPrice()) > 0) {
+          minPrice = stock.getGoodsPrice();
+        }
+      }
+      returnMap.put("minPrice", minPrice);
+      returnMap.put("maxPrice", maxPrice);
+    }
+    // 接入京东商品修改 //计算首付价
+    BigDecimal minPriceFistPayment = new BigDecimal("0.1").multiply(minPrice).setScale(2,
+        BigDecimal.ROUND_DOWN);
+    returnMap.put("minPriceFirstPayment", minPriceFistPayment);
+    returnMap.put("source", "notJd");
+  }
   /**
    * 获取商品基本信息
    *

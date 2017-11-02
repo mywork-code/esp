@@ -47,13 +47,21 @@ public class GoodsInfoInOrderDto {
      */
     private BigDecimal goodsPrice;
     /**
-     * 优惠金额
+     * 活动优惠金额
      */
     private BigDecimal disCountAmt;
     /**
-     * 每个订单详情的优惠金额
+     * 优惠券优惠金额
+     */
+    private BigDecimal CouponDisCountAmt;
+    /**
+     * 每个订单详情的活动优惠金额
      */
     private BigDecimal orderDetailDisCountAmt;
+    /**
+     * 每个订单详情的优惠券优惠金额
+     */
+    private BigDecimal orderDetailCouponDisCountAmt;
     /**
      * 市场价
      */
@@ -159,6 +167,22 @@ public class GoodsInfoInOrderDto {
 
 	public void setOrderDetailDisCountAmt(BigDecimal orderDetailDisCountAmt) {
 		this.orderDetailDisCountAmt = orderDetailDisCountAmt;
+	}
+
+	public BigDecimal getOrderDetailCouponDisCountAmt() {
+		return orderDetailCouponDisCountAmt;
+	}
+
+	public void setOrderDetailCouponDisCountAmt(BigDecimal orderDetailCouponDisCountAmt) {
+		this.orderDetailCouponDisCountAmt = orderDetailCouponDisCountAmt;
+	}
+
+	public BigDecimal getCouponDisCountAmt() {
+		return CouponDisCountAmt;
+	}
+
+	public void setCouponDisCountAmt(BigDecimal couponDisCountAmt) {
+		CouponDisCountAmt = couponDisCountAmt;
 	}
 	
 }
