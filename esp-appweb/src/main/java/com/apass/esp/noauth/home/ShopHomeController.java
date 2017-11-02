@@ -1021,7 +1021,7 @@ public class ShopHomeController {
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
             } else {
-                goodService.loadGoodsBasicInfoById(goodsId, returnMap);
+                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 获取购物车中商品种类数
             if (!StringUtils.isEmpty(userId)) {

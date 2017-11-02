@@ -361,11 +361,13 @@ public class GoodsService {
       LOGGER.error("商品信息不存在:{}", goodsId);
       throw new BusinessException("商品信息不存在");
     }
+    returnMap.put("status", goodsBasicInfo.getStatus());//商品状态
     Date now = new Date();
     if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
         || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
-      goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+      returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
+    //判断该商品下是否有货
     List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
     boolean offShelfFlag = true;
     for (GoodsStockInfoEntity goodsStock : goodsList) {
@@ -375,17 +377,24 @@ public class GoodsService {
       }
     }
     if (offShelfFlag) {
-      goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+    	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
-
-    goodsBasicInfo.setGoodsLogoUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
-    goodsBasicInfo.setGoodsSiftUrlNew(imageService.getImageUrl(goodsBasicInfo.getGoodsSiftUrl()));
-
-    // 20170322
-    goodsBasicInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsLogoUrl()));
-    goodsBasicInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(goodsBasicInfo.getGoodsSiftUrl()));
-
-    returnMap.put("goodsBasicInfo", goodsBasicInfo);
+    // 查询商品图片
+ 	List<String> JdImagePathList=new ArrayList<>();
+    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+    for (BannerInfoEntity banner : goodsBannerList) {
+    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
+    }
+ 
+    
+    
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
     List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
     for (GoodsStockInfoEntity goodsStock : goodsStockList) {
       BigDecimal price = commonService.calculateGoodsPrice(goodsStock.getGoodsId(),
@@ -422,14 +431,6 @@ public class GoodsService {
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("goodsStockList", goodsStockList);
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
-    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
-    // 20170322
-    for (BannerInfoEntity banner : goodsBannerList) {
-      banner.setActivityUrl(EncodeUtils.base64Encode(banner.getActivityUrl()));
-      banner.setBannerImgUrlNew(imageService.getImageUrl(banner.getBannerImgUrl()));
-      banner.setBannerImgUrl(EncodeUtils.base64Encode(banner.getBannerImgUrl()));
-    }
-
     returnMap.put("goodsBannerList", goodsBannerList);
     BigDecimal maxPrice = BigDecimal.ZERO;
     BigDecimal minPrice = BigDecimal.ZERO;
