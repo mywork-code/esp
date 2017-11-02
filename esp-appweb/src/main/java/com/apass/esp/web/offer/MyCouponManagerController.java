@@ -45,6 +45,11 @@ public class MyCouponManagerController {
 		}
 		try {
 			Map<String,Object> params = myCouponManagerService.getCoupons(userId);
+			/**
+			 * sprint 11 您还有未领取的券,如果size 0 则前端不显示
+			 */
+			List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
+			params.put("couponsize", proCouponRelList.size());
 			return Response.successResponse(params);
 		} catch (Exception e) {
 			logger.error("get mycoupons is failed------{}", e);

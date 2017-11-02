@@ -50,11 +50,6 @@ public class GroupGoodsController {
 			 */
 			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
 			maps.put("coupons", couponVos);
-			/**
-			 * sprint 11 您还有未领取的券,如果size 0 则前端不显示
-			 */
-			List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
-			maps.put("couponsize", proCouponRelList.size());
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
