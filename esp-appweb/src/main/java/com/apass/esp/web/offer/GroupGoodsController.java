@@ -1,5 +1,6 @@
 package com.apass.esp.web.offer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,6 @@ import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 @Controller
 @RequestMapping("/activity/group")
@@ -50,6 +50,11 @@ public class GroupGoodsController {
 			 */
 			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
 			maps.put("coupons", couponVos);
+			/**
+			 * sprint 11 您还有未领取的券,如果size 0 则前端不显示
+			 */
+			List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
+			maps.put("couponsize", proCouponRelList.size());
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
