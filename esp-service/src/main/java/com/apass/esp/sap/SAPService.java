@@ -345,7 +345,7 @@ public class SAPService {
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -420,7 +420,7 @@ public class SAPService {
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -460,7 +460,7 @@ public class SAPService {
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -604,7 +604,7 @@ public class SAPService {
     returnTypeList.add("0");
     List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderList, returnStatusList, returnTypeList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -647,7 +647,7 @@ public class SAPService {
     orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
@@ -682,7 +682,7 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
@@ -740,7 +740,7 @@ public class SAPService {
 
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -782,7 +782,7 @@ public class SAPService {
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     CsvWriter csvWriter = null;
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -851,7 +851,7 @@ public class SAPService {
   private void generateQuanEnHuanKuanCsv() throws Exception {
     List<RepayFlow> repayFlowList = repayFlowMapper.querySuccessByDate(getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
