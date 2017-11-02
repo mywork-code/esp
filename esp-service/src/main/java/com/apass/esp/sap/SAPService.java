@@ -1,4 +1,5 @@
 package com.apass.esp.sap;
+import com.apass.esp.common.utils.APStringUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
@@ -392,7 +393,11 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
-          contentList.add(apassTxnAttr.getTxnId());
+          if(apassTxnAttr != null){
+            contentList.add(apassTxnAttr.getTxnId());
+          }else{
+            contentList.add("");
+          }
           contentList.add("T13");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -658,9 +663,9 @@ public class SAPService {
         i++;
         contentList.add(entity.getGoodsCode());
         contentList.add(entity.getGoodsName());
-        contentList.add(entity.getGoodsCostPrice().toString());
+        contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
         contentList.add(entity.getGoodsSkuAttr());
-        contentList.add(entity.getStockCurrAmt().toString());
+        contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {
@@ -820,7 +825,11 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
-          contentList.add(apassTxnAttr.getTxnId());
+          if(apassTxnAttr != null){
+            contentList.add(apassTxnAttr.getTxnId());
+          }else{
+            contentList.add("");
+          }
           contentList.add("T13");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
