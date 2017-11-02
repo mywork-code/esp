@@ -1,6 +1,7 @@
 package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProMyCouponVo {
     private Long id;
@@ -41,7 +42,17 @@ public class ProMyCouponVo {
 
     private String remarks;
     
-    public String getType() {
+    private List<String> goodStockIds;
+    
+    public List<String> getGoodStockIds() {
+		return goodStockIds;
+	}
+
+	public void setGoodStockIds(List<String> goodStockIds) {
+		this.goodStockIds = goodStockIds;
+	}
+
+	public String getType() {
 		return type;
 	}
 
@@ -178,7 +189,11 @@ public class ProMyCouponVo {
 	}
 
 	public String getEffectiveTime() {
-		return getStartDate() + "-" + getEndDate();
+		return effectiveTime;
+	}
+
+	public void setEffectiveTime(String effectiveTime) {
+		this.effectiveTime = effectiveTime;
 	}
 
 	public String getRule() {

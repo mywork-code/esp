@@ -43,7 +43,6 @@ public class GroupGoodsController {
 		if(StringUtils.isEmpty(activityId) || StringUtils.isEmpty(userId) ){
 			return Response.fail("参数传递有误!");
 		}
-		logger.info("getGroupAndGoodsByGroupId:--------->{}",GsonUtils.toJson(paramMap));
 		try {
 			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
 			/**
