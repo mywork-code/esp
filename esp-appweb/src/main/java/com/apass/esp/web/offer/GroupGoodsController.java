@@ -1,6 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class GroupGoodsController {
 		String bannerId = CommonUtils.getValue(paramMap, "bannerId");
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
-		if(StringUtils.isEmpty(activityId) || StringUtils.isEmpty(userId) ){
+		if(StringUtils.isEmpty(activityId)){
 			return Response.fail("参数传递有误!");
 		}
 		try {
