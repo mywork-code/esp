@@ -480,7 +480,11 @@ public class RegisterInfoController {
 				 */
 				Map<String, Object> rrse2 = (Map<String, Object>) resp.getData();
 				Long.parseLong(rrse2.get("userId").toString());
-//				myCouponManagerService.addXYHCoupons(Long.parseLong(rrse2.get("userId").toString()),mobile2.toString());
+				try {
+					myCouponManagerService.addXYHCoupons(Long.parseLong(rrse2.get("userId").toString()),mobile2.toString());
+				} catch (Exception e) {
+					logger.error("新用户注册成功奖励优惠券方法调用失败！");
+				}
 				
 				ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 				AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
