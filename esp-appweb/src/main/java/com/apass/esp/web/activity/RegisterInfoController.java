@@ -480,7 +480,7 @@ public class RegisterInfoController {
 				 */
 				Map<String, Object> rrse2 = (Map<String, Object>) resp.getData();
 				Long.parseLong(rrse2.get("userId").toString());
-				myCouponManagerService.addXYHCoupons(Long.parseLong(rrse2.get("userId").toString()),mobile2.toString());
+//				myCouponManagerService.addXYHCoupons(Long.parseLong(rrse2.get("userId").toString()),mobile2.toString());
 				
 				ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 				AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
