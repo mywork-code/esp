@@ -1,6 +1,6 @@
 package com.apass.esp.domain.vo;
 
-public class ActivityCfgVo {
+public class ActivityCfgVo extends ProCouponRelVo {
 	private Long id;
 
     private String activityName;
@@ -23,6 +23,18 @@ public class ActivityCfgVo {
     
     private String userName;
 
+    /**
+     * 是否使用优惠券；Y：是；N：否
+     */
+    private String coupon;
+
+    public String getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(String coupon) {
+        this.coupon = coupon;
+    }
 
     public Long getId() {
         return id;

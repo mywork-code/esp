@@ -1,12 +1,20 @@
 package com.apass.esp.web.offer;
 
 import java.util.Date;
+import java.util.List;
 
+import com.apass.esp.domain.dto.ProcouponRelVoList;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.apass.gfb.framework.jwt.common.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -101,11 +109,16 @@ public class ActivityCfgController {
  	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
  	@LogAnnotion(operationType = "添加活动信息", valueType = LogValueTypeEnum.VALUE_DTO)
- 	public Response activityAddSave(ActivityCfgVo vo){
+ 	public Response activityAddSave(@RequestBody String request){
+		String requestDecode = EncodeUtils.urlDecode(request);
+		requestDecode = requestDecode.substring(0,requestDecode.length()-1);
+		ActivityCfgVo vo = GsonUtils.convertObj(requestDecode, ActivityCfgVo.class);
+
  		try {
  			validateParams(vo, false);
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			Long activityId = activityCfgService.saveActivity(vo);
+
  			return Response.success("添加成功",activityId);
 		} catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());

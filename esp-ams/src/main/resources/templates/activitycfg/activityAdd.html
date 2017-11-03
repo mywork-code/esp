@@ -49,26 +49,33 @@
 					<tr>
 						<td align="right">活动名称：</td>
 						<td align="left"><input type="text" id="activityName" name="activityName"
-												class="easyui-textbox" style="width: 160px;"/></td>
+												class="easyui-textbox" style="width: 160px;" required/>
+							<span style="color: red">*</span>
+						</td>
 					</tr>
 					<tr>
 						<td align="right">开始时间：</td>
 						<td align="left"><input type="text" id="startTime" name="startTime" editable="false" class="easyui-datetimebox"
-												style="width: 160px;"></td>
+												style="width: 160px;" required>
+							<span style="color: red">*</span>
+						</td>
 					</tr>
 					<tr>
 						<td align="right">结束时间：</td>
 						<td align="left"><input type="text" id="endTime" name="endTime" editable="false" class="easyui-datetimebox"
-												style="width: 160px;"></td>
+												style="width: 160px;" required>
+							<span style="color: red">*</span>
+						</td>
 					</tr>
 					<tr>
 						<td align="right">活动类型：</td>
 						<td align="left">
-							<select class="easyui-combobox" style="width: 160px;" id="activityType" name="activityType" required="required" editable="false" >
+							<select class="easyui-combobox" style="width: 160px;" id="activityType" name="activityType" required="required" required editable="false" >
 								<option value="">请选择</option>
 								<option value="N">无优惠</option>
 								<option value="Y">满减</option>
 							</select>
+							<span style="color: red">*</span>
 						</td>
 					</tr>
 				</table>
@@ -77,51 +84,184 @@
 						<tr>
 							<td align="right">优惠门槛：</td>
 							<td align="left"><input type="text" id="offerSill1" name="offerSill1"
-													class="easyui-numberbox" style="width: 160px;" data-options="min:1"/></td>
+													class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/>
+								<span style="color: red">*</span>
+							</td>
 						</tr>
 						<tr>
 							<td align="right">优惠金额：</td>
 							<td align="left"><input type="text" id="discount1" name="discount1"
-													class="easyui-numberbox" style="width: 160px;" data-options="min:1"/></td>
+													class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/>
+								<span style="color: red">*</span>
+							</td>
 						</tr>
 						<tr>
 							<td align="right">优惠门槛：</td>
 							<td align="left"><input type="text" id="offerSill2" name="offerSill2"
-													class="easyui-numberbox" style="width: 160px;" data-options="min:1"/></td>
+													class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/>
+								<span style="color: red">*</span>
+							</td>
 						</tr>
 						<tr>
 							<td align="right">优惠金额：</td>
 							<td align="left"><input type="text" id="discount2" name="discount2"
-													class="easyui-numberbox" style="width: 160px;" data-options="min:1"/></td>
+													class="easyui-numberbox" style="width: 160px;" data-options="min:1" required/>
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+
+					</table>
+				</div>
+
+				<div style="margin-right: 390px;">
+					<table style="width: 80%;height: auto;">
+						<tr>
+							<td align="right">是否使用优惠券：</td>
+							<td align="left">
+								<input type="radio" class="ifCou" name="isCoupon" value="Y"/> 是
+								<input type="radio" class="ifCou" name="isCoupon" value="N"/> 否
+							</td>
 						</tr>
 					</table>
 				</div>
-				<table style="width: 80%;height: auto;">
-					<tr>
-						<td align="right">是否使用优惠券:</td>
-						<td align="left"><input type="radio" name="isCoupon" value="Y"/> 是
-							<input type="radio" name="isCoupon" value="N"/> 否</td>
-					</tr>
-				</table>
-				<div id="couponsDiv" style="display: none">
+
+				<div class="couponsDiv" style="display:none;margin-left: 10px">
 					<table style="width: 80%;height: auto;">
-						<tr>
-							<td align="right"><span style="color: red">*</span>选择发放优惠券：</td>
-							<td align="left">
-							<input id="choseCoupon"  class="easyui-combobox" style="width: 50%;" /></td>
+						<tr style="display:none" class="couponsDiv">
+							<td align="right">选择发放优惠券：</td>
+							<td>
+								<input class="easyui-combobox issueCouponInput" style="width: 160px;" type="text" id="chooseCoupon1" required editable="false"/>
+								<span style="color: red">*</span>
+							</td>
 						</tr>
-						<tr>
-							<td align="right"><span style="color: red">*</span>发放总量：</td>
-							<td align="left">
-								<input type="text" id="issueCoupon"
-													class="easyui-textbox" style="width: 160px;"/></td>
+						<tr style="display:none" class="couponsDiv">
+							<td align="right">发放总量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 160px;" type="text" id="issueCouponNum1" required/>
+								张
+								<span style="color: red">*</span>
+								<a href="javascript:void(0);" class="easyui-linkbutton addTotalCouponNumButton" id="addTotalCouponNumId1" style="visibility:hidden">添加发放总量</a>
+							</td>
 						</tr>
-						<tr>
-							<td align="right"><span style="color: red">*</span>每人限定张数：</td>
-							<td align="left">
-								<input type="text" id="limitCount"
-									   class="easyui-textbox" style="width: 160px;"/></td>
+						<tr style="display:none" class="couponsDiv">
+							<td align="right">每人限领数量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 140px;" type="text" id="issueLimitNum1" required/>
+								张
+								<span style="color: red">*</span>
+							</td>
 						</tr>
+
+						<tr id="addOrDeleteButtonClass" style="display: none;">
+							<td colspan="2" align="center">
+								<a href="javascript:void(0);" class="easyui-linkbutton" id="issueAddCoupon">添加优惠券种类</a>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<a href="javascript:void(0);" class="easyui-linkbutton" id="issueDeleteCoupon">删除优惠券种类</a>
+							</td>
+						</tr>
+
+						<tr style="display:none" class="addOrdeleteCouponTr2">
+							<td align="right">选择发放优惠券：</td>
+							<td>
+								<input class="easyui-combobox issueCouponInput" style="width: 160px;" type="text" id="chooseCoupon2" required editable="false"/>
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr2">
+							<td align="right">发放总量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 160px;" type="text" id="issueCouponNum2" required/>
+								张
+								<span style="color: red">*</span>
+								<a href="javascript:void(0);" class="easyui-linkbutton addTotalCouponNumButton" id="addTotalCouponNumId2" style="visibility:hidden">添加发放总量</a>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr2">
+							<td align="right">每人限领数量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 140px;" type="text" id="issueLimitNum2" required/>
+								张
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+
+
+
+						<tr style="display:none" class="addOrdeleteCouponTr3">
+							<td align="right">选择发放优惠券：</td>
+							<td>
+								<input class="easyui-combobox issueCouponInput" style="width: 160px;" type="text" id="chooseCoupon3" required editable="false"/>
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr3">
+							<td align="right">发放总量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 160px;" type="text" id="issueCouponNum3" required/>
+								张
+								<span style="color: red">*</span>
+								<a href="javascript:void(0);" class="easyui-linkbutton addTotalCouponNumButton" id="addTotalCouponNumId3" style="visibility:hidden">添加发放总量</a>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr3">
+							<td align="right">每人限领数量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 140px;" type="text" id="issueLimitNum3" required/>
+								张
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+
+						<tr style="display:none" class="addOrdeleteCouponTr4">
+							<td align="right">选择发放优惠券：</td>
+							<td>
+								<input class="easyui-combobox issueCouponInput" style="width: 160px;" type="text" id="chooseCoupon4" required editable="false"/>
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr4">
+							<td align="right">发放总量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 160px;" type="text" id="issueCouponNum4" required/>
+								张
+								<span style="color: red">*</span>
+								<a href="javascript:void(0);" class="easyui-linkbutton addTotalCouponNumButton" id="addTotalCouponNumId4" style="visibility:hidden">添加发放总量</a>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr4">
+							<td align="right">每人限领数量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 140px;" type="text" id="issueLimitNum4" required/>
+								张
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+
+						<tr style="display:none" class="addOrdeleteCouponTr5">
+							<td align="right">选择发放优惠券：</td>
+							<td>
+								<input class="easyui-combobox issueCouponInput" style="width: 160px;" type="text" id="chooseCoupon5" required editable="false"/>
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr5">
+							<td align="right">发放总量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 160px;" type="text" id="issueCouponNum5" required/>
+								张
+								<span style="color: red">*</span>
+								<a href="javascript:void(0);" class="easyui-linkbutton addTotalCouponNumButton" id="addTotalCouponNumId5" style="visibility:hidden">添加发放总量</a>
+							</td>
+						</tr>
+						<tr style="display:none" class="addOrdeleteCouponTr5">
+							<td align="right">每人限领数量：</td>
+							<td>
+								<input class="easyui-textbox" style="width: 140px;" type="text" id="issueLimitNum1" required/>
+								张
+								<span style="color: red">*</span>
+							</td>
+						</tr>
+
 					</table>
 				</div>
 
@@ -138,5 +278,16 @@
 	</div>
 
 	<!-- 配置添加结束  -->
+
+	<div style="display: none" id="addTotalCouponNumDiv">
+		<table style="width: 80%;height: auto;">
+			<tr>
+				<td align="right">增加发放总量：</td>
+				<td align="left">
+					<input class="easyui-textbox" style="width: 160px;" type="text" id="addTotalCouponNum" required/>
+				</td>
+			</tr>
+		</table>
+	</div>
 </body>
 </html>

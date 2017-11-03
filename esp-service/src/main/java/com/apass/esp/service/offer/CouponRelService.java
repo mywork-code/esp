@@ -51,4 +51,13 @@ public class CouponRelService {
 	public List<ProCouponRel> getCouponList(){
 		return couponRelMapper.getCouponList();
 	};
+
+	/**
+	 * 往优惠券活动关系表中添加数据
+	 * @param proCouponRel
+	 * @return
+     */
+	public Integer addProCouponRel(ProCouponRel proCouponRel) {
+		return couponRelMapper.insertSelective(proCouponRel);
+	}
 }
