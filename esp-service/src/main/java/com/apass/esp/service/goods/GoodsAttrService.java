@@ -77,4 +77,10 @@ public class GoodsAttrService {
     public int deleteGoodsAttr(Long id) {
         return goodsAttrMapper.deleteByPrimaryKey(id);
     }
+    /**
+     * 根据主键id查询 商品属性  GoodsAttr
+     */
+    public GoodsAttr selectGoodsAttrByid(Long id){
+    	return goodsAttrMapper.selectByPrimaryKey(id);
+    }
 }
