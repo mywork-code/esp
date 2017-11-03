@@ -2587,7 +2587,6 @@ public class OrderService {
     	/**
     	 * 满足使用券的商品，对应券
     	 */
-    	
     	Map<Long,List<String>> categoryGoods = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(couponVos)){
     		for (ProMyCouponVo coupon : couponVos) {
