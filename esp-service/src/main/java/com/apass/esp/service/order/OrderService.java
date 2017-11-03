@@ -1528,7 +1528,7 @@ public class OrderService {
         // 查询客户的所有订单
         List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
 
-        if (null == orderList || orderList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orderList)) {
             return returnOrders;
         }
 
