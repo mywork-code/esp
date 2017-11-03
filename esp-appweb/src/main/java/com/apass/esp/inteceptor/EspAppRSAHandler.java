@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class EspAppRSAHandler {
 	 * @throws Throwable
 	 */
 
-	@Around("execution(* com.apass.esp.web..*.*(..)) || execution(* com.apass.esp.noauth..*.*(..))")
+//	@Around("execution(* com.apass.esp.web..*.*(..)) || execution(* com.apass.esp.noauth..*.*(..))")
 	private Object handleRSAInteceptor(ProceedingJoinPoint point) throws Throwable {
 		Object[] arr = point.getArgs();
 		if (arr == null || arr.length == 0) {
