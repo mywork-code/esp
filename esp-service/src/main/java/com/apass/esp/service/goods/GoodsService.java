@@ -481,11 +481,21 @@ public class GoodsService {
    * @return
  * @throws BusinessException 
    */
-  public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException{
-	// 查询商品规格中的商品的价格和库存
-	List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
-    List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
-    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException {
+		Long proActivityId = null;
+		String activityCfg;
+		// 返回活动id
+		ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+		if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+			proActivityId = proGroupGoodsBo.getActivityId();
+		}
+		// 满减活动满减字段
+		activityCfg = getActivityInfo(goodsId);
+		
+		// 查询商品规格中的商品的价格和库存
+		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
+		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
     	JdSimilarSkuTo jdSimilarSkuTo=new JdSimilarSkuTo();
     	jdSimilarSkuTo.setSkuIdOrder(goodsStockInfoEntity.getAttrValIds());
     	JdSimilarSkuVo jdSimilarSkuVo=new JdSimilarSkuVo();
@@ -496,11 +506,12 @@ public class GoodsService {
    	    BigDecimal price = commonService.calculateGoodsPrice(goodsId,goodsStockInfoEntity.getId());
     	jdSimilarSkuVo.setPrice(price);
     	jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-    	if(goodsStockInfoEntity.getStockCurrAmt()>0){
-    		jdSimilarSkuVo.setStockDesc("");
-    	}else{
-    		
+    	jdSimilarSkuVo.setStockDesc("无货");
+    	if(null !=goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt()>0){
+    		jdSimilarSkuVo.setStockDesc("有货");
     	}
+    	jdSimilarSkuVo.setActivityCfg(activityCfg);
+    	jdSimilarSkuVo.setProActivityId(proActivityId);
     }
 	return JdSimilarSkuToList;
   }
