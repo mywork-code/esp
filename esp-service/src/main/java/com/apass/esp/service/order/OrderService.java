@@ -494,7 +494,12 @@ public class OrderService {
          * 设置预占库存和修改订单的信息
          */
         preStockStatus(orders, addressId);
-
+        /**
+         * 使用优惠券
+         */
+        if(StringUtils.isNotBlank(myCouponId)){
+        	myCouponManagerService.useMyCoupon(myCouponId);
+        }
         return orders;
     }
     
@@ -799,9 +804,11 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
+            Long mycouponId = -1L;
             if(StringUtils.isNotBlank(myCouponId)){
-            	orderInfo.setCouponId(Long.parseLong(myCouponId));
+            	mycouponId = Long.parseLong(myCouponId);
             }
+            orderInfo.setCouponId(mycouponId);
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
