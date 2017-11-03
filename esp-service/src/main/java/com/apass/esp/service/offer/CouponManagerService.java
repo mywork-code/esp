@@ -2,11 +2,10 @@ package com.apass.esp.service.offer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
-import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.mybatis.page.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,8 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
-
 import com.apass.esp.domain.enums.ActivityStatus;
-
 import com.apass.esp.domain.query.ProMyCouponQuery;
-
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
@@ -104,6 +100,7 @@ public class CouponManagerService {
 				String startTimeString = formatter.format(activityCfg.getStartTime());
 				String endTimeTimeString = formatter.format(activityCfg.getEndTime());
 				proCouponVo.setStartTime(startTimeString);
+				proCouponVo.setStartTimeDate(activityCfg.getStartTime());
 				proCouponVo.setEndTime(endTimeTimeString);
 				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
 			   //判断该用户是否已经领取了该优惠券
@@ -117,6 +114,18 @@ public class CouponManagerService {
 				}
 		      }
 		}
+		//根据ProCouponVo里面的开始时间排序
+		Collections.sort(proCouponList,new Comparator<ProCouponVo>(){
+			@Override
+			public int compare(ProCouponVo o1, ProCouponVo o2) {
+				if(o1.getStartTimeDate().getTime() > o2.getStartTimeDate().getTime()){
+					return -1;
+				}else{
+					return 1;
+				}
+			}
+			
+		});
 		return proCouponList;
 	}
 	

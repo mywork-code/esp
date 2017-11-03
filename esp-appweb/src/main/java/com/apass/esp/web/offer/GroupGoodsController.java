@@ -1,5 +1,6 @@
 package com.apass.esp.web.offer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,6 @@ import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 
 @Controller
 @RequestMapping("/activity/group")

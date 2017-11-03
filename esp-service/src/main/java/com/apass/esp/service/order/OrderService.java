@@ -9,15 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.apass.esp.domain.entity.bill.SalesOrderInfo;
-import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
-import com.apass.esp.domain.vo.CheckAccountOrderDetail;
-import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.service.offer.MyCouponManagerService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.util.JsonUtils;
-import org.elasticsearch.search.DocValueFormat.Decimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -42,10 +35,11 @@ import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -61,7 +55,6 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -72,6 +65,8 @@ import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
@@ -103,6 +98,7 @@ import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.service.merchant.MerchantInforService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.esp.service.withdraw.WithdrawService;
@@ -803,7 +799,9 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
-            orderInfo.setCouponId(Long.parseLong(myCouponId));
+            if(StringUtils.isNotBlank(myCouponId)){
+            	orderInfo.setCouponId(Long.parseLong(myCouponId));
+            }
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
@@ -1654,7 +1652,8 @@ public class OrderService {
             disCount = disCount.add(orderDetailInfo.getDiscountAmount());
             couponCount = couponCount.add(orderDetailInfo.getCouponMoney());
             GoodsInfoInOrderDto goodsInfo = new GoodsInfoInOrderDto();
-            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的优惠金额
+            goodsInfo.setOrderDetailDisCountAmt(orderDetailInfo.getDiscountAmount());//每个订单详情的活动优惠金额
+            goodsInfo.setOrderDetailCouponDisCountAmt(orderDetailInfo.getCouponMoney());//每个订单详情的优惠券优惠金额
             goodsInfo.setGoodsId(orderDetailInfo.getGoodsId());
             goodsInfo.setGoodsStockId(orderDetailInfo.getGoodsStockId());
             goodsInfo.setBuyNum(orderDetailInfo.getGoodsNum());
@@ -1677,16 +1676,18 @@ public class OrderService {
             //单个商品的优惠价格
             BigDecimal goodsPriceDisCount = BigDecimal.ZERO;
     		BigDecimal price = BigDecimal.ZERO;
+    		BigDecimal price2 = BigDecimal.ZERO;
             BigDecimal goodsNumber=new BigDecimal(orderDetailInfo.getGoodsNum());
-            if(orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0 || orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount) >0){
-            	BigDecimal priceDisCount=orderDetailInfo.getDiscountAmount().add(orderDetailInfo.getCouponMoney());//优惠总金额
-            	price=priceDisCount.divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 11）
+            //每件商品的活动优惠金额（sprint 10）
+            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
+            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setDisCountAmt(price);//每件商品的活动优惠金额（sprint 10）
             }
-//            if(null !=orderDetailInfo.getDiscountAmount() && orderDetailInfo.getDiscountAmount().compareTo(goodsPriceDisCount)>0){
-//            	price=orderDetailInfo.getDiscountAmount().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
-//                goodsInfo.setDisCountAmt(price);//每件商品的优惠金额（sprint 10）
-//            }
+            //每件商品的优惠券优惠金额（sprint 11）
+            if(null !=orderDetailInfo.getCouponMoney() && orderDetailInfo.getCouponMoney().compareTo(goodsPriceDisCount)>0){
+            	price2=orderDetailInfo.getCouponMoney().divide(goodsNumber,2, BigDecimal.ROUND_HALF_UP);
+                goodsInfo.setCouponAmt(price2);
+            }
             goodsInfo.setGoodsTitle(orderDetailInfo.getGoodsTitle());
             if (null != goods) {
                 goodsInfo.setUnSupportProvince(goods.getUnSupportProvince());
@@ -2554,7 +2555,7 @@ public class OrderService {
     	/**
     	 * 把优惠金额，平分到每种商品中
     	 */
-    	for (PurchaseRequestDto purchase : purchaseList) {
+    	for (PurchaseRequestDto purchase : available) {
     		BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
     		BigDecimal discount = BigDecimal.ZERO;
     		if(activityDecimal.containsKey(purchase.getProActivityId())){
@@ -2592,7 +2593,7 @@ public class OrderService {
     		for (ProMyCouponVo coupon : couponVos) {
     			List<String> goodslist = new ArrayList<>();
     			BigDecimal total = BigDecimal.ZERO;
-    			for (PurchaseRequestDto purchase : purchaseList) {
+    			for (PurchaseRequestDto purchase : available) {
     				GoodsInfoEntity goods =  goodsDao.select(purchase.getGoodsId()); 
 	    			if(StringUtils.isNotBlank(coupon.getCategoryId1())){//指定分类（一级类目)
 	    				if(StringUtils.equals(coupon.getCategoryId1(), goods.getCategoryId1()+"")){
@@ -2605,10 +2606,13 @@ public class OrderService {
 	    					goodslist.add(purchase.getGoodsStockId()+"");
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
-	    				if(coupon.getSimilarGoodsCode().contains(goods.getGoodsCode())){
-	    					total = total.add(purchase.getPayMoney());
-	    					goodslist.add(purchase.getGoodsStockId()+"");
-	    				}
+	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
+	    				for (String str : strs) {
+							if(StringUtils.equals(goods.getGoodsCode(), str)){
+								total = total.add(purchase.getPayMoney());
+		    					goodslist.add(purchase.getGoodsStockId()+"");
+							}
+						}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
@@ -2642,16 +2646,14 @@ public class OrderService {
         });
     	
     	ProMyCouponVo coupon = null;
-    	BigDecimal couponMoney = BigDecimal.ZERO;
     	if(CollectionUtils.isNotEmpty(yes)){
     		coupon = yes.get(0);
-    		couponMoney = coupon.getDiscountAmonut();
     	}
     	//实际支付金额
     	BigDecimal paySum = totalSum.subtract(discountSum);
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
-    	maps.put("paySum",paySum.subtract(couponMoney));//实际支付金额
+    	maps.put("paySum",paySum);//实际支付金额
     	maps.put("totalSum", totalSum);//总金额（算上优惠金额）
     	maps.put("coupon",coupon);//优惠券金额（默认）
     	maps.put("used",yes);//可供选择的券
