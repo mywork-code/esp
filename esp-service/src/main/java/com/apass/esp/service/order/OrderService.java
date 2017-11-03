@@ -66,6 +66,7 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -780,7 +781,27 @@ public class OrderService {
             }
         }
     }
-
+    
+    /**
+     * 判断当前商户订单下，是否包含使用优惠券的订单
+     * @param merchantCode
+     * @param myCouponId
+     * @param goodStockIds
+     * @return
+     */
+    public Long getCouponId(String merchantCode,String myCouponId,String goodStockIds){
+    	if(StringUtils.isNotBlank(myCouponId)){
+    		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
+    		for (String stockId : stockIds) {
+				GoodsStockInfoEntity stock = goodsStockDao.select(Long.parseLong(StringUtils.trim(stockId)));
+    			GoodsInfoEntity goods = goodsDao.select(stock.getGoodsId());
+    			if(StringUtils.equals(goods.getMerchantCode(), merchantCode)){
+    				return Long.parseLong(myCouponId);
+    			}
+			}
+    	}
+    	return -1l;
+    }
     /**
      *
      * 生成订单 商品价格使用页面传递
@@ -804,11 +825,7 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
-            Long mycouponId = -1L;
-            if(StringUtils.isNotBlank(myCouponId)){
-            	mycouponId = Long.parseLong(myCouponId);
-            }
-            orderInfo.setCouponId(mycouponId);
+            orderInfo.setCouponId(getCouponId(merchantCode, myCouponId, goodStockIds));
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {

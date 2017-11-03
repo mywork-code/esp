@@ -49,6 +49,9 @@ public class CommonHttpClient {
     //退还额度
     private static final String UPDATECUSTOMERAMOUNTQURL = "/espCustomer/updateAvailableAmount";
 
+    //根据手机号查询客户基本信息
+    private static final String GETCUSTOMERBYTELREQURL = "/espCustomer/getCustomerInfoByMobile";
+
     /**
      * 查询客户基本信息及绑卡信息
      *
@@ -77,6 +80,42 @@ public class CommonHttpClient {
             return Response.fail("查询客户基本信息及绑卡信息查询服务异常",BusinessErrorCode.CUSTOMERINFO_BINDCARD_FAILED);
         }
     }
+
+    /**
+     * 通过手机号 查询客户基本信息及绑卡信息
+     *
+     * @param requestId
+     * @param userId
+     * @return
+     */
+    public Response getCustomerBasicInfoByTel(String requestId, String telephone) {
+        try {
+            Map<String, Object> request = new HashMap<String, Object>();
+            request.put("mobile", telephone);
+            String requestUrl = gfbReqUrl + GETCUSTOMERBYTELREQURL;
+            LOG.info(requestId, "查询客户基本信息及绑卡信息请求地址:", requestUrl);
+            String requestJson = GsonUtils.toJson(request);
+            LOG.logstashRequest(requestId, "查询客户基本信息及绑卡信息请求数据:", requestJson);
+            StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+            String responseJson = HttpClientUtils.getMethodPostResponse(requestUrl, entity);
+            LOG.logstashResponse(requestId, "查询客户基本信息及绑卡信息返回数据:", responseJson);
+            Response response = GsonUtils.convertObj(responseJson, Response.class);
+            if (response == null) {
+                return Response.fail("查询客户基本信息及绑卡信息查询服务异常",BusinessErrorCode.CUSTOMERINFO_BINDCARD_FAILED);
+            }
+            return response;
+        } catch (Exception e) {
+            LOGGER.error(requestId, "查询客户基本信息及绑卡信息查询服务异常", "", e);
+            return Response.fail("查询客户基本信息及绑卡信息查询服务异常",BusinessErrorCode.CUSTOMERINFO_BINDCARD_FAILED);
+        }
+    }
+
+
+
+
+
+
+
 
     /**
      * 返回用户的费率信息及CustomerId
@@ -165,8 +204,6 @@ public class CommonHttpClient {
             return Response.fail("退还用户的额度服务异常",BusinessErrorCode.CUSTOMER_UPDATE_AMOUNT_EXCEPTION);
         }
     }
-
-
 
     public String talkingData(TalkingDataDto talkingDataDto) {
         try {
