@@ -330,9 +330,6 @@ public class MyCouponManagerService {
 		ProCoupon proCoupon = new ProCoupon();
 		proCoupon.setExtendType(CouponExtendType.COUPON_XYH.getCode());
 		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
-		if(CollectionUtils.isEmpty(couponList)){
-			throw new BusinessException("未查询到新用户专享优惠券");
-		}
 		for(ProCoupon coupon : couponList){
 			ProMyCoupon proMyCoupon = new ProMyCoupon();
 			proMyCoupon.setUserId(userId);
