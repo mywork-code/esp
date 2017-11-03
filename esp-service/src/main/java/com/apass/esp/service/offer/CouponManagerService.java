@@ -141,6 +141,7 @@ public class CouponManagerService {
 			if(rel.getLimitNum() <= myCoupons.size()){
 				vo.setReceiveFlag(true);
 			}
+			vo.setUserReceiveNum(myCoupons.size() - rel.getLimitNum());//用户计算当前券，当前用户还可领取的张数
 			vo.setRemainNum(rel.getRemainNum());
 			vo.setId(proCoupon.getId());
 			vo.setName(proCoupon.getName());
