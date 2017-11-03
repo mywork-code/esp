@@ -459,7 +459,7 @@ public class PaymentService {
 			    LOG.info(requestId, "订单状态已变更，暂不支持付款", orderId+"订单状态已变更，暂不支持付款");
 				throw new BusinessException("抱歉，订单状态已变更，暂不支持付款");
 			}
-			if(null != orderInfo.getCouponId()){
+			if(null != orderInfo.getCouponId() && orderInfo.getCouponId()!= -1){
 				ProMyCoupon coupon = myCouponMapper.selectByPrimaryKey(orderInfo.getCouponId());
 				Date now = new Date();
 				if(coupon.getStartDate().getTime() > now.getTime() || coupon.getEndDate().getTime() < now.getTime()){
