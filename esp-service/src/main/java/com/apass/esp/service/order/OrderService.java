@@ -1070,8 +1070,12 @@ public class OrderService {
         	// 查询商品商户详情
         	GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
             String merchantCode = goods.getMerchantCode();
-            BigDecimal goodsSum = purchase.getPrice().multiply(BigDecimal.valueOf(Long.valueOf(purchase.getBuyNum())));
-        	if (merchantPayment.containsKey(merchantCode)) {
+            BigDecimal goodsSum = purchase.getPayMoney();
+        	
+            if(null != purchase.getCouponMoney()){
+            	goodsSum = goodsSum.subtract(purchase.getCouponMoney());
+            }
+            if (merchantPayment.containsKey(merchantCode)) {
                 BigDecimal haveSum = merchantPayment.get(merchantCode);
                 haveSum = haveSum.add(goodsSum);
                 merchantPayment.put(merchantCode, haveSum);
