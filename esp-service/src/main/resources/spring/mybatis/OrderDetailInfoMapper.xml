@@ -117,7 +117,8 @@
              source,
              sku_id,
              pro_activity_id,
-             discount_amount
+             discount_amount,
+             coupon_money
              )
 			values (
 			#{orderId, jdbcType=VARCHAR},
@@ -143,7 +144,8 @@
 	        #{source, jdbcType=VARCHAR},
 	        #{skuId, jdbcType=VARCHAR},
 	        #{proActivityId},
-	        #{discountAmount});
+	        #{discountAmount},
+	        #{couponMoney});
 	]]>
 	</insert>
 
