@@ -48,8 +48,10 @@ public class GroupGoodsController {
 			/**
 			 * sprint 11 根据活动的Id，获取对应优惠券的信息
 			 */
-			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
-			maps.put("coupons", couponVos);
+			if(StringUtils.isNotBlank(userId)){
+				List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
+				maps.put("coupons", couponVos);
+			}
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
