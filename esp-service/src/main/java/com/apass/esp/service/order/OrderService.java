@@ -859,7 +859,7 @@ public class OrderService {
                     }
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
-                    orderDetail.setCouponMoney(purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
+                    orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                         orderDetail.setSource(SourceType.JD.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
@@ -1025,18 +1025,20 @@ public class OrderService {
     			throw new BusinessException("您的券已过期!");
     		}
     		
-    		String[] stockIds = goodStockIds.split(",");
+    		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
+    			String stock = StringUtils.trim(stockId);
     			for (PurchaseRequestDto purchase : purchaseList) {
-        			if(StringUtils.equals(purchase.getGoodsId()+"", stockId)){
+        			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
         			}
         		}
 			}
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
-	    			if(StringUtils.equals(purchase.getGoodsId()+"", stockId)){
+    				String stock = StringUtils.trim(stockId);
+	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
 	        			purchase.setCouponMoney(couponMoney);
