@@ -1,7 +1,9 @@
 package com.apass.esp.web.coupon;
 
 import com.alibaba.druid.support.logging.Log;
+import com.apass.esp.common.utils.UrlUtils;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.CouponList;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.enums.*;
@@ -14,21 +16,23 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.HttpWebUtils;
+import com.apass.gfb.framework.utils.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -83,6 +87,16 @@ public class ProCouponBaseInfoController {
         return responseBody;
     }
 
+    @RequestMapping("/loadp")
+    @ResponseBody
+    public List<ProCoupon> loadCouponPTFF(){
+        ProCoupon proCoupon = new ProCoupon();
+        proCoupon.setExtendType(CouponExtendType.COUPON_PTFF.getCode());
+        proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
+
+        return proCouponService.getProCouponList(proCoupon);
+    }
+
     @RequestMapping("/add")
     @ResponseBody
     public Response addCoupon(ProCoupon proCoupon){
@@ -110,34 +124,48 @@ public class ProCouponBaseInfoController {
 
     @RequestMapping("/issue")
     @ResponseBody
-    public Response issueCoupon(ProMyCouponAmsVo proMyCouponAmsVo){
+    public Response issueCoupon(@RequestBody String request) {//ProMyCouponAmsVo
+        String requestDecode = EncodeUtils.urlDecode(request);
+        requestDecode = requestDecode.substring(0,requestDecode.length()-1);
+        LOGGER.info("前台传递的参数有：{}", requestDecode);
+        ProMyCouponAmsVo proMyCouponAmsVo = GsonUtils.convertObj(requestDecode, ProMyCouponAmsVo.class);
         try{
             //优惠券id作为key，每个id对应的优惠券数量作为list
             Map<Long,List<ProMyCoupon>> proMycouponMap = Maps.newHashMap();
-
             List<ProMyCoupon> proMycouponList = Lists.newArrayList();
-            List<Long> couponIdList = proMyCouponAmsVo.getCouponIdList();
-            if(new TreeSet<Long>(couponIdList).size() != couponIdList.size()){
-                return Response.fail("本次发放存在重复优惠券种类，请修改后重试");
+
+            List<CouponList> couponLists = proMyCouponAmsVo.getCouponListIssue();
+            if(CollectionUtils.isNotEmpty(couponLists)){
+                for (int i=0;i<couponLists.size();i++) {
+                    for(int j=i+1; j<couponLists.size();j++){
+                        if(StringUtils.equals(couponLists.get(i).getId(),couponLists.get(j).getId())){
+                            return Response.fail("本次发放存在重复优惠券种类，请修改后重试");
+                        }
+                    }
+                }
             }
+
             //封装数据 map
-            for(Long couponId: couponIdList){
-                ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(couponId);
+            for(CouponList couponList: couponLists){
+                ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(Long.valueOf(couponList.getId()));
+
                 int i = 0;
-                while (i<proMyCouponAmsVo.getCouponNum()){
+                while (i<couponList.getNumer()){
                     ProMyCoupon proMyCoupon = new ProMyCoupon();
-                    proMyCoupon.setCouponId(couponId);
+                    proMyCoupon.setUserId(0l);
+                    proMyCoupon.setCouponRelId(0l);
+                    proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+                    proMyCoupon.setCouponId(Long.valueOf(couponList.getId()));
                     proMyCoupon.setTelephone(proMyCouponAmsVo.getTelephone());
-                    proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
                     proMyCoupon.setStartDate(new Date());
                     proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()==-1?0:proCoupon.getEffectiveTime()));
-                    proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+                    proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
                     proMyCoupon.setCreatedTime(new Date());
                     proMyCoupon.setUpdatedTime(new Date());
                     proMycouponList.add(proMyCoupon);
                     i++;
                 }
-                proMycouponMap.put(couponId,proMycouponList);
+                proMycouponMap.put(Long.valueOf(couponList.getId()),proMycouponList);
             }
 
             //便利，批量插入数据
@@ -145,7 +173,9 @@ public class ProCouponBaseInfoController {
             Set<Map.Entry<Long, List<ProMyCoupon>>> entries = proMycouponMap.entrySet();
             for (Map.Entry<Long, List<ProMyCoupon>> entry:entries) {
                 List<ProMyCoupon> lists = entry.getValue();
-                myCouponManagerService.insertProMyCoupoBach(lists);
+                for (ProMyCoupon proCoup:lists) {
+                    myCouponManagerService.insertProMyCoupo(proCoup);
+                }
             }
 
         }catch (Exception e){
