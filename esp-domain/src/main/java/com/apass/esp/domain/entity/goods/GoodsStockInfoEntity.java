@@ -95,7 +95,15 @@ public class GoodsStockInfoEntity {
     
     /**比价链接2URL**/
     private String     goodsCompareUrl2;
-    private String deleteFlag;
+    
+    /** 删除标志，Y N 列表查询N状态   **/
+    private String     deleteFlag;
+    
+    /** skuid **/
+    private String     skuId;
+    
+    /** 多规格属性组合,-分隔(100-103) **/
+    private String     attrValIds;
     /**
      * 保本率
      */
@@ -283,4 +291,21 @@ public class GoodsStockInfoEntity {
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag;
     }
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
+	}
+
+	public String getAttrValIds() {
+		return attrValIds;
+	}
+
+	public void setAttrValIds(String attrValIds) {
+		this.attrValIds = attrValIds;
+	}
+    
 }
