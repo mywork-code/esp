@@ -494,7 +494,12 @@ public class OrderService {
          * 设置预占库存和修改订单的信息
          */
         preStockStatus(orders, addressId);
-
+        /**
+         * 使用优惠券
+         */
+        if(StringUtils.isNotBlank(myCouponId)){
+        	myCouponManagerService.useMyCoupon(myCouponId);
+        }
         return orders;
     }
     

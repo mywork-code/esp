@@ -291,13 +291,32 @@ public class MyCouponManagerService {
 	 * @param mycouponId
 	 */
 	public void deleteMyCoupon(String mycouponId){
-		if(StringUtils.isNotBlank(mycouponId)){
+		updateMyCoupon(mycouponId, CouponStatus.COUPON_D.getCode());
+	}
+	
+	/**
+	 * 使用我的优惠券
+	 * @param mycouponId
+	 */
+	public void useMyCoupon(String mycouponId){
+		updateMyCoupon(mycouponId, CouponStatus.COUPON_Y.getCode());
+	}
+	
+	/**
+	 * 修改我的优惠券状态
+	 * @param mycouponId
+	 * @param status
+	 * @return
+	 */
+	public int updateMyCoupon(String mycouponId,String status){
+		if(StringUtils.isNotBlank(mycouponId) && StringUtils.isNotBlank(status)){
 			ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(mycouponId));
 			if(null != myCoupon){
-				myCoupon.setStatus(CouponStatus.COUPON_D.getCode());
+				myCoupon.setStatus(status);
 				myCoupon.setUpdatedTime(new Date());
-				myCouponMapper.updateByPrimaryKeySelective(myCoupon);
+				return myCouponMapper.updateByPrimaryKeySelective(myCoupon);
 			}
 		}
+		return 0;
 	}
 }
