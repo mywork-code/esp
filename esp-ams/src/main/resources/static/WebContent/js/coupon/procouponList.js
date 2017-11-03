@@ -158,6 +158,9 @@ $(function(){
 			url: ctx + "/application/coupon/management/loadp",
 			valueField: 'id',
 			textField: 'name',
+			queryParams: {
+				"extendType" : "PTFF"
+			},
 			onLoadSuccess: function () {
 				$(this).combobox('setValue','请选择');
 				//加载完成后,设置选中第一项
@@ -207,8 +210,6 @@ $(function(){
 							"remarks":$("#issueRemark").textbox('getValue')
 						}
 
-						console.log(arr);
-						console.log(param);
 						console.log(JSON.stringify(param));
 						$.ajax({
 							url : ctx + '/application/coupon/management/issue',

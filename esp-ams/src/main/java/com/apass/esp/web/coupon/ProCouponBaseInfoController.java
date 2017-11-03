@@ -89,9 +89,7 @@ public class ProCouponBaseInfoController {
 
     @RequestMapping("/loadp")
     @ResponseBody
-    public List<ProCoupon> loadCouponPTFF(){
-        ProCoupon proCoupon = new ProCoupon();
-        proCoupon.setExtendType(CouponExtendType.COUPON_PTFF.getCode());
+    public List<ProCoupon> loadCouponPTFF(ProCoupon proCoupon){
         proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
 
         return proCouponService.getProCouponList(proCoupon);
@@ -132,7 +130,6 @@ public class ProCouponBaseInfoController {
         try{
             //优惠券id作为key，每个id对应的优惠券数量作为list
             Map<Long,List<ProMyCoupon>> proMycouponMap = Maps.newHashMap();
-            List<ProMyCoupon> proMycouponList = Lists.newArrayList();
 
             List<CouponList> couponLists = proMyCouponAmsVo.getCouponListIssue();
             if(CollectionUtils.isNotEmpty(couponLists)){
@@ -147,6 +144,7 @@ public class ProCouponBaseInfoController {
 
             //封装数据 map
             for(CouponList couponList: couponLists){
+                List<ProMyCoupon> proMycouponList = Lists.newArrayList();
                 ProCoupon proCoupon = proCouponService.selectProCouponByPrimaryID(Long.valueOf(couponList.getId()));
 
                 int i = 0;
