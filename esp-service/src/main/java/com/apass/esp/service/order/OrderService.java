@@ -494,7 +494,12 @@ public class OrderService {
          * 设置预占库存和修改订单的信息
          */
         preStockStatus(orders, addressId);
-
+        /**
+         * 使用优惠券
+         */
+        if(StringUtils.isNotBlank(myCouponId)){
+        	myCouponManagerService.useMyCoupon(myCouponId);
+        }
         return orders;
     }
     
@@ -799,9 +804,11 @@ public class OrderService {
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
             orderInfo.setOrderAmt(orderAmt);
+            Long mycouponId = -1L;
             if(StringUtils.isNotBlank(myCouponId)){
-            	orderInfo.setCouponId(Long.parseLong(myCouponId));
+            	mycouponId = Long.parseLong(myCouponId);
             }
+            orderInfo.setCouponId(mycouponId);
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
@@ -852,7 +859,7 @@ public class OrderService {
                     }
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
-                    orderDetail.setCouponMoney(purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
+                    orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
                         orderDetail.setSource(SourceType.JD.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
@@ -1018,18 +1025,20 @@ public class OrderService {
     			throw new BusinessException("您的券已过期!");
     		}
     		
-    		String[] stockIds = goodStockIds.split(",");
+    		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
+    			String stock = StringUtils.trim(stockId);
     			for (PurchaseRequestDto purchase : purchaseList) {
-        			if(StringUtils.equals(purchase.getGoodsId()+"", stockId)){
+        			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
         			}
         		}
 			}
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
-	    			if(StringUtils.equals(purchase.getGoodsId()+"", stockId)){
+    				String stock = StringUtils.trim(stockId);
+	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
 	        			purchase.setCouponMoney(couponMoney);
@@ -1519,7 +1528,7 @@ public class OrderService {
         // 查询客户的所有订单
         List<OrderInfoEntity> orderList = orderInfoRepository.filter(orderInfo);
 
-        if (null == orderList || orderList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orderList)) {
             return returnOrders;
         }
 
@@ -2587,7 +2596,6 @@ public class OrderService {
     	/**
     	 * 满足使用券的商品，对应券
     	 */
-    	
     	Map<Long,List<String>> categoryGoods = Maps.newHashMap();
     	if(CollectionUtils.isNotEmpty(couponVos)){
     		for (ProMyCouponVo coupon : couponVos) {

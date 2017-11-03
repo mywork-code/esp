@@ -26,7 +26,7 @@ public class CreditAuthActivityMessage {
 	/**
 	 * 手机号
 	 */
-	private int  mobile;
+	private String  mobile;
 	/**
 	 * 当前客户是否为新获取额度(true-更新额度，false-插入额度)
 	 */
@@ -61,10 +61,10 @@ public class CreditAuthActivityMessage {
 	public void setIsGtOriAmount(Boolean isGtOriAmount) {
 		this.isGtOriAmount = isGtOriAmount;
 	}
-	public int getMobile() {
+	public String getMobile() {
 		return mobile;
 	}
-	public void setMobile(int mobile) {
+	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
 	public Boolean getIsUpdate() {
