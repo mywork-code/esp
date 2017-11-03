@@ -11,6 +11,9 @@
             <if test="name != null and name != ''">
                 AND name= #{name}
             </if>
+            <if test="extendType != null and extendType != ''">
+                AND extend_type= #{extendType}
+            </if>
         </where>
     </sql>
 
@@ -36,8 +39,8 @@
         <include refid="QueryProcouponSql" />
     </select>
 
-    <!--根据优惠券名称查询优惠券-->
-    <select id="getProCouponByName" resultType="com.apass.esp.domain.entity.ProCoupon">
+    <!--根据优惠券实体类查询优惠券-->
+    <select id="getProCouponBCoupon" resultType="com.apass.esp.domain.entity.ProCoupon">
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
         <include refid="QueryProcouponSql" />

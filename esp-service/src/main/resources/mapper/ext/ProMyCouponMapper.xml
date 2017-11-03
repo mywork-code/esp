@@ -43,73 +43,23 @@
 
     <!--批量插入-->
     <insert id="insertProMyCoupoBach" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id" >
-        insert into t_esp_pro_mycoupon
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="userId != null" >
-                user_id,
-            </if>
-            <if test="couponRelId != null" >
-                coupon_rel_id,
-            </if>
-            <if test="status != null" >
-                status,
-            </if>
-            <if test="couponId != null" >
-                coupon_id,
-            </if>
-            <if test="telephone != null" >
-                telephone,
-            </if>
-            <if test="startDate != null" >
-                start_date,
-            </if>
-            <if test="endDate != null" >
-                end_date,
-            </if>
-            <if test="remarks != null" >
-                remarks,
-            </if>
-            <if test="createdTime != null" >
-                created_time,
-            </if>
-            <if test="updatedTime != null" >
-                updated_time,
-            </if>
-        </trim>
+        insert into t_esp_pro_mycoupon (user_id, coupon_rel_id, status,
+        coupon_id, telephone, start_date,
+        end_date, remarks, created_time,
+        updated_time)
+        values ()
 
-        <foreach collection="list" item="item" index="index" separator="," >
-            <trim prefix="values (" suffix=")" suffixOverrides="," >
-                <if test="userId != null" >
-                    #{item.userId,jdbcType=BIGINT},
-                </if>
-                <if test="couponRelId != null" >
-                    #{item.couponRelId,jdbcType=BIGINT},
-                </if>
-                <if test="status != null" >
-                    #{item.status,jdbcType=VARCHAR},
-                </if>
-                <if test="couponId != null" >
-                    #{item.couponId,jdbcType=BIGINT},
-                </if>
-                <if test="telephone != null" >
-                    #{item.telephone,jdbcType=VARCHAR},
-                </if>
-                <if test="startDate != null" >
-                    #{item.startDate,jdbcType=TIMESTAMP},
-                </if>
-                <if test="endDate != null" >
-                    #{item.endDate,jdbcType=TIMESTAMP},
-                </if>
-                <if test="remarks != null" >
-                    #{item.remarks,jdbcType=VARCHAR},
-                </if>
-                <if test="createdTime != null" >
-                    #{item.createdTime,jdbcType=TIMESTAMP},
-                </if>
-                <if test="updatedTime != null" >
-                    #{item.updatedTime,jdbcType=TIMESTAMP},
-                </if>
-            </trim>
+        <foreach collection="proMyCouponList" item="item" index="index" separator="," >
+            #{item.userId,jdbcType=BIGINT},
+            #{item.couponRelId,jdbcType=BIGINT},
+            #{item.status,jdbcType=VARCHAR},
+            #{item.couponId,jdbcType=BIGINT},
+            #{item.telephone,jdbcType=VARCHAR},
+            #{item.startDate,jdbcType=TIMESTAMP},
+            #{item.endDate,jdbcType=TIMESTAMP},
+            #{item.remarks,jdbcType=VARCHAR},
+            #{item.createdTime,jdbcType=TIMESTAMP},
+            #{item.updatedTime,jdbcType=TIMESTAMP}
         </foreach>
     </insert>
 

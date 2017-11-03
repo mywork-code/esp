@@ -70,8 +70,8 @@ public class ProCouponService {
      * 根据商品code查询优惠券
      * @return
      */
-    public List<ProCoupon> getProCouponList(String goodsCode) {
-        return couponMapper.getProCouponListByGoodsCode(goodsCode);
+    public List<ProCoupon> getProCouponList(ProCoupon proCoupon) {
+        return couponMapper.getProCouponBCoupon(proCoupon);
     }
 
     public Integer inserProcoupon(ProCoupon proCoupon) {
@@ -103,7 +103,7 @@ public class ProCouponService {
 
         ProCoupon coupon2 = new ProCoupon();
         coupon2.setName(proCoupon.getName());
-        List<ProCoupon> couList = couponMapper.getProCouponByName(coupon2);
+        List<ProCoupon> couList = couponMapper.getProCouponBCoupon(coupon2);
         if(CollectionUtils.isNotEmpty(couList)){
             LOGGER.error("优惠券名称重复，name:{}",proCoupon.getName());
             throw new RuntimeException("优惠券名称已存在，不能重复！");

@@ -84,7 +84,6 @@ $(function(){
 	//单击添加优惠券按钮
 	$("#addCouponButton").click(function () {
 		clearFunction();
-
 		$("#addCouponDiv").dialog({
 			title:'<span style="color: black">添加优惠券</span>',
 			resizable:true,
@@ -151,8 +150,26 @@ $(function(){
 			]
 		});
 	});
+
 	//单击手动发放优惠券按钮
 	$("#issueCouponButton").click(function () {
+		$(".issueCouponInput").combobox({
+			method: "get",
+			url: ctx + "/application/coupon/management/loadp",
+			valueField: 'id',
+			textField: 'name',
+			onLoadSuccess: function () {
+				$(this).combobox('setValue','请选择');
+				//加载完成后,设置选中第一项
+				// var val = $(this).combobox('getData');
+				// for (var item in val[0]) {
+				// 	if (item == 'id') {
+				// 		$(this).combobox('select', val[0][item]);
+				// 	}
+				// }
+			},
+		});
+
 		$("#issueCouponDiv").dialog({
 			title:'<span style="color: black">添加优惠券</span>',
 			resizable:true,
@@ -162,6 +179,55 @@ $(function(){
 				{
 					text : "保存",
 					handler : function() {
+						debugger;
+						var arr = [];
+						var arrObj1 = {};
+						var arrObj2 = {};
+						var arrObj3 = {};
+						arrObj1.id = $("#chooseCoupon").combobox('getValue');
+						arrObj1.numer = $("#issueCouponNum").textbox('getValue');
+						arr.push(arrObj1)
+
+						var addOrdeleteCouponTrDisplay1 = $(".addOrdeleteCouponTr1").css("display");
+						var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
+						if(addOrdeleteCouponTrDisplay1 != "none"){
+							arrObj2.id = $("#chooseCoupon1").combobox('getValue');
+							arrObj2.numer = $("#issueCouponNum1").textbox('getValue');
+							arr.push(arrObj2);
+						}
+						if(addOrdeleteCouponTrDisplay2 != "none"){
+							arrObj3.id = $("#chooseCoupon1").combobox('getValue');
+							arrObj3.numer = $("#issueCouponNum1").textbox('getValue');
+							arr.push(arrObj3);
+						}
+
+						var param = {
+							"couponListIssue":arr,
+							"telephone":$("#issueTelephone").textbox('getValue'),
+							"remarks":$("#issueRemark").textbox('getValue')
+						}
+
+						console.log(arr);
+						console.log(param);
+						console.log(JSON.stringify(param));
+						$.ajax({
+							url : ctx + '/application/coupon/management/issue',
+							data : encodeURI(JSON.stringify(param)),
+							type : "post",
+							dataType : "json",
+							success : function(data) {
+								if(data.status){
+									$.messager.alert('<span style="color: black">提示</span>',data.msg);
+									$('#issueCouponDiv').dialog('close');
+									$('#couponList').datagrid('load',{});
+								}else{
+									$.messager.alert('<span style="color: black">提示</span>',data.msg);
+								}
+							}
+						})
+						
+
+
 					}
 				},{
 					text : "取消",
@@ -171,8 +237,9 @@ $(function(){
 				}
 			]
 		});
-		});
+	});
 
+	//删除优惠券
 	$.deleteCoupon = function (id,extendType) {
 		if(extendType == "用户领取"){
 			extendType = "YHLQ"
@@ -209,22 +276,49 @@ $(function(){
 
 	}
 
+	//手动发放优惠券---->添加优惠券种类
+	$('#issueAddCoupon').bind('click', function(){
+		var addOrdeleteCouponTrDisplay1 = $(".addOrdeleteCouponTr1").css("display");
+		var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
 
-	function clearFunction() {
-		$("#addCouponName").textbox("clear");
-		$("#addExtendType").textbox("clear");
-		$("#addEffectiveTime").textbox("clear");
-		$("#goodsCategoryCombo").combobox("clear");
-		$("#addType1").combobox("clear");
-		$("#addType2").combobox("clear");
-		$("#addType2").combobox({ disabled: false });
-		$("#addGoodsCode").textbox("clear");
-		$("#addCouponSill").textbox("clear");
-		$("#addCouponSill").textbox({disabled: false});
-		$("#addDiscountAmonut").textbox("clear");
-		$("#ifCouponSill").attr("checked",false)
+		if(addOrdeleteCouponTrDisplay1 == "none"){
+			$(".addOrdeleteCouponTr1").show();
+		}else{
+			$(".addOrdeleteCouponTr2").show();
+		}
 
-	}
+		if(addOrdeleteCouponTrDisplay1 != "none" && addOrdeleteCouponTrDisplay2 != "none"){
+			$.messager.alert('<span style="color: black">提示</span>',"最多添加三种优惠券");
+			return;
+		}
+
+	});
+
+	//手动发放优惠券---->删除优惠券种类
+	$('#issueDeleteCoupon').bind('click', function(){
+		var addOrdeleteCouponTrDisplay1 = $(".addOrdeleteCouponTr1").css("display");
+		var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
+
+		if(addOrdeleteCouponTrDisplay2 != "none"){
+			$(".addOrdeleteCouponTr2").css("display","none");
+		}else{
+			$(".addOrdeleteCouponTr1").css("display","none");
+		}
+
+		if(addOrdeleteCouponTrDisplay1 == "none" && addOrdeleteCouponTrDisplay2 == "none"){
+			$.messager.alert('<span style="color: black">提示</span>',"最少添加一种优惠券");
+			return;
+		}
+
+	});
+
+	//发放人群监听事件
+	$("#issueUserGroup").combobox({
+		onChange: function(param){
+			$("#issueTelephoneTr").show();
+		}
+	})
+
 	//有无门槛是否选中
 	$("#ifCouponSill").click(function () {
 		if($('#ifCouponSill').is(':checked')){
@@ -237,10 +331,9 @@ $(function(){
 		}
 	});
 
-	//推广方式 类型选中事件
+	//推广方式类型监听事件
 	$('#addExtendType').combobox({
 		onChange: function(param){
-			debugger;
 			if(param == 'YHLQ'){
 				$("#effectiveTimeTr").css("display","none");
 				$("#typeTd1").css("display","none");
@@ -283,10 +376,9 @@ $(function(){
 	});
 
 
-
 });
 
-
+//加载类目
 function goodsCategoryComboFun2() {
 	$("#goodsCategoryCombo").combotree({
 //        required : true,
@@ -305,5 +397,21 @@ function goodsCategoryComboFun2() {
 		}
 	});
 	$("#goodsCategoryCombo").combotree('setValue', '请选择');
+}
+//添加优惠券窗口初始化
+function clearFunction() {
+	$("#addCouponName").textbox("clear");
+	$("#addExtendType").textbox("clear");
+	$("#addEffectiveTime").textbox("clear");
+	$("#goodsCategoryCombo").combobox("clear");
+	$("#addType1").combobox("clear");
+	$("#addType2").combobox("clear");
+	$("#addType2").combobox({ disabled: false });
+	$("#addGoodsCode").textbox("clear");
+	$("#addCouponSill").textbox("clear");
+	$("#addCouponSill").textbox({disabled: false});
+	$("#addDiscountAmonut").textbox("clear");
+	$("#ifCouponSill").attr("checked",false)
+
 }
 

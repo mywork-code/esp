@@ -282,10 +282,8 @@ public class MyCouponManagerService {
 	 * 批量插入优惠券
 	 * @param lists
      */
-	public void insertProMyCoupoBach(List<ProMyCoupon> lists) {
-		Map<String,Object> paramMap = Maps.newHashMap();
-		paramMap.put("proMyCouponList",lists);
-		myCouponMapper.insertProMyCoupoBach(paramMap);
+	public void insertProMyCoupo(ProMyCoupon proMyCoupon) {
+		myCouponMapper.insertSelective(proMyCoupon);
 	}
 
 	/**
