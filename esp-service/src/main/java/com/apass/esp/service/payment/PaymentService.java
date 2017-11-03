@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
@@ -25,6 +26,7 @@ import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.repository.goods.GoodsStockLogRepository;
@@ -105,6 +107,9 @@ public class PaymentService {
 
 	@Autowired
 	private ProGroupGoodsService proGroupGoodsService;
+	
+	@Autowired
+	private ProMyCouponMapper myCouponMapper;
 
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -453,6 +458,13 @@ public class PaymentService {
 					&& !PaymentStatus.PAYFAIL.getCode().equals(orderInfo.getPayStatus())) {
 			    LOG.info(requestId, "订单状态已变更，暂不支持付款", orderId+"订单状态已变更，暂不支持付款");
 				throw new BusinessException("抱歉，订单状态已变更，暂不支持付款");
+			}
+			if(null != orderInfo.getCouponId()){
+				ProMyCoupon coupon = myCouponMapper.selectByPrimaryKey(orderInfo.getCouponId());
+				Date now = new Date();
+				if(coupon.getStartDate().getTime() > now.getTime() || coupon.getEndDate().getTime() < now.getTime()){
+					throw new BusinessException("抱歉，您的优惠券已过期!");
+				}
 			}
 			/**
 			 * 查询订单下的所有的订单详情
