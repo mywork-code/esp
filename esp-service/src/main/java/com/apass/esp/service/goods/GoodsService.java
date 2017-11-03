@@ -482,8 +482,10 @@ public class GoodsService {
  * @throws BusinessException 
    */
 	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException {
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		Long proActivityId = null;
 		String activityCfg;
+		String support7dRefund;
 		// 返回活动id
 		ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
 		if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
@@ -491,7 +493,17 @@ public class GoodsService {
 		}
 		// 满减活动满减字段
 		activityCfg = getActivityInfo(goodsId);
+		//是否支持7天无理由退货,Y、N
+		support7dRefund=goodsBasicInfo.getSupport7dRefund();
 		
+		List<String> proCoupons=new ArrayList<>();
+		//获取商品的优惠券
+	    List<String> proCoupons2=jdGoodsInfoService.getProCouponList(goodsId);
+		if(proCoupons2.size()>3){
+			proCoupons=proCoupons2.subList(0, 3);
+		}else{
+			proCoupons=proCoupons2;
+		}
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
@@ -512,6 +524,8 @@ public class GoodsService {
     	}
     	jdSimilarSkuVo.setActivityCfg(activityCfg);
     	jdSimilarSkuVo.setProActivityId(proActivityId);
+    	jdSimilarSkuVo.setProCouponList(proCoupons);
+    	jdSimilarSkuVo.setSupport7dRefund(support7dRefund);
     }
 	return JdSimilarSkuToList;
   }
@@ -1319,11 +1333,7 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
-      if(g.getSordNo() == null){
-        goods.setSordNo(0);
-      }else {
-        goods.setSordNo(g.getSordNo());
-      }
+      goods.setSordNo(g.getSordNo());
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));
