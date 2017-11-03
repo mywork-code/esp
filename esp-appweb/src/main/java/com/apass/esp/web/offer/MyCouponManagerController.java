@@ -1,17 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.MyCouponVo;
@@ -21,6 +9,18 @@ import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/my/coupon")
@@ -95,7 +95,7 @@ public class MyCouponManagerController {
 			return Response.success("删除成功!");
 		} catch (Exception e) {
 			logger.error("exception giveCouponToUser :{}",e);
-			return Response.success("删除失败!");
+			return Response.fail("删除失败!");
 		}
 	}
 	  /**
@@ -113,5 +113,21 @@ public class MyCouponManagerController {
 		}
 		List<ProCouponVo> proCouponRelList=couponManagerService.getCouponList(Long.parseLong(userId));
 		 return Response.success("加载未领取优惠券成功!",proCouponRelList);
+	}
+
+	/**
+	 * 给新注册用户发放新用户专享优惠券
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/addXYHCoupons",method = RequestMethod.POST)
+	public Response addXYHCoupons(@RequestBody Map<String, Object> paramMap){
+		String userId = CommonUtils.getValue(paramMap, "userId");
+		String tel = CommonUtils.getValue(paramMap, "tel");
+		try {
+			myCouponManagerService.addXYHCoupons(Long.valueOf(userId),tel);
+			return Response.success("添加成功");
+		} catch (BusinessException e) {
+			return Response.fail(e.getErrorDesc());
+		}
 	}
 }

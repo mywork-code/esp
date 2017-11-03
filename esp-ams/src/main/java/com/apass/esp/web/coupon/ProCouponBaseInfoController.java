@@ -1,22 +1,25 @@
 package com.apass.esp.web.coupon;
 
-import com.alibaba.druid.support.logging.Log;
-import com.apass.esp.common.utils.UrlUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CouponList;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponIsDelete;
+import com.apass.esp.domain.enums.CouponSillType;
+import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
-import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
-import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.*;
+import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,9 +34,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by xiaohai on 2017/10/27.
@@ -151,12 +155,12 @@ public class ProCouponBaseInfoController {
                 while (i<couponList.getNumer()){
                     ProMyCoupon proMyCoupon = new ProMyCoupon();
                     proMyCoupon.setUserId(0l);
-                    proMyCoupon.setCouponRelId(0l);
+                    proMyCoupon.setCouponRelId(-1l);
                     proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
                     proMyCoupon.setCouponId(Long.valueOf(couponList.getId()));
                     proMyCoupon.setTelephone(proMyCouponAmsVo.getTelephone());
                     proMyCoupon.setStartDate(new Date());
-                    proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()==-1?0:proCoupon.getEffectiveTime()));
+                    proMyCoupon.setEndDate(DateFormatUtil.addDays(new Date(),proCoupon.getEffectiveTime()));
                     proMyCoupon.setRemarks(proMyCouponAmsVo.getRemarks());
                     proMyCoupon.setCreatedTime(new Date());
                     proMyCoupon.setUpdatedTime(new Date());

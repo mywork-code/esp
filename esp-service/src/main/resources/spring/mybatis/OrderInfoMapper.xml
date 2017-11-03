@@ -293,7 +293,8 @@
              source,
              ext_order_id,
              pre_stock_status,
-             ext_parent_id
+             ext_parent_id,
+             coupon_id
             )
 			values (
 			#{userId, jdbcType=BIGINT},
@@ -324,7 +325,8 @@
 	        #{source,jdbcType=VARCHAR},
 	        #{extOrderId,jdbcType=VARCHAR},
 	        #{preStockStatus,jdbcType=VARCHAR},
-	        #{extParentId,jdbcType=VARCHAR});
+	        #{extParentId,jdbcType=VARCHAR},
+	        #{couponId, jdbcType=BIGINT});
 	</insert>
 	
 	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">

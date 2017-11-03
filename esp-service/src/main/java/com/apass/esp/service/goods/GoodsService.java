@@ -3,7 +3,9 @@ package com.apass.esp.service.goods;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.GoodsAttr;
+import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -28,6 +32,10 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSaleAttr;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
+import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -117,6 +125,10 @@ public class GoodsService {
   private ActivityCfgService activityCfgService;
   @Autowired
   private OrderService orderService;
+  @Autowired
+  private GoodsAttrValService goodsAttrValService;
+  @Autowired
+  private GoodsAttrService goodsAttrService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -385,12 +397,23 @@ public class GoodsService {
     for (BannerInfoEntity banner : goodsBannerList) {
     	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
     }
- 
-    
-    
+    //拼凑京东商品jdSimilarSkuList2数据格式
+	List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
+	JdSimilarSku jdSimilarSku=new JdSimilarSku();
+	List<JdSaleAttr> saleAttrList=new ArrayList<>();
+	JdSaleAttr jdSaleAttr=new JdSaleAttr();
+	//查出商品属性
+	List<GoodsAttrVal> goodsAttrValList= goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsId);
+	//TODO 查询 t_esp_goods_attr_val 商品不同规格下对应值表
+ 	for (GoodsAttrVal goodsAttrVal : goodsAttrValList) {
+ 		GoodsAttr goodsAttr=goodsAttrService.selectGoodsAttrByid(goodsAttrVal.getAttrId());
+ 		String saleName=goodsAttr.getName();
+ 		List<GoodsAttrVal> GoodsAttrValList=goodsAttrValService.queryByGoodsIdAndAttrId(goodsId, goodsAttrVal.getAttrId());
+ 		for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
+ 		}
+ 	}
  	
- 	
- 	
+	//TODO 查询 t_esp_goods_stock_info 商品库存信息表 
  	
  	
  	
@@ -452,6 +475,87 @@ public class GoodsService {
         BigDecimal.ROUND_DOWN);
     returnMap.put("minPriceFirstPayment", minPriceFistPayment);
     returnMap.put("source", "notJd");
+  }
+  /**
+   * 通过商品goodsId组装非京东上商品的JdSimilarSkuToList
+   * @return
+ * @throws BusinessException 
+   */
+	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException {
+		Long proActivityId = null;
+		String activityCfg;
+		// 返回活动id
+		ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+		if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+			proActivityId = proGroupGoodsBo.getActivityId();
+		}
+		// 满减活动满减字段
+		activityCfg = getActivityInfo(goodsId);
+		
+		// 查询商品规格中的商品的价格和库存
+		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
+		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+    	JdSimilarSkuTo jdSimilarSkuTo=new JdSimilarSkuTo();
+    	jdSimilarSkuTo.setSkuIdOrder(goodsStockInfoEntity.getAttrValIds());
+    	JdSimilarSkuVo jdSimilarSkuVo=new JdSimilarSkuVo();
+    	jdSimilarSkuVo.setSkuId(goodsStockInfoEntity.getSkuId());
+    	jdSimilarSkuVo.setGoodsId(goodsId.toString());
+    	jdSimilarSkuVo.setGoodsStockId(goodsStockInfoEntity.getId().toString());
+    	jdSimilarSkuVo.setStockCurrAmt(goodsStockInfoEntity.getStockCurrAmt());
+   	    BigDecimal price = commonService.calculateGoodsPrice(goodsId,goodsStockInfoEntity.getId());
+    	jdSimilarSkuVo.setPrice(price);
+    	jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+    	jdSimilarSkuVo.setStockDesc("无货");
+    	if(null !=goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt()>0){
+    		jdSimilarSkuVo.setStockDesc("有货");
+    	}
+    	jdSimilarSkuVo.setActivityCfg(activityCfg);
+    	jdSimilarSkuVo.setProActivityId(proActivityId);
+    }
+	return JdSimilarSkuToList;
+  }
+  /**
+   * 通过商品goodsId和attrValId获取某个属性值下的商品列表
+   * @return
+   */
+  public Map<String,Object>  getSkuIdsBygoodsIdAndAttrValId(Long goodsId,Long attrValId){
+	    Map<String,Object> resultMap=new HashMap<>();
+	    List<String> skuIds =new ArrayList<>();
+	    String skuIdStr="";
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+	    List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+//	    	 BigDecimal price = commonService.calculateGoodsPrice(goodsId,goodsStockInfoEntity.getId());
+//	    	 goodsStockInfoEntity.setGoodsPrice(price);
+	    }
+		// 根据GoodsStockInfoEntity里面的GoodsPrice排序(价格由小到大排序)
+		Collections.sort(goodsStockList, new Comparator<GoodsStockInfoEntity>() {
+			@Override
+			public int compare(GoodsStockInfoEntity gsity1, GoodsStockInfoEntity gsity2) {
+				if (gsity1.getGoodsPrice().compareTo(gsity2.getGoodsPrice()) > 0) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+		});
+	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+	    	if(null !=goodsStockInfoEntity.getAttrValIds()){
+	    		String [] AttrValIds=goodsStockInfoEntity.getAttrValIds().split("-");
+	    		if(Arrays.asList(AttrValIds).contains(attrValId.toString())){
+	    			skuIds.add(goodsStockInfoEntity.getSkuId());
+	    			skuIdStr=skuIdStr+goodsStockInfoEntity.getSkuId();
+	    		}
+	    	}
+	    	
+		}
+	    resultMap.put("", "");
+	    resultMap.put("", "");
+	    resultMap.put("", "");
+	    resultMap.put("skuIds", skuIds);
+	    resultMap.put("skuIdStr", skuIdStr);
+	    return resultMap;
   }
   /**
    * 获取商品基本信息
@@ -1215,7 +1319,11 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
-      goods.setSordNo(g.getSordNo());
+      if(g.getSordNo() == null){
+        goods.setSordNo(0);
+      }else {
+        goods.setSordNo(g.getSordNo());
+      }
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));

@@ -61,6 +61,11 @@ public class ProCouponVo {
      * 是否已领取
      */
     private boolean receiveFlag;
+    
+    /**
+     * 用户可领取张数
+     */
+    private Integer userReceiveNum;
 
 	public Long getId() {
 		return id;
@@ -147,4 +152,13 @@ public class ProCouponVo {
 	public void setStartTimeDate(Date startTimeDate) {
 		this.startTimeDate = startTimeDate;
 	}
+
+	public Integer getUserReceiveNum() {
+		return userReceiveNum;
+	}
+
+	public void setUserReceiveNum(Integer userReceiveNum) {
+		this.userReceiveNum = userReceiveNum;
+	}
+	
 }
