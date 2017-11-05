@@ -87,7 +87,6 @@
     <!-- c -->
     <sql id="queryCriteria">
     	<where>
-    		status=1
     		<if test="type !=null and type !='' ">and type = #{type}</if>
     		<if test="activityId !=null and activityId !='' ">and activity_id = #{activityId}</if>
     		<if test="userId !=null and userId !='' ">and user_id = #{userId}</if>

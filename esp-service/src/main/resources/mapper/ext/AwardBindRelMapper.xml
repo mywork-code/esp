@@ -115,7 +115,7 @@
 	<!-- 查询条件 -->
 	<sql id="queryCriteria">
 		<where>
-			<if test="startCreateDate != null and endCreateDate != ''">
+			<if test="startCreateDate != null and startCreateDate != ''">
 				<![CDATA[  and create_date >= #{startCreateDate} ]]>
 			</if>
 			<if test="endCreateDate != null and endCreateDate != '' ">
