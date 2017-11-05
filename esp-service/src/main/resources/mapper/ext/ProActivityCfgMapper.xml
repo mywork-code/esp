@@ -42,4 +42,11 @@
             SELECT pro_activity_id from t_esp_pro_coupon_rel where coupon_id = #{id}
         )
     </select>
+
+    <select id="selectProActivityCfgByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_activity_cfg
+        where activity_name = #{activityName}
+    </select>
 </mapper>

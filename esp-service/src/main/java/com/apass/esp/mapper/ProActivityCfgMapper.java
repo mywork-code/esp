@@ -20,5 +20,8 @@ public interface ProActivityCfgMapper extends GenericMapper<ProActivityCfg, Long
 	 */
 	Integer getActivityCfgListPageCount(ActivityfgDto activityfgDto);
 
+	//根据活动名称查询是否存在活动
+	ProActivityCfg selectProActivityCfgByName(String activityName);
+
 	List<ProActivityCfg> selectProActivityCfgByEntity(Map<String, Object> map);
 }
