@@ -76,7 +76,8 @@ $(function(){
     $.editGroup = function (row) {
         var rows = JSON.parse(decodeURI(row));
         var activityId = rows.id;
-        window.location.href = ctx + "/activity/cfg/edit?id="+activityId;
+        // window.location.href = ctx + "/activity/cfg/edit?id="+activityId;
+        window.location.href= ctx + '/activity/cfg/add?id='+activityId;
     }
 
     $("#add").click(function(){
