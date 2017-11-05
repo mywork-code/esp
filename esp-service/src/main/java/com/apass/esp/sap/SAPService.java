@@ -789,7 +789,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZSCL","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
+      String[] headers = {"GUID", "ZSCL","ZYWH","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       Integer rowNum = new Integer("1");//行号
       for (TxnOrderInfo txn : txnList) {
@@ -799,6 +799,7 @@ public class SAPService {
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
         contentList.add("01");
+        contentList.add("");
         contentList.add("B");
         contentList.add("03");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
