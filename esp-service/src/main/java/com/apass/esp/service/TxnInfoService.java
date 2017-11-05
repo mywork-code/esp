@@ -116,4 +116,8 @@ public class TxnInfoService {
     public List<TxnInfoEntity> selectRepayTxnByUserId(Long userId,String startDate,String endDate){
       return txnInfoMapper.queryRepayTxnByUserId(userId,startDate,endDate);
     }
+
+    public Integer getTotalCreditPayNum(Long userId){
+      return txnInfoMapper.getTotalCreditPayNum(userId);
+    }
 }

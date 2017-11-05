@@ -115,19 +115,4 @@ public class MyCouponManagerController {
 		 return Response.success("加载未领取优惠券成功!",proCouponRelList);
 	}
 
-	/**
-	 * 给新注册用户发放新用户专享优惠券
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/addXYHCoupons",method = RequestMethod.POST)
-	public Response addXYHCoupons(@RequestBody Map<String, Object> paramMap){
-		String userId = CommonUtils.getValue(paramMap, "userId");
-		String tel = CommonUtils.getValue(paramMap, "tel");
-		try {
-			myCouponManagerService.addXYHCoupons(Long.valueOf(userId),tel);
-			return Response.success("添加成功");
-		} catch (BusinessException e) {
-			return Response.fail(e.getErrorDesc());
-		}
-	}
 }

@@ -1,6 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class GroupGoodsController {
 		String bannerId = CommonUtils.getValue(paramMap, "bannerId");
 		String userId = CommonUtils.getValue(paramMap, "userId");
 		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
-		if(StringUtils.isEmpty(activityId) || StringUtils.isEmpty(userId) ){
+		if(StringUtils.isEmpty(activityId)){
 			return Response.fail("参数传递有误!");
 		}
 		try {
@@ -48,8 +47,10 @@ public class GroupGoodsController {
 			/**
 			 * sprint 11 根据活动的Id，获取对应优惠券的信息
 			 */
-			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
-			maps.put("coupons", couponVos);
+			if(StringUtils.isNotBlank(userId)){
+				List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
+				maps.put("coupons", couponVos);
+			}
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
