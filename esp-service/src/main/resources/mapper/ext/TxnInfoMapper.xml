@@ -238,4 +238,8 @@
         order by txn_id asc
     </select>
 
+    <select id="getTotalCreditPayNum" resultType="java.lang.Integer">
+        select count(txn_id) from t_apass_txn_info
+         where user_id = #{userId} and txn_type = 'T02' and status = 'S'
+    </select>
 </mapper>
