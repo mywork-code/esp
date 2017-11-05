@@ -616,6 +616,7 @@ public class SAPService {
         contentList.add(txn.getOrderInfoId().toString());
         contentList.add(txn.getMainOrderId());
         contentList.add(txn.getCompanyCode());
+        contentList.add(txn.getExtOrderId());
         contentList.add(txn.getOrderId());
         contentList.add(txn.getOrderType());
         String suqNo = txn.getSupNo();

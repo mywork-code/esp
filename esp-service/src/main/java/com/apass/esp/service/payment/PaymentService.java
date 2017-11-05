@@ -630,8 +630,14 @@ public class PaymentService {
 						page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付
 					}else{
 						// 支持额度支付
-						if ("1".equals(response1.getData())) {
-							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
+						Map<String, String> map = (Map<String, String>) response1.getData();
+						if ("1".equals(map.get("available"))) {
+							if("1".equals(map.get("needAuthActive"))){
+								//需要额度激活
+								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYONE; // 支持额度支付
+							}else{
+								page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTWO; // 支持额度支付
+							}
 						} else {
 							page = ConstantsUtils.PayMethodPageShow.CHOOSEPAYTHREE; // 只支持银行卡支付 或支付宝
 						}
