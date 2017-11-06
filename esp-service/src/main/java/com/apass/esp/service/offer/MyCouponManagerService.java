@@ -1,37 +1,40 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.query.ProCouponRelQuery;
+import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.vo.MyCouponVo;
+import com.apass.esp.domain.vo.ProMyCouponVo;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.ProActivityCfgMapper;
+import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProCouponRelMapper;
+import com.apass.esp.mapper.ProMyCouponMapper;
+import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponType;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
-import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.enums.ActivityStatus;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.query.ProCouponRelQuery;
-import com.apass.esp.domain.query.ProMyCouponQuery;
-import com.apass.esp.domain.vo.MyCouponVo;
-import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.mapper.ProActivityCfgMapper;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
-import com.apass.esp.mapper.ProMyCouponMapper;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.google.common.collect.Maps;
 
 /**
  * 
@@ -60,6 +63,12 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private ActivityCfgService activityCfgService;
+
+	@Autowired
+	private OrderInfoRepository orderInfoRepository;
+
+	@Autowired
+	private CashRefundMapper cashRefundMapper;
 	
 	/**
 	 * 点击领取优惠券
@@ -298,6 +307,37 @@ public class MyCouponManagerService {
 		vo.setUserId(p.getUserId());
 		return vo;
 	}
+
+	/**
+	 * 订单失效、退款返回优惠券
+	 */
+	public void returnCoupon(Long userId,Long couponId,String selfOrderId){
+		if(couponId == null){
+			return;
+		}
+		//根据couponId查询orderList,判断订单状态是否是退款或订单失效
+		List<OrderInfoEntity> orderList = orderInfoRepository.selectByCouponId(couponId);
+		for(OrderInfoEntity order : orderList){
+			if(selfOrderId.equals(order.getOrderId())){
+				continue;
+			}
+			if(order.getStatus().equals(OrderStatus.ORDER_CANCEL.getCode())){
+
+			}
+			if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
+				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
+				if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
+
+				}else{
+					return;
+				}
+			}else {
+				return;
+			}
+		}
+		updateStatus("N",userId,couponId);
+	}
+
 
 
 	public void updateStatus(String status,Long userId,Long couponId){
