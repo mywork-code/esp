@@ -18,4 +18,6 @@ public interface GoodsAttrMapper extends GenericMapper<GoodsAttr, Long> {
      * @return
      */
     List<GoodsAttr> getGoodsAttrListByName(GoodsAttr entity);
+
+    List<GoodsAttr> selectAllGoodsAttr();
 }

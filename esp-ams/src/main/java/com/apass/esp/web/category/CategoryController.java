@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.apass.esp.domain.entity.CategoryAttrRel;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.vo.GoodsAttrVo;
+import com.apass.esp.service.goods.CategoryAttrRelService;
+import com.apass.esp.service.goods.GoodsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +58,12 @@ public class CategoryController {
     // private static final String CATEGORYPAGE= "goods/goodCategory2";
     @Autowired
     private CategoryInfoService cateService;
+
+    @Autowired
+    private CategoryAttrRelService categoryAttrRelService;
+
+    @Autowired
+    private GoodsService goodsService;
 
     @RequestMapping(value = "/page")
     public ModelAndView categoryPage() {
@@ -349,5 +361,53 @@ public class CategoryController {
                 throw new BusinessException("类目名称格式不正确，请输入重新输入。");
             }
         }
+    }
+
+
+    /**
+     * 关联商品属性
+     * @param categoryId
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/revlenceGoodsAttr")
+    public Response revlenceGoodsAttr(CategoryAttrRel categoryAttrRel) {
+        try{
+            int categoryAttrRelId = categoryAttrRelService.insertCategoryAttrRel(categoryAttrRel);
+
+        }catch (Exception e){
+            LOGGER.error("关联商品属性失败",e);
+            return Response.success("关联商品属性失败！");
+        }
+        return Response.success("关联商品属性成功！");
+    }
+    /**
+     * 取消关联商品属性
+     * @param categoryId
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/disRevlenceGoodsAttr")
+    public Response disRevlenceGoodsAttr(CategoryAttrRel categoryAttrRel) {
+        try{
+            //判断是否该类目所取消关联的商品属性是否已经被商品使用
+            List<GoodsInfoEntity> goodsList = goodsService.selectByCategoryId1(categoryAttrRel.getCategoryId1());
+            if(CollectionUtils.isNotEmpty(goodsList)){
+                for (GoodsInfoEntity goodsInfo: goodsList) {
+                    if(StringUtils.isNotBlank(goodsInfo.getGoodsSkuAttr())){
+                        if(Long.valueOf(goodsInfo.getGoodsSkuAttr()) == categoryAttrRel.getGoodsAttrId()){
+                            return Response.fail("该属性已被使用，不能取消关联");
+                        }
+                    }
+                }
+            }
+            //取消关联
+            int count = categoryAttrRelService.disRevlenceGoodsAttr(categoryAttrRel);
+
+        }catch (Exception e){
+            LOGGER.error("关联商品属性失败",e);
+            return Response.fail("关联商品属性失败！");
+        }
+        return Response.success("关联商品属性成功！");
     }
 }
