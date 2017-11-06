@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<<<<<<< Updated upstream
 <mapper namespace="com.apass.esp.mapper.CategoryAttrRelMapper">
+    <!-- 查询条件 -->
+    <sql id="QueryCategoryAttrRelSql">
+        <where>
+            <if test="categoryId1 != null and categoryId1 != ''">
+                AND category_id1 = #{categoryId1, jdbcType=BIGINT}
+            </if>
+            <if test="goodsAttrId != null and goodsAttrId != ''">
+                AND goods_attr_id = #{goodsAttrId, jdbcType=BIGINT}
+            </if>
+        </where>
+    </sql>
+
     <select id="categoryAttrRelListByCategory" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" resultType="com.apass.esp.domain.entity.CategoryAttrRel">
         <![CDATA[
         SELECT
@@ -21,19 +32,6 @@
             AND t.goods_attr_id = ${goodsAttrId}
         </if>
     </select>
-=======
-<mapper namespace="com.apass.esp.mapper.CategoryAttrRelMapper" >
-  <!-- 查询条件 -->
-  <sql id="QueryCategoryAttrRelSql">
-    <where>
-      <if test="categoryId1 != null and categoryId1 != ''">
-        AND category_id1 = #{categoryId1, jdbcType=BIGINT}
-      </if>
-      <if test="goodsAttrId != null and goodsAttrId != ''">
-        AND goods_attr_id = #{goodsAttrId, jdbcType=BIGINT}
-      </if>
-    </where>
-  </sql>
 
   <select id="selectCategoryAttrRelByQueryEntity" resultMap="BaseResultMap">
       select
@@ -47,5 +45,4 @@
     <include refid="QueryCategoryAttrRelSql" />
   </delete>
 
->>>>>>> Stashed changes
 </mapper>
