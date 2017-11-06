@@ -795,6 +795,9 @@ public class OrderService {
     	if(StringUtils.isNotBlank(myCouponId)){
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		for (String stockId : stockIds) {
+    			if(StringUtils.isEmpty(stockId)){
+    				continue;
+    			}
 				GoodsStockInfoEntity stock = goodsStockDao.select(Long.parseLong(StringUtils.trim(stockId)));
     			GoodsInfoEntity goods = goodsDao.select(stock.getGoodsId());
     			if(StringUtils.equals(goods.getMerchantCode(), merchantCode)){
@@ -1042,6 +1045,7 @@ public class OrderService {
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
     			String stock = StringUtils.trim(stockId);
+    			if(StringUtils.isEmpty(stock)){continue;}
     			for (PurchaseRequestDto purchase : purchaseList) {
         			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
@@ -1051,6 +1055,7 @@ public class OrderService {
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
     				String stock = StringUtils.trim(stockId);
+    				if(StringUtils.isEmpty(stock)){continue;}
 	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
