@@ -55,6 +55,7 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponMessage;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -2609,6 +2610,7 @@ public class OrderService {
     		ProMyCouponVo coupon = couponVos.get(i);
 			Date start = DateFormatUtil.string2date(coupon.getStartDate());
 			if(start.getTime() > now.getTime()){
+				coupon.setMessage(CouponMessage.NO_START.getMessage());
 				no.add(coupon);
 				couponVos.remove(coupon);
 			}
@@ -2657,6 +2659,11 @@ public class OrderService {
     				coupon.setGoodStockIds(goodslist);
     				yes.add(coupon);
     			}else{
+    				if(total.compareTo(BigDecimal.ZERO) == 0){
+    					coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				}else{
+    					coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
+    				}
     				no.add(coupon);
     			}
     		}
