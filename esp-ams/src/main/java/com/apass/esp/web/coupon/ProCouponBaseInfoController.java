@@ -4,12 +4,15 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CouponList;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
+import com.apass.esp.repository.httpClient.CommonHttpClient;
+import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -22,6 +25,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.internal.LinkedTreeMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,6 +55,8 @@ public class ProCouponBaseInfoController {
     private ProCouponService proCouponService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    @Autowired
+    private CommonHttpClient commonHttpClient;
 
     @RequestMapping("/page")
     public ModelAndView page(){
@@ -146,6 +152,11 @@ public class ProCouponBaseInfoController {
                 }
             }
 
+            Response response = commonHttpClient.getCustomerBasicInfoByTel("ProCouponBaseInfoController.issueCoupon(),优惠券发布...", proMyCouponAmsVo.getTelephone());
+            if(response==null||!response.statusResult()){
+                return Response.fail("手机号输入错误，请重新输入。");
+            }
+            CustomerBasicInfo customerBasicInfo = Response.resolveResult(response, CustomerBasicInfo.class);
             //封装数据 map
             for(CouponList couponList: couponLists){
                 List<ProMyCoupon> proMycouponList = Lists.newArrayList();
@@ -154,7 +165,7 @@ public class ProCouponBaseInfoController {
                 int i = 0;
                 while (i<couponList.getNumer()){
                     ProMyCoupon proMyCoupon = new ProMyCoupon();
-                    proMyCoupon.setUserId(0l);
+                    proMyCoupon.setUserId(customerBasicInfo.getAppId());
                     proMyCoupon.setCouponRelId(-1l);
                     proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
                     proMyCoupon.setCouponId(Long.valueOf(couponList.getId()));
