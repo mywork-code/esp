@@ -1,15 +1,14 @@
 package com.apass.esp.service.offer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +70,16 @@ public class ActivityCfgService {
 			throw new BusinessException("添加活动配置信息失败");
 		}
 
+		List<ProcouponRelVoList> procouponRelVoListList1 = vo.getProcouponRelVoListList();
+		if(CollectionUtils.isNotEmpty(procouponRelVoListList1)){
+			Set<Long> sets = Sets.newTreeSet();
+			for (int i=0;i<procouponRelVoListList1.size();i++) {
+				sets.add(procouponRelVoListList1.get(i).getCouponId());
+			}
+			if(sets.size() != procouponRelVoListList1.size()){
+				throw new BusinessException("本次发放存在重复优惠券种类，请修改后重试");
+			}
+		}
 
 		//是否使用优惠券
 		if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCoupon())){

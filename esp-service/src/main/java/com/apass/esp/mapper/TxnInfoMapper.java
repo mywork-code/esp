@@ -60,4 +60,7 @@ public interface TxnInfoMapper extends GenericMapper<TxnInfoEntity, Long>{
   List<TxnInfoEntity> queryRepayTxnByUserId(@Param("userId") Long userId,
                                             @Param("dateBegin") String dateBegin,
                                             @Param("dateEnd") String dateEnd);
+
+
+  Integer getTotalCreditPayNum(@Param("userId") Long userId);
 }

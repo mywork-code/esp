@@ -60,4 +60,12 @@ public class CouponRelService {
 	public Integer addProCouponRel(ProCouponRel proCouponRel) {
 		return couponRelMapper.insertSelective(proCouponRel);
 	}
+
+	public Integer updateProCouponRel(ProCouponRel proCouponRel) {
+		return couponRelMapper.updateByPrimaryKeySelective(proCouponRel);
+	}
+
+	public ProCouponRel getcoupoRelByPrimary(Long id) {
+		return couponRelMapper.selectByPrimaryKey(id);
+	}
 }

@@ -1,4 +1,4 @@
- 
+
 $(function(){
 	//单击下一步所需参数
 	var param = {};
@@ -9,36 +9,133 @@ $(function(){
 	var obj4 = {};
 	var obj5 = {};
 
+	//是否选择优惠券成员变量
+	var coupon = null;
+
+	//获取选择发放优惠券下拉框内容
+	$(".issueCouponInput").combobox({
+		method: "get",
+		url: ctx + "/application/coupon/management/loadp",
+		valueField: 'id',
+		textField: 'name',
+		queryParams: {
+			"extendType" : "YHLQ",
+		},
+		onLoadSuccess:function () {
+
+		}
+	});
+	//活动id
+	var paramMapActivityId = $("#paramMapActivityId").val();
+	$.ajax({
+		url : ctx + '/activity/cfg/edit/find',
+		data : {"id":paramMapActivityId},
+		type : "post",
+		dataType : "json",
+		success : function(data) {
+			var resp = data.data;
+			if(data.status){
+				console.log(data);
+				$("#activityName").textbox('setValue',resp.activityName);
+				$("#startTime").datetimebox('setValue',new Date(resp.startTime).Format("yyyy-MM-dd hh:mm:ss"));
+				$("#endTime").datetimebox('setValue',new Date(resp.endTime).Format("yyyy-MM-dd hh:mm:ss"));
+				var activityType = resp.activityType;
+				$("#activityType").combobox('setValue',activityType);
+
+				coupon = resp.coupon;
+				$("[name='isCoupon']").each(function(){
+					if($(this).val() == coupon){
+						$(this).attr("checked",'true');
+					}
+				});
+				if(activityType == "Y"){
+					$("#xxxxxxID").show();
+					$("#offerSill1").numberbox('setValue',resp.offerSill1)
+					$("#discount1").numberbox('setValue',resp.discountAmonut1)
+					$("#offerSill2").numberbox('setValue',resp.offerSill2)
+					$("#discount2").numberbox('setValue',resp.discountAmount2)
+				}else {
+					$("#offerSill1").numberbox('setValue','');
+					$("#offerSill2").numberbox('setValue','');
+					$("#discount1").numberbox('setValue','');
+					$("#discount2").numberbox('setValue','');
+					$("#xxxxxxID").css("display","none");
+				}
+
+				if(coupon == "Y"){
+					$(".couponsDiv").show();
+
+					var proCopuonRels = resp.proCouponRels;
+					$("#chooseCoupon1").combobox("setValue",proCopuonRels[0].couponId)
+					$("#issueCouponNum1").textbox("setValue",proCopuonRels[0].totalNum)
+					$("#issueLimitNum1").textbox("setValue",proCopuonRels[0].limitNum)
+					$("#proCouponRelId1").val(proCopuonRels[0].id)
+
+					for (var i=2; i<proCopuonRels.length+1; i++) {
+						$(".addOrdeleteCouponTr"+i).show();
+						$("#chooseCoupon"+i).combobox("setValue",proCopuonRels[i-1].couponId)
+						$("#issueCouponNum"+i).textbox("setValue",proCopuonRels[i-1].totalNum)
+						$("#issueLimitNum"+i).textbox("setValue",proCopuonRels[i-1].limitNum)
+						$("#proCouponRelId"+i).val(proCopuonRels[i-1].id)
+					}
+
+				}else{
+					$(".couponsDiv").css("display","none");
+				}
+			}else{
+				$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
+			}
+		}
+	});
+
+	//单击添加优惠券按钮
+	$("#addTotalCouponNumId1").click(function () {
+		addTotalNum("issueCouponNum1");
+	});
+	$("#addTotalCouponNumId2").click(function () {
+		addTotalNum("issueCouponNum2");
+	});
+	$("#addTotalCouponNumId3").click(function () {
+		addTotalNum("issueCouponNum3");
+	});
+	$("#addTotalCouponNumId4").click(function () {
+		addTotalNum("issueCouponNum4");
+	});
+	$("#addTotalCouponNumId5").click(function () {
+		addTotalNum("issueCouponNum5");
+	});
 
 	/**
 	 * 保存活动添加信息
 	 */
 	$("#agreeAdd").click(function(){
-    	if(checkParams()){
-			param.procouponRelVoListList = arr;
-			debugger;
-			console.log(arr);
-			console.log(param);
-			$.ajax({
-				url : ctx + '/activity/cfg/add/save',
-				data : encodeURI(JSON.stringify(param)),
-				type : "post",
-				dataType : "json",
-				success : function(data) {
-					if(data.status){
-						$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
-						window.location.href = ctx + "/activity/cfg/edit?id="+data.data;
-					}else{
-						$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
+		if(coupon == "Y"){
+			if(checkParams()){
+				param.relList = arr;
+				console.log(arr);
+				console.log(param);
+				$.ajax({
+					url : ctx + '/activity/cfg/editpro/update',
+					data : encodeURI(JSON.stringify(param)),
+					type : "post",
+					dataType : "json",
+					success : function(data) {
+						if(data.status){
+							$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
+							window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
+						}else{
+							$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
+						}
 					}
-				}
-			})
-    	}
+				})
+			}
+		}else{
+			window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
+		}
 	});
-
+	//校验参数
 	function checkParams(){
 		var activityName = $("#activityName").textbox('getValue');
-		param.activityName = activityName;
 		if(activityName == '' || null == activityName){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写活动名称！","info");
 			return false;
@@ -47,37 +144,33 @@ $(function(){
 			$.messager.alert("<span style='color: black;'>提示</span>","活动名称长度应在12个字符以内！","info");
 			return false;
 		}
-		
-		var startTime=$("#startTime").textbox('getValue');
+
+		var startTime = $("#startTime").textbox('getValue');
 		if(startTime=='' || null==startTime){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写开始时间！","info");
 			return false;
 		}
-		param.startTime = startTime;
-		
+
 		var endTime= $("#endTime").textbox('getValue');
 		if(endTime=='' || null==endTime){
 			$.messager.alert("<span style='color: black;'>提示</span>","请填写结束时间！","info");
 			return false;
 		}
-		param.endTime = endTime;
-		
+
 		if(startTime!=null && startTime!=''&&endTime!=null && endTime!=''){
 			if(startTime >= endTime){
 				$.messager.alert("<span style='color: black;'>提示</span>","开始时间应小于结束时间，请重新填写！",'info');
 				return false;
 			}
 			if(endTime < new Date().Format("yyyy-MM-dd hh:mm:ss")){
-    			$.messager.alert("<span style='color: black;'>提示</span>","结束时间填写错误，请重新填写！",'info');
-    			return false;
-    		}
+				$.messager.alert("<span style='color: black;'>提示</span>","结束时间填写错误，请重新填写！",'info');
+				return false;
+			}
 		}
-		var activityType = $("#activityType").combobox('getValue');
 		if(activityType == '' || null == activityType){
 			$.messager.alert("<span style='color: black;'>提示</span>","请选择活动类型！",'info');
 			return false;
 		}
-		param.activityType = activityType;
 
 		if(activityType == 'Y') {
 			var offerSill1 = $("#offerSill1").numberbox('getValue');
@@ -89,7 +182,6 @@ $(function(){
 				$.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠门槛金额长度要小于15位！", 'info');
 				return false;
 			}
-			param.offerSill1 = offerSill1;
 			var offerSill2 = $("#offerSill2").numberbox('getValue');
 			if (offerSill2 == '' || null == offerSill2) {
 				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠门槛！", 'info');
@@ -99,7 +191,6 @@ $(function(){
 				$.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠门槛金额长度要小于15位！", 'info');
 				return false;
 			}
-			param.offerSill2 = offerSill2;
 			if (offerSill1 == offerSill2) {
 				$.messager.alert("<span style='color: black;'>提示</span>", "优惠门槛不能相同！", 'info');
 				return false;
@@ -117,7 +208,6 @@ $(function(){
 				$.messager.alert("<span style='color: black;'>提示</span>", "第一个优惠金额要小于第一个优惠门槛金额！", 'info');
 				return false;
 			}
-			param.discount1 = discount1;
 			var discount2 = $("#discount2").numberbox('getValue');
 			if (discount2 == '' || null == discount2) {
 				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个优惠金额！", 'info');
@@ -131,11 +221,9 @@ $(function(){
 				$.messager.alert("<span style='color: black;'>提示</span>", "第二个优惠金额要小于第二个优惠门槛金额！", 'info');
 				return false;
 			}
-			param.discount2 = discount2;
 		}
 
 		var isCoupon = $("input[name='isCoupon']:checked").val()
-		param.coupon = isCoupon;
 		if(isCoupon == "Y") {
 			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
 			if (chooseCoupon1 == '' || null == chooseCoupon1) {
@@ -155,6 +243,7 @@ $(function(){
 			obj1.couponId = chooseCoupon1;
 			obj1.totalNum = issueCouponNum1;
 			obj1.limitNum = issueLimitNum1;
+			obj1.id = $("#proCouponRelId1").val();
 			arr.push(obj1)
 
 
@@ -182,6 +271,7 @@ $(function(){
 				obj2.couponId = chooseCoupon2;
 				obj2.totalNum = issueCouponNum2;
 				obj2.limitNum = issueLimitNum2;
+				obj2.id = $("#proCouponRelId2").val();
 				arr.push(obj2)
 			}
 
@@ -204,6 +294,7 @@ $(function(){
 				obj3.couponId = chooseCoupon3;
 				obj3.totalNum = issueCouponNum3;
 				obj3.limitNum = issueLimitNum3;
+				obj3.id = $("#proCouponRelId3").val();
 				arr.push(obj3)
 			}
 			if (addOrdeleteCouponTrDisplay4 != "none") {
@@ -225,6 +316,7 @@ $(function(){
 				obj4.couponId = chooseCoupon4;
 				obj4.totalNum = issueCouponNum4;
 				obj4.limitNum = issueLimitNum4;
+				obj4.id = $("#proCouponRelId4").val();
 				arr.push(obj4)
 			}
 			if (addOrdeleteCouponTrDisplay5 != "none") {
@@ -252,115 +344,33 @@ $(function(){
 
 		return true;
 	}
-
-	$("#activityType").combobox({
-		onChange: function (n,o) {
-			if(n == 'Y'){
-				$("#xxxxxxID").show();
-			}else{
-				$("#offerSill1").numberbox('setValue','');
-				$("#offerSill2").numberbox('setValue','');
-				$("#discount1").numberbox('setValue','');
-				$("#discount2").numberbox('setValue','');
-				$("#xxxxxxID").css("display","none");
-			}
-		}
-	});
-
-	//radio监听事件
-	$(".ifCou").change(
-		function () {
-			var value = $("input[name='isCoupon']:checked").val();
-			if(value == 'Y'){
-				$(".couponsDiv").show();
-				$("#addOrDeleteButtonClass").show();
-				//加载所有活动优惠券
-				$(".issueCouponInput").combobox({
-					method: "get",
-					url: ctx + "/application/coupon/management/loadp",
-					valueField: 'id',
-					textField: 'name',
-					queryParams: {
-						"extendType" : "YHLQ",
-					},
-
-					onLoadSuccess: function () {
-						$(this).combobox('setValue','请选择');
-						//加载完成后,设置选中第一项
-						// var val = $(this).combobox('getData');
-						// for (var item in val[0]) {
-						// 	if (item == 'id') {
-						// 		$(this).combobox('select', val[0][item]);
-						// 	}
-						// }
-					},
-				});
-			}else{
-				$(".couponsDiv").css("display","none");
-			}
-		}
-	);
-
-	//手动发放优惠券---->添加优惠券种类
-	$('#issueAddCoupon').bind('click', function(){
-		var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
-		var addOrdeleteCouponTrDisplay3 = $(".addOrdeleteCouponTr3").css("display");
-		var addOrdeleteCouponTrDisplay4 = $(".addOrdeleteCouponTr4").css("display");
-		var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
-
-		if(addOrdeleteCouponTrDisplay2 == "none"){
-			$(".addOrdeleteCouponTr2").show();
-		}else if(addOrdeleteCouponTrDisplay3 == "none"){
-			$(".addOrdeleteCouponTr3").show();
-		}else if(addOrdeleteCouponTrDisplay4 == "none"){
-			$(".addOrdeleteCouponTr4").show();
-		}else{
-			$(".addOrdeleteCouponTr5").show();
-		}
-
-		if(addOrdeleteCouponTrDisplay2 != "none"&& addOrdeleteCouponTrDisplay3 != "none"
-			&& addOrdeleteCouponTrDisplay4 != "none"&& addOrdeleteCouponTrDisplay5 != "none"){
-			$.messager.alert('<span style="color: black">提示</span>',"最多添加五种优惠券");
-			return;
-		}
-
-	});
-
-	//手动发放优惠券---->删除优惠券种类
-	$('#issueDeleteCoupon').bind('click', function(){
-		var addOrdeleteCouponTrDisplay2 = $(".addOrdeleteCouponTr2").css("display");
-		var addOrdeleteCouponTrDisplay3 = $(".addOrdeleteCouponTr3").css("display");
-		var addOrdeleteCouponTrDisplay4 = $(".addOrdeleteCouponTr4").css("display");
-		var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
-
-		if(addOrdeleteCouponTrDisplay5 != "none"){
-			$(".addOrdeleteCouponTr5").css("display","none");
-		}else if(addOrdeleteCouponTrDisplay4 != "none"){
-			$(".addOrdeleteCouponTr4").css("display","none");
-		}else if(addOrdeleteCouponTrDisplay3 != "none"){
-			$(".addOrdeleteCouponTr3").css("display","none");
-		}else{
-			$(".addOrdeleteCouponTr2").css("display","none");
-		}
-
-		if(addOrdeleteCouponTrDisplay5 == "none"&&addOrdeleteCouponTrDisplay4 == "none"
-			&&addOrdeleteCouponTrDisplay3 == "none"&& addOrdeleteCouponTrDisplay2 == "none"){
-			$.messager.alert('<span style="color: black">提示</span>',"最少添加一种优惠券");
-			return;
-		}
-
-	});
-	
-	
-
 })
 
-function ifLogoutForm(data){
-	var flag1 = data.indexOf('登录系统');
-	var flag2 = data.indexOf('</div');
-	if (flag1 != -1 && flag2 != -1) {
-		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
-		window.top.location = ctx + "/logout";
-		return;
-	}
+function addTotalNum(id) {
+	$("#addTotalCouponNumDiv").dialog({
+		title:'<span style="color: black">增加发放总量</span>',
+		resizable:true,
+		width : 400,
+		modal:true,
+		buttons:[
+			{
+				text : "保存",
+				handler : function() {
+					var num = $("#addTotalCouponNum").textbox('getValue');
+					var totalCount = parseInt($("#"+id).textbox('getValue'))+parseInt(num);
+					if(parseInt(num)<=0){
+						$.messager.alert("<span style='color: black;'>提示</span>","添加发放总量必须大于0","info");
+						return;
+					}
+					$("#"+id).textbox('setValue',totalCount);
+					$('#addTotalCouponNumDiv').dialog('close');
+				},
+			},{
+				text : "取消",
+				handler : function() {
+					$('#addTotalCouponNumDiv').dialog('close');
+				}
+			}
+		]
+	});
 }
