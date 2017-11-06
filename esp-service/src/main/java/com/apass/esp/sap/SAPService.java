@@ -690,7 +690,7 @@ public class SAPService {
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
-      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET"};
+      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
@@ -715,6 +715,7 @@ public class SAPService {
         contentList.add(createdtime);
 	            /*可选表头UNAME,ZSJLY*/
 	            /*write*/
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {
