@@ -1109,7 +1109,8 @@ public class GoodsBaseInfoController {
             String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
             List<StockInfoFileModel> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<StockInfoFileModel>>(){});
-            return goodsAttrService.saveGoodsCateAttrAndStock(list,categorynameArr1,categorynameArr2,categorynameArr3,goodsId);
+            return goodsAttrService.saveGoodsCateAttrAndStock(list,categorynameArr1,categorynameArr2,
+                categorynameArr3,goodsId,SpringSecurityUtils.getLoginUserDetails().getUsername());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
             return Response.fail("商品属性规格和库存信息录入失败!");

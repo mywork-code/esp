@@ -46,10 +46,10 @@ public class GoodsAttrService {
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
     private GoodsBasicRepository goodsBasicRepository;
-    @Value("${nfs.rootPath}")
-    private String rootPath;
-    @Value("${nfs.goods}")
-    private String nfsGoods;
+//    @Value("${nfs.rootPath}")
+//    private String rootPath;
+//    @Value("${nfs.goods}")
+//    private String nfsGoods;
     /**
      * 商品属性查询
      * @param entity
@@ -155,7 +155,6 @@ public class GoodsAttrService {
         return goodsAttrMapper.deleteByPrimaryKey(id);
     }
     /**
-<<<<<<< HEAD
      * 根据类目查询商品属性下拉框数据填充
      * @param categoryId1
      * @param editCategoryId1
@@ -402,7 +401,9 @@ public class GoodsAttrService {
      * @throws BusinessException 
      */
     @Transactional
-    public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, String[] arr1, String[] arr2,String[] arr3,String goodsid) throws BusinessException {
+    public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, String[] arr1,
+                                              String[] arr2,String[] arr3,String goodsid,
+                                              String userName) throws BusinessException {
         Long goodsId = Long.parseLong(goodsid);
         arr1 = famartsubStringarr(arr1);
         arr2 = famartsubStringarr(arr2);
@@ -422,7 +423,7 @@ public class GoodsAttrService {
         String fileDiName = RandomUtils.nextInt(10)+"";
         String imgType = "jpg";
         String fileName = "stocklogo_"+ fileDiName + "." + imgType;
-        String url = nfsGoods + goodsId + "/" + fileName;
+//        String url = nfsGoods + goodsId + "/" + fileName;
 //        FileUtilsCommons.uploadFilesUtil(rootPath, url, ImageUtils.scale(data, 130,130));
         GoodsBasicInfoEntity goods = goodsBasicRepository.select(goodsId);
         Long sku = goods.getGoodsCode();
@@ -441,9 +442,9 @@ public class GoodsAttrService {
             goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             goodsStockentoty.setSkuId(skuId);
             goodsStockentoty.setDeleteFlag("N");
-            goodsStockentoty.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-            goodsStockentoty.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-            goodsStockentoty.setStockLogo(url);
+            goodsStockentoty.setCreateUser(userName);
+            goodsStockentoty.setUpdateUser(userName);
+//            goodsStockentoty.setStockLogo(url);
             goodsStockInfoService.insert(goodsStockentoty);
         }
         return Response.success("批量保存库存！");
