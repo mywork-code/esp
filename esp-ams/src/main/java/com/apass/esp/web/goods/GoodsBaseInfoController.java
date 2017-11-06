@@ -21,16 +21,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.BannerPicDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.dto.goods.LogoFileModel;
+import com.apass.esp.domain.dto.goods.StockInfoFileModel;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.CategoryDo;
+import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -45,6 +53,7 @@ import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.SystemParamService;
+import com.apass.esp.service.goods.GoodsAttrService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -58,6 +67,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
+import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -347,7 +357,6 @@ public class GoodsBaseInfoController {
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(),
                 pageModel.getGoodsName(), pageModel.getGoodsTitle(), pageModel.getGoodsSkuType())
                 || pageModel.getListTime().equals("")
-                || pageModel.getDelistTime().equals("")
                 || pageModel.getCategoryId1().equals("")
                 || pageModel.getCategoryId2().equals("")
                 || pageModel.getCategoryId3().equals("")
@@ -386,7 +395,8 @@ public class GoodsBaseInfoController {
             }
             goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
-            LOGGER.error("商品添加失败", e);
+            LOGGER.error("商品添加失败!", e);
+            return Response.fail("商品添加失败!");
         }
         return Response.success(message, goodsInfo);
     }
@@ -406,7 +416,7 @@ public class GoodsBaseInfoController {
         LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
         String message = SUCCESS;
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
-                || pageModelEdit.getListTime().equals("") || pageModelEdit.getDelistTime().equals("")) {
+                || pageModelEdit.getListTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }
@@ -545,6 +555,8 @@ public class GoodsBaseInfoController {
             entity.setBannerOrder(Long.valueOf(bannerDto.getBannerPicOrder()));
             entity.setBannerName(fileName);
             entity.setBannerType(bannerDto.getBannerGoodsId());
+            entity.setAttr("");
+            entity.setAttrVal("");
             entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             bannerInfoService.insert(entity);
@@ -1023,5 +1035,163 @@ public class GoodsBaseInfoController {
         String to7Return = goodsService.getsupport7dRefund(Long.valueOf(skuId));
         return Response.success(to7Return);
     }
-
+    @Autowired
+    private GoodsAttrService goodsAttrService;
+    /**
+     * 根据类目查询商品属性下拉框数据填充
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/goodAttrListByCategory")
+    public List<GoodsAttr> goodAttrListByCategory(HttpServletRequest request) {
+        try{
+            String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
+            String editCategoryId1 = HttpWebUtils.getValue(request, "editCategoryId1");
+            return goodsAttrService.goodAttrListByCategory(categoryId1,editCategoryId1);
+        }catch (Exception e) {
+            LOGGER.error("商品属性下拉框载入失败!", e);
+            return null;
+        }
+    }
+    /**
+     * 根据属性规格组合 排列 组合 列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/tableattrlist")
+    public ResponsePageBody<StockInfoFileModel> tableattrlist(HttpServletRequest request) {
+        ResponsePageBody<StockInfoFileModel> respBody = new ResponsePageBody<StockInfoFileModel>();
+        try {
+            // 获取分页数据
+            Page page = new Page();
+            String pageNo = HttpWebUtils.getValue(request, "page");
+            String pageSize = HttpWebUtils.getValue(request, "rows");
+            if(!StringUtils.isAnyBlank(pageNo,pageSize)){
+                Integer pageNoNum = Integer.parseInt(pageNo);
+                Integer pageSizeNum = Integer.parseInt(pageSize);
+                page.setPage(pageNoNum <= 0 ? 1 : pageNoNum);
+                page.setLimit(pageSizeNum <= 0 ? 1 : pageSizeNum);
+            }
+            // 获取页面查询条件
+            String categoryname1 = HttpWebUtils.getValue(request, "categoryname1");
+            String categoryname2 = HttpWebUtils.getValue(request, "categoryname2");
+            String categoryname3 = HttpWebUtils.getValue(request, "categoryname3");
+            // 获取分页结果返回给页面
+            PaginationManage<StockInfoFileModel> pagination = goodsAttrService.tableattrlist(categoryname1,categoryname2,categoryname3,page);
+            if (pagination == null) {
+                respBody.setTotal(0);
+                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            }else{
+                respBody.setTotal(pagination.getTotalCount());
+                respBody.setRows(pagination.getDataList());
+                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            }
+        } catch (Exception e) {
+            respBody.setMsg("根据属性规格组合 排列 组合 列表 失败");
+        }
+        return respBody;
+    }
+    /**
+     * 批量保存  商品的属性规格 和库存信息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/saveGoodsCateAttrAndStock")
+    @LogAnnotion(operationType = "批量保存  商品的属性规格 和库存信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
+    public Response saveGoodsCateAttrAndStock(HttpServletRequest request) {
+        try{
+            String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
+            String[] categorynameArr1 = request.getParameterValues("categorynameArr1");//HttpWebUtils.getValue(request, "categorynameArr1");
+            String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
+            String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            List<StockInfoFileModel> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<StockInfoFileModel>>(){});
+            return goodsAttrService.saveGoodsCateAttrAndStock(list,categorynameArr1,categorynameArr2,
+                categorynameArr3,goodsId,SpringSecurityUtils.getLoginUserDetails().getUsername());
+        }catch (Exception e) {
+            LOGGER.error("商品属性规格和库存信息录入失败!", e);
+            return Response.fail("商品属性规格和库存信息录入失败!");
+        }
+    }
+    /**
+     * 修改商品第四页面
+     * 修改库存信息
+     * 读取商品已有属性 和已有属性下属规格
+     * 以及根据属性规格组合 排列 组合 库存列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/findGoodsCateAttrAndStockForEdit")
+    public Response findGoodsCateAttrAndStockForEdit(HttpServletRequest request) {
+        try{
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            return goodsAttrService.findGoodsCateAttrAndStockForEdit(Long.parseLong(goodsId));
+        }catch(Exception e){
+            return Response.fail("刷新商品库存和属性信息失败！");
+        }
+    }
+    /**
+     * 根据属性规格组合 排列 组合 列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/flushtableattrEditlist")
+    public ResponsePageBody<GoodsStockInfoEntity> flushtableattrEditlist(HttpServletRequest request) {
+        ResponsePageBody<GoodsStockInfoEntity> respBody = new ResponsePageBody<GoodsStockInfoEntity>();
+        try {
+            // 获取分页数据
+            Page page = new Page();
+            String pageNo = HttpWebUtils.getValue(request, "page");
+            String pageSize = HttpWebUtils.getValue(request, "rows");
+            if(!StringUtils.isAnyBlank(pageNo,pageSize)){
+                Integer pageNoNum = Integer.parseInt(pageNo);
+                Integer pageSizeNum = Integer.parseInt(pageSize);
+                page.setPage(pageNoNum <= 0 ? 1 : pageNoNum);
+                page.setLimit(pageSizeNum <= 0 ? 1 : pageSizeNum);
+            }
+            // 获取页面查询条件
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            String categoryname1 = HttpWebUtils.getValue(request, "categorynameArr1");
+            String categoryname2 = HttpWebUtils.getValue(request, "categorynameArr2");
+            String categoryname3 = HttpWebUtils.getValue(request, "categorynameArr3");
+            // 获取分页结果返回给页面
+            PaginationManage<GoodsStockInfoEntity> pagination = goodsAttrService.flushtableattrEditlist(goodsId,categoryname1,categoryname2,categoryname3,page);
+            if (pagination == null) {
+                respBody.setTotal(0);
+                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            }else{
+                respBody.setTotal(pagination.getTotalCount());
+                respBody.setRows(pagination.getDataList());
+                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            }
+        } catch (Exception e) {
+            respBody.setMsg("根据商品 ID 属性规格组合 排列 组合 列表 失败");
+        }
+        return respBody;
+    }
+    /**
+     * 修改库存
+     * INPUT按钮失焦事件 刷新规格库存表失败
+     * 直接保存规格
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/createTableByCateEdit")
+    public Response createTableByCateEdit(HttpServletRequest request) {
+        try{
+            String attrValId = HttpWebUtils.getValue(request, "attrValId");
+            String attrId = HttpWebUtils.getValue(request, "attrId");
+            String attrVal = HttpWebUtils.getValue(request, "attrVal");
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            return goodsAttrService.createTableByCateEdit(attrValId,attrId,attrVal,goodsId);
+        }catch(Exception e){
+            return Response.fail("按钮失焦事件 刷新规格库存表失败！");
+        }
+    }
 }

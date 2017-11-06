@@ -33,6 +33,7 @@
        select <include refid="Base_Column_List" />
         from t_esp_pro_mycoupon
         <include refid="paramSql" />
+        order by updated_time desc
    </select>
    
    <select id="getCouponByUserIdAndCouponId" parameterType="com.apass.esp.domain.query.ProMyCouponQuery"  resultMap="BaseResultMap">
@@ -63,5 +64,10 @@
         </foreach>
     </insert>
 
-    <!--根据ProMyCou-->
+
+    <update id="updateStatusByUserIdAndCouponId">
+        update t_esp_pro_mycoupon set status = #{status},
+        updated_time = now()
+        where user_id = #{userId} and coupon_id = #{couponId}
+    </update>
 </mapper>

@@ -55,6 +55,7 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponMessage;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -1036,12 +1037,6 @@ public class OrderService {
         if(StringUtils.isNotBlank(myCouponId)){
     		ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
     		ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
-    		Date now = new Date();
-    		if(mycoupon.getStartDate().getTime() > now.getTime() &&
-    				mycoupon.getEndDate().getTime() < now.getTime()){
-    			throw new BusinessException("您的券已过期!");
-    		}
-    		
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
@@ -1116,9 +1111,14 @@ public class OrderService {
         /**
          * 如果优惠券Id不为空
          */
+        Date now = new Date();
         if(StringUtils.isNotBlank(myCouponId)){
         	ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
         	ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
+        	if(mycoupon.getStartDate().getTime() > now.getTime() 
+        			|| mycoupon.getEndDate().getTime() < now.getTime()){
+        		throw new BusinessException("您的优惠券已过期!");
+        	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
         
@@ -2609,6 +2609,7 @@ public class OrderService {
     		ProMyCouponVo coupon = couponVos.get(i);
 			Date start = DateFormatUtil.string2date(coupon.getStartDate());
 			if(start.getTime() > now.getTime()){
+				coupon.setMessage(CouponMessage.NO_START.getMessage());
 				no.add(coupon);
 				couponVos.remove(coupon);
 			}
@@ -2657,6 +2658,11 @@ public class OrderService {
     				coupon.setGoodStockIds(goodslist);
     				yes.add(coupon);
     			}else{
+    				if(total.compareTo(BigDecimal.ZERO) == 0){
+    					coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				}else{
+    					coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
+    				}
     				no.add(coupon);
     			}
     		}

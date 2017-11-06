@@ -349,7 +349,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZSCL","ZYWH", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP",
+      String[] headers = {"GUID", "ZSCL","ZYWH", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ZSJLY","ITEM", "WRBTR", "ZZHH", "ZZHH_COMP",
           "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
@@ -365,6 +365,7 @@ public class SAPService {
         contentList.add("03");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),"yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
+        contentList.add("ajqh");
         contentList.add(String.valueOf(rowNum));
         contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -689,7 +690,7 @@ public class SAPService {
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
-      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET"};
+      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
@@ -714,6 +715,7 @@ public class SAPService {
         contentList.add(createdtime);
 	            /*可选表头UNAME,ZSJLY*/
 	            /*write*/
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {

@@ -4,6 +4,7 @@
 $(function () {
     $("#editCategoryDetail").window('close');
     $("#addCategoryDetail").window('close');
+    $("#revlenceGoodsAttrWindow").window('close');
 
     var categoryId;
     var categoryName;
@@ -105,6 +106,11 @@ $(function () {
             $('#optMenu').menu('disableItem', '#downCategory');
         }
         var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+        if(categoryLevel != '1'){
+            $(".reverlanceGoodsAttrClass").css("display","none");
+        }else{
+            $(".reverlanceGoodsAttrClass").show();
+        }
         $('#optMenu').menu('show', {
             left: evt.pageX,
             top: evt.pageY
@@ -132,7 +138,118 @@ $(function () {
 
                 $("#editCategoryName").textbox('setValue',
                     categoryName);
-            } else if (item.text == '删除') {
+            } else if(item.text == '关联商品属性'){
+                $("#revlenceGoodsAttrWindow").window('open');
+                $('#revlenceGoodsAttrDiv').datagrid({
+                    title: '关联商品属性',
+                    fit: true,
+                    idField: 'id',
+                    treeField: 'text',
+                    fitColumns: false,
+                    rownumbers: true,
+                    singleSelect: true,
+                    striped: true,
+                    queryParams: {
+                        'categoryId': categoryId
+                    },
+                    columns: [[{
+                        title: '商品属性名称',
+                        field: 'name',
+                        width: 100,
+                        align: 'center'
+                    }, {
+                            title: '操作',
+                            field: 'opt',
+                            witch: 150,
+                            align: 'center',
+                            formatter: function (value, row, index) {
+                                if (row.flag) {
+                                    var checkboxflag = '<div class="border-circle" style="cursor:pointer"><span class="switch-circle"  style="left:54px" data-sku="' + encodeURI(JSON.stringify(row)) + '"></span><span class="relation-text" style="left:14px;">已关联</span></div>';
+                                } else {
+                                    var checkboxflag = '<div class="border-circle" style="cursor:pointer"><span class="switch-circle" style="left:0px"  data-sku="' + encodeURI(JSON.stringify(row)) + '"></span><span class="relation-text" style="left:27PX;">未关联</span></div>';
+                                }
+                                return checkboxflag;
+                            }
+                        }]],
+                    loader : function(param, success, error){
+                        $.ajax({
+                            url : ctx + "/application/goods/goodsAttr/allGoodsAttr",
+                            data : param,
+                            type : "GET",
+                            dataType : "json",
+                            success : function(resp) {
+                                $.validateResponse(resp, function () {
+                                    success(resp.data);
+                                });
+
+                                $('.datagrid-cell').on('click','.border-circle',function(){
+                                    if($(".border-circle").hasClass('disabled')){
+                                        return;
+                                    }
+                                    $(".border-circle").addClass('disabled');
+                                    var $that = $(this).find('.switch-circle');
+
+                                    var rowData = JSON.parse(decodeURI($that.attr('data-sku')));
+                                    var param = {
+                                        "categoryId1":categoryId,
+                                        "goodsAttrId":rowData.id
+                                    };
+
+                                    if($that.css('left')=='0px') {
+                                        $.ajax({
+                                            url : ctx + '/categoryinfo/category/revlenceGoodsAttr',
+                                            data : param,
+                                            type : "post",
+                                            dateType:"json",
+                                            success : function(data) {
+                                                debugger;
+                                                ifLogout(data);
+                                                if(data.status){
+                                                    $.messager.alert("提示",data.msg,'info');
+                                                    $that.animate({left:"54px"},50)
+                                                    $that.parent().find('.relation-text').css('left','10px');
+                                                    $that.parent().find('.relation-text').html('已关联');
+                                                    $(".border-circle").removeClass('disabled');
+                                                }else{
+                                                    $.messager.alert("错误",data.msg,'error');
+                                                    $(".border-circle").removeClass('disabled');
+                                                }
+                                            }
+                                        });
+                                    } else if($that.css('left')=='54px'){
+                                        $.messager.confirm('确认','您确认想要取消关联吗？',function(r){
+                                            if (r){
+                                                $.ajax({
+                                                    url : ctx + '/categoryinfo/category/disRevlenceGoodsAttr',
+                                                    data : param,
+                                                    type : "post",
+                                                    dateType:"json",
+                                                    success : function(data) {
+                                                        ifLogout(data);
+                                                        $(".border-circle").removeClass("disabled");
+                                                        if(data.status=="1"){
+                                                            $.messager.alert("提示",data.msg,'info');
+                                                            $that.animate({left:"0px"},50)
+                                                            $that.parent().find('.relation-text').css('left','27px');
+                                                            $that.parent().find('.relation-text').html('未关联');
+                                                            $(".border-circle").removeClass('disabled');
+                                                        }else{
+                                                            $.messager.alert("错误",data.msg,'error');
+                                                            $(".border-circle").removeClass('disabled');
+                                                        }
+                                                    }
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+
+            }else if (item.text == '删除') {
                 $.messager.confirm('删除确认', '确定要删除么?删除后不可恢复', function (r) {
                     if (!r) {
                         return;

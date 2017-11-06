@@ -105,6 +105,8 @@
 			t_esp_goods_stock_info
 		WHERE
 			goods_id=#{value}
+		AND 
+		    delete_flag != 'Y'
 	]]>
 	</select>
 	

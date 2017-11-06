@@ -1,6 +1,8 @@
 package com.apass.esp.service.offer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -154,17 +156,38 @@ public class MyCouponManagerService {
 	 */
 	public Map<String,Object> getCoupons(String userId){
 		/**
-		 * 未使用
+		 * 未使用(已根据updated_time 降序排列)
 		 */
 		List<ProMyCouponVo> unUsedList = getCouponsUnused(userId);
 		/**
-		 * 已使用
+		 * 已使用(已根据updated_time 降序排列)
 		 */
 		List<ProMyCouponVo> usedList = getCouponsUsed(userId);
 		/**
-		 * 已过期
+		 * 已过期(需要根据失效时间排序)
 		 */
 		List<ProMyCouponVo> expireList = getExpire(userId);
+		/**
+		 * 排序时间  失效时间
+		 */
+		Collections.sort(expireList, new Comparator<ProMyCouponVo>() {  
+            public int compare(ProMyCouponVo obj1, ProMyCouponVo obj2) {
+            	Date now1 = DateFormatUtil.string2date(obj1.getEndDate(), "");
+            	Date now2 = DateFormatUtil.string2date(obj2.getEndDate(), "");
+                int retVal = 0;  
+                try {  
+                	if( now1.getTime() > now2.getTime() ){
+                		retVal = -1;
+                	}
+                	if( now1.getTime() < now2.getTime() ){
+                		retVal = 1;
+                	}
+                } catch (Exception e) {  
+                    throw new RuntimeException();  
+                }  
+                return retVal;  
+            }  
+        });
 		
 		Map<String,Object> params = Maps.newHashMap();
 		params.put("unUsed", unUsedList);

@@ -1,12 +1,43 @@
 package com.apass.esp.service.goods;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.repository.goods.GoodsRepository;
+import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.apass.esp.domain.entity.CategoryAttrRel;
+import com.apass.esp.domain.entity.CategoryAttrRelQuery;
+import com.apass.esp.domain.vo.GoodsAttrVo;
+import com.apass.gfb.framework.logstash.LOG;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.goods.StockInfoFileModel;
+import com.apass.esp.domain.entity.CategoryAttrRel;
 import com.apass.esp.domain.entity.GoodsAttr;
+import com.apass.esp.domain.entity.GoodsAttrVal;
+import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.GoodsAttrMapper;
+import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.utils.PaginationManage;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 /**
  * 商品属性
  * @author ht
@@ -16,6 +47,18 @@ import com.apass.gfb.framework.mybatis.page.Page;
 public class GoodsAttrService {
     @Autowired
     private GoodsAttrMapper goodsAttrMapper;
+    @Autowired
+    private GoodsAttrValService goodsAttrValService;
+    @Autowired
+    private CategoryAttrRelService categoryAttrRelService;
+    @Autowired
+    private GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    private GoodsRepository goodsRepository;
+//    @Value("${nfs.rootPath}")
+//    private String rootPath;
+//    @Value("${nfs.goods}")
+//    private String nfsGoods;
     /**
      * 商品属性查询
      * @param entity
@@ -31,18 +74,50 @@ public class GoodsAttrService {
         return result;
     }
     /**
+     * 商品属性查询
+     * @param entity
+     * @return
+     */
+    public List<GoodsAttr> getGoodsAttrList(GoodsAttr entity) {
+        return goodsAttrMapper.getGoodsAttrList(entity);
+    }
+    /**
+     * 商品属性精确查询
+     * @param entity
+     * @return
+     */
+    public Boolean getGoodsAttrListByName(GoodsAttr entity) {
+        List<GoodsAttr> list = goodsAttrMapper.getGoodsAttrListByName(entity);
+        if(list!=null&&list.size()>0){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 商品属性查询
+     * @param entity
+     * @return
+     */
+    public GoodsAttr getGoodsAttr(Long id) {
+        return goodsAttrMapper.selectByPrimaryKey(id);
+    }
+    /**
      * 商品属性新增
      * @param name
      * @return
      */
+    @Transactional
     public int addGoodsAttr(String name,String user) {
         GoodsAttr entity = new GoodsAttr();
         entity.setName(name);
-        entity.setCreatedTime(new Date());
-        entity.setCreatedUser(user);
+        if(getGoodsAttrListByName(entity)){
+            return 2;
+        }
         entity.setUpdatedTime(new Date());
         entity.setUpdatedUser(user);
-        return goodsAttrMapper.insert(entity);
+        entity.setCreatedTime(new Date());
+        entity.setCreatedUser(user);
+        return goodsAttrMapper.insertSelective(entity);
     }
     /**
      * 商品属性维护
@@ -50,10 +125,14 @@ public class GoodsAttrService {
      * @param name
      * @return
      */
+    @Transactional
     public int editGoodsAttr(Long id, String name,String user) {
         GoodsAttr entity = new GoodsAttr();
-        entity.setId(id);
         entity.setName(name);
+        if(getGoodsAttrListByName(entity)){
+            return 2;
+        }
+        entity.setId(id);
         entity.setUpdatedTime(new Date());
         entity.setUpdatedUser(user);
         return goodsAttrMapper.updateByPrimaryKeySelective(entity);
@@ -63,8 +142,12 @@ public class GoodsAttrService {
      * @param entity
      * @return
      */
+    @Transactional
     public int editGoodsAttr(GoodsAttr entity) {
 //        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
+        if(getGoodsAttrListByName(entity)){
+            return 2;
+        }
         entity.setUpdatedTime(new Date());
 //        entity.setUpdatedUser(user);
         return goodsAttrMapper.updateByPrimaryKeySelective(entity);
@@ -74,13 +157,581 @@ public class GoodsAttrService {
      * @param id
      * @return
      */
+    @Transactional
     public int deleteGoodsAttr(Long id) {
+        List<CategoryAttrRel>  list = categoryAttrRelService.categoryAttrRelListByAttrId(id);
+        if(list!=null&&list.size()>0){
+            return 2;
+        }
         return goodsAttrMapper.deleteByPrimaryKey(id);
     }
     /**
-     * 根据主键id查询 商品属性  GoodsAttr
+     * 根据类目查询商品属性下拉框数据填充
+     * @param categoryId1
+     * @param editCategoryId1
+     * @return
      */
-    public GoodsAttr selectGoodsAttrByid(Long id){
-    	return goodsAttrMapper.selectByPrimaryKey(id);
+    public List<GoodsAttr> goodAttrListByCategory(String categoryId1, String editCategoryId1) {
+        Boolean falg1 = "undefined".equals(categoryId1)||StringUtils.isBlank(categoryId1);
+        Boolean falg2 = "undefined".equals(editCategoryId1)||StringUtils.isBlank(editCategoryId1);
+        if(!falg1&&!falg2){
+            return null;
+        }
+        if(falg1&&falg2){
+//            return null;
+            return this.getGoodsAttrList(new GoodsAttr());
+        }
+        List<CategoryAttrRel> categoryAttrRellist = null;
+        if(falg1&&!falg2){
+            categoryAttrRellist = categoryAttrRelService.categoryAttrRelListByCategory(Long.parseLong(editCategoryId1));
+        }
+        if(!falg1&&falg2){
+            categoryAttrRellist = categoryAttrRelService.categoryAttrRelListByCategory(Long.parseLong(categoryId1));
+        }
+        List<GoodsAttr> GoodsAttrList = new ArrayList<GoodsAttr>();
+        if(categoryAttrRellist!=null&&categoryAttrRellist.size()>0){
+            for(Iterator<CategoryAttrRel> it = categoryAttrRellist.iterator();it.hasNext();){
+                CategoryAttrRel relEntity = it.next();
+                GoodsAttr entity = getGoodsAttr(relEntity.getGoodsAttrId());
+                GoodsAttrList.add(entity);
+            }
+        }
+//        return GoodsAttrList;
+        //类目功能未完善   先全部查询
+        return this.getGoodsAttrList(new GoodsAttr());
+    }
+    /**
+     * 根据属性规格组合 排列 组合 列表
+     * @param attrid
+     * @param categoryname1
+     * @param categoryname2
+     * @param categoryname3
+     * @return
+     */
+    @SuppressWarnings("unused")
+    public PaginationManage<StockInfoFileModel> tableattrlist(String categoryname1, String categoryname2,String categoryname3,Page page) {
+        List<StockInfoFileModel> list = new ArrayList<StockInfoFileModel>();
+        categoryname1 = famartsubString(categoryname1);
+        categoryname2 = famartsubString(categoryname2);
+        categoryname3 = famartsubString(categoryname3);
+        Boolean falg1 = "undefined".equals(categoryname1)||StringUtils.isBlank(categoryname1);
+        Boolean falg2 = "undefined".equals(categoryname2)||StringUtils.isBlank(categoryname2);
+        Boolean falg3 = "undefined".equals(categoryname3)||StringUtils.isBlank(categoryname3);
+        if(falg1&&falg2&&falg3){
+            list.add(new StockInfoFileModel());
+        }
+        String str = null;
+        String[] arr1 = null;
+        String[] arr2 = null;
+        String[] arr3 = null;
+        if(!falg1){//categoryname1非空
+            arr1 = categoryname1.split(",");
+            if(!falg2){//categoryname2非空
+                arr2 = categoryname2.split(",");
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="111";
+                    for(String str1 : arr1){
+                        for(String str2 : arr2){
+                            for(String str3 : arr3){
+                                list.add(new StockInfoFileModel(str1+"  "+str2+"  "+str3));
+                            }
+                        }
+                    }
+                }else{//categoryname3空
+                    str="110";
+                    for(String str1 : arr1){
+                        for(String str2 : arr2){
+                            list.add(new StockInfoFileModel(str1+"  "+str2));
+                        }
+                    }
+                }
+            }else{//categoryname2空
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="101";
+                    for(String str1 : arr1){
+                        for(String str3 : arr3){
+                            list.add(new StockInfoFileModel(str1+"  "+str3));
+                        }
+                    }
+                }else{//categoryname3空
+                    str="100";
+                    for(String str1 : arr1){
+                        list.add(new StockInfoFileModel(str1));
+                    }
+                }
+            }
+        }else{//categoryname1空
+            if(!falg2){//categoryname2非空
+                arr2 = categoryname2.split(",");
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="011";
+                    for(String str2 : arr2){
+                        for(String str3 : arr3){
+                            list.add(new StockInfoFileModel(str2+"  "+str3));
+                        }
+                    }
+                }else{//categoryname3空
+                    str="010";
+                        for(String str2 : arr2){
+                            list.add(new StockInfoFileModel(str2));
+                        }
+                    }
+            }else{//categoryname2空
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="001";
+                    for(String str3 : arr3){
+                        list.add(new StockInfoFileModel(str3));
+                    }
+                }else{//categoryname3空
+                    str="000";
+                }
+            }
+        }
+        PaginationManage<StockInfoFileModel> result = new PaginationManage<StockInfoFileModel>();
+        result.setDataList(list);
+        result.setPageInfo(page.getPageNo(), page.getPageSize());
+        result.setTotalCount(list.size());
+        return result;
+    }
+    /**
+     * FORMART STRING[]
+     * @param str
+     * @return
+     */
+    private String[] famartsubStringarr(String[] str){
+        if(str!=null&&str.length>0&&StringUtils.isNoneBlank(str[0])){
+            str = str[0].split(",");
+        }else{
+            str = null;
+        }
+        return str;
+    }
+    /**
+     * FORMART STRING
+     * @param str
+     * @return
+     */
+    private String famartsubString(String str){
+        if(StringUtils.isBlank(str)){
+            return str;
+        }
+        str = str.trim();
+        str = famartsubStringComma1(str);
+        str = famartsubStringComma2(str);
+        return str.trim();
+    }
+    private String famartsubStringComma1(String str){
+        if(str.startsWith(",")){
+            str = str.substring(1);
+            return famartsubStringComma1(str);
+        }
+        return str;
+    }
+    private String famartsubStringComma2(String str){
+        if(str.endsWith(",")){
+            str = str.substring(0,str.length()-1);
+            return famartsubStringComma2(str);
+        }
+        return str;
+    }
+    /**
+     * delgoodsAttrValByAttrId
+     * @param arr1
+     * @param arr2
+     * @param arr3
+     * @return
+     */
+    @Transactional
+    private Boolean delgoodsAttrValByAttrId(String[] arr1, String[] arr2,String[] arr3,Long goodsId){
+        if(arr1!=null&&arr1.length>0){
+            String id1 = arr1[0].split("-")[1];
+            Boolean falg = goodsAttrValService.delgoodsAttrValByAttrId(Long.parseLong(id1),goodsId);
+            if(!falg){
+                return false;
+            }
+        }
+        if(arr2!=null&&arr2.length>0){
+            String id2 = arr2[0].split("-")[1];
+            Boolean falg2 = goodsAttrValService.delgoodsAttrValByAttrId(Long.parseLong(id2),goodsId);
+            if(!falg2){
+                return false;
+            }
+        }
+        if(arr3!=null&&arr3.length>0){
+            String id3 = arr3[0].split("-")[1];
+            Boolean falg3 = goodsAttrValService.delgoodsAttrValByAttrId(Long.parseLong(id3),goodsId);
+            if(!falg3){
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * savegoodsAttrValByAttrId
+     * @param arr1
+     * @param arr2
+     * @param arr3
+     * @return
+     */
+    @Transactional
+    private Boolean savegoodsAttrValByAttrId(String[] arr1, String[] arr2, String[] arr3,Long goodsId) {
+        if(arr1!=null&&arr1.length>0){
+            String id1 = arr1[0].split("-")[1];
+            Boolean falg1 = goodsAttrValService.savegoodsAttrValByAttrId(Long.parseLong(id1),arr1,goodsId);
+            if(!falg1){
+                return false;
+            }
+        }
+        if(arr2!=null&&arr2.length>0){
+            String id2 = arr2[0].split("-")[1];
+            Boolean falg2 = goodsAttrValService.savegoodsAttrValByAttrId(Long.parseLong(id2),arr2,goodsId);
+            if(!falg2){
+                return false;
+            }
+        }
+        if(arr3!=null&&arr3.length>0){
+            String id3 = arr3[0].split("-")[1];
+            Boolean falg3 = goodsAttrValService.savegoodsAttrValByAttrId(Long.parseLong(id3),arr3,goodsId);
+            if(!falg3){
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * 批量保存库存   属性规格   信息    需要删除已有库存
+     * @param goodsStock
+     * @param arr1
+     * @param arr2
+     * @param arr3
+     * @return
+     * @throws BusinessException 
+     */
+    @Transactional
+    public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, String[] arr1,
+                                              String[] arr2,String[] arr3,String goodsid,
+                                              String userName) throws BusinessException {
+        Long goodsId = Long.parseLong(goodsid);
+        arr1 = famartsubStringarr(arr1);
+        arr2 = famartsubStringarr(arr2);
+        arr3 = famartsubStringarr(arr3);
+        Boolean fDELETE = this.delgoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
+        if(!fDELETE){
+            throw new BusinessException("DELETE goodsAttrValByAttrId ERROE ");
+        }
+        Boolean fCREATE = this.savegoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
+        if(!fCREATE){
+            throw new BusinessException("CREATE goodsAttrValByAttrId ERROE ATTRVAL REPETITION");
+        }
+        Boolean dsCREATE = goodsStockInfoService.deletegoodsStockInfoByGoodsId(goodsId);
+        if(!dsCREATE){
+            throw new BusinessException("DELETE goodsStockInfoByGoodsId ERROE ");
+        }
+        String fileDiName = RandomUtils.nextInt(10)+"";
+        String imgType = "jpg";
+        String fileName = "stocklogo_"+ fileDiName + "." + imgType;
+//        String url = nfsGoods + goodsId + "/" + fileName;
+//        FileUtilsCommons.uploadFilesUtil(rootPath, url, ImageUtils.scale(data, 130,130));
+        GoodsInfoEntity goods = goodsRepository.select(goodsId);
+        String sku = goods.getGoodsCode();
+        String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
+        String skuId = sku+rand;
+        for(StockInfoFileModel entity : goodsStock){
+            String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getAttrnameByAfter(),goodsId);
+            GoodsStockInfoEntity goodsStockentoty = new GoodsStockInfoEntity();
+            goodsStockentoty.setGoodsId(goodsId);
+            goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
+            goodsStockentoty.setGoodsPrice(new BigDecimal(entity.getGoodsPrice()));
+            goodsStockentoty.setGoodsCostPrice(new BigDecimal(entity.getGoodsCostPrice()));
+            goodsStockentoty.setStockTotalAmt(Long.valueOf(entity.getStockTotalAmt()));// 库存总量
+            goodsStockentoty.setStockCurrAmt(Long.valueOf(entity.getStockAmt()));// 库存剩余
+            goodsStockentoty.setAttrValIds(skuIdStr);
+            goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
+            goodsStockentoty.setSkuId(skuId);
+            goodsStockentoty.setDeleteFlag("N");
+            goodsStockentoty.setCreateUser(userName);
+            goodsStockentoty.setUpdateUser(userName);
+//            goodsStockentoty.setStockLogo(url);
+            goodsStockInfoService.insert(goodsStockentoty);
+        }
+        return Response.success("批量保存库存！");
+    }
+    /**
+     * 修改商品第四页面
+     * 修改库存信息
+     * 读取商品已有属性 和已有属性下属规格
+     * 以及根据属性规格组合 排列 组合 库存列表   本列表前端带入不了
+     * @param request
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Response findGoodsCateAttrAndStockForEdit(Long goodsId) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        List<GoodsAttrVal> list = goodsAttrValService.goodsAttrValListByAttrId(null, goodsId);
+        for(GoodsAttrVal entity : list){
+            if(map.get(entity.getAttrId().toString())==null){
+                List<GoodsAttrVal> listentity = new ArrayList<GoodsAttrVal>();
+                listentity.add(entity);
+                map.put(entity.getAttrId().toString(), listentity);
+            }else{
+                List<GoodsAttrVal> listentity = (List<GoodsAttrVal>) map.get(entity.getAttrId().toString());
+                listentity.add(entity);
+                map.put(entity.getAttrId().toString(), listentity);
+            }
+        }
+        Set<Entry<String, Object>> set = map.entrySet();
+        Map<String,Object> value = new HashMap<String,Object>();
+        Integer i = 1;
+        for(Entry<String, Object> entry : set){
+            String key1 = "attrVal"+i;
+            String key2 = "attr"+i;
+            value.put(key1, entry.getValue());
+            GoodsAttr attr = this.getGoodsAttr(Long.parseLong(entry.getKey()));
+            value.put(key2, attr);
+            i++;
+        }
+        return Response.success("success", value);
+    }
+    public PaginationManage<GoodsStockInfoEntity> flushtableattrEditlist(String goodsId, String categoryname1,String categoryname2, String categoryname3, Page page) throws BusinessException {
+        List<GoodsStockInfoEntity> listold = new ArrayList<GoodsStockInfoEntity>();
+        List<GoodsStockInfoEntity> listnew = new ArrayList<GoodsStockInfoEntity>();
+        Boolean falg = "undefined".equals(goodsId)||StringUtils.isBlank(goodsId);
+        categoryname1 = famartsubString(categoryname1);
+        categoryname2 = famartsubString(categoryname2);
+        categoryname3 = famartsubString(categoryname3);
+        Boolean falg1 = "undefined".equals(categoryname1)||StringUtils.isBlank(categoryname1);
+        Boolean falg2 = "undefined".equals(categoryname2)||StringUtils.isBlank(categoryname2);
+        Boolean falg3 = "undefined".equals(categoryname3)||StringUtils.isBlank(categoryname3);
+//        if(falg){
+//            throw new BusinessException("商品ID为空，参数错误！");
+//        }
+        if(!falg){
+            listold =  goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+        }
+        String str = null;
+        String[] arr1 = null;
+        String[] arr2 = null;
+        String[] arr3 = null;
+        if(!falg1){//categoryname1非空
+            arr1 = categoryname1.split(",");
+            if(!falg2){//categoryname2非空
+                arr2 = categoryname2.split(",");
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="111";
+                    for(String str1 : arr1){
+                        for(String str2 : arr2){
+                            for(String str3 : arr3){
+                                String attrVal = str1+"  "+str2+"  "+str3;
+                                GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                                en.setGoodsSkuAttr(attrVal);
+                                listnew.add(en);
+                            }
+                        }
+                    }
+                }else{//categoryname3空
+                    str="110";
+                    for(String str1 : arr1){
+                        for(String str2 : arr2){
+                            String attrVal = str1+"  "+str2;
+                            GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                            en.setGoodsSkuAttr(attrVal);
+                            listnew.add(en);
+                        }
+                    }
+                }
+            }else{//categoryname2空
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="101";
+                    for(String str1 : arr1){
+                        for(String str3 : arr3){
+                            String attrVal = str1+"  "+str3;
+                            GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                            en.setGoodsSkuAttr(attrVal);
+                            listnew.add(en);
+                        }
+                    }
+                }else{//categoryname3空
+                    str="100";
+                    for(String str1 : arr1){
+                        String attrVal = str1;
+                        GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                        en.setGoodsSkuAttr(attrVal);
+                        listnew.add(en);
+                    }
+                }
+            }
+        }else{//categoryname1空
+            if(!falg2){//categoryname2非空
+                arr2 = categoryname2.split(",");
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="011";
+                    for(String str2 : arr2){
+                        for(String str3 : arr3){
+                            String attrVal = str2+"  "+str3;
+                            GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                            en.setGoodsSkuAttr(attrVal);
+                            listnew.add(en);
+                        }
+                    }
+                }else{//categoryname3空
+                    str="010";
+                        for(String str2 : arr2){
+                            String attrVal = str2;
+                            GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                            en.setGoodsSkuAttr(attrVal);
+                            listnew.add(en);
+                        }
+                    }
+            }else{//categoryname2空
+                if(!falg3){//categoryname3非空
+                    arr3 = categoryname3.split(",");
+                    str="001";
+                    for(String str3 : arr3){
+                        String attrVal = str3;
+                        GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                        en.setGoodsSkuAttr(attrVal);
+                        listnew.add(en);
+                    }
+                }else{//categoryname3空
+                    str="000";
+                }
+            }
+        }
+        PaginationManage<GoodsStockInfoEntity> result = new PaginationManage<GoodsStockInfoEntity>();
+        List<GoodsStockInfoEntity> list3 = new ArrayList<GoodsStockInfoEntity>();
+        if(listold!=null&&listold.size()>0){
+            for(GoodsStockInfoEntity ennew : listnew){
+                for(GoodsStockInfoEntity enold : listold){
+                    if(StringUtils.equals(enold.getGoodsSkuAttr(),ennew.getGoodsSkuAttr())){
+                        list3.add(enold);
+                        break;
+                    }else{
+                        list3.add(ennew);
+                        break;
+                    }
+                }
+            }
+            result.setDataList(list3);
+            result.setTotalCount(list3.size());
+        }else{
+            result.setDataList(listnew);
+            result.setTotalCount(listnew.size());
+        }
+        result.setPageInfo(page.getPageNo(), page.getPageSize());
+        return result;
+    }
+    /**
+     * 修改库存
+     * INPUT按钮失焦事件 刷新规格库存表失败
+     * 直接保存规格
+     * @param request
+     * @return
+     * @throws BusinessException 
+     */
+    @Transactional
+    public Response createTableByCateEdit(String attrValId, String attrId, String attrVal,String goodsId) throws BusinessException {
+        Boolean falg1 = "undefined".equals(attrValId)||StringUtils.isBlank(attrValId);
+        Boolean falg3 = "undefined".equals(attrVal)||StringUtils.isBlank(attrVal);
+        if(falg1){//规格表无ID
+            if(falg3){//规格表名称为空    无操作
+            }else{//规格表名称非空    保存规格
+                GoodsAttrVal entity = new GoodsAttrVal();
+                entity.setAttrVal(attrVal);
+                entity.setCreatedTime(new Date());
+                entity.setGoodsId(Long.parseLong(goodsId));
+                entity.setAttrId(Long.parseLong(attrId));
+                entity.setSort(1);
+                entity.setUpdatedTime(new Date());
+                int i = goodsAttrValService.insertAttrVal(entity);
+                if(i==0){
+                    throw new BusinessException("属性规格名称验重失败!");
+                }
+            }
+        }else{//规格表有ID
+            if(falg3){//规格表名称为空    //删除该属性规格 删除该属性规格库存
+                goodsAttrValService.deleteByPrimaryKey(Long.parseLong(attrValId));
+                List<GoodsStockInfoEntity>  list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+                for(GoodsStockInfoEntity en : list){
+                    if(StringUtils.contains(en.getAttrValIds(), attrValId)){
+                        if(goodsStockInfoService.deletegoodsStockInfoById(en.getId())){
+                            throw new BusinessException("库存删除失败!");
+                        }
+                    }
+                }
+            }else{//规格表名称为空   更新该属性规格    更新该属性规格库存
+                GoodsAttrVal entity = goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValId));
+                entity.setAttrVal(attrVal);
+                entity.setUpdatedTime(new Date());
+                int i =goodsAttrValService.updateByPrimaryKeySelective(entity);
+                if(i==0){
+                    throw new BusinessException("属性规格名称验重失败!");
+                }
+                List<GoodsStockInfoEntity>  list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+                for(GoodsStockInfoEntity en : list){
+                    if(StringUtils.contains(en.getAttrValIds(), attrValId)){
+                        String attrValIds = en.getAttrValIds();
+                        String attrSkuAttr = en.getGoodsSkuAttr();
+                        attrSkuAttr = attrSkuAttr.replace(goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValId)).getAttrVal(), attrVal);
+                        en.setGoodsSkuAttr(attrSkuAttr);
+                        goodsStockInfoService.updateService(en);
+                    }
+                }
+            }
+        }
+        return Response.success("刷新库存！");
+    }
+
+   /*
+    * 根据主键id查询 商品属性  GoodsAttr
+    */
+   public GoodsAttr selectGoodsAttrByid(Long id){
+       return goodsAttrMapper.selectByPrimaryKey(id);
+   }
+
+    public List<GoodsAttrVo> listAll(String categoryId) {
+        List<GoodsAttr> lists= goodsAttrMapper.selectAllGoodsAttr();
+        List<GoodsAttrVo> listVo = Lists.newArrayList();
+        goodsAttrToGoodsAttrVo(lists,listVo);
+
+        CategoryAttrRelQuery categoryAttrRelQuery = new CategoryAttrRelQuery();
+        categoryAttrRelQuery.setCategoryId1(Long.valueOf(categoryId));
+        List<CategoryAttrRel> cateAttrRels = categoryAttrRelService.selectCategoryAttrRelByQueryEntity(categoryAttrRelQuery);
+        if(CollectionUtils.isNotEmpty(listVo)){
+            for (GoodsAttrVo goodsAttrVo:listVo) {
+                for (CategoryAttrRel categoryAttrRel:cateAttrRels) {
+                  if(goodsAttrVo.getId() == categoryAttrRel.getGoodsAttrId()){
+                      //已关联
+                      goodsAttrVo.setFlag(true);
+                  }
+                }
+            }
+
+        }
+
+        return listVo;
+    }
+
+    private void goodsAttrToGoodsAttrVo(List<GoodsAttr> lists, List<GoodsAttrVo> listVo) {
+        if(CollectionUtils.isNotEmpty(lists)){
+            for(GoodsAttr goodsAttr:lists){
+                GoodsAttrVo goodsAttrVo = new GoodsAttrVo();
+                goodsAttrVo.setId(goodsAttr.getId());
+                goodsAttrVo.setName(goodsAttr.getName());
+                goodsAttrVo.setCreatedTime(goodsAttr.getCreatedTime());
+                goodsAttrVo.setCreatedUser(goodsAttr.getCreatedUser());
+                goodsAttrVo.setUpdatedTime(goodsAttr.getUpdatedTime());
+                goodsAttrVo.setUpdatedUser(goodsAttr.getUpdatedUser());
+                listVo.add(goodsAttrVo);
+            }
+        }
     }
 }
+  
+

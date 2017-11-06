@@ -1,5 +1,14 @@
 package com.apass.esp.service.goods;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -8,14 +17,6 @@ import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class GoodsStockInfoService {
@@ -115,5 +116,47 @@ public class GoodsStockInfoService {
 
     public List<GoodsStockSkuDto> getGoodsStockSkuInfo(Long goodsId) {
         return goodsStockDao.getGoodsStockSkuInfo(goodsId);
+    }
+    /**
+     * 查询商品库存
+     * @param goodsId
+     * @return
+     */
+    public List<GoodsStockInfoEntity> getGoodsStock(Long goodsId) {
+        return goodsStockDao.loadByGoodsId(goodsId);
+    }
+    /**
+     * 删除单个
+     * @param goodsStockId
+     * @return
+     */
+    @Transactional
+    public Boolean deletegoodsStockInfoById(Long goodsStockId) {
+        try{
+            GoodsStockInfoEntity entity = goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
+            entity.setDeleteFlag("Y");
+            goodsStockDao.update(entity);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+    /**
+     * 批量删除库存
+     * @param goodsId
+     * @return
+     */
+    @Transactional
+    public Boolean deletegoodsStockInfoByGoodsId(Long goodsId) {
+        try{
+            List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
+            for(GoodsStockInfoEntity entity : list){
+                entity.setDeleteFlag("Y");
+                goodsStockDao.update(entity);
+            }
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 }

@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.apass.esp.mapper.GoodsAttrValMapper" >
-	<!-- 根据goodsId查询商品的规格 -->
-  	<select id="queryGoodsAttrValsByGoodsId" resultMap="BaseResultMap">
-		select
-		         <include refid="Base_Column_List"/>
-		from      t_esp_goods_attr_val
-		where     goods_id =#{goodsId}
-		group by  attr_id
-	</select>
-	<!-- 根据goodsId,attrId查询商品的规格详情 -->
-	<select id="queryByGoodsIdAndAttrId" resultMap="BaseResultMap">
-		select
-		         <include refid="Base_Column_List"/>
-		from      t_esp_goods_attr_val
-		where     goods_id =#{goodsId}
-		and       attr_id=	#{attrId}	
-	</select>
+<mapper namespace="com.apass.esp.mapper.GoodsAttrValMapper">
+    <select id="goodsAttrValListByAttrId" parameterType="com.apass.esp.domain.entity.GoodsAttrVal" resultType="com.apass.esp.domain.entity.GoodsAttrVal">
+        <![CDATA[
+        SELECT
+            id id,
+            goods_id goodsId, 
+            attr_id attrId,
+            attr_val attrVal,
+            sort sort,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_goods_attr_val t
+        WHERE 1=1
+        ]]>
+        <if test="attrId!=null and attrId!=''">
+            AND t.attr_id = ${attrId}
+        </if>
+        <if test="goodsId!=null and goodsId!=''">
+            AND t.goods_id = ${goodsId}
+        </if>
+        <if test="attrVal!=null and attrVal!=''">
+            AND t.attr_val = '${attrVal}'
+        </if>
+    </select>
+    
+    <!-- 根据goodsId查询商品的规格 -->
+    <select id="queryGoodsAttrValsByGoodsId" resultMap="BaseResultMap">
+        select
+                 <include refid="Base_Column_List"/>
+        from      t_esp_goods_attr_val
+        where     goods_id =#{goodsId}
+        group by  attr_id
+    </select>
+    <!-- 根据goodsId,attrId查询商品的规格详情 -->
+    <select id="queryByGoodsIdAndAttrId" resultMap="BaseResultMap">
+        select
+                 <include refid="Base_Column_List"/>
+        from      t_esp_goods_attr_val
+        where     goods_id =#{goodsId}
+        and       attr_id=  #{attrId}   
+    </select>
 </mapper>
