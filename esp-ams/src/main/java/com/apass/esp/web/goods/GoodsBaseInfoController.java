@@ -357,7 +357,6 @@ public class GoodsBaseInfoController {
         if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(),
                 pageModel.getGoodsName(), pageModel.getGoodsTitle(), pageModel.getGoodsSkuType())
                 || pageModel.getListTime().equals("")
-                || pageModel.getDelistTime().equals("")
                 || pageModel.getCategoryId1().equals("")
                 || pageModel.getCategoryId2().equals("")
                 || pageModel.getCategoryId3().equals("")
@@ -396,7 +395,8 @@ public class GoodsBaseInfoController {
             }
             goodsInfo = goodsService.insert(pageModel);
         } catch (Exception e) {
-            LOGGER.error("商品添加失败", e);
+            LOGGER.error("商品添加失败!", e);
+            return Response.fail("商品添加失败!");
         }
         return Response.success(message, goodsInfo);
     }
@@ -416,7 +416,7 @@ public class GoodsBaseInfoController {
         LOGGER.info("编辑商品，参数:{}",GsonUtils.toJson(pageModelEdit));
         String message = SUCCESS;
         if (StringUtils.isAnyBlank(pageModelEdit.getGoodsName(), pageModelEdit.getGoodsTitle())
-                || pageModelEdit.getListTime().equals("") || pageModelEdit.getDelistTime().equals("")) {
+                || pageModelEdit.getListTime().equals("")) {
             message = "参数有误,请确认再提交！";
             return Response.fail(message);
         }

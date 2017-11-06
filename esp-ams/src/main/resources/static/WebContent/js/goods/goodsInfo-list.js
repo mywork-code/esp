@@ -963,13 +963,15 @@ $(function() {
 			$.messager.alert("提示", "商品上架时间不能为空！", "info");
 			return;
 		}	
-		if (null == delistTime || ("") == delistTime) {
-			$.messager.alert("提示", "商品下架时间不能为空！", "info");
-			return;
-		}
-		if (listTime > delistTime) {
-			$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
-			return;
+		// if (null == delistTime || ("") == delistTime) {
+		// 	$.messager.alert("提示", "商品下架时间不能为空！", "info");
+		// 	return;
+		// }
+		if(null != delistTime && "" != delistTime){
+			if (listTime > delistTime) {
+				$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
+				return;
+			}
 		}
 //		if (null == proDate || ("") == proDate) {
 //			$.messager.alert("提示", "商品生产日期不能为空！", "info");
@@ -1975,7 +1977,6 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
 	addSupport7dRefund=$("input[name='addSupport7dRefund']:checked").val(),
 	sordNo=$("#sordNo").numberbox('getValue');
-	debugger;
 	//字段效验
 	if (null == categoryId1 || ("") == categoryId1) {
 		$.messager.alert("提示", "商品一级类目不能为空！", "info");
@@ -2023,14 +2024,17 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "商品上架日期不能为空！", "info");
 		return;
 	}	
-	if (null == delistTime || ("") == delistTime) {
-		$.messager.alert("提示", "商品下架日期不能为空！", "info");
-		return;
+	// if (null == delistTime || ("") == delistTime) {
+	// 	$.messager.alert("提示", "商品下架日期不能为空！", "info");
+	// 	return;
+	// }
+	if(null != delistTime && delistTime != ''){
+		if (listTime > delistTime) {
+			$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
+			return;
+		}
 	}
-	if (listTime > delistTime) {
-		$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
-		return;
-	}
+
 //	if (null == proDate || ("") == proDate) {
 //		$.messager.alert("提示", "商品生产日期不能为空！", "info");
 //		return;
@@ -2057,7 +2061,6 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	// 	$.messager.alert("提示", "排序不能为空！", "info");
 	// 	return;
 	// }
-	debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
 	formObj.append("<input type='text' name='categoryId1' value='"+categoryId1+"'/>");
@@ -2114,7 +2117,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		    	$(".search-btn").click();
 		    	loadBanner("addGoodsbannerList",addGoodId);
 			}else{
-				$.messager.alert("提示", data, "info");
+				$.messager.alert("提示", data.msg, "info");
 			}
 		}
 	});
