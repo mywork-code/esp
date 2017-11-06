@@ -40,6 +40,7 @@ import com.apass.esp.domain.entity.jd.JdSellPrice;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
+import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponGoodsDetailVo;
@@ -561,9 +562,9 @@ public class JdGoodsInfoService {
 	 */
 	public Map<String,Object> getProCoupons(Long goodsId,Long userId){
 		Map<String,Object> resultMap=new HashMap<>();
-		List<ProCouponVo> proCouponVos=new ArrayList<>();
-		List<ProCouponVo> reProCouponList=new ArrayList<>();
-        List<ProCouponVo> proCouponList=new ArrayList<>();
+		List<ProCouponVo> proCouponVos=new ArrayList<>();//根据活动的Id，查询所属活动的券
+		List<ProCouponVo> reProCouponList=new ArrayList<>();//已领取的有效的券
+        List<ProCouponVo> proCouponList=new ArrayList<>();//可领取的有效的券
         String activityId="";
         GoodsInfoEntity goodsBasicInfo=new GoodsInfoEntity();
 		//获取与活动向关联的优惠券
@@ -609,9 +610,9 @@ public class JdGoodsInfoService {
 		for (ProCouponVo proCouponVo : proCouponVos) {
 			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(Long.parseLong(activityId), proCouponVo.getId());
 			List<ProMyCoupon> proMyCouponList1=myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(userId, proCouponRel.getId()));
-			if(null !=proCouponRel && proCouponRel.getRemainNum()>0){//優惠券的剩餘數量大於零
+			if( proCouponRel.getRemainNum() > 0 ){//優惠券的剩餘數量大於零
 				if(CollectionUtils.isNotEmpty(proMyCouponList1)){
-					if(proMyCouponList1.size()<proCouponRel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
+					if( proMyCouponList1.size() < proCouponRel.getLimitNum() ){//领取的数量小于限领的数量则该优惠券还可以领取
 						proCouponList.add(proCouponVo);
 					}
 				}else{
@@ -620,7 +621,7 @@ public class JdGoodsInfoService {
 			}
 			//已经领取的优惠券中未使用的优惠券
 			for (ProMyCoupon proMyCoupon : proMyCouponList1) {
-				if("N".equals(proMyCoupon.getStatus())){
+				if(StringUtils.equals(proMyCoupon.getStatus(), CouponStatus.COUPON_N.getCode())){
 					proMyCouponList.add(proMyCoupon);
 				}
 			}
