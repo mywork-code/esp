@@ -199,8 +199,8 @@ $(function(){
 							arr.push(arrObj2);
 						}
 						if(addOrdeleteCouponTrDisplay2 != "none"){
-							arrObj3.id = $("#chooseCoupon1").combobox('getValue');
-							arrObj3.numer = $("#issueCouponNum1").textbox('getValue');
+							arrObj3.id = $("#chooseCoupon2").combobox('getValue');
+							arrObj3.numer = $("#issueCouponNum2").textbox('getValue');
 							arr.push(arrObj3);
 						}
 

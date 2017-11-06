@@ -25,7 +25,7 @@ $(function(){
 				type : "post",
 				dataType : "json",
 				success : function(data) {
-					if(data.status){
+					if(data.status == '1'){
 						$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 						window.location.href = ctx + "/activity/cfg/edit?id="+data.data;
 					}else{
@@ -135,6 +135,10 @@ $(function(){
 		}
 
 		var isCoupon = $("input[name='isCoupon']:checked").val()
+		if (isCoupon == '' || null == isCoupon) {
+			$.messager.alert("<span style='color: black;'>提示</span>", "请选择是否使用优惠券！", 'info');
+			return false;
+		}
 		param.coupon = isCoupon;
 		if(isCoupon == "Y") {
 			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
