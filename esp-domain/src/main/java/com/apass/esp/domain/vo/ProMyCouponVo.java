@@ -44,7 +44,17 @@ public class ProMyCouponVo {
     
     private List<String> goodStockIds;//商品库存的id 集合
     
-    public List<String> getGoodStockIds() {
+    private String message;//券描述，主要用来描述不能使用的原因
+    
+    public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public List<String> getGoodStockIds() {
 		return goodStockIds;
 	}
 
