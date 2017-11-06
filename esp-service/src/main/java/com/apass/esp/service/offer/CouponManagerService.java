@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,11 +138,13 @@ public class CouponManagerService {
 		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
-			List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
-			if(rel.getLimitNum() <= myCoupons.size()){
-				vo.setReceiveFlag(true);
+			if(StringUtils.isNotBlank(userId)){
+				List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
+				if(rel.getLimitNum() <= myCoupons.size()){
+					vo.setReceiveFlag(true);
+				}
+				vo.setUserReceiveNum(rel.getLimitNum()-myCoupons.size());//用户计算当前券，当前用户还可领取的张数
 			}
-			vo.setUserReceiveNum(rel.getLimitNum()-myCoupons.size());//用户计算当前券，当前用户还可领取的张数
 			vo.setRemainNum(rel.getRemainNum());
 			vo.setId(proCoupon.getId());
 			vo.setName(proCoupon.getName());
