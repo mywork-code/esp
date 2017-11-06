@@ -8,34 +8,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import com.apass.esp.domain.entity.CategoryAttrRel;
-import com.apass.esp.domain.entity.CategoryAttrRelQuery;
-import com.apass.esp.domain.vo.GoodsAttrVo;
-import com.apass.gfb.framework.logstash.LOG;
-import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
 import com.apass.esp.domain.entity.CategoryAttrRel;
+import com.apass.esp.domain.entity.CategoryAttrRelQuery;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.vo.GoodsAttrVo;
 import com.apass.esp.mapper.GoodsAttrMapper;
-import com.apass.esp.repository.goods.GoodsBasicRepository;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.google.common.collect.Lists;
 /**
  * 商品属性
  * @author ht
@@ -52,7 +46,7 @@ public class GoodsAttrService {
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
-    private GoodsBasicRepository goodsBasicRepository;
+    private GoodsRepository goodsRepository;
 //    @Value("${nfs.rootPath}")
 //    private String rootPath;
 //    @Value("${nfs.goods}")
@@ -113,6 +107,8 @@ public class GoodsAttrService {
         }
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
+        entity.setUpdatedTime(new Date());
+        entity.setUpdatedUser(user);
         return goodsAttrMapper.insertSelective(entity);
     }
     /**
@@ -432,8 +428,8 @@ public class GoodsAttrService {
         String fileName = "stocklogo_"+ fileDiName + "." + imgType;
 //        String url = nfsGoods + goodsId + "/" + fileName;
 //        FileUtilsCommons.uploadFilesUtil(rootPath, url, ImageUtils.scale(data, 130,130));
-        GoodsBasicInfoEntity goods = goodsBasicRepository.select(goodsId);
-        Long sku = goods.getGoodsCode();
+        GoodsInfoEntity goods = goodsRepository.select(goodsId);
+        String sku = goods.getGoodsCode();
         String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
         String skuId = sku+rand;
         for(StockInfoFileModel entity : goodsStock){

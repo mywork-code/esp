@@ -870,7 +870,8 @@
             source     source,
             external_id   externalId,
             attr_desc     attrDesc,
-            support_7d_refund       support7dRefund
+            support_7d_refund   support7dRefund,
+            goods_code goodsCode
         FROM
             t_esp_goods_base_info
         WHERE
