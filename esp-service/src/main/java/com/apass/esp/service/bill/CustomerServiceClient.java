@@ -66,7 +66,7 @@ public class CustomerServiceClient {
             throw new BusinessException("调用gfb客户信息查询服务异常", e);
         }
     }
-	
+
     public <T> T resolveResult(Response response, Class<T> cls) throws BusinessException {
         if (response == null) {
             throw new BusinessException("接口请求异常稍后再试");
