@@ -1,6 +1,7 @@
 package com.apass.esp.service.order;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -2637,12 +2638,10 @@ public class OrderService {
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
 	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				for (String str : strs) {
-							if(StringUtils.equals(goods.getGoodsCode(), str)){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-							}
-						}
+	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+	    					total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
