@@ -165,7 +165,7 @@
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="extendType != null" >
+      <if test="extendType != null and extendType != ''" >
         extend_type = #{extendType,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >

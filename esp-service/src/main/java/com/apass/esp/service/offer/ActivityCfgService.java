@@ -1,10 +1,16 @@
 package com.apass.esp.service.offer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +31,8 @@ public class ActivityCfgService {
 	
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
+	@Autowired
+	private CouponRelService couponRelService;
 
 	public ProActivityCfg getById(Long activityId){
 		return activityCfgMapper.selectByPrimaryKey(activityId);
@@ -60,6 +68,38 @@ public class ActivityCfgService {
 		Integer activityId = activityCfgMapper.insertSelective(record);
 		if(activityId == 0){
 			throw new BusinessException("添加活动配置信息失败");
+		}
+
+		List<ProcouponRelVoList> procouponRelVoListList1 = vo.getProcouponRelVoListList();
+		if(CollectionUtils.isNotEmpty(procouponRelVoListList1)){
+			Set<Long> sets = Sets.newTreeSet();
+			for (int i=0;i<procouponRelVoListList1.size();i++) {
+				sets.add(procouponRelVoListList1.get(i).getCouponId());
+			}
+			if(sets.size() != procouponRelVoListList1.size()){
+				throw new BusinessException("本次发放存在重复优惠券种类，请修改后重试");
+			}
+		}
+
+		//是否使用优惠券
+		if(StringUtils.equals(ActivityCfgCoupon.COUPON_Y.getCode(),vo.getCoupon())){
+			List<ProcouponRelVoList> procouponRelVoListList = vo.getProcouponRelVoListList();
+			if(CollectionUtils.isNotEmpty(procouponRelVoListList)){
+				for (ProcouponRelVoList relList:procouponRelVoListList) {
+					ProCouponRel proCouponRel = new ProCouponRel();
+					proCouponRel.setCouponId(relList.getCouponId());
+					proCouponRel.setProActivityId(record.getId());
+					proCouponRel.setLimitNum(relList.getLimitNum());
+					proCouponRel.setTotalNum(relList.getTotalNum());
+					proCouponRel.setRemainNum(relList.getTotalNum());
+					proCouponRel.setCreatedTime(new Date());
+					proCouponRel.setUpdatedTime(new Date());
+					Integer relId = couponRelService.addProCouponRel(proCouponRel);
+					if(relId == 0){
+						throw new BusinessException("添加活动配置信息失败");
+					}
+				}
+			}
 		}
 		return record.getId();
 	}
@@ -100,6 +140,7 @@ public class ActivityCfgService {
 		record.setUpdatedTime(new Date());
 		record.setUpdateUser(vo.getUserName());
 		record.setId(vo.getId());
+		record.setCoupon(vo.getCoupon());
 		return record;
 	}
 	
@@ -169,6 +210,8 @@ public class ActivityCfgService {
 	 * @return
      */
 	public List<ProActivityCfg> selectProActivityCfgByEntity(Long id) {
-		return activityCfgMapper.selectProActivityCfgByEntity(id);
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("id",id);
+		return activityCfgMapper.selectProActivityCfgByEntity(paramMap);
 	}
 }

@@ -1,6 +1,7 @@
 package com.apass.esp.domain.vo;
 
 import java.math.BigDecimal;
+import java.util.Date;
 /**
  * 
  * @author pyc
@@ -40,6 +41,8 @@ public class ProCouponVo {
      */
     private String startTime;
     
+    private  Date  startTimeDate;
+    
     /**
      * 结束时间
      */
@@ -58,6 +61,11 @@ public class ProCouponVo {
      * 是否已领取
      */
     private boolean receiveFlag;
+    
+    /**
+     * 用户可领取张数
+     */
+    private Integer userReceiveNum;
 
 	public Long getId() {
 		return id;
@@ -135,6 +143,22 @@ public class ProCouponVo {
 
 	public void setReceiveFlag(boolean receiveFlag) {
 		this.receiveFlag = receiveFlag;
+	}
+	
+	public Date getStartTimeDate() {
+		return startTimeDate;
+	}
+
+	public void setStartTimeDate(Date startTimeDate) {
+		this.startTimeDate = startTimeDate;
+	}
+
+	public Integer getUserReceiveNum() {
+		return userReceiveNum;
+	}
+
+	public void setUserReceiveNum(Integer userReceiveNum) {
+		this.userReceiveNum = userReceiveNum;
 	}
 	
 }

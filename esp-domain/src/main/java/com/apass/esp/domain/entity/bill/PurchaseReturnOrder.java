@@ -22,6 +22,7 @@ public class PurchaseReturnOrder extends OrderInfoEntity{
     private String carriage;
     /*原订单编号*/
     private String oldOrderId;
+    private String mainOrderId;
     /*创建日期   */
     //private Date createDate;
     public Long getOrderInfoId() {
@@ -71,5 +72,15 @@ public class PurchaseReturnOrder extends OrderInfoEntity{
     }
     public void setOldOrderId(String oldOrderId) {
         this.oldOrderId = oldOrderId;
+    }
+
+    @Override
+    public String getMainOrderId() {
+        return mainOrderId;
+    }
+
+    @Override
+    public void setMainOrderId(String mainOrderId) {
+        this.mainOrderId = mainOrderId;
     }
 }

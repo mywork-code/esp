@@ -15,9 +15,10 @@ public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
 	List<ProCoupon> pageList(Map<String, Object> paramMap);
     //根据商品code查询优惠券
-    List<ProCoupon> getProCouponListByGoodsCode(String goodsCode);
+    //List<ProCoupon> getProCouponListByGoodsCode(ProCoupon proCoupon);
 
     Integer pageListCount(Map<String, Object> paramMap);
 
-    List<ProCoupon> getProCouponByName(String name);
+    //根据proCoupon中的数据查询优惠券：公用
+    List<ProCoupon> getProCouponBCoupon(ProCoupon proCoupon);
 }

@@ -16,10 +16,10 @@ public final class SAPConstants {
   public static final String VBSBUSINESS_FILE_NAME = "VBSAndShopping_%s_001.csv";
   public static final String PAYMENTORFULLPAYMENT_FILE_PATH = "/CommodityReturnFlow.csv";
   public static final String PAYMENTORFULLPAYMENT_FILE_NAME = "CommodityReturnFlow_%s_001.csv";
-  public static final String SALESORDERINFO_FILE_PATH = "/salesorderinfo.csv";
-  public static final String SALESORDERINFO_FILE_NAME = "salesorderinfo_%s_001.csv";
-  public static final String SALESORDER_FILE_PATH = "/salesorder.csv";
-  public static final String SALESORDER_FILE_NAME = "salesorder_%s_001.csv";
+  public static final String SALESORDERINFO_FILE_PATH = "/SalesOrderInfo.csv";
+  public static final String SALESORDERINFO_FILE_NAME = "SalesOrderInfo_%s_001.csv";
+  public static final String SALESORDER_FILE_PATH = "/SalesOrder.csv";
+  public static final String SALESORDER_FILE_NAME = "SalesOrder_%s_001.csv";
   public static final String PURCHASEORDER_FILE_PATH = "/PurchaseOrderInfo.csv";
   public static final String PURCHASEORDER_FILE_NAME = "PurchaseOrderInfo_%s_001.csv";
   public static final String PURCHASERETURNSALES_FILE_PATH = "/PurchaseOrder.csv";

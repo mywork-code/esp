@@ -31,7 +31,7 @@ CREATE TABLE `t_esp_pro_coupon` (
 CREATE TABLE `t_esp_pro_mycoupon` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment '主键id',
   `user_id` bigint(20) NOT NULL COMMENT '用户id',
-  `coupon_rel_id`   bigint(20) NOT NULL DEFAULT 0 COMMENT '优惠券与活动关联主键id',
+  `coupon_rel_id`   bigint(20) NOT NULL DEFAULT -1 COMMENT '优惠券与活动关联主键id',
   `status` varchar(8) NOT NULL COMMENT '状态：未使用：N;已使用：Y;已删除：D',
   `coupon_id` bigint(20) NOT NULL COMMENT '优惠券id',
   `telephone` varchar(15) NOT NULL DEFAULT''  COMMENT '用户手机号',

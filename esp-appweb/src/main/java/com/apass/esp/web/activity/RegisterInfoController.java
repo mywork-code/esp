@@ -1,19 +1,13 @@
 package com.apass.esp.web.activity;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.enums.AwardActivity.ActivityName;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardBindRelService;
-import com.apass.esp.service.common.MobileSmsService;
-import com.apass.esp.service.registerInfo.RegisterInfoService;
-import com.apass.gfb.framework.cache.CacheManager;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.GsonUtils;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +17,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.enums.AwardActivity.ActivityName;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.common.MobileSmsService;
+import com.apass.esp.service.offer.MyCouponManagerService;
+import com.apass.esp.service.registerInfo.RegisterInfoService;
+import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.apass.gfb.framework.utils.GsonUtils;
 
 @RestController
 @RequestMapping("/activity/regist")
@@ -46,6 +48,8 @@ public class RegisterInfoController {
 	private AwardBindRelService awardBindRelService;
 	@Autowired
 	private AwardActivityInfoService awardActivityInfoService;
+	@Autowired
+	private MyCouponManagerService myCouponManagerService;
 	/**
 	 * 缓存服务
 	 */
@@ -471,6 +475,17 @@ public class RegisterInfoController {
 			Response resp = registerInfoService.regsitNew(mobile2, password, InviterId);
 			logger.info("转介绍活动注册新用户接口(/new)---->regsitNew-->" + "resp.status=" + resp.getStatus());
 			if ("1".equals(resp.getStatus())) {
+				/**
+				 * sprint 11 (新用户注册成功奖励优惠券方法调用)
+				 */
+				Map<String, Object> rrse2 = (Map<String, Object>) resp.getData();
+				Long.parseLong(rrse2.get("userId").toString());
+				try {
+					myCouponManagerService.addXYHCoupons(Long.parseLong(rrse2.get("userId").toString()),mobile2.toString());
+				} catch (Exception e) {
+					logger.error("新用户注册成功奖励优惠券方法调用失败！");
+				}
+				
 				ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 				AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(activityName);
 				if (null == aInfoVo) {

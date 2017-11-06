@@ -231,6 +231,21 @@ public class GoodsBaseInfoController {
     }
 
     /**
+     * 商品类目列表:只查前两级类目
+     */
+    @ResponseBody
+    @RequestMapping("/categoryList2")
+    public Response categoryList2() {
+        try {
+            List<CategoryDo> categoryList = categoryInfoService.goodsCategoryList2();
+            return Response.success("success", categoryList);
+        } catch (Exception e) {
+            LOGGER.error("商品类目列表加载失败！", e);
+            return Response.fail("商品类目列表加载失败！");
+        }
+    }
+
+    /**
      * 商品管理分页json
      */
     @ResponseBody

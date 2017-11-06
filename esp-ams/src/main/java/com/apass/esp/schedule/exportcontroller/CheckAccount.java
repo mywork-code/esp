@@ -46,7 +46,7 @@ public class CheckAccount {
     public void exportOrderDetail(HttpServletRequest request){
         try{
             String beginDate = HttpWebUtils.getValue(request, "beginDate");
-            LOGGER.info("开始时间，beginDate{}",beginDate);
+            LOGGER.info("开始时间，beginDate:{}",beginDate);
             //获取数据
             List<CheckAccountOrderDetail> checkAccountOrderDetailList = getCheckOrderDetail(beginDate);
             //重新包装数据

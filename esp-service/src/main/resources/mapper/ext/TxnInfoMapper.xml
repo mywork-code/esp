@@ -177,7 +177,8 @@
     </select>
     <!-- 查采购退货  UNION ALL 查采购订单 -->
     <select id ="selectPurchaseReturnSalesList" resultType="com.apass.esp.domain.entity.bill.PurchaseReturnOrder">
-      SELECT A.id orderInfoId,'6008' companyCode,D.id orderId,
+      SELECT A.id orderInfoId,'6008' companyCode,D.id orderId,A.main_order_id mainOrderId,
+        A.ext_order_id extOrderId,
         'Z001' orderType,C.sup_no supNo,C.merchant_code merchantCode,
         '0' carriage,A.order_id oldOrderId,A.create_date createDate
 		FROM t_esp_order_info A 
@@ -197,7 +198,8 @@
 		<![CDATA[ AND A.update_date >= #{dateBegin}]]>
         <![CDATA[ AND A.update_date < #{dateEnd}]]>
     UNION ALL
-	  SELECT A.id orderInfoId,'6008' companyCode,A.order_id orderId,
+	  SELECT A.id orderInfoId,'6008' companyCode,A.order_id orderId,A.main_order_id mainOrderId,
+        A.ext_order_id extOrderId,
         'Z002' orderType,C.sup_no supNo,C.merchant_code merchantCode,
         '0' carriage,'00000000000' oldOrderId,A.create_date createDate
 		FROM t_esp_order_info A 
@@ -238,4 +240,8 @@
         order by txn_id asc
     </select>
 
+    <select id="getTotalCreditPayNum" resultType="java.lang.Integer">
+        select count(txn_id) from t_apass_txn_info
+         where user_id = #{userId} and txn_type = 'T02' and status = 'S'
+    </select>
 </mapper>

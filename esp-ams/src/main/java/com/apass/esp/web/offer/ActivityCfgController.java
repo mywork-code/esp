@@ -1,12 +1,27 @@
 package com.apass.esp.web.offer;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
+import com.apass.esp.domain.dto.ProcouponRelListVo;
+import com.apass.esp.domain.dto.ProcouponRelVoList;
+import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.apass.esp.domain.vo.ActivityCfgForEditVo;
+import com.apass.esp.service.offer.CouponRelService;
+import com.apass.gfb.framework.jwt.common.EncodeUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,10 +52,12 @@ public class ActivityCfgController {
 	/**
      * 日志
      */
-    private static final Logger logger = LoggerFactory.getLogger(ActivityCfgController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActivityCfgController.class);
 	
     @Autowired
     private ActivityCfgService activityCfgService;
+	@Autowired
+	private CouponRelService couponRelService;
     /**
      * 活动配置
      * @return
@@ -64,7 +81,7 @@ public class ActivityCfgController {
             respBody.setRows(pagination.getRows());
             respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
-        	logger.error("活动配置查询失败!",e);
+        	LOGGER.error("活动配置查询失败!",e);
             respBody.setMsg("活动配置查询失败");
         }
         return respBody;
@@ -75,8 +92,16 @@ public class ActivityCfgController {
      * @return
      */
  	@RequestMapping(value = "/add")
-    public String activityAddConfig() {
-       return "activitycfg/activityAdd";
+    public ModelAndView activityAddConfig(String id) {
+		ModelAndView mv = null;
+		if(StringUtils.isBlank(id)){
+			mv = new ModelAndView("activitycfg/activityAdd");
+		}else{
+			mv = new ModelAndView("activitycfg/activityAddForEdit");
+			mv.addObject("activityId",id);
+		}
+
+        return mv;
     }
 	/**
      * 活动配置:编辑活动
@@ -101,19 +126,57 @@ public class ActivityCfgController {
  	@ResponseBody
     @RequestMapping(value ="/add/save",method = RequestMethod.POST)
  	@LogAnnotion(operationType = "添加活动信息", valueType = LogValueTypeEnum.VALUE_DTO)
- 	public Response activityAddSave(ActivityCfgVo vo){
+ 	public Response activityAddSave(@RequestBody String request){
+		String requestDecode = EncodeUtils.urlDecode(request);
+		requestDecode = requestDecode.substring(0,requestDecode.length()-1);
+		ActivityCfgVo vo = GsonUtils.convertObj(requestDecode, ActivityCfgVo.class);
+
  		try {
  			validateParams(vo, false);
  			vo.setUserName(SpringSecurityUtils.getLoginUserDetails().getUsername());
  			Long activityId = activityCfgService.saveActivity(vo);
+
  			return Response.success("添加成功",activityId);
 		} catch (BusinessException e) {
+			LOGGER.error("新增活动配置失败", e);
 			return Response.fail(e.getErrorDesc());
 		}catch (Exception e) {
-			logger.error("新增活动配置失败", e);
+			LOGGER.error("新增活动配置失败", e);
 			return Response.fail("新增活动配置失败");
 		}
  	}
+
+	@ResponseBody
+	@RequestMapping(value ="/editpro/update",method = RequestMethod.POST)
+	public Response editSavePro(@RequestBody String request){
+		try{
+			String requestDecode = EncodeUtils.urlDecode(request);
+			requestDecode = requestDecode.substring(0,requestDecode.length()-1);
+			ProcouponRelListVo procouponRelListVo = GsonUtils.convertObj(requestDecode,ProcouponRelListVo.class);
+
+			if(procouponRelListVo != null){
+				List<ProCouponRel> relList = procouponRelListVo.getRelList();
+				if(CollectionUtils.isNotEmpty(relList)){
+					Iterator<ProCouponRel> iteratorRel = relList.iterator();
+					while(iteratorRel.hasNext()){
+						ProCouponRel proRel1 = iteratorRel.next();
+						//根据id获取remainNum值
+						ProCouponRel proRel2 = couponRelService.getcoupoRelByPrimary(proRel1.getId());
+						Integer subtractNum = proRel2.getTotalNum()-proRel2.getRemainNum();
+						proRel1.setRemainNum(proRel1.getTotalNum()-subtractNum);
+						couponRelService.updateProCouponRel(proRel1);
+					}
+				}
+
+			}
+		}catch (Exception e){
+			LOGGER.error("修改优惠券总数失败", e);
+			return Response.fail("修改优惠券总数失败");
+		}
+
+
+		return Response.success("修改优惠券总数成功");
+	}
  	
  	@ResponseBody
     @RequestMapping(value ="/edit/save",method = RequestMethod.POST)
@@ -126,12 +189,57 @@ public class ActivityCfgController {
 		} catch (BusinessException e) {
 			return Response.fail(e.getErrorDesc());
 		}catch (Exception e) {
-			logger.error("编辑活动配置失败", e);
+			LOGGER.error("编辑活动配置失败", e);
 			return Response.fail("编辑活动配置失败");
 		}
  	}
- 	
- 	public void validateParams(ActivityCfgVo vo,boolean bl) throws BusinessException{
+
+	@ResponseBody
+	@RequestMapping(value ="/edit/find",method = RequestMethod.POST)
+	public Response activityEditFind(ActivityCfgVo vo){
+		ActivityCfgForEditVo activityCfgForEditVo = new ActivityCfgForEditVo();
+		try{
+			//根据活动id去活动表查询数据
+			ProActivityCfg pro = activityCfgService.getById(vo.getId());
+
+			converToActivityCfgForEditVo(activityCfgForEditVo,pro);
+
+			if(StringUtils.isNotBlank(pro.getCoupon())){
+				if(StringUtils.equals(pro.getCoupon(),ActivityCfgCoupon.COUPON_Y.getCode())){
+					//如果使用优惠券，去优惠券与活动关系表中查询优惠券想着信息
+					List<ProCouponRel> couponRelList = couponRelService.getCouponRelList(String.valueOf(vo.getId()));
+					activityCfgForEditVo.setProCouponRels(couponRelList);
+				}
+			}
+
+		}catch (Exception e){
+			LOGGER.error("活动编辑回显查询失败",e);
+			return Response.success("活动编辑回显查询失败");
+		}
+		return Response.success("活动编辑回显查询成功",activityCfgForEditVo);
+	}
+
+
+	private void converToActivityCfgForEditVo(ActivityCfgForEditVo activityCfgForEditVo, ProActivityCfg pro) {
+		if(pro != null){
+			activityCfgForEditVo.setId(pro.getId());
+			activityCfgForEditVo.setActivityName(pro.getActivityName());
+			activityCfgForEditVo.setActivityType(pro.getActivityType());
+			activityCfgForEditVo.setStartTime(pro.getStartTime());
+			activityCfgForEditVo.setEndTime(pro.getEndTime());
+			activityCfgForEditVo.setOfferSill1(pro.getOfferSill1());
+			activityCfgForEditVo.setOfferSill2(pro.getOfferSill2());
+			activityCfgForEditVo.setDiscountAmonut1(pro.getDiscountAmonut1());
+			activityCfgForEditVo.setDiscountAmount2(pro.getDiscountAmount2());
+			activityCfgForEditVo.setCreateUser(pro.getCreateUser());
+			activityCfgForEditVo.setCreatedTime(pro.getCreatedTime());
+			activityCfgForEditVo.setUpdatedTime(pro.getUpdatedTime());
+			activityCfgForEditVo.setUpdateUser(pro.getUpdateUser());
+			activityCfgForEditVo.setCoupon(pro.getCoupon());
+		}
+	}
+
+	public void validateParams(ActivityCfgVo vo,boolean bl) throws BusinessException{
  		
  		String activityName = vo.getActivityName();
  		ValidateUtils.isNotBlank(activityName, "请填写活动名称！");

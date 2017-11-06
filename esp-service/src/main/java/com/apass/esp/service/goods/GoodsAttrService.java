@@ -155,6 +155,7 @@ public class GoodsAttrService {
         return goodsAttrMapper.deleteByPrimaryKey(id);
     }
     /**
+<<<<<<< HEAD
      * 根据类目查询商品属性下拉框数据填充
      * @param categoryId1
      * @param editCategoryId1
@@ -674,4 +675,13 @@ public class GoodsAttrService {
         }
         return Response.success("刷新库存！");
     }
+    
+   /*
+    * 根据主键id查询 商品属性  GoodsAttr
+    */
+   public GoodsAttr selectGoodsAttrByid(Long id){
+       return goodsAttrMapper.selectByPrimaryKey(id);
+   }
 }
+  
+

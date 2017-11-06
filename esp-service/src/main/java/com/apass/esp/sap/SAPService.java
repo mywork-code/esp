@@ -1,4 +1,5 @@
 package com.apass.esp.sap;
+import com.apass.esp.common.utils.APStringUtils;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
@@ -344,11 +345,11 @@ public class SAPService {
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.PAYMENTORFULLPAYMENT_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZYWH", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP",
+      String[] headers = {"GUID", "ZSCL","ZYWH", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP",
           "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
@@ -358,11 +359,12 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
+        contentList.add("01");
         contentList.add("");
         contentList.add("B");
-        contentList.add("S".equals(txn.getStatus()) ? "03" : "06");
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        contentList.add("03");
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(),"yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
         contentList.add(String.valueOf(rowNum));
         contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -386,14 +388,18 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("银联");
+          contentList.add("T07");
 
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
-          contentList.add(apassTxnAttr.getTxnId());
-          contentList.add("支付宝");
+          if(apassTxnAttr != null){
+            contentList.add(apassTxnAttr.getTxnId());
+          }else{
+            contentList.add("");
+          }
+          contentList.add("T13");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum + 1;
@@ -415,7 +421,7 @@ public class SAPService {
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -455,7 +461,7 @@ public class SAPService {
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -473,11 +479,11 @@ public class SAPService {
           contentList.add("Y001");
         }
         contentList.add(salOrder.getTelephone());
-        contentList.add("通过");
+        contentList.add("1");
         contentList.add(salOrder.getOrderId());
         contentList.add(salOrder.getTotalDiscountAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
-        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add(salOrder.getName());
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
@@ -499,7 +505,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ERDAT", "ZTZLX", "KUNNR", "ZSFQE", "ZSFKBZ", "ZPTMC", "ZPTBM", "ZPTLSH", "ZZHH", "ZZHH_COMP",
+      String[] headers = {"GUID", "ZTZ_DAT", "ZTZLX", "KUNNR", "ZSFQE", "ZSFKBZ", "ZPTMC", "ZPTBM", "ZPTLSH", "ZZHH", "ZZHH_COMP",
           "ZZHH_NO", "ZPTFWF", "ZDFF"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
@@ -549,7 +555,7 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(cashRefundTxn.getId() + "");
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), DateFormatUtil.YYYY_MM_DD));
+        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -599,16 +605,18 @@ public class SAPService {
     returnTypeList.add("0");
     List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderList, returnStatusList, returnTypeList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "BUKRS", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD", "ERDAT", "ERZET"};
+      String[] headers = {"GUID", "ZDZ_LSH","BUKRS", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD", "ERDAT", "ERZET"};
       csvWriter.writeRecord(headers);
       for (PurchaseReturnOrder txn : txnList) {
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getOrderInfoId().toString());
+        contentList.add(txn.getMainOrderId());
         contentList.add(txn.getCompanyCode());
+        contentList.add(txn.getExtOrderId());
         contentList.add(txn.getOrderId());
         contentList.add(txn.getOrderType());
         String suqNo = txn.getSupNo();
@@ -624,8 +632,8 @@ public class SAPService {
         contentList.add(suqNo);
         contentList.add(txn.getCarriage());
         contentList.add(txn.getOldOrderId());
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {
@@ -642,7 +650,7 @@ public class SAPService {
     orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
@@ -658,9 +666,9 @@ public class SAPService {
         i++;
         contentList.add(entity.getGoodsCode());
         contentList.add(entity.getGoodsName());
-        contentList.add(entity.getGoodsCostPrice().toString());
+        contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
         contentList.add(entity.getGoodsSkuAttr());
-        contentList.add(entity.getStockCurrAmt().toString());
+        contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {
@@ -677,7 +685,7 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
@@ -698,8 +706,8 @@ public class SAPService {
         contentList.add(txn.getOrderId());
 	            /*ZYWH_VBS*/
         contentList.add(txn.getLoanId().toString());
-        String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD);
-        String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
+        String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
+        String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
 	            /*ERDAT*/
         contentList.add(createdDate);
 	            /*ERZET*/
@@ -735,7 +743,7 @@ public class SAPService {
 
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.CAIWUPINGZHENG_FILE_PATH2, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
@@ -777,11 +785,11 @@ public class SAPService {
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     CsvWriter csvWriter = null;
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH, ',', Charset.forName("gbk"));
+      csvWriter = new CsvWriter(SAPConstants.PURCHASEORRETURN_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
+      String[] headers = {"GUID", "ZSCL","ZYWH","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       Integer rowNum = new Integer("1");//行号
       for (TxnOrderInfo txn : txnList) {
@@ -790,10 +798,12 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId().toString());
-        contentList.add("收款");
-        contentList.add("S".equals(txn.getStatus()) ? "收款成功" : "收款失败");
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD));
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
+        contentList.add("01");
+        contentList.add("");
+        contentList.add("B");
+        contentList.add("03");
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
         contentList.add(String.valueOf(rowNum));
         contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -815,13 +825,17 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("银联");
+          contentList.add("T07");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
-          contentList.add(apassTxnAttr.getTxnId());
-          contentList.add("支付宝");
+          if(apassTxnAttr != null){
+            contentList.add(apassTxnAttr.getTxnId());
+          }else{
+            contentList.add("");
+          }
+          contentList.add("T13");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum++;
@@ -842,11 +856,11 @@ public class SAPService {
   private void generateQuanEnHuanKuanCsv() throws Exception {
     List<RepayFlow> repayFlowList = repayFlowMapper.querySuccessByDate(getDateBegin(), getDateEnd());
     try {
-      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("gbk"));
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.QUANENHUANKUAN_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO",
+      String[] headers = {"GUID", "ZSCL","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO",
           "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       for (RepayFlow repayFlow : repayFlowList) {
@@ -948,10 +962,11 @@ public class SAPService {
               ++i;
               List<String> contentList = new ArrayList<String>();
               contentList.add(order.getId() + "");
+              contentList.add("01");
               contentList.add("B");
               contentList.add("03");
               contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
-              contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
+              contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"HHmmss"));
               contentList.add(i + "");
               contentList.add(repayDateMap.get(repayId).getTxnAmt() + "");
               //银联
@@ -961,7 +976,7 @@ public class SAPService {
               contentList.add(repayId);
               contentList.add(order.getOrderId());
               contentList.add(repayId);
-              contentList.add("银联");
+              contentList.add("T07");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
           }

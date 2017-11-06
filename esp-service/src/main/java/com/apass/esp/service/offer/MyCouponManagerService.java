@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -263,9 +266,10 @@ public class MyCouponManagerService {
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
-		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
+		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());
-		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd"));
+		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
+		vo.setEffectiveTime(DateFormatUtil.dateToString(p.getStartDate(),"yyyy.MM.dd")+"-"+DateFormatUtil.dateToString(p.getEndDate(),"yyyy.MM.dd"));
 		vo.setStatus(p.getStatus());
 		vo.setTelephone(p.getTelephone());
 		vo.setUserId(p.getUserId());
@@ -279,12 +283,9 @@ public class MyCouponManagerService {
 
 	/**
 	 * 批量插入优惠券
-	 * @param lists
      */
-	public void insertProMyCoupoBach(List<ProMyCoupon> lists) {
-		Map<String,Object> paramMap = Maps.newHashMap();
-		paramMap.put("proMyCouponList",lists);
-		myCouponMapper.insertProMyCoupoBach(paramMap);
+	public void insertProMyCoupo(ProMyCoupon proMyCoupon) {
+		myCouponMapper.insertSelective(proMyCoupon);
 	}
 
 	/**
@@ -292,13 +293,56 @@ public class MyCouponManagerService {
 	 * @param mycouponId
 	 */
 	public void deleteMyCoupon(String mycouponId){
-		if(StringUtils.isNotBlank(mycouponId)){
+		updateMyCoupon(mycouponId, CouponStatus.COUPON_D.getCode());
+	}
+	
+	/**
+	 * 使用我的优惠券
+	 * @param mycouponId
+	 */
+	public void useMyCoupon(String mycouponId){
+		updateMyCoupon(mycouponId, CouponStatus.COUPON_Y.getCode());
+	}
+	
+	/**
+	 * 修改我的优惠券状态
+	 * @param mycouponId
+	 * @param status
+	 * @return
+	 */
+	public int updateMyCoupon(String mycouponId,String status){
+		if(StringUtils.isNotBlank(mycouponId) && StringUtils.isNotBlank(status)){
 			ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(mycouponId));
 			if(null != myCoupon){
-				myCoupon.setStatus(CouponStatus.COUPON_D.getCode());
+				myCoupon.setStatus(status);
 				myCoupon.setUpdatedTime(new Date());
-				myCouponMapper.updateByPrimaryKeySelective(myCoupon);
+				return myCouponMapper.updateByPrimaryKeySelective(myCoupon);
 			}
+		}
+		return 0;
+	}
+
+	/**
+	 * 给新注册的用户添加新用户专享优惠券
+	 */
+	public void addXYHCoupons(Long userId,String tel) throws BusinessException {
+		//查询新用户专享优惠券
+		ProCoupon proCoupon = new ProCoupon();
+		proCoupon.setExtendType(CouponExtendType.COUPON_XYH.getCode());
+		List<ProCoupon> couponList = couponMapper.getProCouponBCoupon(proCoupon);
+		for(ProCoupon coupon : couponList){
+			ProMyCoupon proMyCoupon = new ProMyCoupon();
+			proMyCoupon.setUserId(userId);
+			proMyCoupon.setCouponRelId(-1l);
+			proMyCoupon.setStatus(CouponStatus.COUPON_N.getCode());
+			proMyCoupon.setCouponId(Long.valueOf(coupon.getId()));
+			proMyCoupon.setTelephone(tel);
+			Date d = new Date();
+			proMyCoupon.setStartDate(d);
+			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,proCoupon.getEffectiveTime()));
+			proMyCoupon.setCreatedTime(d);
+			proMyCoupon.setUpdatedTime(d);
+			myCouponMapper.insertSelective(proMyCoupon);
 		}
 	}
 }

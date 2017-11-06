@@ -1,11 +1,9 @@
 package com.apass.esp.repository.payment;
 
 
-import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -131,7 +129,8 @@ public class PaymentHttpClient {
                 return Response.fail("额度支付权限查询异常");
             }
             HashMap<String, String> result = resolveResult(resp, HashMap.class);
-            return Response.successResponse(result.get("available"));
+//            return Response.successResponse(result.get("available"));
+            return Response.successResponse(result);
         } catch (Exception e) {
             LOGGER.error("额度支付权限查询异常", e);
             return Response.fail("额度支付权限查询异常");

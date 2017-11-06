@@ -25,4 +25,21 @@
             AND t.attr_val = '${attrVal}'
         </if>
     </select>
+    
+    <!-- 根据goodsId查询商品的规格 -->
+    <select id="queryGoodsAttrValsByGoodsId" resultMap="BaseResultMap">
+        select
+                 <include refid="Base_Column_List"/>
+        from      t_esp_goods_attr_val
+        where     goods_id =#{goodsId}
+        group by  attr_id
+    </select>
+    <!-- 根据goodsId,attrId查询商品的规格详情 -->
+    <select id="queryByGoodsIdAndAttrId" resultMap="BaseResultMap">
+        select
+                 <include refid="Base_Column_List"/>
+        from      t_esp_goods_attr_val
+        where     goods_id =#{goodsId}
+        and       attr_id=  #{attrId}   
+    </select>
 </mapper>

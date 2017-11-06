@@ -2,21 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.apass.esp.mapper.ProCouponMapper" >
-   <!-- <sql id="QueryProcouponSql">
+    <sql id="QueryProcouponSql">
         <where>
+            AND is_delete = 'N'
             <if test="goodsCode != null and goodsCode != ''">
                 AND goods_code= #{goodsCode}
             </if>
             <if test="name != null and name != ''">
                 AND name= #{name}
             </if>
+            <if test="extendType != null and extendType != ''">
+                AND extend_type= #{extendType}
+            </if>
         </where>
-    </sql>-->
+    </sql>
 
 
     <select id="pageList" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         from t_esp_pro_coupon
+        <include refid="QueryProcouponSql" />
         <![CDATA[
           ORDER BY updated_time DESC
         ]]>
@@ -24,21 +29,21 @@
     </select>
 
     <select id="pageListCount" resultType="java.lang.Integer">
-      <![CDATA[
         SELECT COUNT(1) FROM t_esp_pro_coupon
-      ]]>
+        <include refid="QueryProcouponSql" />
     </select>
+
     <select id="getProCouponListByGoodsCode" resultType="com.apass.esp.domain.entity.ProCoupon">
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
-        where goods_code= #{goodsCode}
+        <include refid="QueryProcouponSql" />
     </select>
 
-    <!--根据优惠券名称查询优惠券-->
-    <select id="getProCouponByName" resultType="com.apass.esp.domain.entity.ProCoupon">
+    <!--根据优惠券实体类查询优惠券-->
+    <select id="getProCouponBCoupon" resultType="com.apass.esp.domain.entity.ProCoupon">
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
-        where name=#{name}
+        <include refid="QueryProcouponSql" />
     </select>
 
     <update id="updateStatusByUserIdAndCouponId">
