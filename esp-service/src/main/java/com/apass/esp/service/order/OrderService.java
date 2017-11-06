@@ -1,6 +1,7 @@
 package com.apass.esp.service.order;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -794,6 +795,9 @@ public class OrderService {
     	if(StringUtils.isNotBlank(myCouponId)){
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		for (String stockId : stockIds) {
+    			if(StringUtils.isEmpty(stockId)){
+    				continue;
+    			}
 				GoodsStockInfoEntity stock = goodsStockDao.select(Long.parseLong(StringUtils.trim(stockId)));
     			GoodsInfoEntity goods = goodsDao.select(stock.getGoodsId());
     			if(StringUtils.equals(goods.getMerchantCode(), merchantCode)){
@@ -1041,6 +1045,7 @@ public class OrderService {
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
     			String stock = StringUtils.trim(stockId);
+    			if(StringUtils.isEmpty(stock)){continue;}
     			for (PurchaseRequestDto purchase : purchaseList) {
         			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
@@ -1050,6 +1055,7 @@ public class OrderService {
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
     				String stock = StringUtils.trim(stockId);
+    				if(StringUtils.isEmpty(stock)){continue;}
 	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
@@ -2637,12 +2643,10 @@ public class OrderService {
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
 	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				for (String str : strs) {
-							if(StringUtils.equals(goods.getGoodsCode(), str)){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-							}
-						}
+	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+	    					total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());

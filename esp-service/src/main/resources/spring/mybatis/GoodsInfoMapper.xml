@@ -1333,8 +1333,6 @@
                 t.create_date createDate,
                 t.update_date updateDate,
                 t.merchant_code merchantCode,
-                t2.merchant_name merchantName,
-                t2.merchant_type  merchantType,
                 t.status status,
                 t.status statusDesc,
                 t.goods_Sku_Type goodsSkuType,
