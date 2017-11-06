@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.repository.goods.GoodsRepository;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +54,7 @@ public class GoodsAttrService {
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
-    private GoodsBasicRepository goodsBasicRepository;
+    private GoodsRepository goodsRepository;
 //    @Value("${nfs.rootPath}")
 //    private String rootPath;
 //    @Value("${nfs.goods}")
@@ -111,6 +113,8 @@ public class GoodsAttrService {
         if(getGoodsAttrListByName(entity)){
             return 2;
         }
+        entity.setUpdatedTime(new Date());
+        entity.setUpdatedUser(user);
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
         return goodsAttrMapper.insertSelective(entity);
@@ -432,8 +436,8 @@ public class GoodsAttrService {
         String fileName = "stocklogo_"+ fileDiName + "." + imgType;
 //        String url = nfsGoods + goodsId + "/" + fileName;
 //        FileUtilsCommons.uploadFilesUtil(rootPath, url, ImageUtils.scale(data, 130,130));
-        GoodsBasicInfoEntity goods = goodsBasicRepository.select(goodsId);
-        Long sku = goods.getGoodsCode();
+        GoodsInfoEntity goods = goodsRepository.select(goodsId);
+        String sku = goods.getGoodsCode();
         String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
         String skuId = sku+rand;
         for(StockInfoFileModel entity : goodsStock){
