@@ -463,7 +463,7 @@ public class PaymentService {
 				ProMyCoupon coupon = myCouponMapper.selectByPrimaryKey(orderInfo.getCouponId());
 				Date now = new Date();
 				if(coupon.getStartDate().getTime() > now.getTime() || coupon.getEndDate().getTime() < now.getTime()){
-					throw new BusinessException("抱歉，您的优惠券已过期!");
+					throw new BusinessException("您的优惠券已过期!");
 				}
 			}
 			/**
