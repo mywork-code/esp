@@ -1,6 +1,9 @@
 package com.apass.esp.web.goods;
 import java.net.URLDecoder;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import com.apass.esp.domain.vo.GoodsAttrVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,4 +146,21 @@ public class GoodsAttrController {
             return Response.fail("商品属性删除异常！");
         }
     }
+
+
+
+    @ResponseBody
+    @RequestMapping("/allGoodsAttr")
+    public Response listGoodsAttrs(String categoryId) {
+        List<GoodsAttrVo> goodsAttrs = null;
+        try {
+            goodsAttrs = goodsAttrService.listAll(categoryId);
+        }catch (Exception e){
+            LOG.error("查询全部商品属性失败",e);
+            return Response.fail("查询全部商品属性失败");
+        }
+        return Response.success("查询全部商品属性成功",goodsAttrs);
+    }
+
+
 }

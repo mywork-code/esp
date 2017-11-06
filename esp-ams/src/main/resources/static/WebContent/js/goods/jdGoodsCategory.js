@@ -302,7 +302,6 @@ $(function() {
 	                        success(resp.data);
 	                    });
 	                	$('.datagrid-cell').on('click','.border-circle',function(){  
-//	                		stime = window.setInterval("start()", 15000);
 	                		if($(".border-circle").hasClass('disabled')){
 	                			return;
 	                		}
@@ -409,15 +408,7 @@ $(function() {
 	                
 		})
 	}
-//	$('.border-circle').on('click','.switch-circle',function(){
-//		alert('jjj');
-//		$('.switch-circle').css('right','0');
-//	});
-//	console.log('123');
 	$('.switch-circle').css('width','50px');
-//	$('.border-circle').on('click','.switch-circle',function(){
-//		alert('123');
-//	})
 });
 
 

@@ -11,6 +11,13 @@ import java.util.Set;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.apass.esp.domain.entity.CategoryAttrRel;
+import com.apass.esp.domain.entity.CategoryAttrRelQuery;
+import com.apass.esp.domain.vo.GoodsAttrVo;
+import com.apass.gfb.framework.logstash.LOG;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -676,13 +683,51 @@ public class GoodsAttrService {
         }
         return Response.success("刷新库存！");
     }
-    
+
    /*
     * 根据主键id查询 商品属性  GoodsAttr
     */
    public GoodsAttr selectGoodsAttrByid(Long id){
        return goodsAttrMapper.selectByPrimaryKey(id);
    }
+
+    public List<GoodsAttrVo> listAll(String categoryId) {
+        List<GoodsAttr> lists= goodsAttrMapper.selectAllGoodsAttr();
+        List<GoodsAttrVo> listVo = Lists.newArrayList();
+        goodsAttrToGoodsAttrVo(lists,listVo);
+
+        CategoryAttrRelQuery categoryAttrRelQuery = new CategoryAttrRelQuery();
+        categoryAttrRelQuery.setCategoryId1(Long.valueOf(categoryId));
+        List<CategoryAttrRel> cateAttrRels = categoryAttrRelService.selectCategoryAttrRelByQueryEntity(categoryAttrRelQuery);
+        if(CollectionUtils.isNotEmpty(listVo)){
+            for (GoodsAttrVo goodsAttrVo:listVo) {
+                for (CategoryAttrRel categoryAttrRel:cateAttrRels) {
+                  if(goodsAttrVo.getId() == categoryAttrRel.getGoodsAttrId()){
+                      //已关联
+                      goodsAttrVo.setFlag(true);
+                  }
+                }
+            }
+
+        }
+
+        return listVo;
+    }
+
+    private void goodsAttrToGoodsAttrVo(List<GoodsAttr> lists, List<GoodsAttrVo> listVo) {
+        if(CollectionUtils.isNotEmpty(lists)){
+            for(GoodsAttr goodsAttr:lists){
+                GoodsAttrVo goodsAttrVo = new GoodsAttrVo();
+                goodsAttrVo.setId(goodsAttr.getId());
+                goodsAttrVo.setName(goodsAttr.getName());
+                goodsAttrVo.setCreatedTime(goodsAttr.getCreatedTime());
+                goodsAttrVo.setCreatedUser(goodsAttr.getCreatedUser());
+                goodsAttrVo.setUpdatedTime(goodsAttr.getUpdatedTime());
+                goodsAttrVo.setUpdatedUser(goodsAttr.getUpdatedUser());
+                listVo.add(goodsAttrVo);
+            }
+        }
+    }
 }
   
 

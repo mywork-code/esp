@@ -221,6 +221,9 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     public List<GoodsInfoEntity> selectByCategoryId2(Long categoryId) {
         return this.getSqlSession().selectList("selectByCategoryId2", categoryId);
     }
+    public List<GoodsInfoEntity> selectByCategoryId1(Long categoryId) {
+        return this.getSqlSession().selectList("selectByCategoryId1", categoryId);
+    }
 
     public GoodsInfoEntity selectGoodsByExternalIdAndStatus(Long skuId) {
         return this.getSqlSession().selectOne("selectGoodsByExternalIdAndStatus", skuId);

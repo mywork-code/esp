@@ -1162,6 +1162,15 @@ public class GoodsService {
   public List<GoodsInfoEntity> selectByCategoryId2(Long categoryId) {
     return goodsDao.selectByCategoryId2(categoryId);
   }
+    /**
+     * 根据一级类目id查询所有商品
+     *
+     * @param categoryId
+     * @return
+     */
+    public List<GoodsInfoEntity> selectByCategoryId1(Long categoryId) {
+        return goodsDao.selectByCategoryId1(categoryId);
+    }
 
   /**
    * 判断该类目下京东是否存在已上架待审核状态商品
