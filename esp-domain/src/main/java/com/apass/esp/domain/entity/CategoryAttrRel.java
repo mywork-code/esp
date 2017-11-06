@@ -1,8 +1,17 @@
 package com.apass.esp.domain.entity;
-
 import java.util.Date;
-
 public class CategoryAttrRel {
+    /**
+     * 2个构造方法   便于通过categoryId1ID查询
+     * @param categoryId1
+     */
+    public CategoryAttrRel(Long categoryId1) {
+        super();
+        this.categoryId1 = categoryId1;
+    }
+    public CategoryAttrRel() {
+        super();
+    }
     private Long id;
 
     private Long categoryId1;

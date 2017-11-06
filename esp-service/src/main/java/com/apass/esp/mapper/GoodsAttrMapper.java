@@ -9,8 +9,13 @@ public interface GoodsAttrMapper extends GenericMapper<GoodsAttr, Long> {
     /**
      * 商品属性查询
      * @param entity
-     * @param page
      * @return
      */
     List<GoodsAttr> getGoodsAttrList(GoodsAttr entity);
+    /**
+     * 商品属性精确查询验重查询
+     * @param entity
+     * @return
+     */
+    List<GoodsAttr> getGoodsAttrListByName(GoodsAttr entity);
 }

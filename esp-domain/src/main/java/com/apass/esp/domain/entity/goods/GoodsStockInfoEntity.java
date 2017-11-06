@@ -25,11 +25,9 @@ public class GoodsStockInfoEntity {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     /** 商品id **/
     private Long       goodsId;
     /**  商品来源**/
@@ -95,6 +93,8 @@ public class GoodsStockInfoEntity {
     
     /**比价链接2URL**/
     private String     goodsCompareUrl2;
+    private String skuId;
+    private String attrValIds;
     private String deleteFlag;
     /**
      * 保本率
@@ -272,14 +272,24 @@ public class GoodsStockInfoEntity {
     public BigDecimal getPriceCostRate() {
         return priceCostRate;
     }
-
     public void setPriceCostRate(BigDecimal priceCostRate) {
         this.priceCostRate = priceCostRate;
+    }
+    public String getSkuId() {
+        return skuId;
+    }
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
+    public String getAttrValIds() {
+        return attrValIds;
+    }
+    public void setAttrValIds(String attrValIds) {
+        this.attrValIds = attrValIds;
     }
     public String getDeleteFlag() {
         return deleteFlag;
     }
-
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag;
     }

@@ -91,9 +91,11 @@ public class GoodsAttrController {
             int result = goodsAttrService.addGoodsAttr(name,user);
             if (result == 1) {
                 return Response.success("商品属性新增成功！");
-              } else {
+            } else if(result == 2){
+                return Response.fail("商品属性名称重复,新增失败！");
+            }else{
                 return Response.fail("商品属性新增失败！");
-              }
+            }
         }catch(Exception e) {
             LOG.error("ADD GOODSATTR EXCEPTION!", e);
             return Response.fail("商品属性新增异常！");
@@ -110,10 +112,12 @@ public class GoodsAttrController {
             String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
             int result = goodsAttrService.editGoodsAttr(id,name,user);
             if (result == 1) {
-                return Response.success("商品属性维护成功！");
-              } else {
-                return Response.fail("商品属性维护失败！");
-              }
+                return Response.success("商品属性新增成功！");
+            } else if(result == 2){
+                return Response.fail("商品属性名称重复,修改失败！");
+            }else{
+                return Response.fail("商品属性新增失败！");
+            }
         }catch(Exception e) {
             LOG.error("ADD GOODSATTR EXCEPTION!", e);
             return Response.fail("商品属性维护异常！");
@@ -129,9 +133,11 @@ public class GoodsAttrController {
             int result = goodsAttrService.deleteGoodsAttr(id);
             if (result == 1) {
                 return Response.success("商品属性删除成功！");
-              } else {
+            }else if(result == 2){
+                return Response.fail("商品属性关联类目,删除失败！");
+            } else {
                 return Response.fail("商品属性删除失败！");
-              }
+            }
         }catch(Exception e) {
             LOG.error("ADD GOODSATTR EXCEPTION!", e);
             return Response.fail("商品属性删除异常！");

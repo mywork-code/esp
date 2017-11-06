@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.CategoryAttrRelMapper">
+    <select id="categoryAttrRelListByCategory" parameterType="com.apass.esp.domain.entity.CategoryAttrRel" resultType="com.apass.esp.domain.entity.CategoryAttrRel">
+        <![CDATA[
+        SELECT
+            id id,
+            category_id1 categoryId1, 
+            goods_attr_id goodsAttrId,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_category_attr_rel t
+        WHERE 1=1
+        ]]>
+        <if test="categoryId1!=null and categoryId1!=''">
+            AND t.category_id1 = ${categoryId1}
+        </if>
+        <if test="goodsAttrId!=null and goodsAttrId!=''">
+            AND t.goods_attr_id = ${goodsAttrId}
+        </if>
+    </select>
+</mapper>
