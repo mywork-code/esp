@@ -1038,9 +1038,9 @@ public class OrderService {
     		ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
     		ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
     		Date now = new Date();
-    		if(mycoupon.getStartDate().getTime() > now.getTime() &&
+    		if(mycoupon.getStartDate().getTime() > now.getTime() ||
     				mycoupon.getEndDate().getTime() < now.getTime()){
-    			throw new BusinessException("您的券已过期!");
+    			throw new BusinessException("您的优惠券已过期!");
     		}
     		
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
@@ -1117,9 +1117,14 @@ public class OrderService {
         /**
          * 如果优惠券Id不为空
          */
+        Date now = new Date();
         if(StringUtils.isNotBlank(myCouponId)){
         	ProMyCoupon mycoupon = myCouponMapper.selectByPrimaryKey(Long.parseLong(myCouponId));
         	ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
+        	if(mycoupon.getStartDate().getTime() > now.getTime() 
+        			|| mycoupon.getEndDate().getTime() < now.getTime()){
+        		throw new BusinessException("您的优惠券已过期!");
+        	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
         
