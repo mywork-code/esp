@@ -38,6 +38,7 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
@@ -110,6 +111,9 @@ public class PaymentService {
 	
 	@Autowired
 	private ProMyCouponMapper myCouponMapper;
+
+	@Autowired
+	private MyCouponManagerService myCouponManagerService;
 
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -935,13 +939,15 @@ public class PaymentService {
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),cashDto.getId());
 			
 			//修改订单状态为交易关闭
+
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
-	        orderInfoEntity.setOrderId(orderId);
-	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
-        	orderService.updateOrderStatus(orderInfoEntity);
+			orderInfoEntity.setOrderId(orderId);
+			orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+			orderService.updateOrderStatus(orderInfoEntity);
 
 			//退款成功 则返回优惠券
-			orderService.updateOrderCancel(orderId);
+			OrderInfoEntity order =   orderService.selectByOrderId(orderId);
+			myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());

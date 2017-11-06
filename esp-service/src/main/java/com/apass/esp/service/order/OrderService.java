@@ -2800,12 +2800,9 @@ public class OrderService {
         OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(order.getId());
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
-
-        if(order.getCouponId() != null && order.getCouponId() > 0 ){
-            //订单失效 则返回优惠券
-            myCouponManagerService.updateStatus("N",order.getUserId(),order.getCouponId());
-        }
         orderInfoRepository.update(entity);
+        //订单失效 则返回优惠券
+        myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
     }
 
     /**
