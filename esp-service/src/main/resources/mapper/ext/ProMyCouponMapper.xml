@@ -33,6 +33,7 @@
        select <include refid="Base_Column_List" />
         from t_esp_pro_mycoupon
         <include refid="paramSql" />
+        order by updated_time desc
    </select>
    
    <select id="getCouponByUserIdAndCouponId" parameterType="com.apass.esp.domain.query.ProMyCouponQuery"  resultMap="BaseResultMap">
