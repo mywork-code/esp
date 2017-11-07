@@ -300,8 +300,7 @@ $(function(){
 					},
 				});
 			}else{
-				$("#issueCouponNum1").textbox('setValue','');
-				$("#issueLimitNum1").textbox('setValue','');
+				clearTextBox('1');
 				$(".couponsDiv").css("display","none");
 			}
 		}
@@ -340,12 +339,16 @@ $(function(){
 		var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
 
 		if(addOrdeleteCouponTrDisplay5 != "none"){
+			clearTextBox('5');
 			$(".addOrdeleteCouponTr5").css("display","none");
 		}else if(addOrdeleteCouponTrDisplay4 != "none"){
+			clearTextBox('4');
 			$(".addOrdeleteCouponTr4").css("display","none");
 		}else if(addOrdeleteCouponTrDisplay3 != "none"){
+			clearTextBox('3');
 			$(".addOrdeleteCouponTr3").css("display","none");
 		}else{
+			clearTextBox('2');
 			$(".addOrdeleteCouponTr2").css("display","none");
 		}
 
@@ -369,4 +372,9 @@ function ifLogoutForm(data){
 		window.top.location = ctx + "/logout";
 		return;
 	}
+}
+function clearTextBox(No){
+	$("#chooseCoupon"+No).combobox('clear');
+	$("#issueCouponNum"+No).textbox('setValue','');
+	$("#issueLimitNum"+No).textbox('setValue','');
 }
