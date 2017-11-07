@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
@@ -35,6 +36,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
  * Created by jie.xu on 17/7/14.
  */
 @Component("creditAuthActivityTaskListener")
+@Profile("zqs")
 public class CreditAuthActivityTaskListener implements MessageListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CreditAuthActivityTaskListener.class);
 	@Autowired
@@ -128,7 +130,7 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 											}
 											BigDecimal awardAmont = new BigDecimal(aInfoVo.getAwardAmont());// 即将获得的奖励金额
 											BigDecimal amount = awardAmont.add(amountAward);
-											if (new BigDecimal("800").compareTo(amount) > 0) {// 总奖励金额小于800，直接插入记录
+											if (new BigDecimal("800").compareTo(amount) >= 0) {// 总奖励金额小于800，直接插入记录
 												awardDetailDto.setTaxAmount(new BigDecimal("0"));
 												awardDetailDto.setAmount(awardAmont);
 												awardDetailService.addAwardDetail(awardDetailDto);

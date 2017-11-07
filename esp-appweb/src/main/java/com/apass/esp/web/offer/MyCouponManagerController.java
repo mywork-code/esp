@@ -79,7 +79,7 @@ public class MyCouponManagerController {
 		} catch (Exception e) {
 			logger.error("exception giveCouponToUser :{}",e);
 		}
-		return Response.fail("领取失败!");
+		return Response.fail("当前领券人数过多，请稍后再试!");
 	}
 	
 	@ResponseBody

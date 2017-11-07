@@ -536,18 +536,23 @@ public class GoodsService {
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId) {
 		//拼凑京东商品jdSimilarSkuList数据格式
 		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
-		JdSimilarSku jdSimilarSku=new JdSimilarSku();
-		List<JdSaleAttr> saleAttrList=new ArrayList<>();
-		JdSaleAttr jdSaleAttr=new JdSaleAttr();
 		//查出商品属性
 		List<GoodsAttrVal> goodsAttrValList = goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsId);
 		//查询 t_esp_goods_attr_val 商品不同规格下对应值表
 		for (GoodsAttrVal goodsAttrVal : goodsAttrValList) {
+			JdSimilarSku jdSimilarSku=new JdSimilarSku();
 			GoodsAttr goodsAttr = goodsAttrService.selectGoodsAttrByid(goodsAttrVal.getAttrId());
 			String saleName = goodsAttr.getName();//京东saleName
+			jdSimilarSku.setSaleName(saleName);
+			List<JdSaleAttr> saleAttrList=new ArrayList<>();
 			List<GoodsAttrVal> GoodsAttrValList = goodsAttrValService.queryByGoodsIdAndAttrId(goodsId,
 					goodsAttrVal.getAttrId());
 			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
+				JdSaleAttr jdSaleAttr=new JdSaleAttr();
+				jdSaleAttr.setImagePath("");
+				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
+				jdSaleAttr.setSaleValueId("");
+
 			}
 		}
 		
@@ -1325,7 +1330,11 @@ public class GoodsService {
 
       goods.setSource(g.getSource());
       goods.setDelistTimeString(DateFormatUtil.dateToString(g.getDelistTime(), ""));
-      goods.setSordNo(g.getSordNo());
+      if(g.getSordNo() == null){
+        goods.setSordNo(0);
+      }else {
+        goods.setSordNo(g.getSordNo());
+      }
       goods.setCreateDate(g.getCreateDate());
       goods.setGoodsTitle(g.getGoodsTitle());
       goods.setGoodsTitlePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsTitle()));

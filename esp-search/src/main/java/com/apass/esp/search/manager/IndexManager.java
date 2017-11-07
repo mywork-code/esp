@@ -15,10 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
@@ -145,8 +146,9 @@ public class IndexManager<T> {
         byte[] json;
         for (T t : datas) {
             json = ESDataUtil.toBytes(t);
-//            bulkRequest.add(new IndexRequest(esprop.getIndice(), indexType.getDataName(), t.getId() + "").source(json));
-            bulkRequest.add(new UpdateRequest(esprop.getIndice(), indexType.getDataName(), t.getId() + "").upsert(json));
+            bulkRequest.add(new DeleteRequest(esprop.getIndice(),indexType.getDataName(),t.getId() + ""));
+            bulkRequest.add(new IndexRequest(esprop.getIndice(), indexType.getDataName(), t.getId() + "").source(json));
+//            bulkRequest.add(new UpdateRequest(esprop.getIndice(), indexType.getDataName(), t.getId() + "").upsert(json));
         }
         // 执行批量处理request
         BulkResponse bulkResponse = bulkRequest.get();
