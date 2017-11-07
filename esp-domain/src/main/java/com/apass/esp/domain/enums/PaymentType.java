@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum PaymentType {
 
-    CREDIT_PAYMENT("T02", "额度支付"),//退了信用支付
+    CREDIT_PAYMENT("T02", "趣花钱包"),//退了信用支付
 
     CARD_PAYMENT("T05", "银行卡支付"),
 	
