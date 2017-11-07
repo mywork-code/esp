@@ -108,3 +108,8 @@ ALTER TABLE `t_esp_weex_info`
 ADD COLUMN `weex_blong` varchar(12)  NOT NULL DEFAULT '' COMMENT 'weex所属项目(ajqh,ajp)';
 
 alter table t_esp_goods_stock_info  ADD COLUMN delete_flag varchar(32) not null default 'N' comment '删除标志，Y-已删除；N-未删除';
+
+
+ALTER TABLE `t_esp_weex_info`
+CHANGE COLUMN `weex_ver` `ios_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT 'ios版本号' ,
+ADD COLUMN `android_ver` varchar(12) NOT NULL DEFAULT '' COMMENT 'android版本号';
