@@ -1122,7 +1122,7 @@ public class OrderService {
         	ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
         	if(mycoupon.getStartDate().getTime() > now.getTime() 
         			|| mycoupon.getEndDate().getTime() < now.getTime()){
-        		throw new BusinessException("您的优惠券已过期!");
+        		throw new BusinessException("优惠券已失效，请重新结算!");
         	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
