@@ -29,6 +29,8 @@ public class WeexInfoEntity {
 
     private String androidVer;
 
+    private String weexVer;
+
     public String getWeexBlong() {
         return weexBlong;
     }
@@ -133,5 +135,13 @@ public class WeexInfoEntity {
 
     public void setAndroidVer(String androidVer) {
         this.androidVer = androidVer;
+    }
+
+    public String getWeexVer() {
+        return weexVer;
+    }
+
+    public void setWeexVer(String weexVer) {
+        this.weexVer = weexVer;
     }
 }
