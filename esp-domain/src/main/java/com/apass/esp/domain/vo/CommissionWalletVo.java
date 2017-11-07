@@ -4,20 +4,13 @@ package com.apass.esp.domain.vo;
  * Created by xiaohai on 2017/8/28.
  */
 public class CommissionWalletVo {
-    private String  ver;
+    private String  iosVer;
+    private String  androidVer;
     private boolean flag;
     private String id;
     private String url;
     private String md5;
     private boolean offLine;
-
-    public String getVer() {
-        return ver;
-    }
-
-    public void setVer(String ver) {
-        this.ver = ver;
-    }
 
     public boolean isFlag() {
         return flag;
@@ -57,5 +50,21 @@ public class CommissionWalletVo {
 
     public void setOffLine(boolean offLine) {
         this.offLine = offLine;
+    }
+
+    public String getIosVer() {
+        return iosVer;
+    }
+
+    public void setIosVer(String iosVer) {
+        this.iosVer = iosVer;
+    }
+
+    public String getAndroidVer() {
+        return androidVer;
+    }
+
+    public void setAndroidVer(String androidVer) {
+        this.androidVer = androidVer;
     }
 }

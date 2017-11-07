@@ -10,8 +10,11 @@
     UPDATE T_ESP_WEEX_INFO
     <set>
       UPDATE_DATE = CURRENT_TIMESTAMP,
-      <if test="weexVer != null and weexVer != ''">
-        WEEX_VER = #{weexVer,jdbcType=TIMESTAMP},
+      <if test="iosVer != null and iosVer != ''">
+        ios_ver = #{iosVer},
+      </if>
+      <if test="androidVer != null and androidVer != ''">
+        android_ver = #{androidVer},
       </if>
       <if test="weexPath != null and weexPath != ''">
         WEEX_PATH = #{weexPath,jdbcType=VARCHAR},

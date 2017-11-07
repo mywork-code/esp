@@ -20,7 +20,6 @@ $ (function ()
 	    striped : true,
 	    columns : [
 		    [
-		            
 		            {
 		                title : 'id',
 		                field : 'id',
@@ -41,11 +40,17 @@ $ (function ()
 		            },
 
 		            {
-		                title : '版本号',
-		                field : 'weexVer',
+		                title : 'ios版本号',
+		                field : 'iosVer',
 		                width : 100,
 		                align : 'center'
 		            },
+					{
+						title : 'android版本号',
+						field : 'androidVer',
+						width : 100,
+						align : 'center'
+					},
 					{
 						title : '归属项目',
 						field : 'weexBlong',
@@ -105,7 +110,8 @@ $ (function ()
 	{
 		$ ("#editWeexJsInfo").dialog ("open");
 		
-		$ ("#weexVer").val (data.weexVer);
+		$ ("#iosVer").val (data.iosVer);
+		$ ("#androidVer").val (data.androidVer);
 		$ ("#weexType").combobox ('setValue',data.weexType);
 		$ ("#weexFile").val (data.weexFile);
 		$ ("#weexId").val (data.id);
@@ -124,7 +130,8 @@ function confirmWeexBtn ()
 		if (r)
 		{
 			debugger;
-			var weexVer = $ ("#weexVer").val ();
+			var iosVer = $ ("#iosVer").val ();
+			var androidVer = $ ("#androidVer").val ();
 			var weexType = $ ("#weexType").combobox ('getValue');
 			var weexFile = $ ("#weexFile").val ();
 			var weexId = $ ("#weexId").val ();
@@ -133,9 +140,14 @@ function confirmWeexBtn ()
 
 			
 			// 验证参数
-			if (weexVer == null || weexVer == "")
+			if (iosVer == null || iosVer == "")
 			{
-				$.messager.alert ('消息', "weex版本号不能为空");
+				$.messager.alert ('消息', "ios版本号不能为空");
+				return false;
+			}
+			if (androidVer == null || androidVer == "")
+			{
+				$.messager.alert ('消息', "android版本号不能为空");
 				return false;
 			}
 			if (weexType == null || weexType == "")
