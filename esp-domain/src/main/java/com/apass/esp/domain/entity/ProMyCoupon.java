@@ -24,6 +24,8 @@ public class ProMyCoupon {
     private Date createdTime;
 
     private Date updatedTime;
+    
+    private Boolean activityFalge;
 
     public Long getId() {
         return id;
@@ -112,4 +114,13 @@ public class ProMyCoupon {
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
+
+	public Boolean getActivityFalge() {
+		return activityFalge;
+	}
+
+	public void setActivityFalge(Boolean activityFalge) {
+		this.activityFalge = activityFalge;
+	}
+    
 }
