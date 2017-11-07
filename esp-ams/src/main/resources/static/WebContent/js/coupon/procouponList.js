@@ -38,7 +38,13 @@ $(function(){
 				title : '优惠门槛',
 				field : 'couponSill',
 				width : 120,
-				align : 'center'
+				align : 'center',
+				formatter :function(value, row, index) {
+					if(value == '0'){
+						value = '无门槛';
+					}
+				 return value;
+			    }
 			},{
 				title : '优惠金额',
 				field : 'discountAmonut',
