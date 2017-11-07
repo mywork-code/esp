@@ -1,5 +1,25 @@
 package com.apass.esp.nothing;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -13,23 +33,6 @@ import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("/activity/award")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -66,13 +69,13 @@ public class ActivityAwardController {
 				LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
-				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
+				if (StringUtils.equals(isFirstCredit, "true")) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
 					LOGGER.info("用户获得额度时 活动aInfoVo="+aInfoVo);
 					if (null != aInfoVo) {
 						Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
 						int falge = aEndDate.compareTo(new Date());
-						if (falge > 0) {
+						if (falge >= 0) {
 							//获取邀请人的信息
 							List<AwardBindRel> awardBindRel = awardBindRelService.getAllByInviterUserId(userId);
 							LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel);
@@ -94,7 +97,6 @@ public class ActivityAwardController {
 									c.set(Calendar.DAY_OF_MONTH,1);
 									String first = format.format(c.getTime());
 									String firstDay=first+" 00:00:00";
-									String nowTime=DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
 									if(null !=awardBindRel && awardBindRel.size()>0){
 										AwardDetailDto awardDetailDto=new AwardDetailDto();
 										awardDetailDto.setActivityId(aInfoVo.getId());
@@ -111,30 +113,31 @@ public class ActivityAwardController {
 										parMap.put("userId", awardBindRel.get(0).getUserId());
 										parMap.put("type", "0");
 										parMap.put("applyDate1", DateFormatUtil.string2date(firstDay, "yyyy-MM-dd HH:mm:ss"));
-										parMap.put("applyDate2", DateFormatUtil.string2date(nowTime, "yyyy-MM-dd HH:mm:ss"));
+										parMap.put("applyDate2", new Date());
 										BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
 										LOGGER.info("用户获得额度时 已经获得的奖励金额amountAward="+amountAward);
 										if(amountAward == null){
-											amountAward = new BigDecimal(0);
+											amountAward = BigDecimal.ZERO;
 										}
 										BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
 										BigDecimal amount=awardAmont.add(amountAward);
-										if(new BigDecimal("800").compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
+										BigDecimal base = new BigDecimal("800");
+										if(base.compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
 											awardDetailDto.setTaxAmount(new BigDecimal("0"));
 											awardDetailDto.setAmount(awardAmont);
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)>=0 && new BigDecimal("800").compareTo(amount)<0){
-											BigDecimal more=amount.subtract(new BigDecimal("800"));
-											//扣除20%个人所得税后的奖励金额
-											BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
-											awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
-											awardDetailDto.setAmount(awardAmont2);
-											awardDetailService.addAwardDetail(awardDetailDto);
-											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)<0){
-											awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
-											awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
+										}else {
+											/**
+											 * 需要缴税的部分奖励金额
+											 */
+											BigDecimal taxAmount = amount.subtract(base);
+											/**
+											 * 提现扣税金额
+											 */
+											BigDecimal taxMoney = taxAmount.multiply(new BigDecimal("0.2"));
+											awardDetailDto.setTaxAmount(taxMoney);
+											awardDetailDto.setAmount(awardAmont.subtract(taxMoney));
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
 										}

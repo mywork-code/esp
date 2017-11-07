@@ -137,7 +137,7 @@ public class GoodsAttrController {
             if (result == 1) {
                 return Response.success("商品属性删除成功！");
             }else if(result == 2){
-                return Response.fail("商品属性关联类目,删除失败！");
+                return Response.success("商品属性关联类目,删除失败！");
             } else {
                 return Response.fail("商品属性删除失败！");
             }
