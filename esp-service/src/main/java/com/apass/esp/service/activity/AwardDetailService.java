@@ -270,7 +270,9 @@ public class AwardDetailService {
 				BigDecimal canWithdrawAmount = getCanUserAmt(awardDetail.getUserId(),awardDetail.getCreateDate());	
 				awardBindRelIntroVo.setCanWithdrawAmount(canWithdrawAmount);
 				awardBindRelIntroVo.setApplyDate(DateFormatUtil.dateToString(awardDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
-				awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
+				if(awardDetail.getTaxAmount() != null){
+					awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
+				}
 				awardBindRelIntroVo.setRealName(awardDetail.getRealName());
 				awardBindRelIntroVo.setCardNO(awardDetail.getCardNo());
 				awardBindRelIntroVo.setCardBank(awardDetail.getCardBank());

@@ -1,6 +1,7 @@
 package com.apass.esp.service.order;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -67,7 +68,6 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
-import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -794,6 +794,9 @@ public class OrderService {
     	if(StringUtils.isNotBlank(myCouponId)){
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		for (String stockId : stockIds) {
+    			if(StringUtils.isEmpty(stockId)){
+    				continue;
+    			}
 				GoodsStockInfoEntity stock = goodsStockDao.select(Long.parseLong(StringUtils.trim(stockId)));
     			GoodsInfoEntity goods = goodsDao.select(stock.getGoodsId());
     			if(StringUtils.equals(goods.getMerchantCode(), merchantCode)){
@@ -1041,6 +1044,7 @@ public class OrderService {
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
     			String stock = StringUtils.trim(stockId);
+    			if(StringUtils.isEmpty(stock)){continue;}
     			for (PurchaseRequestDto purchase : purchaseList) {
         			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
@@ -1050,6 +1054,7 @@ public class OrderService {
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
     				String stock = StringUtils.trim(stockId);
+    				if(StringUtils.isEmpty(stock)){continue;}
 	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
@@ -1121,7 +1126,7 @@ public class OrderService {
         	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
-        
+        LOGGER.info("product total money:{0},payMoney+discountMoney+couponMoney:{1},discountMoney:{2},myCouponId:{3}",countTotalPrice,totalPayment,discountMoney,myCouponId);
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
             throw new BusinessException("订单总金额计算错误!");
@@ -2637,12 +2642,10 @@ public class OrderService {
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
 	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				for (String str : strs) {
-							if(StringUtils.equals(goods.getGoodsCode(), str)){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-							}
-						}
+	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+	    					total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
