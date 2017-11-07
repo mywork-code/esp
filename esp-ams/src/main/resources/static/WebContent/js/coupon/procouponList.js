@@ -28,7 +28,13 @@ $(function(){
 				title : '有效时间',
 				field : 'effectiveTime',
 				width : 120,
-				align : 'center'
+				align : 'center',
+				formatter :function(value, row, index) {
+					if(value == '-1'){
+						value = '';
+					}
+				 return value;
+			    }
 			},{
 				title : '优惠券类型',
 				field : 'type',
