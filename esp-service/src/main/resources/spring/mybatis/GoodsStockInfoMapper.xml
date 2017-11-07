@@ -208,6 +208,15 @@
 			<if test="goodsCompareUrl2 != null">
 			  A.goods_compare_url2 = #{goodsCompareUrl2, jdbcType=VARCHAR},
 			</if>
+			<if test="skuId != null">
+				A.sku_id = #{skuId, jdbcType=VARCHAR},
+			</if>
+			<if test="attrValIds != null">
+				A.attr_val_ids = #{attrValIds, jdbcType=VARCHAR},
+			</if>
+			<if test="deleteFlag != null">
+				A.delete_flag = #{deleteFlag, jdbcType=VARCHAR},
+			</if>
 			
 		</set>
 	<![CDATA[

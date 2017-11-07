@@ -224,7 +224,7 @@ public class ProCouponBaseInfoController {
            throw new RuntimeException("优惠券名称不能为空");
         }
         if(proCoupon.getName().length()>20 ){
-            throw new RuntimeException("优惠券名称必须小于等于20字符");
+            throw new RuntimeException("优惠券名称不能大于20字符");
         }
         if(StringUtils.isBlank(proCoupon.getExtendType())){
             throw new RuntimeException("推广方式不能为空");
