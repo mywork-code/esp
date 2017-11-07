@@ -13,10 +13,11 @@
     <result column="weex_type" property="weexType" jdbcType="VARCHAR" />
     <result column="weex_blong" property="weexBlong" jdbcType="VARCHAR" />
     <result column="android_ver" property="androidVer" jdbcType="VARCHAR" />
+    <result column="weex_ver" property="weexVer" jdbcType="VARCHAR" />
   </resultMap>
 
   <sql id="Base_Column_List" >
-    ID, WEEX_PATH, IOS_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE,WEEX_BLONG,ANDROID_VER
+    ID, WEEX_PATH, IOS_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE,WEEX_BLONG,ANDROID_VER,WEEX_VER
   </sql>
 
   <insert id="insert" parameterType="com.apass.esp.domain.entity.WeexInfoEntity" useGeneratedKeys="true" keyProperty="id" >
@@ -43,13 +44,19 @@
       <if test="updateDate != null" >
         update_date,
       </if>
+      <if test="androidVer != null" >
+        android_ver,
+      </if>
+      <if test="weexVer != null" >
+        weex_ver,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="weexPath != null" >
         #{weexPath,jdbcType=VARCHAR},
       </if>
-      <if test="weexVer != null" >
-        #{weexVer,jdbcType=VARCHAR},
+      <if test="iosVer != null" >
+        #{iosVer,jdbcType=VARCHAR},
       </if>
       <if test="weexEve != null" >
         #{weexEve,jdbcType=VARCHAR},
@@ -61,7 +68,10 @@
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
       <if test="androidVer != null" >
-        android_ver
+        #{androidVer,jdbcType=VARCHAR},
+      </if>
+      <if test="weexVer != null" >
+        #{weexVer,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

@@ -4,6 +4,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.domain.vo.CommissionWalletVo;
+import com.apass.esp.domain.vo.CommissionWalletVoOld;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.schedule.JdAfterSaleScheduleTask;
@@ -129,76 +130,38 @@ public class StaticFileController {
     @ResponseBody
     @Deprecated
     public Response getMd5ByFile3() {
-        LOGGER.info("weex,v3自动部署程序开始执行.....");
-        List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
+        LOGGER.info("weex,v3自动部署程序开始执行.....,运行环境:{}",systemEnvConfig.getEve());
+        List<CommissionWalletVoOld> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
-        String iosVer1 = null;
-        String androidVer1 = null;
-        String iosVer2 = null;
-        String androidVer2 = null;
+        String ver1 = null;
+        String ver2 = null;
         String weexPath1 = null;
         String weexPath2 = null;
 
         try {
             List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
-            if (systemEnvConfig.isDEV()){
 
-                for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
+            for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
+                if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajqh")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer1= weexInfoEntity.getIosVer();
-                        androidVer1 = weexInfoEntity.getAndroidVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
+                        ver1 = weexInfoEntity.getWeexVer();
                     }
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
+                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                         file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer2= weexInfoEntity.getIosVer();
-                        androidVer2 = weexInfoEntity.getAndroidVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
+                        ver2 = weexInfoEntity.getWeexVer();
                     }
                 }
-
-            } else if(systemEnvConfig.isUAT()){
-                for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
-                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer1= weexInfoEntity.getIosVer();
-                        androidVer1 = weexInfoEntity.getAndroidVer();
-                        weexPath1 = weexInfoEntity.getWeexPath();
-                    }
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer2= weexInfoEntity.getIosVer();
-                        androidVer2 = weexInfoEntity.getAndroidVer();
-                        weexPath2 = weexInfoEntity.getWeexPath();
-                    }
-                }
-            }else if(systemEnvConfig.isPROD()){
-                for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
-                        file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer1= weexInfoEntity.getIosVer();
-                        androidVer1 = weexInfoEntity.getAndroidVer();
-                        weexPath1 = weexInfoEntity.getWeexPath();
-                    }
-                    if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
-                        file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        iosVer2= weexInfoEntity.getIosVer();
-                        androidVer2 = weexInfoEntity.getAndroidVer();
-                        weexPath2 = weexInfoEntity.getWeexPath();
-                    }
-                }
-            }else{
-                return Response.fail("发布有误，无法区分是什么环境");
             }
 
             LOGGER.info("file1:{},file2:{}",file1.getPath(),file2.getPath());
             FileInputStream in1 = new FileInputStream(file1);
             String md5 = MD5Utils.getMd5ByFile(in1);
-            CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-            commissionWalletVo.setIosVer(iosVer1);
-            commissionWalletVo.setAndroidVer(androidVer1);
+            CommissionWalletVoOld commissionWalletVo = new CommissionWalletVoOld();
+            commissionWalletVo.setVer(ver1);
             commissionWalletVo.setFlag(true);
             commissionWalletVo.setId("commission");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath1);
@@ -208,9 +171,8 @@ public class StaticFileController {
 
             FileInputStream in2 = new FileInputStream(file2);
             String md52 = MD5Utils.getMd5ByFile(in2);
-            CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
-            commissionWalletVo.setIosVer(iosVer2);
-            commissionWalletVo.setAndroidVer(androidVer2);
+            CommissionWalletVoOld commissionWalletVo2 = new CommissionWalletVoOld();
+            commissionWalletVo2.setVer(ver2);
             commissionWalletVo2.setFlag(true);
             commissionWalletVo2.setId("wallet");
             commissionWalletVo2.setUrl(appWebDomain+"/static"+weexPath2);
