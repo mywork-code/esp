@@ -1084,7 +1084,7 @@ public class ShopHomeController {
 		} catch (Exception e) {
 			LOGGER.error("exception giveCouponToUser :{}",e);
 		}
-		return Response.fail("商品优惠券列表优惠券领取失败!");
+		return Response.fail("当前领券人数过多，请稍后再试!");
 	}
     /**
      * 地址改变，查看是否有货
