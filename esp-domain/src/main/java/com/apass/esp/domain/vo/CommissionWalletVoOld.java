@@ -3,14 +3,13 @@ package com.apass.esp.domain.vo;
 /**
  * Created by xiaohai on 2017/8/28.
  */
-public class CommissionWalletVo {
-    private String  iosVer;
-    private String  androidVer;
+public class CommissionWalletVoOld {
     private boolean flag;
     private String id;
     private String url;
     private String md5;
     private boolean offLine;
+    private String ver;
 
     public boolean isFlag() {
         return flag;
@@ -52,20 +51,11 @@ public class CommissionWalletVo {
         this.offLine = offLine;
     }
 
-    public String getIosVer() {
-        return iosVer;
+    public String getVer() {
+        return ver;
     }
 
-    public void setIosVer(String iosVer) {
-        this.iosVer = iosVer;
+    public void setVer(String ver) {
+        this.ver = ver;
     }
-
-    public String getAndroidVer() {
-        return androidVer;
-    }
-
-    public void setAndroidVer(String androidVer) {
-        this.androidVer = androidVer;
-    }
-
 }
