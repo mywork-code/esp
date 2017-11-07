@@ -2694,6 +2694,7 @@ public class OrderService {
     		ProMyCouponVo coupon = yes.get(i);
 			if(coupon.getDiscountAmonut().compareTo(paySum) > 0){
 				yes.remove(coupon);
+				coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
 				no.add(coupon);
 			}
 		}
