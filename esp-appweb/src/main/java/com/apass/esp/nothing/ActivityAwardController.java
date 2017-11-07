@@ -124,7 +124,7 @@ public class ActivityAwardController {
 											awardDetailDto.setAmount(awardAmont);
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)>0 && new BigDecimal("800").compareTo(amount)<0){
+										}else if(new BigDecimal("800").compareTo(amountAward)>=0 && new BigDecimal("800").compareTo(amount)<0){
 											BigDecimal more=amount.subtract(new BigDecimal("800"));
 											//扣除20%个人所得税后的奖励金额
 											BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
