@@ -34,7 +34,7 @@ $(function(){
 		dataType : "json",
 		success : function(data) {
 			var resp = data.data;
-			if(data.status){
+			if(data.status=="1"){
 				console.log(data);
 				$("#activityName").textbox('setValue',resp.activityName);
 				$("#startTime").datetimebox('setValue',new Date(resp.startTime).Format("yyyy-MM-dd hh:mm:ss"));
@@ -120,7 +120,7 @@ $(function(){
 					type : "post",
 					dataType : "json",
 					success : function(data) {
-						if(data.status){
+						if(data.status=="1"){
 							$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 							window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 						}else{

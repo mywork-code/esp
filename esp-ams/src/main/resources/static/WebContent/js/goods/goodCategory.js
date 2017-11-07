@@ -204,7 +204,7 @@ $(function () {
                                             success : function(data) {
                                                 debugger;
                                                 ifLogout(data);
-                                                if(data.status){
+                                                if(data.status=="1"){
                                                     $.messager.alert("提示",data.msg,'info');
                                                     $that.animate({left:"54px"},50)
                                                     $that.parent().find('.relation-text').css('left','10px');
