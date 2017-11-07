@@ -130,6 +130,7 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 											}
 											BigDecimal awardAmont = new BigDecimal(aInfoVo.getAwardAmont());// 即将获得的奖励金额
 											BigDecimal amount = awardAmont.add(amountAward);
+											LOGGER.info("用户获得额度时 即将获得的奖励金额 awardAmont" +awardAmont);
 											if (new BigDecimal("800").compareTo(amount) >= 0) {// 总奖励金额小于800，直接插入记录
 												awardDetailDto.setTaxAmount(new BigDecimal("0"));
 												awardDetailDto.setAmount(awardAmont);

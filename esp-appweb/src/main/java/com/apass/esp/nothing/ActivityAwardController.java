@@ -68,6 +68,7 @@ public class ActivityAwardController {
 				Map<String, Object> resultMap = (Map<String, Object>) response.getData();
 				LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
+				LOGGER.info("用户获得额度时 该用户是否是第一次获取额度："+isFirstCredit);
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
 				if (StringUtils.equals(isFirstCredit, "true")) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
@@ -78,7 +79,7 @@ public class ActivityAwardController {
 						if (falge >= 0) {
 							//获取邀请人的信息
 							List<AwardBindRel> awardBindRel = awardBindRelService.getAllByInviterUserId(userId);
-							LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel);
+							LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel+"邀请人的userId="+awardBindRel.get(0).getUserId());
 							if(null !=awardBindRel && awardBindRel.size()>0){
 								//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
 								Map<String, Object> parMap2=new HashMap<>();
