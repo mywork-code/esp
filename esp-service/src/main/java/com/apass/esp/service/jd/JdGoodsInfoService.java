@@ -489,7 +489,15 @@ public class JdGoodsInfoService {
 			}
 		}
 		for (ProCouponGoodsDetailVo proCouponGoodsDetailVo : proCouponGoodsDetailVos) {
-			proCouponStringList.add("满"+proCouponGoodsDetailVo.getCouponSill().intValue()+"-"+proCouponGoodsDetailVo.getDiscountAmonut().intValue());
+			BigDecimal zero = BigDecimal.ZERO;
+			if (proCouponGoodsDetailVo.getCouponSill().compareTo(zero) <= 0) {
+				String  couponSillString=proCouponGoodsDetailVo.getDiscountAmonut().intValue()+".1";
+				proCouponStringList.add("满" +couponSillString + "-"
+						+ proCouponGoodsDetailVo.getDiscountAmonut().intValue());
+			} else {
+				proCouponStringList.add("满" + proCouponGoodsDetailVo.getCouponSill().intValue() + "-"
+						+ proCouponGoodsDetailVo.getDiscountAmonut().intValue());
+			}
 		}
 		return proCouponStringList;
 	}
