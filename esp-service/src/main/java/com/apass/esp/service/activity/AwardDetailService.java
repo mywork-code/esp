@@ -66,7 +66,7 @@ public class AwardDetailService {
 	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) throws BusinessException {
 	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
-        Map<String, Object> maps = getAllSum(query);
+                Map<String, Object> maps = getAllSum(query);
 		List<AwardBindRelStatisticVo> result = new ArrayList<>();
 		for(AwardBindRelStatistic rs : list){
 			AwardBindRelStatisticVo vo = new AwardBindRelStatisticVo();
@@ -272,6 +272,8 @@ public class AwardDetailService {
 				awardBindRelIntroVo.setApplyDate(DateFormatUtil.dateToString(awardDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 				if(awardDetail.getTaxAmount() != null){
 					awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
+				}else{
+					awardBindRelIntroVo.setAmount(awardDetail.getAmount());
 				}
 				awardBindRelIntroVo.setRealName(awardDetail.getRealName());
 				awardBindRelIntroVo.setCardNO(awardDetail.getCardNo());
