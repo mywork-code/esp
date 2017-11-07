@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
@@ -35,6 +36,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
  * Created by jie.xu on 17/7/14.
  */
 @Component("creditAuthActivityTaskListener")
+@Profile("zqs")
 public class CreditAuthActivityTaskListener implements MessageListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CreditAuthActivityTaskListener.class);
 	@Autowired
