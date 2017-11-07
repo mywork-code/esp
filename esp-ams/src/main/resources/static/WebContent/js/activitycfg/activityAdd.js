@@ -300,6 +300,8 @@ $(function(){
 					},
 				});
 			}else{
+				$("#issueCouponNum1").textbox('setValue','');
+				$("#issueLimitNum1").textbox('setValue','');
 				$(".couponsDiv").css("display","none");
 			}
 		}
