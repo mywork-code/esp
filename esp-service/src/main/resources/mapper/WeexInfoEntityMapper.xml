@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.WeexInfoEntity" >
     <result column="id" property="id" jdbcType="INTEGER" />
     <result column="weex_path" property="weexPath" jdbcType="VARCHAR" />
-    <result column="weex_ver" property="weexVer" jdbcType="VARCHAR" />
+    <result column="ios_ver" property="iosVer" jdbcType="VARCHAR" />
     <result column="weex_eve" property="weexEve" jdbcType="VARCHAR" />
     <result column="create_data" property="createData" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
@@ -12,15 +12,16 @@
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     <result column="weex_type" property="weexType" jdbcType="VARCHAR" />
     <result column="weex_blong" property="weexBlong" jdbcType="VARCHAR" />
+    <result column="android_ver" property="androidVer" jdbcType="VARCHAR" />
   </resultMap>
 
   <sql id="Base_Column_List" >
-    ID, WEEX_PATH, WEEX_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE,WEEX_BLONG
+    ID, WEEX_PATH, IOS_VER, WEEX_EVE, CREATE_DATA, UPDATE_DATE, UPDATE_USER, CREATE_USER,WEEX_TYPE,WEEX_BLONG,ANDROID_VER
   </sql>
 
   <insert id="insert" parameterType="com.apass.esp.domain.entity.WeexInfoEntity" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_weex_info (weex_path, weex_ver, weex_eve, 
-      create_data, update_date)
+    insert into t_esp_weex_info (weex_path, IOS_VER, weex_eve,
+      create_data, update_date,ANDROID_VER)
     values (#{weexPath,jdbcType=VARCHAR}, #{weexVer,jdbcType=VARCHAR}, #{weexEve,jdbcType=VARCHAR}, 
       #{createData,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
   </insert>
@@ -30,8 +31,8 @@
       <if test="weexPath != null" >
         weex_path,
       </if>
-      <if test="weexVer != null" >
-        weex_ver,
+      <if test="isoVer != null" >
+        ios_ver,
       </if>
       <if test="weexEve != null" >
         weex_eve,
@@ -58,6 +59,9 @@
       </if>
       <if test="updateDate != null" >
         #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="androidVer != null" >
+        android_ver
       </if>
     </trim>
   </insert>

@@ -98,7 +98,8 @@ public class StaticFileController {
 
         String md5 = MD5Utils.getMd5ByFile(in);
         CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-        commissionWalletVo.setVer("27");
+        commissionWalletVo.setAndroidVer("27");
+        commissionWalletVo.setIosVer("27");
         commissionWalletVo.setFlag(true);
         commissionWalletVo.setId("commission");
         commissionWalletVo.setUrl(appWebDomain+"/appweb/WebContent/js/commission/commission.weex_prd_v27.js");
@@ -109,7 +110,8 @@ public class StaticFileController {
         InputStream in2  =  classLoader.getResourceAsStream("static/WebContent/js/wallet/wallet.weex_prd_v6.js");
         String md52 = MD5Utils.getMd5ByFile(in2);
         CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
-        commissionWalletVo2.setVer("6");
+        commissionWalletVo2.setAndroidVer("6");
+        commissionWalletVo2.setIosVer("6");
         commissionWalletVo2.setFlag(true);
         commissionWalletVo2.setId("wallet");
         commissionWalletVo2.setUrl(appWebDomain+"/appweb/WebContent/js/wallet/wallet.weex_prd_v6.js");
@@ -131,8 +133,10 @@ public class StaticFileController {
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
-        String ver1 = null;
-        String ver2 = null;
+        String iosVer1 = null;
+        String androidVer1 = null;
+        String iosVer2 = null;
+        String androidVer2 = null;
         String weexPath1 = null;
         String weexPath2 = null;
 
@@ -143,12 +147,14 @@ public class StaticFileController {
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver1 = weexInfoEntity.getWeexVer();
+                        iosVer1= weexInfoEntity.getIosVer();
+                        androidVer1 = weexInfoEntity.getAndroidVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"sit") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                         file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver2 = weexInfoEntity.getWeexVer();
+                        iosVer2= weexInfoEntity.getIosVer();
+                        androidVer2 = weexInfoEntity.getAndroidVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
                 }
@@ -157,12 +163,14 @@ public class StaticFileController {
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver1 = weexInfoEntity.getWeexVer();
+                        iosVer1= weexInfoEntity.getIosVer();
+                        androidVer1 = weexInfoEntity.getAndroidVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"uat") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                         file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver2 = weexInfoEntity.getWeexVer();
+                        iosVer2= weexInfoEntity.getIosVer();
+                        androidVer2 = weexInfoEntity.getAndroidVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
                 }
@@ -170,12 +178,14 @@ public class StaticFileController {
                 for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver1 = weexInfoEntity.getWeexVer();
+                        iosVer1= weexInfoEntity.getIosVer();
+                        androidVer1 = weexInfoEntity.getAndroidVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),"prod") && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                         file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver2 = weexInfoEntity.getWeexVer();
+                        iosVer2= weexInfoEntity.getIosVer();
+                        androidVer2 = weexInfoEntity.getAndroidVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
                 }
@@ -187,7 +197,8 @@ public class StaticFileController {
             FileInputStream in1 = new FileInputStream(file1);
             String md5 = MD5Utils.getMd5ByFile(in1);
             CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-            commissionWalletVo.setVer(ver1);
+            commissionWalletVo.setIosVer(iosVer1);
+            commissionWalletVo.setAndroidVer(androidVer1);
             commissionWalletVo.setFlag(true);
             commissionWalletVo.setId("commission");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath1);
@@ -198,7 +209,8 @@ public class StaticFileController {
             FileInputStream in2 = new FileInputStream(file2);
             String md52 = MD5Utils.getMd5ByFile(in2);
             CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
-            commissionWalletVo2.setVer(ver2);
+            commissionWalletVo.setIosVer(iosVer2);
+            commissionWalletVo.setAndroidVer(androidVer2);
             commissionWalletVo2.setFlag(true);
             commissionWalletVo2.setId("wallet");
             commissionWalletVo2.setUrl(appWebDomain+"/static"+weexPath2);
@@ -224,8 +236,10 @@ public class StaticFileController {
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file1 = null;
         File file2 = null;
-        String ver1 = null;
-        String ver2 = null;
+        String iosVer1 = null;
+        String androidVer1 = null;
+        String iosVer2 = null;
+        String androidVer2 = null;
         String weexPath1 = null;
         String weexPath2 = null;
 
@@ -236,12 +250,14 @@ public class StaticFileController {
                 if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajqh")){
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"commission")){
                         file1 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver1 = weexInfoEntity.getWeexVer();
+                        iosVer1= weexInfoEntity.getIosVer();
+                        androidVer1 = weexInfoEntity.getAndroidVer();
                         weexPath1 = weexInfoEntity.getWeexPath();
                     }
                     if(StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve()) && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                         file2 = new File(rootPath+weexInfoEntity.getWeexPath());
-                        ver2 = weexInfoEntity.getWeexVer();
+                        iosVer2= weexInfoEntity.getIosVer();
+                        androidVer2 = weexInfoEntity.getAndroidVer();
                         weexPath2 = weexInfoEntity.getWeexPath();
                     }
                 }
@@ -251,7 +267,8 @@ public class StaticFileController {
             FileInputStream in1 = new FileInputStream(file1);
             String md5 = MD5Utils.getMd5ByFile(in1);
             CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-            commissionWalletVo.setVer(ver1);
+            commissionWalletVo.setIosVer(iosVer1);
+            commissionWalletVo.setAndroidVer(androidVer1);
             commissionWalletVo.setFlag(true);
             commissionWalletVo.setId("commission");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath1);
@@ -262,7 +279,8 @@ public class StaticFileController {
             FileInputStream in2 = new FileInputStream(file2);
             String md52 = MD5Utils.getMd5ByFile(in2);
             CommissionWalletVo commissionWalletVo2 = new CommissionWalletVo();
-            commissionWalletVo2.setVer(ver2);
+            commissionWalletVo2.setIosVer(iosVer2);
+            commissionWalletVo2.setAndroidVer(androidVer2);
             commissionWalletVo2.setFlag(true);
             commissionWalletVo2.setId("wallet");
             commissionWalletVo2.setUrl(appWebDomain+"/static"+weexPath2);
@@ -287,7 +305,8 @@ public class StaticFileController {
         LOGGER.info("weex,v5自动部署程序开始执行.....查询安家派weex,运行环境:{}",systemEnvConfig.getEve());
         List<CommissionWalletVo> commissionWalletVos = Lists.newArrayList();
         File file = null;
-        String ver = null;
+        String iosVer = null;
+        String androidVer = null;
         String weexPath = null;
 
         try {
@@ -298,7 +317,8 @@ public class StaticFileController {
                 if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajp")&&StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve())
                         && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
                     file = new File(rootPath+weexInfoEntity.getWeexPath());
-                    ver = weexInfoEntity.getWeexVer();
+                    iosVer = weexInfoEntity.getIosVer();
+                    androidVer = weexInfoEntity.getAndroidVer();
                     weexPath = weexInfoEntity.getWeexPath();
                 }
             }
@@ -308,7 +328,8 @@ public class StaticFileController {
             String md5 = MD5Utils.getMd5ByFile(in);
 
             CommissionWalletVo commissionWalletVo = new CommissionWalletVo();
-            commissionWalletVo.setVer(ver);
+            commissionWalletVo.setIosVer(iosVer);
+            commissionWalletVo.setAndroidVer(androidVer);
             commissionWalletVo.setFlag(true);
             commissionWalletVo.setId("wallet");
             commissionWalletVo.setUrl(appWebDomain+"/static"+weexPath);
