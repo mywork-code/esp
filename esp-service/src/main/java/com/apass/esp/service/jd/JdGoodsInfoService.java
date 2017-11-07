@@ -630,6 +630,7 @@ public class JdGoodsInfoService {
 			//已经领取的优惠券中未使用的优惠券
 			for (ProMyCoupon proMyCoupon : proMyCouponList1) {
 				if(StringUtils.equals(proMyCoupon.getStatus(), CouponStatus.COUPON_N.getCode())){
+					proMyCoupon.setActivityFalge(true);
 					proMyCouponList.add(proMyCoupon);
 				}
 			}
@@ -642,6 +643,7 @@ public class JdGoodsInfoService {
 		query.setMaxDate(new Date());
 		List<ProMyCoupon> ProMyCoupons=myCouponMapper.getCouponByStatusAndDate(query);
 		for (ProMyCoupon proMyCoupon : ProMyCoupons) {
+			proMyCoupon.setActivityFalge(false);
 			ProCoupon pro = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
 			if (StringUtils.equals(pro.getType(), "ZDPL")) {
 				if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", pro.getCategoryId1())) {
@@ -663,6 +665,7 @@ public class JdGoodsInfoService {
 			ProCouponVo proCouponVo=new ProCouponVo();
 			proCouponVo.setId(proCoupon.getId());
 			proCouponVo.setActivityId(Long.parseLong(activityId));
+			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());
 			proCouponVo.setName(proCoupon.getName());
 			proCouponVo.setCouponSill(proCoupon.getCouponSill());
 			proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
