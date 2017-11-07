@@ -2656,17 +2656,19 @@ public class OrderService {
 	    				goodslist.add(purchase.getGoodsStockId()+"");
 	    			}
     			}
-    			if(coupon.getCouponSill().compareTo(total) <= 0){
-    				categoryGoods.put(coupon.getId(), goodslist);
-    				coupon.setGoodStockIds(goodslist);
-    				yes.add(coupon);
+    			
+    			if(total.compareTo(BigDecimal.ZERO) <= 0){
+    				coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				no.add(coupon);
     			}else{
-    				if(total.compareTo(BigDecimal.ZERO) == 0){
-    					coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				if(coupon.getCouponSill().compareTo(total) <= 0){
+    					categoryGoods.put(coupon.getId(), goodslist);
+        				coupon.setGoodStockIds(goodslist);
+        				yes.add(coupon);
     				}else{
     					coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
+    					no.add(coupon);
     				}
-    				no.add(coupon);
     			}
     		}
     	}
@@ -2683,12 +2685,23 @@ public class OrderService {
             }  
         });
     	
+    	/**
+    	 * 查看优惠券优惠的金额是否大于订单的金额
+    	 */
+    	//实际支付金额
+    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	for (int i = yes.size() - 1;i >= 0;i--) {
+    		ProMyCouponVo coupon = yes.get(i);
+			if(coupon.getDiscountAmonut().compareTo(paySum) > 0){
+				yes.remove(coupon);
+				no.add(coupon);
+			}
+		}
     	ProMyCouponVo coupon = null;
     	if(CollectionUtils.isNotEmpty(yes)){
     		coupon = yes.get(0);
     	}
-    	//实际支付金额
-    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
     	maps.put("paySum",paySum);//实际支付金额
