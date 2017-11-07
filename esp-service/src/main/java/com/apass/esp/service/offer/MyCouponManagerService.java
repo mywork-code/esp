@@ -206,7 +206,6 @@ public class MyCouponManagerService {
 	}
 	/**
 	 * 根据用户的Id和优惠券Id查询对应的信息
-	 * @param query
 	 * @return
 	 */
 	public List<ProMyCoupon> getCouponByUserIdAndCouponId(Long userId,Long couponId){
@@ -326,10 +325,14 @@ public class MyCouponManagerService {
 			}
 			if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
 				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
-				if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
+				if(cr != null){
+					if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
 
+					}else{
+						return;
+					}
 				}else{
-					return;
+					return ;
 				}
 			}else {
 				return;
