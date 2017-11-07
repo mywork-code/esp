@@ -68,7 +68,6 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
-import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -1127,7 +1126,7 @@ public class OrderService {
         	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
-        
+        LOGGER.info("product total money:{0},payMoney+discountMoney+couponMoney:{1},discountMoney:{2},myCouponId:{3}",countTotalPrice,totalPayment,discountMoney,myCouponId);
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
             throw new BusinessException("订单总金额计算错误!");
