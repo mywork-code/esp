@@ -16,12 +16,13 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,12 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 @Path("/activity/award")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -124,7 +119,7 @@ public class ActivityAwardController {
 										}
 										BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
 										BigDecimal amount=awardAmont.add(amountAward);
-										if(new BigDecimal("800").compareTo(amount)>0){//总奖励金额小于800，直接插入记录
+										if(new BigDecimal("800").compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
 											awardDetailDto.setTaxAmount(new BigDecimal("0"));
 											awardDetailDto.setAmount(awardAmont);
 											awardDetailService.addAwardDetail(awardDetailDto);
