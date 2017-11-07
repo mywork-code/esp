@@ -36,7 +36,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
  * Created by jie.xu on 17/7/14.
  */
 @Component("creditAuthActivityTaskListener")
-@Profile("zqs")
+//@Profile("zqs")
 public class CreditAuthActivityTaskListener implements MessageListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CreditAuthActivityTaskListener.class);
 	@Autowired
