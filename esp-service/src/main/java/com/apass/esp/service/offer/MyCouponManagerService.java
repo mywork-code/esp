@@ -83,20 +83,20 @@ public class MyCouponManagerService {
 		 */
 	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
 	    if(null==activityCfg){
-	    	throw new BusinessException("领取失败，活动已经结束!");
+	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
-	    	throw new BusinessException("领取失败，活动已经结束!");
+	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 		/**
 		 * 首先，根据活动的Id和优惠券的id ,查询此活动和优惠券的关系表信息
 		 */
 		ProCouponRel couponRel = couponRelMapper.getRelByActivityIdAndCouponId(new ProCouponRelQuery(vo.getActivityId(),vo.getCouponId()));
 		if(null == couponRel){
-			throw new BusinessException("领取失败!");
+			throw new BusinessException("该券被抢空啦，看看其他的券吧!");
 		}
 		if(couponRel.getRemainNum() == 0){
-			throw new BusinessException("领取失败，优惠券数量不足！");
+			throw new BusinessException("该券被抢空啦，看看其他的券吧！");
 		}
 		/**
 		 * 限制领取优惠券张数
