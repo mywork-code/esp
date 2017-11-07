@@ -157,10 +157,12 @@ public class AfterSaleService {
                 }
                 
                 BigDecimal price=resultMap.get(idNum.getGoodsStockId()).getGoodsPrice();
-                BigDecimal discountAmount=resultMap.get(idNum.getGoodsStockId()).getDiscountAmount();
+                BigDecimal discountAmount=resultMap.get(idNum.getGoodsStockId()).getDiscountAmount();//活动优惠金额度
+                BigDecimal couponMoney=resultMap.get(idNum.getGoodsStockId()).getCouponMoney();//优惠券优惠金额
                 BigDecimal goodsNum=new BigDecimal(resultMap.get(idNum.getGoodsStockId()).getGoodsNum());
                 BigDecimal eachDiscountAmount=discountAmount.divide(goodsNum,2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal eachPrice=price.subtract(eachDiscountAmount);
+                BigDecimal eachCouponMoney=couponMoney.divide(goodsNum,2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal eachPrice=price.subtract(eachDiscountAmount.add(eachCouponMoney));
                 // 计算退货商品总金额
                 refundAmt = refundAmt.add(eachPrice.multiply(BigDecimal.valueOf(idNum.getGoodsNum())));
                 // list 删除 已匹配到的 商品库存id

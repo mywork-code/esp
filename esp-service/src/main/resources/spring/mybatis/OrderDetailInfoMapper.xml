@@ -47,6 +47,7 @@
 		orderdetail.source source,
 		orderdetail.sku_id skuId,
 		orderdetail.discount_amount  discountAmount,
+		orderdetail.coupon_money     couponMoney,
 		orderdetail.UPDATE_DATE updateDate,
 		orderdetail.pro_activity_id proActivityId
 		FROM
