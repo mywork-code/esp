@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -26,6 +27,7 @@ import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -38,6 +40,7 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
@@ -109,7 +112,13 @@ public class PaymentService {
 	private ProGroupGoodsService proGroupGoodsService;
 	
 	@Autowired
+	private ProActivityCfgMapper proActivityCfgMapper;
+	
+	@Autowired
 	private ProMyCouponMapper myCouponMapper;
+
+	@Autowired
+	private MyCouponManagerService myCouponManagerService;
 
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -481,6 +490,21 @@ public class PaymentService {
 	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
 	    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
 	            }
+	            /**
+	             * 验证活动是否过期
+	             */
+	            String activityId = detail.getProActivityId();
+	            Date now = new Date();
+	            if(StringUtils.isNotBlank(activityId)){
+	            	ProActivityCfg cfg = proActivityCfgMapper.selectByPrimaryKey(Long.parseLong(activityId));
+	            	if(null == cfg){
+	            		throw new BusinessException("抱歉，您的订单内含活动已过期的商品");
+	            	}
+	            	if(cfg.getStartTime().getTime() > now.getTime() || cfg.getEndTime().getTime() < now.getTime() ){
+	            		throw new BusinessException("抱歉，您的订单内含活动已过期的商品");
+	            	}
+	            }
+	            
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//如果是京东订单，则不要做以下判断
@@ -935,13 +959,15 @@ public class PaymentService {
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),cashDto.getId());
 			
 			//修改订单状态为交易关闭
+
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
-	        orderInfoEntity.setOrderId(orderId);
-	        orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
-        	orderService.updateOrderStatus(orderInfoEntity);
+			orderInfoEntity.setOrderId(orderId);
+			orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+			orderService.updateOrderStatus(orderInfoEntity);
 
 			//退款成功 则返回优惠券
-			orderService.updateOrderCancel(orderId);
+			OrderInfoEntity order =   orderService.selectByOrderId(orderId);
+			myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());

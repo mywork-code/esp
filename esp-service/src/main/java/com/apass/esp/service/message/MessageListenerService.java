@@ -1,18 +1,16 @@
 package com.apass.esp.service.message;
 
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.MessageListener;
 import com.apass.esp.mapper.MessageListenerMapper;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 @Service
 public class MessageListenerService {
 	@Autowired
@@ -30,7 +28,7 @@ public class MessageListenerService {
 			pageBody.setTotal(count);
 		}
 		for(MessageListener m:backList){
-			m.setCreateDateString(DateFormatUtil.datetime2String(m.getCreateDate()));
+			m.setCreateDateString(DateFormatUtil.datetime2String(m.getCreatedTime()));
 		}
 		pageBody.setRows(backList);
 		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);

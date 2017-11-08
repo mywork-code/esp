@@ -155,6 +155,7 @@
 		parameterType="com.apass.esp.domain.query.ActivityBindRelStatisticQuery">
 		SELECT
 			user_id userId,
+			mobile  mobile,
 			COUNT(invite_user_id) newNums
 		FROM
 			t_esp_award_bind_rel

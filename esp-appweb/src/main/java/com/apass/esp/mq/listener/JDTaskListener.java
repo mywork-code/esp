@@ -1,21 +1,5 @@
 package com.apass.esp.mq.listener;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.model.JdMerchantCode;
@@ -45,6 +29,21 @@ import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jie.xu on 17/7/14.
@@ -110,18 +109,18 @@ public class JDTaskListener implements MessageListener {
       if (goodsInfoEntity == null) {
         ml.setStatus("0");
         ml.setResult("更新商品价格失败，未查询到相应商品，price=" + price);
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         return;
       }
       List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsService.loadDetailInfoByGoodsId(goodsInfoEntity.getGoodId());
       if (CollectionUtils.isEmpty(goodsStockInfoEntityList)) {
         ml.setStatus("0");
         ml.setResult("更新商品价格失败，未查询到相应商品库存，price=" + price);
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         return;
       }
       try {
@@ -131,16 +130,16 @@ public class JDTaskListener implements MessageListener {
         goodsStockInfoService.update(goodsStockInfoEntity);
         ml.setStatus("1");
         ml.setResult("调用批量查询京东商品价格接口成功，京东最新价格：price=" + price);
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
       } catch (Exception e) {
         LOGGER.error("message skuId {} update price error ");
         ml.setStatus("0");
         ml.setResult("更新商品价格失败，price=" + price);
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         return;
       }
       //更新京东表
@@ -191,16 +190,16 @@ public class JDTaskListener implements MessageListener {
             }
             ml.setStatus("1");
             ml.setResult("商品下架");
-            ml.setCreateDate(new Date());
+            ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
-            messageListenerMapper.insert(ml);
+            messageListenerMapper.insertSelective(ml);
           } catch (Exception e) {
             LOGGER.error("delete index error");
             ml.setStatus("0");
             ml.setResult("商品下架失败");
-            ml.setCreateDate(new Date());
+            ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
-            messageListenerMapper.insert(ml);
+            messageListenerMapper.insertSelective(ml);
           }
         }
       }
@@ -219,9 +218,9 @@ public class JDTaskListener implements MessageListener {
         orderInfoEntity.setExtOrderId(String.valueOf(orderId));
         orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
         ml.setResult("妥投");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
       } else {
         LOGGER.info("orderId {}, 已拒收 ", orderId);
         OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
@@ -229,9 +228,9 @@ public class JDTaskListener implements MessageListener {
         orderInfoEntity.setExtOrderId(String.valueOf(orderId));
         orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
         ml.setResult("拒收");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
       }
       return;
     }
@@ -245,9 +244,9 @@ public class JDTaskListener implements MessageListener {
       if (!jdApiResponse.isSuccess()) {
         ml.setStatus("0");
         ml.setResult("根据京东订单号，查询京东订单明细接口失败！");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         LOGGER.info("confirm order result {}", jdApiResponse);
         return;
       }
@@ -256,18 +255,18 @@ public class JDTaskListener implements MessageListener {
       if (orderInfoEntity == null) {
         ml.setStatus("0");
         ml.setResult("根据京东订单号查询数据库订单失败！");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
         return;
       }
       if (orderInfoEntity.getPreStockStatus() == null || !orderInfoEntity.getPreStockStatus().equalsIgnoreCase(PreStockStatus.PRE_STOCK.getCode())) {
         ml.setStatus("0");
         ml.setResult("根据京东订单号查询数据库订单中预占库存状态为空或不为预占库存状态！");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         LOGGER.error("confirm order result {},orderInfoEntity {}", jdApiResponse, orderInfoEntity);
         return;
       }
@@ -275,15 +274,15 @@ public class JDTaskListener implements MessageListener {
         orderService.jdSplitOrderMessageHandle(jsonObject, orderInfoEntity);
         ml.setStatus("1");
         ml.setResult("京东拆单消息处理成功！");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
       } catch (BusinessException e) {
         ml.setStatus("0");
         ml.setResult("京东拆单消息处理失败！");
-        ml.setCreateDate(new Date());
+        ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
-        messageListenerMapper.insert(ml);
+        messageListenerMapper.insertSelective(ml);
         LOGGER.error("jdSplitOrderMessageHandle error extOrderId {}", orderInfoEntity.getExtOrderId());
         return;
       }
@@ -357,9 +356,9 @@ public class JDTaskListener implements MessageListener {
           jdGoodsMapper.insertSelective(jdGoods);
           ml.setResult("商品添加到jdgoods表成功");
           ml.setStatus("1");
-          ml.setCreateDate(new Date());
+          ml.setCreatedTime(new Date());
           ml.setUpdatedTime(new Date());
-          messageListenerMapper.insert(ml);
+          messageListenerMapper.insertSelective(ml);
         } catch (Exception e) {
           LOGGER.error("skuId {} type 6 state {} error", skuId, state);
           LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
@@ -415,16 +414,16 @@ public class JDTaskListener implements MessageListener {
             goodsStockInfoService.insert(stockEntity);
             ml.setResult("商品添加到base_goods表成功");
             ml.setStatus("1");
-            ml.setCreateDate(new Date());
+            ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
-            messageListenerMapper.insert(ml);
+            messageListenerMapper.insertSelective(ml);
           } catch (Exception e) {
             LOGGER.error("skuId {} type 6 state {} error", skuId, state);
             ml.setStatus("0");
             ml.setResult("京东商品添加失败！");
-            ml.setCreateDate(new Date());
+            ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
-            messageListenerMapper.insert(ml);
+            messageListenerMapper.insertSelective(ml);
             return;
           }
         }
@@ -453,15 +452,15 @@ public class JDTaskListener implements MessageListener {
           }
           ml.setResult("商品删除成功");
           ml.setStatus("1");
-          ml.setCreateDate(new Date());
+          ml.setCreatedTime(new Date());
           ml.setUpdatedTime(new Date());
-          messageListenerMapper.insert(ml);
+          messageListenerMapper.insertSelective(ml);
         } catch (Exception e) {
           ml.setStatus("0");
           ml.setResult("京东商品删除失败！");
-          ml.setCreateDate(new Date());
+          ml.setCreatedTime(new Date());
           ml.setUpdatedTime(new Date());
-          messageListenerMapper.insert(ml);
+          messageListenerMapper.insertSelective(ml);
           return;
         }
       }

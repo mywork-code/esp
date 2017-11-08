@@ -1,14 +1,12 @@
 package com.apass.esp.schedule;
 
-import com.apass.esp.domain.enums.AwardActivity.ActivityName;
-import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
-import com.apass.esp.domain.vo.ActivityStatisticsVo;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardBindRelService;
-import com.apass.esp.service.activity.AwardDetailService;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +18,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import com.apass.esp.domain.enums.AwardActivity.ActivityName;
+import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
+import com.apass.esp.domain.vo.ActivityStatisticsVo;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 /**
  * 转介绍奖励金统计
@@ -80,7 +81,7 @@ public class AwardActivityStatisticsScheduleTask {
         calendar.setTime(new Date());
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         String BeforeDay = format.format(calendar.getTime());
-        String BeforeDay2=BeforeDay+" 00:00:00";
+        String BeforeDay2=BeforeDay+" 23:59:59";
         
         ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 		try {

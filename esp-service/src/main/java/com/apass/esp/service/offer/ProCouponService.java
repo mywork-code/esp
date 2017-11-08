@@ -77,11 +77,15 @@ public class ProCouponService {
     public Integer inserProcoupon(ProCoupon proCoupon) {
         if(StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())){
             GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+            if(goodsInfoEntity == null){
+                throw new RuntimeException("商品编号输入错误，请重新输入");
+            }
+
             //如果是京东商品，查询相似goods_code用逗号隔开，插入表中作为similar_goods_code
             if(StringUtils.equals(goodsInfoEntity.getSource(),"jd")){
                 TreeSet<String> skuIdSet = jdGoodsInfoService.getJdSimilarSkuIdList(goodsInfoEntity.getExternalId());
                 List<String> skuIdList = new ArrayList<String> (skuIdSet);
-                if(skuIdList == null){
+                if(CollectionUtils.isEmpty(skuIdList)){
                     LOGGER.error("数据有误,京东商品无skuId,商品id为:{}",String.valueOf(goodsInfoEntity.getId()));
                     throw new RuntimeException("数据有误,京东商品无skuId");
                 }

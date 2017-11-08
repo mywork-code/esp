@@ -1,6 +1,7 @@
 package com.apass.esp.service.order;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -67,7 +68,6 @@ import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
-import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.ProMyCouponVo;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
@@ -794,6 +794,9 @@ public class OrderService {
     	if(StringUtils.isNotBlank(myCouponId)){
     		String[] stockIds = StringUtils.strip(goodStockIds,"[]").split(",");
     		for (String stockId : stockIds) {
+    			if(StringUtils.isEmpty(stockId)){
+    				continue;
+    			}
 				GoodsStockInfoEntity stock = goodsStockDao.select(Long.parseLong(StringUtils.trim(stockId)));
     			GoodsInfoEntity goods = goodsDao.select(stock.getGoodsId());
     			if(StringUtils.equals(goods.getMerchantCode(), merchantCode)){
@@ -1041,6 +1044,7 @@ public class OrderService {
     		BigDecimal total = BigDecimal.ZERO;
     		for (String stockId : stockIds) {
     			String stock = StringUtils.trim(stockId);
+    			if(StringUtils.isEmpty(stock)){continue;}
     			for (PurchaseRequestDto purchase : purchaseList) {
         			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
         				total = total.add(purchase.getPayMoney());
@@ -1050,6 +1054,7 @@ public class OrderService {
     		for (PurchaseRequestDto purchase : purchaseList) {
     			for (String stockId : stockIds) {
     				String stock = StringUtils.trim(stockId);
+    				if(StringUtils.isEmpty(stock)){continue;}
 	    			if(StringUtils.equals(purchase.getGoodsStockId()+"", stock)){
 	    				BigDecimal couponMoney  = purchase.getPayMoney().multiply(coupon.getDiscountAmonut())
 	        					.divide(total,2,BigDecimal.ROUND_HALF_UP);
@@ -1117,11 +1122,11 @@ public class OrderService {
         	ProCoupon coupon = couponMapper.selectByPrimaryKey(mycoupon.getCouponId());
         	if(mycoupon.getStartDate().getTime() > now.getTime() 
         			|| mycoupon.getEndDate().getTime() < now.getTime()){
-        		throw new BusinessException("您的优惠券已过期!");
+        		throw new BusinessException("优惠券已失效，请重新结算!");
         	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
-        
+        LOGGER.info("product total money:{0},payMoney+discountMoney+couponMoney:{1},discountMoney:{2},myCouponId:{3}",countTotalPrice,totalPayment,discountMoney,myCouponId);
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
             throw new BusinessException("订单总金额计算错误!");
@@ -2637,13 +2642,11 @@ public class OrderService {
 	    				}
 	    			}else if(StringUtils.isNotBlank(coupon.getSimilarGoodsCode())){//指定商品
 	    				String[] strs = coupon.getSimilarGoodsCode().split(",");
-	    				for (String str : strs) {
-							if(StringUtils.equals(goods.getGoodsCode(), str)){
-								total = total.add(purchase.getPayMoney());
-		    					goodslist.add(purchase.getGoodsStockId()+"");
-							}
-						}
-	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
+	    				if(Arrays.asList(strs).contains(goods.getGoodsCode())){
+	    					total = total.add(purchase.getPayMoney());
+	    					goodslist.add(purchase.getGoodsStockId()+"");
+	    				}
+	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"") && coupon.getActivityId()!=-1){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
 	    					goodslist.add(purchase.getGoodsStockId()+"");
@@ -2653,17 +2656,19 @@ public class OrderService {
 	    				goodslist.add(purchase.getGoodsStockId()+"");
 	    			}
     			}
-    			if(coupon.getCouponSill().compareTo(total) <= 0){
-    				categoryGoods.put(coupon.getId(), goodslist);
-    				coupon.setGoodStockIds(goodslist);
-    				yes.add(coupon);
+    			
+    			if(total.compareTo(BigDecimal.ZERO) <= 0){
+    				coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				no.add(coupon);
     			}else{
-    				if(total.compareTo(BigDecimal.ZERO) == 0){
-    					coupon.setMessage(CouponMessage.NO_PRODUCTS.getMessage());
+    				if(coupon.getCouponSill().compareTo(total) <= 0){
+    					categoryGoods.put(coupon.getId(), goodslist);
+        				coupon.setGoodStockIds(goodslist);
+        				yes.add(coupon);
     				}else{
     					coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
+    					no.add(coupon);
     				}
-    				no.add(coupon);
     			}
     		}
     	}
@@ -2680,12 +2685,24 @@ public class OrderService {
             }  
         });
     	
+    	/**
+    	 * 查看优惠券优惠的金额是否大于订单的金额
+    	 */
+    	//实际支付金额
+    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	for (int i = yes.size() - 1;i >= 0;i--) {
+    		ProMyCouponVo coupon = yes.get(i);
+			if(coupon.getDiscountAmonut().compareTo(paySum) > 0){
+				yes.remove(coupon);
+				coupon.setMessage(CouponMessage.NO_MONEY.getMessage());
+				no.add(coupon);
+			}
+		}
     	ProMyCouponVo coupon = null;
     	if(CollectionUtils.isNotEmpty(yes)){
     		coupon = yes.get(0);
     	}
-    	//实际支付金额
-    	BigDecimal paySum = totalSum.subtract(discountSum);
+    	
     	maps.put("buyNum", buyNum);//购买商品数量，除去无货和不支持配送的
     	maps.put("discountSum", discountSum);//总共优惠的金额
     	maps.put("paySum",paySum);//实际支付金额
@@ -2800,12 +2817,9 @@ public class OrderService {
         OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(order.getId());
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
-
-        if(order.getCouponId() != null && order.getCouponId() > 0 ){
-            //订单失效 则返回优惠券
-            myCouponManagerService.updateStatus("N",order.getUserId(),order.getCouponId());
-        }
         orderInfoRepository.update(entity);
+        //订单失效 则返回优惠券
+        myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
     }
 
     /**

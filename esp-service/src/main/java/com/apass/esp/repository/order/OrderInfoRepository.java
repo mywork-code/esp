@@ -1,7 +1,6 @@
 package com.apass.esp.repository.order;
 
 import com.apass.esp.domain.dto.aftersale.IdNum;
-import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
@@ -355,5 +354,11 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         HashMap<Object, Object> param = new HashMap<>();
         param.put("beginDate", beginDate);
         return getSqlSession().selectList("getCheckOrderDetail",param);
+    }
+
+    public List<OrderInfoEntity> selectByCouponId(Long couponId){
+        HashMap<Object, Object> param = new HashMap<>();
+        param.put("couponId", couponId);
+        return getSqlSession().selectList("selectByCouponId",param);
     }
 }

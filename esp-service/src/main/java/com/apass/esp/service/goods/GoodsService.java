@@ -3,9 +3,7 @@ package com.apass.esp.service.goods;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -482,8 +480,10 @@ public class GoodsService {
  * @throws BusinessException 
    */
 	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException {
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		Long proActivityId = null;
 		String activityCfg;
+		String support7dRefund;
 		// 返回活动id
 		ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
 		if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
@@ -491,7 +491,17 @@ public class GoodsService {
 		}
 		// 满减活动满减字段
 		activityCfg = getActivityInfo(goodsId);
+		//是否支持7天无理由退货,Y、N
+		support7dRefund=goodsBasicInfo.getSupport7dRefund();
 		
+		List<String> proCoupons=new ArrayList<>();
+		//获取商品的优惠券
+	    List<String> proCoupons2=jdGoodsInfoService.getProCouponList(goodsId);
+		if(proCoupons2.size()>3){
+			proCoupons=proCoupons2.subList(0, 3);
+		}else{
+			proCoupons=proCoupons2;
+		}
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
@@ -512,51 +522,43 @@ public class GoodsService {
     	}
     	jdSimilarSkuVo.setActivityCfg(activityCfg);
     	jdSimilarSkuVo.setProActivityId(proActivityId);
+    	jdSimilarSkuVo.setProCouponList(proCoupons);
+    	jdSimilarSkuVo.setSupport7dRefund(support7dRefund);
     }
 	return JdSimilarSkuToList;
   }
-  /**
-   * 通过商品goodsId和attrValId获取某个属性值下的商品列表
-   * @return
-   */
-  public Map<String,Object>  getSkuIdsBygoodsIdAndAttrValId(Long goodsId,Long attrValId){
-	    Map<String,Object> resultMap=new HashMap<>();
-	    List<String> skuIds =new ArrayList<>();
-	    String skuIdStr="";
-	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
-	    List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
-	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
-//	    	 BigDecimal price = commonService.calculateGoodsPrice(goodsId,goodsStockInfoEntity.getId());
-//	    	 goodsStockInfoEntity.setGoodsPrice(price);
-	    }
-		// 根据GoodsStockInfoEntity里面的GoodsPrice排序(价格由小到大排序)
-		Collections.sort(goodsStockList, new Comparator<GoodsStockInfoEntity>() {
-			@Override
-			public int compare(GoodsStockInfoEntity gsity1, GoodsStockInfoEntity gsity2) {
-				if (gsity1.getGoodsPrice().compareTo(gsity2.getGoodsPrice()) > 0) {
-					return 1;
-				} else {
-					return -1;
-				}
+
+	/**
+	 * 通过商品goodsId组装非京东上商品的jdSimilarSkuList
+	 * 
+	 * @return
+	 */
+	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId) {
+		//拼凑京东商品jdSimilarSkuList数据格式
+		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
+		//查出商品属性
+		List<GoodsAttrVal> goodsAttrValList = goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsId);
+		//查询 t_esp_goods_attr_val 商品不同规格下对应值表
+		for (GoodsAttrVal goodsAttrVal : goodsAttrValList) {
+			JdSimilarSku jdSimilarSku=new JdSimilarSku();
+			GoodsAttr goodsAttr = goodsAttrService.selectGoodsAttrByid(goodsAttrVal.getAttrId());
+			String saleName = goodsAttr.getName();//京东saleName
+			jdSimilarSku.setSaleName(saleName);
+			List<JdSaleAttr> saleAttrList=new ArrayList<>();
+			List<GoodsAttrVal> GoodsAttrValList = goodsAttrValService.queryByGoodsIdAndAttrId(goodsId,
+					goodsAttrVal.getAttrId());
+			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
+				JdSaleAttr jdSaleAttr=new JdSaleAttr();
+				jdSaleAttr.setImagePath("");
+				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
+				jdSaleAttr.setSaleValueId("");
+
 			}
-		});
-	    for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
-	    	if(null !=goodsStockInfoEntity.getAttrValIds()){
-	    		String [] AttrValIds=goodsStockInfoEntity.getAttrValIds().split("-");
-	    		if(Arrays.asList(AttrValIds).contains(attrValId.toString())){
-	    			skuIds.add(goodsStockInfoEntity.getSkuId());
-	    			skuIdStr=skuIdStr+goodsStockInfoEntity.getSkuId();
-	    		}
-	    	}
-	    	
 		}
-	    resultMap.put("", "");
-	    resultMap.put("", "");
-	    resultMap.put("", "");
-	    resultMap.put("skuIds", skuIds);
-	    resultMap.put("skuIdStr", skuIdStr);
-	    return resultMap;
-  }
+		
+	
+		return jdSimilarSkuList;
+	}
   /**
    * 获取商品基本信息
    *

@@ -9,7 +9,7 @@ public class WeexInfoEntity {
 
     private String weexPath;
 
-    private String weexVer;
+    private String iosVer;
 
     private String weexEve;
 
@@ -26,6 +26,10 @@ public class WeexInfoEntity {
     private String weexType;
 
     private String weexBlong;
+
+    private String androidVer;
+
+    private String weexVer;
 
     public String getWeexBlong() {
         return weexBlong;
@@ -93,14 +97,6 @@ public class WeexInfoEntity {
         this.weexPath = weexPath;
     }
 
-    public String getWeexVer() {
-        return weexVer;
-    }
-
-    public void setWeexVer(String weexVer) {
-        this.weexVer = weexVer;
-    }
-
     public String getWeexEve() {
         return weexEve;
     }
@@ -123,5 +119,29 @@ public class WeexInfoEntity {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getIosVer() {
+        return iosVer;
+    }
+
+    public void setIosVer(String iosVer) {
+        this.iosVer = iosVer;
+    }
+
+    public String getAndroidVer() {
+        return androidVer;
+    }
+
+    public void setAndroidVer(String androidVer) {
+        this.androidVer = androidVer;
+    }
+
+    public String getWeexVer() {
+        return weexVer;
+    }
+
+    public void setWeexVer(String weexVer) {
+        this.weexVer = weexVer;
     }
 }

@@ -80,7 +80,7 @@ public class AwardDetailService {
 			for(AwardDetail awardDetail : awardDetails){
 			    if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
                                 rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
-                            }   
+                            }
                             String orderId = awardDetail.getOrderId();
                             if(StringUtils.isNotBlank(orderId)){
                                 OrderInfoEntity order = orderService.selectByOrderId(orderId);
@@ -270,7 +270,11 @@ public class AwardDetailService {
 				BigDecimal canWithdrawAmount = getCanUserAmt(awardDetail.getUserId(),awardDetail.getCreateDate());	
 				awardBindRelIntroVo.setCanWithdrawAmount(canWithdrawAmount);
 				awardBindRelIntroVo.setApplyDate(DateFormatUtil.dateToString(awardDetail.getCreateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
-				awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
+				if(awardDetail.getTaxAmount() != null){
+					awardBindRelIntroVo.setAmount(awardDetail.getAmount().subtract(awardDetail.getTaxAmount()));
+				}else{
+					awardBindRelIntroVo.setAmount(awardDetail.getAmount());
+				}
 				awardBindRelIntroVo.setRealName(awardDetail.getRealName());
 				awardBindRelIntroVo.setCardNO(awardDetail.getCardNo());
 				awardBindRelIntroVo.setCardBank(awardDetail.getCardBank());

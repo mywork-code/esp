@@ -111,6 +111,8 @@ public class GoodsAttrService {//450
         if(getGoodsAttrListByName(entity)){
             return 2;
         }
+        entity.setUpdatedTime(new Date());
+        entity.setUpdatedUser(user);
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
         entity.setUpdatedTime(new Date());

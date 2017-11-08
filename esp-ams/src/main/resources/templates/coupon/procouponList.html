@@ -8,8 +8,12 @@
 </head>
 <body>
 	<div id="tb" style="margin-left: 20px">
+		<@apass.role value="MANUAL_ADD_COUPON">
 		<a href="javascript:void(0);" class="easyui-linkbutton" id="addCouponButton">添&nbsp;加&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
+		</@apass.role>
+		<@apass.role value="MANUAL_ISSUE_COUPON">
 		<a href="javascript:void(0);" class="easyui-linkbutton"  id="issueCouponButton">手&nbsp;动&nbsp;发&nbsp;放&nbsp;优&nbsp;惠&nbsp;券&nbsp;</a> &nbsp;&nbsp;
+		</@apass.role>
 	</div>
 	<!-- 优惠券查询列表 -->
 	<div id="couponList"></div>
@@ -45,7 +49,7 @@
 				<tr id="effectiveTimeTr">
 					<td align="right">有效时间 </td>
 					<td colspan="2">
-						<input class="easyui-textbox" style="width: 220px;"
+						<input class="easyui-numberbox" style="width: 220px;" data-options="min:1"
 							   type="text" id="addEffectiveTime" name="effectiveTime" required/>
 						天
 						<span style="color: red">*</span>
@@ -95,7 +99,7 @@
 				<tr>
 					<td align="right">优惠门槛 </td>
 					<td>
-						<input class="easyui-textbox" style="width: 220px;"
+						<input class="easyui-numberbox" style="width: 220px;" data-options="min:1"
 							   type="text" id="addCouponSill" name="couponSill" required/>
 						元
 						<span style="color: red">*</span>
@@ -106,7 +110,7 @@
 				<tr>
 					<td align="right">优惠金额 </td>
 					<td colspan="2">
-						<input class="easyui-textbox" style="width: 220px;"
+						<input class="easyui-numberbox" style="width: 220px;" data-options="min:1"
 							   type="text" id="addDiscountAmonut" name="discountAmonut" required/>
 						元
 						<span style="color: red">*</span>
@@ -132,7 +136,7 @@
 			<tr>
 				<td align="right">发放数量 </td>
 				<td>
-					<input class="easyui-textbox" style="width: 220px;" type="text" id="issueCouponNum" required/>
+					<input class="easyui-numberbox" style="width: 220px;" type="text" id="issueCouponNum" required required data-options="min:1"/>
 					张
 					<span style="color: red">*</span>
 				</td>
@@ -148,7 +152,7 @@
 			<tr style="display:none" class="addOrdeleteCouponTr1">
 				<td align="right">发放数量 </td>
 				<td>
-					<input class="easyui-textbox" style="width: 220px;" type="text" id="issueCouponNum1" required/>
+					<input class="easyui-numberbox" style="width: 220px;" type="text" id="issueCouponNum1" required required data-options="min:1"/>
 					张
 					<span style="color: red">*</span>
 				</td>
@@ -164,7 +168,7 @@
 			<tr style="display:none" class="addOrdeleteCouponTr2">
 				<td align="right">发放数量 </td>
 				<td>
-					<input class="easyui-textbox" style="width: 220px;" type="text" id="issueCouponNum2" required/>
+					<input class="easyui-numberbox" style="width: 220px;" type="text" id="issueCouponNum2" required data-options="min:1"/>
 					张
 					<span style="color: red">*</span>
 				</td>

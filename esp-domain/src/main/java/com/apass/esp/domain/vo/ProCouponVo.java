@@ -20,6 +20,10 @@ public class ProCouponVo {
      * 与优惠券有关的活动id
      */
     private Long activityId;
+    /**
+     * 标识优惠券是否为活动优惠券
+     */
+    private Boolean activityFalge;
 
     /**
      * 优惠券名称
@@ -159,6 +163,14 @@ public class ProCouponVo {
 
 	public void setUserReceiveNum(Integer userReceiveNum) {
 		this.userReceiveNum = userReceiveNum;
+	}
+
+	public Boolean getActivityFalge() {
+		return activityFalge;
+	}
+
+	public void setActivityFalge(Boolean activityFalge) {
+		this.activityFalge = activityFalge;
 	}
 	
 }

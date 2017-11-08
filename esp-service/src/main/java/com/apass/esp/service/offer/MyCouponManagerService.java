@@ -1,37 +1,40 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.query.ProCouponRelQuery;
+import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.vo.MyCouponVo;
+import com.apass.esp.domain.vo.ProMyCouponVo;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.ProActivityCfgMapper;
+import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProCouponRelMapper;
+import com.apass.esp.mapper.ProMyCouponMapper;
+import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponType;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
-import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.enums.ActivityStatus;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.query.ProCouponRelQuery;
-import com.apass.esp.domain.query.ProMyCouponQuery;
-import com.apass.esp.domain.vo.MyCouponVo;
-import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.mapper.ProActivityCfgMapper;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
-import com.apass.esp.mapper.ProMyCouponMapper;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.google.common.collect.Maps;
 
 /**
  * 
@@ -60,13 +63,16 @@ public class MyCouponManagerService {
 	
 	@Autowired
 	private ActivityCfgService activityCfgService;
+
+	@Autowired
+	private OrderInfoRepository orderInfoRepository;
+
+	@Autowired
+	private CashRefundMapper cashRefundMapper;
 	
 	/**
 	 * 点击领取优惠券
-	 * @param userId 用户Id
-	 * @param couponId 优惠券Id
-	 * @param activityId 活动Id 可为空
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public int giveCouponToUser(MyCouponVo vo) throws BusinessException{
 		/**
@@ -74,20 +80,20 @@ public class MyCouponManagerService {
 		 */
 	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
 	    if(null==activityCfg){
-	    	throw new BusinessException("领取失败，活动已经结束!");
+	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
-	    	throw new BusinessException("领取失败，活动已经结束!");
+	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 		/**
 		 * 首先，根据活动的Id和优惠券的id ,查询此活动和优惠券的关系表信息
 		 */
 		ProCouponRel couponRel = couponRelMapper.getRelByActivityIdAndCouponId(new ProCouponRelQuery(vo.getActivityId(),vo.getCouponId()));
 		if(null == couponRel){
-			throw new BusinessException("领取失败!");
+			throw new BusinessException("该券被抢空啦，看看其他的券吧!");
 		}
 		if(couponRel.getRemainNum() == 0){
-			throw new BusinessException("领取失败，优惠券数量不足！");
+			throw new BusinessException("该券被抢空啦，看看其他的券吧！");
 		}
 		/**
 		 * 限制领取优惠券张数
@@ -196,16 +202,15 @@ public class MyCouponManagerService {
 		return params;
 	}
 	/**
-	 * 根据用户的Id和优惠券Id查询对应的信息
-	 * @param query
+	 * 根据用户的Id和活动优惠券Id查询对应的信息
 	 * @return
 	 */
-	public List<ProMyCoupon> getCouponByUserIdAndCouponId(Long userId,Long couponId){
+	public List<ProMyCoupon> getCouponByUserIdAndRelCouponId(Long userId,Long couponRelId){
 		ProMyCouponQuery query=new ProMyCouponQuery();
-		if(null !=userId && null !=couponId){
+		if(null !=userId && null !=couponRelId){
 			query.setUserId(userId);
-			query.setCouponId(couponId);
-			return myCouponMapper.getCouponByUserIdAndCouponId(query);
+			query.setCouponRelId(couponRelId);
+			return myCouponMapper.getCouponByUserIdAndRelId(query);
 		}
 		return null;
 	};
@@ -299,6 +304,41 @@ public class MyCouponManagerService {
 		return vo;
 	}
 
+	/**
+	 * 订单失效、退款返回优惠券
+	 */
+	public void returnCoupon(Long userId,Long couponId,String selfOrderId){
+		if(couponId == null){
+			return;
+		}
+		//根据couponId查询orderList,判断订单状态是否是退款或订单失效
+		List<OrderInfoEntity> orderList = orderInfoRepository.selectByCouponId(couponId);
+		for(OrderInfoEntity order : orderList){
+			if(selfOrderId.equals(order.getOrderId())){
+				continue;
+			}
+			if(order.getStatus().equals(OrderStatus.ORDER_CANCEL.getCode())){
+
+			}
+		  else if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
+				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
+				if(cr != null){
+					if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
+
+					}else{
+						return;
+					}
+				}else{
+					return ;
+				}
+			}else {
+				return;
+			}
+		}
+		updateStatus("N",userId,couponId);
+	}
+
+
 
 	public void updateStatus(String status,Long userId,Long couponId){
 		myCouponMapper.updateStatusByUserIdAndCouponId(status,userId,couponId);
@@ -362,7 +402,7 @@ public class MyCouponManagerService {
 			proMyCoupon.setTelephone(tel);
 			Date d = new Date();
 			proMyCoupon.setStartDate(d);
-			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,proCoupon.getEffectiveTime()));
+			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,coupon.getEffectiveTime()));
 			proMyCoupon.setCreatedTime(d);
 			proMyCoupon.setUpdatedTime(d);
 			myCouponMapper.insertSelective(proMyCoupon);

@@ -1,27 +1,5 @@
 package com.apass.esp.nothing;
 
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.dto.activity.AwardDetailDto;
-import com.apass.esp.domain.entity.AwardBindRel;
-import com.apass.esp.domain.enums.AwardActivity.ActivityName;
-import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.mapper.AwardDetailMapper;
-import com.apass.esp.service.activity.AwardActivityInfoService;
-import com.apass.esp.service.activity.AwardBindRelService;
-import com.apass.esp.service.activity.AwardDetailService;
-import com.apass.esp.service.registerInfo.RegisterInfoService;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,6 +13,26 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.activity.AwardDetailDto;
+import com.apass.esp.domain.entity.AwardBindRel;
+import com.apass.esp.domain.enums.AwardActivity.ActivityName;
+import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.mapper.AwardDetailMapper;
+import com.apass.esp.service.activity.AwardActivityInfoService;
+import com.apass.esp.service.activity.AwardBindRelService;
+import com.apass.esp.service.activity.AwardDetailService;
+import com.apass.esp.service.registerInfo.RegisterInfoService;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Path("/activity/award")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -71,7 +69,7 @@ public class ActivityAwardController {
 				LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
-				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
+				if (StringUtils.equals(isFirstCredit, "true")) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
 					LOGGER.info("用户获得额度时 活动aInfoVo="+aInfoVo);
 					if (null != aInfoVo) {
@@ -124,7 +122,7 @@ public class ActivityAwardController {
 										}
 										BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
 										BigDecimal amount=awardAmont.add(amountAward);
-										if(new BigDecimal("800").compareTo(amount)>0){//总奖励金额小于800，直接插入记录
+										if(new BigDecimal("800").compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
 											awardDetailDto.setTaxAmount(new BigDecimal("0"));
 											awardDetailDto.setAmount(awardAmont);
 											awardDetailService.addAwardDetail(awardDetailDto);
@@ -137,7 +135,7 @@ public class ActivityAwardController {
 											awardDetailDto.setAmount(awardAmont2);
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)<0){
+										}else if(new BigDecimal("800").compareTo(amountAward)<=0){
 											awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
 											awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
 											awardDetailService.addAwardDetail(awardDetailDto);

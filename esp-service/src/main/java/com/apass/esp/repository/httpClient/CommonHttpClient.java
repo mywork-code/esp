@@ -35,7 +35,6 @@ public class CommonHttpClient {
 
 
     @Value("${gfbwechat.request.address}")
-
     public String gfbReqUrl;
     // 查询客户基本信息及绑卡信息
     private static final String GETCUSTOMERBASICREQURL = "/espCustomer/getCustomerBasicInfo";

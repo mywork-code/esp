@@ -34,7 +34,7 @@ $(function(){
 		dataType : "json",
 		success : function(data) {
 			var resp = data.data;
-			if(data.status){
+			if(data.status=="1"){
 				console.log(data);
 				$("#activityName").textbox('setValue',resp.activityName);
 				$("#startTime").datetimebox('setValue',new Date(resp.startTime).Format("yyyy-MM-dd hh:mm:ss"));
@@ -120,10 +120,13 @@ $(function(){
 					type : "post",
 					dataType : "json",
 					success : function(data) {
-						if(data.status){
+						ifLogout(data);
+						if(data.status=="1"){
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 							window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 						}else{
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
 						}
 					}
@@ -338,6 +341,7 @@ $(function(){
 				obj5.couponId = chooseCoupon5;
 				obj5.totalNum = issueCouponNum5;
 				obj5.limitNum = issueLimitNum5;
+				obj5.id = $("#proCouponRelId5").val();
 				arr.push(obj5)
 			}
 		}
@@ -345,6 +349,15 @@ $(function(){
 		return true;
 	}
 })
+
+//判断是否超时
+function ifLogout(data) {
+	if (data.message == 'timeout' && data.result == false) {
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return false;
+	}
+}
 
 function addTotalNum(id) {
 	$("#addTotalCouponNumDiv").dialog({
@@ -357,6 +370,10 @@ function addTotalNum(id) {
 				text : "保存",
 				handler : function() {
 					var num = $("#addTotalCouponNum").textbox('getValue');
+					if(num == null || num == ""){
+						$.messager.alert("<span style='color: black;'>提示</span>","请输入增加发放总量","info");
+						return;
+					}
 					var totalCount = parseInt($("#"+id).textbox('getValue'))+parseInt(num);
 					if(parseInt(num)<=0){
 						$.messager.alert("<span style='color: black;'>提示</span>","添加发放总量必须大于0","info");

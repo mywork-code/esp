@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,20 @@ public class CouponManagerService {
 		return couponList;
 	}
 	/**
+	 * 根据活动的Id，获取优惠券(不过滤优惠券剩余数量为0的优惠券)
+	 * @param activityId
+	 * @return
+	 */
+	public List<ProCoupon> getCouponListsByActivityId(String activityId){
+		List<ProCoupon> couponList = new ArrayList<ProCoupon>();
+		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		for (ProCouponRel rel : relList) {
+				ProCoupon pro = couponMapper.selectByPrimaryKey(rel.getCouponId());
+				couponList.add(pro);
+		}
+		return couponList;
+	}
+	/**
 	 * 获取有效活动优惠券(过滤优惠券剩余数量为0的优惠券和用户已经领取的优惠券)
 	 * @return
 	 */
@@ -104,7 +119,7 @@ public class CouponManagerService {
 				proCouponVo.setEndTime(endTimeTimeString);
 				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
 			   //判断该用户是否已经领取了该优惠券
-			   List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId,rel.getCouponId());
+			   List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndRelCouponId(userId,rel.getId());
 			   if(null !=proMyCouponList && proMyCouponList.size()>0){
 					if(proMyCouponList.size()<rel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
 						proCouponList.add(proCouponVo);
@@ -137,11 +152,13 @@ public class CouponManagerService {
 		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
-			List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
-			if(rel.getLimitNum() <= myCoupons.size()){
-				vo.setReceiveFlag(true);
+			if(StringUtils.isNotBlank(userId)){
+				List<ProMyCoupon> myCoupons = myCouponMapper.getCouponByUserIdAndRelId(new ProMyCouponQuery(Long.parseLong(userId), rel.getId()));
+				if(rel.getLimitNum() <= myCoupons.size()){
+					vo.setReceiveFlag(true);
+				}
+				vo.setUserReceiveNum(rel.getLimitNum()-myCoupons.size());//用户计算当前券，当前用户还可领取的张数
 			}
-			vo.setUserReceiveNum(rel.getLimitNum()-myCoupons.size());//用户计算当前券，当前用户还可领取的张数
 			vo.setRemainNum(rel.getRemainNum());
 			vo.setId(proCoupon.getId());
 			vo.setName(proCoupon.getName());

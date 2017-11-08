@@ -47,7 +47,9 @@
 		orderdetail.source source,
 		orderdetail.sku_id skuId,
 		orderdetail.discount_amount  discountAmount,
-		orderdetail.UPDATE_DATE updateDate
+		orderdetail.coupon_money     couponMoney,
+		orderdetail.UPDATE_DATE updateDate,
+		orderdetail.pro_activity_id proActivityId
 		FROM
 			t_esp_order_detail_info orderdetail
 				LEFT JOIN t_esp_goods_base_info goodsbaseinfo on orderdetail.goods_id= goodsbaseinfo.id

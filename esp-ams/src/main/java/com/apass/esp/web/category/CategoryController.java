@@ -406,8 +406,8 @@ public class CategoryController {
 
         }catch (Exception e){
             LOGGER.error("关联商品属性失败",e);
-            return Response.fail("关联商品属性失败！");
+            return Response.fail("取消关联商品属性失败！");
         }
-        return Response.success("关联商品属性成功！");
+        return Response.success("取消关联商品属性成功！");
     }
 }

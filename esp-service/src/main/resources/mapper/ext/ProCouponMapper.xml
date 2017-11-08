@@ -38,9 +38,14 @@
         FROM t_esp_pro_coupon
         <include refid="QueryProcouponSql" />
     </select>
-
+    <!-- 获取非用户领取（不是活动）优惠券列表 -->
+   <select id="getProCouponListNotActivity" resultType="com.apass.esp.domain.entity.ProCoupon">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_esp_pro_coupon
+        where  extend_type !='YHLQ'
+    </select>
     <!--根据优惠券实体类查询优惠券-->
-    <select id="getProCouponBCoupon" resultType="com.apass.esp.domain.entity.ProCoupon">
+    <select id="getProCouponBCoupon" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
         <include refid="QueryProcouponSql" />
