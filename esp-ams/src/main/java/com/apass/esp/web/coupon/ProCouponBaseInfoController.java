@@ -74,7 +74,7 @@ public class ProCouponBaseInfoController {
 
             //分页参数
             Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
-            Integer pageSize = Integer.valueOf(pageSiz) <= 0 ? 1 : Integer.valueOf(pageSiz);
+            Integer pageSize = Integer.valueOf(pageSiz) <= 0 ? 10 : Integer.valueOf(pageSiz);
             Integer pageBegin = (pageNum - 1) * pageSize;
 
             Map<String,Object> paramMap = Maps.newHashMap();

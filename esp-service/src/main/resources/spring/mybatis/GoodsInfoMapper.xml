@@ -1239,6 +1239,7 @@
                 t.status statusDesc,
                 t.goods_Sku_Type goodsSkuType,
                 t.goods_Model goodsModel,
+                t.sord_no sordNo,
                 t.goods_sift_url goodsSiftUrl,
                 t.external_id externalId,
                 t.source source
@@ -1375,8 +1376,6 @@
         t.create_date createDate,
         t.update_date updateDate,
         t.merchant_code merchantCode,
-        t2.merchant_name merchantName,
-        t2.merchant_type  merchantType,
         t.status status,
         t.status statusDesc,
         t.goods_Sku_Type goodsSkuType,
@@ -1391,8 +1390,8 @@
         FROM
         t_esp_goods_base_info t
         where
-        external_id in (
-        <foreach collection="list" item="externalId" separator=",">
+        external_id in
+        <foreach collection="list" item="externalId" separator="," open="(" close=")">
             #{externalId}
         </foreach>
 
