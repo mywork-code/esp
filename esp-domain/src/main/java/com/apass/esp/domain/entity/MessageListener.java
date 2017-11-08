@@ -1,108 +1,108 @@
 package com.apass.esp.domain.entity;
 
-import java.util.Date;
-
 import com.apass.esp.common.model.QueryParams;
 
-public class MessageListener extends QueryParams{
-    private Long id;
+import java.util.Date;
 
-    private String type;
+public class MessageListener extends QueryParams {
+  private Long id;
 
-    private String skuid;
+  private String type;
 
-    private String orderid;
+  private String skuid;
 
-    private String status;
+  private String orderid;
 
-    private String errorMassage;
+  private String status;
 
-    private String result;
+  private String errorMassage;
 
-    private Date createDate;
-    
-    private String createDateString;
-    
-    private Date updatedTime;
+  private String result;
 
-    public Long getId() {
-        return id;
-    }
+  private Date createdTime;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  private String createDateString;
 
-    public String getType() {
-        return type;
-    }
+  private Date updatedTime;
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getSkuid() {
-        return skuid;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setSkuid(String skuid) {
-        this.skuid = skuid;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public String getOrderid() {
-        return orderid;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public void setOrderid(String orderid) {
-        this.orderid = orderid;
-    }
+  public String getSkuid() {
+    return skuid;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public void setSkuid(String skuid) {
+    this.skuid = skuid;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public String getOrderid() {
+    return orderid;
+  }
 
-    public String getErrorMassage() {
-        return errorMassage;
-    }
+  public void setOrderid(String orderid) {
+    this.orderid = orderid;
+  }
 
-    public void setErrorMassage(String errorMassage) {
-        this.errorMassage = errorMassage;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public String getResult() {
-        return result;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public void setResult(String result) {
-        this.result = result;
-    }
+  public String getErrorMassage() {
+    return errorMassage;
+  }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
+  public void setErrorMassage(String errorMassage) {
+    this.errorMassage = errorMassage;
+  }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-    
-	public Date getUpdatedTime() {
-		return updatedTime;
-	}
+  public String getResult() {
+    return result;
+  }
 
-	public void setUpdatedTime(Date updatedTime) {
-		this.updatedTime = updatedTime;
-	}
+  public void setResult(String result) {
+    this.result = result;
+  }
 
-	public String getCreateDateString() {
-		return createDateString;
-	}
+  public Date getCreatedTime() {
+    return createdTime;
+  }
 
-	public void setCreateDateString(String createDateString) {
-		this.createDateString = createDateString;
-	}
-    
+  public void setCreatedTime(Date createdTime) {
+    this.createdTime = createdTime;
+  }
+
+  public Date getUpdatedTime() {
+    return updatedTime;
+  }
+
+  public void setUpdatedTime(Date updatedTime) {
+    this.updatedTime = updatedTime;
+  }
+
+  public String getCreateDateString() {
+    return createDateString;
+  }
+
+  public void setCreateDateString(String createDateString) {
+    this.createDateString = createDateString;
+  }
+
 }
