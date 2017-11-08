@@ -870,11 +870,7 @@
             source     source,
             external_id   externalId,
             attr_desc     attrDesc,
-<<<<<<< HEAD
-            support_7d_refund   support7dRefund,
-=======
             support_7d_refund support7dRefund,
->>>>>>> 23ce0076a549648a64a830365b4c6b4d12eade6a
             goods_code goodsCode
         FROM
             t_esp_goods_base_info
