@@ -191,10 +191,10 @@ $(function(){
 				// }
 			},
 		});
-		clearIssueDiv();
+		clearIssueAndRestoreDiv();
 
 		$("#issueCouponDiv").dialog({
-			title:'<span style="color: black">添加优惠券</span>',
+			title:'<span style="color: black">手动发放优惠券</span>',
 			resizable:true,
 			width : 400,
 			modal:true,
@@ -548,7 +548,7 @@ function clearFunction() {
 
 }
 //手动发放优惠券窗口初始化
-function clearIssueDiv() {
+function clearIssueAndRestoreDiv() {
 	$("#chooseCoupon").combobox('clear');
 	$("#issueCouponNum").textbox('clear');
 	$("#chooseCoupon1").combobox('clear');
@@ -559,5 +559,7 @@ function clearIssueDiv() {
 	$("#issueUserGroup").combobox('clear');
 	$("#issueTelephone").textbox('clear');
 	$("#issueRemark").textbox('clear');
+	$(".addOrdeleteCouponTr1").css("display","none");
+	$(".addOrdeleteCouponTr2").css("display","none");
 }
 

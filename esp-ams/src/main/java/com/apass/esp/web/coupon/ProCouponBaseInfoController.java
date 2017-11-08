@@ -157,6 +157,9 @@ public class ProCouponBaseInfoController {
                 return Response.fail("手机号输入错误，请重新输入。");
             }
             CustomerBasicInfo customerBasicInfo = Response.resolveResult(response, CustomerBasicInfo.class);
+            if(customerBasicInfo==null){
+                return Response.fail("手机号输入错误，请重新输入。");
+            }
             //封装数据 map
             for(CouponList couponList: couponLists){
                 List<ProMyCoupon> proMycouponList = Lists.newArrayList();
