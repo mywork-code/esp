@@ -98,7 +98,7 @@ ADD COLUMN attr_val_ids varchar(32) not null default '' comment '多规格属性
 
 
 ALTER TABLE `t_esp_order_info`
-ADD COLUMN `coupon_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '优惠券Id';
+ADD COLUMN `coupon_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT 't_esp_pro_mycoupon表主键id';
 
 alter table t_esp_banner_info add column `attr` varchar(32) not null default '' comment '活动地址：activity;商品编号/skuid:good',
  add column `attr_val` varchar(32) not null default '' comment '属性值';
@@ -112,4 +112,5 @@ alter table t_esp_goods_stock_info  ADD COLUMN delete_flag varchar(32) not null 
 
 ALTER TABLE `t_esp_weex_info`
 CHANGE COLUMN `weex_ver` `ios_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT 'ios版本号' ,
-ADD COLUMN `android_ver` varchar(12) NOT NULL DEFAULT '' COMMENT 'android版本号';
+ADD COLUMN `android_ver` varchar(12) NOT NULL DEFAULT '' COMMENT 'android版本号',
+ADD COLUMN `weex_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT '兼容老用户版本号';
