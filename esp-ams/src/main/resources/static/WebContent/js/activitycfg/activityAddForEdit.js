@@ -377,7 +377,7 @@ function addTotalNum(id) {
 						return;
 					}
 					if(parseInt(totalCount) > 100000){
-						$.messager.alert("<span style='color: black;'>提示</span>","发放总量必须小于100000","info");
+						$.messager.alert("<span style='color: black;'>提示</span>","发放总量必须小于等于100000","info");
 						return;
 					}
 					$("#"+id).textbox('setValue',totalCount);
