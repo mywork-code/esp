@@ -550,7 +550,7 @@ public class JdGoodsInfoService {
 		for (ProCouponVo proCouponVo : proCouponVos) {
 			ProCouponRel proCouponRel=couponRelService.getRelByActivityIdAndCouponId(Long.parseLong(activityId), proCouponVo.getId());
 			if(null !=proCouponRel && proCouponRel.getRemainNum()>0){//優惠券的剩餘數量大於零
-				List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId, proCouponVo.getId());
+				List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndRelCouponId(userId, proCouponRel.getId());
 				if(null !=proMyCouponList && proMyCouponList.size()>0){
 					reProCouponList.add(proCouponVo);
 					if(proMyCouponList.size()<proCouponRel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
