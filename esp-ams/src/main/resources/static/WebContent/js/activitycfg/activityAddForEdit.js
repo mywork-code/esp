@@ -122,9 +122,11 @@ $(function(){
 					success : function(data) {
 						ifLogout(data);
 						if(data.status=="1"){
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 							window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 						}else{
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
 						}
 					}
@@ -227,7 +229,7 @@ $(function(){
 		var isCoupon = $("input[name='isCoupon']:checked").val()
 		if(isCoupon == "Y") {
 			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
-			if (chooseCoupon1 == '请选择') {
+			if (chooseCoupon1 == '' || null == chooseCoupon1) {
 				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个选择发放优惠券！", 'info');
 				return false;
 			}
@@ -254,7 +256,7 @@ $(function(){
 			var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
 			if (addOrdeleteCouponTrDisplay2 != "none") {
 				var chooseCoupon2 = $('#chooseCoupon2').textbox('getValue');
-				if (chooseCoupon2 == '请选择') {
+				if (chooseCoupon2 == '' || null == chooseCoupon2) {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -278,7 +280,7 @@ $(function(){
 
 			if (addOrdeleteCouponTrDisplay3 != "none") {
 				var chooseCoupon3 = $('#chooseCoupon3').textbox('getValue');
-				if (chooseCoupon3 == '请选择') {
+				if (chooseCoupon3 == '' || null == chooseCoupon3) {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -300,7 +302,7 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay4 != "none") {
 				var chooseCoupon4 = $('#chooseCoupon4').textbox('getValue');
-				if (chooseCoupon4 == '请选择') {
+				if (chooseCoupon4 == '' || null == chooseCoupon4) {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -322,7 +324,7 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay5 != "none") {
 				var chooseCoupon5 = $('#chooseCoupon5').textbox('getValue');
-				if (chooseCoupon5 == '请选择') {
+				if (chooseCoupon5 == '' || null == chooseCoupon5) {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -339,6 +341,7 @@ $(function(){
 				obj5.couponId = chooseCoupon5;
 				obj5.totalNum = issueCouponNum5;
 				obj5.limitNum = issueLimitNum5;
+				obj5.id = $("#proCouponRelId5").val();
 				arr.push(obj5)
 			}
 		}
@@ -374,10 +377,6 @@ function addTotalNum(id) {
 					var totalCount = parseInt($("#"+id).textbox('getValue'))+parseInt(num);
 					if(parseInt(num)<=0){
 						$.messager.alert("<span style='color: black;'>提示</span>","添加发放总量必须大于0","info");
-						return;
-					}
-					if(parseInt(totalCount) > 100000){
-						$.messager.alert("<span style='color: black;'>提示</span>","发放总量必须小于等于100000","info");
 						return;
 					}
 					$("#"+id).textbox('setValue',totalCount);
