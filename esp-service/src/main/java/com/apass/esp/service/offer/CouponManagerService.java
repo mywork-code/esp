@@ -79,6 +79,20 @@ public class CouponManagerService {
 		return couponList;
 	}
 	/**
+	 * 根据活动的Id，获取优惠券(不过滤优惠券剩余数量为0的优惠券)
+	 * @param activityId
+	 * @return
+	 */
+	public List<ProCoupon> getCouponListsByActivityId(String activityId){
+		List<ProCoupon> couponList = new ArrayList<ProCoupon>();
+		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		for (ProCouponRel rel : relList) {
+				ProCoupon pro = couponMapper.selectByPrimaryKey(rel.getCouponId());
+				couponList.add(pro);
+		}
+		return couponList;
+	}
+	/**
 	 * 获取有效活动优惠券(过滤优惠券剩余数量为0的优惠券和用户已经领取的优惠券)
 	 * @return
 	 */

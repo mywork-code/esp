@@ -466,7 +466,7 @@ public class JdGoodsInfoService {
 		if(null !=goodsId){
 	    	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
 	    	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListByActivityId(proGroupGoodsBo.getActivityId().toString());
+	    		List<ProCoupon> proCoupons=couponManagerService.getCouponListsByActivityId(proGroupGoodsBo.getActivityId().toString());
     			for (ProCoupon proCoupon : proCoupons) {
     				ProCouponGoodsDetailVo proCouponGoodsDetailVo=new ProCouponGoodsDetailVo();
     				proCouponGoodsDetailVo.setCouponSill(proCoupon.getCouponSill());

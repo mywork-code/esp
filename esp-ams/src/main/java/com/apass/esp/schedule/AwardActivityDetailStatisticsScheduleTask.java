@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import com.apass.esp.domain.enums.AwardActivity.ActivityName;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.ActivityDetailStatisticsVo;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
-import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
