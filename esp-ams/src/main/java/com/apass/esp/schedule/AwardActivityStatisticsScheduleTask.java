@@ -80,7 +80,7 @@ public class AwardActivityStatisticsScheduleTask {
         calendar.setTime(new Date());
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         String BeforeDay = format.format(calendar.getTime());
-        String BeforeDay2=BeforeDay+" 00:00:00";
+        String BeforeDay2=BeforeDay+" 23:59:59";
         
         ActivityName activityName = ActivityName.INTRO;// 获取活动名称
 		try {
