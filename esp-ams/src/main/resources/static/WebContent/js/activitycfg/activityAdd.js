@@ -26,9 +26,11 @@ $(function(){
 				dataType : "json",
 				success : function(data) {
 					if(data.status == '1'){
+						arr.splice(0);//清空list
 						$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 						window.location.href = ctx + "/activity/cfg/edit?id="+data.data;
 					}else{
+						arr.splice(0);//清空list
 						$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
 					}
 				}
@@ -142,8 +144,8 @@ $(function(){
 		param.coupon = isCoupon;
 		if(isCoupon == "Y") {
 			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
-			if (chooseCoupon1 == '请选择') {
-				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个选择发放优惠券！", 'info');
+			if (chooseCoupon1 == '' || null == chooseCoupon1) {
+				$.messager.alert("<span style='color: black;'>提示</span>", "请选择第一个选择发放优惠券！", 'info');
 				return false;
 			}
 			var issueCouponNum1 = $('#issueCouponNum1').textbox('getValue');
@@ -154,6 +156,11 @@ $(function(){
 			var issueLimitNum1 = $('#issueLimitNum1').textbox('getValue');
 			if (issueLimitNum1 == '' || null == issueLimitNum1) {
 				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个每人限领数量！", 'info');
+				return false;
+			}
+
+			if(parseInt(issueLimitNum1)>parseInt(issueCouponNum1)){
+				$.messager.alert("<span style='color: black;'>提示</span>", "第一个每人限领数量不可大于发放总量！", 'info');
 				return false;
 			}
 			obj1.couponId = chooseCoupon1;
@@ -168,8 +175,8 @@ $(function(){
 			var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
 			if (addOrdeleteCouponTrDisplay2 != "none") {
 				var chooseCoupon2 = $('#chooseCoupon2').textbox('getValue');
-				if (chooseCoupon2 == '请选择') {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个选择发放优惠券！", 'info');
+				if (chooseCoupon2 == '' || null == chooseCoupon2) {
+					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第二个选择发放优惠券！", 'info');
 					return false;
 				}
 				var issueCouponNum2 = $('#issueCouponNum2').textbox('getValue');
@@ -182,6 +189,10 @@ $(function(){
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个每人限领数量！", 'info');
 					return false;
 				}
+				if(parseInt(issueLimitNum2)>parseInt(issueCouponNum2)){
+					$.messager.alert("<span style='color: black;'>提示</span>", "第二个每人限领数量不可大于发放总量！", 'info');
+					return false;
+				}
 
 				obj2.couponId = chooseCoupon2;
 				obj2.totalNum = issueCouponNum2;
@@ -191,8 +202,8 @@ $(function(){
 
 			if (addOrdeleteCouponTrDisplay3 != "none") {
 				var chooseCoupon3 = $('#chooseCoupon3').textbox('getValue');
-				if (chooseCoupon3 == '请选择') {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个选择发放优惠券！", 'info');
+				if (chooseCoupon3 == '' || null == chooseCoupon3) {
+					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第三个选择发放优惠券！", 'info');
 					return false;
 				}
 				var issueCouponNum3 = $('#issueCouponNum3').textbox('getValue');
@@ -205,6 +216,10 @@ $(function(){
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个每人限领数量！", 'info');
 					return false;
 				}
+				if(parseInt(issueLimitNum3)>parseInt(issueCouponNum3)){
+					$.messager.alert("<span style='color: black;'>提示</span>", "第三个每人限领数量不可大于发放总量！", 'info');
+					return false;
+				}
 				obj3.couponId = chooseCoupon3;
 				obj3.totalNum = issueCouponNum3;
 				obj3.limitNum = issueLimitNum3;
@@ -212,8 +227,8 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay4 != "none") {
 				var chooseCoupon4 = $('#chooseCoupon4').textbox('getValue');
-				if (chooseCoupon4 == '请选择') {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个选择发放优惠券！", 'info');
+				if (chooseCoupon4 == '' || null == chooseCoupon4) {
+					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第四个选择发放优惠券！", 'info');
 					return false;
 				}
 				var issueCouponNum4 = $('#issueCouponNum4').textbox('getValue');
@@ -226,6 +241,10 @@ $(function(){
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个每人限领数量！", 'info');
 					return false;
 				}
+				if(parseInt(issueLimitNum4)>parseInt(issueCouponNum4)){
+					$.messager.alert("<span style='color: black;'>提示</span>", "第四个每人限领数量不可大于发放总量！", 'info');
+					return false;
+				}
 				obj4.couponId = chooseCoupon4;
 				obj4.totalNum = issueCouponNum4;
 				obj4.limitNum = issueLimitNum4;
@@ -233,8 +252,8 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay5 != "none") {
 				var chooseCoupon5 = $('#chooseCoupon5').textbox('getValue');
-				if (chooseCoupon5 == '请选择') {
-					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个选择发放优惠券！", 'info');
+				if (chooseCoupon5 == '' || null == chooseCoupon5) {
+					$.messager.alert("<span style='color: black;'>提示</span>", "请选择第五个选择发放优惠券！", 'info');
 					return false;
 				}
 				var issueCouponNum5 = $('#issueCouponNum5').textbox('getValue');
@@ -245,6 +264,10 @@ $(function(){
 				var issueLimitNum5 = $('#issueLimitNum5').textbox('getValue');
 				if (issueLimitNum5 == '' || null == issueLimitNum5) {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个每人限领数量！", 'info');
+					return false;
+				}
+				if(parseInt(issueLimitNum5)>parseInt(issueCouponNum5)){
+					$.messager.alert("<span style='color: black;'>提示</span>", "第五个每人限领数量不可大于发放总量！", 'info');
 					return false;
 				}
 				obj5.couponId = chooseCoupon5;
@@ -289,7 +312,7 @@ $(function(){
 					},
 
 					onLoadSuccess: function () {
-						$(this).combobox('setValue','请选择');
+						$(this).combobox('setValue','');
 						//加载完成后,设置选中第一项
 						// var val = $(this).combobox('getData');
 						// for (var item in val[0]) {
@@ -338,17 +361,22 @@ $(function(){
 		var addOrdeleteCouponTrDisplay4 = $(".addOrdeleteCouponTr4").css("display");
 		var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
 
+		debugger;
 		if(addOrdeleteCouponTrDisplay5 != "none"){
 			clearTextBox('5');
+			arr.splice(arr.length-1)//删除数组中的参数
 			$(".addOrdeleteCouponTr5").css("display","none");
 		}else if(addOrdeleteCouponTrDisplay4 != "none"){
 			clearTextBox('4');
+			arr.splice(arr.length-1)
 			$(".addOrdeleteCouponTr4").css("display","none");
 		}else if(addOrdeleteCouponTrDisplay3 != "none"){
 			clearTextBox('3');
+			arr.splice(arr.length-1)
 			$(".addOrdeleteCouponTr3").css("display","none");
 		}else{
 			clearTextBox('2');
+			arr.splice(arr.length-1)
 			$(".addOrdeleteCouponTr2").css("display","none");
 		}
 
