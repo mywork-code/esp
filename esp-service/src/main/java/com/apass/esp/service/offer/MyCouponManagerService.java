@@ -1,17 +1,5 @@
 package com.apass.esp.service.offer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
@@ -36,6 +24,17 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -73,10 +72,7 @@ public class MyCouponManagerService {
 	
 	/**
 	 * 点击领取优惠券
-	 * @param userId 用户Id
-	 * @param couponId 优惠券Id
-	 * @param activityId 活动Id 可为空
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public int giveCouponToUser(MyCouponVo vo) throws BusinessException{
 		/**
@@ -324,7 +320,7 @@ public class MyCouponManagerService {
 			if(order.getStatus().equals(OrderStatus.ORDER_CANCEL.getCode())){
 
 			}
-			if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
+		  else if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
 				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
 				if(cr != null){
 					if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
