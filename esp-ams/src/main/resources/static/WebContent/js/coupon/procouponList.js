@@ -152,8 +152,8 @@ $(function(){
 							success : function(data) {
 								if(data.status=="1"){
 									$.messager.alert('<span style="color: black">提示</span>',data.msg);
-									// $('#addCouponDiv').dialog('close');
-									$('#couponList').datagrid('load',{});
+									$('#addCouponDiv').dialog('close');
+									$('#couponList').datagrid('reload',{});
 								}else{
 									$.messager.alert('<span style="color: black">提示</span>',data.msg);
 								}
@@ -277,7 +277,7 @@ $(function(){
 								if(data.status=="1"){
 									$.messager.alert('<span style="color: black">提示</span>',data.msg);
 									$('#issueCouponDiv').dialog('close');
-									$('#couponList').datagrid('load',{});
+									$('#couponList').datagrid('reload',{});
 								}else{
 									$.messager.alert('<span style="color: black">提示</span>',data.msg);
 								}
@@ -323,7 +323,7 @@ $(function(){
 					success : function(data) {
 						if(data.status=="1"){
 							$.messager.alert('<span style="color: black">提示</span>',data.msg);
-							$('#couponList').datagrid('load',{});
+							$('#couponList').datagrid('reload',{});
 						}else{
 							$.messager.alert('<span style="color: black">提示</span>',data.msg);
 						}
