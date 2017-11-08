@@ -1,13 +1,12 @@
 package com.apass.esp.mapper;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jie.xu on 17/10/27.
@@ -33,7 +32,7 @@ public interface ProMyCouponMapper extends GenericMapper<ProMyCoupon, Long> {
 	List<ProMyCoupon> getCouponByUserIdAndCouponId(ProMyCouponQuery query);
 
 	Integer updateStatusByUserIdAndCouponId(@Param("status") String status,@Param("userId") Long userId,
-																			 @Param("couponId") Long couponId);
+																			 @Param("myCouponId") Long couponId);
 
 	Integer insertProMyCoupoBach(Map<String, Object> paramMap);
 
