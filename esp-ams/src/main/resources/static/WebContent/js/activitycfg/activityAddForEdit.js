@@ -122,9 +122,11 @@ $(function(){
 					success : function(data) {
 						ifLogout(data);
 						if(data.status=="1"){
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>提示</span>",data.msg,"info");
 							window.location.href = ctx + "/activity/cfg/edit?id="+paramMapActivityId;
 						}else{
+							arr.splice(0);//清空list
 							$.messager.alert("<span style='color: black;'>警告</span>",data.msg,"warning");
 						}
 					}
@@ -339,6 +341,7 @@ $(function(){
 				obj5.couponId = chooseCoupon5;
 				obj5.totalNum = issueCouponNum5;
 				obj5.limitNum = issueLimitNum5;
+				obj5.id = $("#proCouponRelId5").val();
 				arr.push(obj5)
 			}
 		}
