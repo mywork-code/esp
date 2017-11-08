@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import com.apass.esp.domain.enums.AwardActivity.ActivityName;
 import com.apass.esp.domain.query.ActivityBindRelStatisticQuery;
 import com.apass.esp.domain.vo.ActivityDetailStatisticsVo;
 import com.apass.esp.domain.vo.AwardActivityInfoVo;
+import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.service.activity.AwardActivityInfoService;
 import com.apass.esp.service.activity.AwardBindRelService;
 import com.apass.esp.service.activity.AwardDetailService;
@@ -53,9 +57,20 @@ public class AwardActivityDetailStatisticsScheduleTask {
 	@Autowired
 	private AwardDetailService awardDetailService;
 
-	@Scheduled(cron = "0 0 7 * * ?")
+	@Scheduled(cron = "0 0 7 * * ?")//每天早上7点
 	public void awardActivityStatistics() {
 		List<ActivityDetailStatisticsVo> chanelStatistisList = activityDetailStatisList();
+		//根据ActivityDetailStatisticsVo里面的拉新总数排序
+		Collections.sort(chanelStatistisList,new Comparator<ActivityDetailStatisticsVo>(){
+			@Override
+			public int compare(ActivityDetailStatisticsVo o1, ActivityDetailStatisticsVo o2) {
+				if(o1.getNewNums() > o2.getNewNums()){
+					return -1;
+				}else{
+					return 1;
+				}
+			}
+		});
 		String fileName = "转介绍奖励金额明细";
 		String[] rowHeadArr = { "推荐人", "拉新人数", "总奖励金额", "已返现金额", "可返现金额" };
 		String[] headKeyArr = { "mobile", "newNums", "awardAmount", "backAwardAmount", "haveAwardAmount" };
@@ -89,7 +104,7 @@ public class AwardActivityDetailStatisticsScheduleTask {
 	        calendar.setTime(new Date());
 	        calendar.add(Calendar.DAY_OF_MONTH, -1);
 	        String BeforeDay = format.format(calendar.getTime());
-	        String BeforeDay2=BeforeDay+" 00:00:00";
+	        String BeforeDay2=BeforeDay+" 23:59:59";
 			ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
 			query.setActivityId(aInfoVo.getId());
 			query.setEndCreateDate(BeforeDay2);
@@ -108,12 +123,12 @@ public class AwardActivityDetailStatisticsScheduleTask {
 					backAwardAmount = awardDetailService.getAllBackAwardByActivityIdAndTime(query);
 				}
 				haveAwardAmount = awardAmount.subtract(backAwardAmount);
-				aVo.setAwardAmount(haveAwardAmount);
+				aVo.setAwardAmount(awardAmount);
 				aVo.setBackAwardAmount(backAwardAmount);
 				aVo.setHaveAwardAmount(haveAwardAmount);
-				// 总奖励金额为0的明细不展示
-				if (awardAmount.compareTo(BigDecimal.ZERO) <= 0) {
-					it.remove();
+				// 总奖励大于0的明细展示
+				if (awardAmount.compareTo(BigDecimal.ZERO) > 0) {
+					list.add(aVo);
 				}
 			}
 		} catch (BusinessException e) {
