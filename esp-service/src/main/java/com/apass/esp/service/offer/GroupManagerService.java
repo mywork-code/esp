@@ -109,9 +109,9 @@ public class GroupManagerService {
 		
 		Date currentTime = new Date();
 		
-		if(activity.getStartTime().getTime() > currentTime.getTime()){
-			throw new BusinessException("活动暂未开始!");
-		}
+//		if(activity.getStartTime().getTime() > currentTime.getTime()){
+//			throw new BusinessException("活动暂未开始!");
+//		}
 		//活动的状态
 		String status = "";
 		if(activity.getEndTime().getTime() < currentTime.getTime()){
