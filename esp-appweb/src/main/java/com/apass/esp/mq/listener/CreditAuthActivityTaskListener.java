@@ -130,14 +130,14 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 												awardDetailDto.setTaxAmount(new BigDecimal("0"));
 												awardDetailDto.setAmount(awardAmont);
 												awardDetailService.addAwardDetail(awardDetailDto);
-											}else if(new BigDecimal("800").compareTo(amountAward)>=0 && new BigDecimal("800").compareTo(amount)<0){
+											}else if(new BigDecimal("800").compareTo(amountAward)>0 && new BigDecimal("800").compareTo(amount)<0){
 												BigDecimal more=amount.subtract(new BigDecimal("800"));
 												//扣除20%个人所得税后的奖励金额
 												BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
 												awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
 												awardDetailDto.setAmount(awardAmont2);
 												awardDetailService.addAwardDetail(awardDetailDto);
-											}else if(new BigDecimal("800").compareTo(amountAward)<0){
+											}else if(new BigDecimal("800").compareTo(amountAward)<=0){
 												awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
 												awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
 												awardDetailService.addAwardDetail(awardDetailDto);
