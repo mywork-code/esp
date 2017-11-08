@@ -1,23 +1,5 @@
 package com.apass.esp.schedule;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.CashRefund;
@@ -41,6 +23,23 @@ import com.apass.esp.service.refund.ServiceProcessService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * type: class
@@ -110,7 +109,7 @@ public class JdAfterSaleScheduleTask {
             if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
             	ml.setStatus("0");
             	ml.setResult("afterSaleServiceListPageQuery接口调用失败！");
-            	ml.setCreateDate(new Date());
+            	ml.setCreatedTime(new Date());
             	ml.setUpdatedTime(new Date());
             	messageListenerMapper.insert(ml);
                 continue;
@@ -119,7 +118,7 @@ public class JdAfterSaleScheduleTask {
             if (result == null || "".equals(result)) {
             	ml.setStatus("0");
             	ml.setResult("获取serviceInfoList组件列表失败！");
-            	ml.setCreateDate(new Date());
+            	ml.setCreatedTime(new Date());
             	ml.setUpdatedTime(new Date());
             	messageListenerMapper.insert(ml);
                 continue;
@@ -280,7 +279,7 @@ public class JdAfterSaleScheduleTask {
             	else if(i==33){ml.setResult("京东处理");}
                 refundDetailInfoEntity.setStatus(RefundStatus.REFUND_STATUS01.getCode());
             }
-            ml.setCreateDate(new Date());
+            ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
             messageListenerMapper.insert(ml);
             refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
