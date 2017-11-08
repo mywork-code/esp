@@ -111,7 +111,7 @@ public class JdAfterSaleScheduleTask {
             	ml.setResult("afterSaleServiceListPageQuery接口调用失败！");
             	ml.setCreatedTime(new Date());
             	ml.setUpdatedTime(new Date());
-            	messageListenerMapper.insert(ml);
+            	messageListenerMapper.insertSelective(ml);
                 continue;
             }
             String result = afsInfo.getResult().getString("serviceInfoList");
@@ -120,7 +120,7 @@ public class JdAfterSaleScheduleTask {
             	ml.setResult("获取serviceInfoList组件列表失败！");
             	ml.setCreatedTime(new Date());
             	ml.setUpdatedTime(new Date());
-            	messageListenerMapper.insert(ml);
+            	messageListenerMapper.insertSelective(ml);
                 continue;
             }
             LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(),result);
@@ -281,7 +281,7 @@ public class JdAfterSaleScheduleTask {
             }
             ml.setCreatedTime(new Date());
             ml.setUpdatedTime(new Date());
-            messageListenerMapper.insert(ml);
+            messageListenerMapper.insertSelective(ml);
             refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
         }
 
