@@ -376,6 +376,10 @@ function addTotalNum(id) {
 						$.messager.alert("<span style='color: black;'>提示</span>","添加发放总量必须大于0","info");
 						return;
 					}
+					if(parseInt(totalCount) > 100000){
+						$.messager.alert("<span style='color: black;'>提示</span>","发放总量必须小于100000","info");
+						return;
+					}
 					$("#"+id).textbox('setValue',totalCount);
 					$('#addTotalCouponNumDiv').dialog('close');
 				},
