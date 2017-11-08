@@ -1,5 +1,17 @@
 package com.apass.esp.service.offer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
@@ -24,17 +36,6 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -205,15 +206,15 @@ public class MyCouponManagerService {
 		return params;
 	}
 	/**
-	 * 根据用户的Id和优惠券Id查询对应的信息
+	 * 根据用户的Id和活动优惠券Id查询对应的信息
 	 * @return
 	 */
-	public List<ProMyCoupon> getCouponByUserIdAndCouponId(Long userId,Long couponId){
+	public List<ProMyCoupon> getCouponByUserIdAndRelCouponId(Long userId,Long couponRelId){
 		ProMyCouponQuery query=new ProMyCouponQuery();
-		if(null !=userId && null !=couponId){
+		if(null !=userId && null !=couponRelId){
 			query.setUserId(userId);
-			query.setCouponId(couponId);
-			return myCouponMapper.getCouponByUserIdAndCouponId(query);
+			query.setCouponRelId(couponRelId);
+			return myCouponMapper.getCouponByUserIdAndRelId(query);
 		}
 		return null;
 	};
@@ -405,7 +406,7 @@ public class MyCouponManagerService {
 			proMyCoupon.setTelephone(tel);
 			Date d = new Date();
 			proMyCoupon.setStartDate(d);
-			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,proCoupon.getEffectiveTime()));
+			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,coupon.getEffectiveTime()));
 			proMyCoupon.setCreatedTime(d);
 			proMyCoupon.setUpdatedTime(d);
 			myCouponMapper.insertSelective(proMyCoupon);

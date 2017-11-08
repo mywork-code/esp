@@ -1,5 +1,25 @@
 package com.apass.esp.nothing;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.activity.AwardDetailDto;
 import com.apass.esp.domain.entity.AwardBindRel;
@@ -13,23 +33,6 @@ import com.apass.esp.service.registerInfo.RegisterInfoService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("/activity/award")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -66,7 +69,7 @@ public class ActivityAwardController {
 				LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 				String isFirstCredit = (String) resultMap.get("isFirstCredit");
 				String userId = (String) resultMap.get("userId");//被邀请人的userId
-				if ("true".contentEquals(isFirstCredit)) {// 如果该用户是第一次获取额度则奖励给他的邀请人
+				if (StringUtils.equals(isFirstCredit, "true")) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 					AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
 					LOGGER.info("用户获得额度时 活动aInfoVo="+aInfoVo);
 					if (null != aInfoVo) {
@@ -124,7 +127,7 @@ public class ActivityAwardController {
 											awardDetailDto.setAmount(awardAmont);
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)>=0 && new BigDecimal("800").compareTo(amount)<0){
+										}else if(new BigDecimal("800").compareTo(amountAward)>0 && new BigDecimal("800").compareTo(amount)<0){
 											BigDecimal more=amount.subtract(new BigDecimal("800"));
 											//扣除20%个人所得税后的奖励金额
 											BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
@@ -132,7 +135,7 @@ public class ActivityAwardController {
 											awardDetailDto.setAmount(awardAmont2);
 											awardDetailService.addAwardDetail(awardDetailDto);
 											return Response.success("奖励邀请人奖励金成功！");
-										}else if(new BigDecimal("800").compareTo(amountAward)<0){
+										}else if(new BigDecimal("800").compareTo(amountAward)<=0){
 											awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
 											awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
 											awardDetailService.addAwardDetail(awardDetailDto);

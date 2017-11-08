@@ -45,7 +45,7 @@
         where  extend_type !='YHLQ'
     </select>
     <!--根据优惠券实体类查询优惠券-->
-    <select id="getProCouponBCoupon" resultType="com.apass.esp.domain.entity.ProCoupon">
+    <select id="getProCouponBCoupon" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM t_esp_pro_coupon
         <include refid="QueryProcouponSql" />
