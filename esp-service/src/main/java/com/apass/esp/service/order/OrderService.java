@@ -2646,7 +2646,7 @@ public class OrderService {
 	    					total = total.add(purchase.getPayMoney());
 	    					goodslist.add(purchase.getGoodsStockId()+"");
 	    				}
-	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"")){//活动
+	    			}else if(StringUtils.isNotBlank(coupon.getActivityId()+"") && coupon.getActivityId()!=-1){//活动
 	    				if(StringUtils.equals(coupon.getActivityId()+"",purchase.getProActivityId()) ){
 	    					total = total.add(purchase.getPayMoney());
 	    					goodslist.add(purchase.getGoodsStockId()+"");
