@@ -72,7 +72,6 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 					Map<String, Object> resultMap = (Map<String, Object>) response.getData();
 					LOGGER.info("用户获得额度时 response.data="+(Map<String, Object>) response.getData());
 					String isFirstCredit = (String) resultMap.get("isFirstCredit");
-					LOGGER.info("用户获得额度时 该用户是否是第一次获取额度："+isFirstCredit);
 					String userId = (String) resultMap.get("userId");//被邀请人的userId
 					if (StringUtils.equals(isFirstCredit, "true")) {// 如果该用户是第一次获取额度则奖励给他的邀请人
 						AwardActivityInfoVo aInfoVo = awardActivityInfoService.getActivityByName(ActivityName.INTRO);
@@ -80,10 +79,10 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 						if (null != aInfoVo) {
 							Date aEndDate = DateFormatUtil.string2date(aInfoVo.getaEndDate(), "yyyy-MM-dd HH:mm:ss");
 							int falge = aEndDate.compareTo(new Date());
-							if (falge >= 0) {
+							if (falge > 0) {
 								//获取邀请人的信息
 								List<AwardBindRel> awardBindRel = awardBindRelService.getAllByInviterUserId(userId);
-								LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel+"邀请人的userId="+awardBindRel.get(0).getUserId());
+								LOGGER.info("用户获得额度时 获取邀请人的信息awardBindRel="+awardBindRel);
 								if(null !=awardBindRel && awardBindRel.size()>0){
 									//判断在当前活动下邀请人是否已经获得了被邀请人的奖励
 									Map<String, Object> parMap2=new HashMap<>();
@@ -102,6 +101,7 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 										c.set(Calendar.DAY_OF_MONTH,1);
 										String first = format.format(c.getTime());
 										String firstDay=first+" 00:00:00";
+										String nowTime=DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
 										if(null !=awardBindRel && awardBindRel.size()>0){
 											AwardDetailDto awardDetailDto=new AwardDetailDto();
 											awardDetailDto.setActivityId(aInfoVo.getId());
@@ -118,30 +118,28 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 											parMap.put("userId", awardBindRel.get(0).getUserId());
 											parMap.put("type", "0");
 											parMap.put("applyDate1", DateFormatUtil.string2date(firstDay, "yyyy-MM-dd HH:mm:ss"));
-											parMap.put("applyDate2", new Date());
+											parMap.put("applyDate2", DateFormatUtil.string2date(nowTime, "yyyy-MM-dd HH:mm:ss"));
 											BigDecimal amountAward=awardDetailMapper.queryAmountAward(parMap);//已经获得的奖励金额
 											LOGGER.info("用户获得额度时 已经获得的奖励金额amountAward="+amountAward);
 											if(amountAward == null){
-												amountAward = BigDecimal.ZERO;
+												amountAward = new BigDecimal(0);
 											}
 											BigDecimal  awardAmont=new BigDecimal(aInfoVo.getAwardAmont());//即将获得的奖励金额
 											BigDecimal amount=awardAmont.add(amountAward);
-											BigDecimal base = new BigDecimal("800");
-											if(base.compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
+											if(new BigDecimal("800").compareTo(amount)>=0){//总奖励金额小于800，直接插入记录
 												awardDetailDto.setTaxAmount(new BigDecimal("0"));
 												awardDetailDto.setAmount(awardAmont);
 												awardDetailService.addAwardDetail(awardDetailDto);
-											}else {
-												/**
-												 * 需要缴税的部分奖励金额
-												 */
-												BigDecimal taxAmount = amount.subtract(base);
-												/**
-												 * 提现扣税金额
-												 */
-												BigDecimal taxMoney = taxAmount.multiply(new BigDecimal("0.2"));
-												awardDetailDto.setTaxAmount(taxMoney);
-												awardDetailDto.setAmount(awardAmont.subtract(taxMoney));
+											}else if(new BigDecimal("800").compareTo(amountAward)>=0 && new BigDecimal("800").compareTo(amount)<0){
+												BigDecimal more=amount.subtract(new BigDecimal("800"));
+												//扣除20%个人所得税后的奖励金额
+												BigDecimal  awardAmont2=awardAmont.subtract(more.multiply(new BigDecimal("0.2")));
+												awardDetailDto.setTaxAmount(more.multiply(new BigDecimal("0.2")));
+												awardDetailDto.setAmount(awardAmont2);
+												awardDetailService.addAwardDetail(awardDetailDto);
+											}else if(new BigDecimal("800").compareTo(amountAward)<0){
+												awardDetailDto.setTaxAmount(awardAmont.multiply(new BigDecimal("0.2")));
+												awardDetailDto.setAmount(awardAmont.multiply(new BigDecimal("0.8")));
 												awardDetailService.addAwardDetail(awardDetailDto);
 											}
 										}
