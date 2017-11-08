@@ -85,13 +85,12 @@ public class ProCouponService {
             if(StringUtils.equals(goodsInfoEntity.getSource(),"jd")){
                 TreeSet<String> skuIdSet = jdGoodsInfoService.getJdSimilarSkuIdList(goodsInfoEntity.getExternalId());
                 List<String> skuIdList = new ArrayList<String> (skuIdSet);
-                if(skuIdList == null){
+                if(CollectionUtils.isEmpty(skuIdList)){
                     LOGGER.error("数据有误,京东商品无skuId,商品id为:{}",String.valueOf(goodsInfoEntity.getId()));
                     throw new RuntimeException("数据有误,京东商品无skuId");
                 }
                 List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(skuIdList);
                 StringBuffer similarGoodsCode = new StringBuffer();
-                similarGoodsCode.append(proCoupon.getGoodsCode());
                 for (int i = 0; i <goodsList.size() ; i++) {
                     if(i<goodsList.size()-1){
                         similarGoodsCode.append(goodsList.get(i).getGoodsCode()+",");

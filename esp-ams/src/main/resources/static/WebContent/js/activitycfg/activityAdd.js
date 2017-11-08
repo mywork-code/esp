@@ -142,7 +142,7 @@ $(function(){
 		param.coupon = isCoupon;
 		if(isCoupon == "Y") {
 			var chooseCoupon1 = $('#chooseCoupon1').textbox('getValue');
-			if (chooseCoupon1 == '' || null == chooseCoupon1) {
+			if (chooseCoupon1 == '请选择') {
 				$.messager.alert("<span style='color: black;'>提示</span>", "请填写第一个选择发放优惠券！", 'info');
 				return false;
 			}
@@ -168,7 +168,7 @@ $(function(){
 			var addOrdeleteCouponTrDisplay5 = $(".addOrdeleteCouponTr5").css("display");
 			if (addOrdeleteCouponTrDisplay2 != "none") {
 				var chooseCoupon2 = $('#chooseCoupon2').textbox('getValue');
-				if (chooseCoupon2 == '' || null == chooseCoupon2) {
+				if (chooseCoupon2 == '请选择') {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第二个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -191,7 +191,7 @@ $(function(){
 
 			if (addOrdeleteCouponTrDisplay3 != "none") {
 				var chooseCoupon3 = $('#chooseCoupon3').textbox('getValue');
-				if (chooseCoupon3 == '' || null == chooseCoupon3) {
+				if (chooseCoupon3 == '请选择') {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第三个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -212,7 +212,7 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay4 != "none") {
 				var chooseCoupon4 = $('#chooseCoupon4').textbox('getValue');
-				if (chooseCoupon4 == '' || null == chooseCoupon4) {
+				if (chooseCoupon4 == '请选择') {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第四个选择发放优惠券！", 'info');
 					return false;
 				}
@@ -233,7 +233,7 @@ $(function(){
 			}
 			if (addOrdeleteCouponTrDisplay5 != "none") {
 				var chooseCoupon5 = $('#chooseCoupon5').textbox('getValue');
-				if (chooseCoupon5 == '' || null == chooseCoupon5) {
+				if (chooseCoupon5 == '请选择') {
 					$.messager.alert("<span style='color: black;'>提示</span>", "请填写第五个选择发放优惠券！", 'info');
 					return false;
 				}

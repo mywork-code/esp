@@ -205,10 +205,11 @@ $(function () {
                                                 debugger;
                                                 ifLogout(data);
                                                 if(data.status=="1"){
-                                                    $.messager.alert("提示",data.msg,'info');
+                                                    debugger;
                                                     $that.animate({left:"54px"},50)
                                                     $that.parent().find('.relation-text').css('left','10px');
                                                     $that.parent().find('.relation-text').html('已关联');
+                                                    $.messager.alert("提示",data.msg,'info');
                                                     $(".border-circle").removeClass('disabled');
                                                 }else{
                                                     $.messager.alert("错误",data.msg,'error');
@@ -225,13 +226,14 @@ $(function () {
                                                     type : "post",
                                                     dateType:"json",
                                                     success : function(data) {
+                                                        debugger;
                                                         ifLogout(data);
                                                         $(".border-circle").removeClass("disabled");
                                                         if(data.status=="1"){
-                                                            $.messager.alert("提示",data.msg,'info');
                                                             $that.animate({left:"0px"},50)
                                                             $that.parent().find('.relation-text').css('left','27px');
                                                             $that.parent().find('.relation-text').html('未关联');
+                                                            $.messager.alert("提示",data.msg,'info');
                                                             $(".border-circle").removeClass('disabled');
                                                         }else{
                                                             $.messager.alert("错误",data.msg,'error');
