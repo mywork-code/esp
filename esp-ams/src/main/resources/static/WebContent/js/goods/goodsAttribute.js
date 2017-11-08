@@ -204,9 +204,10 @@ $(function () {
 			function(resp) {
 				$.validateResponse(resp, function() {
 	                $(".search-btn").click();
-	                $('#deleteAttr').window('close');
 	            });
-		});
+				$('#deleteAttr').window('close');
+		    }
+		);
 	});
 	//取消
 	$("#deletecancel").click(function() {

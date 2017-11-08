@@ -105,7 +105,7 @@ public class CouponManagerService {
 				proCouponVo.setEndTime(endTimeTimeString);
 				proCouponVo.setEffectiveTiem(startTimeString, endTimeTimeString);
 			   //判断该用户是否已经领取了该优惠券
-			   List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndCouponId(userId,rel.getCouponId());
+			   List<ProMyCoupon> proMyCouponList=myCouponManagerService.getCouponByUserIdAndRelCouponId(userId,rel.getId());
 			   if(null !=proMyCouponList && proMyCouponList.size()>0){
 					if(proMyCouponList.size()<rel.getLimitNum()){//领取的数量小于限领的数量则该优惠券还可以领取
 						proCouponList.add(proCouponVo);
