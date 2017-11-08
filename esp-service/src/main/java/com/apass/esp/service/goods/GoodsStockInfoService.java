@@ -135,7 +135,7 @@ public class GoodsStockInfoService {
         try{
             GoodsStockInfoEntity entity = goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
             entity.setDeleteFlag("Y");
-            goodsStockDao.update(entity);
+            goodsStockDao.updateService(entity);
             return true;
         }catch(Exception e){
             return false;
@@ -152,7 +152,7 @@ public class GoodsStockInfoService {
             List<GoodsStockInfoEntity> list = goodsStockDao.loadByGoodsId(goodsId);
             for(GoodsStockInfoEntity entity : list){
                 entity.setDeleteFlag("Y");
-                goodsStockDao.update(entity);
+                goodsStockDao.updateService(entity);
             }
             return true;
         }catch(Exception e){

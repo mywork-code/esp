@@ -46,9 +46,4 @@
         <include refid="QueryProcouponSql" />
     </select>
 
-    <update id="updateStatusByUserIdAndCouponId">
-            update t_esp_pro_mycoupon set status = #{status},
-            updated_time = now()
-            where user_id = #{userId} and coupon_id = #{couponId}
-    </update>
 </mapper>

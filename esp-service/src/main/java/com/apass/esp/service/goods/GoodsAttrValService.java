@@ -57,6 +57,7 @@ public class GoodsAttrValService {
             for(String str : arr){
                 entity = new GoodsAttrVal();
                 entity.setAttrVal(str.split("-")[0]);
+                entity.setGoodsId(goodsId);
                 List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
                 if(list!=null&&list.size()>0){
                     return false;
@@ -65,7 +66,6 @@ public class GoodsAttrValService {
                 entity.setSort(++sort);
                 entity.setCreatedTime(new Date());
                 entity.setUpdatedTime(new Date());
-                entity.setGoodsId(goodsId);
                 goodsAttrValMapper.insertSelective(entity);
             }
             return true;
