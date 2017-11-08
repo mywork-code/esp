@@ -405,7 +405,7 @@ public class MyCouponManagerService {
 			proMyCoupon.setTelephone(tel);
 			Date d = new Date();
 			proMyCoupon.setStartDate(d);
-			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,proCoupon.getEffectiveTime()));
+			proMyCoupon.setEndDate(DateFormatUtil.addDays(d,coupon.getEffectiveTime()));
 			proMyCoupon.setCreatedTime(d);
 			proMyCoupon.setUpdatedTime(d);
 			myCouponMapper.insertSelective(proMyCoupon);
