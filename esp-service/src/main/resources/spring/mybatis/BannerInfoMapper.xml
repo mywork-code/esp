@@ -195,4 +195,16 @@
 		</set>
 		where id = #{id,jdbcType=BIGINT}
 	</update>
+	
+	<select id="selectByActivityId" resultType="BannerInfoEntity" parameterType="String">
+	<![CDATA[
+		SELECT
+			ID id,
+			activity_url activityUrl
+		FROM
+			t_esp_banner_info
+		WHERE
+			activity_url like #{value} 
+	]]>
+	</select>
 </mapper> 
