@@ -308,7 +308,7 @@ public class MyCouponManagerService {
 	 * 订单失效、退款返回优惠券
 	 */
 	public void returnCoupon(Long userId,Long couponId,String selfOrderId){
-		if(couponId == null){
+		if(couponId == null || couponId < 0){
 			return;
 		}
 		//根据couponId查询orderList,判断订单状态是否是退款或订单失效
@@ -318,12 +318,12 @@ public class MyCouponManagerService {
 				continue;
 			}
 			if(order.getStatus().equals(OrderStatus.ORDER_CANCEL.getCode())){
-
+				//这里空代码是正确的代码，请勿删除！！！
 			}
 		  else if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
 				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
 				if(cr != null){
-					if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
+					if(cr.getStatus().toString().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
 
 					}else{
 						return;
