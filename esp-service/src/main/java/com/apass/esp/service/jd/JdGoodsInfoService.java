@@ -654,7 +654,7 @@ public class JdGoodsInfoService {
 				}
 			} else if (StringUtils.equals(pro.getType(), "ZDSP")) {
 				String[] similarGoods = pro.getSimilarGoodsCode().split(",");
-				if (Arrays.asList(similarGoods).contains(pro.getGoodsCode())) {
+				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
 					proMyCouponList.add(proMyCoupon);
 				}
 			} else if (StringUtils.equals(pro.getType(), "QPL")) {
@@ -665,7 +665,11 @@ public class JdGoodsInfoService {
 			ProCoupon proCoupon = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
 			ProCouponVo proCouponVo=new ProCouponVo();
 			proCouponVo.setId(proCoupon.getId());
-			proCouponVo.setActivityId(Long.parseLong(activityId));
+			if(StringUtils.isNotEmpty(activityId)){
+				proCouponVo.setActivityId(Long.parseLong(activityId));
+			}else{
+				proCouponVo.setActivityId(null);
+			}
 			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());
 			proCouponVo.setName(proCoupon.getName());
 			proCouponVo.setCouponSill(proCoupon.getCouponSill());
