@@ -79,10 +79,10 @@ public class MyCouponManagerService {
 		 * 判断活动是否已经结束
 		 */
 	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
-	    if(null==activityCfg){
+	    if(null == activityCfg){
 	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
-	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
+	    if(activityCfg.getEndTime().getTime() < new Date().getTime()){
 	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 		/**
