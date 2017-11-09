@@ -12,9 +12,9 @@
         where main_order_id = #{mainOrderId,jdbcType=VARCHAR}
     </select>
     
-    <select id="queryCashRefundByStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    <select id="queryCashRefundByStatus" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />
-        from t_esp_cash_refund where status = #{status,jdbcType=INTEGER}
+        from t_esp_cash_refund where status = #{status,jdbcType=INTEGER} AND agree_d &lt; #{agreeDate,jdbcType=TIMESTAMP}
     </select>
     
    <update id="updateByOrderIdSelective" parameterType="com.apass.esp.domain.entity.CashRefund" >
