@@ -654,7 +654,7 @@ public class JdGoodsInfoService {
 				}
 			} else if (StringUtils.equals(pro.getType(), "ZDSP")) {
 				String[] similarGoods = pro.getSimilarGoodsCode().split(",");
-				if (Arrays.asList(similarGoods).contains(pro.getGoodsCode())) {
+				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
 					proMyCouponList.add(proMyCoupon);
 				}
 			} else if (StringUtils.equals(pro.getType(), "QPL")) {
