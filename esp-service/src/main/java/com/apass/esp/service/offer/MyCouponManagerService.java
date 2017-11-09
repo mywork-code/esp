@@ -136,14 +136,8 @@ public class MyCouponManagerService {
 		coupon.setCouponId(vo.getCouponId());
 		//根据活动的Id和优惠券的Id，获取活动和券的关系表信息
 		ProCouponRel couponRel = couponRelMapper.getRelByActivityIdAndCouponId(new ProCouponRelQuery(vo.getActivityId(),vo.getCouponId()));
-		if(null == couponRel){
-			throw new BusinessException("领取失败!");
-		}
 		
 		ProActivityCfg activity = activityCfgMapper.selectByPrimaryKey(vo.getActivityId());
-		if(null == activity){
-			throw new BusinessException("领取失败!");
-		}
 		coupon.setCouponRelId(couponRel.getId());
 		coupon.setStartDate(activity.getStartTime());
 		coupon.setEndDate(activity.getEndTime());
