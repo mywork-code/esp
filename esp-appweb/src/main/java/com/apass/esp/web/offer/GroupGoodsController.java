@@ -1,6 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.vo.BannerVo;
-import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.service.banner.BannerInfoService;
-import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
