@@ -665,7 +665,11 @@ public class JdGoodsInfoService {
 			ProCoupon proCoupon = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
 			ProCouponVo proCouponVo=new ProCouponVo();
 			proCouponVo.setId(proCoupon.getId());
-			proCouponVo.setActivityId(Long.parseLong(activityId));
+			if(StringUtils.isNotEmpty(activityId)){
+				proCouponVo.setActivityId(Long.parseLong(activityId));
+			}else{
+				proCouponVo.setActivityId(null);
+			}
 			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());
 			proCouponVo.setName(proCoupon.getName());
 			proCouponVo.setCouponSill(proCoupon.getCouponSill());
