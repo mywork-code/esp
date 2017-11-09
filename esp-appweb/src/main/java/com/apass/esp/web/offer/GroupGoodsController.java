@@ -32,9 +32,6 @@ public class GroupGoodsController {
 	private GroupManagerService groupManagerService;
 	
 	@Autowired
-	private CouponManagerService couponManagerService;
-	
-	@Autowired
 	private BannerInfoService bannerInfoService;
 	
 	
@@ -49,12 +46,7 @@ public class GroupGoodsController {
 			return Response.fail("参数传递有误!");
 		}
 		try {
-			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
-			/**
-			 * sprint 11 根据活动的Id，获取对应优惠券的信息
-			 */
-			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
-			maps.put("coupons", couponVos);
+			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId,userId);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
