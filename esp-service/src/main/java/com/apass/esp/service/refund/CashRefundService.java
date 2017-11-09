@@ -645,8 +645,8 @@ public class CashRefundService {
      *
      * @return
      */
-    public List<CashRefund> getCashRefundByStatus(String status) {
-        return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status));
+    public List<CashRefund> getCashRefundByStatus(String status,Date agreeDate) {
+        return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status),agreeDate);
     }
 
     /**
