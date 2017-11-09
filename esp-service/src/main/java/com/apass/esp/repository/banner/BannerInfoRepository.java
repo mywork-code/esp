@@ -66,7 +66,7 @@ public class BannerInfoRepository extends BaseMybatisRepository<BannerInfoEntity
     /**
      * 根据活动的Id，获取活动的配置路径
      */
-    public BannerInfoEntity getActivityUrlLikeActivityId(String activityId){
-    	return getSqlSession().selectOne(getSQL("selectByActivityId"), activityId);
+    public List<BannerInfoEntity> getActivityUrlLikeActivityId(String activityId){
+    	return getSqlSession().selectList(getSQL("selectByActivityId"), activityId);
     }
 }
