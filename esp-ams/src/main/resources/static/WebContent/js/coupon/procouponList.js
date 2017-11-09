@@ -1,6 +1,4 @@
 $(function(){
-	// 有无门槛标记
-	var sillType = 'Y';
 	//优惠券类型标记
 	var type = null;
 	//Grid
@@ -141,7 +139,7 @@ $(function(){
 							"goodsCode":$("#addGoodsCode").textbox("getValue"),
 							"couponSill":$("#addCouponSill").textbox("getValue"),
 							"discountAmonut":$("#addDiscountAmonut").textbox("getValue"),
-							"sillType":sillType
+							"sillType":$("#sillType").val()
 						}
 
 						$.ajax({
@@ -202,7 +200,6 @@ $(function(){
 				{
 					text : "保存",
 					handler : function() {
-						debugger;
 						var arr = [];
 						var arrObj1 = {};
 						var arrObj2 = {};
@@ -387,10 +384,10 @@ $(function(){
 		if($('#ifCouponSill').is(':checked')){
 			$("#addCouponSill").textbox({disabled: true});
 			$("#addCouponSill").textbox('clear');
-			sillType = "N";
+			$("#sillType").val("N");
 		}else{
 			$("#addCouponSill").textbox({disabled: false});
-			sillType = "Y";
+			$("#sillType").val("Y");
 		}
 	});
 
@@ -480,8 +477,7 @@ $(function(){
 				}
 			}
 		}
-		debugger;
-		if(sillType == "Y"){
+		if($("#sillType").val() == "Y"){
 			if($("#addCouponSill").textbox("getValue")==null || $("#addCouponSill").textbox("getValue") == ""){
 				$.messager.alert('<span style="color: black">提示</span>','请输入优惠门槛');
 				return false;
@@ -538,6 +534,8 @@ function goodsCategoryComboFun2() {
 }
 //添加优惠券窗口初始化
 function clearFunction() {
+
+	debugger;
 	$("#addCouponName").textbox("clear");
 	$("#addExtendType").textbox("clear");
 	$("#addEffectiveTime").textbox("clear");
@@ -550,6 +548,7 @@ function clearFunction() {
 	$("#addCouponSill").textbox({disabled: false});
 	$("#addDiscountAmonut").textbox("clear");
 	$("#ifCouponSill").attr("checked",false)
+	$("#sillType").val("Y");
 
 }
 //手动发放优惠券窗口初始化

@@ -2,11 +2,9 @@ package com.apass.esp.service.offer;
 
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
