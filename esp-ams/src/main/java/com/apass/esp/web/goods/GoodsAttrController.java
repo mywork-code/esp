@@ -105,7 +105,7 @@ public class GoodsAttrController {
         }
     }
     @ResponseBody
-    @RequestMapping(value = "/editGoodsAttr",method = RequestMethod.GET)
+    @RequestMapping(value = "/editGoodsAttr",method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品属性维护", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editGoodsAttr(HttpServletRequest request) {
         try{
