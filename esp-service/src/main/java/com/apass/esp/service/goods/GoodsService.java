@@ -397,7 +397,7 @@ public class GoodsService {
     returnMap.put("goodsTitle",goodsBasicInfo.getGoodsTitle());
     returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
     returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
-    returnMap.put("status",goodsBasicInfo.getStatus());
+//    returnMap.put("status",goodsBasicInfo.getStatus());
     returnMap.put("goodsStockDes","无货");
 	if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
 	returnMap.put("goodsStockDes","有货");
@@ -485,6 +485,8 @@ public class GoodsService {
 			jdSimilarSkuVo.setProActivityId(proActivityId);
 			jdSimilarSkuVo.setProCouponList(proCoupons);
 			jdSimilarSkuVo.setSupport7dRefund(support7dRefund);
+			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+			JdSimilarSkuToList.add(jdSimilarSkuTo);
 		}
 		return JdSimilarSkuToList;
 	}
@@ -524,7 +526,7 @@ public class GoodsService {
 						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split("-");
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
 							skuIds.add(goodsStockInfoEntity.getSkuId());
-							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId();
+							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId()+",";
 						}
 					}
 				}
@@ -533,6 +535,7 @@ public class GoodsService {
 				saleAttrList.add(jdSaleAttr);
 			}
 			jdSimilarSku.setSaleAttrList(saleAttrList);
+			jdSimilarSkuList.add(jdSimilarSku);
 		}
 		return jdSimilarSkuList;
 	}
