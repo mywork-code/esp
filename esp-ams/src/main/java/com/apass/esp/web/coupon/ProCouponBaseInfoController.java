@@ -1,5 +1,6 @@
 package com.apass.esp.web.coupon;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CouponList;
 import com.apass.esp.domain.entity.ProCoupon;
@@ -10,6 +11,7 @@ import com.apass.esp.domain.enums.CouponIsDelete;
 import com.apass.esp.domain.enums.CouponSillType;
 import com.apass.esp.domain.enums.CouponStatus;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
@@ -65,23 +67,11 @@ public class ProCouponBaseInfoController {
 
     @RequestMapping("/pageList")
     @ResponseBody
-    public ResponsePageBody<ProCoupon> pageList(HttpServletRequest request){
+    public ResponsePageBody<ProCoupon> pageList(ProCouponQuery query){
         LOGGER.info("优惠券分页查询开始,pageList()方法.....");
         ResponsePageBody<ProCoupon> responseBody = new ResponsePageBody<>();
         try{
-            String pageNo = HttpWebUtils.getValue(request, "page");
-            String pageSiz = HttpWebUtils.getValue(request, "rows");
-
-            //分页参数
-            Integer pageNum = Integer.valueOf(pageNo) <= 0 ? 1 : Integer.valueOf(pageNo);
-            Integer pageSize = Integer.valueOf(pageSiz) <= 0 ? 10 : Integer.valueOf(pageSiz);
-            Integer pageBegin = (pageNum - 1) * pageSize;
-
-            Map<String,Object> paramMap = Maps.newHashMap();
-            paramMap.put("pageBegin",pageBegin);
-            paramMap.put("pageSize",pageSize);
-
-            Pagination<ProCoupon> pagination = proCouponService.pageList(paramMap);
+            Pagination<ProCoupon> pagination = proCouponService.pageList(query);
             responseBody.setTotal(pagination.getTotalCount()==null ? 0 : pagination.getTotalCount());
             responseBody.setRows(pagination.getDataList());
             responseBody.setMsg("优惠券查询成功");

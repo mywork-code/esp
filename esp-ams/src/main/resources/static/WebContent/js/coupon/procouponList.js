@@ -534,8 +534,6 @@ function goodsCategoryComboFun2() {
 }
 //添加优惠券窗口初始化
 function clearFunction() {
-
-	debugger;
 	$("#addCouponName").textbox("clear");
 	$("#addExtendType").textbox("clear");
 	$("#addEffectiveTime").textbox("clear");
