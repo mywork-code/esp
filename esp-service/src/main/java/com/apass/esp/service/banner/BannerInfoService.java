@@ -106,7 +106,7 @@ public class BannerInfoService {
     }
     
     /**
-     * 通过id查询banner信息
+     * 通过activityId查询banner信息
      * @param id
      * @return
      */
