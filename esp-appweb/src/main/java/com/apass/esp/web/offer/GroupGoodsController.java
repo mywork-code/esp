@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.vo.BannerVo;
 import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -31,6 +33,10 @@ public class GroupGoodsController {
 	
 	@Autowired
 	private CouponManagerService couponManagerService;
+	
+	@Autowired
+	private BannerInfoService bannerInfoService;
+	
 	
 	@RequestMapping("/getGroupAndGoods")
 	@ResponseBody
@@ -58,4 +64,22 @@ public class GroupGoodsController {
 			return Response.fail("活动查询失败!");
 		}
 	}
+	
+	@RequestMapping("/getActivityUrl")
+	@ResponseBody
+	public Response getActivityUrlLikeActivityId(@RequestBody Map<String, Object> paramMap){
+		String activityId = CommonUtils.getValue(paramMap, "activityId");
+		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
+		if(StringUtils.isEmpty(activityId)){
+			return Response.fail("参数传递有误!");
+		}
+		try {
+			BannerVo banner = bannerInfoService.getBannerVoLikeActivityId(activityId);
+			return Response.successResponse(banner);
+		} catch (Exception e) {
+			logger.error("exception activityId :{}",e);
+			return Response.fail("活动Url查询失败!");
+		}
+	}
+	
 }
