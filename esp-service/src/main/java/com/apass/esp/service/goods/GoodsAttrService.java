@@ -432,7 +432,7 @@ public class GoodsAttrService {//450
             goodsStockentoty.setUpdateUser(userName);
             goodsStockentoty.setMarketPrice(new BigDecimal(entity.getGoodsPrice()));//1h
 //            goodsStockentoty.setStockLogo(url);
-            goodsStockInfoService.insert(goodsStockentoty);
+            goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
         }
         return Response.success("批量保存库存！");
     }

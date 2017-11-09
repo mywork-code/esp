@@ -159,4 +159,8 @@ public class GoodsStockInfoService {
             return false;
         }
     }
+
+    public void insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
+        goodsStockDao.insertGoodsAttr(goodsStockentoty);
+    }
 }
