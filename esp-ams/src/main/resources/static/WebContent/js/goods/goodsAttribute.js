@@ -120,16 +120,18 @@ $(function () {
 			return;
 		}
 		//提交
-		var address = ctx + '/application/goods/goodsAttr/addGoodsAttr';
-		$.getJSON(
-			address,
-			{"name":name}, 
-			function(resp) {
-				$.validateResponse(resp, function() {
-	                $(".search-btn").click();
-	                $('#addAttr').window('close');
-	            });
-		});
+		 $.ajax({
+             url : ctx + '/application/goods/goodsAttr/addGoodsAttr',
+             data : {"name":name},
+             type : "post",
+             dataType : "json",
+             success : function(data) {
+                 $.validateResponse(data, function() {
+                	 $(".search-btn").click();
+ 	                $('#addAttr').window('close');
+                 });
+             }
+         })
 	});
     //取消
 	$("#addcancel").click(function() {
