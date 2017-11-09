@@ -2,11 +2,14 @@ package com.apass.esp.service.banner;
 
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
+import com.apass.esp.domain.vo.BannerVo;
 import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,5 +103,33 @@ public class BannerInfoService {
     //查询所有banner图
     public List<BannerInfoEntity> loadBannersList(Map<String, Object> map) {
         return bannerDao.loadBannersList(map);
+    }
+    
+    /**
+     * 通过activityId查询banner信息
+     * @param id
+     * @return
+     */
+    public List<BannerInfoEntity> getActivityUrlLikeActivityId(String activityId) {
+        return bannerDao.getActivityUrlLikeActivityId(activityId);
+    }
+    
+    public BannerVo getBannerVoLikeActivityId(String activityId){
+    	List<BannerInfoEntity> bannerList = getActivityUrlLikeActivityId("%?activityId="+activityId);
+    	BannerInfoEntity banner = null;
+    	if(CollectionUtils.isNotEmpty(bannerList)){
+    		banner = bannerList.get(0);
+    	}
+    	return getBannerPoToVo(banner);
+    }
+    
+    public BannerVo getBannerPoToVo(BannerInfoEntity banner){
+    	BannerVo vo = new BannerVo();
+    	if(null != banner){
+    		vo.setActivityUrl(banner.getActivityUrl().replace("ajqh://cn.apass.ajqh/web?url=", ""));
+    		vo.setId(banner.getId());
+    		vo.setName(banner.getBannerName());
+    	}
+    	return vo;
     }
 }
