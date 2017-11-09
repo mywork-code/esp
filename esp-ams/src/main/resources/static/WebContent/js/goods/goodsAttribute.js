@@ -170,15 +170,18 @@ $(function () {
 		}
 		//提交
 		var address = ctx + '/application/goods/goodsAttr/editGoodsAttr';
-		$.getJSON(
-			address,
-			{"id":id,"name":name}, 
-			function(resp) {
-				$.validateResponse(resp, function() {
-	                $(".search-btn").click();
-	                $('#editAttr').window('close');
-	            });
-		});
+		$.ajax({
+            url : address,
+            data : {"id":id,"name":name},
+            type : "post",
+            dataType : "json",
+            success : function(data) {
+                $.validateResponse(data, function() {
+                	$(".search-btn").click();
+ 	                $('#editAttr').window('close');
+                });
+            }
+        })
 	});
 	//取消
 	$("#editcancel").click(function() {
