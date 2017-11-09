@@ -1,6 +1,6 @@
 $(function(){
 	// 有无门槛标记
-	var sillType = 'N';
+	var sillType = 'Y';
 	//优惠券类型标记
 	var type = null;
 	//Grid
@@ -480,7 +480,7 @@ $(function(){
 				}
 			}
 		}
-		
+		debugger;
 		if(sillType == "Y"){
 			if($("#addCouponSill").textbox("getValue")==null || $("#addCouponSill").textbox("getValue") == ""){
 				$.messager.alert('<span style="color: black">提示</span>','请输入优惠门槛');
@@ -490,6 +490,11 @@ $(function(){
 			var couponSill = parseInt($("#addCouponSill").textbox("getValue"));
 			if(couponSill<0){
 				$.messager.alert('<span style="color: black">提示</span>','优惠门槛只能输入正整数');
+				return false;
+			}
+
+			if(couponSill<$("#addDiscountAmonut").textbox("getValue")){
+				$.messager.alert('<span style="color: black">提示</span>','优惠金额不能大于优惠门槛');
 				return false;
 			}
 		}
