@@ -22,6 +22,8 @@
 	var catenum = 0;//记录添加属性次数
 	var catename = new Array();//记录添加属性名称  (ID)
 	var goodsCateChangeFalg=1;//保存修改商品时商品类目有没有修改    为1未修改 为0 已修改 
+	
+	var viewdisplaybysource = 'jd';//修改商品   判断该商品是否京东     判定页面显示      京东商品页面显示2个   非京东页面显示4个。    所以跳页需要修改 。。 
 /**
  * GOODS - info
  */
@@ -103,6 +105,10 @@ $(function() {
 	});
 	///*修改商品    -新增库存信息*/
     $(".add-btn2").click(function() {
+    	if(viewdisplaybysource == 'jd'){
+    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+			return;
+    	}
     	if(goodsCateChangeFalg==1){
     		$.messager.alert("提示", "商品类目未修改，不可维护商品属性！", "info");
 			return;
@@ -113,6 +119,10 @@ $(function() {
     });
 	//修改商品保存库存
 	$(".save-btnAllEdit").click(function() {
+		if(viewdisplaybysource == 'jd'){
+    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+			return;
+    	}
 		if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
 			function2();
 			return;
@@ -160,62 +170,52 @@ $(function() {
         singleSelect : true,
         striped:true,
         toolbar : '#tb',
-        columns : [[
-                {
+        columns : [[{
                     title : '商户名称',
                     field : 'merchantName',
                     width : 90,
                     align : 'center'
-                },
-                {
+                },{
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },
-				{
+                },{
 					title : '商品编号',
 					field : 'goodsCode',
 					width : 90,
 					align : 'center'
-				},
-				{
+				},{
 					title : 'skuid',
 					field : 'externalId',
 					width : 90,
 					align : 'center'
-				},
-       		 	{  
+				},{  
        		 		title : '类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
        		 		align : 'center'
-       		 	}, 
-       		 	{
+       		 	},{
                     title : '商品型号',
                     field : 'goodsModel',
                     width : 80,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品小标题',
                     field : 'goodsTitle',
                     width : 90,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品类型',
                     field : 'goodsTypeDesc',
                     width : 80,
                     align : 'center',
-                }, 
-                {
+                },{
                     title : '规格类型',
                     field : 'goodsSkuType',
                     width : 80,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品生产日期',
                     field : 'proDate',
                     width : 120,
@@ -225,8 +225,7 @@ $(function() {
                     		return new Date(value).Format("yyyy-MM-dd");
                     	}
                     }
-                }, 
-                {
+                },{
                     title : '保质期',
                     field : 'keepDate',
                     width : 80,
@@ -236,50 +235,42 @@ $(function() {
                     		return value+"个月";
                     	}
                     }
-                }, 
-                {
+                },{
                     title : '生产厂家',
                     field : 'supNo',
                     width : 90,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '排序',
                     field : 'sordNo',
                     width : 60,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '状态',
                     field : 'statusDesc',
                     width : 80,
                     align : 'center',
-                }, 
-                {
+                },{
                     title : '商品上架时间',
                     field : 'listTimeString',
                     width : 140,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品下架时间',
                     field : 'delistTimeString',
                     width : 140,
                     align : 'center'
-                },
-                {
+                },{
                     title : '创建人',
                     field : 'createUser',
                     width : 100,
                     align : 'center'
-                },
-                {
+                },{
                     title : '修改人',
                     field : 'updateUser',
                     width : 100,
                     align : 'center'
-                },
-                {
+                },{
                     title : '创建时间',
                     field : 'createDate',
                     width : 140,
@@ -287,8 +278,7 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },
-                {
+                },{
                     title : '修改时间',
                     field : 'updateDate',
                     width : 140,
@@ -296,15 +286,13 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },
-                {
+                },{
                 	title : '商品来源标识',
                 	field : 'source',
                 	width : 140,
                 	align : 'center',
                 	hidden: 'hidden'
-                },
-                {
+                },{
                     title : '操作',
                     field : 'opt',
                     width : 150,
@@ -939,6 +927,7 @@ $(function() {
 		initEditGoodsInfo(rowData);//编辑商品回显
 		$("#editBannerGoodsId").val(rowData.id);
 		if(rowData.source == 'jd'){
+			viewdisplaybysource = 'jd';
 			$("#editPlanDecrible #one").css({'display':'none'});
 	    	$("#editPlanDecrible #two").css({'display':'inline','font-weight':'bold'});
 	    	$("#editPlanDecrible #three").css('display','none');
@@ -951,6 +940,7 @@ $(function() {
 			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			$("input[name='editSupport7dRefund'][value='N']").attr("disabled",true);
 		}else{
+			viewdisplaybysource = 'notjd';
 			$("#editPlanDecrible #one").css({'display':'inline','font-weight':'bold'});
 			$("#editPlanDecrible #two").css({'display':'inline','font-weight':'lighter'});
 			$("#editPlanDecrible #three").css({'display':'inline','font-weight':'lighter'});
@@ -1080,8 +1070,12 @@ $(function() {
 //    	$("#editGoodsStock").css('display','none');
 //    	
 //	});
-	//第二页  -- 上一步  跳页  跳第一页
+	//第二页  -- 上一步  跳页  跳第一页     ||||京东商品不可跳页|||||
 	$("#disEditgoodsAddinfo").click(function() {
+		if(viewdisplaybysource=='jd'){
+			$.messager.alert("提示", '京东商品不可显示商品类目', "info");
+			return;
+		}
 		$("#editPlanDecrible #one").css('font-weight','bold');
 		$("#editPlanDecrible #two").css('font-weight','lighter');
 		$("#editPlanDecrible #three").css('font-weight','lighter');
@@ -1092,9 +1086,8 @@ $(function() {
 		$("#editUpLoadGoodsPicture").css('display','none');
 		$("#editGoodsStock").css('display','none');
 	})
-	 //编辑 -- 保存商品信息   跳页 跳第三页
+	 //编辑 -- 保存商品信息   跳页 跳第三页                 ||||京东商品跳第四页|||||
 	$("#editgoodsAddinfo").click(function() {
-		// debugger;
 		var id=$("#editid").val(),
 		editNewCreatDate=$("#editNewCreatDate").val(),
 		goodsModel=$("#editgoodsModel").textbox('getValue'),
@@ -1221,7 +1214,25 @@ $(function() {
 				if(data.status == '1'){
 					$(".search-btn").click();
 					$.messager.alert("提示", "修改商品成功", "info");
-					//跳页  跳第三页
+					//京东跳第四页   
+					if(viewdisplaybysource=='jd'){
+						$("#editPlanDecrible #one").css('font-weight','lighter');
+				    	$("#editPlanDecrible #two").css('font-weight','lighter');
+				    	$("#editPlanDecrible #three").css('font-weight','lighter');
+				    	$("#editPlanDecrible #four").css('font-weight','bold');
+				    	
+				    	$("#editSelectCategoryList").css('display','none');
+				    	$("#editWriteGoodsInfo").css('display','none');
+				    	$("#editUpLoadGoodsPicture").css('display','none');
+				    	$("#editGoodsStock").css('display','block');
+				    	
+				    	loadStockGoods('editGoodsStockList',id,externalsource);
+//				    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+				    	flushtableattrEditlist();
+						flushGoodsStock(id);
+						return;
+					}
+					//非京东 跳页  跳第三页
 					$("#editPlanDecrible #one").css('font-weight','lighter');
 					$("#editPlanDecrible #two").css('font-weight','lighter');
 					$("#editPlanDecrible #three").css('font-weight','bold');
@@ -1490,8 +1501,20 @@ $(function() {
 			}
 		});
 	});
-	//修改库存    第四页 取消  跳第三页
+	//修改库存    第四页 取消  跳第三页    ||||||京东商品跳第二页   ||||||||
 	$(".save-btnAllEditdis").click(function() {
+		if(viewdisplaybysource=='jd'){
+			$("#editPlanDecrible #one").css('font-weight','lighter');
+	    	$("#editPlanDecrible #two").css('font-weight','bold');
+	    	$("#editPlanDecrible #three").css('font-weight','lighter');
+	    	$("#editPlanDecrible #four").css('font-weight','lighter');
+	    	
+	    	$("#editSelectCategoryList").css('display','none');
+	    	$("#editWriteGoodsInfo").css('display','block');
+	    	$("#editUpLoadGoodsPicture").css('display','none');
+	    	$("#editGoodsStock").css('display','none');
+	    	return;
+		}
 		$("#editPlanDecrible #one").css('font-weight','lighter');
 		$("#editPlanDecrible #two").css('font-weight','lighter');
 		$("#editPlanDecrible #three").css('font-weight','bold');
