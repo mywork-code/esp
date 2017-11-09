@@ -121,6 +121,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.zxing.datamatrix.encoder.SymbolShapeHint;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -823,12 +824,22 @@ public class OrderService {
         // 每商户订单金额
         Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList,myCouponId,goodStockIds);
         AddressInfoEntity address = addressInfoDao.select(addressId);
+        int index = 0;
+        int size = merchantPaymentMap.size();
+        BigDecimal calc = BigDecimal.ZERO;
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
+        	index++;
             String merchantCode = merchant.getKey();
             BigDecimal orderAmt = merchant.getValue();
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
-            orderInfo.setOrderAmt(orderAmt);
+            if(index == size){
+            	orderInfo.setOrderAmt(totalPayment.subtract(calc));
+            }else{
+              orderInfo.setOrderAmt(orderAmt);
+              calc = calc.add(orderAmt);
+            }
+            
             orderInfo.setCouponId(getCouponId(merchantCode, myCouponId, goodStockIds));
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
