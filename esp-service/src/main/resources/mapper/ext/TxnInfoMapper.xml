@@ -122,7 +122,7 @@
         <![CDATA[ and ord.update_date >= #{dateBegin}]]>
         <![CDATA[ and ord.update_date < #{dateEnd}]]>
     </select>
-    <select id ="selectVBSBusinessNumList" resultType="com.apass.esp.domain.entity.bill.TxnOrderInfo">
+    <!--<select id ="selectVBSBusinessNumList" resultType="com.apass.esp.domain.entity.bill.TxnOrderInfo">
       select
           tx.txn_id txnId,
           tx.order_id mainOrderId,
@@ -153,7 +153,19 @@
         </foreach>
         <![CDATA[ and ord.update_date >= #{dateBegin}]]>
         <![CDATA[ and ord.update_date < #{dateEnd}]]>
+    </select>-->
+    <select id ="selectVBSBusinessNumList" resultType="com.apass.esp.domain.entity.bill.TxnOrderInfo">
+        SELECT
+        a.user_id userId,a.loan_id loanId,a.txn_id txnId
+        FROM
+        t_apass_txn_info a
+        WHERE
+        a.txn_type = 'T04' AND a.`status` = 'S' AND a.settle_flag != 0
+        <![CDATA[ and a.update_date >= #{dateBegin}]]>
+        <![CDATA[ and a.update_date < #{dateEnd}]]>
     </select>
+
+
     <select id ="selectPurchaseOrderList" resultType="com.apass.esp.domain.entity.bill.PurchaseOrderDetail">
       SELECT 
         A.id orderInfoId,

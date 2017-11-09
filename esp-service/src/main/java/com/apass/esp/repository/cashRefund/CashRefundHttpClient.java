@@ -4,6 +4,8 @@ package com.apass.esp.repository.cashRefund;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
+import com.apass.esp.domain.entity.bill.SapData;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -26,9 +28,11 @@ public class CashRefundHttpClient {
 
     @Value("${bbs.request.address}")
     public String bbsReqUrl;
-
     //退款地址
     private static final String APASS_CASHREFUND_COLLER = "/apassRefund/refundCash";
+
+    //sapData接口
+    private static final String VBS_BSS_URL = "/queryForEsp/querySapData";
 
 
     /**
@@ -57,6 +61,35 @@ public class CashRefundHttpClient {
         } catch (Exception e) {
             LOGGER.error("cashRefund_error接口调用异常:{}", e);
             return Response.fail("bss退款接口调用异常");
+        }
+    }
+
+    /**
+     * 消费分期相关的电商订单orderId集合
+     *
+     * @param payReq
+     * @return
+     * @throws BusinessException
+     */
+    public SapData querySapData(TxnOrderInfo request) throws BusinessException {
+
+        try {
+            String address = bbsReqUrl + VBS_BSS_URL;
+            String requestJson = GsonUtils.toJson(request);
+
+            LOGGER.info("sap_getData_reqJson:{}", requestJson);
+            StringEntity entity = new StringEntity(requestJson, ContentType.APPLICATION_JSON);
+            String responseJson = HttpClientUtils.getMethodPostResponse(address, entity);
+            LOGGER.info("sap_getData_repJson:{}", responseJson);
+
+            Response resp = GsonUtils.convertObj(responseJson, Response.class);
+            return Response.resolveResult(resp,SapData.class);
+        } catch (BusinessException e) {
+            LOGGER.error(e.getErrorDesc(), e);
+            throw new BusinessException("bss退款接口调用异常", e);
+        } catch (Exception e) {
+            LOGGER.error("querySapData_error接口调用异常:{}", e);
+            throw new BusinessException("bss退款接口调用异常", e);
         }
     }
 
