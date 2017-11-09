@@ -97,10 +97,16 @@ $(function() {
                     width : 80,
                     align : 'center'
                 },{
-                    title : '排序',
-                    field : 'sordNo',
+                    title : '精选排序',
+                    field : 'siftSort',
                     width : 80,
-                    align : 'center'
+                    align : 'center',
+                    formatter:function(value,row,index){
+                        if("0" == value){
+                            return "";
+                        }
+                        return value;
+                    }
                 },{
                     title : '状态',
                     field : 'status',
