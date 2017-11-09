@@ -1,12 +1,12 @@
 package com.apass.esp.service.offer;
 
+import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
-import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
@@ -42,9 +42,9 @@ public class ProCouponService {
      * @param paramMap
      * @return
      */
-    public Pagination<ProCoupon> pageList(Map<String, Object> paramMap) {
+    public Pagination<ProCoupon> pageList(ProCouponQuery query) {
         Pagination<ProCoupon> pagination = new Pagination<>();
-        List<ProCoupon> proCouponList = couponMapper.pageList(paramMap);
+        List<ProCoupon> proCouponList = couponMapper.pageList(query);
         if(CollectionUtils.isNotEmpty(proCouponList)){
             for (ProCoupon proCoupon:proCouponList) {
                 for (CouponExtendType couponExtendType : CouponExtendType.values()) {
@@ -61,7 +61,7 @@ public class ProCouponService {
             }
 
         }
-        Integer count = couponMapper.pageListCount(paramMap);
+        Integer count = couponMapper.pageListCount(query);
         pagination.setDataList(proCouponList);
         pagination.setTotalCount(count);
         return pagination;

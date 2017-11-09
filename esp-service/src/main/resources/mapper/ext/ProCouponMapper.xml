@@ -25,7 +25,9 @@
         <![CDATA[
           ORDER BY updated_time DESC
         ]]>
-        limit #{pageBegin},#{pageSize}
+        <if test="startRecordIndex != null">
+            <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
     </select>
 
     <select id="pageListCount" resultType="java.lang.Integer">
