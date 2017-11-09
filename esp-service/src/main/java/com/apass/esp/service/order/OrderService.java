@@ -2817,9 +2817,14 @@ public class OrderService {
         OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(order.getId());
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+        Long couponId = order.getCouponId();
+        if(couponId > 0){
+            //订单失效时优惠券id 置为负数，比如couponId = -418
+            entity.setCouponId(couponId * -1);
+        }
         orderInfoRepository.update(entity);
         //订单失效 则返回优惠券
-        myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
+        myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
     }
 
     /**
