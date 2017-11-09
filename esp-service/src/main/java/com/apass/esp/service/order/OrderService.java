@@ -121,6 +121,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.zxing.datamatrix.encoder.SymbolShapeHint;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -823,12 +824,22 @@ public class OrderService {
         // 每商户订单金额
         Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList,myCouponId,goodStockIds);
         AddressInfoEntity address = addressInfoDao.select(addressId);
+        int index = 0;
+        int size = merchantPaymentMap.size();
+        BigDecimal calc = BigDecimal.ZERO;
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
+        	index++;
             String merchantCode = merchant.getKey();
             BigDecimal orderAmt = merchant.getValue();
             OrderInfoEntity orderInfo = new OrderInfoEntity();
             orderInfo.setUserId(userId);
-            orderInfo.setOrderAmt(orderAmt);
+            if(index == size){
+            	orderInfo.setOrderAmt(totalPayment.subtract(calc));
+            }else{
+              orderInfo.setOrderAmt(orderAmt);
+              calc = calc.add(orderAmt);
+            }
+            
             orderInfo.setCouponId(getCouponId(merchantCode, myCouponId, goodStockIds));
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
@@ -2817,9 +2828,14 @@ public class OrderService {
         OrderInfoEntity entity = new OrderInfoEntity();
         entity.setId(order.getId());
         entity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+        Long couponId = order.getCouponId();
+        if(couponId > 0){
+            //订单失效时优惠券id 置为负数，比如couponId = -418
+            entity.setCouponId(couponId * -1);
+        }
         orderInfoRepository.update(entity);
         //订单失效 则返回优惠券
-        myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
+        myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
     }
 
     /**

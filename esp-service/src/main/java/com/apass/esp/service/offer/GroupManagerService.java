@@ -19,6 +19,7 @@ import com.apass.esp.domain.entity.ProGroupManager;
 import com.apass.esp.domain.query.GroupQuery;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.GroupManagerVo;
+import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.mapper.ProGroupManagerMapper;
@@ -49,6 +50,8 @@ public class GroupManagerService {
 	@Autowired
 	private BannerInfoRepository bannerMapper;
 	
+	@Autowired
+	private CouponManagerService couponManagerService;
 	/**
 	 * 获取活动配置信息
 	 * @param query
@@ -98,7 +101,7 @@ public class GroupManagerService {
 	 * @return
 	 * @throws BusinessException 
 	 */
-	public Map<String,Object> getGroupsAndGoodsByActivityId(String activityId,String bannerId) throws BusinessException{
+	public Map<String,Object> getGroupsAndGoodsByActivityId(String activityId,String bannerId,String userId) throws BusinessException{
 		
 		Map<String,Object> maps = Maps.newHashMap();
 		
@@ -138,6 +141,11 @@ public class GroupManagerService {
 			}
 		}
 		
+		/**
+		 * sprint 11 根据活动的Id，获取对应优惠券的信息
+		 */
+		List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
+		maps.put("coupons", couponVos);
 		maps.put("groups", groupVoList);
 		maps.put("status",status);
 		return maps;

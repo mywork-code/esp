@@ -156,9 +156,6 @@ public class CouponManagerService {
 		if(null == cfg){
 			throw new BusinessException("活动不存在");
 		}
-		if(cfg.getEndTime().getTime() < new Date().getTime()){
-			throw new BusinessException("活动已结束");
-		}
 		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());

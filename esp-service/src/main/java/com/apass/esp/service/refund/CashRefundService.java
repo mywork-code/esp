@@ -11,8 +11,12 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundTxnStatus;
+import com.apass.esp.domain.enums.CashRefundVoStatus;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.RefundType;
+import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.ApassTxnAttrMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
@@ -34,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -205,7 +210,7 @@ public class CashRefundService {
         	    List<TxnInfoEntity> txnlinfoList=txnInfoMapper.selectByOrderId(orderInfo.getMainOrderId());
                 if(txnlinfoList.size() > 1){
                     //是信用支付，txninfo 表插入信用额度那部分退款流水记录(T07)
-                    CashRefundAmtDto crAmt = getCreditCashRefundAmt(txnlinfoList,cr.getAmt());
+                    CashRefundAmtDto crAmt = getCreditCashRefundAmt(txnlinfoList,orderId);
                     TxnInfoEntity txnInfoEntity = new TxnInfoEntity();
                     txnInfoEntity.setOrderId("CR"+cr.getId());
                     txnInfoEntity.setTxnType(TxnTypeCode.CASH_REFUND_CODE.getCode());
@@ -331,7 +336,7 @@ public class CashRefundService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public Response agreeRefund(String userId, String orderId) {
+    public Response agreeRefund(String userId, String orderId) throws BusinessException {
         CashRefund cashRefund = cashRefundMapper.getCashRefundByOrderId(orderId);
         OrderInfoEntity orderEntity = orderInfoRepository.selectByOrderId(orderId);
         logger.info("agree refund orderId {}",orderId);
@@ -423,7 +428,7 @@ public class CashRefundService {
                 }
             });
 
-            CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,cashRefund.getAmt());
+            CashRefundAmtDto refundAmt = getCreditCashRefundAmt(txnInfoEntityList,orderId);
             boolean alpaySFFlag = false;
             for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
                 List<CashRefundTxn> existCashRefundTxnList = cashRefundTxnMapper.queryByCashRefundIdAndType(cashRefund.getId(),txnInfoEntity.getTxnType());
@@ -507,128 +512,67 @@ public class CashRefundService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void agreeRefundInAfterSalesTask(String orderId) {
-    	
-    	OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
-    	/**
-    	 * 如果订单的支付方式不是支付宝支付获取额度支付，不需要往下面走
-    	 */
-    	if(!StringUtils.equals(order.getPayType(), PaymentType.CREDIT_PAYMENT.getCode()) && 
-    			!StringUtils.equals(order.getPayType(), PaymentType.ALIPAY_PAYMENT.getCode())){
-    		return;
-    	}
-    	
-    	if(!StringUtils.equals(order.getStatus(), OrderStatus.ORDER_RETURNING.getCode())){
-    		return;
-    	}
-    	
-    	Map<String, Object> map = new HashMap<>();
-        map.put("orderId", orderId);
-        map.put("refundType", "0");
-    	RefundInfoEntity refund = orderRefundRepository.queryRefundInfoByOrderIdAndRefundType(map);
-    	
-        logger.info("agree refund orderId {}",orderId);
-        List<TxnInfoEntity> txnInfoEntityList = txnInfoMapper.selectByOrderId(order.getMainOrderId());
-        if (CollectionUtils.isEmpty(txnInfoEntityList)) {
-        	logger.error("orderId:"+orderId+"txn-info is null");
-        }
-        
-        if(txnInfoEntityList.size() == 1){
-        	
-        	TxnInfoEntity txn = txnInfoEntityList.get(0);
-        	String txnType = txn.getTxnType();
-        	if (TxnTypeCode.ALIPAY_CODE.getCode().equalsIgnoreCase(txnType)) {
-        		
-        		/**
-            	 * 退换库存
-            	 */
-            	try {
-                    orderService.addGoodsStockInAfterSalesTask("", orderId);
-                } catch (BusinessException e) {
-                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
-                	logger.error("back goods stock is failed!!!!! ",e);
-                    e.printStackTrace();
-                }
-        		
-        		ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txn.getTxnId());
-                logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),txn.getTxnAmt());
-                Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),refund.getRefundAmt().toString(),orderId,txn.getTxnAmt().toString());
-                if (!response.statusResult()) {
-                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
-                }
-        	}
-        }
-        
-        if(txnInfoEntityList.size() == 2){
-        	TxnInfoEntity txn1 = txnInfoEntityList.get(0);
-        	TxnInfoEntity txn2 = txnInfoEntityList.get(1);
-        	if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode()) || StringUtils.equals(txn2.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
-        		/**
-            	 * 退换库存
-            	 */
-            	try {
-                    orderService.addGoodsStockInAfterSalesTask("", orderId);
-                } catch (BusinessException e) {
-                	logger.error("back goods stock is failed！！！！ orderId:{}",orderId);
-                	logger.error("back goods stock is failed!!!!! ",e);
-                    e.printStackTrace();
-                }
-        		Long txnId = null;
-        		BigDecimal amount = new BigDecimal(0);
-        		if(StringUtils.equals(txn1.getTxnType(), TxnTypeCode.ALIPAY_SF_CODE.getCode())){
-        			txnId = txn1.getTxnId();
-        			amount = txn1.getTxnAmt();
-        		}else{
-        			txnId = txn2.getTxnId();
-        			amount = txn2.getTxnAmt();
-        		}
-        		ApassTxnAttr apassTxnAttr =  apassTxnAttrMapper.getApassTxnAttrByTxnId(txnId);
-        		CashRefundAmtDto dto = getCreditCashRefundAmt(txnInfoEntityList, refund.getRefundAmt());
-        		BigDecimal sf = dto.getSfAmt();
-        		BigDecimal creditAmt  = dto.getCreditAmt();
-        		
-        		logger.info("agree refund orderId {},mainOrderId {},refundAmt {} ",orderId, apassTxnAttr.getOutTradeNo(),sf);
-                /**
-                 * 支付宝退款
-                 */
-        		Response response = paymentHttpClient.refundAliPay(apassTxnAttr.getOutTradeNo(),sf.toString(),orderId,amount.toString());
-                if (!response.statusResult()) {
-                    logger.error("refund fail orderId {},mainOrderId {}",orderId,apassTxnAttr.getOutTradeNo());
-                }
-                /**
-                 * 退还额度
-                 */
-                Response res = commonHttpClient.updateAvailableAmount("",order.getUserId() , String.valueOf(creditAmt));
-                if (!res.statusResult()) {
-                	logger.error("reback creditAmt is failed！orderId:{0}",orderId);
-                }
-        	}
-        }
-    }
-    
+
     /**
      * 信用支付时 才能调用
+     * 需要注意多笔子订单下的退款 除不尽的情况，最后一笔计算首付时，需要用总的首付金额减去前面几笔分摊的首付
      * @param txnInfoEntityList
-     * @param orderAmt
      * @return
      */
-    public CashRefundAmtDto getCreditCashRefundAmt(List<TxnInfoEntity> txnInfoEntityList,BigDecimal orderAmt) {
+    public CashRefundAmtDto getCreditCashRefundAmt(List<TxnInfoEntity> txnInfoEntityList,
+                                                   String selfOrderId) throws BusinessException {
 
         CashRefundAmtDto dto = new CashRefundAmtDto();
         BigDecimal txtAmount = new BigDecimal(0);
         BigDecimal firstAmount = new BigDecimal(0);
+        BigDecimal totalCreditAmount = new BigDecimal(0);
         for (TxnInfoEntity txnInfoEntity : txnInfoEntityList) {
             txtAmount = txtAmount.add(txnInfoEntity.getTxnAmt());
             if(txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.ALIPAY_SF_CODE.getCode())||txnInfoEntity.getTxnType().equalsIgnoreCase(TxnTypeCode.SF_CODE.getCode())){
                 firstAmount = txnInfoEntity.getTxnAmt();
             }
+            if(txnInfoEntity.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())){
+                totalCreditAmount = txnInfoEntity.getTxnAmt();
+            }
         }
-        dto.setSfAmt(orderAmt.multiply(firstAmount).divide(txtAmount,3, ROUND_HALF_UP));
-        dto.setCreditAmt(orderAmt.subtract(dto.getSfAmt()));
-        return dto;
+        String mainOrderId = txnInfoEntityList.get(0).getOrderId();
+        List<OrderInfoEntity> orderList = orderService.selectByMainOrderId(mainOrderId);
+        Integer size = orderList.size();
+        if(size == 1){
+            dto.setSfAmt(firstAmount);
+            dto.setCreditAmt(totalCreditAmount);
+            return dto;
+        }else if(size > 1){
+            Map<String,Object> sfMap = new HashMap<>();
+            Map<String,Object> creditMap = new HashMap<>();
+            BigDecimal a = new BigDecimal(0);
+            BigDecimal b = new BigDecimal(0);
+            for(int i = 0; i < size; i++){
+                OrderInfoEntity or = orderList.get(i);
+                if(i == (size - 1) ){
+                    sfMap.put(or.getOrderId(),firstAmount.subtract(a));
+                    creditMap.put(or.getOrderId(),totalCreditAmount.subtract(b));
+                } else {
+                    BigDecimal orAmt = or.getOrderAmt();
+                    BigDecimal sfAmt = orAmt.multiply(firstAmount).divide(txtAmount,2, ROUND_HALF_UP);
+                    BigDecimal crAmt = orAmt.subtract(sfAmt);
+                    sfMap.put(or.getOrderId(),sfAmt);
+                    creditMap.put(or.getOrderId(),crAmt);
+                    a = a.add(sfAmt);
+                    b = b.add(crAmt);
+                }
+            }
 
+            dto.setSfAmt((BigDecimal) sfMap.get(selfOrderId));
+            dto.setCreditAmt((BigDecimal) creditMap.get(selfOrderId));
+            return dto;
+        }else{
+            throw new BusinessException("不存在该订单，数据异常！");
+        }
     }
+
+
+
 
     /**
      * 根据订单id修改退款状态
@@ -645,8 +589,8 @@ public class CashRefundService {
      *
      * @return
      */
-    public List<CashRefund> getCashRefundByStatus(String status) {
-        return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status));
+    public List<CashRefund> getCashRefundByStatus(String status,Date agreeDate) {
+        return cashRefundMapper.queryCashRefundByStatus(Integer.valueOf(status),agreeDate);
     }
 
     /**
