@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,8 @@ import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 /**
  * 
@@ -146,9 +149,16 @@ public class CouponManagerService {
 	
 
 	
-	public List<ProCouponVo> getCouponVos(String userId,String activityId){
+	public List<ProCouponVo> getCouponVos(String userId,String activityId) throws BusinessException{
 		List<ProCouponVo> couponList = new ArrayList<ProCouponVo>();
 		List<ProCouponRel> relList = couponRelService.getCouponRelList(activityId);
+		ProActivityCfg cfg  = activityCfgService.getById(Long.parseLong(activityId));
+		if(null == cfg){
+			throw new BusinessException("活动不存在");
+		}
+		if(cfg.getEndTime().getTime() < new Date().getTime()){
+			throw new BusinessException("活动已结束");
+		}
 		for (ProCouponRel rel : relList) {
 			ProCouponVo vo  = new ProCouponVo();
 			ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
@@ -164,6 +174,9 @@ public class CouponManagerService {
 			vo.setName(proCoupon.getName());
 			vo.setCouponSill(proCoupon.getCouponSill());
 			vo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+			vo.setStartTime(DateFormatUtil.dateToString(cfg.getStartTime(), "yyyy.MM.dd"));
+			vo.setEndTime(DateFormatUtil.dateToString(cfg.getEndTime(), "yyyy.MM.dd"));
+			vo.setEffectiveTiem(vo.getStartTime(), vo.getEndTime());
 			couponList.add(vo);
 		}
 		return couponList;

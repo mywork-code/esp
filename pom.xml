@@ -65,7 +65,7 @@
 		<repository>
 			<id>nexus</id>
 			<name>Team Nexus Repository</name>
-			<url>http://10.138.60.65:8081/nexus/content/groups/public</url>
+			<url>http://10.254.60.19:8081/nexus/content/groups/public</url>
 		</repository>
 		<!-- <repository> <id>spring-milestones</id> <name>Spring Milestones</name> 
 			<url>http://repo.spring.io/milestone</url> <snapshots> <enabled>false</enabled> 
@@ -75,7 +75,7 @@
 		<pluginRepository>
 			<id>nexus</id>
 			<name>Team Nexus Repository</name>
-			<url>http://10.138.60.65:8081/nexus/content/groups/public</url>
+			<url>http://10.254.60.19:8081/nexus/content/groups/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -87,12 +87,12 @@
 		<repository>
 			<id>nexus-releases</id>
 			<name>Local Nexus Repository</name>
-			<url>http://10.138.60.65:8081/nexus/content/repositories/releases</url>
+			<url>http://10.254.60.19:8081/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<name>Local Nexus Repository</name>
-			<url>http://10.138.60.65:8081/nexus/content/repositories/snapshots</url>
+			<url>http://10.254.60.19:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 

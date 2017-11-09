@@ -137,6 +137,40 @@
 	             market_price,
 	             goods_Cost_Price,
 	             stock_Logo,
+	             goods_compare_url,goods_compare_url2)
+			values (#{goodsId, jdbcType=BIGINT},
+			        #{goodsSkuAttr, jdbcType=VARCHAR},
+		        	#{goodsPrice, jdbcType=DECIMAL},
+		        	#{stockTotalAmt, jdbcType=BIGINT}, 
+			        #{stockCurrAmt, jdbcType=BIGINT},
+			        #{createUser, jdbcType=VARCHAR},
+			        #{updateUser, jdbcType=VARCHAR},
+			        CURRENT_TIMESTAMP,
+			        CURRENT_TIMESTAMP,
+			        #{marketPrice, jdbcType=DECIMAL},
+			        #{goodsCostPrice, jdbcType=DECIMAL},
+			        #{stockLogo, jdbcType=VARCHAR},
+			        #{goodsCompareUrl, jdbcType=VARCHAR},
+			        #{goodsCompareUrl2, jdbcType=VARCHAR}
+			        );
+	]]>
+	</insert>
+
+	<insert id="insertGoodsAttr" parameterType="GoodsStockInfoEntity">
+		<![CDATA[
+		insert into t_esp_goods_stock_info
+	            (goods_id,
+	             goods_sku_attr,
+	             goods_price,
+	             stock_total_amt,
+	             stock_curr_amt,
+	             create_user,
+	             update_user,
+	             create_date,
+	             update_date,
+	             market_price,
+	             goods_Cost_Price,
+	             stock_Logo,
 	             goods_compare_url,goods_compare_url2,
 	             sku_id,
 	             attr_val_ids,
@@ -144,7 +178,7 @@
 			values (#{goodsId, jdbcType=BIGINT},
 			        #{goodsSkuAttr, jdbcType=VARCHAR},
 		        	#{goodsPrice, jdbcType=DECIMAL},
-		        	#{stockTotalAmt, jdbcType=BIGINT}, 
+		        	#{stockTotalAmt, jdbcType=BIGINT},
 			        #{stockCurrAmt, jdbcType=BIGINT},
 			        #{createUser, jdbcType=VARCHAR},
 			        #{updateUser, jdbcType=VARCHAR},
@@ -161,6 +195,11 @@
 			        );
 	]]>
 	</insert>
+
+
+
+
+
 	<!-- 更新 -->
 	<update id="update" parameterType="GoodsStockInfoEntity">
 		<![CDATA[
