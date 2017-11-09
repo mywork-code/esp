@@ -456,7 +456,7 @@ public class GoodsAttrService {
             goodsStockentoty.setCreateUser(userName);
             goodsStockentoty.setUpdateUser(userName);
 //            goodsStockentoty.setStockLogo(url);
-            goodsStockInfoService.insert(goodsStockentoty);
+            goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
         }
         return Response.success("批量保存库存！");
     }
