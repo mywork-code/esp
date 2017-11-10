@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.ProcouponRelVoList;
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
@@ -51,7 +52,7 @@ public class ActivityCfgService {
 		Integer count = activityCfgMapper.getActivityCfgListPageCount(activityfgDto);
 		
 		List<ActivityCfgVo> configVoList = getPoToVoList(configList);
-		
+
 		pageBody.setTotal(count);
 		pageBody.setRows(configVoList);
 		pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
@@ -213,5 +214,9 @@ public class ActivityCfgService {
 		Map<String,Object> paramMap = Maps.newHashMap();
 		paramMap.put("id",id);
 		return activityCfgMapper.selectProActivityCfgByEntity(paramMap);
+	}
+
+	public List<ProActivityCfg> selectProActivityCfgByActivitCfgQuery(ActivityCfgQuery activityCfgQuery) {
+		return activityCfgMapper.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
 	}
 }

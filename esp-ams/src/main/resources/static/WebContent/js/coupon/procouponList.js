@@ -441,8 +441,8 @@ $(function(){
 			$.messager.alert('<span style="color: black">提示</span>','请输入优惠券名称');
 			return false;
 		}
-		if($("#addCouponName").textbox("getValue").length>20){
-			$.messager.alert('<span style="color: black">提示</span>','优惠券名称不能大于20字符');
+		if($("#addCouponName").textbox("getValue").length>16){
+			$.messager.alert('<span style="color: black">提示</span>','优惠券名称不能大于16字');
 			return false;
 		}
 		if($("#addExtendType").textbox("getValue")==null || $("#addExtendType").textbox("getValue")==""){

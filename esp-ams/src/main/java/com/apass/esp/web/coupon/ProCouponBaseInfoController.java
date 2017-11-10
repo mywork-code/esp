@@ -3,18 +3,19 @@ package com.apass.esp.web.coupon;
 import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CouponList;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponIsDelete;
-import com.apass.esp.domain.enums.CouponSillType;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.query.ProCouponQuery;
+import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerBasicInfo;
+import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProCouponService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -27,6 +28,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.internal.LinkedTreeMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,10 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by xiaohai on 2017/10/27.
@@ -59,6 +58,10 @@ public class ProCouponBaseInfoController {
     private MyCouponManagerService myCouponManagerService;
     @Autowired
     private CommonHttpClient commonHttpClient;
+    @Autowired
+    private ActivityCfgService activityCfgService;
+    @Autowired
+    private CouponRelService couponRelService;
 
     @RequestMapping("/page")
     public ModelAndView page(){
@@ -91,6 +94,34 @@ public class ProCouponBaseInfoController {
     @ResponseBody
     public List<ProCoupon> loadCouponPTFF(ProCoupon proCoupon){
         proCoupon.setIsDelete(CouponIsDelete.COUPON_N.getCode());
+        //如果是用户领取，只显示未关联有效活动的优惠券显示
+        if(StringUtils.equals(CouponExtendType.COUPON_YHLQ.getCode(),proCoupon.getExtendType())){
+            //先捞取所有使用优惠券的 且有效的 活动
+            ActivityCfgQuery activityCfgQuery = new ActivityCfgQuery();
+            activityCfgQuery.setCoupon(ActivityCfgCoupon.COUPON_Y.getCode());
+            activityCfgQuery.setStatus("processing");
+            List<ProActivityCfg> activityCfgList = activityCfgService.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
+            List<Long> activityIds = Lists.newArrayList();//有效活动id集合
+            if(CollectionUtils.isNotEmpty(activityCfgList)){
+                for (ProActivityCfg proActivityCfg: activityCfgList) {
+                    activityIds.add(proActivityCfg.getId());
+                }
+            }
+            
+            //根据活动id去优惠券关联表中查询相应的优惠券id
+            List<ProCouponRel> couponRels = couponRelService.getCouponRelListByActivityIdBanch(activityIds);
+            Set<Long> couponIds = Sets.newTreeSet();
+            if(CollectionUtils.isNotEmpty(couponRels)){
+                for (ProCouponRel proRel:couponRels) {
+                    couponIds.add(proRel.getCouponId());
+                }
+            }
+            ArrayList<Long> couponIdList = new ArrayList<>(couponIds);
+
+            //查询用户领取类型优惠券，并not in上述id的优惠券显示在前端
+            List<ProCoupon> lists = proCouponService.selectProCouponByIds(couponIdList);
+            return lists;
+        }
 
         return proCouponService.getProCouponList(proCoupon);
     }
@@ -216,8 +247,8 @@ public class ProCouponBaseInfoController {
         if(StringUtils.isBlank(proCoupon.getName())){
            throw new RuntimeException("优惠券名称不能为空");
         }
-        if(proCoupon.getName().length()>20 ){
-            throw new RuntimeException("优惠券名称不能大于20字符");
+        if(proCoupon.getName().length()>16 ){
+            throw new RuntimeException("优惠券名称不能大于16字符");
         }
         if(StringUtils.isBlank(proCoupon.getExtendType())){
             throw new RuntimeException("推广方式不能为空");

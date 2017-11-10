@@ -1,6 +1,7 @@
 package com.apass.esp.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.query.ProCouponRelQuery;
@@ -28,4 +29,6 @@ public interface ProCouponRelMapper extends GenericMapper<ProCouponRel, Long> {
 	 * @return
 	 */
 	List<ProCouponRel> getCouponList();
+
+	List<ProCouponRel> getCouponRelListByActivityIdBanch(Map<String, Object> activityIds);
 }
