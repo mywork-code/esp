@@ -466,7 +466,8 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "VKORG", "ZDDH", "AUART", "ZTEL_NO", "ZDDZT", "ZLSH_YDD", "ZZK", "ERDAT", "ERZET", "UNAME"};
+      String[] headers = {"GUID", "VKORG", "ZDDH", "AUART","KUNNR","NAME1","ZSFZ_NO", "ZTEL_NO", "VERTN","ZDDZT", "ZLSH_YDD", "ZGL_PO","ZZK",
+          "ZERDAT","ZERZET","ERDAT", "ERZET", "ZSJLY"};
       csvWriter.writeRecord(headers);
       for (SalesOrderPassOrRefund salOrder : salOrderList) {
 
@@ -479,13 +480,20 @@ public class SAPService {
         } else {
           contentList.add("Y001");
         }
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
         contentList.add(salOrder.getTelephone());
+        contentList.add("");
         contentList.add("1");
         contentList.add(salOrder.getOrderId());
+        contentList.add("");
         contentList.add(salOrder.getTotalDiscountAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+        contentList.add("");
+        contentList.add("");
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
-        contentList.add(salOrder.getName());
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
       csvWriter.close();
@@ -507,7 +515,7 @@ public class SAPService {
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
       String[] headers = {"GUID", "ZTZ_DAT", "ZTZLX", "KUNNR", "ZSFQE", "ZSFKBZ", "ZPTMC", "ZPTBM", "ZPTLSH", "ZZHH", "ZZHH_COMP",
-          "ZZHH_NO", "ZPTFWF", "ZDFF"};
+          "ZZHH_NO", "ZZJF","ZDBF","ZFWF","ZPTFWF", "ZDFF","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
@@ -515,7 +523,7 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(txn.getTxnId() + "");
-        contentList.add(DateFormatUtil.dateToString(txn.getPayTime(), DateFormatUtil.YYYY_MM_DD));
+        contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -542,7 +550,12 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
         contentList.add("6008");
+        contentList.add("");
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
 
@@ -610,7 +623,8 @@ public class SAPService {
       //第一行空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZDZ_LSH","BUKRS", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD", "ERDAT", "ERZET"};
+      String[] headers = {"GUID", "ZDZ_LSH","BUKRS","ZLSH_DSF", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD",
+          "ZERDAT","ZERZET","ERDAT", "ERZET","UNAME","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (PurchaseReturnOrder txn : txnList) {
         List<String> contentList = new ArrayList<String>();
@@ -631,10 +645,15 @@ public class SAPService {
         }
         contentList.add(merchantCode);
         contentList.add(suqNo);
+        contentList.add("");
         contentList.add(txn.getCarriage());
         contentList.add(txn.getOldOrderId());
+        contentList.add("");
+        contentList.add("");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
+        contentList.add("");
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
     } catch (Exception e) {
@@ -690,7 +709,7 @@ public class SAPService {
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
-      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET","ZSJLY"};
+      String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET","UNAME","ZSJLY"};
       csvWriter.writeRecord(headers);
       for (TxnOrderInfo txn : txnList) {
         if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
@@ -715,6 +734,7 @@ public class SAPService {
         contentList.add(createdtime);
 	            /*可选表头UNAME,ZSJLY*/
 	            /*write*/
+        contentList.add("");
         contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
@@ -749,7 +769,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR"};
+      String[] headers = {"GUID", "P_GUID", "ZPTLSH", "ITEM", "ZFYLX", "WRBTR","ZLSH_VBS","ZDZ_LSH","ZLSH_YH","ZDDBJ"};
       csvWriter.writeRecord(headers);
       int i = 0;
       for (TxnOrderInfo txn : txnList) {
@@ -770,6 +790,10 @@ public class SAPService {
           contentList.add("Z044");
         }
         contentList.add(txn.getTxnAmt() + "");
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
 
@@ -791,7 +815,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZSCL","ZYWH","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
+      String[] headers = {"GUID", "ZSCL","ZYWH","ZTYPE", "ZSTATUS", "ERDAT", "ERZET","ZSJLY", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO", "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       Integer rowNum = new Integer("1");//行号
       for (TxnOrderInfo txn : txnList) {
@@ -806,6 +830,7 @@ public class SAPService {
         contentList.add("03");
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
         contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
+        contentList.add("ajqh");
         contentList.add(String.valueOf(rowNum));
         contentList.add(txn.getTxnAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
@@ -862,7 +887,7 @@ public class SAPService {
       //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
-      String[] headers = {"GUID", "ZSCL","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO",
+      String[] headers = {"GUID", "ZSCL","ZYWH","ZTYPE", "ZSTATUS", "ERDAT", "ERZET", "ZSJLY","ITEM", "WRBTR", "ZZHH", "ZZHH_COMP", "ZZHH_NO",
           "ZDZ_LSH", "ZKK_LSH", "ZSF_LSH", "ZSFTD"};
       csvWriter.writeRecord(headers);
       for (RepayFlow repayFlow : repayFlowList) {
@@ -965,10 +990,12 @@ public class SAPService {
               List<String> contentList = new ArrayList<String>();
               contentList.add(order.getId() + "");
               contentList.add("01");
+              contentList.add("");
               contentList.add("B");
               contentList.add("03");
               contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"yyyyMMdd"));
               contentList.add(DateFormatUtil.dateToString(repayDateMap.get(repayId).getTxnDate(),"HHmmss"));
+              contentList.add("");
               contentList.add(i + "");
               contentList.add(repayDateMap.get(repayId).getTxnAmt() + "");
               //银联
