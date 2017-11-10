@@ -1,20 +1,16 @@
 package com.apass.esp.schedule;
 
 import com.apass.esp.sap.SAPService;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Date;
 
 /**
  * Created by jie.xu on 17/10/17.
  */
-@Component
-@RequestMapping("/sap/test")
+//@Component
+//@RequestMapping("/sap/test")
 public class SAPScheduleTask {
 
 	@Value("${ftp.ip}")
