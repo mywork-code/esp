@@ -786,8 +786,11 @@ public class GoodsAttrService {//450
                 String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
                 String skuId = sku+rand;
                 entity.setSkuId(skuId);
-                goodsStockInfoService.insert(entity);
+                goodsStockInfoService.insertGoodsAttr(entity);
             }else{
+                GoodsStockInfoEntity en = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
+                entity.setStockTotalAmt(en.getStockTotalAmt());
+                entity.setStockCurrAmt(en.getStockCurrAmt());
                 goodsStockInfoService.updateService(entity);
             }
         }
