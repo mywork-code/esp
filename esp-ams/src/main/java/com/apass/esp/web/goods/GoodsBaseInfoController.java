@@ -438,6 +438,7 @@ public class GoodsBaseInfoController {
     @LogAnnotion(operationType = "商品类目修改", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
         try {
+        	pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
             return goodsAttrService.editCategory(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
