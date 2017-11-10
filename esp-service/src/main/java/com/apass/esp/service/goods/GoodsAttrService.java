@@ -806,7 +806,6 @@ public class GoodsAttrService {//450
     public Response editCategory(GoodsInfoEntity entity) throws BusinessException {
         String message = "0";
         Long cateid1 = goodsService.selectByGoodsId(entity.getId()).getCategoryId1();
-        entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
         if(cateid1.equals(entity.getCategoryId1())){
             message = "1";
         }else{//商品类目变动    此时需要删除商品库存信息    删除商品属性下属规格
