@@ -14,6 +14,9 @@
                 <if test="status=='end'">
                     and now() &gt;end_time
                 </if>
+                <if test="coupon != null and coupon != ''">
+                    and coupon = #{coupon}
+                </if>
             </if>
         </where>
     </sql>
@@ -48,5 +51,12 @@
         <include refid="Base_Column_List" />
         from t_esp_pro_activity_cfg
         where activity_name = #{activityName}
+    </select>
+
+    <select id="selectProActivityCfgByActivitCfgQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_pro_activity_cfg
+        <include refid="QueryGoodsSql" />
     </select>
 </mapper>

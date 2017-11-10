@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.apass.esp.domain.dto.offo.ActivityfgDto;
 import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 
 public interface ProActivityCfgMapper extends GenericMapper<ProActivityCfg, Long>{
@@ -24,4 +25,6 @@ public interface ProActivityCfgMapper extends GenericMapper<ProActivityCfg, Long
 	ProActivityCfg selectProActivityCfgByName(String activityName);
 
 	List<ProActivityCfg> selectProActivityCfgByEntity(Map<String, Object> map);
+
+	List<ProActivityCfg> selectProActivityCfgByActivitCfgQuery(ActivityCfgQuery activityCfgQuery);
 }

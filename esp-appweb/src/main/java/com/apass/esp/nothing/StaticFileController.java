@@ -274,7 +274,6 @@ public class StaticFileController {
         try {
             List<WeexInfoEntity> weexInfoEntities = weexInfoService.queryWeexInfoList();
 
-
             for (WeexInfoEntity weexInfoEntity:weexInfoEntities) {
                 if(StringUtils.equals(weexInfoEntity.getWeexBlong(),"ajp")&&StringUtils.equals(weexInfoEntity.getWeexEve(),systemEnvConfig.getEve())
                         && StringUtils.equals(weexInfoEntity.getWeexType(),"wallet")){
