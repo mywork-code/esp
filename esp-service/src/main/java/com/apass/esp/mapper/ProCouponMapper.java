@@ -1,5 +1,6 @@
 package com.apass.esp.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +24,8 @@ public interface ProCouponMapper extends GenericMapper<ProCoupon, Long> {
 
     //根据proCoupon中的数据查询优惠券：公用
     List<ProCoupon> getProCouponBCoupon(ProCoupon proCoupon);
+
+
+    List<ProCoupon> selectProCouponByIds(Map<String, Object> paramMap);
 }
+

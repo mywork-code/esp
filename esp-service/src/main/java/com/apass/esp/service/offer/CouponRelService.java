@@ -1,7 +1,9 @@
 package com.apass.esp.service.offer;
 
 import java.util.List;
+import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,5 +69,12 @@ public class CouponRelService {
 
 	public ProCouponRel getcoupoRelByPrimary(Long id) {
 		return couponRelMapper.selectByPrimaryKey(id);
+	}
+
+
+	public List<ProCouponRel> getCouponRelListByActivityIdBanch(List<Long> activityIds) {
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("activityIds",activityIds);
+		return couponRelMapper.getCouponRelListByActivityIdBanch(paramMap);
 	}
 }

@@ -8,14 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
 import com.apass.esp.domain.entity.CategoryAttrRel;
@@ -28,9 +26,10 @@ import com.apass.esp.domain.vo.GoodsAttrVo;
 import com.apass.esp.mapper.GoodsAttrMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.utils.PaginationManage;
+import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
-import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.BaseConstants;
 import com.google.common.collect.Lists;
 /**
  * 商品属性
@@ -57,13 +56,14 @@ public class GoodsAttrService {//450
      * @param page
      * @return
      */
-    public PaginationManage<GoodsAttr> getGoodsAttrList(GoodsAttr entity, Page page) {
-        PaginationManage<GoodsAttr> result = new PaginationManage<GoodsAttr>();
-        List<GoodsAttr> response = goodsAttrMapper.getGoodsAttrList(entity);
-        result.setDataList(response);
-        result.setPageInfo(page.getPageNo(), page.getPageSize());
-        result.setTotalCount(response.size());
-        return result;
+    public ResponsePageBody<GoodsAttr> getGoodsAttrPage(GoodsAttr entity) {
+        ResponsePageBody<GoodsAttr> pageBody = new ResponsePageBody<GoodsAttr>();
+        List<GoodsAttr> response = goodsAttrMapper.getGoodsAttrPage(entity);
+        Integer count = goodsAttrMapper.getGoodsAttrPageCount(entity);
+        pageBody.setTotal(count);
+        pageBody.setRows(response);
+        pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
+        return pageBody;
     }
     /**
      * 商品属性查询
@@ -786,8 +786,11 @@ public class GoodsAttrService {//450
                 String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
                 String skuId = sku+rand;
                 entity.setSkuId(skuId);
-                goodsStockInfoService.insert(entity);
+                goodsStockInfoService.insertGoodsAttr(entity);
             }else{
+                GoodsStockInfoEntity en = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
+                entity.setStockTotalAmt(en.getStockTotalAmt());
+                entity.setStockCurrAmt(en.getStockCurrAmt());
                 goodsStockInfoService.updateService(entity);
             }
         }

@@ -53,4 +53,14 @@
         <include refid="QueryProcouponSql" />
     </select>
 
+    <select id="selectProCouponByIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_esp_pro_coupon
+        WHERE
+        extend_type= 'YHLQ' AND id NOT IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

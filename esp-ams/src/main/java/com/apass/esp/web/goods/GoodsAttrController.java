@@ -1,10 +1,6 @@
 package com.apass.esp.web.goods;
-import java.net.URLDecoder;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-
-import com.apass.esp.domain.vo.GoodsAttrVo;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.GoodsAttr;
+import com.apass.esp.domain.vo.GoodsAttrVo;
 import com.apass.esp.service.goods.GoodsAttrService;
-import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
-import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
@@ -48,39 +43,17 @@ public class GoodsAttrController {
      */
     @ResponseBody
     @RequestMapping("/getGoodsAttrList")
-    public ResponsePageBody<GoodsAttr> getGoodsAttrList(HttpServletRequest request) {
+    public ResponsePageBody<GoodsAttr> getGoodsAttrList(GoodsAttr entity) {
         ResponsePageBody<GoodsAttr> respBody = new ResponsePageBody<GoodsAttr>();
         try {
-            // 获取分页数据
-            Page page = new Page();
-            String pageNo = HttpWebUtils.getValue(request, "page");
-            String pageSize = HttpWebUtils.getValue(request, "rows");
-            if(!StringUtils.isAnyBlank(pageNo,pageSize)){
-                Integer pageNoNum = Integer.parseInt(pageNo);
-                Integer pageSizeNum = Integer.parseInt(pageSize);
-                page.setPage(pageNoNum <= 0 ? 1 : pageNoNum);
-                page.setLimit(pageSizeNum <= 0 ? 1 : pageSizeNum);
-            }
             // 获取页面查询条件
-            String attrName = HttpWebUtils.getValue(request, "attrName");
-            if (StringUtils.isNoneBlank(attrName)) {
-                attrName = URLDecoder.decode(attrName, "utf-8");
-            }
-            GoodsAttr entity = new GoodsAttr();
-            entity.setName(attrName);
-            // 获取分页结果返回给页面
-            PaginationManage<GoodsAttr> pagination = goodsAttrService.getGoodsAttrList(entity, page);
-            if (pagination == null) {
-                respBody.setTotal(0);
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
-            }else{
-                respBody.setTotal(pagination.getTotalCount());
-                respBody.setRows(pagination.getDataList());
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
-            }
+            ResponsePageBody<GoodsAttr> pagination=goodsAttrService.getGoodsAttrPage(entity);
+            respBody.setTotal(pagination.getTotal());
+            respBody.setRows(pagination.getRows());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
-            LOG.error("商品精选列表查询失败", e);
-            respBody.setMsg("商品精选列表查询失败");
+            LOG.error("商品属性列表查询失败", e);
+            respBody.setMsg("商品属性列表查询失败");
         }
         return respBody;
     }
@@ -146,9 +119,6 @@ public class GoodsAttrController {
             return Response.fail("商品属性删除异常！");
         }
     }
-
-
-
     @ResponseBody
     @RequestMapping("/allGoodsAttr")
     public Response listGoodsAttrs(String categoryId) {
@@ -161,6 +131,4 @@ public class GoodsAttrController {
         }
         return Response.success("查询全部商品属性成功",goodsAttrs);
     }
-
-
 }

@@ -31,4 +31,14 @@
         from t_esp_pro_coupon_rel
         where remain_num>0
     </select>
+
+
+    <select id="getCouponRelListByActivityIdBanch" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from t_esp_pro_coupon_rel
+        where pro_activity_id IN
+        <foreach collection="activityIds" open="(" close=")" separator="," item="activityId">
+          #{activityId}
+        </foreach>
+    </select>
 </mapper>
