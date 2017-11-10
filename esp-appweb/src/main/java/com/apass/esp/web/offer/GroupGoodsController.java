@@ -1,6 +1,5 @@
 package com.apass.esp.web.offer;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.vo.ProCouponVo;
-import com.apass.esp.service.offer.CouponManagerService;
+import com.apass.esp.domain.vo.BannerVo;
+import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.offer.GroupManagerService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -30,7 +29,8 @@ public class GroupGoodsController {
 	private GroupManagerService groupManagerService;
 	
 	@Autowired
-	private CouponManagerService couponManagerService;
+	private BannerInfoService bannerInfoService;
+	
 	
 	@RequestMapping("/getGroupAndGoods")
 	@ResponseBody
@@ -43,12 +43,7 @@ public class GroupGoodsController {
 			return Response.fail("参数传递有误!");
 		}
 		try {
-			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId);
-			/**
-			 * sprint 11 根据活动的Id，获取对应优惠券的信息
-			 */
-			List<ProCouponVo> couponVos = couponManagerService.getCouponVos(userId,activityId);
-			maps.put("coupons", couponVos);
+			Map<String,Object> maps = groupManagerService.getGroupsAndGoodsByActivityId(activityId,bannerId,userId);
 			return Response.success("查询成功!", maps);
 		} catch(BusinessException e){
 			logger.error("business activityId :{}",e);
@@ -58,4 +53,22 @@ public class GroupGoodsController {
 			return Response.fail("活动查询失败!");
 		}
 	}
+	
+	@RequestMapping("/getActivityUrl")
+	@ResponseBody
+	public Response getActivityUrlLikeActivityId(@RequestBody Map<String, Object> paramMap){
+		String activityId = CommonUtils.getValue(paramMap, "activityId");
+		logger.info("getGroupAndGoodsByGroupId---------------------->{}",JsonUtil.toJsonString(paramMap));
+		if(StringUtils.isEmpty(activityId)){
+			return Response.fail("参数传递有误!");
+		}
+		try {
+			BannerVo banner = bannerInfoService.getBannerVoLikeActivityId(activityId);
+			return Response.successResponse(banner);
+		} catch (Exception e) {
+			logger.error("exception activityId :{}",e);
+			return Response.fail("活动Url查询失败!");
+		}
+	}
+	
 }

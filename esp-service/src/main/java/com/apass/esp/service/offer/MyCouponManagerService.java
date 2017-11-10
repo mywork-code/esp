@@ -79,10 +79,10 @@ public class MyCouponManagerService {
 		 * 判断活动是否已经结束
 		 */
 	    ProActivityCfg activityCfg = activityCfgService.getById(vo.getActivityId());
-	    if(null==activityCfg){
+	    if(null == activityCfg){
 	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
-	    if(ActivityStatus.PROCESSING != activityCfgService.getActivityStatus(activityCfg)){
+	    if(activityCfg.getEndTime().getTime() < new Date().getTime()){
 	    	throw new BusinessException("活动已经结束啦，看看其他的券吧!");
 	    }
 		/**
@@ -136,14 +136,8 @@ public class MyCouponManagerService {
 		coupon.setCouponId(vo.getCouponId());
 		//根据活动的Id和优惠券的Id，获取活动和券的关系表信息
 		ProCouponRel couponRel = couponRelMapper.getRelByActivityIdAndCouponId(new ProCouponRelQuery(vo.getActivityId(),vo.getCouponId()));
-		if(null == couponRel){
-			throw new BusinessException("领取失败!");
-		}
 		
 		ProActivityCfg activity = activityCfgMapper.selectByPrimaryKey(vo.getActivityId());
-		if(null == activity){
-			throw new BusinessException("领取失败!");
-		}
 		coupon.setCouponRelId(couponRel.getId());
 		coupon.setStartDate(activity.getStartTime());
 		coupon.setEndDate(activity.getEndTime());
@@ -308,7 +302,7 @@ public class MyCouponManagerService {
 	 * 订单失效、退款返回优惠券
 	 */
 	public void returnCoupon(Long userId,Long couponId,String selfOrderId){
-		if(couponId == null){
+		if(couponId == null || couponId < 0){
 			return;
 		}
 		//根据couponId查询orderList,判断订单状态是否是退款或订单失效
@@ -318,12 +312,12 @@ public class MyCouponManagerService {
 				continue;
 			}
 			if(order.getStatus().equals(OrderStatus.ORDER_CANCEL.getCode())){
-
+				//这里空代码是正确的代码，请勿删除！！！
 			}
 		  else if(order.getStatus().equals(OrderStatus.ORDER_TRADCLOSED.getCode())){
 				CashRefund cr = cashRefundMapper.getCashRefundByOrderId(order.getOrderId());
 				if(cr != null){
-					if(cr.getStatus().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
+					if(cr.getStatus().toString().equals(CashRefundStatus.CASHREFUND_STATUS4.getCode())){
 
 					}else{
 						return;

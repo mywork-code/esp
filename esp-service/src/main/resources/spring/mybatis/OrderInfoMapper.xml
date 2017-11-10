@@ -442,6 +442,9 @@
 			<if test="extParentId != null and extParentId !=''">
 				ext_parent_id = #{extParentId, jdbcType=VARCHAR},
 			</if>
+			<if test="couponId != null">
+				coupon_id = #{couponId},
+			</if>
         </set>
         <![CDATA[
         WHERE ID = #{id, jdbcType=BIGINT} 

@@ -11,7 +11,6 @@ import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundVoStatus;
 import com.apass.esp.domain.enums.LogStashKey;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
@@ -37,7 +36,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,8 +93,6 @@ public class CashRefundController {
         if (cashRefundDto.getStatus() == 1) {
             long surplus = new Date().getTime() - cashRefundDto.getCreateDate().getTime();
            if (24 * 60 * 60 * 1000L - surplus > 0) {
-//            if ( 2* 60  * 1000L - surplus > 0) {
-//               cashRefundDto.setRefundSurplusTime(new Date(2 * 60 * 60 * 1000L  - surplus));
                 cashRefundDto.setRefundSurplusTime(new Date(24 * 60 * 60 * 1000L  - surplus));
             } else {
                 cashRefundDto.setRefundSurplusTime(null);
@@ -113,7 +109,6 @@ public class CashRefundController {
         cashRefundDto.setSystemProcessDateStr(DateFormatUtil.dateToString(cashRefundDto.getSystemProcessDate(), DateFormatUtil.YYYY_MM_DD_HH_MM));
         cashRefundDto.setAgreeDStr(DateFormatUtil.dateToString(cashRefundDto.getAgreeD(), DateFormatUtil.YYYY_MM_DD_HH_MM));
         cashRefundDto.setUpdateDateStr(DateFormatUtil.dateToString(cashRefundDto.getUpdateDate(), DateFormatUtil.YYYY_MM_DD_HH_MM));
-       // List<TxnInfoDto> txnInfoDtoList = cashRefundService.getTxnInfoByMainOrderId(cashRefundDto.getMainOrderId());
         List<CashRefundTxn> cashRefundTxnList =  cashRefundTxnService.queryCashRefundTxnByCashRefundId(cashRefundDto.getId());
         List<TxnInfoDto> txnInfoDtoList = new ArrayList<>();
         for (CashRefundTxn cashRefundTxn:cashRefundTxnList){

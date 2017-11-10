@@ -468,11 +468,11 @@ public class PaymentService {
 			    LOG.info(requestId, "订单状态已变更，暂不支持付款", orderId+"订单状态已变更，暂不支持付款");
 				throw new BusinessException("抱歉，订单状态已变更，暂不支持付款");
 			}
-			if(null != orderInfo.getCouponId() && orderInfo.getCouponId()!= -1){
+			if(null != orderInfo.getCouponId() && orderInfo.getCouponId() > 0){
 				ProMyCoupon coupon = myCouponMapper.selectByPrimaryKey(orderInfo.getCouponId());
 				Date now = new Date();
 				if(coupon.getStartDate().getTime() > now.getTime() || coupon.getEndDate().getTime() < now.getTime()){
-					throw new BusinessException("您的优惠券已过期!");
+					throw new BusinessException("您的优惠券已过期，暂不支持付款");
 				}
 			}
 			/**
@@ -960,14 +960,20 @@ public class PaymentService {
 			
 			//修改订单状态为交易关闭
 
+			OrderInfoEntity order =   orderService.selectByOrderId(orderId);
+
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
 			orderInfoEntity.setOrderId(orderId);
 			orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
+			Long couponId = order.getCouponId();
+			if(couponId > 0){
+				//订单失效时优惠券id 置为负数，比如couponId = -418
+				orderInfoEntity.setCouponId(couponId * -1);
+			}
 			orderService.updateOrderStatus(orderInfoEntity);
 
 			//退款成功 则返回优惠券
-			OrderInfoEntity order =   orderService.selectByOrderId(orderId);
-			myCouponManagerService.returnCoupon(order.getUserId(),order.getCouponId(),orderId);
+			myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());

@@ -19,6 +19,7 @@ import com.apass.esp.service.refund.CashRefundTxnService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,15 +73,16 @@ public class RefundScheduleTask {
   }
 
   /**
-   * 退款：每隔72小时获取所有退款中的订单 向银联发起退款
+   * 退款：同意退款后，过72小时向银联发起退款
    */
-  @Scheduled(cron = "0 0 0 */3 * ?")//每三天执行一次
-//  @Scheduled(cron = "0 0/5 * * * *")//每5分钟执行一次
+  @Scheduled(cron = "0 0 1 * * ?")//每天零晨一点
   public void cashRefundTask() {
     LOGGER.info("退款job开始执行,当前时间{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     //1，查询所有退款中的订单
-    List<CashRefund> cashRefunds = cashRefundService.getCashRefundByStatus(CashRefundStatus.CASHREFUND_STATUS2.getCode());
-    if (cashRefunds != null) {
+    Date agreeDate = DateFormatUtil.addDays(new Date(), -3);
+
+    List<CashRefund> cashRefunds = cashRefundService.getCashRefundByStatus(CashRefundStatus.CASHREFUND_STATUS2.getCode(),agreeDate);
+    if (CollectionUtils.isNotEmpty(cashRefunds)) {
       for (CashRefund cashRefund : cashRefunds) {
         RefundCashRequest request = new RefundCashRequest();
         request.setOrderId(cashRefund.getOrderId());
@@ -103,8 +105,7 @@ public class RefundScheduleTask {
   /**
    * 退款：每隔24小时获取所有退款中的订单 向银联发起退款
    */
-  @Scheduled(cron = "0 0 1 * * ?")//每天执行一次
-//  @Scheduled(cron = "0 0/10 * * * *")//每5分钟执行一次
+  @Scheduled(cron = "0 0 5 * * ?")//每天零晨5点执行一次
   public void cashRefundTaskAdd() {
     LOGGER.info("退款补偿job开始执行,当前时间{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     //1，查询所有退款失败的订单

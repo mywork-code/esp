@@ -25,7 +25,7 @@ CREATE TABLE `t_esp_pro_coupon` (
   `updated_time` datetime NOT NULL COMMENT '修改时间',
   `is_delete` varchar(2) NOT NULL DEFAULT 'N' COMMENT '是否删除，Y：是；N：否',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='优惠券信息表';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='优惠券信息表';
 
 
 CREATE TABLE `t_esp_pro_mycoupon` (
@@ -94,7 +94,8 @@ CREATE TABLE `t_esp_goods_attr_val` (
 
 
 alter table t_esp_goods_stock_info  ADD COLUMN `sku_id` varchar(20) not null default '' COMMENT 'skuid',
-ADD COLUMN attr_val_ids varchar(32) not null default '' comment '多规格属性组合,-分隔(100-103)';
+ADD COLUMN attr_val_ids varchar(32) not null default '' comment '多规格属性组合,-分隔(100-103)',
+ADD COLUMN delete_flag varchar(32) not null default 'N' comment '删除标志，Y-已删除；N-未删除';
 
 
 ALTER TABLE `t_esp_order_info`
@@ -104,13 +105,8 @@ alter table t_esp_banner_info add column `attr` varchar(32) not null default '' 
  add column `attr_val` varchar(32) not null default '' comment '属性值';
 
 
-ALTER TABLE `t_esp_weex_info`
-ADD COLUMN `weex_blong` varchar(12)  NOT NULL DEFAULT '' COMMENT 'weex所属项目(ajqh,ajp)';
-
-alter table t_esp_goods_stock_info  ADD COLUMN delete_flag varchar(32) not null default 'N' comment '删除标志，Y-已删除；N-未删除';
-
 
 ALTER TABLE `t_esp_weex_info`
-CHANGE COLUMN `weex_ver` `ios_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT 'ios版本号' ,
+ADD COLUMN `weex_blong` varchar(12)  NOT NULL DEFAULT '' COMMENT 'weex所属项目(ajqh,ajp)',
 ADD COLUMN `android_ver` varchar(12) NOT NULL DEFAULT '' COMMENT 'android版本号',
-ADD COLUMN `weex_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT '兼容老用户版本号';
+ADD COLUMN `ios_ver`  varchar(12)  NOT NULL DEFAULT '' COMMENT 'ios版本号';

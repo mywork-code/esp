@@ -4,6 +4,7 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CashRefundMapper extends GenericMapper<CashRefund, Long>{
@@ -20,7 +21,7 @@ public interface CashRefundMapper extends GenericMapper<CashRefund, Long>{
 	
     Integer updateByOrderIdSelective(CashRefund crfd);
 
-	List<CashRefund> queryCashRefundByStatus(@Param("status")Integer status);
+	List<CashRefund> queryCashRefundByStatus(@Param("status")Integer status, @Param("agreeDate")Date agreeDate);
 
 
 	List<CashRefund> queryByMainOrderIdAndStatus(@Param("mainOrderId") String mainOrderId,
