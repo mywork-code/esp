@@ -1138,7 +1138,7 @@ public class OrderService {
         	}
         	totalPayment = totalPayment.add(coupon.getDiscountAmonut());
         }
-        LOGGER.info("product total money:{0},payMoney+discountMoney+couponMoney:{1},discountMoney:{2},myCouponId:{3}",countTotalPrice,totalPayment,discountMoney,myCouponId);
+        LOGGER.info("product total money:{},payMoney+discountMoney+couponMoney:{},discountMoney:{},myCouponId:{}",countTotalPrice,totalPayment,discountMoney,myCouponId);
         if (countTotalPrice.compareTo(totalPayment) != 0) {
             LOG.info(requestId, "生成订单前校验,订单总金额计算错误!", countTotalPrice.toString());
             throw new BusinessException("订单总金额计算错误!");
