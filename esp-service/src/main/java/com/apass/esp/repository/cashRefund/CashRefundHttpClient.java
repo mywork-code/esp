@@ -90,7 +90,7 @@ public class CashRefundHttpClient {
             list.add(new BasicNameValuePair("vbsId", request.getVbsId().toString()));
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(list);
             String responseJson = HttpClientUtils.getMethodPostResponse(address, formEntity);
-
+            LOGGER.info("查询消费分期相关的电商订单orderId集合返回数据:", responseJson);
             Response resp = GsonUtils.convertObj(responseJson, Response.class);
             return Response.resolveResult(resp,SapData.class);
         } catch (BusinessException e) {
