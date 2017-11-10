@@ -89,7 +89,7 @@ $(function () {
     // 查询列表
     $(".search-btn").click(function() {
         var params = {};
-        params['attrName'] = $("#attrName").textbox('getValue');
+        params['name'] = $("#attrName").textbox('getValue');
         $('#goodsAttrlist').datagrid('load', params);
     });
     //添加按钮事件
