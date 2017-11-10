@@ -1,11 +1,13 @@
 package com.apass.esp.domain.entity;
 import java.util.Date;
+
+import com.apass.esp.common.model.QueryParams;
 /**
  * 商品属性
  * @author ht
  * 20171027  sprint11  新增商品属性维护
  */
-public class GoodsAttr {
+public class GoodsAttr extends QueryParams{
     private Long id;
     private String name;
     private String createdUser;
