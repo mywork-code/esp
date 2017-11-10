@@ -624,7 +624,7 @@
         AND CURRENT_TIMESTAMP > a.list_time
         AND a.`status` = 'G02'
         AND a.is_delete = '01'
-        ORDER BY a.update_date DESC
+        ORDER BY a.goods_type ASC,a.sift_sort ASC,a.sord_no ASC
         limit #{pageIndex},#{pageSize}
     ]]>
     </select>
