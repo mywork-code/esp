@@ -33,7 +33,7 @@
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-}
+} 
 .new-btn {
 	display: inline-block;
     padding: 2px 4px 2px 30px;
@@ -171,7 +171,7 @@
 		        <div id="addEastAttrDataGrid" data-options="fit:true,border:false">
 		        </div> 
 		    </div> 
-		    <div data-options="region:'south',split:false,collapsible:false" style="height:15%;" align="right">  
+		    <div data-options="region:'south',split:false,collapsible:false" style="height:15%;" align="center">  
 					<a href="javascript:void(0);" id="disGoodsCategory"
 							style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;&nbsp;
 							<a href="javascript:void(0);" id="confirmGoodsCategory"
@@ -207,20 +207,18 @@
 						<td colspan="1" width="60%" align="left"><input class="easyui-textbox"  data-options="validType:'length[1,25]'" 
 							type="text" id="addgoodsTitle" name="addgoodsTitle" style="width: 50%;" /><span id="addgoodsTitleL"></span></td>
 					</tr>
-					<tr>
+					<!--20171027 sprint11删除属性录入  在库存页面录入-->
+					<!-- <tr>
 					<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
-					<td align="left"><select class="easyui-combobox"
-							data-options="required:true" style="width: 100%" id="addgoodsSkuType" editable="false"
-							name="addgoodsSkuType">
-								<option value="">请选择</option>
-								<option value="颜色">颜色</option>
-								<option value="尺寸">尺寸</option>
-								<option value="容量">容量</option>
-								<option value="型号">型号</option>
-								<option value="适用人群">适用人群</option>
-						</select></td>
-					</tr>
-	
+					<td align="left">
+					   <select class="easyui-combobox" data-options="required:true" style="width: 100%" 
+					   id="addgoodsSkuType" editable="false" name="addgoodsSkuType">
+						<option value="">请选择</option><option value="颜色">颜色</option>
+						<option value="尺寸">尺寸</option><option value="容量">容量</option>
+						<option value="型号">型号</option><option value="适用人群">适用人群</option>
+						</select>
+					</td>
+					</tr> -->
 					<tr>
 						<td  width="20%" align="right">生产日期:</td>
 						<td align="left"><input id="addproDate" name="addproDate" editable="false"
@@ -233,8 +231,9 @@
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
-						<td align="right">下架日期:</td>
-						<td  align="left"><input id="adddelistTime" name="adddelistTime" class="easyui-datetimebox" style="width: 50%;" /></td>
+						<td align="right"><font color="red"></font>下架日期:</td>
+						<td  align="left"><input id="adddelistTime" name="adddelistTime" editable="false"
+							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
 						<td align="right"><font color="red">*</font>是否支持7天退货:</td>
@@ -340,15 +339,15 @@
 
 			<div style="width: 100%;">
 				<a href="javascript:void(0);" id="previousStepUpLoadPic"
-								style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;一&nbsp;步&nbsp;</a>
-								<a href="javascript:void(0);" id="nextStepUpLoadPic"
-								style="margin-right: 15px;" class="easyui-linkbutton">下&nbsp;一&nbsp;步&nbsp;</a>	
+					style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;一&nbsp;步&nbsp;</a>
+				<a href="javascript:void(0);" id="nextStepUpLoadPic"
+				    style="margin-right: 15px;" class="easyui-linkbutton">下&nbsp;一&nbsp;步&nbsp;</a>	
 			</div>
 		</div>
 		<!-- 新增库存 -->
 		<div id="addGoodsStock" style="width: 100%;min-height: 400px">
-			<!-- 库存查询录入 -->
-			<div id="addGoodsStockInfoDiv">
+			<!-- 库存查询录入 --><!-- 更新在下面 -->
+			<!-- <div id="addGoodsStockInfoDiv">
 		  		<tr style="margin-top: 22px;">
 				<td><a href="javascript:void(0);"
 				style="margin-left: 2px;" class="easyui-linkbutton addGoodsStockInfo">新&nbsp;增&nbsp;</a>
@@ -361,7 +360,28 @@
 								style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;一&nbsp;步&nbsp;</a>
 								<a href="javascript:void(0);" id="saveGoodsStock"
 								style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>	
-			</div>
+			</div> -->
+<!-- ================-----------维护库存新（新增修改）（始）新增------------=========== -->
+            <!-- 新加库存 -->
+            <div>
+                <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">
+                   <a href="javascript:void(0);" class="easyui-linkbutton add-btn1"
+                      data-options="iconCls:'icon-add'">添加商品属性</a>&nbsp;&nbsp;
+                </div>
+                <div>
+                   <div id ="inputDiv"></div> 
+                </div>
+                <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">
+                    <div id="tableattrlist"></div>
+                </div>
+                <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">
+                    <a href="javascript:void(0);" class="easyui-linkbutton save-btnAlladddis"
+                      data-options="iconCls:'icon-add'">上一步</a> 
+                    <a href="javascript:void(0);" class="easyui-linkbutton save-btnAlladd"
+                      data-options="iconCls:'icon-add'">保存库存</a> 
+                </div>
+            </div>
+<!-- =============-----------维护库存新（新增修改）（末）新增------------================= -->
 		</div>
 	</div>
 <!-- =============================================--------添加商品 末--------================================================ -->
@@ -375,12 +395,9 @@
 			<!-- 进度描述 -->
 		<div style="height: 35px" align="left" id="editPlanDecrible">
 			<font style="font-weight: bold; cursor: pointer; font-size: 16px;" id="one">选择商品分类</font>
-			&nbsp;&nbsp;
 			<font style="font-weight: lighter; cursor: pointer; font-size: 16px;" id="two">填写商品信息</font>
-			&nbsp;&nbsp;
 			<font style="font-weight: lighter; cursor: pointer; font-size: 16px;" id="three">上传商品图片</font>
-			&nbsp;&nbsp;
-			<font style="font-weight: lighter; cursor: pointer;font-size: 16px;" id="four">新增库存</font>
+			<font style="font-weight: lighter; cursor: pointer;font-size: 16px;" id="four">维护库存</font>
 		</div>
 		<!-- 选择商品分类  -->
 		<div class="easyui-layout" id="editSelectCategoryList" data-options="fit:true,border:false">  
@@ -397,8 +414,11 @@
 		        </div> 
 		    </div> 
 		    <div data-options="region:'south',split:false,collapsible:false" style="height:15%;" align="center">  
-							<a href="javascript:void(0);" id="saveGoodsCategory"
-							style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>
+				<a href="javascript:void(0);" id="disSaveGoodsCategory"
+                    style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>&nbsp;&nbsp;&nbsp;
+                <a href="javascript:void(0);" id="saveGoodsCategory"
+                    style="margin-right: 15px;" class="easyui-linkbutton">下一步</a>
+            
 		    </div> 
 		</div>
 		<!-- 填写商品信息 -->
@@ -431,27 +451,27 @@
 						<td colspan="1" width="60%" align="left"><input class="easyui-textbox" data-options="validType:'length[1,25]'"
 							type="text" id="editgoodsTitle" name="editgoodsTitle" style="width: 50%;" /><span id="editgoodsTitleL"></span></td>
 					</tr>
-					<tr>
+					<!--20171027 sprint11删除属性录入  在库存页面录入-->
+					<!-- <tr>
 					<td width="20%" align="right"><font color="red">*</font>规格类型:</td>
-					<td align="left"><select class="easyui-combobox" editable="false"
-							data-options="required:true" style="width: 100%" id="editgoodsSkuType"
-							name="editgoodsSkuType">
-								<option value="">请选择</option>
-								<option value="颜色">颜色</option>
-								<option value="尺寸">尺寸</option>
-								<option value="容量">容量</option>
-								<option value="型号">型号</option>
-								<option value="适用人群">适用人群</option>
-						</select></td>
-					</tr>
+					<td align="left">
+					   <select class="easyui-combobox" editable="false" data-options="required:true" 
+					   style="width: 100%" id="editgoodsSkuType" name="editgoodsSkuType">
+							<option value="">请选择</option><option value="颜色">颜色</option>
+							<option value="尺寸">尺寸</option><option value="容量">容量</option>
+							<option value="型号">型号</option><option value="适用人群">适用人群</option>
+						</select>
+					</td>
+					</tr> -->
 					<tr>
 						<td align="right"><font color="red">*</font>上架日期:</td>
 						<td align="left"><input id="editlistTime" name="editlistTime" editable="false"
 							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
-						<td align="right">下架日期:</td>
-						<td align="left"><input id="editdelistTime" name="editdelistTime" class="easyui-datetimebox" style="width: 50%;" /></td>
+						<td align="right"><font color="red"></font>下架日期:</td>
+						<td align="left"><input id="editdelistTime" name="editdelistTime" editable="false"
+							class="easyui-datetimebox" style="width: 50%;" /></td>
 					</tr>
 					<tr>
 						<td align="right"><font color="red">*</font>是否支持7天退货:</td>
@@ -488,8 +508,10 @@
 					</tr>
 					<tr style="margin-top: 22px;">
 						<td colspan="4">
-							<a href="javascript:void(0);" id="editgoodsAddinfo"
-							style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>
+					      <a href="javascript:void(0);" id="disEditgoodsAddinfo"
+                            style="margin-right: 15px;" class="easyui-linkbutton">上一步</a>
+						  <a href="javascript:void(0);" id="editgoodsAddinfo"
+							style="margin-right: 15px;" class="easyui-linkbutton">下一步</a>
 						</td>
 					</tr>
 				</table>
@@ -551,8 +573,10 @@
 			<span style="color:red">支持格式：.png,.jpg;尺寸:width:480-1242px,height:1-1546px;大小：≤500kb</span>
 			<div id="editGoodDetails" style="width:100%; min-height: 300px;border: 1px solid lightblue;">
 			    <script id="editEditor" type="text/plain" style="width:900px;height:200px;"></script>
+			    <a href="javascript:void(0);" id="disEditGetAllHtml"
+                    style="margin-right: 15px;" class="easyui-linkbutton">上一步</a>
 			    <a href="javascript:void(0);" id="editGetAllHtml"
-								style="margin-right: 15px;" class="easyui-linkbutton">保&nbsp;存&nbsp;</a>
+				    style="margin-right: 15px;" class="easyui-linkbutton">下一步</a>
 			</div>
 			<div style="width: 100%;margin-top: 20px">
 <!-- 				<a href="javascript:void(0);" id="saveEditUploadPic" -->
@@ -561,8 +585,8 @@
 		</div>
 		<!-- 新增库存 -->
 		<div id="editGoodsStock" style="width: 100%; height: 100%">
-			<!-- 库存查询录入 -->
-			<div id="editGoodsStockInfoDiv">
+			<!-- 库存查询录入 --><!-- 更新 在下面 -->
+			<!-- <div id="editGoodsStockInfoDiv">
 				<table>
 			  		<tr style="margin-top: 22px;">
 			  		<input type="hidden" name="goodsId" id="goodsId">
@@ -576,11 +600,33 @@
 			<div style="width: 100%;min-height: 100px">
 				<a href="javascript:void(0);" id="saveEditGoodsStock"
 					style="margin-right: 15px;" class="easyui-linkbutton">关&nbsp;闭&nbsp;</a>	
-			</div>
+			</div> -->
+<!-- ================-----------维护库存新（新增修改）（始）修改------------=========== -->
+            <!-- 修改库存信息 -->
+		    <div>
+		        <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">
+                   <a href="javascript:void(0);" class="easyui-linkbutton add-btn2"
+                      data-options="iconCls:'icon-add'">添加商品属性</a>&nbsp;&nbsp;
+                </div>
+		        <div>
+		           <div id ="inputDivEdit"></div> 
+		        </div>
+		        <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">
+		           <div id="tableattrEditlist"></div>
+		        </div>
+		        <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">
+		           <a href="javascript:void(0);" class="easyui-linkbutton save-btnAllEditdis"
+                      data-options="iconCls:'icon-add'">上一步</a> 
+		           <a href="javascript:void(0);" class="easyui-linkbutton save-btnAllEdit"
+		              data-options="iconCls:'icon-add'">保存库存</a> 
+		        </div>
+	        </div>
+<!-- =============-----------维护库存新（新增修改）（末）修改------------================= -->
 		</div>
 	</div>
 
 <!-- =========================================================----------- 编辑 末------------============================================================= -->	
+<!-- ==================================-----------维护库存旧（新增修改）（始）------------========================== -->
 	<!-- 新加库存 -->
 	<div id="addGoodsStockInfoWin" class="easyui-window"
 		title="<font color='black'>新加库存</font>" hidden="hidden"
@@ -739,7 +785,7 @@
 				</tr>
 			</table>
 	</div>
-	
+<!-- ==================================-----------维护库存旧（新增修改）（末）------------========================== -->
 	<!-- 修改京东库存信息 -->
 	<div id="editJDStockWin" class="easyui-window"
 		title="<font color='black'>修改京东库存信息</font>" hidden="hidden"

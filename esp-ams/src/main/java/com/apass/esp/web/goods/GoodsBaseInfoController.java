@@ -354,8 +354,9 @@ public class GoodsBaseInfoController {
         String message = SUCCESS;
         GoodsInfoEntity goodsInfo = null;
 
-        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), pageModel.getGoodsModel(),
-                pageModel.getGoodsName(), pageModel.getGoodsTitle(), pageModel.getGoodsSkuType())
+        if (StringUtils.isAnyBlank(pageModel.getMerchantCode(), 
+                pageModel.getGoodsModel(),pageModel.getGoodsName(), 
+                pageModel.getGoodsTitle())
                 || pageModel.getListTime().equals("")
                 || pageModel.getCategoryId1().equals("")
                 || pageModel.getCategoryId2().equals("")
@@ -374,6 +375,7 @@ public class GoodsBaseInfoController {
             pageModel.setNewCreatDate(new Date());
             pageModel.setSource("");
             pageModel.setExternalId("");
+            pageModel.setGoodsSkuType("");
             Integer sordNo = pageModel.getSordNo();
             if(sordNo != null){
                 List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
@@ -435,14 +437,12 @@ public class GoodsBaseInfoController {
     @RequestMapping(value = "/editCategory", method = RequestMethod.POST)
     @LogAnnotion(operationType = "商品类目修改", valueType = LogValueTypeEnum.VALUE_DTO)
     public Response editCategory(@ModelAttribute("pageModelEdit") GoodsInfoEntity pageModelEdit) {
-        String message = SUCCESS;
         try {
-            pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            goodsService.updateService(pageModelEdit);
-            return Response.success(message);
+        	pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
+            return goodsAttrService.editCategory(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
-            return Response.fail("编辑商品失败");
+            return Response.fail("编辑商品类目失败");
         }
     }
 
@@ -1094,13 +1094,13 @@ public class GoodsBaseInfoController {
         return respBody;
     }
     /**
-     * 批量保存  商品的属性规格 和库存信息
+     * 新增商品 保存库存 批量保存  商品的属性规格 和库存信息
      * @param request
      * @return
      */
     @ResponseBody
     @RequestMapping("/saveGoodsCateAttrAndStock")
-    @LogAnnotion(operationType = "批量保存  商品的属性规格 和库存信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
+    @LogAnnotion(operationType = "新增商品  批量保存  商品的属性规格 和库存信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response saveGoodsCateAttrAndStock(HttpServletRequest request) {
         try{
             String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
@@ -1108,9 +1108,13 @@ public class GoodsBaseInfoController {
             String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
             String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
-            List<StockInfoFileModel> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<StockInfoFileModel>>(){});
-            return goodsAttrService.saveGoodsCateAttrAndStock(list,categorynameArr1,categorynameArr2,
-                categorynameArr3,goodsId,SpringSecurityUtils.getLoginUserDetails().getUsername());
+            String status = HttpWebUtils.getValue(request, "status");
+            List<StockInfoFileModel> listadd = JSONObject.parseObject(goodsStock[0], new TypeReference<List<StockInfoFileModel>>(){});
+            List<GoodsStockInfoEntity> listenedit = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
+            return goodsAttrService.saveGoodsCateAttrAndStock(listadd,listenedit,categorynameArr1,categorynameArr2,
+                categorynameArr3,goodsId,SpringSecurityUtils.getLoginUserDetails().getUsername(),status);
+        }catch(BusinessException e){
+            return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
             return Response.fail("商品属性规格和库存信息录入失败!");
@@ -1156,11 +1160,18 @@ public class GoodsBaseInfoController {
             }
             // 获取页面查询条件
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            //修改的 未改类目
             String categoryname1 = HttpWebUtils.getValue(request, "categorynameArr1");
             String categoryname2 = HttpWebUtils.getValue(request, "categorynameArr2");
             String categoryname3 = HttpWebUtils.getValue(request, "categorynameArr3");
+            //修改的 改类目
+            String category1 = HttpWebUtils.getValue(request, "categoryname1");
+            String category2 = HttpWebUtils.getValue(request, "categoryname2");
+            String category3 = HttpWebUtils.getValue(request, "categoryname3");
+            String status = HttpWebUtils.getValue(request, "status");
             // 获取分页结果返回给页面
-            PaginationManage<GoodsStockInfoEntity> pagination = goodsAttrService.flushtableattrEditlist(goodsId,categoryname1,categoryname2,categoryname3,page);
+            PaginationManage<GoodsStockInfoEntity> pagination = goodsAttrService.flushtableattrEditlist(goodsId,
+                    categoryname1,categoryname2,categoryname3,category1,category2,category3,page,status);
             if (pagination == null) {
                 respBody.setTotal(0);
                 respBody.setStatus(CommonCode.SUCCESS_CODE);
@@ -1190,8 +1201,32 @@ public class GoodsBaseInfoController {
             String attrVal = HttpWebUtils.getValue(request, "attrVal");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
             return goodsAttrService.createTableByCateEdit(attrValId,attrId,attrVal,goodsId);
+        }catch(BusinessException e){
+            return Response.fail(e.getErrorDesc());
         }catch(Exception e){
             return Response.fail("按钮失焦事件 刷新规格库存表失败！");
+        }
+    }
+    /**
+     * 修改商品 保存库存 批量保存  商品的属性规格 和库存信息（无规格）
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/editsaveGoodsCateAttrAndStock")
+    @LogAnnotion(operationType = "修改商品 保存库存（无规格）", valueType = LogValueTypeEnum.VALUE_REQUEST)
+    public Response editsaveGoodsCateAttrAndStock(HttpServletRequest request) {
+        try{
+            String[] categorynameArr1 = request.getParameterValues("categorynameArr1");//HttpWebUtils.getValue(request, "categorynameArr1");
+            String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
+            String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
+            String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            List<GoodsStockInfoEntity> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
+            return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),SpringSecurityUtils.getLoginUserDetails().getUsername());
+        }catch (Exception e) {
+            LOGGER.error("商品属性规格和库存信息录入失败!", e);
+            return Response.fail("商品属性规格和库存信息录入失败!");
         }
     }
 }
