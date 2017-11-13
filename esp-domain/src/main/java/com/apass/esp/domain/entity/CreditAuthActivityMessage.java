@@ -8,6 +8,10 @@ public class CreditAuthActivityMessage {
 	 */
 	private BigDecimal amount;
 	/**
+	 * 佣金分期金额
+	 */
+	private BigDecimal yjfqAmount;
+	/**
 	 * 客户号
 	 */
 	private Long customerId;
@@ -72,6 +76,12 @@ public class CreditAuthActivityMessage {
 	}
 	public void setIsUpdate(Boolean isUpdate) {
 		this.isUpdate = isUpdate;
+	}
+	public BigDecimal getYjfqAmount() {
+		return yjfqAmount;
+	}
+	public void setYjfqAmount(BigDecimal yjfqAmount) {
+		this.yjfqAmount = yjfqAmount;
 	}
 	
 }

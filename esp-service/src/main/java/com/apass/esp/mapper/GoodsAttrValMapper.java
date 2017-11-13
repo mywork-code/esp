@@ -1,6 +1,8 @@
 package com.apass.esp.mapper;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 /**
@@ -25,5 +27,5 @@ public interface GoodsAttrValMapper  extends GenericMapper<GoodsAttrVal, Long> {
 	 * @param goodsId
 	 * @return
 	 */
-	List<GoodsAttrVal> queryByGoodsIdAndAttrId(Long goodsId,Long attrId);
+	List<GoodsAttrVal> queryByGoodsIdAndAttrId(@Param("goodsId") Long goodsId,@Param("attrId") Long attrId);
 }

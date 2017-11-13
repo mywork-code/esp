@@ -389,15 +389,15 @@ public class GoodsService {
     	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
     //商品价格最低
-    GoodsStockInfoEntity MinGoodsPriceStock= getMinPriceNotJdGoods(goodsId);
-	BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsId, MinGoodsPriceStock.getGoodsStockId());
-    returnMap.put("goodsPrice",goodsPrice);
-    returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(goodsPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
+    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
+    returnMap.put("goodsPrice",minPrice);
+    returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(minPrice)).setScale(2, BigDecimal.ROUND_DOWN));
     returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
     returnMap.put("goodsTitle",goodsBasicInfo.getGoodsTitle());
     returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
     returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
-    returnMap.put("status",goodsBasicInfo.getStatus());
     returnMap.put("goodsStockDes","无货");
 	if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
 	returnMap.put("goodsStockDes","有货");
@@ -410,7 +410,7 @@ public class GoodsService {
     	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
     }
     List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId);
-    List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId);
+    List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
     
     returnMap.put("jdImagePathList",JdImagePathList);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
@@ -485,6 +485,8 @@ public class GoodsService {
 			jdSimilarSkuVo.setProActivityId(proActivityId);
 			jdSimilarSkuVo.setProCouponList(proCoupons);
 			jdSimilarSkuVo.setSupport7dRefund(support7dRefund);
+			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+			JdSimilarSkuToList.add(jdSimilarSkuTo);
 		}
 		return JdSimilarSkuToList;
 	}
@@ -494,8 +496,9 @@ public class GoodsService {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId) throws BusinessException {
+	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId,String attrValId) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+		String[] attrValIdString=attrValId.split(":");
 		// 拼凑京东商品jdSimilarSkuList数据格式
 		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
 		// 查出商品属性
@@ -516,15 +519,19 @@ public class GoodsService {
 				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
 				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
 				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
+				//默认价格最低的商品的属性规格为默认值
+				if(Arrays.asList(attrValIdString).contains(goodsAttrVal2.getId().toString())){
+					jdSaleAttr.setIsSelect("true");
+				}
 				List<String> skuIds = new ArrayList<>();
 				String skuIdStr = "";
 				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 				for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 					if (StringUtils.isNotEmpty(goodsStockInfoEntity.getAttrValIds())) {
-						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split("-");
+						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
 							skuIds.add(goodsStockInfoEntity.getSkuId());
-							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId();
+							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId()+",";
 						}
 					}
 				}
@@ -533,6 +540,7 @@ public class GoodsService {
 				saleAttrList.add(jdSaleAttr);
 			}
 			jdSimilarSku.setSaleAttrList(saleAttrList);
+			jdSimilarSkuList.add(jdSimilarSku);
 		}
 		return jdSimilarSkuList;
 	}
@@ -612,6 +620,7 @@ public class GoodsService {
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("goodsStockList", goodsStockList);
+    returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
     List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
     // 20170322
@@ -644,12 +653,13 @@ public class GoodsService {
     returnMap.put("source", "notJd");
   }
 
-	// 获取非京东商品的最小价格对象
-	public GoodsStockInfoEntity getMinPriceNotJdGoods(Long goodsId) throws BusinessException {
+	// 获取非京东商品的最小价格对象及价格
+	public Map<String,Object> getMinPriceNotJdGoods(Long goodsId) throws BusinessException {
+		Map<String,Object> resultMap=new HashMap<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
 		GoodsStockInfoEntity goodsStock = new GoodsStockInfoEntity();
 		BigDecimal minPrice = BigDecimal.ZERO;
-		if (null != goodsStockList && goodsStockList.size() > 0) {
+		if (CollectionUtils.isNotEmpty(goodsStockList)) {
 			minPrice = commonService.calculateGoodsPrice(goodsId, goodsStockList.get(0).getGoodsStockId());
 			for (GoodsStockInfoEntity stock : goodsStockList) {
 				BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsId, stock.getGoodsStockId());
@@ -659,7 +669,9 @@ public class GoodsService {
 				}
 			}
 		}
-		return goodsStock;
+		resultMap.put("minPrice", minPrice);
+		resultMap.put("goodsStock", goodsStock);
+		return resultMap;
 	}
   /**
    * (满减活动)通过goodsId查看该商品是否参加有效活动，如果参加返回相关数据
