@@ -210,11 +210,11 @@ $(function() {
                     field : 'goodsTypeDesc',
                     width : 80,
                     align : 'center',
-                },{
-                    title : '规格类型',
-                    field : 'goodsSkuType',
-                    width : 80,
-                    align : 'center'
+//                },{
+//                    title : '规格类型',
+//                    field : 'goodsSkuType',
+//                    width : 80,
+//                    align : 'center'
                 },{
                     title : '商品生产日期',
                     field : 'proDate',
@@ -888,7 +888,10 @@ $(function() {
     	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
     	flushtableattrEditlist();
-		flushGoodsStock(finalGoodId);
+    	//类目未修改才刷新下方规格
+    	if(goodsCateChangeFalg==1){
+    		flushGoodsStock(finalGoodId);
+    	}
 	});
 	
 	//监听编辑商品输入商品名称事件
@@ -955,6 +958,7 @@ $(function() {
 	//编辑
 	$.editGoods = function(index) {//编缉初始化
 		$('#editGoodsInfo').window('open');
+		goodsCateChangeFalg=1;
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
 		externalsource = rowData.source;
 		editGoodId = rowData.id;
@@ -1266,7 +1270,10 @@ $(function() {
 				    	loadStockGoods('editGoodsStockList',id,externalsource);
 //				    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
 				    	flushtableattrEditlist();
-						flushGoodsStock(id);
+				    	//类目未修改才刷新规格
+				    	if(goodsCateChangeFalg==1){
+				    		flushGoodsStock(id);
+				    	}
 						return;
 					}
 					//非京东 跳页  跳第三页
@@ -1493,7 +1500,10 @@ $(function() {
 			    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //			    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
 			    	flushtableattrEditlist();
-					flushGoodsStock(finalGoodId);
+			    	//类目未修改才刷新规格
+			    	if(goodsCateChangeFalg==1){
+			    		flushGoodsStock(finalGoodId);
+			    	}
 				}
 			}
 		});
@@ -1529,10 +1539,9 @@ $(function() {
 		$(".search-btn").click();
 	});
 	//修改库存    第四页 确定 保存库存    save-btnAllEdit   见上方
-//==================================-------编辑商品 末--------===================================================================//````````````````````
-	/**
-	 * 库存datagrid
-	 */
+	//==================================-------编辑商品 末--------===============================================//
+	//==================================-------库存商品 始--------===============================================//
+	//库存弹框datagrid
 	$.queryGoodsStockInfo = function(index) {
 		var dataRow = $('#tablelist').datagrid('getData').rows[index];
 		var goodsId=dataRow.id
@@ -1543,7 +1552,8 @@ $(function() {
 		$('#goodsStockInfo').window({modal: true});
 		$('#goodsStockInfo').window('open');
 		
-		loadStockGoods('goodsStockList',goodsId,source);
+		//loadStockGoods('goodsStockList',goodsId,source);
+		loadStockGoodsAbout('goodsStockList',goodsId,source);
 	}
 	
 	//商品规格长度校验
@@ -1699,29 +1709,22 @@ $(function() {
 		//判断商品总量是否超过999
 //		var stockinfoAmtAll=parseInt(addstockinfoAmt)+parseInt(stockTotalAmtTemp);//库存商品总量
 		var stockinfoAmtAll=parseInt(addstockinfoAmt)+parseInt(stockCurrAmtTemp);//当前库存量
-		if (stockinfoAmtAll > 999)
-		{
+		if (stockinfoAmtAll > 999){
 			$.messager.alert ("提示", "当前库存数量不能超过999个！", "info");
 			return;
 		}
 		var param = {};
 		param['id']=stockinfoId;
 		param['addAmt']=addstockinfoAmt;
-		/**
-		 * 验证未加
-		 */
-		$.ajax({
-			type : "POST",
-			url : ctx + '/application/goods/stockinfo/editStockinfo',
-			data : param,
-			success : function(data) {
+		$.ajax({url : ctx + '/application/goods/stockinfo/editStockinfo',type : "POST",data : param,success : function(data) {
 			 	var params = {};
 		        params['goodsId'] = goodsId;
 //		        $('#addGoodsStockList').datagrid('load', params);
 //		        $('#editGoodsStockList').datagrid('load', params);
-		        loadStockGoods('addGoodsStockList',goodsId,null);
-		        loadStockGoods('editGoodsStockList',goodsId,null);
-		        loadStockGoods('goodsStockList',goodsId,null);
+//		        loadStockGoods('addGoodsStockList',goodsId,null);
+//		        loadStockGoods('editGoodsStockList',goodsId,null);
+//		        loadStockGoods('goodsStockList',goodsId,null);
+		        loadStockGoodsAbout('goodsStockList',goodsId,null);
 		        $('#addAmtGoodsStockInfoWin').window('close');
 		        $(".search-btn").click();
 			}
@@ -2464,7 +2467,6 @@ function loadBanner(datagridId,goodsId){
 }
 //加载库存列表
 function loadStockGoods(datagridId,goodsId,source){
-	// debugger;
 	var statusV = null;
 	if('goodsStockList' == datagridId){
 		statusV = 'G02';
@@ -2532,6 +2534,69 @@ function loadStockGoods(datagridId,goodsId,source){
                     }
                 }
             ]] 
+    });
+}
+//点击商品库存   加载库存列表
+function loadStockGoodsAbout(datagridId,goodsId,source){
+	$('#'+datagridId).datagrid({
+        width:"100%",
+        url : ctx + '/application/goods/stockinfo/pagelist?goodsId='+goodsId,
+        idField:'id',
+        pagination : true,
+		rownumbers : true,
+        columns: [[{
+        	field: 'stockLogo', 
+        	title: 'logo', 
+        	width: 210,
+        	align : 'center',
+        	formatter : function(value, row, index) {
+        		if(value !=null){
+        			var content = "";
+        			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.alertPic('"
+        				+ row.stockLogo + "');\">"+row.stockLogo+"</a>&nbsp;&nbsp;";
+        			return content;
+        		}
+        	}
+        },{
+        	field: 'id', title: '库存id', width: 70,align : 'center',hidden:'hidden'
+		},{
+			field: 'goodsSkuAttr', title: '库存规格', width: 80,align : 'center'
+		},{
+			field: 'goodsCostPrice',
+			title: '成本价格', 
+			width: 70,
+			align : 'center',
+            formatter:function(value,row,index){// 授权标示
+             	var goodCostpriceIf=$('#goodCostpriceIf').val();
+             	if(goodCostpriceIf=='permission'){
+            		return value;
+            	} 
+        		return "未授权";
+            }
+		},{
+			field: 'goodsPrice', title: '商品售价', width: 70,align : 'center'
+		},{
+			field: 'stockTotalAmt', title: '库存总量', width: 70,align : 'center'
+		},{
+			field: 'stockCurrAmt', title: '库存剩余', width: 70,align : 'center'
+		},{
+			field : 'opt',  
+			title : '操作', 
+			width : 80,
+			align : 'center',
+            formatter : function(value, row, index) {// 授权标示
+             	var grantedAuthority=$('#grantedAuthority').val();
+            	var content = "";
+            	if(grantedAuthority=='permission'){
+            		if(source != 'jd'){
+            			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">追加库存</a>&nbsp;&nbsp;";
+            		}
+            	}else{
+             		content +="权限不足";
+            	}
+            	return content;
+            }
+        }]] 
     });
 }
 //添加商品初始化商品信息
@@ -3179,13 +3244,9 @@ function getRowIndex(target){//可编辑动态表格
 }
 /*修改库存细信息相关*/
 function flushGoodsStock(finalGoodId){
-	var address = ctx + '/application/goods/management/findGoodsCateAttrAndStockForEdit';
 	var param = {};
 	param['goodsId'] = finalGoodId;
-	$.ajax({
-		url : address,
-		type : "POST",
-		data : param,
+	$.ajax({url : ctx + '/application/goods/management/findGoodsCateAttrAndStockForEdit',type : "post",data : param,
 		success : function(data) {
 			if(data.msg=='success'){
 				var da = data.data;
@@ -3271,7 +3332,7 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
 	param["attrId"]=attrId;
 	param["attrVal"]=value;
 	param["goodsId"]=goodsId;
-	$.ajax({url : ctx + '/application/goods/management/createTableByCateEdit',data : param, type : "get",dataType : "json",
+	$.ajax({url : ctx + '/application/goods/management/createTableByCateEdit',data : param, type : "post",dataType : "json",
         success : function(data) {
         	if(data.status==1){
         		//此时刷新表格  tableattrEditlist
@@ -3427,7 +3488,7 @@ function flushtableattrEditlist(){
             $.ajax({
                 url : ctx + '/application/goods/management/flushtableattrEditlist',
                 data : param,
-                type : "get",
+                type : "post",
                 dataType : "json",
                 success : function(data) {
                     $.validateResponse(data, function() {
@@ -3457,6 +3518,7 @@ function getRowIndexE(target){//可编辑动态表格
 }
 /*=================================修改商品类目修改  此时逻辑与  新增商品库存的逻辑完全一致  只是页面DIV不同重写一遍。=====================================*/
 function function1(){
+	debugger
 	if(catenum>2){
 		$.messager.alert("提示", "商品属性最多选择3个！", "info");
 		return;
@@ -3466,10 +3528,10 @@ function function1(){
 	var buttonid = catenum+"+buttonId";
 	var str ='<div id ='+divid+'>';
 		str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
-			str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
+			str+='<input class="easyui-combobox" style="width:95px"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
 			str+="&nbsp;&nbsp;"
-			str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="buttonclick(this.id)"/>';
-//			str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton buttonclick">删除</a>'
+			str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="function5(this.id)"/>';
+//			str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton function5">删除</a>'
 		str+='</div>';
 		str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:650px;">';
 		for(var i = 0;i<10;i++){
@@ -3569,4 +3631,35 @@ function function4(value1,value2,value3){
     params['categoryname3'] = value3.toString();
     params['status'] = "editstatusaddmethod";
     $('#tableattrEditlist').datagrid('load', params);
+}
+function function5(id){//删除本条属性下属十个规格，刷新表格
+	var attnum = id.split("+")[0];
+	if(catenum>0){
+		catenum--;
+	}
+	var child = document.getElementById(id);
+	var childfir = child.parentNode.childNodes[0];
+	var childVlaue = $('#'+childfir.id).combobox('getValue');
+	child.parentNode.parentNode.remove();
+	var catenameNew = new Array();
+	for(var b = 0;b<catename.length;b++){
+		if(catename[b]!=childVlaue){
+			catenameNew.push(catename[b]);
+		}
+	}
+	catename=[];
+	catename = catenameNew;
+	if(attnum==0){
+		categorynameArr1=[];
+		categorynameArrX=[];
+	}
+	if(attnum==1){
+		categorynameArr2=[];
+		categorynameArrY=[];
+	}
+	if(attnum==2){
+		categorynameArr3=[];
+		categorynameArrZ=[];
+	}
+	function4(categorynameArr1,categorynameArr2,categorynameArr3);
 }
