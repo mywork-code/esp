@@ -409,9 +409,9 @@ public class GoodsService {
     for (BannerInfoEntity banner : goodsBannerList) {
     	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
     }
-    List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId);
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
-    
+    List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+
     returnMap.put("jdImagePathList",JdImagePathList);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("merchantCode", goodsBasicInfo.getMerchantCode());
@@ -440,7 +440,7 @@ public class GoodsService {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId) throws BusinessException {
+	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		Long proActivityId = null;
 		String activityCfg;
@@ -463,12 +463,36 @@ public class GoodsService {
 		} else {
 			proCoupons = proCoupons2;
 		}
+		
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
 		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-			jdSimilarSkuTo.setSkuIdOrder(goodsStockInfoEntity.getAttrValIds());
+			String attrValIds=goodsStockInfoEntity.getAttrValIds();
+			String[] attrValIdsList=attrValIds.split(":");
+			for (JdSimilarSku jdSimilarSku : list) {
+				List<JdSaleAttr> saleAttrList=jdSimilarSku.getSaleAttrList();
+				for (JdSaleAttr jdSaleAttr : saleAttrList) {
+					for(int i=0;i<attrValIdsList.length;i++){
+						if(StringUtils.equals(jdSaleAttr.getSaleValueId(),attrValIdsList[i])){
+							attrValIdsList[i]=jdSimilarSku.getDim()+""+jdSaleAttr.getSaleValueId();
+							break;
+						}
+						
+					}
+				
+				}
+			}
+			String attrValIds2="";
+			for (String string : attrValIdsList) {
+				if(StringUtils.isEmpty(attrValIds2)){
+					attrValIds2=string;
+				}else{
+					attrValIds2=attrValIds2+":"+string;
+				}
+			}
+			jdSimilarSkuTo.setSkuIdOrder(attrValIds2);
 			JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 			jdSimilarSkuVo.setSkuId(goodsStockInfoEntity.getSkuId());
 			jdSimilarSkuVo.setGoodsId(goodsId.toString());
