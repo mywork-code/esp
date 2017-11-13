@@ -13,6 +13,7 @@ import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.entity.bill.SapData;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
+import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.MerchantCode;
@@ -26,6 +27,7 @@ import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
+import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
@@ -76,6 +78,9 @@ public class SAPService {
 
   @Autowired
   private CashRefundHttpClient cashRefundHttpClient;
+
+  @Autowired
+  private MerchantInforService merchantInforService;
 
   /**
    * 上传财物凭证调整（首付款或全额）
@@ -557,7 +562,7 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
-        contentList.add("");
+        contentList.add("6008");
         contentList.add("");
         contentList.add("");
         contentList.add("6008");
@@ -604,7 +609,7 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
-        contentList.add("");
+        contentList.add("6008");
         contentList.add("");
         contentList.add("");
         contentList.add("6008");
@@ -621,6 +626,9 @@ public class SAPService {
     }
   }
 
+  /**
+   * 采购订单（采购和退货）
+   */
   private void transPurchaseReturnSalesCvs() {
     CsvWriter csvWriter = null;
     List<String> orderList = new ArrayList<>();
@@ -656,8 +664,9 @@ public class SAPService {
           }
         }
         contentList.add(merchantCode);
+        MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+        contentList.add(merchantInfoEntity.getMerchantName());//商户名称
         contentList.add(suqNo);
-        contentList.add("");
         contentList.add(txn.getCarriage());
         contentList.add(txn.getOldOrderId());
         contentList.add("");
@@ -853,6 +862,10 @@ public class SAPService {
     }
   }
 
+  /**
+   * 采购订单（采购，退货）流水
+   * @throws Exception
+   */
   private void transPurchaseOrReturnCvs() throws Exception{
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
