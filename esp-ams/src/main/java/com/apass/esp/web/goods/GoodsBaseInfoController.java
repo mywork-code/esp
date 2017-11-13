@@ -1043,7 +1043,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/goodAttrListByCategory")
+    @RequestMapping(value = "/goodAttrListByCategory", method = RequestMethod.GET)
     public List<GoodsAttr> goodAttrListByCategory(HttpServletRequest request) {
         try{
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
@@ -1060,7 +1060,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/tableattrlist")
+    @RequestMapping(value = "/tableattrlist", method = RequestMethod.POST)
     public ResponsePageBody<StockInfoFileModel> tableattrlist(HttpServletRequest request) {
         ResponsePageBody<StockInfoFileModel> respBody = new ResponsePageBody<StockInfoFileModel>();
         try {
@@ -1099,7 +1099,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/saveGoodsCateAttrAndStock")
+    @RequestMapping(value = "/saveGoodsCateAttrAndStock", method = RequestMethod.POST)
     @LogAnnotion(operationType = "新增商品  批量保存  商品的属性规格 和库存信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response saveGoodsCateAttrAndStock(HttpServletRequest request) {
         try{
@@ -1129,7 +1129,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/findGoodsCateAttrAndStockForEdit")
+    @RequestMapping(value = "/findGoodsCateAttrAndStockForEdit", method = RequestMethod.POST)
     public Response findGoodsCateAttrAndStockForEdit(HttpServletRequest request) {
         try{
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
@@ -1144,7 +1144,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/flushtableattrEditlist")
+    @RequestMapping(value = "/flushtableattrEditlist", method = RequestMethod.POST)
     public ResponsePageBody<GoodsStockInfoEntity> flushtableattrEditlist(HttpServletRequest request) {
         ResponsePageBody<GoodsStockInfoEntity> respBody = new ResponsePageBody<GoodsStockInfoEntity>();
         try {
@@ -1193,7 +1193,7 @@ public class GoodsBaseInfoController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/createTableByCateEdit")
+    @RequestMapping(value = "/createTableByCateEdit", method = RequestMethod.POST)
     public Response createTableByCateEdit(HttpServletRequest request) {
         try{
             String attrValId = HttpWebUtils.getValue(request, "attrValId");
@@ -1212,8 +1212,9 @@ public class GoodsBaseInfoController {
      * @param request
      * @return
      */
+    @SuppressWarnings("unused")
     @ResponseBody
-    @RequestMapping("/editsaveGoodsCateAttrAndStock")
+    @RequestMapping(value = "/editsaveGoodsCateAttrAndStock", method = RequestMethod.POST)
     @LogAnnotion(operationType = "修改商品 保存库存（无规格）", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editsaveGoodsCateAttrAndStock(HttpServletRequest request) {
         try{

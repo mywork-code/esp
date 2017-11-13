@@ -838,7 +838,7 @@
 	
 	<!-- 新增库存数量 -->
 	<div id="addAmtGoodsStockInfoWin" class="easyui-window"
-		title="<font color='black'>加库存</font>" hidden="hidden"
+		title="<font color='black'>追加库存</font>" hidden="hidden"
 		style="width: 500px; height: 100px; display: none; text-align: center;"
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
 			<table class="details_table" style="width: 92%">
@@ -864,22 +864,39 @@
 			</table>
 	</div>
 	
-	<!-- 库存查询录入 -->
-	<div id="goodsStockInfo" class="easyui-window"
+	<!-- |||||||||||||||||||sprint11 库存修改  |||||||||||||||||||||||-->
+	<!-- ------------库存查询录入 旧    始 ------------  -->
+	<!-- <div id="goodsStockInfo" class="easyui-window"
 		title="<font color='black'>库存查询录入</font>" hidden="hidden"
 		style="width: 900px; height: 300px; display: none; text-align: center;"
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
 		<table>
 	  		<tr style="margin-top: 22px;">
-				<td>
-		  		<input type="hidden" name = "goodsId" id = "editGoodsId">
-				<a href="javascript:void(0);" id="addGoodsStockInfo"
-				style="margin-left: 5px;" class="easyui-linkbutton addGoodsStockInfo">新&nbsp;增&nbsp;</a>
-				</td>
+			<td>
+	  		<input type="hidden" name = "goodsId" id = "editGoodsId">
+			<a href="javascript:void(0);" id="addGoodsStockInfo" style="margin-left: 5px;" 
+			class="easyui-linkbutton addGoodsStockInfo">新&nbsp;增&nbsp;</a>
+			</td>
 			</tr>
 		</table>
     	<div id="goodsStockList"></div>
-	</div>
+	</div> -->
+	<!-- ------------库存查询录入 旧    末 ------------  -->
+	<!-- ------------库存查询录入 新    始 ------------  -->
+	<div id="goodsStockInfo" class="easyui-window"
+        title="<font color='black'>库存查询录入</font>" hidden="hidden"
+        style="width: 700px; height: 450px; display: none; text-align: center;"
+        data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+        <table>
+            <tr style="margin-top: 22px;">
+            <td>
+            <input type="hidden" name = "goodsId" id = "editGoodsId">
+            </td>
+            </tr>
+        </table>
+        <div id="goodsStockList"></div>
+    </div>
+	<!-- ------------库存查询录入 新    末 ------------  -->
 	
 	<!-- 预览banner图-->
 	<div id="previewBannerWin" class="easyui-window"
