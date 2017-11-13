@@ -6,7 +6,13 @@ import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.RepaySchedule.RepayScheduleEntity;
-import com.apass.esp.domain.entity.bill.*;
+import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
+import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
+import com.apass.esp.domain.entity.bill.SalesOrderInfo;
+import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
+import com.apass.esp.domain.entity.bill.SapData;
+import com.apass.esp.domain.entity.bill.TxnInfoEntity;
+import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.MerchantCode;
@@ -23,17 +29,13 @@ import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.csvreader.CsvWriter;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -602,7 +604,12 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
         contentList.add("6008");
+        contentList.add("");
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
 
       }
