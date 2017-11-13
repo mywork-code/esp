@@ -620,6 +620,7 @@ public class GoodsService {
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("goodsStockList", goodsStockList);
+    returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
     List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
     // 20170322
