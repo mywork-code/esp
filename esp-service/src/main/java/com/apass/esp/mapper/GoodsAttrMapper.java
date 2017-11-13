@@ -7,17 +7,29 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
  */
 public interface GoodsAttrMapper extends GenericMapper<GoodsAttr, Long> {
     /**
+     * 商品属性分页查询
+     * @param entity
+     * @return
+     */
+    public List<GoodsAttr> getGoodsAttrPage(GoodsAttr entity);
+    /**
+     * 商品属性分页查询   查询总数据数量
+     * @param entity
+     * @return
+     */
+    public Integer getGoodsAttrPageCount(GoodsAttr entity);
+    /**
      * 商品属性查询
      * @param entity
      * @return
      */
-    List<GoodsAttr> getGoodsAttrList(GoodsAttr entity);
+    public List<GoodsAttr> getGoodsAttrList(GoodsAttr entity);
     /**
      * 商品属性精确查询验重查询
      * @param entity
      * @return
      */
-    List<GoodsAttr> getGoodsAttrListByName(GoodsAttr entity);
+    public List<GoodsAttr> getGoodsAttrListByName(GoodsAttr entity);
 
-    List<GoodsAttr> selectAllGoodsAttr();
+    public List<GoodsAttr> selectAllGoodsAttr();
 }

@@ -18,6 +18,12 @@
 	
 	//添加商品--是否已经保存商品信息
 	var ifSaveGoodsFlag = false;
+	
+	var catenum = 0;//记录添加属性次数
+	var catename = new Array();//记录添加属性名称  (ID)
+	var goodsCateChangeFalg=1;//保存修改商品时商品类目有没有修改    为1未修改 为0 已修改 
+	
+	var viewdisplaybysource = 'jd';//修改商品   判断该商品是否京东     判定页面显示      京东商品页面显示2个   非京东页面显示4个。    所以跳页需要修改 。。 
 /**
  * GOODS - info
  */
@@ -33,7 +39,130 @@ $(function() {
 	$('#previewBannerWin').window('close');
 	$('#previewProductWin').window('close');
 	$('#editJDStockWin').window('close');
-	
+	/*新增商品    -新增库存信息*/
+	$(".add-btn1").click(function() {//新增商品属性
+		if(catenum>2){
+			$.messager.alert("提示", "商品属性最多选择3个！", "info");
+			return;
+		}
+		var divid = "goodsAttrId"+catenum;
+		var selectnum = "selectnum"+catenum;
+		var buttonid = catenum+"+buttonId";
+		var str ='<div id ='+divid+'>';
+			str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
+				str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
+				str+="&nbsp;&nbsp;"
+				str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="buttonclick(this.id)"/>';
+//				str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton buttonclick">删除</a>'
+			str+='</div>';
+			str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:650px;">';
+			for(var i = 0;i<10;i++){
+				id = catenum+"+"+i+"goodsAttrId";
+				str+='<input style="width:100px" onblur="createTableByCate(this.value,this.id)" id='+id+' name='+id+'/>'
+			}
+			str+='</div>';
+		str+='</div>';
+		$('#inputDiv').append(str);
+		dropdown(selectnum);
+		catenum++;
+	});
+	//新增商品  保存库存
+	$(".save-btnAlladd").click(function() {
+		var ids = [];
+	    var rows = $('#tableattrlist').datagrid('getRows');
+	    for(var i=0; i<rows.length; i++){
+	    	var d = i+1;
+	    	if(rows[i].editing==true){
+	    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
+				return;
+	    	}
+	    	if(rows[i].stockTotalAmt<rows[i].stockAmt){
+	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+				return;
+	    	}
+	        ids.push(rows[i]);
+	    }
+	    var param = {};
+	    param['categorynameArr1']= categorynameArrX.toString();
+	    param['categorynameArr2']= categorynameArrY.toString();
+	    param['categorynameArr3']= categorynameArrZ.toString();
+	    param["goodsStock"]= JSON.stringify(ids);
+	    param["goodsId"]= finalGoodId;
+		var address = ctx + '/application/goods/management/saveGoodsCateAttrAndStock';
+		$.ajax({
+			url : address,
+			type : "POST",
+			data : param,
+			success : function(data) {
+				//刷新前置页面库存列表（无需刷新）
+				//关闭本窗口 无需关闭
+				if(data.status==1){
+					$.messager.alert("提示", data.msg, "info");
+				}
+				//$('#addGoodsInfo').window('close');
+			}
+		});
+	});
+	///*修改商品    -新增库存信息*/
+    $(".add-btn2").click(function() {
+    	if(viewdisplaybysource == 'jd'){
+    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+			return;
+    	}
+    	if(goodsCateChangeFalg==1){
+    		$.messager.alert("提示", "商品类目未修改，不可维护商品属性！", "info");
+			return;
+    	}
+    	if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
+    		function1()
+    	}
+    });
+	//修改商品保存库存
+	$(".save-btnAllEdit").click(function() {
+		if(viewdisplaybysource == 'jd'){
+    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+			return;
+    	}
+		if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
+			function2();
+			return;
+		}
+		var ids = [];
+	    var rows = $('#tableattrEditlist').datagrid('getRows');
+	    for(var i=0; i<rows.length; i++){
+	    	var d = i+1;
+	    	if(rows[i].editing==true){
+	    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
+				return;
+	    	}
+	    	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
+	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+				return;
+	    	}
+	        ids.push(rows[i]);
+	    }
+	    var param = {};
+//	    param['categorynameArr1']= categorynameArrX.toString();
+//	    param['categorynameArr2']= categorynameArrY.toString();
+//	    param['categorynameArr3']= categorynameArrZ.toString();
+	    param["goodsStock"]= JSON.stringify(ids);
+	    param["goodsId"]= finalGoodId;
+		var address = ctx + '/application/goods/management/editsaveGoodsCateAttrAndStock';
+		$.ajax({
+			url : address,
+			type : "POST",
+			data : param,
+			success : function(data) {
+				//刷新前置页面库存列表（无需刷新）
+				//关闭本窗口 无需关闭
+				if(data.status==1){
+					$.messager.alert("提示", data.msg, "info");
+				}
+				//$('#editGoodsInfo').window('close');
+			}
+		});
+	});
+	/*修改库存信息 见最下方flushGoodsStock*/	
     $('#tablelist').datagrid({
         title : '商品列表',
         rownumbers : true,
@@ -41,62 +170,52 @@ $(function() {
         singleSelect : true,
         striped:true,
         toolbar : '#tb',
-        columns : [[
-                {
+        columns : [[{
                     title : '商户名称',
                     field : 'merchantName',
                     width : 90,
                     align : 'center'
-                },
-                {
+                },{
                     title : '商品名称',
                     field : 'goodsName',
                     width : 90,
                     align : 'center'
-                },
-				{
+                },{
 					title : '商品编号',
 					field : 'goodsCode',
 					width : 90,
 					align : 'center'
-				},
-				{
+				},{
 					title : 'skuid',
 					field : 'externalId',
 					width : 90,
 					align : 'center'
-				},
-       		 	{  
+				},{  
        		 		title : '类目名称',  
        		 		field : 'categoryName3', 
        		 	    width : 90,  
        		 		align : 'center'
-       		 	}, 
-       		 	{
+       		 	},{
                     title : '商品型号',
                     field : 'goodsModel',
                     width : 80,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品小标题',
                     field : 'goodsTitle',
                     width : 90,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品类型',
                     field : 'goodsTypeDesc',
                     width : 80,
                     align : 'center',
-                }, 
-                {
+                },{
                     title : '规格类型',
                     field : 'goodsSkuType',
                     width : 80,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品生产日期',
                     field : 'proDate',
                     width : 120,
@@ -106,8 +225,7 @@ $(function() {
                     		return new Date(value).Format("yyyy-MM-dd");
                     	}
                     }
-                }, 
-                {
+                },{
                     title : '保质期',
                     field : 'keepDate',
                     width : 80,
@@ -117,50 +235,42 @@ $(function() {
                     		return value+"个月";
                     	}
                     }
-                }, 
-                {
+                },{
                     title : '生产厂家',
                     field : 'supNo',
                     width : 90,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '排序',
                     field : 'sordNo',
                     width : 60,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '状态',
                     field : 'statusDesc',
                     width : 80,
                     align : 'center',
-                }, 
-                {
+                },{
                     title : '商品上架时间',
                     field : 'listTimeString',
                     width : 140,
                     align : 'center'
-                }, 
-                {
+                },{
                     title : '商品下架时间',
                     field : 'delistTimeString',
                     width : 140,
                     align : 'center'
-                },
-                {
+                },{
                     title : '创建人',
                     field : 'createUser',
                     width : 100,
                     align : 'center'
-                },
-                {
+                },{
                     title : '修改人',
                     field : 'updateUser',
                     width : 100,
                     align : 'center'
-                },
-                {
+                },{
                     title : '创建时间',
                     field : 'createDate',
                     width : 140,
@@ -168,8 +278,7 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },
-                {
+                },{
                     title : '修改时间',
                     field : 'updateDate',
                     width : 140,
@@ -177,15 +286,13 @@ $(function() {
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
                     }
-                },
-                {
+                },{
                 	title : '商品来源标识',
                 	field : 'source',
                 	width : 140,
                 	align : 'center',
                 	hidden: 'hidden'
-                },
-                {
+                },{
                     title : '操作',
                     field : 'opt',
                     width : 150,
@@ -237,7 +344,6 @@ $(function() {
             })
         }
     });
-
     // 查询列表
     $(".search-btn").click(function() {
         var params = {};
@@ -348,8 +454,7 @@ $(function() {
                     }
                 })
             }
-         });
-    	
+        });
     });
     /**监听关闭添加商品窗口事件**/
     $('#addGoodsInfo').window({    
@@ -595,7 +700,8 @@ $(function() {
     	if(!ifSaveGoodsFlag){//如果是第一次进入商品信息页面清空页面内容
     		initGoodsInfo();
     	}
-    	
+    	/*新增商品   第一个页面跳页   需要第一个页面的一级类目信息*/
+    	/*刷新第四页面库存信息     见721行大图下一步（第三页面下一步跳第四页）*/
     });
     //商品分类： 取消
 	$("#disGoodsCategory").click(function() {
@@ -649,6 +755,18 @@ $(function() {
     	$("#addGoodsStock").css('display','block');
     	
     	loadStockGoods('addGoodsStockList',addGoodId,null);
+    	$('#inputDiv').empty();//新增商品清掉输入框
+    	//一下全局变量做清空默认值处理(以及表格清空)
+    	catenum = 0;//记录添加属性次数
+    	catename = [];//记录添加属性名称  (ID)
+    	categorynameArr1 = [];//单纯保存input内容
+    	categorynameArr2 = [];
+    	categorynameArr3 = [];
+    	categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
+    	categorynameArrY = [];
+    	categorynameArrZ = [];
+    	flushAttrList();
+    	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
 	});
 	
 	//大图：上一步
@@ -663,7 +781,20 @@ $(function() {
     	$("#addUpLoadGoodsPicture").css('display','none');
     	$("#addGoodsStock").css('display','none');
 	});
-	
+	//新增库存：取消保存  
+	$(".save-btnAlladddis").click(function() {
+		$("#addPlanDecrible #one").css('font-weight','lighter');
+		$("#addPlanDecrible #two").css('font-weight','lighter');
+		$("#addPlanDecrible #three").css('font-weight','bold');
+		$("#addPlanDecrible #four").css('font-weight','lighter');
+		
+		$("#addSelectCategoryList").css('display','none');
+		$("#addWriteGoodsInfo").css('display','none');
+		$("#addUpLoadGoodsPicture").css('display','block');
+		$("#addGoodsStock").css('display','none');;
+	})
+	//新增库存：保存见最上方  save-btnAlladd 
+	//以下2个方法弃用
 	//库存：保存
 	$("#saveGoodsStock").click(function() {
 		$("#addPlanDecrible #one").css('font-weight','lighter');
@@ -695,9 +826,71 @@ $(function() {
 	});
 	
 //========================================-----新增商品 末----====================================================//===================
-	
-	
+
 //=======================================-------编辑商品 始--------===================================================================//````````````````````
+	//点击选择商品分类
+	$("#editPlanDecrible #one").click(function(){
+		$("#editPlanDecrible #one").css('font-weight','bold');
+		$("#editPlanDecrible #two").css('font-weight','lighter');
+		$("#editPlanDecrible #three").css('font-weight','lighter');
+		$("#editPlanDecrible #four").css('font-weight','lighter');
+		
+		$("#editSelectCategoryList").css('display','block');
+		$("#editWriteGoodsInfo").css('display','none');
+		$("#editUpLoadGoodsPicture").css('display','none');
+		$("#editGoodsStock").css('display','none');
+		
+		loadEditDatagrid();
+	});
+	//点击填写商品信息
+	$("#editPlanDecrible #two").click(function(){
+		$("#editPlanDecrible #one").css('font-weight','lighter');
+    	$("#editPlanDecrible #two").css('font-weight','bold');
+    	$("#editPlanDecrible #three").css('font-weight','lighter');
+    	$("#editPlanDecrible #four").css('font-weight','lighter');
+    	
+    	$("#editSelectCategoryList").css('display','none');
+    	$("#editWriteGoodsInfo").css('display','block');
+    	$("#editUpLoadGoodsPicture").css('display','none');
+    	$("#editGoodsStock").css('display','none');
+    	
+	});
+	//点击上传商品图片
+	$("#editPlanDecrible #three").click(function(){
+		$("#editPlanDecrible #one").css('font-weight','lighter');
+		$("#editPlanDecrible #two").css('font-weight','lighter');
+		$("#editPlanDecrible #three").css('font-weight','bold');
+		$("#editPlanDecrible #four").css('font-weight','lighter');
+		
+		$("#editSelectCategoryList").css('display','none');
+		$("#editWriteGoodsInfo").css('display','none');
+		$("#editUpLoadGoodsPicture").css('display','block');
+		$("#editGoodsStock").css('display','none');
+		//回显商品墙图片
+		loadLogo("editGoodsLogoImg",editGoodLogoUrl);
+		//商品大图回显
+		loadBanner("editGoodsbannerList",editGoodId);
+		
+		$(".search-btn").click();
+	});
+	//点击新增库存
+	$("#editPlanDecrible #four").click(function(){
+		$("#editPlanDecrible #one").css('font-weight','lighter');
+    	$("#editPlanDecrible #two").css('font-weight','lighter');
+    	$("#editPlanDecrible #three").css('font-weight','lighter');
+    	$("#editPlanDecrible #four").css('font-weight','bold');
+    	
+    	$("#editSelectCategoryList").css('display','none');
+    	$("#editWriteGoodsInfo").css('display','none');
+    	$("#editUpLoadGoodsPicture").css('display','none');
+    	$("#editGoodsStock").css('display','block');
+    	
+    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
+//    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+    	flushtableattrEditlist();
+		flushGoodsStock(finalGoodId);
+	});
+	
 	//监听编辑商品输入商品名称事件
 //	var $editgoodsName = $("#editgoodsName"),$edit_last = $("#editgoodsNameL");
 //	$editgoodsName.on("keydown",function(){
@@ -759,25 +952,21 @@ $(function() {
 			$("#addgoodsTitleL").text('还可以输入'+canLen+'个字');
 		}
 	})
-	/**
-	 * 编辑
-	 */
+	//编辑
 	$.editGoods = function(index) {//编缉初始化
-		debugger;
 		$('#editGoodsInfo').window('open');
 		var rowData = $('#tablelist').datagrid('getData').rows[index];
 		externalsource = rowData.source;
 		editGoodId = rowData.id;
 		finalGoodId = editGoodId;
 		support7dRefundFinal = rowData.support7dRefund;
-
 		if(support7dRefundFinal == null || support7dRefundFinal == ''){
 			$.ajax({
 				type : "POST",
 				url : ctx + '/application/goods/management/getsupport7dRefund',
 				data : {'skuId':rowData.externalId},
 				success : function(data) {
-					debugger;
+					// debugger;
 					support7dRefundFinal = data.msg;
 				}
 			});
@@ -798,7 +987,7 @@ $(function() {
 		initEditGoodsInfo(rowData);//编辑商品回显
 		$("#editBannerGoodsId").val(rowData.id);
 		if(rowData.source == 'jd'){
-			debugger;
+			viewdisplaybysource = 'jd';
 			$("#editPlanDecrible #one").css({'display':'none'});
 	    	$("#editPlanDecrible #two").css({'display':'inline','font-weight':'bold'});
 	    	$("#editPlanDecrible #three").css('display','none');
@@ -811,6 +1000,7 @@ $(function() {
 			$("input[name='editSupport7dRefund'][value='Y']").attr("disabled",true);
 			$("input[name='editSupport7dRefund'][value='N']").attr("disabled",true);
 		}else{
+			viewdisplaybysource = 'notjd';
 			$("#editPlanDecrible #one").css({'display':'inline','font-weight':'bold'});
 			$("#editPlanDecrible #two").css({'display':'inline','font-weight':'lighter'});
 			$("#editPlanDecrible #three").css({'display':'inline','font-weight':'lighter'});
@@ -824,7 +1014,6 @@ $(function() {
 			// $("input[name='editSupport7dRefund'][value='Y']").removeAttr("disabled");
 			// $("input[name='editSupport7dRefund'][value='N']").removeAttr("disabled");
 		}
-		
     	
     	UE.getEditor('editEditor').setContent('');//重置编辑器
     	
@@ -842,8 +1031,12 @@ $(function() {
 		//加载类目
 		loadEditDatagrid();
 	}
+	//取消保存类目 关闭页面
+	$("#disSaveGoodsCategory").click(function(){
+		$('#editGoodsInfo').window('close');
+	})
 	
-	//确认保存类目
+	//确认保存类目  跳页  跳第二页
 	$("#saveGoodsCategory").click(function(){
 		var firstCategory = $('#editWestAttrDataGrid').datagrid('getSelected');
     	if(firstCategory=='' || firstCategory==null){
@@ -876,6 +1069,32 @@ $(function() {
 				if(data.status == '1'){
 					$.messager.alert("提示", "修改商品分类信息成功！", "info");
 					$(".search-btn").click();
+					//跳填写商品信息tag页
+					$("#editPlanDecrible #one").css('font-weight','lighter');
+			    	$("#editPlanDecrible #two").css('font-weight','bold');
+			    	$("#editPlanDecrible #three").css('font-weight','lighter');
+			    	$("#editPlanDecrible #four").css('font-weight','lighter');
+			    	
+			    	$("#editSelectCategoryList").css('display','none');
+			    	$("#editWriteGoodsInfo").css('display','block');
+			    	$("#editUpLoadGoodsPicture").css('display','none');
+			    	$("#editGoodsStock").css('display','none');
+	    			goodsCateChangeFalg = data.msg;//一级类目修改标志    为1未修改 为0 已修改     若已修改需要1清空库存（后端操作）2前段刷新第四页面刷新
+	    			if(goodsCateChangeFalg==0){
+	    				$('#inputDivEdit').empty();
+	    				//新增商品清掉输入框
+	    		    	//一下全局变量做清空默认值处理(以及表格清空)
+	    		    	catenum = 0;//记录添加属性次数
+	    		    	catename = [];//记录添加属性名称  (ID)
+	    		    	categorynameArr1 = [];//单纯保存input内容
+	    		    	categorynameArr2 = [];
+	    		    	categorynameArr3 = [];
+	    		    	categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
+	    		    	categorynameArrY = [];
+	    		    	categorynameArrZ = [];
+	    		    	flushtableattrEditlist();
+	    		    	flushtableattrEditlistEdit(editGoodId,categorynameArr1,categorynameArr2,categorynameArr3);
+	    			}
 				}else{
 					$.messager.alert("提示", data.msg, "info");
 				}
@@ -884,8 +1103,12 @@ $(function() {
     	
 	});
 	
-	//点击选择商品分类
-	$("#editPlanDecrible #one").click(function(){
+	//第二页  -- 上一步  跳页  跳第一页     ||||京东商品不可跳页|||||
+	$("#disEditgoodsAddinfo").click(function() {
+		if(viewdisplaybysource=='jd'){
+			$.messager.alert("提示", '京东商品不可显示商品类目', "info");
+			return;
+		}
 		$("#editPlanDecrible #one").css('font-weight','bold');
 		$("#editPlanDecrible #two").css('font-weight','lighter');
 		$("#editPlanDecrible #three").css('font-weight','lighter');
@@ -895,27 +1118,9 @@ $(function() {
 		$("#editWriteGoodsInfo").css('display','none');
 		$("#editUpLoadGoodsPicture").css('display','none');
 		$("#editGoodsStock").css('display','none');
-		
-		loadEditDatagrid();
-	});
-	
-	//点击填写商品信息
-	$("#editPlanDecrible #two").click(function(){
-		$("#editPlanDecrible #one").css('font-weight','lighter');
-    	$("#editPlanDecrible #two").css('font-weight','bold');
-    	$("#editPlanDecrible #three").css('font-weight','lighter');
-    	$("#editPlanDecrible #four").css('font-weight','lighter');
-    	
-    	$("#editSelectCategoryList").css('display','none');
-    	$("#editWriteGoodsInfo").css('display','block');
-    	$("#editUpLoadGoodsPicture").css('display','none');
-    	$("#editGoodsStock").css('display','none');
-    	
-	});
-	
-	 //编辑 -- 保存商品信息
+	})
+	 //编辑 -- 保存商品信息   跳页 跳第三页                 ||||京东商品跳第四页|||||
 	$("#editgoodsAddinfo").click(function() {
-		debugger;
 		var id=$("#editid").val(),
 		editNewCreatDate=$("#editNewCreatDate").val(),
 		goodsModel=$("#editgoodsModel").textbox('getValue'),
@@ -926,8 +1131,10 @@ $(function() {
 		delistTime=$("#editdelistTime").datetimebox('getValue'),
 		editSupport7dRefund	= $("input[name='editSupport7dRefund']:checked").val(),
 		unSupportProvince = $("#editUnSupportProvince").combobox('getText');
-		keepDate=$("#editkeepDate").textbox('getValue'),sordNo=$("#editsordNo").numberbox('getValue'),
-		supNo=$("#editsupNo").textbox('getValue'),goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
+		keepDate=$("#editkeepDate").textbox('getValue');
+		sordNo=$("#editsordNo").numberbox('getValue');
+		supNo=$("#editsupNo").textbox('getValue');
+		//goodsSkuType=$("#editgoodsSkuType").combobox('getValue');
 
 		if(!editSupport7dRefund){
 			editSupport7dRefund = "";
@@ -955,19 +1162,19 @@ $(function() {
 			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
-		if ((!(externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
-			$.messager.alert("提示", "商品规格类型不能为空！", "info");
-			return;
-		}
+//		if ((!(externalsource == 'jd'))&&(null == goodsSkuType || ("") == goodsSkuType)) {
+//			$.messager.alert("提示", "商品规格类型不能为空！", "info");
+//			return;
+//		}
 		if (null == listTime || ("") == listTime) {
 			$.messager.alert("提示", "商品上架时间不能为空！", "info");
 			return;
 		}	
-		// if (null == delistTime || ("") == delistTime) {
-		// 	$.messager.alert("提示", "商品下架时间不能为空！", "info");
-		// 	return;
-		// }
-		if(null != delistTime && "" != delistTime){
+//		if (null == delistTime || ("") == delistTime) {
+//			$.messager.alert("提示", "商品下架时间不能为空！", "info");
+//			return;
+//		}
+		if (null != delistTime && ("") != delistTime) {
 			if (listTime > delistTime) {
 				$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
 				return;
@@ -977,14 +1184,16 @@ $(function() {
 //			$.messager.alert("提示", "商品生产日期不能为空！", "info");
 //			return;
 //		}
-		if (proDate > listTime) {
-			$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
-			return;
+		if (null != proDate && ("") != proDate) {
+			if (proDate > listTime) {
+				$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
+				return;
+			}
 		}
-		if (!(externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
-			$.messager.alert("提示", "商品排序不能为空！", "info");
-			return;
-		}
+//		if (!(externalsource == 'jd')&&(null == sordNo || ("") == sordNo)) {
+//			$.messager.alert("提示", "商品排序不能为空！", "info");
+//			return;
+//		}
 		if (null == unSupportProvince || ("") == unSupportProvince) {
 			unSupportProvince = '';
 		}
@@ -1011,7 +1220,11 @@ $(function() {
 	 	
 	 	formObj.append("<input type='text' name='goodsTitle' value='"+goodsTitle+"'/>");
 	 	formObj.append("<input type='text' name='listTime'  dataType='Require' value='"+listTime+"'/>");
-		formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
+	 	if(!(null == delistTime || ("") == delistTime)){
+	 		formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
+	 	}else{
+	 		formObj.append("<input type='text' name='delistTime' value=''/>");
+	 	}
 		if(!(null == proDate || ("") == proDate)){
 			formObj.append("<input type='text' name='proDate' value='"+proDate+"  00:00:00'/>");
 		}else{
@@ -1021,8 +1234,12 @@ $(function() {
 
 		formObj.append("<input type='text' name='keepDate' value='"+keepDate+"'/>");
 		formObj.append("<input type='text' name='supNo' value='"+supNo+"'/>");
-		formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
-		formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
+		if(!(null == sordNo || ("") == sordNo)){
+			formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
+		}else{
+			formObj.append("<input type='text' name='sordNo' value=''/>");
+		}
+		//formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
 		formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 		formObj.append("<input type='text' name='support7dRefund' value='"+editSupport7dRefund+"'/>");
 		formObj.css('display','none').appendTo("body");
@@ -1034,6 +1251,40 @@ $(function() {
 				if(data.status == '1'){
 					$(".search-btn").click();
 					$.messager.alert("提示", "修改商品成功", "info");
+					//京东跳第四页   
+					if(viewdisplaybysource=='jd'){
+						$("#editPlanDecrible #one").css('font-weight','lighter');
+				    	$("#editPlanDecrible #two").css('font-weight','lighter');
+				    	$("#editPlanDecrible #three").css('font-weight','lighter');
+				    	$("#editPlanDecrible #four").css('font-weight','bold');
+				    	
+				    	$("#editSelectCategoryList").css('display','none');
+				    	$("#editWriteGoodsInfo").css('display','none');
+				    	$("#editUpLoadGoodsPicture").css('display','none');
+				    	$("#editGoodsStock").css('display','block');
+				    	
+				    	loadStockGoods('editGoodsStockList',id,externalsource);
+//				    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+				    	flushtableattrEditlist();
+						flushGoodsStock(id);
+						return;
+					}
+					//非京东 跳页  跳第三页
+					$("#editPlanDecrible #one").css('font-weight','lighter');
+					$("#editPlanDecrible #two").css('font-weight','lighter');
+					$("#editPlanDecrible #three").css('font-weight','bold');
+					$("#editPlanDecrible #four").css('font-weight','lighter');
+					
+					$("#editSelectCategoryList").css('display','none');
+					$("#editWriteGoodsInfo").css('display','none');
+					$("#editUpLoadGoodsPicture").css('display','block');
+					$("#editGoodsStock").css('display','none');
+					//回显商品墙图片
+					loadLogo("editGoodsLogoImg",editGoodLogoUrl);
+					//商品大图回显
+					loadBanner("editGoodsbannerList",editGoodId);
+					
+					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", data.msg, "info");
 				}
@@ -1041,44 +1292,9 @@ $(function() {
 		});
 	});
 	
-	
-	//点击上传商品图片
-	$("#editPlanDecrible #three").click(function(){
-		$("#editPlanDecrible #one").css('font-weight','lighter');
-		$("#editPlanDecrible #two").css('font-weight','lighter');
-		$("#editPlanDecrible #three").css('font-weight','bold');
-		$("#editPlanDecrible #four").css('font-weight','lighter');
-		
-		$("#editSelectCategoryList").css('display','none');
-		$("#editWriteGoodsInfo").css('display','none');
-		$("#editUpLoadGoodsPicture").css('display','block');
-		$("#editGoodsStock").css('display','none');
-		//回显商品墙图片
-		loadLogo("editGoodsLogoImg",editGoodLogoUrl);
-		//商品大图回显
-		loadBanner("editGoodsbannerList",editGoodId);
-		
-		$(".search-btn").click();
-	});
-	
 	//保存上传的图片
 	$("#saveEditUploadPic").click(function(){
 		$.messager.alert("提示", "保存上传图片成功！", "info");
-	});
-	
-	//点击新增库存
-	$("#editPlanDecrible #four").click(function(){
-		$("#editPlanDecrible #one").css('font-weight','lighter');
-    	$("#editPlanDecrible #two").css('font-weight','lighter');
-    	$("#editPlanDecrible #three").css('font-weight','lighter');
-    	$("#editPlanDecrible #four").css('font-weight','bold');
-    	
-    	$("#editSelectCategoryList").css('display','none');
-    	$("#editWriteGoodsInfo").css('display','none');
-    	$("#editUpLoadGoodsPicture").css('display','none');
-    	$("#editGoodsStock").css('display','block');
-    	
-    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 	});
 	
 	//库存：保存
@@ -1095,8 +1311,6 @@ $(function() {
 		$(".search-btn").click();
 	});
 	
-//==================================-------编辑商品 末--------===================================================================//````````````````````
-
 	// 取消
 	$("#editdisGoods").click(function() {
 		$('#editGoodsInfo').window('close');
@@ -1131,7 +1345,7 @@ $(function() {
 				var response = JSON.parse(data);
 				console.log(response);
 				if(response.msg=="success"){
-					debugger;
+					// debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
 					$("#addBannerPicOrder").numberbox('clear');
 					$("#addBannerPicFile").val('')
@@ -1171,11 +1385,11 @@ $(function() {
 				var response = JSON.parse(data);
 				console.log(response);
 				if(response.msg=="success"){
-					debugger;
+					// debugger;
 					$.messager.alert("提示", '商品大图上传成功！');
 					$("#editBannerPicOrder").numberbox('clear');
 					$("#editBannerPicFile").val('')
-					debugger;
+					// debugger;
 					loadBanner("editGoodsbannerList",editGoodId);
 					$(".search-btn").click();
 				}else{
@@ -1204,7 +1418,7 @@ $(function() {
 				url : ctx + '/application/goods/management/upeditor',
 				data : params,
 				success : function(data) {
-					debugger;
+					// debugger;
 					if(data.message=='timeout'){
 						$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
 	    				window.top.location = ctx + "/logout";
@@ -1217,11 +1431,27 @@ $(function() {
 				}
 			});
 	});
-	
-	//确定 获取编辑器的html
+	//取消   确定 获取编辑器的html   并且跳页  第三页跳第二页
+	$("#disEditGetAllHtml").click(function() {
+		$("#editPlanDecrible #one").css('font-weight','lighter');
+    	$("#editPlanDecrible #two").css('font-weight','bold');
+    	$("#editPlanDecrible #three").css('font-weight','lighter');
+    	$("#editPlanDecrible #four").css('font-weight','lighter');
+    	
+    	$("#editSelectCategoryList").css('display','none');
+    	$("#editWriteGoodsInfo").css('display','block');
+    	$("#editUpLoadGoodsPicture").css('display','none');
+    	$("#editGoodsStock").css('display','none');
+	})
+	//确定 获取编辑器的html   并且跳页   第三页跳第四页
 	$("#editGetAllHtml").click(function() {
 		var params = {};
 		params['id']=editGoodId;
+		var rows = $('#editGoodsbannerList').datagrid('getRows');
+		if(rows.length<2){
+			$.messager.alert("提示", "请上传商品大图，最少2张", "info");
+			return;
+		}
 //			var goodsDetails = UE.getEditor('editor').getAllHtml();
 //			params['goodsDetail'] = goodsDetails.splice(12,0,'<meta charset="UTF-8">');
 		params['goodsDetail'] = UE.getEditor('editEditor').getAllHtml();;
@@ -1249,11 +1479,57 @@ $(function() {
 				if(data == 'SUCCESS'){
 					$(".search-btn").click();
 					$.messager.alert("提示", "保存商品详情成功", "info");
+					//跳页
+					$("#editPlanDecrible #one").css('font-weight','lighter');
+			    	$("#editPlanDecrible #two").css('font-weight','lighter');
+			    	$("#editPlanDecrible #three").css('font-weight','lighter');
+			    	$("#editPlanDecrible #four").css('font-weight','bold');
+			    	
+			    	$("#editSelectCategoryList").css('display','none');
+			    	$("#editWriteGoodsInfo").css('display','none');
+			    	$("#editUpLoadGoodsPicture").css('display','none');
+			    	$("#editGoodsStock").css('display','block');
+			    	
+			    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
+//			    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+			    	flushtableattrEditlist();
+					flushGoodsStock(finalGoodId);
 				}
 			}
 		});
 	});
-
+	//修改库存    第四页 取消  跳第三页    ||||||京东商品跳第二页   ||||||||
+	$(".save-btnAllEditdis").click(function() {
+		if(viewdisplaybysource=='jd'){
+			$("#editPlanDecrible #one").css('font-weight','lighter');
+	    	$("#editPlanDecrible #two").css('font-weight','bold');
+	    	$("#editPlanDecrible #three").css('font-weight','lighter');
+	    	$("#editPlanDecrible #four").css('font-weight','lighter');
+	    	
+	    	$("#editSelectCategoryList").css('display','none');
+	    	$("#editWriteGoodsInfo").css('display','block');
+	    	$("#editUpLoadGoodsPicture").css('display','none');
+	    	$("#editGoodsStock").css('display','none');
+	    	return;
+		}
+		$("#editPlanDecrible #one").css('font-weight','lighter');
+		$("#editPlanDecrible #two").css('font-weight','lighter');
+		$("#editPlanDecrible #three").css('font-weight','bold');
+		$("#editPlanDecrible #four").css('font-weight','lighter');
+		
+		$("#editSelectCategoryList").css('display','none');
+		$("#editWriteGoodsInfo").css('display','none');
+		$("#editUpLoadGoodsPicture").css('display','block');
+		$("#editGoodsStock").css('display','none');
+		//回显商品墙图片
+		loadLogo("editGoodsLogoImg",editGoodLogoUrl);
+		//商品大图回显
+		loadBanner("editGoodsbannerList",editGoodId);
+		
+		$(".search-btn").click();
+	});
+	//修改库存    第四页 确定 保存库存    save-btnAllEdit   见上方
+//==================================-------编辑商品 末--------===================================================================//````````````````````
 	/**
 	 * 库存datagrid
 	 */
@@ -1309,7 +1585,7 @@ $(function() {
 		var goodsCostPrice=$("#goodsCostPrice").textbox('getValue');
 		var goodsCompareUrlone=$("#goodsCompareUrlone").textbox('getValue');
 		var goodsCompareUrltwo=$("#goodsCompareUrltwo").textbox('getValue');
-		debugger;
+		// debugger;
 //		$('#goodsCompareUrl').val(goodsCompareUrlone+";"+goodsCompareUrlone);
 //		console.log($('#goodsCompareUrl').val());
 		var stockLogoFile=$("#stockLogoFile").val();
@@ -1562,7 +1838,7 @@ $(function() {
 //			$.messager.alert("提示", "库存logo不允许空！", "info");
 //			return;
 //		}
-		debugger;
+		// debugger;
 		var param = {};
 		param['goodsSkuAttr']=goodsSkuAttr;
 		param['id']=stockinfoId;
@@ -1577,10 +1853,10 @@ $(function() {
 			url : ctx + '/application/goods/stockinfo/editStockinfo',
 			data : param,
 			success : function(data) {
-				debugger;
+				// debugger;
 //				var response = JSON.parse(data);
 				if(data.msg=="success"){
-					debugger;
+					// debugger;
 					$.messager.alert("提示", "修改库存信息成功！", "info");
 					var params = {};
 			        params['goodsId'] = goodsId;
@@ -1662,7 +1938,7 @@ $(function() {
 	//删除banner图
 	$.delbanner = function(datagridId,id,goodsId) {
 		$.messager.confirm('提示框', '你确定要删除吗?',function(r){
-			debugger;
+			// debugger;
 			if(r){
 				var params = {};
 				params['id']=id;
@@ -1684,7 +1960,7 @@ $(function() {
 	$.shelves = function(id,source,listTime,delistTime) {
 		$.messager.confirm('提示框', '你确定要上架吗?',function(r){
 			if(r){
-				debugger;
+				// debugger;
 				var params = {};
 				params['id']=id;
 				params['source']=source;
@@ -1696,10 +1972,10 @@ $(function() {
 					$.messager.alert("提示", "商品上架时间不能为空！", "info");
 					return;
 				}
-				if (null == delistTime || 'null' == delistTime) {
-					$.messager.alert("提示", "商品下架时间不能为空！", "info");
-					return;
-				}
+//				if (null == delistTime || 'null' == delistTime) {
+//					$.messager.alert("提示", "商品下架时间不能为空！", "info");
+//					return;
+//				}
 				$.ajax({
 					type : "POST",
 					url : ctx + '/application/goods/management/shelves',
@@ -1730,7 +2006,7 @@ $(function() {
 					url : ctx + '/application/goods/management/shelf',
 					data : params,
 					success : function(data) {
-					  debugger;
+					  // debugger;
 					  $.messager.alert("提示", "商品下架成功", "info");
 					  $(".search-btn").click();
 					}
@@ -1743,7 +2019,7 @@ $(function() {
 	/** loadlogo* */
 	function loadStockLogo (goodsStockLogoUrl)
 	{
-		debugger;
+		// debugger;
 		if (goodsStockLogoUrl != null)
 		{
 			var params = {};
@@ -1831,7 +2107,7 @@ $(function() {
 	
 	//上传库存logo
 	$("#upStockLogoBtn").click(function() {
-		debugger;
+		// debugger;
 		var editStockGoodsLogoFile=$('#editStockGoodsLogoFile').val();
 		var editStockinfoIdInForm = $('#editStockinfoIdInForm').val();
 		if (null == editStockGoodsLogoFile || ("") == editStockGoodsLogoFile) {
@@ -1865,7 +2141,7 @@ $(function() {
 		$('#previewBannerWin').window('open');
 //		var params = {};
 //		params['picUrl']=url;
-		debugger;
+		// debugger;
 		$("#previewBannerImg").attr ("src", ctx + "/fileView/query?picUrl=" + url);
 //		$.ajax({
 //			type : "POST",
@@ -1910,12 +2186,12 @@ $(function() {
 	};
 	// 导出商品列表
 	$ (".export-btn").click (function (){
-		debugger;
+		// debugger;
 		$.messager.confirm ('商品信息', '确定要导出吗？', function (r)
 		{
 			if (r)
 			{
-				debugger;
+				// debugger;
 				var params = {};
 				params['merchantName'] = $("#merchantName").textbox('getValue');
 		        params['merchantType'] = $("#merchantType").combobox('getValue');
@@ -1963,7 +2239,7 @@ String.prototype.splice = function(idx, rem, str) {
 
 //保存添加的商品信息
 function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
-	
+	//20171027 sprint11删除属性录入  在库存页面录入
 	var merchantCode=$("#addmerchantCode").textbox('getValue'), 
 	goodsModel=$("#addgoodsModel").textbox('getValue'),
 	goodsName=$("#addgoodsName").textbox('getValue'), 
@@ -1973,10 +2249,11 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	delistTime=$("#adddelistTime").datetimebox('getValue'),
 	keepDate=$("#addkeepDate").textbox('getValue'),
 	supNo=$("#addsupNo").textbox('getValue'),
-	goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
+	//goodsSkuType=$("#addgoodsSkuType").combobox('getValue'),
 	unSupportProvince=$("#addUnSupportProvince").combobox('getText'),
 	addSupport7dRefund=$("input[name='addSupport7dRefund']:checked").val(),
 	sordNo=$("#sordNo").numberbox('getValue');
+	// debugger;
 	//字段效验
 	if (null == categoryId1 || ("") == categoryId1) {
 		$.messager.alert("提示", "商品一级类目不能为空！", "info");
@@ -2016,32 +2293,33 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		$.messager.alert("提示", "商品小标题最多25字！", "info");  
 		return;
 	}
-	if (null == goodsSkuType || ("") == goodsSkuType) {
-		$.messager.alert("提示", "商品规格类型不能为空！", "info");
-		return;
-	}
+//	if (null == goodsSkuType || ("") == goodsSkuType) {
+//		$.messager.alert("提示", "商品规格类型不能为空！", "info");
+//		return;
+//	}
 	if (null == listTime || ("") == listTime) {
 		$.messager.alert("提示", "商品上架日期不能为空！", "info");
 		return;
 	}	
-	// if (null == delistTime || ("") == delistTime) {
-	// 	$.messager.alert("提示", "商品下架日期不能为空！", "info");
-	// 	return;
-	// }
-	if(null != delistTime && delistTime != ''){
+//	if (null == delistTime || ("") == delistTime) {
+//		$.messager.alert("提示", "商品下架日期不能为空！", "info");
+//		return;
+//	}
+	if (null != delistTime && ("") != delistTime) {
 		if (listTime > delistTime) {
 			$.messager.alert("提示", "上架时间不能大于下架时间！", "info");
 			return;
 		}
 	}
-
 //	if (null == proDate || ("") == proDate) {
 //		$.messager.alert("提示", "商品生产日期不能为空！", "info");
 //		return;
 //	}
-	if (proDate > listTime) {
-		$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
-		return;
+	if (null != proDate && ("") != proDate) {
+		if (proDate > listTime) {
+			$.messager.alert("提示", "商品生产日期不能大于上架日期！", "info");
+			return;
+		}
 	}
 //	if (null == keepDate || ("") == keepDate) {
 //		$.messager.alert("提示", "商品保质期不能为空！", "info");
@@ -2061,6 +2339,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	// 	$.messager.alert("提示", "排序不能为空！", "info");
 	// 	return;
 	// }
+	// debugger;
 	//from重组
 	var formObj = $("<form></form>").attr("method","post");
 	formObj.append("<input type='text' name='categoryId1' value='"+categoryId1+"'/>");
@@ -2071,8 +2350,12 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
  	formObj.append("<input type='text' name='goodsName' value='"+goodsName+"'/>");
  	formObj.append("<input type='text' name='goodsTitle' value='"+goodsTitle+"'/>");
  	formObj.append("<input type='text' name='listTime'  dataType='Require' value='"+listTime+"'/>");
-	formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
-	formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
+ 	if (!(null == delistTime || ("") == delistTime)) {
+ 		formObj.append("<input type='text' name='delistTime' value='"+delistTime+"'/>");
+ 	}else{
+ 		formObj.append("<input type='text' name='delistTime' value=''/>");
+ 	}
+ 	formObj.append("<input type='text' name='unSupportProvince' value='"+unSupportProvince+"'/>");
 	formObj.append("<input type='text' name='goodId' value='"+addGoodId+"'/>");
 	if(proDate!=""){
 		formObj.append("<input type='text' name='proDate' value='"+proDate+" 00:00:00'/>");
@@ -2083,7 +2366,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	if(supNo!=""){
 		formObj.append("<input type='text' name='supNo' value='"+supNo+"'/>");
 	}
-	formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
+	//formObj.append("<input type='text' name='goodsSkuType' value='"+goodsSkuType+"'/>");
 	formObj.append("<input type='text' name='support7dRefund' value='"+addSupport7dRefund+"'/>");
 	formObj.append("<input type='text' name='sordNo' value='"+sordNo+"'/>");
 	formObj.css('display','none').appendTo("body");
@@ -2117,7 +2400,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 		    	$(".search-btn").click();
 		    	loadBanner("addGoodsbannerList",addGoodId);
 			}else{
-				$.messager.alert("提示", data.msg, "info");
+				$.messager.alert("提示", data, "info");
 			}
 		}
 	});
@@ -2181,7 +2464,7 @@ function loadBanner(datagridId,goodsId){
 }
 //加载库存列表
 function loadStockGoods(datagridId,goodsId,source){
-	debugger;
+	// debugger;
 	var statusV = null;
 	if('goodsStockList' == datagridId){
 		statusV = 'G02';
@@ -2266,7 +2549,7 @@ function initGoodsInfo(){
 	$("#addproDate").datebox('setValue', '');
 	$("#addkeepDate").numberbox('setValue','');  
 	$("#addsupNo").textbox('clear');
-	$('#addgoodsSkuType').combobox('setValue','');
+	//$('#addgoodsSkuType').combobox('setValue','');
 	$('#addUnSupportProvince').combobox('setValue','');
 	$("#sordNo").numberbox('setValue','');
 }
@@ -2326,11 +2609,10 @@ function initEditGoodsInfo(row){
 			});
 			
 			if(externalsource == 'jd'){
-				debugger;
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");
-				$("#editgoodsSkuType").combobox('disable');
+				//$("#editgoodsSkuType").combobox('disable');
 				$("#editUnSupportProvince").combobox('disable');
 				$("#editproDate").next("span").children(".validatebox-text").attr("disabled","disabled");
 				$("#editproDate").next("span").children(".textbox-addon-right").children("a").addClass("textbox-icon-disabled");
@@ -2340,9 +2622,8 @@ function initEditGoodsInfo(row){
 				$("#editsordNo").next("span").children(".validatebox-text").attr("disabled","disabled");
 				// $("input[name='editSupport7dRefund'][value='Y']").attr("checked", "checked");
 			}else{
-				debugger;
 				$("#editgoodsModel").textbox('textbox').removeAttr("disabled");
-				$("#editgoodsSkuType").combobox('enable');
+				//$("#editgoodsSkuType").combobox('enable');
 				$("#editUnSupportProvince").combobox('enable');
 				$("#editproDate").next("span").children(".validatebox-text").removeAttr("disabled");
 				$("#editproDate").next("span").children(".textbox-addon-right").children("a").removeClass("textbox-icon-disabled");
@@ -2367,7 +2648,7 @@ function initEditGoodsInfo(row){
 			$("#editgoodsModel").textbox('setValue',row.goodsModel);
 			$("#editgoodsName").textbox('setValue',row.goodsName);
 			$("#editgoodsTitle").textbox('setValue',row.goodsTitle);
-			$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
+			//$("#editgoodsSkuType").combobox('setValue',row.goodsSkuType);
 			if(unSupportPrivincesCodes != null && unSupportPrivincesCodes != ''){
 				$("#editUnSupportProvince").combobox('setValues',unSupportPrivincesCodes.split(","));
 			}
@@ -2399,7 +2680,7 @@ function initEditGoodsInfo(row){
 /** 回显图片* */
 function loadLogo (id,picUrl)
 {
-	debugger;
+	// debugger;
 	if (picUrl != null)
 	{
 		$ ("#"+id).attr ("src","");
@@ -2626,7 +2907,7 @@ function secondClickCategoryEdit(indexSecondEd,rowSecondEd){
 			 hidden: 'hidden',
 		 }  ] ],
 		 onLoadSuccess : function(data){
-			debugger;
+			// debugger;
  			var indexS;
 		 	$.each(data.rows, function(i, n){
 	 		  if(data.rows[i].categoryId == editCategoryId3){
@@ -2636,7 +2917,7 @@ function secondClickCategoryEdit(indexSecondEd,rowSecondEd){
 		    $('#editEastAttrDataGrid').datagrid('selectRow',indexS);
 		 }, 
 		 onClickRow: function (index, row) {
-			 debugger;
+			 // debugger;
     		 editCategoryId3 = row.categoryId;
     	 },
 		 loader : function(param, success, error) {
@@ -2654,7 +2935,6 @@ function secondClickCategoryEdit(indexSecondEd,rowSecondEd){
        }
 	 });
 }
-
 function htmlspecialchars (string) {  
     string = string.replace(/&/g, '&amp;');//这个就是双引号  
     string = string.replace(/"/g, '"');  
@@ -2662,18 +2942,631 @@ function htmlspecialchars (string) {
     string = string.replace(/</g, '<');  
     string = string.replace(/>/g, '>');  
     return string;  
-}  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
+var goodsAttrId = null;
+var attrid;
+var categorynameArr = [];
+var categorynameArr1 = [];//单纯保存input内容
+var categorynameArr2 = [];
+var categorynameArr3 = [];
+var categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
+var categorynameArrY = [];
+var categorynameArrZ = [];
+function dropdown(selectId){
+	//下拉框
+	$('#'+selectId).combobox({//categoryId1 是新增商品时一级类目ID，editCategoryId1是修改商品时一级目录ID
+		method: "get",
+        url: ctx + '/application/goods/management/goodAttrListByCategory?categoryId1='+categoryId1+"&=editCategoryId1"+editCategoryId1,   
+        panelHeight: '100',  
+        valueField: 'id',
+        textField: 'name',
+        onChange: function (n, o) {
+        	for(var a=0;a<catename.length;a++){//新值重复判定
+        		if(catename[a]==n){
+        			$.messager.alert("提示", "请勿重复选择商品属性！", "info");
+        			$('#'+selectId).combobox('clear');
+        			break;
+        		}
+        	}
+        	var catenamenew = [];
+        	for(var a=0;a<catename.length;a++){//旧值去除判定
+        		if(catename[a]!=o&&catename[a]!=n){
+        			catenamenew.push(catename[a]);
+        		}
+        	}
+        	goodsAttrId = n;
+    		catenamenew.push(goodsAttrId);
+    		catename = [];
+    		for(var a=0;a<catenamenew.length;a++){//空字符串去除判定
+        		if(catenamenew[a]!=null&&catenamenew[a]!=""){
+        			catename.push(catenamenew[a]);
+        		}
+        	}
+        }
+	});
+}
+function buttonclick(id){//删除本条属性下属十个规格，刷新表格
+	var attnum = id.split("+")[0];
+	if(catenum>0){
+		catenum--;
+	}
+	var child = document.getElementById(id);
+	var childfir = child.parentNode.childNodes[0];
+	var childVlaue = $('#'+childfir.id).combobox('getValue');
+	child.parentNode.parentNode.remove();
+	var catenameNew = new Array();
+	for(var b = 0;b<catename.length;b++){
+		if(catename[b]!=childVlaue){
+			catenameNew.push(catename[b]);
+		}
+	}
+	catename=[];
+	catename = catenameNew;
+	if(attnum==0){
+		categorynameArr1=[];
+		categorynameArrX=[];
+	}
+	if(attnum==1){
+		categorynameArr2=[];
+		categorynameArrY=[];
+	}
+	if(attnum==2){
+		categorynameArr3=[];
+		categorynameArrZ=[];
+	}
+	debugger
+	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+}
+function createTableByCate(value,id){//根据每个属性  十条规格   失焦事件  刷新表格
+	var attnum = id.split("+")[0];//第几个（属性和input）框  0 1 2
+	var child = document.getElementById(id);//本次时间触发对象input
+	var childarr = child.parentNode.parentNode.childNodes;//总共几个（属性和input）框 对象集合
+	var	childmy = childarr[0];
+	var childmyatt = childmy.childNodes[0];//本input归属属性下拉框
+	var childattVlaue = $('#'+childmyatt.id).combobox('getValue');//本input归属属性下拉框ID
+	var reg = /^[1-9]\d*$/;
+	if(!reg.test(childattVlaue)){
+		$.messager.alert("提示", "请先选择商品属性！", "info");
+		child.value="";
+		return;
+	}
+	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
+	var valuearr=[];
+	var valueidarr=[];
+	for(var i=0;i<childbroarr.length;i++){
+		var val = childbroarr[i].value;
+		if(typeof(val)!="undefined"&&val!=null&&val!=''){
+			valuearr.push(childbroarr[i].value);
+			valueidarr.push(val+"-"+childattVlaue);
+		}
+	}
+	if(attnum==0){
+		categorynameArr1=[];
+		categorynameArrX=[];
+		categorynameArr1=valuearr;
+		categorynameArrX=valueidarr;
+	}
+	if(attnum==1){
+		categorynameArr2=[];
+		categorynameArrY=[];
+		categorynameArr2=valuearr;
+		categorynameArrY=valueidarr;
+	}
+	if(attnum==2){
+		categorynameArr3=[];
+		categorynameArrZ=[];
+		categorynameArr3=valuearr;
+		categorynameArrZ=valueidarr;
+	}
+	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+}
+function flushAttrListPrepare(value1,value2,value3){//刷新表格
+	var params = {};
+    params['categoryname1'] = value1.toString();
+    params['categoryname2'] = value2.toString();
+    params['categoryname3'] = value3.toString();
+    $('#tableattrlist').datagrid('load', params);
+}
+function flushAttrList(){//表格   刷新       弹框 后才刷新 
+	$('#tableattrlist').datagrid({
+        rownumbers : true,
+        pagination : true,
+        singleSelect : true,
+        striped:true,
+        columns:[[{
+        	title : '属性规格',
+            field : 'attrnameByAfter',
+            width : 100,
+            align : 'center'
+        },{
+            field : 'iddd',
+            hidden: 'hidden'
+        },{
+        	title : '成本价',
+            field : 'goodsCostPrice',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+					precision:2
+				}
+            }
+        },{
+        	title : '售价',
+            field : 'goodsPrice',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+					precision:2
+				}
+            }
+        },{
+        	title : '库存总量',
+            field : 'stockTotalAmt',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+				}
+            }
+        },{
+        	title : '库存剩余',
+            field : 'stockAmt',
+            width : 100,
+            align : 'center',//库存剩余删除可编辑
+        },{
+        	field:'action',
+        	title:'Action',
+        	width:100,
+        	align:'center',
+			formatter:function(value,row,index){
+				if (row.editing){
+					var r = '<a href="#" onclick="saverow(this)">Save</a> ';
+					return r;
+				} else {
+					var e = '<a href="#" onclick="editrow(this)">Edit</a> ';
+					return e;
+				}
+			}
+        }]],
+        onBeforeEdit:function(index,row){//BEFORE EDIT
+			row.editing = true;
+			updateActions(index,row.editing);
+		},
+		onAfterEdit:function(index,row){//AFTER EDIT
+			row.editing = false;
+			row.stockAmt = row.stockTotalAmt;//库存剩余跟随库存总量变动跟随变动
+			updateActions(index,row.editing);
+		},
+        loader : function(param, success, error) {//LOADING DATA
+            $.ajax({
+                url : ctx + '/application/goods/management/tableattrlist',
+                data : param,
+                type : "post",
+                dataType : "json",
+                success : function(data) {
+                    $.validateResponse(data, function() {
+                        success(data);
+                    });
+                }
+            })
+        }
+	});
+}
+function updateActions(index,falg){//可编辑动态表格
+	if(falg){
+		$('#tableattrlist').datagrid('updateRow',{index: index,row:{"iddd":100}});
+	}else{
+		$('#tableattrlist').datagrid('updateRow',{index: index,row:{"iddd":10}});
+	}
+}
+function editrow(target){//可编辑动态表格
+	$('#tableattrlist').datagrid('beginEdit', getRowIndex(target));
+}
+function saverow(target){//可编辑动态表格
+	$('#tableattrlist').datagrid('endEdit', getRowIndex(target));
+}
+function getRowIndex(target){//可编辑动态表格
+	var tr = $(target).closest('tr.datagrid-row');
+	return parseInt(tr.attr('datagrid-row-index'));
+}
+/*修改库存细信息相关*/
+function flushGoodsStock(finalGoodId){
+	var address = ctx + '/application/goods/management/findGoodsCateAttrAndStockForEdit';
+	var param = {};
+	param['goodsId'] = finalGoodId;
+	$.ajax({
+		url : address,
+		type : "POST",
+		data : param,
+		success : function(data) {
+			if(data.msg=='success'){
+				var da = data.data;
+				var attrVal1 = da.attrVal1;
+				var attrVal2 = da.attrVal2;
+				var attrVal3 = da.attrVal3;
+				var attr1 = da.attr1;
+				var attr2 = da.attr2;
+				var attr3 = da.attr3;
+				var str = "";
+				if(typeof(attrVal1)!='undefined'&&attrVal1!=null&&attrVal1.length>0){
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr1.name+' disabled="true">';
+					str+='</div>';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					var attrId1 = attrVal1[0].attrId;
+					for(var i = 0;i<10;i++){
+						var en = attrVal1[i];
+						var id = 1+"+"+i+"goodsAttrIdEd"+attrId1;
+						if(typeof(en)!='undefined'){
+							var val = en.attrVal;
+							id+="Ed";
+							id+=en.id;
+						}else{
+							var val = "";
+						}
+						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+					}
+					str+='</div>';
+				}
+				if(typeof(attrVal2)!='undefined'&&attrVal2!=null&&attrVal2.length>0){
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr2.name+' disabled="true">';
+					str+='</div>';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					var attrId2 = attrVal2[0].attrId;
+					for(var i = 0;i<10;i++){
+						var en = attrVal2[i];
+						var id = 2+"+"+i+"goodsAttrIdEd"+attrId2;
+						if(typeof(en)!='undefined'){
+							var val = en.attrVal;
+							id+="Ed";
+							id+=en.id;
+						}else{
+							var val = "";
+						}
+						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+					}
+					str+='</div>';
+				}
+				if(typeof(attrVal3)!='undefined'&&attrVal3!=null&&attrVal3.length>0){
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr3.name+' disabled="true">';
+					str+='</div>';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					var attrId3 = attrVal3[0].attrId;
+					for(var i = 0;i<10;i++){
+						var en = attrVal3[i];
+						var id = 3+"+"+i+"goodsAttrIdEd"+attrId3;
+						if(typeof(en)!='undefined'){
+							var val = en.attrVal;
+							id+="Ed";
+							id+=en.id;
+						}else{
+							var val = "";
+						}
+						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+					}
+					str+='</div>';
+				}
+				$('#inputDivEdit').empty();
+				$('#inputDivEdit').append(str);
+			}
+		}
+	});
+	$('#tableattrEditlist').datagrid('load', param);
+}
+function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
+	var attrId = id.split("Ed")[1];
+	var attrValId = id.split("Ed")[2];
+	var param = {};
+	param["attrValId"]=attrValId;
+	param["attrId"]=attrId;
+	param["attrVal"]=value;
+	param["goodsId"]=goodsId;
+	$.ajax({url : ctx + '/application/goods/management/createTableByCateEdit',data : param, type : "get",dataType : "json",
+        success : function(data) {
+        	if(data.status==1){
+        		//此时刷新表格  tableattrEditlist
+            	var attnum = id.split("+")[0];
+            	var inp = document.getElementById(id);
+        		var p = inp.parentNode.parentNode.children;
+        		for(var i =0,pl= p.length;i<pl;i++) {
+        			var q = p[i].children;
+        			if(i/1%2==0){
+        				continue;
+        			}
+        			if(i==1){
+        				var categorynameArr1=[];
+    					var categorynameArrX=[];
+    					attrId = q[0].id.split("Ed")[1];
+        				for(var j =0,ql= q.length;j<ql;j++) {
+        					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
+        						categorynameArr1.push(q[j].value);
+            					categorynameArrX.push(q[j].value+"-"+attrId);
+        					}
+        				}
+        				continue;
+        			}
+        			if(i==3){
+        				var categorynameArr2=[];
+    					var categorynameArrY=[];
+    					attrId = q[0].id.split("Ed")[1];
+        				for(var j =0,ql= q.length;j<ql;j++) {
+        					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
+        						categorynameArr2.push(q[j].value);
+            					categorynameArrY.push(q[j].value+"-"+attrId);
+        					}
+        				}
+        				continue;
+        			}
+        			if(i==5){
+        				var categorynameArr3=[];
+    					var categorynameArrZ=[];
+    					attrId = q[0].id.split("Ed")[1];
+        				for(var j =0,ql= q.length;j<ql;j++) {
+        					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
+        						categorynameArr3.push(q[j].value);
+            					categorynameArrZ.push(q[j].value+"-"+attrId);
+        					}
+        				}
+        				continue;
+        			}
+        		}
+            	flushGoodsStock();
+            	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
+        	}else{
+        		document.getElementById(id).value="";
+        		$.messager.alert("提示", "商品属性规格名称验重失败，规格名称不可用！", "info");
+        	}
+        },
+    })
+}
+function flushtableattrEditlistEdit(finalGoodId,value1,value2,value3){
+	var param = {};
+	param["goodsId"]=finalGoodId;
+	if(value1!=null){
+		param["categorynameArr1"]=value1.toString();
+	}
+	if(value2!=null){
+		param["categorynameArr2"]=value2.toString();
+	}
+	if(value3!=null){
+		param["categorynameArr3"]=value3.toString();
+	}
+	$('#tableattrEditlist').datagrid('load', param);
+}
+function flushtableattrEditlist(){
+	$('#tableattrEditlist').datagrid({
+		rownumbers : true,
+        pagination : true,
+        singleSelect : true,
+        striped:true,
+        fitColumns : true,
+        columns:[[{
+        	title : '属性规格',
+            field : 'goodsSkuAttr',
+            width : 100,
+            align : 'center'
+        },{
+            field : 'iddd',
+            hidden: 'hidden'
+        },{
+            field : 'id',
+            hidden: 'hidden'
+        },{
+        	title : '成本价',
+            field : 'goodsCostPrice',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+					precision:2
+				}
+            }
+        },{
+        	title : '售价',
+            field : 'goodsPrice',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+					precision:2
+				}
+            }
+        },{
+        	title : '库存总量',
+            field : 'stockTotalAmt',
+            width : 100,
+            align : 'center',
+            editor: {
+            	type:'numberbox',
+            	options:{
+					required:true,
+				}
+            }
+        },{
+        	title : '库存剩余',
+            field : 'stockCurrAmt',
+            width : 100,
+            align : 'center',
+        },{
+        	field:'action',
+        	title:'Action',
+        	width:100,
+        	align:'center',
+			formatter:function(value,row,index){
+				if (row.editing){
+					return '<a href="#" onclick="saverowE(this)">Save</a> ';
+				} else {
+					return '<a href="#" onclick="editrowE(this)">Edit</a> ';
+				}
+			}
+        }]],
+        onBeforeEdit:function(index,row){//BEFORE EDIT
+			row.editing = true;
+			updateActionsE(index,row.editing);
+		},
+		onAfterEdit:function(index,row){//AFTER EDIT
+			row.editing = false;
+			row.stockCurrAmt = row.stockTotalAmt;
+			updateActionsE(index,row.editing);
+		},
+        loader : function(param, success, error) {//LOADING DATA
+            $.ajax({
+                url : ctx + '/application/goods/management/flushtableattrEditlist',
+                data : param,
+                type : "get",
+                dataType : "json",
+                success : function(data) {
+                    $.validateResponse(data, function() {
+                        success(data);
+                    });
+                }
+            })
+        },
+	});
+}
+function updateActionsE(index,falg){//可编辑动态表格
+	if(falg){
+		$('#tableattrEditlist').datagrid('updateRow',{index: index,row:{"iddd":100}});
+	}else{
+		$('#tableattrEditlist').datagrid('updateRow',{index: index,row:{"iddd":10}});
+	}
+}
+function editrowE(target){//可编辑动态表格
+	$('#tableattrEditlist').datagrid('beginEdit', getRowIndexE(target));
+}
+function saverowE(target){//可编辑动态表格
+	$('#tableattrEditlist').datagrid('endEdit', getRowIndexE(target));
+}
+function getRowIndexE(target){//可编辑动态表格
+	var tr = $(target).closest('tr.datagrid-row');
+	return parseInt(tr.attr('datagrid-row-index'));
+}
+/*=================================修改商品类目修改  此时逻辑与  新增商品库存的逻辑完全一致  只是页面DIV不同重写一遍。=====================================*/
+function function1(){
+	if(catenum>2){
+		$.messager.alert("提示", "商品属性最多选择3个！", "info");
+		return;
+	}
+	var divid = "goodsAttrId"+catenum;
+	var selectnum = "selectnum"+catenum;
+	var buttonid = catenum+"+buttonId";
+	var str ='<div id ='+divid+'>';
+		str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
+			str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
+			str+="&nbsp;&nbsp;"
+			str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="buttonclick(this.id)"/>';
+//			str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton buttonclick">删除</a>'
+		str+='</div>';
+		str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:650px;">';
+		for(var i = 0;i<10;i++){
+			id = catenum+"+"+i+"goodsAttrId";
+			str+='<input style="width:100px" onblur="function3(this.value,this.id)" id='+id+' name='+id+'/>'
+		}
+		str+='</div>';
+	str+='</div>';
+	$('#inputDivEdit').append(str);
+	dropdown(selectnum);
+	catenum++;
+}
+function function2(){
+	var ids = [];
+    var rows = $('#tableattrEditlist').datagrid('getRows');
+    for(var i=0; i<rows.length; i++){
+    	var d = i+1;
+    	if(rows[i].editing==true){
+    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
+			return;
+    	}
+    	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
+    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+			return;
+    	}
+        ids.push(rows[i]);
+    }
+    var param = {};
+    param['categorynameArr1']= categorynameArrX.toString();
+    param['categorynameArr2']= categorynameArrY.toString();
+    param['categorynameArr3']= categorynameArrZ.toString();
+    param["goodsStock"]= JSON.stringify(ids);
+    param["goodsId"]= finalGoodId;
+    param['status'] = "editstatusaddmethod";
+	var address = ctx + '/application/goods/management/saveGoodsCateAttrAndStock';
+	$.ajax({
+		url : address,
+		type : "POST",
+		data : param,
+		success : function(data) {
+			//刷新前置页面库存列表（无需刷新）
+			//关闭本窗口 无需关闭
+			if(data.status==1){
+				$.messager.alert("提示", data.msg, "info");
+			}
+			//$('#editGoodsInfo').window('close');
+		}
+	});
+}
+function function3(value,id){//根据每个属性  十条规格   失焦事件  刷新表格
+	var attnum = id.split("+")[0];//第几个（属性和input）框  0 1 2
+	var child = document.getElementById(id);//本次时间触发对象input
+	var childarr = child.parentNode.parentNode.childNodes;//总共几个（属性和input）框 对象集合
+	var	childmy = childarr[0];
+	var childmyatt = childmy.childNodes[0];//本input归属属性下拉框
+	var childattVlaue = $('#'+childmyatt.id).combobox('getValue');//本input归属属性下拉框ID
+	var reg = /^[1-9]\d*$/;
+	if(!reg.test(childattVlaue)){
+		$.messager.alert("提示", "请先选择商品属性！", "info");
+		child.value="";
+		return;
+	}
+	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
+	var valuearr=[];
+	var valueidarr=[];
+	for(var i=0;i<childbroarr.length;i++){
+		var val = childbroarr[i].value;
+		if(typeof(val)!="undefined"&&val!=null&&val!=''){
+			valuearr.push(childbroarr[i].value);
+			valueidarr.push(val+"-"+childattVlaue);
+		}
+	}
+	if(attnum==0){
+		categorynameArr1=[];
+		categorynameArrX=[];
+		categorynameArr1=valuearr;
+		categorynameArrX=valueidarr;
+	}
+	if(attnum==1){
+		categorynameArr2=[];
+		categorynameArrY=[];
+		categorynameArr2=valuearr;
+		categorynameArrY=valueidarr;
+	}
+	if(attnum==2){
+		categorynameArr3=[];
+		categorynameArrZ=[];
+		categorynameArr3=valuearr;
+		categorynameArrZ=valueidarr;
+	}
+	function4(categorynameArr1,categorynameArr2,categorynameArr3);
+}
+function function4(value1,value2,value3){
+	var params = {};
+    params['categoryname1'] = value1.toString();
+    params['categoryname2'] = value2.toString();
+    params['categoryname3'] = value3.toString();
+    params['status'] = "editstatusaddmethod";
+    $('#tableattrEditlist').datagrid('load', params);
+}

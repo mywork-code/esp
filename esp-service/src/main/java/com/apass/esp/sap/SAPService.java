@@ -1,6 +1,7 @@
 package com.apass.esp.sap;
 import com.apass.esp.common.utils.APStringUtils;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.TxnOrderInfoForBss;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
@@ -9,6 +10,7 @@ import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
 import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
+import com.apass.esp.domain.entity.bill.SapData;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.bill.TxnOrderInfo;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -19,6 +21,7 @@ import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
+import com.apass.esp.repository.cashRefund.CashRefundHttpClient;
 import com.apass.esp.repository.httpClient.CommonHttpClient;
 import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
@@ -32,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -69,6 +73,9 @@ public class SAPService {
 
   @Autowired
   private RepayScheduleRepository repayScheduleRepository;
+
+  @Autowired
+  private CashRefundHttpClient cashRefundHttpClient;
 
   /**
    * 上传财物凭证调整（首付款或全额）
@@ -597,7 +604,12 @@ public class SAPService {
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
+        contentList.add("");
+        contentList.add("");
+        contentList.add("");
         contentList.add("6008");
+        contentList.add("");
+        contentList.add("ajqh");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
 
       }
@@ -704,6 +716,7 @@ public class SAPService {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectVBSBusinessNumList(orderStatusList, getDateBegin(), getDateEnd());
+
     try {
       csvWriter = new CsvWriter(SAPConstants.VBSBUSINESS_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
@@ -711,32 +724,58 @@ public class SAPService {
       //必选表头
       String[] headers = {"GUID", "ZPTMC", "ZPTBM", "ZLSH_DD", "ZYWH_VBS", "ERDAT", "ERZET","UNAME","ZSJLY"};
       csvWriter.writeRecord(headers);
+
       for (TxnOrderInfo txn : txnList) {
-        if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-          continue;
-        }
-        List<String> contentList = new ArrayList<String>();
-                /*GUID*/
-        contentList.add(txn.getTxnId() + "'");
-            /*ZPTMC*/
-        contentList.add(ZPTMC);
-	        	/*ZPTBM*/
-        contentList.add(SAPConstants.PLATFORM_CODE);
-	            /*ZLSH_DD  子订单号*/
-        contentList.add(txn.getOrderId());
-	            /*ZYWH_VBS*/
-        contentList.add(txn.getLoanId().toString());
-        String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
-        String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
-	            /*ERDAT*/
-        contentList.add(createdDate);
-	            /*ERZET*/
-        contentList.add(createdtime);
-	            /*可选表头UNAME,ZSJLY*/
-	            /*write*/
-        contentList.add("");
-        contentList.add("ajqh");
-        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+          TxnOrderInfoForBss txnOrderInfoForBss = txnOrderInfoToTxnOrderInfoForBss(txn);
+
+          SapData sapData = cashRefundHttpClient.querySapData(txnOrderInfoForBss);
+          if(sapData!=null&&sapData.getOrderIds()!=null&&sapData.getOrderIds().size()>0){
+              for(String ob : sapData.getOrderIds()){
+                  List<String> contentList = new ArrayList<String>();
+                    /*GUID*/
+                  contentList.add(txn.getTxnId().toString());
+                    /*ZPTMC*/
+                  contentList.add(ZPTMC);
+                    /*ZPTBM*/
+                  contentList.add(SAPConstants.PLATFORM_CODE);
+                    /*ZLSH_DD  子订单号*/
+                  contentList.add(ob);
+                    /*ZYWH_VBS*/
+                  contentList.add(txn.getLoanId().toString());
+                  String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
+                  String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
+                    /*ERDAT*/
+                  contentList.add(createdDate);
+                    /*ERZET*/
+                  contentList.add(createdtime);
+                    /*可选表头UNAME,ZSJLY*/
+                    /*write*/
+                  contentList.add("ajqh");
+                  csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+              }
+          }else{
+              List<String> contentList = new ArrayList<String>();
+              /*GUID*/
+              contentList.add(txn.getTxnId().toString());
+              /*ZPTMC*/
+              contentList.add(ZPTMC);
+              /*ZPTBM*/
+              contentList.add(SAPConstants.PLATFORM_CODE);
+              /*ZLSH_DD  子订单号*/
+              contentList.add("");
+              /*ZYWH_VBS*/
+              contentList.add(txn.getLoanId().toString());
+              String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
+              String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
+              /*ERDAT*/
+              contentList.add(createdDate);
+              /*ERZET*/
+              contentList.add(createdtime);
+              /*可选表头UNAME,ZSJLY*/
+              /*write*/
+              contentList.add("ajqh");
+              csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+          }
       }
     } catch (Exception e) {
       LOG.error("VBSBusinessCvs error...", e);
@@ -746,7 +785,16 @@ public class SAPService {
     }
   }
 
-  private String getDateBegin() {
+    private TxnOrderInfoForBss txnOrderInfoToTxnOrderInfoForBss(TxnOrderInfo txn) {
+        TxnOrderInfoForBss txnOrderInfoForBss = new TxnOrderInfoForBss();
+        txnOrderInfoForBss.setTxnId(txn.getTxnId());
+        txnOrderInfoForBss.setUserId(txn.getUserId());
+        txnOrderInfoForBss.setVbsId(txn.getLoanId());
+
+        return txnOrderInfoForBss;
+    }
+
+    private String getDateBegin() {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -1);
     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);

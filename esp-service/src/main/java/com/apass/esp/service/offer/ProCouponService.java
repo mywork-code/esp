@@ -11,6 +11,7 @@ import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -140,5 +141,11 @@ public class ProCouponService {
         }else {
             throw new RuntimeException("优惠券id不存在！");
         }
+    }
+
+    public List<ProCoupon> selectProCouponByIds(ArrayList<Long> couponIdList) {
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("ids",couponIdList);
+        return couponMapper.selectProCouponByIds(paramMap);
     }
 }
