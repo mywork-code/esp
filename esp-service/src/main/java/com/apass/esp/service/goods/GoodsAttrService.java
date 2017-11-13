@@ -778,9 +778,6 @@ public class GoodsAttrService {//450
             entity.setCreateUser(userName);
             entity.setUpdateUser(userName);
             String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getGoodsSkuAttr(),goodsId);
-            if(skuIdStr.endsWith("-")){
-                skuIdStr=skuIdStr.substring(0, skuIdStr.length()-1);
-            }
             entity.setAttrValIds(skuIdStr);
             if(entity.getId()==null){
                 String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
