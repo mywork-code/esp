@@ -722,29 +722,53 @@ public class SAPService {
           TxnOrderInfoForBss txnOrderInfoForBss = txnOrderInfoToTxnOrderInfoForBss(txn);
 
           SapData sapData = cashRefundHttpClient.querySapData(txnOrderInfoForBss);
-          for(String ob : sapData.getOrderIds()){
+          if(sapData!=null&&sapData.getOrderIds()!=null&&sapData.getOrderIds().size()>0){
+              for(String ob : sapData.getOrderIds()){
+                  List<String> contentList = new ArrayList<String>();
+                    /*GUID*/
+                  contentList.add(txn.getTxnId().toString());
+                    /*ZPTMC*/
+                  contentList.add(ZPTMC);
+                    /*ZPTBM*/
+                  contentList.add(SAPConstants.PLATFORM_CODE);
+                    /*ZLSH_DD  子订单号*/
+                  contentList.add(ob);
+                    /*ZYWH_VBS*/
+                  contentList.add(txn.getLoanId().toString());
+                  String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
+                  String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
+                    /*ERDAT*/
+                  contentList.add(createdDate);
+                    /*ERZET*/
+                  contentList.add(createdtime);
+                    /*可选表头UNAME,ZSJLY*/
+                    /*write*/
+                  contentList.add("ajqh");
+                  csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+              }
+          }else{
               List<String> contentList = new ArrayList<String>();
-                        /*GUID*/
+              /*GUID*/
               contentList.add(txn.getTxnId().toString());
-                        /*ZPTMC*/
+              /*ZPTMC*/
               contentList.add(ZPTMC);
-                        /*ZPTBM*/
+              /*ZPTBM*/
               contentList.add(SAPConstants.PLATFORM_CODE);
-                        /*ZLSH_DD  子订单号*/
-              contentList.add(ob);
-                        /*ZYWH_VBS*/
+              /*ZLSH_DD  子订单号*/
+              contentList.add("");
+              /*ZYWH_VBS*/
               contentList.add(txn.getLoanId().toString());
               String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
               String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
-                        /*ERDAT*/
+              /*ERDAT*/
               contentList.add(createdDate);
-                        /*ERZET*/
+              /*ERZET*/
               contentList.add(createdtime);
-                        /*可选表头UNAME,ZSJLY*/
-                        /*write*/
+              /*可选表头UNAME,ZSJLY*/
+              /*write*/
               contentList.add("ajqh");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-        }
+          }
       }
     } catch (Exception e) {
       LOG.error("VBSBusinessCvs error...", e);

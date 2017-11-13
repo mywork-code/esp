@@ -5,7 +5,7 @@
     <sql id="QueryConditionSql">
         <where>
             <if test="name!=null and name!=''">
-                AND name LIKE '%#{name}%'
+                AND name LIKE '%${name}%'
             </if>
         </where>
     </sql>
