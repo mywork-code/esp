@@ -8,7 +8,7 @@
 				<![CDATA[  and create_date >= #{startCreateDate} ]]>
 			</if>
 			<if test="endCreateDate != null and endCreateDate != '' ">
-				<![CDATA[  and create_date <= #{endCreateDate} ]]>
+				<![CDATA[  and create_date < #{endCreateDate} ]]>
 			</if>
 			<if test="activityId != null ">
 				<![CDATA[  and activity_id = #{activityId} ]]>
