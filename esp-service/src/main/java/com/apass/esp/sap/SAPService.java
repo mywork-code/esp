@@ -581,7 +581,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(cashRefundTxn.getId() + "");
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -760,13 +760,14 @@ public class SAPService {
                   contentList.add(createdtime);
                     /*可选表头UNAME,ZSJLY*/
                     /*write*/
+                  contentList.add("");
                   contentList.add("ajqh");
                   csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
               }
           }else{
               List<String> contentList = new ArrayList<String>();
               /*GUID*/
-              contentList.add(txn.getTxnId().toString());
+              contentList.add(ListeningStringUtils.getUUID());
               /*ZPTMC*/
               contentList.add(ZPTMC);
               /*ZPTBM*/
@@ -783,6 +784,7 @@ public class SAPService {
               contentList.add(createdtime);
               /*可选表头UNAME,ZSJLY*/
               /*write*/
+              contentList.add("");
               contentList.add("ajqh");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
           }
@@ -990,7 +992,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             } else {
@@ -1009,7 +1011,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             }
@@ -1037,7 +1039,7 @@ public class SAPService {
               } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                 repayMap.put(txn.getOrderId(), mainOrderIdList);
                 repayDateMap.put(txn.getOrderId(),txn);
-                mainOrderIdList.clear();
+                mainOrderIdList = new ArrayList<>();
               }
             }
 
