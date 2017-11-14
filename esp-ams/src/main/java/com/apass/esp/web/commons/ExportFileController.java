@@ -216,50 +216,59 @@ public class ExportFileController {
                     }
                     BigDecimal canUserAmt = awardDetailService.getCanUserAmt(awDetail.getUserId(),
                             awDetail.getCreateDate());
-                    if (StringUtils.isBlank(awardBindRelIntroVo.getMobile())
+                    if (StringUtils.isBlank(awardBindRelIntroVo.getMobile())//判断导入手机号与数据库中手机号是否相同
                             || !awDetail.getMobile().equals(awardBindRelIntroVo.getMobile())) {
+                        LOG.info("导入手机号{}与数据库中手机号{}不同",awardBindRelIntroVo.getMobile(),awDetail.getMobile());
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getCanWithdrawAmount() == null
                             || canUserAmt.doubleValue() != awardBindRelIntroVo.getCanWithdrawAmount()
-                                    .doubleValue()) {
+                            .doubleValue()) {//判断导可提现金额与数据库中可提现金额是否相同
+                        LOG.info("用户:{}的导入可提现金额{}与数据库中可提现金额{}不同",awardBindRelIntroVo.getMobile(),awardBindRelIntroVo.getCanWithdrawAmount().toString(),canUserAmt.toString());
                         countFail++;
                         continue;
                     }
                     if (awDetail.getCreateDate() == null
                             || !DateFormatUtil.dateToString(awDetail.getCreateDate(),
-                                    DateFormatUtil.YYYY_MM_DD_HH_MM_SS).equals(
-                                    awardBindRelIntroVo.getApplyDate())) {
+                            DateFormatUtil.YYYY_MM_DD_HH_MM_SS).equals(
+                            awardBindRelIntroVo.getApplyDate())) {
+                        LOG.info("用户:{}的导入申请提现提交时间{}与数据库中申请提现提交时间{}不同",awardBindRelIntroVo.getMobile(),awardBindRelIntroVo.getApplyDate(),DateFormatUtil.dateToString(awDetail.getCreateDate(),
+                                DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getAmount() == null
-                            || awDetail.getAmount().subtract(awDetail.getTaxAmount()).doubleValue() != awardBindRelIntroVo
-                                    .getAmount().doubleValue()) {
+                            || awDetail.getAmount().subtract(awDetail.getTaxAmount()==null ? new BigDecimal(0):awDetail.getTaxAmount()).doubleValue() != awardBindRelIntroVo
+                            .getAmount().doubleValue()) {
+                        LOG.info("用户:{}的导入申请提现金额{}与数据库中申请提现金额{}不同",awardBindRelIntroVo.getMobile(),awardBindRelIntroVo.getAmount().toString(),awDetail.getAmount().subtract(awDetail.getTaxAmount()==null ? new BigDecimal(0):awDetail.getTaxAmount()).toString());
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getRealName() == null
                             || !awDetail.getRealName().equals(awardBindRelIntroVo.getRealName())) {
+                        LOG.info("用户:{}的推荐人姓名{}与数据库中推荐人姓名{}不同",awardBindRelIntroVo.getMobile(),awardBindRelIntroVo.getRealName(),awDetail.getRealName());
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getCardNO() == null
                             || !awDetail.getCardNo().equals(awardBindRelIntroVo.getCardNO())) {
+                        LOG.info("用户:{}的推荐人银行卡号{}与数据库中推荐人银行卡号{}不同",awardBindRelIntroVo.getMobile(),awardBindRelIntroVo.getCardNO(),awDetail.getCardNo());
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getCardBank() == null
                             || !awDetail.getCardBank().equals(awardBindRelIntroVo.getCardBank())) {
+                        LOG.info("用户:{}的推荐人所属银行{}与数据库中所属银行{}不同",awardBindRelIntroVo.getCardBank(),awardBindRelIntroVo.getCardNO(),awDetail.getCardNo());
                         countFail++;
                         continue;
                     }
                     if (awardBindRelIntroVo.getStatus() == null
                             || awardBindRelIntroVo.getStatus() == AwardActivity.AWARD_STATUS_AMS.FAIL
-                                    .getCode()
+                            .getCode()
                             || awardBindRelIntroVo.getStatus() == AwardActivity.AWARD_STATUS_AMS.PROCESSING
-                                    .getCode()) {
+                            .getCode()) {
+                        LOG.info("用户:{}的放款状态错误,放款状态是{}",awardBindRelIntroVo.getCardBank(),awardBindRelIntroVo.getStatus());
                         countFail++;
                         continue;
                     }
@@ -273,7 +282,7 @@ public class ExportFileController {
                 countSucc = list.size() - countFail;
             }
         } catch (IOException e) {
-            LOG.error("服务器忙，请稍后再试。", e);
+            LOG.error("服务器忙，请稍后再试",e);
             return Response.fail(e.getMessage());
         }
 
