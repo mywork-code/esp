@@ -26,6 +26,9 @@
 			<if test="isDelete != null and isDelete != ''">
 			    and is_delete=#{isDelete, jdbcType=VARCHAR}
 			</if>
+			<if test="parentOrderId != null and parentOrderId != ''">
+			    and parent_order_id=#{parentOrderId, jdbcType=VARCHAR}
+			</if>
 	</sql>
 
 	<select id="select" parameterType="OrderInfoEntity" resultType="OrderInfoEntity">
@@ -66,7 +69,7 @@
 		]]>
 		<where>
 			<![CDATA[
-					orderstatus !='D08' and ext_parent_id!='-1'
+					orderstatus !='D08' and ext_parent_id != '-1' and parent_order_id != '-1'
 				 ]]>
  			<include refid="QueryConditionSql" />
 		</where>
@@ -108,7 +111,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-		where main_order_id=#{value} and ext_parent_id!='-1'
+		where main_order_id=#{value} and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 	</select>
 	
@@ -145,7 +148,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-		where 1=1 and ext_parent_id!='-1'
+		where 1=1 and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 		<if test="orderIdArray != null">
 			AND order_id in
@@ -193,7 +196,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-			WHERE 1=1 and ext_parent_id!='-1'
+			WHERE 1=1 and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 		<if test="userId != null and userId != ''">
 			AND user_id=#{userId}
@@ -250,7 +253,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-			WHERE 1=1 and ext_parent_id!='-1'
+			WHERE 1=1 and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 		<if test="userId != null">
 			AND user_id=#{userId}
@@ -294,7 +297,8 @@
              ext_order_id,
              pre_stock_status,
              ext_parent_id,
-             coupon_id
+             coupon_id,
+             parent_order_id
             )
 			values (
 			#{userId, jdbcType=BIGINT},
@@ -326,7 +330,8 @@
 	        #{extOrderId,jdbcType=VARCHAR},
 	        #{preStockStatus,jdbcType=VARCHAR},
 	        #{extParentId,jdbcType=VARCHAR},
-	        #{couponId, jdbcType=BIGINT});
+	        #{couponId, jdbcType=BIGINT},
+	        #{parentOrderId, jdbcType=VARCHAR});
 	</insert>
 	
 	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
@@ -460,7 +465,7 @@
                 ORDERSTATUS         id 
         FROM    t_esp_order_info 
         WHERE   USER_ID = #{value} 
-        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1'
+        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1' and parent_order_id != '-1'
         GROUP BY ORDERSTATUS
         ]]>
 	</select>
@@ -480,7 +485,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D00' and ext_parent_id!='-1'
+			orderstatus = 'D00' and ext_parent_id!='-1' and parent_order_id != '-1'
 		order by create_date asc
 		LIMIT 0,1000
 		]]>
@@ -510,7 +515,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D03' and ext_parent_id!='-1'
+			orderstatus = 'D03' and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 	</select>
 	<!-- 根据物流唯一标识 -->
@@ -564,7 +569,7 @@
 					INTERVAL 1 DAY
 				) < NOW()
 			)
-		AND orderstatus = 'D05' and ext_parent_id!='-1'
+		AND orderstatus = 'D05' and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 	</select>
 
@@ -585,7 +590,7 @@
 			WHERE a.payType='T02' and 
 			a.payStatus = 'P02' AND
 			a.user_id = #{value}
-			 and ext_parent_id!='-1' and
+			 and ext_parent_id!='-1' and parent_order_id != '-1' and
 			not EXISTS 
             (select b.id from t_esp_cash_refund b where a.order_id=b.order_id and b.status in (2,4))	
 			
@@ -604,16 +609,25 @@
 			paystatus payStatus,
 			orderstatus STATUS,
 			create_date createDate,
-			update_date updateDate
+			update_date updateDate,
+			parent_order_id parentOrderId,
+			merchant_code merchantCode
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D02' and pre_delivery = 'N' and ext_parent_id!='-1'
+			orderstatus = 'D02' and pre_delivery = 'N' and ext_parent_id!='-1' and parent_order_id != '-1'
 		]]>
 	</select>
 	
 	<update id="updateOrderStatusAndPreDelivery" parameterType="OrderInfoEntity">
-		UPDATE t_esp_order_info set orderstatus = #{status, jdbcType=VARCHAR}, pre_delivery = #{preDelivery, jdbcType=VARCHAR},update_date = CURRENT_TIMESTAMP WHERE order_id =  #{orderId, jdbcType=VARCHAR}
+		UPDATE t_esp_order_info 
+		<set>
+			parent_order_id = #{parentOrderId, jdbcType=VARCHAR},
+			orderstatus = #{status, jdbcType=VARCHAR}, 
+			pre_delivery = #{preDelivery, jdbcType=VARCHAR},
+			update_date = CURRENT_TIMESTAMP 
+	    </set>
+		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
 	</update>
 
 
@@ -623,14 +637,14 @@
 
 	<select id="selectOrderCountByStatus" resultType="java.lang.Integer">
 		SELECT count(1) from t_esp_order_info
-		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1' and parent_order_id != '-1'
 		and create_date &gt;= #{dateBegin}
         and create_date &lt; #{dateEnd}
 	</select>
 
 	<select id="selectOrderAmtByStatus" resultType="java.lang.Double">
 		SELECT sum(order_amt) from t_esp_order_info
-		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1' and parent_order_id != '-1'
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
@@ -652,7 +666,7 @@
             last_acceptgoodsdate		lastAcceptGoodsDate,
             acceptgoodsdate			acceptGoodsDate
 	    from t_esp_order_info
-		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1' and parent_order_id != '-1'
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
@@ -676,7 +690,7 @@
 		last_acceptgoodsdate		lastAcceptGoodsDate,
 		acceptgoodsdate			acceptGoodsDate
 		from t_esp_order_info
-		where  ext_parent_id!='-1'
+		where  ext_parent_id!='-1' and parent_order_id != '-1'
 			AND orderstatus in
 			<foreach collection="statusArray" item="item" open="("
 					 separator="," close=")">
@@ -871,7 +885,7 @@
 			t_esp_order_info
 		where
 		source = 'jd'
-		and orderstatus=#{orderStatus} and ext_parent_id!='-1'
+		and orderstatus=#{orderStatus} and ext_parent_id!='-1' and parent_order_id != '-1'
 	</select>
 	
 	<select id="getConfirmOrderCount" resultType="java.lang.Integer">

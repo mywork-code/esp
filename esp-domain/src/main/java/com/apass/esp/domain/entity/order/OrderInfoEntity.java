@@ -204,8 +204,24 @@ public class OrderInfoEntity {
     /** 是否删除 **/
     private String isDelete;
 
+    /**
+     * 我的优惠券的Id
+     */
     private Long couponId;
     
+    /**
+     * 父订单的Id
+     */
+    private String parentOrderId;
+    
+	public String getParentOrderId() {
+		return parentOrderId;
+	}
+
+	public void setParentOrderId(String parentOrderId) {
+		this.parentOrderId = parentOrderId;
+	}
+
 	public String getIsDelete() {
 		return isDelete;
 	}
