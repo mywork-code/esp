@@ -224,13 +224,13 @@ public class GoodsStockInfoController {
         String goodsCostPrice = HttpWebUtils.getValue(request, "goodsCostPrice");
         String marketPrice = HttpWebUtils.getValue(request, "marketPrice");
         String goodsPrice = HttpWebUtils.getValue(request, "goodsPrice");
-        String goodsCompareUrl = HttpWebUtils.getValue(request, "goodsCompareUrl");
-        String goodsCompareUrl2 = HttpWebUtils.getValue(request, "goodsCompareUrl2");
-        if (!StringUtils.isAnyBlank(goodsCompareUrl,goodsCompareUrl2)) {
-            if (goodsCompareUrl.length() > 255 || goodsCompareUrl2.length() > 255) {
-                return Response.fail("比价链接地址过长，每个地址长度必须小于255个字符");
-            }
-        }
+//        String goodsCompareUrl = HttpWebUtils.getValue(request, "goodsCompareUrl");
+//        String goodsCompareUrl2 = HttpWebUtils.getValue(request, "goodsCompareUrl2");
+//        if (!StringUtils.isAnyBlank(goodsCompareUrl,goodsCompareUrl2)) {
+//            if (goodsCompareUrl.length() > 255 || goodsCompareUrl2.length() > 255) {
+//                return Response.fail("比价链接地址过长，每个地址长度必须小于255个字符");
+//            }
+//        }
 
         GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
         entity.setId(Long.valueOf(id));
@@ -250,12 +250,12 @@ public class GoodsStockInfoController {
         if (!StringUtils.isBlank(goodsPrice)) {
             entity.setGoodsPrice(new BigDecimal(goodsPrice));
         }
-        if (goodsCompareUrl != null) {
-            entity.setGoodsCompareUrl(goodsCompareUrl);
-        }
-        if (goodsCompareUrl2 != null) {
-            entity.setGoodsCompareUrl2(goodsCompareUrl2);
-        }
+//        if (goodsCompareUrl != null) {
+//            entity.setGoodsCompareUrl(goodsCompareUrl);
+//        }
+//        if (goodsCompareUrl2 != null) {
+//            entity.setGoodsCompareUrl2(goodsCompareUrl2);
+//        }
 
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
 

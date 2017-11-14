@@ -29,6 +29,7 @@ import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.gfb.framework.jwt.common.ListeningStringUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
 import com.csvreader.CsvWriter;
@@ -370,7 +371,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getTxnId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add("01");
         contentList.add("");
         contentList.add("B");
@@ -444,7 +445,7 @@ public class SAPService {
       for (SalesOrderInfo salOrder : salOrderList) {
 
         List<String> contentList = new ArrayList<String>();
-        contentList.add(salOrder.getOrderdetailId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(salOrder.getOrderPrimayId().toString());
         contentList.add(String.valueOf(rowNum));
         contentList.add(salOrder.getGoodsCode());
@@ -484,7 +485,7 @@ public class SAPService {
       for (SalesOrderPassOrRefund salOrder : salOrderList) {
 
         List<String> contentList = new ArrayList<String>();
-        contentList.add(salOrder.getOrderPrimayId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add("6008");
         contentList.add(salOrder.getOrderId());
         if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
@@ -534,7 +535,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getTxnId() + "");
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -648,7 +649,7 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       for (PurchaseReturnOrder txn : txnList) {
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getOrderInfoId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(txn.getMainOrderId());
         contentList.add(txn.getCompanyCode());
         contentList.add(txn.getExtOrderId());
@@ -701,7 +702,7 @@ public class SAPService {
       for (Iterator<PurchaseOrderDetail> it = txnList.iterator(); it.hasNext(); ) {
         PurchaseOrderDetail entity = it.next();
         List<String> contentList = new ArrayList<String>();
-        contentList.add(entity.getOrderInfoId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(entity.getOrderId().toString());
         contentList.add(i + "");
         i++;
@@ -742,7 +743,7 @@ public class SAPService {
               for(String ob : sapData.getOrderIds()){
                   List<String> contentList = new ArrayList<String>();
                     /*GUID*/
-                  contentList.add(txn.getTxnId().toString());
+                  contentList.add(ListeningStringUtils.getUUID());
                     /*ZPTMC*/
                   contentList.add(ZPTMC);
                     /*ZPTBM*/
@@ -835,7 +836,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getExtOrderId() + "");
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(txn.getTxnId() + "");
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
@@ -884,7 +885,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(txn.getTxnId().toString());
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add("01");
         contentList.add("");
         contentList.add("B");
@@ -982,13 +983,14 @@ public class SAPService {
               cal.set(Calendar.DATE, billDate);
               String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
               List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+              List<String> mainOrderIdList = new ArrayList<>();
               for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
                 if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                   mainOrderIdList.add(txn.getOrderId());
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
+                  mainOrderIdList.clear();
                 }
               }
             } else {
@@ -1000,13 +1002,14 @@ public class SAPService {
               String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
               List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
+              List<String> mainOrderIdList = new ArrayList<>();
               for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
                 if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                   mainOrderIdList.add(txn.getOrderId());
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
+                  mainOrderIdList.clear();
                 }
               }
             }
@@ -1027,13 +1030,14 @@ public class SAPService {
             String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
             List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
+            List<String> mainOrderIdList = new ArrayList<>();
             for (TxnInfoEntity txn : txnList) {
-              List<String> mainOrderIdList = new ArrayList<>();
               if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                 mainOrderIdList.add(txn.getOrderId());
               } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                 repayMap.put(txn.getOrderId(), mainOrderIdList);
                 repayDateMap.put(txn.getOrderId(),txn);
+                mainOrderIdList.clear();
               }
             }
 
@@ -1049,7 +1053,7 @@ public class SAPService {
             for (OrderInfoEntity order : orderList) {
               ++i;
               List<String> contentList = new ArrayList<String>();
-              contentList.add(order.getId() + "");
+              contentList.add(ListeningStringUtils.getUUID());
               contentList.add("01");
               contentList.add("");
               contentList.add("B");

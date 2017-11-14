@@ -1,6 +1,8 @@
 package com.apass.esp.service.goods;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,10 +91,14 @@ public class GoodsAttrValService {
             entity = goodsAttrValMapper.goodsAttrValListByAttrId(entity).get(0);
             if(entity.getId()!=null){
                 skuId.append(entity.getId().toString());
-                skuId.append("-");
+                skuId.append(":");
             }
         }
-        return skuId.toString();
+        String str = skuId.toString();
+        if(!StringUtils.isBlank(str)&&str.length()>0){
+            return str.substring(0, str.length()-1);
+        }
+        return str;
     }
     /**
      * 保存单个实体
