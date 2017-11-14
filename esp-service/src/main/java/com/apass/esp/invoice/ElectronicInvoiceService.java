@@ -57,8 +57,8 @@ public class ElectronicInvoiceService {
   private String createGlobalInfoXml() {
     GlobalInfo globalInfo = new GlobalInfo();
     globalInfo.setTerminalCode("0");
-    globalInfo.setAppId("ZZS_PT_DZFP");
-    globalInfo.setVersion("1.42");
+    globalInfo.setAppId("DZFP");
+    globalInfo.setVersion("1.0");
     globalInfo.setInterfaceCode("ECXML.FPKJ.BC.E_INV");//开具发票
     globalInfo.setRequestCode("111MFWIK");
     globalInfo.setRequestTime("2016-11-28 10:19:16");
