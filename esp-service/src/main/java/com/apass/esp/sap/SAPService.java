@@ -983,13 +983,14 @@ public class SAPService {
               cal.set(Calendar.DATE, billDate);
               String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
               List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
+              List<String> mainOrderIdList = new ArrayList<>();
               for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
                 if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                   mainOrderIdList.add(txn.getOrderId());
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
+                  mainOrderIdList.clear();
                 }
               }
             } else {
@@ -1001,13 +1002,14 @@ public class SAPService {
               String startDate = DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
               List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
+              List<String> mainOrderIdList = new ArrayList<>();
               for (TxnInfoEntity txn : txnList) {
-                List<String> mainOrderIdList = new ArrayList<>();
                 if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                   mainOrderIdList.add(txn.getOrderId());
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
+                  mainOrderIdList.clear();
                 }
               }
             }
@@ -1028,13 +1030,14 @@ public class SAPService {
             String startDate = DateFormatUtil.dateToString(DateFormatUtil.addMonth(billDate,-1),DateFormatUtil.YYYY_MM_DD);
             List<TxnInfoEntity> txnList = txnInfoService.selectRepayTxnByUserId(userId, startDate, endDate);
 
+            List<String> mainOrderIdList = new ArrayList<>();
             for (TxnInfoEntity txn : txnList) {
-              List<String> mainOrderIdList = new ArrayList<>();
               if (txn.getTxnType().equals(TxnTypeCode.XYZF_CODE.getCode())) {
                 mainOrderIdList.add(txn.getOrderId());
               } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                 repayMap.put(txn.getOrderId(), mainOrderIdList);
                 repayDateMap.put(txn.getOrderId(),txn);
+                mainOrderIdList.clear();
               }
             }
 
