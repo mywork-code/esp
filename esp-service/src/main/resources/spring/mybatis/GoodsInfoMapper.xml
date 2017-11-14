@@ -168,7 +168,17 @@
     ]]>
     </select>
 
-
+	<!-- 查询非京东的商品 -->
+	<select id="getNotJDgoodsList" resultType="GoodsInfoEntity">
+		SELECT
+			ID id
+		FROM
+			t_esp_goods_base_info
+		WHERE
+			source != 'jd'
+	</select>
+    
+    
     <!-- 商品精选分页查询 -->
     <!-- 删除排序字段 t.update_date DESC, 用商品非精选  精选以及排序字段排序 -->
     <select id="pageForSiftList" parameterType="GoodsInfoEntity" resultType="GoodsInfoEntity">

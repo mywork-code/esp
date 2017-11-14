@@ -120,6 +120,27 @@ public class GoodsAttrService {//450
         return goodsAttrMapper.insertSelective(entity);
     }
     /**
+     * 商品属性新增
+     * @param name
+     * @return
+     */
+    @Transactional
+    public Long addGoodsAttr2(String name,String user) {
+        GoodsAttr entity = new GoodsAttr();
+        entity.setName(name);
+        if(getGoodsAttrListByName(entity)){
+            return -1l;
+        }
+        entity.setUpdatedTime(new Date());
+        entity.setUpdatedUser(user);
+        entity.setCreatedTime(new Date());
+        entity.setCreatedUser(user);
+        entity.setUpdatedTime(new Date());
+        entity.setUpdatedUser(user);
+        goodsAttrMapper.insertSelective(entity);
+        return entity.getId();
+    }
+    /**
      * 商品属性维护
      * @param id
      * @param name
