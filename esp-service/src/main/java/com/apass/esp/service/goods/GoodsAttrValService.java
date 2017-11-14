@@ -28,6 +28,14 @@ public class GoodsAttrValService {
         entity.setGoodsId(goodsId);
         return goodsAttrValMapper.goodsAttrValListByAttrId(entity);
     }
+    
+    public List<GoodsAttrVal> goodsAttrValList(Long attrId,Long goodsId,String attrVal) {
+        GoodsAttrVal entity = new GoodsAttrVal();
+        entity.setAttrId(attrId);
+        entity.setGoodsId(goodsId);
+        entity.setAttrVal(attrVal);
+        return goodsAttrValMapper.goodsAttrValListByAttrId(entity);
+    }
     /**
      * 通过属性D删除属性值列表   旧列表删除
      * @param editCategoryId1
