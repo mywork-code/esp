@@ -685,6 +685,7 @@ public class GoodsService {
 		BigDecimal minPrice = BigDecimal.ZERO;
 		if (CollectionUtils.isNotEmpty(goodsStockList)) {
 			minPrice = commonService.calculateGoodsPrice(goodsId, goodsStockList.get(0).getGoodsStockId());
+			goodsStock=goodsStockList.get(0);
 			for (GoodsStockInfoEntity stock : goodsStockList) {
 				BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsId, stock.getGoodsStockId());
 				if (minPrice.compareTo(goodsPrice) > 0) {
@@ -922,7 +923,12 @@ public class GoodsService {
   public List<GoodsInfoEntity> pageList(GoodsInfoEntity goodsInfoEntity) {
     return goodsDao.pageList(goodsInfoEntity);
   }
-
+  /**
+   *  查询非京东的商品
+   */
+  public List<GoodsInfoEntity> getNotJDgoodsList() {
+      return goodsDao.getNotJDgoodsList();
+  }
   /**
    * 新增
    *
