@@ -1677,20 +1677,6 @@ public class OrderService {
          * 前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
          */
         orderInfoRepository.updateIsDeleteByOrderId(orderInfo.getOrderId());
-        
-        /**
-         * 可以删除的订单肯定都是过期订单，所以此时要判断一下，下属是否存在子订单(sprint12)
-         */
-        if(StringUtils.equals(orderInfo.getMerchantCode(), "-1")){//此时说明此订单下，存在子订单
-        	LOGGER.info("cancel sub-order start,main_order_id:{}",orderId);
-        	OrderInfoEntity domain = new OrderInfoEntity();
-            domain.setMainOrderId(orderId);
-            List<OrderInfoEntity> orderList = orderInfoRepository.filter(domain);
-            LOGGER.info("sub-order list:{}",JsonUtil.toJsonString(orderList));
-            for (OrderInfoEntity order : orderList) {
-            	orderInfoRepository.updateIsDeleteByOrderId(order.getOrderId());
-    		}
-        }
     }
 
     /**
