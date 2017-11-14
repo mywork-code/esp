@@ -990,7 +990,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             } else {
@@ -1009,7 +1009,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             }
@@ -1037,7 +1037,7 @@ public class SAPService {
               } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                 repayMap.put(txn.getOrderId(), mainOrderIdList);
                 repayDateMap.put(txn.getOrderId(),txn);
-                mainOrderIdList.clear();
+                mainOrderIdList = new ArrayList<>();
               }
             }
 
