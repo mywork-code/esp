@@ -85,6 +85,9 @@ public class GoodsAttrService {//450
         }
         return false;
     }
+    public List<GoodsAttr> getGoodsAttrsByName(GoodsAttr entity) {
+    	return  goodsAttrMapper.getGoodsAttrListByName(entity);
+    }
     /**
      * 商品属性查询
      * @param entity
