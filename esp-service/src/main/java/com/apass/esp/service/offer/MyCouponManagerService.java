@@ -285,6 +285,7 @@ public class MyCouponManagerService {
 		vo.setCategoryId2(coupon.getCategoryId2());
 		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
 		vo.setType(coupon.getType());
+		vo.setTypeDesc(getTypeDesc());
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
 		vo.setCouponName(null != coupon ? coupon.getName():"");
@@ -297,7 +298,16 @@ public class MyCouponManagerService {
 		vo.setUserId(p.getUserId());
 		return vo;
 	}
-
+	
+	/**
+	 * 根据券的类型，获取type描述信息
+	 * @param coupon
+	 * @return
+	 */
+	public String getTypeDesc(){
+		return "";
+	}
+	
 	/**
 	 * 订单失效、退款返回优惠券
 	 */

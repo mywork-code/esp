@@ -199,4 +199,29 @@ public class CommonService {
         sb.append(mechantStr);
         return sb.toString();
     }
+    
+    /**
+     * 生成主订单的Id
+     * @param deviceType
+     * @param merchantId
+     * @return
+     */
+    public String createParentOrderIdNew(String deviceType) {
+    	 //下单时间戳后四位+下单渠道，+随机码+商户ID后两位
+        String dateString = String.valueOf(new Date().getTime());
+        dateString = dateString.substring(dateString.length() - 4, dateString.length());
+        StringBuffer sb = new StringBuffer();
+        sb.append(dateString);
+        if(deviceType==null){
+            sb.append(DeviceType.ANDROID.getCode());
+        } else {
+            if (deviceType.equals(DeviceType.ANDROID.getName())) {
+                sb.append(DeviceType.ANDROID.getCode());
+            } else {
+                sb.append(DeviceType.IOS.getCode());
+            }
+        }
+        sb.append(RandomUtils.getRandomNum(6));
+        return sb.toString();
+    }
 }
