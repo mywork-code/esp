@@ -845,9 +845,9 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
-          contentList.add("Z047");
+          contentList.add("Z067");
         } else {
-          contentList.add("Z044");
+          contentList.add("Z051");
         }
         contentList.add(txn.getTxnAmt() + "");
         contentList.add("");
