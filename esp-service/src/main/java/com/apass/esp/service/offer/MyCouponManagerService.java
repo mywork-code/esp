@@ -311,11 +311,11 @@ public class MyCouponManagerService {
 		if(StringUtils.equals(type, CouponType.COUPON_ZDPL.getCode())){
 			String categoryId = StringUtils.isBlank(coupon.getCategoryId1()) ? coupon.getCategoryId2():coupon.getCategoryId1();
 			Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(categoryId));
-			buffer.append("限["+categroy.getCategoryName()+"]类\t");
+			buffer.append("【限"+categroy.getCategoryName()+"类】\t");
 		}else if(StringUtils.equals(type, CouponType.COUPON_HDSP.getCode())){
-			buffer.append("限["+	activityName+"]活动商品\t");
+			buffer.append("【限"+activityName+"活动商品】\t");
 		}else{
-			buffer.append("["+CouponType.getMessage(type)+"]\t");
+			buffer.append("【"+CouponType.getMessage(type)+"】\t");
 		}
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
