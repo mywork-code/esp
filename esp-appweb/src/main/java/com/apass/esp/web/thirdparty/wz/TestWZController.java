@@ -1,5 +1,7 @@
 package com.apass.esp.web.thirdparty.wz;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,7 @@ public class TestWZController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
-	public Response testGetToken() {
+	public Response testGetToken() throws Exception {
 		TokenEntity token = weiZhiTokenClient.getToken();
 		if(null !=token){
 			//将token和其有效期存放到redies中

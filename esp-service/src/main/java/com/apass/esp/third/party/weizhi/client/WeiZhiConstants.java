@@ -1,7 +1,10 @@
 package com.apass.esp.third.party.weizhi.client;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
+
+import com.apass.gfb.framework.utils.MD5Utils;
 @Component
 public class WeiZhiConstants {
 	//tokenUrl
@@ -19,9 +22,11 @@ public class WeiZhiConstants {
     //
     public static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
     //获取sign
-    public String getSign(String timestamp){
-    	String signString=CLIENT_SECRET+USER_NAME+PASSWORD+timestamp+CLIENT_ID+GRANT_TYPE+CLIENT_SECRET;
-    	return DigestUtils.md5Hex(signString).toLowerCase();
+    public String getSign(String timestamp) throws Exception{
+    	
+    	String signString= CLIENT_SECRET + USER_NAME + PASSWORD +timestamp+CLIENT_ID
+    	    	+GRANT_TYPE+ CLIENT_SECRET;
+    	return StringUtils.upperCase(DigestUtils.md5Hex(signString));
     }
 
 }
