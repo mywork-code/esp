@@ -15,7 +15,7 @@ import com.apass.gfb.framework.cache.CacheManager;
  */
 @Controller
 @RequestMapping("wz")
-public class TestController {
+public class TestWZController {
     private static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
     private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String EXPIRED_TIME = "EXPIRED_TIME";
