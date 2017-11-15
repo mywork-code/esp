@@ -331,18 +331,6 @@ public class MyCouponManagerService {
 	}
 	
 	/**
-	 * 根据券的类型，获取type描述信息
-	 * @param coupon
-	 * @return
-	 */
-	public String getTypeDesc(ProCoupon coupon){
-		
-		
-		
-		return "";
-	}
-	
-	/**
 	 * 订单失效、退款返回优惠券
 	 */
 	public void returnCoupon(Long userId,Long couponId,String selfOrderId){
