@@ -1,5 +1,7 @@
 package com.apass.esp.domain.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Created by xiaohai on 2017/10/27.
  * 优惠券类型
@@ -31,5 +33,15 @@ public enum CouponType {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public static String getMessage(String code){
+    	CouponType[] types = CouponType.values();
+    	for (CouponType type : types) {
+			if(StringUtils.equals(code, type.getCode())){
+				return type.getMessage();
+			}
+		}
+    	return "";
     }
 }

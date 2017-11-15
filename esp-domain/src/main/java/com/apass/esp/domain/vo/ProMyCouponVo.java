@@ -18,12 +18,12 @@ public class ProMyCouponVo {
     
     private String categoryId2;//二级类目的Id
     
+    private String goodsId;//商品ID
+    
     private String similarGoodsCode;//商品的相似code
     
     private String type;//我的优惠券的类型
     
-    private String typeDesc;//优惠券类型描述
-
     private BigDecimal couponSill;//优惠券门槛
 
     private BigDecimal discountAmonut;//优惠券优惠金额
@@ -47,13 +47,13 @@ public class ProMyCouponVo {
     private List<String> goodStockIds;//商品库存的id 集合
     
     private String message;//券描述，主要用来描述不能使用的原因
-    
-    public String getTypeDesc() {
-		return typeDesc;
+
+    public String getGoodsId() {
+		return goodsId;
 	}
 
-	public void setTypeDesc(String typeDesc) {
-		this.typeDesc = typeDesc;
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
 	}
 
 	public String getMessage() {

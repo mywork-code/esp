@@ -1,40 +1,45 @@
 package com.apass.esp.service.offer;
 
-import com.apass.esp.domain.entity.CashRefund;
-import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProCouponRel;
-import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.ActivityStatus;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CouponExtendType;
-import com.apass.esp.domain.enums.CouponStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.query.ProCouponRelQuery;
-import com.apass.esp.domain.query.ProMyCouponQuery;
-import com.apass.esp.domain.vo.MyCouponVo;
-import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.mapper.CashRefundMapper;
-import com.apass.esp.mapper.ProActivityCfgMapper;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
-import com.apass.esp.mapper.ProMyCouponMapper;
-import com.apass.esp.repository.order.OrderInfoRepository;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.apass.esp.domain.entity.CashRefund;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.ProCoupon;
+import com.apass.esp.domain.entity.ProCouponRel;
+import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.query.ProCouponRelQuery;
+import com.apass.esp.domain.query.ProMyCouponQuery;
+import com.apass.esp.domain.vo.MyCouponVo;
+import com.apass.esp.domain.vo.ProMyCouponVo;
+import com.apass.esp.mapper.CashRefundMapper;
+import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.mapper.ProActivityCfgMapper;
+import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProCouponRelMapper;
+import com.apass.esp.mapper.ProMyCouponMapper;
+import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.order.OrderInfoRepository;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.DateFormatUtil;
+import com.google.common.collect.Maps;
 
 /**
  * 
@@ -70,6 +75,11 @@ public class MyCouponManagerService {
 	@Autowired
 	private CashRefundMapper cashRefundMapper;
 	
+	@Autowired
+	private GoodsRepository goodsMapper;
+	
+	@Autowired
+	private CategoryMapper categoryMapper;
 	/**
 	 * 点击领取优惠券
 	 * @throws BusinessException
@@ -273,10 +283,18 @@ public class MyCouponManagerService {
 	 */
 	public ProMyCouponVo getVoByPo(ProMyCoupon p){
 		ProMyCouponVo vo = new ProMyCouponVo();
+		StringBuffer buffer = new StringBuffer();
 		vo.setId(p.getId());
+		String activityName = "";
 		if(null != p.getCouponRelId()){
 			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(p.getCouponRelId());
-			vo.setActivityId(null != rel ? rel.getProActivityId() : -1L);
+			if(null != rel){//此做法主要是适配于测试环境直接删库数据不完全，可能导致的问题
+				vo.setActivityId(rel.getProActivityId());
+				ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+				if(null != cfg){
+					activityName = cfg.getActivityName();
+				}
+			}
 		}
 		vo.setCouponRelId(p.getCouponRelId());
 		vo.setCouponId(p.getCouponId());
@@ -284,11 +302,24 @@ public class MyCouponManagerService {
 		vo.setCategoryId1(coupon.getCategoryId1());
 		vo.setCategoryId2(coupon.getCategoryId2());
 		vo.setSimilarGoodsCode(coupon.getSimilarGoodsCode());
+		if(StringUtils.isNotBlank(coupon.getGoodsCode())){
+			GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(coupon.getGoodsCode());
+			vo.setGoodsId(goods.getId()+"");
+		}
 		vo.setType(coupon.getType());
-		vo.setTypeDesc(getTypeDesc());
+		String type = coupon.getType();
+		if(StringUtils.equals(type, CouponType.COUPON_ZDPL.getCode())){
+			String categoryId = StringUtils.isBlank(coupon.getCategoryId1()) ? coupon.getCategoryId2():coupon.getCategoryId1();
+			Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(categoryId));
+			buffer.append("限["+categroy.getCategoryName()+"]类\t");
+		}else if(StringUtils.equals(type, CouponType.COUPON_HDSP.getCode())){
+			buffer.append("限["+	activityName+"]活动商品\t");
+		}else{
+			buffer.append("["+CouponType.getMessage(type)+"]\t");
+		}
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
-		vo.setCouponName(null != coupon ? coupon.getName():"");
+		vo.setCouponName(buffer.append(coupon.getName()).toString());
 		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());
 		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));
@@ -297,15 +328,6 @@ public class MyCouponManagerService {
 		vo.setTelephone(p.getTelephone());
 		vo.setUserId(p.getUserId());
 		return vo;
-	}
-	
-	/**
-	 * 根据券的类型，获取type描述信息
-	 * @param coupon
-	 * @return
-	 */
-	public String getTypeDesc(){
-		return "";
 	}
 	
 	/**
