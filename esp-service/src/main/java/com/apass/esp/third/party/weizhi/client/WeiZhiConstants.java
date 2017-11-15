@@ -3,8 +3,6 @@ package com.apass.esp.third.party.weizhi.client;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
-
-import com.apass.gfb.framework.utils.MD5Utils;
 @Component
 public class WeiZhiConstants {
 	//tokenUrl
@@ -20,7 +18,11 @@ public class WeiZhiConstants {
     //
     public static final String CLIENT_SECRET = "kLKYak8a9xHsUW2TBgdf";
     //
-    public static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
+    public  static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
+    
+    public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    
+    public static final String EXPIRED_TIME = "EXPIRED_TIME";
     //获取sign
     public String getSign(String timestamp) throws Exception{
     	
