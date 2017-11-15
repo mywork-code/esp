@@ -706,7 +706,7 @@ public class SAPService {
         contentList.add(entity.getOrderId().toString());
         contentList.add(i + "");
         i++;
-        contentList.add(entity.getGoodsCode());
+        contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
         contentList.add(entity.getGoodsSkuAttr());
