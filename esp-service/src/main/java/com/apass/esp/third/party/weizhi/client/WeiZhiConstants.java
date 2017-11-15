@@ -24,7 +24,7 @@ public class WeiZhiConstants {
     //获取sign
     public String getSign(String timestamp) throws Exception{
     	
-    	String signString= CLIENT_SECRET + USER_NAME + PASSWORD +timestamp+CLIENT_ID
+    	String signString= CLIENT_SECRET + USER_NAME + DigestUtils.md5Hex(PASSWORD) +timestamp+CLIENT_ID
     	    	+GRANT_TYPE+ CLIENT_SECRET;
     	return StringUtils.upperCase(DigestUtils.md5Hex(signString));
     }
