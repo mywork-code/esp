@@ -317,9 +317,11 @@ public class StaticFileController {
 
 
     @RequestMapping(value = "bsdiff/download")
-    public Response downLoad(@RequestParam("ver") String ver){
+    @ResponseBody
+    public Response downLoad(@RequestBody(required=true) Map<String,Object> paramMap){
         Map<String,String> resultMap = Maps.newHashMap();
         try{
+            String ver = (String)paramMap.get("ver");
             if(StringUtils.isBlank(ver)){
                 return Response.fail("版本号不能为空!");
             }
