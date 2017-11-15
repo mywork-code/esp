@@ -1,7 +1,8 @@
 package com.apass.esp.third.party.weizhi.client;
 
 import org.apache.commons.codec.digest.DigestUtils;
-
+import org.springframework.stereotype.Component;
+@Component
 public class WeiZhiConstants {
 	//tokenUrl
     public static final String TOKEN_URL = "http://180.168.49.94:65530/jdapi/accessToken";
