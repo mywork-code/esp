@@ -316,6 +316,8 @@ public class StaticFileController {
         return Response.successResponse(commissionWalletVos);
     }
 
+    @RequestMapping(value = "bsdiff/download")
+    @ResponseBody
     public Response downLoad(@RequestBody(required=true) Map<String,Object> paramMap){
         LOGGER.info("bsdiff下载开始执行了,参数:{}", GsonUtils.toJson(paramMap));
         Map<String,String> resultMap = Maps.newHashMap();
