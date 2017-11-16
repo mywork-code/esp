@@ -34,13 +34,13 @@ public class BsdiffinfoService {
 	private static final String PATCHPATH = "/patchzip";
 
 
-	@Transactional
-	public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
-		StringBuffer sb = new StringBuffer();
-
-		String bsdiffVer = bsdiffEntity.getBsdiffVer();
+    @Transactional
+    public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
+        StringBuffer sb = new StringBuffer();
 
 		//如果版本号已存在，给出提示
+        String bsdiffVer = bsdiffEntity.getBsdiffVer();
+
         List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
         if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
             for (BsdiffInfoEntity bsEn: bsdiffInfoEntities) {
@@ -99,8 +99,7 @@ public class BsdiffinfoService {
 				}
 			}
 		}
-
-	}
+    }
 
 	public List<BsdiffInfoEntity> listAll(){
 		return bsdiffInfoEntityMapper.selectAllBsdiff();
