@@ -831,10 +831,10 @@ public class OrderService {
          * sprint 12 如果存在多个商户的商品,为订单生成一个主订单，如果只是一个商户的商品，不需要
          */
         String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
-        Long negativeParentOrderId = 0L;
+        String negativeParentOrderId = "0";
         if(size > 1){
         	orderList.add(parentOrderId);
-        	negativeParentOrderId = (Long.parseLong(parentOrderId) * -1);
+        	negativeParentOrderId = "-"+ parentOrderId;
         }
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
         	index++;
@@ -880,7 +880,7 @@ public class OrderService {
             orderInfo.setPreDelivery("N");
             orderInfo.setExtOrderId("");
             orderInfo.setPreStockStatus("");
-            orderInfo.setParentOrderId(negativeParentOrderId+"");
+            orderInfo.setParentOrderId(negativeParentOrderId);
             if(size > 1){
             	orderInfo.setMainOrderId(parentOrderId);
             }

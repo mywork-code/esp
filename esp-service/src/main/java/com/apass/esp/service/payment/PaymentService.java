@@ -188,27 +188,21 @@ public class PaymentService {
 		}
 		// 主订单号[对应交易流水]
 		String mainOrderId = rayResp.getMainOrderId();
-		
-		List<OrderInfoEntity> orders = orderDao.selectByMainOrderId(mainOrderId);
-		if(CollectionUtils.isNotEmpty(orders)){//此时确定是存在子订单
-			// 修改订单[订单状态及主订单号]
-	        for (OrderInfoEntity order : orders) {
-	        	OrderInfoEntity entity = new OrderInfoEntity();
-	            entity.setId(order.getId());
-	            //entity.setMainOrderId(mainOrderId);
-	            entity.setPayType(paymentType);
-	            orderDao.update(entity);
-	        }
-		}else{//单商户订单
-			// 修改订单[订单状态及主订单号]
-	        for (OrderInfoEntity order : orderInfoList) {
-	        	OrderInfoEntity entity = new OrderInfoEntity();
-	            entity.setId(order.getId());
-	            entity.setMainOrderId(mainOrderId);
-	            entity.setPayType(paymentType);
-	            orderDao.update(entity);
-	        }
-		}
+		// 修改订单[订单状态及主订单号]
+        for (OrderInfoEntity order : orderInfoList) {
+        	OrderInfoEntity entity = orderDao.selectByOrderId(order.getOrderId());
+        	entity.setMainOrderId(mainOrderId);
+            entity.setPayType(paymentType);
+            orderDao.update(entity);
+        	if(StringUtils.equals(entity.getMerchantCode(), "-1")){//说明存在子订单
+        		List<OrderInfoEntity> subList = orderDao.selectByParentOrderId("-"+entity.getOrderId());
+        		for (OrderInfoEntity orderInfoEntity : subList) {
+        			orderInfoEntity.setMainOrderId(mainOrderId);
+        			orderInfoEntity.setPayType(paymentType);
+                    orderDao.update(orderInfoEntity);
+				}
+        	}
+        }
 		return rayResp.getPayPage();
 	}
 	
