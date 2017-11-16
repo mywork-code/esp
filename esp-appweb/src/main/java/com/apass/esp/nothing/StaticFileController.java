@@ -339,7 +339,7 @@ public class StaticFileController {
                 }
             }
             resultMap.put("ver",bsdiffInfoEntity.getBsdiffVer());
-            resultMap.put("url",path);
+            resultMap.put("url",appWebDomain+"/static"+path);
             LOGGER.info("bsdiff下载执行结束了,返回值:{}", GsonUtils.toJson(resultMap));
         }catch (Exception e){
             LOGGER.error("下载失败",e);
