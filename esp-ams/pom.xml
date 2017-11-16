@@ -65,6 +65,12 @@
             <artifactId>mail</artifactId>
             <version>1.4.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.tencent.tinker</groupId>
+            <artifactId>bsdiff-util</artifactId>
+            <version>1.9.0</version>
+        </dependency>
     </dependencies>
 
     <!-- Plugins -->
