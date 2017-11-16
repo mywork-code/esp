@@ -438,6 +438,7 @@ public class OrderService {
             if (!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())) {
                 entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
                 entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+                entity.setParentOrderId(entity.getParentOrderId());
                 orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
             }
 
