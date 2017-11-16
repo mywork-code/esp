@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Created by jie.xu on 17/3/29.
  * 发票下载
  */
+@XStreamAlias("REQUEST_FPXXXZ_NEW")
 public class FaPiaoDLoad {
     @XStreamAlias("FPQQLSH")
     private String fpqqlsh;
