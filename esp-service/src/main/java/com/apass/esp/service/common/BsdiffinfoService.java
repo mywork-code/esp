@@ -5,6 +5,7 @@ import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.tencent.tinker.bsdiff.BSDiff;
+import com.tencent.tinker.bsdiff.BSPatch;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -96,6 +98,9 @@ public class BsdiffinfoService {
 					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 
 					BSDiff.bsdiff(oldFile,newFile,diffFile);
+
+                    File heFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/he/he1.zip");
+                    BSPatch.patchFast(new FileInputStream(oldFile),new FileInputStream(diffFile),heFile);
 				}
 			}
 		}
