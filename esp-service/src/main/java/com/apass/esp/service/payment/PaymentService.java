@@ -51,6 +51,8 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,10 +118,87 @@ public class PaymentService {
 	
 	@Autowired
 	private ProMyCouponMapper myCouponMapper;
+	
+	/**
+	 * 支付[银行卡支付或信用支付]
+	 * 
+	 * @param userId
+	 *            用户id
+	 * @param orderList
+	 *            订单列表
+	 * @param paymentType
+	 *            支付方式
+	 * @throws BusinessException
+	 * 
+	 * sprint12
+	 */
 
-	@Autowired
-	private MyCouponManagerService myCouponManagerService;
+	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
+	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
+	public String defary1(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
+		// 校验订单状态
+		Map<String, Object> data = validateDefary(requestId,userId, orderList);
+		if(!data.containsKey("totalAmt")){
+			throw new BusinessException("抱歉，暂不支持该地区发货！");
+		}
+		BigDecimal totalAmt = (BigDecimal) data.get("totalAmt");
+		
+		@SuppressWarnings("unchecked")
+		//订单列表
+		List<OrderInfoEntity> orderInfoList = (List<OrderInfoEntity>) data.get("orderInfoList");
+		//订单详情列表
+		List<OrderDetailInfoEntity> orderDetailList = orderService.loadOrderDetail(orderInfoList);
+		
+		//校验商品上下架及库存
+        for (OrderDetailInfoEntity orderDetail : orderDetailList) {
+            String requestIdOrder = requestId + "_" + orderDetail.getOrderId();
+            orderService.validateGoodsStock(requestIdOrder, orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),orderDetail.getGoodsNum(),orderDetail.getOrderId());
+        }
+        //更新库存
+        for (OrderInfoEntity order : orderInfoList) {
+            if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
+                LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
+                if (null == stockLog) {
+                    //减库存
+                    modifyGoodsStock(requestId, userId, order);
+                    //插入库存日志
+                    GoodsStockLogEntity goodStockLog = new GoodsStockLogEntity();
+                    goodStockLog.setOrderId(order.getOrderId());
+                    goodStockLog.setUserId(userId);
+                    goodsStockLogDao.insert(goodStockLog);
+                }
+            }
+        	
+        }
+        //交易描述
+        String txnDesc = obtainTxnDesc(orderDetailList);
+        
+		// 支付
+		//TODO 是否需要判断支付类型做相应的处理
+		Response response = defary(userId, paymentType, totalAmt, txnDesc, cardNo,orderList,systemType,downPayType);
+		if (null == response||!response.statusResult()) {
+			throw new BusinessException("支付失败");
+		}
+		PayResponseDto rayResp = (PayResponseDto)response.getData();
 
+		if (!PayFailCode.CG.getCode().equals(rayResp.getResultCode())) {
+			// 支付失败
+			throw new BusinessException(rayResp.getResultCode(), rayResp.getResultMessage());
+		}
+		// 主订单号[对应交易流水]
+		String mainOrderId = rayResp.getMainOrderId();
+		// 修改订单[订单状态及主订单号]
+        for (OrderInfoEntity order : orderInfoList) {
+        	OrderInfoEntity entity = new OrderInfoEntity();
+            entity.setId(order.getId());
+            entity.setMainOrderId(mainOrderId);
+            entity.setPayType(paymentType);
+            orderDao.update(entity);
+        }
+		return rayResp.getPayPage();
+	}
+	
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 

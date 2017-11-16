@@ -112,7 +112,7 @@
           tx.status status,
           tx.CREATE_DATE createDate
       from t_apass_txn_info tx join t_esp_order_info ord on tx.order_id = ord.main_order_id
-        where  ord.ext_parent_id!='-1' and ord.parent_order_id != '-1'
+        where  ord.ext_parent_id!='-1'
         AND ord.orderstatus in
         <foreach collection="statusArray" item="item" open="("
                  separator="," close=")">
@@ -179,7 +179,7 @@
 		LEFT JOIN t_esp_order_info B on B.order_id = A.order_id
 		LEFT JOIN t_esp_goods_base_info C ON C.id = A.goods_id
 		LEFT JOIN t_esp_goods_stock_info D ON D.id = A.goods_stock_id 
-      where B.ext_parent_id!='-1' and B.parent_order_id != '-1'
+      where B.ext_parent_id!='-1'
         AND B.`orderstatus` in
         <foreach collection="statusArray" item="item" open="(" separator="," close=")">
             #{item}
@@ -197,7 +197,7 @@
 		JOIN t_esp_order_detail_info B ON A.order_id = B.order_id
 		LEFT JOIN t_esp_goods_base_info C ON C.id = B.goods_id
 		JOIN t_esp_refund_info D ON D.order_id = A.order_id
-	  WHERE A.ext_parent_id!='-1' and A.parent_order_id != '-1'
+	  WHERE A.ext_parent_id!='-1'
 		AND A.orderstatus in
 		<foreach collection="orderArray" item="item" open="(" separator="," close=")">
             #{item}
@@ -217,7 +217,7 @@
 		FROM t_esp_order_info A 
 		JOIN t_esp_order_detail_info B ON A.order_id = B.order_id
 		LEFT JOIN t_esp_goods_base_info C ON C.id = B.goods_id
-	  WHERE A.ext_parent_id!='-1' and A.parent_order_id != '-1'
+	  WHERE A.ext_parent_id!='-1'
 	    AND A.orderstatus in
         <foreach collection="orderArray" item="item" open="(" separator="," close=")">
             #{item}
@@ -225,7 +225,7 @@
 		AND A.order_id not in 
 		(SELECT D.order_id FROM t_esp_order_info D 
 		JOIN t_esp_refund_info F ON F.order_id = D.order_id
-		WHERE D.ext_parent_id!='-1' and D.parent_order_id != '-1'
+		WHERE D.ext_parent_id!='-1'
 		AND D.orderstatus in
         <foreach collection="orderArray" item="item" open="(" separator="," close=")">
             #{item}
