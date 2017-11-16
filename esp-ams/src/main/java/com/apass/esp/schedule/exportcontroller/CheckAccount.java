@@ -124,7 +124,7 @@ public class CheckAccount {
         csvWriter.writeRecord(headers);
         for(CheckAccountOrderDetail chOrder : checkAccountOrderDetailList){
             List<String> contentList = new ArrayList<String>();
-            contentList.add(chOrder.getOrderId());
+            contentList.add("'"+chOrder.getOrderId());
             contentList.add(chOrder.getMerchantName());
             contentList.add(chOrder.getTelephone());
             contentList.add(chOrder.getCreateDate()==null?"":DateFormatUtil.dateToString(chOrder.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
