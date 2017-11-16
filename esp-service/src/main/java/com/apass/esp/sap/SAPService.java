@@ -581,7 +581,7 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(cashRefundTxn.getId() + "");
+        contentList.add(ListeningStringUtils.getUUID());
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -706,7 +706,7 @@ public class SAPService {
         contentList.add(entity.getOrderId().toString());
         contentList.add(i + "");
         i++;
-        contentList.add(entity.getGoodsCode());
+        contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
         contentList.add(entity.getGoodsSkuAttr());
@@ -760,13 +760,14 @@ public class SAPService {
                   contentList.add(createdtime);
                     /*可选表头UNAME,ZSJLY*/
                     /*write*/
+                  contentList.add("");
                   contentList.add("ajqh");
                   csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
               }
           }else{
               List<String> contentList = new ArrayList<String>();
               /*GUID*/
-              contentList.add(txn.getTxnId().toString());
+              contentList.add(ListeningStringUtils.getUUID());
               /*ZPTMC*/
               contentList.add(ZPTMC);
               /*ZPTBM*/
@@ -783,6 +784,7 @@ public class SAPService {
               contentList.add(createdtime);
               /*可选表头UNAME,ZSJLY*/
               /*write*/
+              contentList.add("");
               contentList.add("ajqh");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
           }
@@ -843,9 +845,9 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
-          contentList.add("Z047");
+          contentList.add("Z067");
         } else {
-          contentList.add("Z044");
+          contentList.add("Z051");
         }
         contentList.add(txn.getTxnAmt() + "");
         contentList.add("");
@@ -990,7 +992,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             } else {
@@ -1009,7 +1011,7 @@ public class SAPService {
                 } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                   repayMap.put(txn.getOrderId(), mainOrderIdList);
                   repayDateMap.put(txn.getOrderId(),txn);
-                  mainOrderIdList.clear();
+                  mainOrderIdList = new ArrayList<>();
                 }
               }
             }
@@ -1037,7 +1039,7 @@ public class SAPService {
               } else if (txn.getTxnType().equals(TxnTypeCode.REPAY_CODE.getCode())) {
                 repayMap.put(txn.getOrderId(), mainOrderIdList);
                 repayDateMap.put(txn.getOrderId(),txn);
-                mainOrderIdList.clear();
+                mainOrderIdList = new ArrayList<>();
               }
             }
 

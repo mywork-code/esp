@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
@@ -57,7 +58,6 @@ import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.CashRefundStatus;
 import com.apass.esp.domain.enums.CouponMessage;
-import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.PaymentStatus;
@@ -122,7 +122,6 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.zxing.datamatrix.encoder.SymbolShapeHint;
 
 @Service
 @Transactional(rollbackFor = { Exception.class })
@@ -828,6 +827,13 @@ public class OrderService {
         int index = 0;
         int size = merchantPaymentMap.size();
         BigDecimal calc = BigDecimal.ZERO;
+        /**
+         * sprint 12 如果存在多个商户的商品,为订单生成一个主订单，如果只是一个商户的商品，不需要
+         */
+        String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
+        if(size > 1){
+        	orderList.add(parentOrderId);
+        }
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
         	index++;
             String merchantCode = merchant.getKey();
@@ -849,7 +855,10 @@ public class OrderService {
                 orderInfo.setExtParentId("0");
             }
             String orderId = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
-            orderList.add(orderId);
+            if(size == 1){
+            	orderList.add(orderId);
+            	orderInfo.setMainOrderId(orderId);
+            }
             orderInfo.setDeviceType(deviceType);
             orderInfo.setOrderId(orderId);
             orderInfo.setStatus(OrderStatus.ORDER_NOPAY.getCode());
@@ -869,6 +878,10 @@ public class OrderService {
             orderInfo.setPreDelivery("N");
             orderInfo.setExtOrderId("");
             orderInfo.setPreStockStatus("");
+            orderInfo.setParentOrderId(parentOrderId);
+            if(size > 1){
+            	orderInfo.setMainOrderId(parentOrderId);
+            }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
             if (successStatus < 1) {
                 LOG.info(requestId, "生成订单", "订单表数据插入失败");
@@ -944,6 +957,122 @@ public class OrderService {
     }
     
     /**
+     * 
+     * @param mapSize
+     * @param purchaseList 购买商品
+     * @param myCouponId 我的优惠券的Id
+     * @param totalPayment 支付金额
+     * @return
+     * @throws BusinessException 
+     */
+    public String saveParentOrder(String requestId,Long userId,String deviceType,AddressInfoEntity address,Integer mapSize,
+    		List<PurchaseRequestDto> purchaseList,String myCouponId,BigDecimal totalPayment) throws BusinessException{
+    	/**
+    	 * mapSize大于1标志着有多个商户的商品
+    	 */
+    	if(mapSize == 1){
+    		return "0";
+    	}
+        OrderInfoEntity orderInfo = new OrderInfoEntity();
+        orderInfo.setUserId(userId);
+        orderInfo.setOrderAmt(totalPayment);
+        if(StringUtils.isBlank(myCouponId)){
+        	myCouponId = "-1";
+        }
+        orderInfo.setCouponId(Long.parseLong(myCouponId));
+        String orderId = commonService.createParentOrderIdNew(deviceType);
+        orderInfo.setDeviceType(deviceType);
+        orderInfo.setOrderId(orderId);
+        orderInfo.setStatus(OrderStatus.ORDER_NOPAY.getCode());
+        orderInfo.setProvince(address.getProvince());
+        orderInfo.setCity(address.getCity());
+        orderInfo.setDistrict(address.getDistrict());
+        orderInfo.setAddress(address.getAddress());
+        orderInfo.setPostcode(address.getPostcode());
+        orderInfo.setName(address.getName());
+        orderInfo.setTelephone(address.getTelephone());
+        orderInfo.setMerchantCode("-1");
+        orderInfo.setExtendAcceptGoodsNum(0);
+        orderInfo.setAddressId(address.getAddressId());
+        orderInfo.setPayStatus(PaymentStatus.NOPAY.getCode());
+        Long orderGoodsNum = this.countGoodsNumGroupByMerchantCode1(purchaseList);
+        orderInfo.setGoodsNum(orderGoodsNum);
+        orderInfo.setPreDelivery("N");
+        orderInfo.setExtOrderId("");
+        orderInfo.setPreStockStatus("");
+        orderInfo.setParentOrderId("0");
+        orderInfo.setMainOrderId(orderId);
+        Integer successStatus = orderInfoRepository.insert(orderInfo);
+        if (successStatus < 1) {
+            LOG.info(requestId, "生成订单", "订单表数据插入失败");
+            throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);
+        }
+        // 插入商品级订单
+        for (PurchaseRequestDto purchase : purchaseList) {
+            GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+                GoodsStockInfoEntity goodsStock = goodsStockDao.select(purchase.getGoodsStockId());
+                OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
+                if(StringUtils.isNotBlank(purchase.getProActivityId())){
+                	ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+                	if(validActivityFlag != ActivityStatus.PROCESSING){
+                		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
+                		throw new BusinessException("订单中包含无效活动的商品!");
+                	}
+                }
+                if(StringUtils.isEmpty(purchase.getProActivityId())){
+                	purchase.setProActivityId("");
+                }
+                orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
+                orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
+                orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
+                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                    orderDetail.setSource(SourceType.JD.getCode());
+                    orderDetail.setSkuId(goods.getExternalId());
+                    
+                    long skuId = Long.parseLong(goods.getExternalId());
+                    Set<Long> skus = new HashSet<>();
+                    skus.add(skuId);
+                    JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
+                    if (jsonArrayJdApiResponse != null
+                        && jsonArrayJdApiResponse.isSuccess()
+                        && jsonArrayJdApiResponse.getResult() != null
+                        && jsonArrayJdApiResponse.getResult().size() != 0
+                        ) {
+                    	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
+                        BigDecimal price = (BigDecimal) jsonObject.get("price");
+                        orderDetail.setGoodsCostPrice(price);
+                    }
+                }
+                if(StringUtils.isBlank(goods.getSource())){
+                	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());
+                }
+                orderDetail.setOrderId(orderInfo.getOrderId());
+                orderDetail.setGoodsId(goods.getId());
+                orderDetail.setGoodsStockId(purchase.getGoodsStockId());
+                orderDetail.setGoodsPrice(purchase.getPrice());
+                orderDetail.setGoodsNum(purchase.getBuyNum().longValue());
+                orderDetail.setGoodsTitle(goods.getGoodsTitle());
+                orderDetail.setCategoryCode(goods.getCategoryCode());
+                orderDetail.setGoodsName(goods.getGoodsName());
+                orderDetail.setGoodsSellPt(goods.getGoodsSellPt());
+                orderDetail.setGoodsType(goods.getGoodsType());
+                orderDetail.setGoodsLogoUrl(goodsStock.getStockLogo());
+                orderDetail.setMerchantCode(goods.getMerchantCode());
+                orderDetail.setListTime(goods.getListTime());
+                orderDetail.setDelistTime(goods.getDelistTime());
+                orderDetail.setProDate(goods.getProDate());
+                orderDetail.setKeepDate(goods.getKeepDate());
+                orderDetail.setSupNo(goods.getSupNo());
+
+                Integer orderDetailSuccess = orderDetailInfoRepository.insert(orderDetail);
+                if (orderDetailSuccess < 1) {
+                    LOG.info(requestId, "生成订单", "订单详情表数据插入失败");
+                    throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);
+                }
+            }
+	        return orderId;
+    }
+    /**
      * 根据订单号获取对应商户号
      * @param orderIdList
      * @return
@@ -972,6 +1101,13 @@ public class OrderService {
         return goodsNum;
     }
 
+    private Long countGoodsNumGroupByMerchantCode1(List<PurchaseRequestDto> purchaseList) {
+        Long goodsNum = 0L;
+        for (PurchaseRequestDto purchase : purchaseList) {
+            goodsNum += purchase.getBuyNum();
+        }
+        return goodsNum;
+    }
     /**
      * 统计每个商户订单总金额
      *
@@ -1559,6 +1695,10 @@ public class OrderService {
         //前端用户操作删除订单时，由原来的改变订单状态（订单删除）改为保持原订单状态。(sprint8)
         orderInfo.setIsDelete("00");
         if (StringUtils.isNotBlank(orderStatus)) {
+        	if(StringUtils.equals(orderStatus, OrderStatus.ORDER_NOPAY.getCode()) || 
+        			StringUtils.equals(orderStatus, OrderStatus.ORDER_PAYED.getCode()) ){
+        		orderInfo.setParentOrderId("0");
+        	}
             orderInfo.setStatus(orderStatus);
         }
 
@@ -2316,8 +2456,13 @@ public class OrderService {
                 order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
                 order.setStatus(OrderStatus.ORDER_SEND.getCode());
                 order.setUpdateDate(new Date());
+                if(StringUtils.equals(order.getMerchantCode(),"-1")){
+                	order.setParentOrderId("-1");
+                }
                 updateOrderStatusAndPreDelivery(order);
-                orderIdList.add(order.getOrderId());
+                if(!StringUtils.equals(order.getMerchantCode(),"-1")){
+                	orderIdList.add(order.getOrderId());
+                }
             }
             updateJdGoodsSaleVolume(orderIdList);
         }
@@ -2828,6 +2973,22 @@ public class OrderService {
         orderInfoRepository.update(entity);
         //订单失效 则返回优惠券
         myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
+        
+        /**
+         * 把orderId作为main_order_id,再次查询（此时如果查询出数据应该是子订单信息）(sprint 12)
+         */
+        if(StringUtils.equals(order.getMerchantCode(), "-1")){//此时说明此订单下，存在子订单
+        	LOGGER.info("cancel sub-order start,main_order_id:{}",orderId);
+        	OrderInfoEntity domain = new OrderInfoEntity();
+            domain.setMainOrderId(orderId);
+            List<OrderInfoEntity> orderList = orderInfoRepository.filter(domain);
+            LOGGER.info("sub-order list:{}",JsonUtil.toJsonString(orderList));
+            for (OrderInfoEntity orderInfoEntity : orderList) {
+    			orderInfoEntity.setStatus(OrderStatus.ORDER_CANCEL.getCode());
+            	orderInfoEntity.setUpdateDate(new Date());
+            	orderInfoRepository.update(entity);
+    		}
+        }
     }
 
     /**

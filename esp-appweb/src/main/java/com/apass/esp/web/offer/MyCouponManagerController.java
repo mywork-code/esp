@@ -34,6 +34,11 @@ public class MyCouponManagerController {
 	@Autowired
 	private CouponManagerService couponManagerService;
 	
+	/**
+	 * 我的优惠券
+	 * @param paramMap
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	public Response getMyCoupons(@RequestBody Map<String, Object> paramMap){

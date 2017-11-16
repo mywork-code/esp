@@ -960,20 +960,11 @@ public class PaymentService {
 			
 			//修改订单状态为交易关闭
 
-			OrderInfoEntity order =   orderService.selectByOrderId(orderId);
-
 			OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
 			orderInfoEntity.setOrderId(orderId);
 			orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
-			Long couponId = order.getCouponId();
-			if(couponId > 0){
-				//订单失效时优惠券id 置为负数，比如couponId = -418
-				orderInfoEntity.setCouponId(couponId * -1);
-			}
-			orderService.updateOrderStatus(orderInfoEntity);
 
-			//退款成功 则返回优惠券
-			myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
+			orderService.updateOrderStatus(orderInfoEntity);
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());
