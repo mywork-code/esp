@@ -2,7 +2,9 @@ package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -17,7 +19,9 @@ import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
+import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
@@ -208,6 +212,40 @@ public class WeiZhiProductApiClient {
 			LOGGER.error("getWeiZhiGetSku response {} return is not 200");
 		}
 		return wzSkuListPage;
+	}
+	/**
+	 *获取所有图片信息
+	 */
+	public List<Map<String,List<WzPicture>>> getWeiZhiProductSkuImage(String sku) throws Exception {
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("sku", sku);
+		parameters.add(param1);
+		parameters.add(param2);
+
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		List<Map<String,List<WzPicture>>> map=new ArrayList<>();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUIMAGE,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<List<Map<String,List<WzPicture>>>>>() {
+			}.getType();
+			WeiZhiResponse<List<Map<String,List<WzPicture>>>> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				map = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiProductSkuImage response {} return is not 200");
+		}
+		return map;
 	}
 
 }

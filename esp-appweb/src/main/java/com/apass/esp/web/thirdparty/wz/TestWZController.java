@@ -19,6 +19,7 @@ import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * @author zengqingshan
@@ -133,5 +134,19 @@ public class TestWZController {
 			return Response.fail("获取分类商品编号接口失败！");
 		}
     	 return Response.success("获取分类商品编号接口成功！");
+    }
+    /**
+     *获取所有图片信息
+     */
+    @RequestMapping(value = "/getWeiZhiProductSkuImage", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getWeiZhiProductSkuImage(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<WzSkuPicture> wzSkuPictureList=weiZhiProductService.getWeiZhiProductSkuImage(1593516+","+1686504);
+			System.out.println(wzSkuPictureList);
+		} catch (Exception e) {
+			return Response.fail("获取所有图片信息失败！");
+		}
+    	 return Response.success("获取所有图片信息成功！");
     }
 }
