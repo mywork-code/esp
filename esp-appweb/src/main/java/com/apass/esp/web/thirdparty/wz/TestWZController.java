@@ -61,4 +61,20 @@ public class TestWZController {
 		}
         return Response.success("1", "微知获取商品详情成功！");
     }
+    /**
+     * 查询商品是否上下架
+     */
+    @RequestMapping(value = "/jdProductStateQuery", method = RequestMethod.POST)
+    @ResponseBody
+    public Response jdProductStateQuery(@RequestBody Map<String, Object> paramMap){
+		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
+		Boolean result;
+		try {
+			result = weiZhiProductService.getWeiZhiProductSkuState(sku);
+		} catch (Exception e) {
+			return Response.fail("查询商品是否上下架失败！");
+		}
+    	 return Response.success("查询商品是否上下架成功！",result);
+    }
+    
 }

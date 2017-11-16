@@ -27,8 +27,9 @@ public class WeiZhiProductService {
 
 	/**
 	 * 获取商品上下架状态接口(单个商品) true:上架；false:下架
+	 * @throws Exception 
 	 */
-	public Boolean getWeiZhiProductSkuState(String sku) throws Exception {
+	public Boolean getWeiZhiProductSkuState(String sku) throws Exception{
 		if (StringUtils.isNotEmpty(sku)) {
 			List<JdProductState> wzProductState = weiZhiProductApiClient.getWeiZhiProductSkuState(sku);
 			if (null != wzProductState && wzProductState.size() == 1) {
