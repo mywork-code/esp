@@ -2,6 +2,7 @@ package com.apass.esp.web.thirdparty.wz;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiTokenClient;
-import com.apass.esp.third.party.weizhi.entity.TokenEntity;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * @author zengqingshan
@@ -25,7 +25,7 @@ import com.apass.gfb.framework.utils.CommonUtils;
 public class TestWZController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestWZController.class);
 	@Autowired
-	private WeiZhiTokenClient weiZhiTokenClient;
+	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
 	private WeiZhiProductApiClient weiZhiProductApiClient;
 	
@@ -33,8 +33,8 @@ public class TestWZController {
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
 	public Response testGetToken() {
 		try {
-			TokenEntity token = weiZhiTokenClient.getToken();
-			if(null !=token){
+			String token = weiZhiTokenService.getToken();
+			if(StringUtils.equals("success", token)){
 				return Response.success("微知token获取成功！");
 			}
 		} catch (Exception e) {
