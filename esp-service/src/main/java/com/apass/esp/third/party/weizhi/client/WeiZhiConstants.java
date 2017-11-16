@@ -17,12 +17,16 @@ public class WeiZhiConstants {
     public static final String PASSWORD = "132654";
     //
     public static final String CLIENT_SECRET = "kLKYak8a9xHsUW2TBgdf";
-    //
+    //Token在redis中的key值
     public  static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
     
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     
     public static final String EXPIRED_TIME = "EXPIRED_TIME";
+    //Token在redis中的有效期
+    public static final int TOKEN_EXPIRED =86400 ;
+
+    
     //获取sign
     public String getSign(String timestamp) throws Exception{
     	
@@ -30,5 +34,7 @@ public class WeiZhiConstants {
     	    	+GRANT_TYPE+ CLIENT_SECRET;
     	return StringUtils.upperCase(DigestUtils.md5Hex(signString));
     }
-
+    //微知接口API地址
+    //微知获取商品详细信息接口地址
+    public static final String WZAPI_PRODUCT_GETDETAIL = "http://180.168.49.94:65530/jdapi/product/getDetail";
 }

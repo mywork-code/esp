@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.third.party.weizhi.entity.TokenEntity;
+import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
@@ -24,6 +25,8 @@ public class WeiZhiTokenClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiTokenClient.class);
     @Autowired
     private WeiZhiConstants weiZhiConstants;
+    @Autowired
+	private CacheManager cacheManager;
     /**
      * 获取微知token
      * @return
@@ -58,6 +61,11 @@ public class WeiZhiTokenClient {
         	WeiZhiTokenResponse response = GsonUtils.convertObj(responseJson, WeiZhiTokenResponse.class);       
             if(null !=response && response.getResult()==0){
             	token=response.getData();
+    			//将token和其有效期存放到redies中
+				cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN+":"+WeiZhiConstants.ACCESS_TOKEN,token.getAccess_token());
+				cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN+":"+WeiZhiConstants.EXPIRED_TIME,token.getExpired_time());
+				//设置Token的有效期
+				cacheManager.expire(WeiZhiConstants.WEIZHI_TOKEN+":"+WeiZhiConstants.ACCESS_TOKEN, WeiZhiConstants.TOKEN_EXPIRED);
             }
 		} catch (Exception e) {
 			LOGGER.error("getToken response {} return is not 200");

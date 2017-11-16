@@ -43,8 +43,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		Product wzProductDetail = new Product();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse("http://180.168.49.94:65530/jdapi/product/getDetail",
-					entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
