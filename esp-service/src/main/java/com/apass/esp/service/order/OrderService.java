@@ -831,9 +831,10 @@ public class OrderService {
          * sprint 12 如果存在多个商户的商品,为订单生成一个主订单，如果只是一个商户的商品，不需要
          */
         String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
+        String negativeParentOrderId = "0";
         if(size > 1){
         	orderList.add(parentOrderId);
-        	parentOrderId = "-"+parentOrderId;
+        	negativeParentOrderId = "-"+ parentOrderId;
         }
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
         	index++;
@@ -879,9 +880,9 @@ public class OrderService {
             orderInfo.setPreDelivery("N");
             orderInfo.setExtOrderId("");
             orderInfo.setPreStockStatus("");
-            orderInfo.setParentOrderId(parentOrderId);
+            orderInfo.setParentOrderId(negativeParentOrderId);
             if(size > 1){
-            	orderInfo.setMainOrderId(Long.parseLong(parentOrderId) * -1+"");
+            	orderInfo.setMainOrderId(parentOrderId);
             }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
             if (successStatus < 1) {
@@ -2477,7 +2478,7 @@ public class OrderService {
     	 */
     	List<OrderInfoEntity> subList = orderInfoRepository.selectByParentOrderId(orderId);
     	for (OrderInfoEntity order : subList) {
-			Long parent = Long.parseLong(order.getParentOrderId()) * -1;
+    		String parent = order.getParentOrderId().replace("-", "");
 			order.setParentOrderId(parent+"");
 			orderInfoRepository.update(order);
 		}
