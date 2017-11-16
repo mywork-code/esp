@@ -1,5 +1,6 @@
 package com.apass.esp.third.party.weizhi.client;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.apass.esp.third.party.weizhi.entity.WzProductDetail;
+import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.gfb.framework.cache.CacheManager;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 @Service
 public class WeiZhiProductApiClient {
@@ -41,7 +43,7 @@ public class WeiZhiProductApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		WzProductDetail  wzProductDetail=null;
+		Product  wzProductDetail=null;
         try {
         	responseJson = HttpClientUtils.getMethodPostResponse("http://180.168.49.94:65530/jdapi/product/getDetail", entity);
         	LOGGER.info("微知获取token返回Json数据："+responseJson);
@@ -49,7 +51,9 @@ public class WeiZhiProductApiClient {
         	 LOGGER.info("微知获取token失败！");
         	 return null;
         	}
-        	WeiZhiProductDetailResponse response = GsonUtils.convertObj(responseJson, WeiZhiProductDetailResponse.class);       
+        	Gson gson = new Gson();  
+            Type objectType = new TypeToken<WeiZhiResponse<Product>>() {}.getType();  
+            WeiZhiResponse<Product>  response= gson.fromJson(responseJson, objectType);  
             if(null !=response && response.getResult()==0){
             	wzProductDetail=response.getData();
             }
