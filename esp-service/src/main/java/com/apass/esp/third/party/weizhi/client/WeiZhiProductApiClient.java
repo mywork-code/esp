@@ -17,6 +17,7 @@ import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
@@ -162,7 +163,7 @@ public class WeiZhiProductApiClient {
 	/**
 	 * 获取分类商品编号接口
 	 */
-	public CategoryPage getWeiZhiGetSku(Integer pageNo,Integer pageSize,String catId) throws Exception {
+	public WzSkuListPage getWeiZhiGetSku(Integer pageNo,Integer pageSize,String catId) throws Exception {
 		Integer Num=0;
 	    Integer Size=0;
 		if(null ==pageNo || pageNo<1){
@@ -190,7 +191,7 @@ public class WeiZhiProductApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		CategoryPage firstCategorys =null;
+		WzSkuListPage wzSkuListPage =null;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETSKU,entity);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
@@ -198,15 +199,15 @@ public class WeiZhiProductApiClient {
 				LOGGER.info("微知获取token失败！");
 				return null;
 			}			
-			WeiZhiCategorysResponse response =GsonUtils.convertObj(responseJson, WeiZhiCategorysResponse.class);
+			WeiZhiSkuListResponse response =GsonUtils.convertObj(responseJson, WeiZhiSkuListResponse.class);
 			
 			if (null != response && response.getResult() == 0) {
-				firstCategorys = response.getData();
+				wzSkuListPage = response.getData();
 			}
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiGetSku response {} return is not 200");
 		}
-		return firstCategorys;
+		return wzSkuListPage;
 	}
 
 }

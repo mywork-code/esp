@@ -12,6 +12,7 @@ import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 
 @Service
 public class WeiZhiProductService {
@@ -110,16 +111,16 @@ public class WeiZhiProductService {
 	/**
 	 *获取分类商品编号接口
 	 */
-	public List<Category> getWeiZhiGetSku() throws Exception {
-		List<Category> categoryList=new ArrayList<>();
-		CategoryPage  thirdCategorys = weiZhiProductApiClient.getWeiZhiGetSku(1,20,672+"");
-		if(null !=thirdCategorys){
-			categoryList=thirdCategorys.getCategorys();
-			int pageNo=thirdCategorys.getPageNo();
-			int pageSize=thirdCategorys.getPageSize();
-			int totalRows=thirdCategorys.getTotalRows();
+	public List<String> getWeiZhiGetSku() throws Exception {
+		List<String> skuIdList=new ArrayList<>();
+		WzSkuListPage  wzSkuListPage = weiZhiProductApiClient.getWeiZhiGetSku(1,20,672+"");
+		if(null !=wzSkuListPage){
+			skuIdList=wzSkuListPage.getSkuIds();
+			int pageNo=wzSkuListPage.getPageNo();
+			int pageSize=wzSkuListPage.getPageSize();
+			int totalRows=wzSkuListPage.getTotalRows();
 		}
-		return categoryList;
+		return skuIdList;
 	}
 	
 }
