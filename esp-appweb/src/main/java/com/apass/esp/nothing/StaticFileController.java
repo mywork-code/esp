@@ -332,12 +332,12 @@ public class StaticFileController {
             BsdiffInfoEntity bsdiffInfoEntity = bsdiffInfoEntities.get(0);//选择已上传最大版本号vermax_ver.返回的文件路径为patchpath目录下的vermax_ver.zip文件
 
             if(StringUtils.isBlank(ver)){//如果版本号为空，说明是第一次打开。返回最新zip包
-                path = rootPath + nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip";
+                path = nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip";
             }else{//如果不是空，判断版本号是否是最新版本号，如果是url返回空，否则返回对应patch包
                 if(StringUtils.equals(ver,bsdiffInfoEntity.getBsdiffVer())){
                     path = "";
                 }else {
-                    path = rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip";
+                    path = nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip";
                 }
             }
             resultMap.put("ver",bsdiffInfoEntity.getBsdiffVer());
