@@ -186,11 +186,8 @@ public class PaymentService {
 			// 支付失败
 			throw new BusinessException(rayResp.getResultCode(), rayResp.getResultMessage());
 		}
-		
 		// 主订单号[对应交易流水]
 		String mainOrderId = rayResp.getMainOrderId();
-		//用mainOrderId查询订单信息
-		//List<OrderInfoEntity> orders = orderDao.selectByMainOrderId(mainOrderId);
 		// 修改订单[订单状态及主订单号]
         for (OrderInfoEntity order : orderInfoList) {
         	OrderInfoEntity entity = new OrderInfoEntity();
@@ -198,11 +195,7 @@ public class PaymentService {
             entity.setMainOrderId(mainOrderId);
             entity.setPayType(paymentType);
             orderDao.update(entity);
-            
         }
-		
-		// 为空时,表示之前没支付过  或者  存在单笔支付历史
-		
 		return rayResp.getPayPage();
 	}
 	
