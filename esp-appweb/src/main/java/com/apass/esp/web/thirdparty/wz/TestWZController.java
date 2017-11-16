@@ -120,4 +120,18 @@ public class TestWZController {
 		}
     	 return Response.success("查询三级分类列表信息接口成功！");
     }
+    /**
+     *获取分类商品编号接口
+     */
+    @RequestMapping(value = "/getWeiZhiGetSku", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<Category> categorys=weiZhiProductService.getWeiZhiGetSku();
+			System.out.println(categorys);
+		} catch (Exception e) {
+			return Response.fail("查询三级分类列表信息接口失败！");
+		}
+    	 return Response.success("查询三级分类列表信息接口成功！");
+    }
 }

@@ -159,5 +159,54 @@ public class WeiZhiProductApiClient {
 		}
 		return firstCategorys;
 	}
+	/**
+	 * 获取分类商品编号接口
+	 */
+	public CategoryPage getWeiZhiGetSku(Integer pageNo,Integer pageSize,String catId) throws Exception {
+		Integer Num=0;
+	    Integer Size=0;
+		if(null ==pageNo || pageNo<1){
+			Num=1;
+		}else{
+			Num=pageNo;
+		}
+		if(null ==pageSize || pageSize<1 || pageSize>20){
+			Size=10;
+		}else{
+			Size=pageSize;
+		}
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("pageNo", Num.toString());
+		BasicNameValuePair param3 = new BasicNameValuePair("pageSize", Size.toString());
+		BasicNameValuePair param4 = new BasicNameValuePair("catId", catId);		
+
+		parameters.add(param1);
+		parameters.add(param2);
+		parameters.add(param3);
+		parameters.add(param4);
+		
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		CategoryPage firstCategorys =null;
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETSKU,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}			
+			WeiZhiCategorysResponse response =GsonUtils.convertObj(responseJson, WeiZhiCategorysResponse.class);
+			
+			if (null != response && response.getResult() == 0) {
+				firstCategorys = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiGetSku response {} return is not 200");
+		}
+		return firstCategorys;
+	}
 
 }

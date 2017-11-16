@@ -107,5 +107,19 @@ public class WeiZhiProductService {
 		}
 		return categoryList;
 	}
+	/**
+	 *获取分类商品编号接口
+	 */
+	public List<Category> getWeiZhiGetSku() throws Exception {
+		List<Category> categoryList=new ArrayList<>();
+		CategoryPage  thirdCategorys = weiZhiProductApiClient.getWeiZhiGetSku(1,20,672+"");
+		if(null !=thirdCategorys){
+			categoryList=thirdCategorys.getCategorys();
+			int pageNo=thirdCategorys.getPageNo();
+			int pageSize=thirdCategorys.getPageSize();
+			int totalRows=thirdCategorys.getTotalRows();
+		}
+		return categoryList;
+	}
 	
 }
