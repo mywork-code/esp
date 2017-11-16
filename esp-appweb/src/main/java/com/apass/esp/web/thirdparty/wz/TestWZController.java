@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.client.WeiZhiTokenClient;
 import com.apass.esp.third.party.weizhi.entity.TokenEntity;
@@ -62,10 +63,10 @@ public class TestWZController {
     public Response productDetailQuery(@RequestBody Map<String, Object> paramMap) {
 		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
 		try {
-			String wzProductDetail = weiZhiProductApiClient.getWeiZhiProductDetail(sku);
+			Product wzProductDetail = weiZhiProductApiClient.getWeiZhiProductDetail(sku);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return Response.success("1", "");
+        return Response.success("1", "微知获取商品详情成功！");
     }
 }

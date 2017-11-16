@@ -21,45 +21,45 @@ import com.google.gson.Gson;
 
 @Service
 public class WeiZhiProductApiClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiProductApiClient.class);
-    private static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-    private static final String EXPIRED_TIME = "EXPIRED_TIME";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiProductApiClient.class);
 	@Autowired
 	private CacheManager cacheManager;
-    /**
-     * 获取微知商品详情信息
-     * @return
-     * @throws Exception 
-     */
-    public String getWeiZhiProductDetail(String sku) throws Exception{
-    	String token=cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN+":"+WeiZhiConstants.ACCESS_TOKEN);
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+
+	/**
+	 * 获取微知商品详情信息
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public Product getWeiZhiProductDetail(String sku) throws Exception {
+		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
 		BasicNameValuePair param2 = new BasicNameValuePair("sku", sku);
 		parameters.add(param1);
 		parameters.add(param2);
-		
+
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Product  wzProductDetail=null;
-        try {
-        	responseJson = HttpClientUtils.getMethodPostResponse("http://180.168.49.94:65530/jdapi/product/getDetail", entity);
-        	LOGGER.info("微知获取token返回Json数据："+responseJson);
-        	if(null ==responseJson){
-        	 LOGGER.info("微知获取token失败！");
-        	 return null;
-        	}
-        	Gson gson = new Gson();  
-            Type objectType = new TypeToken<WeiZhiResponse<Product>>() {}.getType();  
-            WeiZhiResponse<Product>  response= gson.fromJson(responseJson, objectType);  
-            if(null !=response && response.getResult()==0){
-            	wzProductDetail=response.getData();
-            }
+		Product wzProductDetail = new Product();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse("http://180.168.49.94:65530/jdapi/product/getDetail",
+					entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<Product>>() {
+			}.getType();
+			WeiZhiResponse<Product> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				wzProductDetail = response.getData();
+			}
 		} catch (Exception e) {
 			LOGGER.error("getToken response {} return is not 200");
 		}
-		return "";
-    }
+		return wzProductDetail;
+	}
 }
