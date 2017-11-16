@@ -39,6 +39,7 @@ public class BsdiffinfoService {
 		StringBuffer sb = new StringBuffer();
 
 		String bsdiffVer = bsdiffEntity.getBsdiffVer();
+
 		//如果版本号已存在，给出提示
         List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
         if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
@@ -47,10 +48,17 @@ public class BsdiffinfoService {
                     throw new RuntimeException("版本号已经存在，请重新填写版本号!");
                 }
             }
-
         }
 
         MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
+        String[] split = bsdiffFile.getOriginalFilename().split("\\.");
+        if(!StringUtils.equals("zip",split[1])){
+            throw new RuntimeException("请上传zip文件 .");
+        }
+        if(StringUtils.equals(bsdiffVer,bsdiffFile.getName())){
+            throw new RuntimeException("版本要与zip文件名一致.");
+        }
+
 		String originalFilename = bsdiffFile.getOriginalFilename();
 
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
