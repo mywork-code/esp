@@ -111,7 +111,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-		where main_order_id=#{value} and ext_parent_id!='-1'
+		where main_order_id=#{value} and ext_parent_id!='-1' and parent_order_id >= 0
 		]]>
 	</select>
 	
@@ -468,7 +468,7 @@
                 ORDERSTATUS         id 
         FROM    t_esp_order_info 
         WHERE   USER_ID = #{value} 
-        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1'
+        AND     ORDERSTATUS IN ('D00','D02','D03') and ext_parent_id!='-1' and parent_order_id >= 0
         GROUP BY ORDERSTATUS
         ]]>
 	</select>

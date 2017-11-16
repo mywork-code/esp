@@ -275,6 +275,11 @@
 			<artifactId>javacsv</artifactId>
 			<version>2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.tencent.tinker</groupId>
+			<artifactId>bsdiff-util</artifactId>
+			<version>RELEASE</version>
+		</dependency>
 
 	</dependencies>
 

@@ -5,8 +5,7 @@
 // 主键id_o
 var id_o = "";
 
-$ (function ()
-{
+$ (function (){
 	
 	$ ("#editWeexJsInfo").dialog ("close");
 	// Grid 列表
@@ -14,6 +13,7 @@ $ (function ()
 	{
 	    title : 'weex管理',
 	    fit : true,
+		toolbar:"#tb",
 	    rownumbers : true,
 	    pagination : true,
 	    singleSelect : true,
@@ -118,6 +118,55 @@ $ (function ()
 		$ ("#weexEve").val (data.weexEve);
 		$ ("#weexBlong").val (data.weexBlong);
 	}
+
+	$("#bsDiffUpload").click(function () {
+		$("#bsdiffFile").val("");
+		$("#bsdiffVer").val("");
+
+		$("#bsdiffDiv").dialog({
+			title : "增量更新上传zip包",
+			modal : true,
+			width : 400,
+			resizable:true,
+			buttons:[{
+				text : "确定",
+				handler : function() {
+					var theForm = $("#bsdiffForm");
+					var bsdiffFile = $("#bsdiffFile").val();
+					if(bsdiffFile == null || bsdiffFile == ''){
+						$.messager.alert ('消息', "请选择上传文件.");
+					}
+
+					var bsdiffVer = $("#bsdiffVer").val();
+					if(bsdiffVer == null || bsdiffVer == ''){
+						$.messager.alert ('消息', "请填写版本号(版本号只能是1,2,3......等正整数)");
+					}
+
+					theForm.form("submit",{
+						url : ctx + '/application/system/param/bsdiffUpload',
+						success : function(data) {
+							var response = JSON.parse(data);
+							if(response.status=="1"){
+								$.messager.alert ('消息', response.msg);
+								$('#bsdiffDiv').dialog('close');
+							}else{
+								$.messager.alert("提示", response.msg);
+							}
+
+						}
+					});
+				}
+			},{
+				text : "取消",
+				handler : function() {
+					$('#bsdiffDiv').dialog('close');
+				}
+
+			}],
+		});
+	});
+	
+	
 
 
 });

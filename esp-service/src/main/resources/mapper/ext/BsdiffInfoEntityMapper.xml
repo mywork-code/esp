@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.BsdiffInfoEntityMapper" >
+
+  <!--查询所有:按创建时间倒序排序-->
+  <select id="selectAllBsdiff" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from t_esp_bsdiff_info ORDER BY create_data DESC
+  </select>
+</mapper>
