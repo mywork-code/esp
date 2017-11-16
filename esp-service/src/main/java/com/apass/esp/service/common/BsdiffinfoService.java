@@ -55,7 +55,7 @@ public class BsdiffinfoService {
         if(!StringUtils.equals("zip",split[1])){
             throw new RuntimeException("请上传zip文件 .");
         }
-        if(StringUtils.equals(bsdiffVer,bsdiffFile.getName())){
+        if(!StringUtils.equals(bsdiffVer,bsdiffFile.getName())){
             throw new RuntimeException("版本要与zip文件名一致.");
         }
 
