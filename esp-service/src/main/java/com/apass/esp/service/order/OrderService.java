@@ -833,6 +833,7 @@ public class OrderService {
         String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
         if(size > 1){
         	orderList.add(parentOrderId);
+        	parentOrderId = "-"+parentOrderId;
         }
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
         	index++;
@@ -880,7 +881,7 @@ public class OrderService {
             orderInfo.setPreStockStatus("");
             orderInfo.setParentOrderId(parentOrderId);
             if(size > 1){
-            	orderInfo.setMainOrderId(parentOrderId);
+            	orderInfo.setMainOrderId(Long.parseLong(parentOrderId) * -1+"");
             }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
             if (successStatus < 1) {
@@ -2460,14 +2461,28 @@ public class OrderService {
                 	order.setParentOrderId("-1");
                 }
                 updateOrderStatusAndPreDelivery(order);
-                if(!StringUtils.equals(order.getMerchantCode(),"-1")){
-                	orderIdList.add(order.getOrderId());
+                if(StringUtils.equals(order.getMerchantCode(),"-1")){
+                	changeParentOrderId("-"+order.getOrderId());
                 }
+                orderIdList.add(order.getOrderId());
             }
             updateJdGoodsSaleVolume(orderIdList);
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void changeParentOrderId(String orderId){
+    	/**
+    	 * 根据主订单Id，查询子订单的信息
+    	 */
+    	List<OrderInfoEntity> subList = orderInfoRepository.selectByParentOrderId(orderId);
+    	for (OrderInfoEntity order : subList) {
+			Long parent = Long.parseLong(order.getParentOrderId()) * -1;
+			order.setParentOrderId(parent+"");
+			orderInfoRepository.update(order);
+		}
+    }
+    
     /**
      * 更新销量
      * 

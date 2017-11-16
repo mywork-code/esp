@@ -361,4 +361,8 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
         param.put("couponId", couponId);
         return getSqlSession().selectList("selectByCouponId",param);
     }
+    
+    public List<OrderInfoEntity> selectByParentOrderId(String parentOrderId){
+    	 return getSqlSession().selectList(getSQL("selectByParentOrderId"), parentOrderId);
+    }
 }

@@ -47,8 +47,18 @@ public class ProMyCouponVo {
     private List<String> goodStockIds;//商品库存的id 集合
     
     private String message;//券描述，主要用来描述不能使用的原因
+    
+    private String source;//如果是指定商品，用来区分京东和非京东
+    
+    public String getSource() {
+		return source;
+	}
 
-    public String getGoodsId() {
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getGoodsId() {
 		return goodsId;
 	}
 
