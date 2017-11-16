@@ -1,14 +1,9 @@
 package com.apass.esp.service.goods;
-
 import java.math.BigDecimal;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -17,16 +12,12 @@ import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
-
 @Service
 public class GoodsStockInfoService {
-
-    private static final Logger      LOGGER = LoggerFactory.getLogger(GoodsStockInfoService.class);
     @Autowired
     private GoodsStockInfoRepository goodsStockDao;
     @Autowired
     private CommonService commonService;
-
     /**
      * 商品分页(查询)
      * 
@@ -91,8 +82,8 @@ public class GoodsStockInfoService {
      * @param entity
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateService(GoodsStockInfoEntity entity) {
-        goodsStockDao.updateService(entity);
+    public Integer updateService(GoodsStockInfoEntity entity) {
+        return goodsStockDao.updateService(entity);
     }
 
 	/**
@@ -160,7 +151,7 @@ public class GoodsStockInfoService {
         }
     }
 
-    public void insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
-        goodsStockDao.insertGoodsAttr(goodsStockentoty);
+    public Integer insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
+        return goodsStockDao.insertGoodsAttr(goodsStockentoty);
     }
 }

@@ -1117,7 +1117,7 @@ public class GoodsBaseInfoController {
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品属性规格和库存信息录入失败!");
+            return Response.fail("商品库存保存失败，检查非空字段验证!");
         }
     }
     /**
@@ -1225,9 +1225,11 @@ public class GoodsBaseInfoController {
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
             List<GoodsStockInfoEntity> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
             return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),SpringSecurityUtils.getLoginUserDetails().getUsername());
+        }catch(BusinessException e){
+            return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品属性规格和库存信息录入失败!");
+            return Response.fail("商品库存保存失败，检查非空字段验证!");
         }
     }
 }
