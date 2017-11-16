@@ -250,7 +250,8 @@
 			source source,
 			ext_order_id extOrderId,
 			ext_parent_id extParentId,
-			coupon_id  couponId
+			coupon_id  couponId,
+			parent_order_id parentOrderId
 		FROM
 			t_esp_order_info
 			WHERE 1=1 and ext_parent_id!='-1'
