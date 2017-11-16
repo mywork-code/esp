@@ -2,7 +2,6 @@ package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,6 @@ import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
-import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
