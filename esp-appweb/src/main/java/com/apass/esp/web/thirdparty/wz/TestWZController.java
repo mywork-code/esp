@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
@@ -28,6 +29,8 @@ public class TestWZController {
 	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
 	private WeiZhiProductApiClient weiZhiProductApiClient;
+	@Autowired
+	private WeiZhiProductService weiZhiProductService;
 	
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -52,7 +55,7 @@ public class TestWZController {
     public Response productDetailQuery(@RequestBody Map<String, Object> paramMap) {
 		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
 		try {
-			Product wzProductDetail = weiZhiProductApiClient.getWeiZhiProductDetail(sku);
+			Product wzProductDetail = weiZhiProductService.getWeiZhiProductDetail(sku);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
