@@ -187,7 +187,7 @@ public class AwardActivity {
     // 可选择银行列表
     public enum BANK_ENTITY {
         BANKLIST_ICBC("ICBC", "工商银行"),
-        BANKLIST_CMBC("CMBC", "民生银行"),
+//        BANKLIST_CMBC("CMBC", "民生银行"),
         BANKLIST_CEB("CEB", "光大银行"),
         BANKLIST_GDB("CGB", "广发银行"),
         BANKLIST_CITIC("CITIC", "中信银行"),

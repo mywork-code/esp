@@ -270,9 +270,9 @@ public class AwardActivityInfoService {
         BankEntity e1 = new BankEntity();
         e1.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_ICBC.getCode());
         e1.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_ICBC.getMessage());
-        BankEntity e2 = new BankEntity();
-        e2.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getCode());
-        e2.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getMessage());
+//        BankEntity e2 = new BankEntity();
+//        e2.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getCode());
+//        e2.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CMBC.getMessage());
         BankEntity e3 = new BankEntity();
         e3.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_CEB.getCode());
         e3.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_CEB.getMessage());
@@ -305,7 +305,7 @@ public class AwardActivityInfoService {
         e11.setBankCode(AwardActivity.BANK_ENTITY.BANKLIST_ABC.getCode());
         e11.setBankName(AwardActivity.BANK_ENTITY.BANKLIST_ABC.getMessage());
         list.add(e1);
-        list.add(e2);
+//        list.add(e2);
         list.add(e3);
         list.add(e4);
         list.add(e5);
