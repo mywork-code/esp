@@ -120,8 +120,8 @@ $ (function (){
 	}
 
 	$("#bsDiffUpload").click(function () {
-		$("#bsdiffFile").value = "";
-		$("#bsdiffVer").value = "";
+		$("#bsdiffFile").val("");
+		$("#bsdiffVer").val("");
 
 		$("#bsdiffDiv").dialog({
 			title : "增量更新上传zip包",
