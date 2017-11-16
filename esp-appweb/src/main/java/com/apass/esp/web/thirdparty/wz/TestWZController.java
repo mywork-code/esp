@@ -1,5 +1,6 @@
 package com.apass.esp.web.thirdparty.wz;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
+import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * @author zengqingshan
@@ -76,5 +78,17 @@ public class TestWZController {
 		}
     	 return Response.success("查询商品是否上下架成功！",result);
     }
-    
+    /**
+     * 查询一级分类列表信息接口
+     */
+    @RequestMapping(value = "/getWeiZhiFirstCategorys", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getWeiZhiFirstCategorys(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<Category> categorys=weiZhiProductService.getWeiZhiFirstCategorys();
+		} catch (Exception e) {
+			return Response.fail("查询一级分类列表信息接口失败！");
+		}
+    	 return Response.success("查询一级分类列表信息接口成功！");
+    }
 }

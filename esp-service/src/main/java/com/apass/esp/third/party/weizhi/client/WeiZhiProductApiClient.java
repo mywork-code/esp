@@ -2,7 +2,9 @@ package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -95,4 +97,56 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductState;
 	}
+	
+	
+	/**
+	 * 查询一级分类列表信息接口
+	 */
+	public Map<String,Object> getWeiZhiFirstCategorys(Integer pageNo,Integer pageSize) throws Exception {
+		Integer Num=0;
+	    Integer Size=0;
+		if(null ==pageNo || pageNo<1){
+			Num=1;
+		}else{
+			Num=pageNo;
+		}
+		if(null ==pageSize || pageSize<1 || pageSize>20){
+			Size=10;
+		}else{
+			Size=pageSize;
+		}
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("pageNo", Num.toString());
+		BasicNameValuePair param3 = new BasicNameValuePair("pageSize", Size.toString());
+
+		parameters.add(param1);
+		parameters.add(param2);
+		parameters.add(param3);
+		
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		Map<String,Object>  firstCategorys = new HashMap<String, Object>();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_FIRSTCATEGORYS,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<Map<String,Object>>>() {
+			}.getType();
+			WeiZhiResponse<Map<String,Object>> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				firstCategorys = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getToken response {} return is not 200");
+		}
+		return firstCategorys;
+	}
+	
 }

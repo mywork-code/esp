@@ -2,6 +2,7 @@ package com.apass.esp.service.wz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
+import com.apass.esp.third.party.weizhi.entity.Category;
 
 @Service
 public class WeiZhiProductService {
@@ -62,6 +64,19 @@ public class WeiZhiProductService {
 		}
 		return wzProductState;
 	}
-	
+	/**
+	 * 查询一级分类列表信息接口
+	 */
+	public List<Category> getWeiZhiFirstCategorys() throws Exception {
+		List<Category> categoryList=new ArrayList<>();
+		Map<String,Object>  firstCategorys = weiZhiProductApiClient.getWeiZhiFirstCategorys(1,20);
+		if(null !=firstCategorys){
+			categoryList=(List<Category>) firstCategorys.get("categorys");
+			long pageNo=(long) firstCategorys.get("pageNo");
+			long pageSize=(long) firstCategorys.get("pageSize");
+			long totalRows=(long) firstCategorys.get("totalRows");
+		}
+		return categoryList;
+	}
 	
 }
