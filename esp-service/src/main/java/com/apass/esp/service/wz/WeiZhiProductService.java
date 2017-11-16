@@ -2,6 +2,7 @@ package com.apass.esp.service.wz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
+import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 
 @Service
 public class WeiZhiProductService {
@@ -121,6 +124,25 @@ public class WeiZhiProductService {
 			int totalRows=wzSkuListPage.getTotalRows();
 		}
 		return skuIdList;
+	}
+
+	/**
+	 * 获取所有图片信息
+	 */
+	public List<WzSkuPicture> getWeiZhiProductSkuImage(String sku) throws Exception {
+		List<WzSkuPicture> list = new ArrayList<>();
+		List<Map<String, List<WzPicture>>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		for (Map<String, List<WzPicture>> map2 : map) {
+			for (Map.Entry<String, List<WzPicture>> entry : map2.entrySet()) {
+				WzSkuPicture wzSkuPicture = new WzSkuPicture();
+				String skuStrign = entry.getKey();
+				wzSkuPicture.setSku(skuStrign);
+				List<WzPicture> wzPicturelist = entry.getValue();
+				wzSkuPicture.setWzPicturelist(wzPicturelist);
+				list.add(wzSkuPicture);
+			}
+		}
+		return list;
 	}
 	
 }

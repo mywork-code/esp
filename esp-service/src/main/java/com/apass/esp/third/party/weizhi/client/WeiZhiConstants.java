@@ -49,6 +49,7 @@ public class WeiZhiConstants {
     public static final String WZAPI_PRODUCT_GETCATEGORY  = "http://180.168.49.94:65530/jdapi/product/getCategory";
     //微知获取分类商品编号接口
     public static final String WZAPI_PRODUCT_GETSKU  = "http://180.168.49.94:65530/jdapi/product/getSku";
+
     
     
     //统一下单接口
@@ -59,4 +60,8 @@ public class WeiZhiConstants {
     public static final String WZAPI_ORDER_SELECTORDER = "http://180.168.49.94:65530/jdapi/order/selectOrder";
     //根据订单号查询物流信息
     public static final String WZAPI_ORDER_ORDERTRACK = "http://180.168.49.94:65530/jdapi/order/orderTrack";
+
+    //微知获取所有图片信息
+    public static final String WZAPI_PRODUCT_SKUIMAGE  = "http://180.168.49.94:65530/jdapi/product/skuImage";
+
 }
