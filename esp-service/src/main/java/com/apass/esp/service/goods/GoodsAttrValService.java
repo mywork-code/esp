@@ -142,7 +142,7 @@ public class GoodsAttrValService {
     @Transactional
     public int updateByPrimaryKeySelective(GoodsAttrVal entity) {
         List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
-        if(list!=null&&list.size()>0){
+        if(list!=null&&list.size()>1){
             return 0;
         }
         return goodsAttrValMapper.updateByPrimaryKeySelective(entity);
