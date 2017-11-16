@@ -59,7 +59,7 @@ public class WeiZhiProductApiClient {
 				wzProductDetail = response.getData();
 			}
 		} catch (Exception e) {
-			LOGGER.error("getToken response {} return is not 200");
+			LOGGER.error("getWeiZhiProductDetail response {} return is not 200");
 		}
 		return wzProductDetail;
 	}
@@ -93,7 +93,7 @@ public class WeiZhiProductApiClient {
 				wzProductState = response.getData();
 			}
 		} catch (Exception e) {
-			LOGGER.error("getToken response {} return is not 200");
+			LOGGER.error("getWeiZhiProductSkuState response {} return is not 200");
 		}
 		return wzProductState;
 	}
@@ -101,8 +101,11 @@ public class WeiZhiProductApiClient {
 	
 	/**
 	 * 查询一级分类列表信息接口
+	 * categoryFalge=1 为一级类目
+	 * categoryFalge=2 为二级类目
+	 * categoryFalge=3 为三级类目
 	 */
-	public CategoryPage getWeiZhiFirstCategorys(Integer pageNo,Integer pageSize) throws Exception {
+	public CategoryPage getWeiZhiGetCategorys(Integer pageNo,Integer pageSize,Integer categoryFalge,Integer parentId) throws Exception {
 		Integer Num=0;
 	    Integer Size=0;
 		if(null ==pageNo || pageNo<1){
@@ -121,6 +124,16 @@ public class WeiZhiProductApiClient {
 		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
 		BasicNameValuePair param2 = new BasicNameValuePair("pageNo", Num.toString());
 		BasicNameValuePair param3 = new BasicNameValuePair("pageSize", Size.toString());
+		String url=WeiZhiConstants.WZAPI_PRODUCT_FIRSTCATEGORYS;//一级类目URL
+		if(categoryFalge==2 ){
+			BasicNameValuePair param4 = new BasicNameValuePair("parentId", parentId.toString());
+			parameters.add(param4);	
+			url=WeiZhiConstants.WZAPI_PRODUCT_SECONDCATEGORYS;//二级类目URL
+		}else if(categoryFalge==3){
+			BasicNameValuePair param4 = new BasicNameValuePair("parentId", parentId.toString());
+			parameters.add(param4);	
+			url=WeiZhiConstants.WZAPI_PRODUCT_THIRDCATEGORYS;//三级类目URL
+		}
 
 		parameters.add(param1);
 		parameters.add(param2);
@@ -130,7 +143,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		CategoryPage firstCategorys =null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_FIRSTCATEGORYS,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(url,entity);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -142,9 +155,9 @@ public class WeiZhiProductApiClient {
 				firstCategorys = response.getData();
 			}
 		} catch (Exception e) {
-			LOGGER.error("getToken response {} return is not 200");
+			LOGGER.error("getWeiZhiGetCategorys response {} return is not 200");
 		}
 		return firstCategorys;
 	}
-	
+
 }

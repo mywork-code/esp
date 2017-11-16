@@ -86,9 +86,38 @@ public class TestWZController {
     public Response getWeiZhiFirstCategorys(@RequestBody Map<String, Object> paramMap){
 		try {
 			List<Category> categorys=weiZhiProductService.getWeiZhiFirstCategorys();
+		    System.out.println(categorys);
 		} catch (Exception e) {
 			return Response.fail("查询一级分类列表信息接口失败！");
 		}
-    	 return Response.success("查询一级分类列表信息接口成功！");
+		return Response.success("查询一级分类列表信息接口成功！");
+    }
+    /**
+     * 查询二级分类列表信息接口
+     */
+    @RequestMapping(value = "/getWeiZhiSecondCategorys", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getWeiZhiSecondCategorys(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<Category> categorys=weiZhiProductService.getWeiZhiSecondCategorys();
+			System.out.println(categorys);
+		} catch (Exception e) {
+			return Response.fail("查询二级分类列表信息接口失败！");
+		}
+    	 return Response.success("查询二级分类列表信息接口成功！");
+    }
+    /**
+     * 查询三级分类列表信息接口
+     */
+    @RequestMapping(value = "/getWeiZhiThirdCategorys", method = RequestMethod.POST)
+    @ResponseBody
+    public Response getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<Category> categorys=weiZhiProductService.getWeiZhiThirdCategorys();
+			System.out.println(categorys);
+		} catch (Exception e) {
+			return Response.fail("查询三级分类列表信息接口失败！");
+		}
+    	 return Response.success("查询三级分类列表信息接口成功！");
     }
 }

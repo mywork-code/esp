@@ -69,12 +69,41 @@ public class WeiZhiProductService {
 	 */
 	public List<Category> getWeiZhiFirstCategorys() throws Exception {
 		List<Category> categoryList=new ArrayList<>();
-		CategoryPage  firstCategorys = weiZhiProductApiClient.getWeiZhiFirstCategorys(1,20);
+		CategoryPage  firstCategorys = weiZhiProductApiClient.getWeiZhiGetCategorys(1,20,1,0);
 		if(null !=firstCategorys){
 			categoryList=firstCategorys.getCategorys();
 			int pageNo=firstCategorys.getPageNo();
 			int pageSize=firstCategorys.getPageSize();
 			int totalRows=firstCategorys.getTotalRows();
+		}
+		return categoryList;
+	}
+	/**
+	 * 查询二级分类列表信息接口
+	 */
+	public List<Category> getWeiZhiSecondCategorys() throws Exception {
+		List<Category> categoryList=new ArrayList<>();
+		CategoryPage  secondCategorys = weiZhiProductApiClient.getWeiZhiGetCategorys(1,20,2,670);
+		if(null !=secondCategorys){
+			categoryList=secondCategorys.getCategorys();
+			int pageNo=secondCategorys.getPageNo();
+			int pageSize=secondCategorys.getPageSize();
+			int totalRows=secondCategorys.getTotalRows();
+		}
+		return categoryList;
+	}
+	
+	/**
+	 * 查询三级分类列表信息接口
+	 */
+	public List<Category> getWeiZhiThirdCategorys() throws Exception {
+		List<Category> categoryList=new ArrayList<>();
+		CategoryPage  thirdCategorys = weiZhiProductApiClient.getWeiZhiGetCategorys(1,20,3,671);
+		if(null !=thirdCategorys){
+			categoryList=thirdCategorys.getCategorys();
+			int pageNo=thirdCategorys.getPageNo();
+			int pageSize=thirdCategorys.getPageSize();
+			int totalRows=thirdCategorys.getTotalRows();
 		}
 		return categoryList;
 	}
