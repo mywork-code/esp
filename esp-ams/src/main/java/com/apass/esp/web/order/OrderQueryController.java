@@ -139,6 +139,7 @@ public class OrderQueryController {
             map.put("createDate", createDate);
             map.put("telephone", telephone);
             map.put("name", name);
+            map.put("parentOrderId", "0");
 
             Pagination<OrderSubInfoEntity> orderList = new Pagination<OrderSubInfoEntity>();
 
@@ -299,6 +300,7 @@ public class OrderQueryController {
             map.put("createDate", createDate);
             map.put("telephone", telephone);
             map.put("name", name);
+            map.put("parentOrderId", "0");
             Pagination<OrderSubInfoEntity> orderList = orderService.queryOrderSubDetailInfoByParam(map, page);
 
             respBody.setTotal(orderList.getTotalCount());

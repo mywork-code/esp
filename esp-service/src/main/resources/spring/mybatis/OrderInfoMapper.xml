@@ -250,7 +250,8 @@
 			source source,
 			ext_order_id extOrderId,
 			ext_parent_id extParentId,
-			coupon_id  couponId
+			coupon_id  couponId,
+			parent_order_id parentOrderId
 		FROM
 			t_esp_order_info
 			WHERE 1=1 and ext_parent_id!='-1'
@@ -983,15 +984,15 @@
 	</select>
 	<select id="getCheckOrderDetail" resultType="com.apass.esp.domain.vo.CheckAccountOrderDetail">
 		SELECT
-			orderInfo.order_id 'orderId',
-			orderInfo.main_order_id 'mainOrderId',
-			merchant.merchant_name 'merchantName',
+			orderInfo.order_id orderId,
+			orderInfo.main_order_id mainOrderId,
+			merchant.merchant_name merchantName,
 			orderInfo.user_id userId,
-			orderInfo.create_date 'createDate',
-			orderInfo.pay_time 'payTime',
+			orderInfo.create_date createDate,
+			orderInfo.pay_time payTime,
 			orderInfo.orderstatus orderstatus,
 			MAX(txnInfo.txn_type) txnType,
-			orderInfo.order_amt 'orderAmt'
+			orderInfo.order_amt orderAmt
 		FROM
 			t_esp_order_info orderInfo
 		LEFT JOIN t_esp_merchant_info merchant ON orderInfo.merchant_code = merchant.merchant_code
