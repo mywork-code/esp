@@ -490,13 +490,15 @@ public class OrderService {
             }
         }
         // 4 生成订单
-        List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
+        Map<String,List<String>> params = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
                 deviceType,myCouponId,goodStockIds);
 
+        List<String> orders = params.get("orderList");//主订单的Id
+        List<String> comfirmOrders = params.get("confirmList");//子订单的Id
         /**
          * 设置预占库存和修改订单的信息
          */
-        preStockStatus(orders, addressId);
+        preStockStatus(comfirmOrders, addressId);
         /**
          * 使用优惠券
          */
@@ -818,10 +820,12 @@ public class OrderService {
      * @throws BusinessException
      */
     @Transactional(rollbackFor = { Exception.class, BusinessException.class })
-    public List<String> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
+    public Map<String,List<String>> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
             List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId,String goodStockIds)
             throws BusinessException {
+    	Map<String,List<String>> params = Maps.newHashMap();
         List<String> orderList = Lists.newArrayList();
+        List<String> confirmOrderList = Lists.newArrayList();
         // 每商户订单金额
         Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList,myCouponId,goodStockIds);
         AddressInfoEntity address = addressInfoDao.select(addressId);
@@ -886,6 +890,7 @@ public class OrderService {
             	orderInfo.setMainOrderId(parentOrderId);
             }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
+            confirmOrderList.add(orderId);
             if (successStatus < 1) {
                 LOG.info(requestId, "生成订单", "订单表数据插入失败");
                 throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);
@@ -956,7 +961,9 @@ public class OrderService {
                 }
             }
         }
-        return orderList;
+        params.put("orderList", orderList);
+        params.put("confirmList",confirmOrderList);
+        return params;
     }
     
     /**
