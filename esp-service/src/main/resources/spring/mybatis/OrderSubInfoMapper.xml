@@ -60,6 +60,9 @@
 			<if test="preDelivery != null and preDelivery != ''">
 				and orderInfo.pre_delivery = #{preDelivery}
 			</if>
+			<if test="parentOrderId != null and parentOrderId != ''">
+			    and orderInfo.parent_order_id >= #{parentOrderId}
+			</if>
 		</where>
 	</sql>
 	<!-- 订单查询页面显示  -->
