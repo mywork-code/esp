@@ -463,8 +463,7 @@ public class OrderService {
      * @param purchaseList 商品列表
      * @throws BusinessException
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class,
-            BusinessException.class })
+    @Transactional(rollbackFor = { Exception.class,BusinessException.class })
     public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment,BigDecimal discountMoneydiscountMoney, Long addressId,
             List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType,String myCouponId,String goodStockIds)
             throws BusinessException {
@@ -531,6 +530,7 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
     public String preStockStatus(List<String> orderIdList, Long addressId) throws BusinessException {
         /**
          * 根据传入订单号，检测是京东的订单
@@ -2480,6 +2480,9 @@ public class OrderService {
     	for (OrderInfoEntity order : subList) {
     		String parent = order.getParentOrderId().replace("-", "");
 			order.setParentOrderId(parent+"");
+			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+            order.setStatus(OrderStatus.ORDER_SEND.getCode());
+            order.setUpdateDate(new Date());
 			orderInfoRepository.update(order);
 		}
     }

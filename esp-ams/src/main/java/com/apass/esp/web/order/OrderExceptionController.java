@@ -82,6 +82,8 @@ public class OrderExceptionController {
     @Autowired
     private TalkingDataScheduleTask talkingDataScheduleTask;
 
+    @Autowired
+    private OrderModifyStatusScheduleTask task1;
     /**
      * 订单信息页面
      */
@@ -265,4 +267,11 @@ public class OrderExceptionController {
         return Response.success("发送成功");
     }
 
+    @ResponseBody
+    @RequestMapping("/time")
+    public Response scheduledDelivery(){
+    	task1.updateOrderStatusAndPreDelivery();
+    	return Response.success("定时发货成功!");
+    }
+    
 }

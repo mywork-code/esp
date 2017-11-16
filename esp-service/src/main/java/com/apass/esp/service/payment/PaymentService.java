@@ -197,7 +197,6 @@ public class PaymentService {
         	if(StringUtils.equals(entity.getMerchantCode(), "-1")){//说明存在子订单
         		List<OrderInfoEntity> subList = orderDao.selectByParentOrderId("-"+entity.getOrderId());
         		for (OrderInfoEntity orderInfoEntity : subList) {
-        			orderInfoEntity.setMainOrderId(mainOrderId);
         			orderInfoEntity.setPayType(paymentType);
                     orderDao.update(orderInfoEntity);
 				}
