@@ -50,4 +50,13 @@ public class WeiZhiConstants {
     //微知获取分类商品编号接口
     public static final String WZAPI_PRODUCT_GETSKU  = "http://180.168.49.94:65530/jdapi/product/getSku";
     
+    
+    //统一下单接口
+    public static final String WZAPI_ORDER_SUBMITORDER =  "http://180.168.49.94:65530/jdapi/order/submitOrder";
+    //确认预占库存
+    public static final String WZAPI_ORDER_CONFIRMORDER = "http://180.168.49.94:65530/jdapi/order/confirmOrder"; 
+    //查询订单信息接口
+    public static final String WZAPI_ORDER_SELECTORDER = "http://180.168.49.94:65530/jdapi/order/selectOrder";
+    //根据订单号查询物流信息
+    public static final String WZAPI_ORDER_ORDERTRACK = "http://180.168.49.94:65530/jdapi/order/orderTrack";
 }
