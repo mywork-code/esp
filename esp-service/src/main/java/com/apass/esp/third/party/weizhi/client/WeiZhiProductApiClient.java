@@ -2,9 +2,7 @@ package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -102,7 +102,7 @@ public class WeiZhiProductApiClient {
 	/**
 	 * 查询一级分类列表信息接口
 	 */
-	public Map<String,Object> getWeiZhiFirstCategorys(Integer pageNo,Integer pageSize) throws Exception {
+	public CategoryPage getWeiZhiFirstCategorys(Integer pageNo,Integer pageSize) throws Exception {
 		Integer Num=0;
 	    Integer Size=0;
 		if(null ==pageNo || pageNo<1){
@@ -128,18 +128,16 @@ public class WeiZhiProductApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Map<String,Object>  firstCategorys = new HashMap<String, Object>();
+		CategoryPage firstCategorys =null;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_FIRSTCATEGORYS,entity);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
-			}
-			Gson gson = new Gson();
-			Type objectType = new TypeToken<WeiZhiResponse<Map<String,Object>>>() {
-			}.getType();
-			WeiZhiResponse<Map<String,Object>> response = gson.fromJson(responseJson, objectType);
+			}			
+			WeiZhiCategorysResponse response =GsonUtils.convertObj(responseJson, WeiZhiCategorysResponse.class);
+			
 			if (null != response && response.getResult() == 0) {
 				firstCategorys = response.getData();
 			}

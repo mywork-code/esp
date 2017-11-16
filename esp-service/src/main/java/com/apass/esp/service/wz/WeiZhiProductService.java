@@ -2,7 +2,6 @@ package com.apass.esp.service.wz;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 
 @Service
 public class WeiZhiProductService {
@@ -69,12 +69,12 @@ public class WeiZhiProductService {
 	 */
 	public List<Category> getWeiZhiFirstCategorys() throws Exception {
 		List<Category> categoryList=new ArrayList<>();
-		Map<String,Object>  firstCategorys = weiZhiProductApiClient.getWeiZhiFirstCategorys(1,20);
+		CategoryPage  firstCategorys = weiZhiProductApiClient.getWeiZhiFirstCategorys(1,20);
 		if(null !=firstCategorys){
-			categoryList=(List<Category>) firstCategorys.get("categorys");
-			long pageNo=(long) firstCategorys.get("pageNo");
-			long pageSize=(long) firstCategorys.get("pageSize");
-			long totalRows=(long) firstCategorys.get("totalRows");
+			categoryList=firstCategorys.getCategorys();
+			int pageNo=firstCategorys.getPageNo();
+			int pageSize=firstCategorys.getPageSize();
+			int totalRows=firstCategorys.getTotalRows();
 		}
 		return categoryList;
 	}
