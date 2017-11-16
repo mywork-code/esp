@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -23,16 +22,15 @@ import com.google.gson.Gson;
 public class WeiZhiProductApiClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiProductApiClient.class);
 	@Autowired
-	private CacheManager cacheManager;
-
+	private WeiZhiTokenClient weiZhiTokenClient;
 	/**
 	 * 获取微知商品详情信息
-	 * 
 	 * @return
 	 * @throws Exception
 	 */
 	public Product getWeiZhiProductDetail(String sku) throws Exception {
-		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+		//获取Token
+		String token = weiZhiTokenClient.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
 		BasicNameValuePair param2 = new BasicNameValuePair("sku", sku);
