@@ -1,6 +1,5 @@
 package com.apass.esp.third.party.weizhi.entity;
 
-import com.apass.esp.third.party.jd.entity.base.Region;
 /**
  * 
  * @author pyc
