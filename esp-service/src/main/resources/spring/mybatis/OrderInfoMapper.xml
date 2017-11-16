@@ -618,7 +618,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D02' and pre_delivery = 'N' and ext_parent_id!='-1'
+			orderstatus = 'D02' and pre_delivery = 'N' and ext_parent_id!='-1' and parent_order_id >= 0
 		]]>
 	</select>
 	
