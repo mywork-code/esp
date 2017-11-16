@@ -5,6 +5,8 @@ import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.tencent.tinker.bsdiff.BSDiff;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,18 @@ public class BsdiffinfoService {
 		StringBuffer sb = new StringBuffer();
 
 		String bsdiffVer = bsdiffEntity.getBsdiffVer();
-		MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
+		//如果版本号已存在，给出提示
+        List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
+        if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
+            for (BsdiffInfoEntity bsEn: bsdiffInfoEntities) {
+                if(StringUtils.equals(bsdiffVer,bsEn.getBsdiffVer())){
+                    throw new RuntimeException("版本号已经存在，请重新填写版本号!");
+                }
+            }
+
+        }
+
+        MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
 		String originalFilename = bsdiffFile.getOriginalFilename();
 
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
