@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -117,7 +118,7 @@ public class ElectronicInvoiceService {
     sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">");
     sb.append("\r\n");
     FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-    faPiaoKJ.setFpqqlsh("d2222222222222222217");
+    faPiaoKJ.setFpqqlsh("d2222222222222221234");
     faPiaoKJ.setDsptbm("111MFWIK");
     faPiaoKJ.setNsrsbh("310101000000090");
     faPiaoKJ.setNsrmc("雅诗兰黛（上海）商贸有限公司");
@@ -202,7 +203,7 @@ public class ElectronicInvoiceService {
     sb.append("</FPKJXX_XMXXS>");
     sb.append("\r\n");
     FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-    faPiaoKJDD.setDdh("2492684718573093");
+    faPiaoKJDD.setDdh("456456789123");
     faPiaoKJDD.setThdh("2492684718573093");
     faPiaoKJDD.setDddate("2016-10-31 10:47:17");
     XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
@@ -219,6 +220,6 @@ public class ElectronicInvoiceService {
   public static void main(String[] args) throws Exception {
     ElectronicInvoiceService service = new ElectronicInvoiceService();
     System.out.println(service.requestFaPiao());
-//   System.out.println(new String(new BASE64Decoder().decodeBuffer("5Y+R56Wo6K+35rGC5rWB5rC05Y+35bey57uP5a2Y5Zyo")));
+//  System.out.println(new String(new BASE64Decoder().decodeBuffer("5o6l5pS25byA56Wo5pWw5o2u5oiQ5Yqf77yB")));
   }
 }

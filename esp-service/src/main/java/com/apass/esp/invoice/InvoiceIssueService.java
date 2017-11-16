@@ -1,5 +1,8 @@
 package com.apass.esp.invoice;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
@@ -9,6 +12,12 @@ import com.apass.esp.invoice.model.FaPiaoKJXM;
 import com.apass.esp.invoice.model.GlobalInfoEctype;
 import com.apass.esp.invoice.model.ReturnStateInfo;
 import com.thoughtworks.xstream.XStream;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import sun.misc.BASE64Decoder;
+
 /**
  * 电子发票
  * @author Administrator
@@ -26,10 +35,23 @@ public class InvoiceIssueService {
      */
     public String requestFaPiaoDL(GlobalInfoEctype globalInfo,ReturnStateInfo stateInfo,FaPiaoDLoad entity) throws Exception {
         String params = createContentDL(globalInfo,stateInfo,entity);
+        System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
         org.apache.cxf.endpoint.Client client = jwdc.createClient(testUrl);
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
+    }
+
+    public ReturnStateInfo getFaPiaoReturnState(String respXML) throws Exception{
+        Document doc = DocumentHelper.parseText(respXML);
+        Element root = doc.getRootElement();
+        Element returnEle = root.element("returnStateInfo");
+        String returnCode = returnEle.element("returnCode").getText();
+        String returnMessage =  returnEle.element("returnMessage").getText();
+        ReturnStateInfo result = new ReturnStateInfo();
+        result.setReturnCode(returnCode);
+        result.setReturnMessage(new String(new BASE64Decoder().decodeBuffer(returnMessage)));
+        return result;
     }
     /**
      * 3.1

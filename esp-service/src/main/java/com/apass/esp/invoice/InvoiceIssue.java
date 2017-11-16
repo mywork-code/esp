@@ -109,6 +109,9 @@ public class InvoiceIssue implements InvoiceHandler{
             sb.append(str);
             sb.append("\r\n");
         }
+        sb.append("</FPKJXX_XMXXS>");
+        sb.append("\r\n");
+
         XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
         xStream3.autodetectAnnotations(true);
         String ddXml = xStream3.toXML(enbuy);

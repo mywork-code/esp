@@ -2,35 +2,31 @@ package com.apass.esp.invoice;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.apass.esp.invoice.model.*;
 import org.apache.commons.lang.StringUtils;
 
-import com.apass.esp.invoice.model.FaPiaoKJ;
-import com.apass.esp.invoice.model.FaPiaoKJDD;
-import com.apass.esp.invoice.model.FaPiaoKJXM;
-import com.apass.esp.invoice.model.GlobalInfoEctype;
-import com.apass.esp.invoice.model.ReturnStateInfo;
 public class InvoiceTest {
     public static void main(String[] args) throws Exception {
         GlobalInfoEctype globalInfo = new GlobalInfoEctype();
         globalInfo.setTerminalCode("0");
-        globalInfo.setAppId("ZZS_PT_DZFP");
-        globalInfo.setVersion("1.42");
-        globalInfo.setInterfaceCode("ECXML.FPKJ.BC.E_INV");//开具发票
+        globalInfo.setAppId("DZFP");
+        globalInfo.setVersion("1.0");
+        globalInfo.setInterfaceCode("ECXML.FPXZ.CX.E_INV");//开具发票
         globalInfo.setRequestCode("111MFWIK");
         globalInfo.setRequestTime("2016-11-28 10:19:16");
         globalInfo.setResponseCode("121");
-        globalInfo.setDataExchangeId("111MFWIKECXML.FPKJ.BC.E_INV20161128eXl4EymmJ");
+        globalInfo.setDataExchangeId("111MFWIKECXML.FPXZ.CX.E_INV20161128eXl4EymmJ");
         globalInfo.setUserName("111MFWIK");
         globalInfo.setPassWord("6051435131bDo4Vs6uBMpJfjwVUdCiSwyy");
         globalInfo.setTaxpayerId("310101000000090");
         globalInfo.setAuthorizationCode("3100000090");
-        
+
         ReturnStateInfo stateInfo = new ReturnStateInfo();
         stateInfo.setReturnCode(StringUtils.EMPTY);
         stateInfo.setReturnMessage(StringUtils.EMPTY);
-        
+
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-        faPiaoKJ.setFpqqlsh("d2222222222222222217");
+        faPiaoKJ.setFpqqlsh("d2222222222222221234");
         faPiaoKJ.setDsptbm("111MFWIK");
         faPiaoKJ.setNsrsbh("310101000000090");
         faPiaoKJ.setNsrmc("雅诗兰黛（上海）商贸有限公司");
@@ -77,7 +73,7 @@ public class InvoiceTest {
         faPiaoKJ.setByzd3("");
         faPiaoKJ.setByzd4("");
         faPiaoKJ.setByzd5("");
-        
+
         List<FaPiaoKJXM> list = new ArrayList<FaPiaoKJXM>();
         FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
         faPiaoKJXM.setXmmc("0J3M01 净痘凝胶 10ML ");
@@ -104,12 +100,24 @@ public class InvoiceTest {
         list.add(faPiaoKJXM);
         list.add(faPiaoKJXM);
         list.add(faPiaoKJXM);
-        
-        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-        faPiaoKJDD.setDdh("2492684718573093");
-        faPiaoKJDD.setThdh("2492684718573093");
-        faPiaoKJDD.setDddate("2016-10-31 10:47:17");
+
+//        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
+//        faPiaoKJDD.setDdh("2492684718573093");
+//        faPiaoKJDD.setThdh("2492684718573093");
+//        faPiaoKJDD.setDddate("2016-10-31 10:47:17");
+//        InvoiceIssueService service = new InvoiceIssueService();
+//        String s = service.requestFaPiaoKJ(globalInfo,stateInfo,faPiaoKJ,list,faPiaoKJDD);
+//        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
+
+        FaPiaoDLoad   faPiaoDLoad = new FaPiaoDLoad();
+        faPiaoDLoad.setDdh("2492684718512345");
+        faPiaoDLoad.setDsptbm("111MFWIK");
+        faPiaoDLoad.setFpqqlsh("d22222222222222255667");
+        faPiaoDLoad.setNsrsbh("310101000000090");
+        faPiaoDLoad.setPdfXzfs("3");
         InvoiceIssueService service = new InvoiceIssueService();
-        System.out.println(service.requestFaPiaoKJ(globalInfo,stateInfo,faPiaoKJ,list,faPiaoKJDD));
+       String s = service.requestFaPiaoDL(globalInfo,stateInfo,faPiaoDLoad);
+        System.out.println(s);
+        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
     }
 }
