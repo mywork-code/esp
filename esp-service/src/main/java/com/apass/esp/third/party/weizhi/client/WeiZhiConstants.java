@@ -37,4 +37,6 @@ public class WeiZhiConstants {
     //微知接口API地址
     //微知获取商品详细信息接口地址
     public static final String WZAPI_PRODUCT_GETDETAIL = "http://180.168.49.94:65530/jdapi/product/getDetail";
+    //微知获取商品上下架状态接口地址
+    public static final String WZAPI_PRODUCT_SKUSTATE  = "http://180.168.49.94:65530/jdapi/product/skuState";
 }

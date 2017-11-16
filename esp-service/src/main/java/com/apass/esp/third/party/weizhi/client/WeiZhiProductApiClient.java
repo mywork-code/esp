@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.gfb.framework.utils.HttpClientUtils;
@@ -63,7 +64,7 @@ public class WeiZhiProductApiClient {
 	/**
 	 * 获取商品上下架状态接口
 	 */
-	public Product getWeiZhiProductSkuState(String sku) throws Exception {
+	public List<JdProductState> getWeiZhiProductSkuState(String sku) throws Exception {
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -74,24 +75,24 @@ public class WeiZhiProductApiClient {
 
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Product wzProductDetail = new Product();
+		List<JdProductState>  wzProductState = new ArrayList<>();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUSTATE,entity);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
 			}
 			Gson gson = new Gson();
-			Type objectType = new TypeToken<WeiZhiResponse<Product>>() {
+			Type objectType = new TypeToken<WeiZhiResponse<List<JdProductState>>>() {
 			}.getType();
-			WeiZhiResponse<Product> response = gson.fromJson(responseJson, objectType);
+			WeiZhiResponse<List<JdProductState> > response = gson.fromJson(responseJson, objectType);
 			if (null != response && response.getResult() == 0) {
-				wzProductDetail = response.getData();
+				wzProductState = response.getData();
 			}
 		} catch (Exception e) {
 			LOGGER.error("getToken response {} return is not 200");
 		}
-		return wzProductDetail;
+		return wzProductState;
 	}
 }
