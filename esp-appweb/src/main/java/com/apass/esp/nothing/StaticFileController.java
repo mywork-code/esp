@@ -334,7 +334,7 @@ public class StaticFileController {
 
             if(StringUtils.isBlank(ver)){//如果版本号为空，说明是第一次打开。返回最新zip包
                 path = appWebDomain+"/static"+ nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip";
-                md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
+                md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip"));
             }else{//如果不是空，判断版本号是否是最新版本号，如果是 url返回空，否则 返回对应patch包
                 if(StringUtils.equals(ver,bsdiffInfoEntity.getBsdiffVer())){
                     path = "";
