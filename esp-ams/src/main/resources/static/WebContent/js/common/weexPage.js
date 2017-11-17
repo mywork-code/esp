@@ -131,7 +131,7 @@ $ (function (){
 			buttons:[{
 				text : "确定",
 				handler : function() {
-					debugger;
+					//$('.ui-dialog-buttonpane').find('button:contains("确定")').attr("disabled", "disabled");
 					var theForm = $("#bsdiffForm");
 					var bsdiffFile = $("#bsdiffFile").val();
 					if(bsdiffFile == null || bsdiffFile == ''){
@@ -158,6 +158,7 @@ $ (function (){
 
 						}
 					});
+
 				}
 			},{
 				text : "取消",

@@ -98,9 +98,6 @@ public class BsdiffinfoService {
 					File diffFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/"+bsdiffVer+"_"+i+".zip");
 
 					BSDiff.bsdiff(oldFile,newFile,diffFile);
-
-                    File heFile = new File(rootPath+nfsBsdiffPath+PATCHPATH+"/he/he1.zip");
-                    BSPatch.patchFast(new FileInputStream(oldFile),new FileInputStream(diffFile),heFile);
 				}
 			}
 		}
