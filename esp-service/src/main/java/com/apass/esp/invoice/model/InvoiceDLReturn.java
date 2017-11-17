@@ -17,7 +17,7 @@ public class InvoiceDLReturn {
     private String kplx;
     private String hjbhsje;
     private String kphjse;
-    private String pdfFile;
+//    private String pdfFile;
     private String pdfUrl;
     private String czdm;
     private String returnCode;
@@ -94,12 +94,12 @@ public class InvoiceDLReturn {
     public void setKphjse(String kphjse) {
         this.kphjse = kphjse;
     }
-    public String getPdfFile() {
-        return pdfFile;
-    }
-    public void setPdfFile(String pdfFile) {
-        this.pdfFile = pdfFile;
-    }
+//    public String getPdfFile() {
+//        return pdfFile;
+//    }
+//    public void setPdfFile(String pdfFile) {
+//        this.pdfFile = pdfFile;
+//    }
     public String getPdfUrl() {
         return pdfUrl;
     }

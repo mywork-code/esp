@@ -1,6 +1,8 @@
 package com.apass.esp.invoice;
 import java.util.List;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+
+import com.aisino.EncryptionDecryption;
 import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
@@ -23,20 +25,8 @@ import sun.misc.BASE64Decoder;
  */
 public class InvoiceIssueService {
     private static final String testUrl = "http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
-    @SuppressWarnings("restriction")
-    public ReturnStateInfo getFaPiaoReturnState(String respXML) throws Exception{
-        Document doc = DocumentHelper.parseText(respXML);
-        Element root = doc.getRootElement();
-        Element returnEle = root.element("returnStateInfo");
-        String returnCode = returnEle.element("returnCode").getText();
-        String returnMessage =  returnEle.element("returnMessage").getText();
-        ReturnStateInfo result = new ReturnStateInfo("1");
-        result.setReturnCode(returnCode);
-        result.setReturnMessage(new String(new BASE64Decoder().decodeBuffer(returnMessage)));
-        return result;
-    }
     /**
-     * 3.2
+     * 3.2  返回报文示例与数据项说明
      * @param entity
      * @return
      * @throws Exception
@@ -50,7 +40,7 @@ public class InvoiceIssueService {
         return (String) tsobjects[0];
     }
     /**
-     * 3.1  
+     * 3.1  返回报文示例（只有外层报文，没 Content ）：返回报文只有外层报文，Content 内容为空，无数据项。  直接返回
      * @param ensale
      * @param list
      * @param enbuy
