@@ -78,7 +78,7 @@ public class InvoiceIssueService {
         //globalInfo
         //returnStateInfo
         //dataDescription
-        sb.append(generateXMl());
+        sb.append(generateXMl("2"));
         //content
         sb.append("<content>");
         sb.append("\r\n");
@@ -108,7 +108,7 @@ public class InvoiceIssueService {
         //globalInfo
         //returnStateInfo
         //dataDescription
-        sb.append(generateXMl());
+        sb.append(generateXMl("1"));
         //content
         sb.append("<content>");
         sb.append("\r\n");
@@ -133,8 +133,8 @@ public class InvoiceIssueService {
      * @return
      * @throws Exception
      */
-    private String generateXMl() throws Exception {
-        GlobalInfoEctype globalInfo = new GlobalInfoEctype("1");
+    private String generateXMl(String type) throws Exception {
+        GlobalInfoEctype globalInfo = new GlobalInfoEctype(type);
         ReturnStateInfo stateInfo = new ReturnStateInfo("1");
         globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
         globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
