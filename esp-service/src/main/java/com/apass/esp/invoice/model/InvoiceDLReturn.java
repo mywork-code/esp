@@ -124,4 +124,11 @@ public class InvoiceDLReturn {
     public void setReturnMessage(String returnMessage) {
         this.returnMessage = returnMessage;
     }
+    @Override
+    public String toString() {
+        return "InvoiceDLReturn [fpqqlsh=" + fpqqlsh + ", ddh=" + ddh + ", kplsh=" + kplsh + ", fwm=" + fwm + ", ewm="
+                + ewm + ", fpzlDm=" + fpzlDm + ", fpDm=" + fpDm + ", fpHm=" + fpHm + ", kprq=" + kprq + ", kplx=" + kplx
+                + ", hjbhsje=" + hjbhsje + ", kphjse=" + kphjse + ", pdfUrl=" + pdfUrl + ", czdm=" + czdm
+                + ", returnCode=" + returnCode + ", returnMessage=" + returnMessage + "]";
+    }
 }
