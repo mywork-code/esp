@@ -140,7 +140,7 @@ public class InvoiceIssueService {
      */
     private String generateXMl(GlobalInfoEctype globalInfo,ReturnStateInfo stateInfo) throws Exception {
         globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
-        globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MI:SS SS"));
+        globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
         StringBuffer sbex = new StringBuffer(globalInfo.getRequestCode());
         sbex.append(globalInfo.getInterfaceCode());
         sbex.append(DateFormatUtil.getCurrentTime("YYYYMMDD"));
