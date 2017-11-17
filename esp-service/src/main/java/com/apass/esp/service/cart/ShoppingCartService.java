@@ -729,6 +729,48 @@ public class ShoppingCartService {
         return resultMap;
     }
     /**
+     * 查看商品规格(非京东商品多规格)
+     * 
+     * @param goodsId
+     * @return
+     * @throws BusinessException 
+     */
+    public Map<String, Object> getGoodsStockSkuInfoV3(String requestId, String goodsId) throws BusinessException {
+        
+        Long goodsIdVal = Long.valueOf(goodsId);
+        
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
+        if(null == goodsInfo){
+            LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
+            throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
+        }
+		if ("jd".equals(goodsInfo.getSource())) {
+			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
+			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
+			//京东商品没有规格情况拼凑数据格式
+            int jdSimilarSkuListSize= (int) jdSimilarSkuInfoMap.get("jdSimilarSkuListSize");
+			if(jdSimilarSkuListSize==0){
+			   jdSimilarSkuToList= getJdSimilarSkuToList(goodsIdVal);
+			}else{
+				jdSimilarSkuToList=(List<JdSimilarSkuTo>) jdSimilarSkuInfoMap.get("JdSimilarSkuToList");
+			}
+			resultMap.put("goodsSource", "jd");
+			resultMap.put("JdSimilarSkuToList", jdSimilarSkuToList);
+			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
+			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
+		} else {
+			Map<String, Object> returnMap =new HashMap<>();
+			returnMap=goodsService.loadGoodsBasicInfoById3(Long.parseLong(goodsId));
+			resultMap.put("goodsSource", "notJd");
+			resultMap.put("JdSimilarSkuToList", returnMap.get("JdSimilarSkuToList"));
+			resultMap.put("jdSimilarSkuList", returnMap.get("jdSimilarSkuList"));
+			resultMap.put("jdSimilarSkuListSize", returnMap.get("jdSimilarSkuListSize"));	
+		}
+        return resultMap;
+    }
+    /**
      *  京东商品没有规格情况拼凑数据格式
      * @throws BusinessException 
      */
