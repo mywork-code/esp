@@ -1,7 +1,6 @@
 package com.apass.esp.invoice;
 import java.io.File;
 import java.util.List;
-
 import com.apass.esp.common.utils.GZipUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -16,29 +15,10 @@ import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.XppDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 public class InvoiceIssue implements InvoiceHandler{
     private final static Logger LOGGER = LoggerFactory.getLogger(PKCS7.class);
     @Override
     public String fapiaoEmailSend(List<FaPiaoCommonNode> sendinfo,List<List<FaPiaoCommonNode>> invoiceinfolist) throws Exception {
-        return this.createFaPiaoEmailXml(sendinfo,invoiceinfolist);
-    }
-    @Override
-    public String fapiaoDownLoad(FaPiaoDLoad entity) throws Exception {
-        return this.createFaPiaoDLXml(entity);
-    }
-    @Override
-    public String fapiaoKJData(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
-        return this.createFaPiaoKJXml(ensale,list,enbuy);
-    }
-    /**
-     * 3.3 创建邮箱发票推送content
-     * @param sendinfo
-     * @param invoiceinfolist
-     * @return
-     * @throws Exception 
-     */
-    private String createFaPiaoEmailXml(List<FaPiaoCommonNode> sendinfo, List<List<FaPiaoCommonNode>> invoiceinfolist) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("<REQUEST_EMAILPHONEFPTS class=\"REQUEST_EMAILPHONEFPTS\">").append("\r\n");
             sb.append("<TSFSXX class=\"TSFSXX\">").append("\r\n");
@@ -71,13 +51,8 @@ public class InvoiceIssue implements InvoiceHandler{
         String str = sb.toString();
         return encodeText(str);
     }
-    /**
-     * 3.2 创建发票下载content
-     * @param entity
-     * @return
-     * @throws Exception 
-     */
-    public String createFaPiaoDLXml(FaPiaoDLoad entity) throws Exception {
+    @Override
+    public String fapiaoDownLoad(FaPiaoDLoad entity) throws Exception {
         StringBuilder sb = new StringBuilder();
         XStream xStream = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
         xStream.autodetectAnnotations(true);
@@ -88,12 +63,8 @@ public class InvoiceIssue implements InvoiceHandler{
         System.out.println(str);
         return encodeText(str);
     }
-    /**
-     * 3.1 创建发票开具content
-     * @return
-     * @throws Exception
-     */
-    private String createFaPiaoKJXml(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
+    @Override
+    public String fapiaoKJData(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">").append("\r\n");
         
@@ -122,7 +93,6 @@ public class InvoiceIssue implements InvoiceHandler{
         String content = sb.toString();
         return encodeText(content);
     }
-
     /**
      *content 字节大小小于10KB,就先ca加密，再base64加密
      */

@@ -2,24 +2,47 @@ package com.apass.esp.invoice.model;
 /**
  * Created by jie.xu on 17/3/29.
  */
-public enum GlobalInfoEctype {
-    GLOBALFPKJ(TerminalCode.TERMINALBS.getCode(), "DZFP", "1.0", InterfaceCode.INTERFACEKJ.getCode(), "111MFWIK",
-            "310101000000090", "3100000090", "111MFWIK", "121"),
-    GLOBALFPXZ(TerminalCode.TERMINALBS.getCode(), "DZFP", "1.0", InterfaceCode.INTERFACEXZ.getCode(), "111MFWIK",
-            "310101000000090", "3100000090", "111MFWIK", "121");
-    private GlobalInfoEctype() {
+public class GlobalInfoEctype {
+    public GlobalInfoEctype() {}
+    public GlobalInfoEctype(String type) {
+        if("1".equals(type)){
+            this.terminalCode = TerminalCode.TERMINALBS.getCode();
+            this.appId = "DZFP";
+            this.version = "1.0";
+            this.interfaceCode = InterfaceCode.INTERFACEKJ.getCode();
+            this.userName = "111MFWIK";
+            this.taxpayerId = "310101000000090";
+            this.authorizationCode = "3100000090";
+            this.requestCode = "111MFWIK";
+            this.responseCode = "121";
+        }else if("2".equals(type)){
+            this.terminalCode = TerminalCode.TERMINALBS.getCode();
+            this.appId = "DZFP";
+            this.version = "1.0";
+            this.interfaceCode = InterfaceCode.INTERFACEXZ.getCode();
+            this.userName = "111MFWIK";
+            this.taxpayerId = "310101000000090";
+            this.authorizationCode = "3100000090";
+            this.requestCode = "111MFWIK";
+            this.responseCode = "121";
+        }
     }
-    private GlobalInfoEctype(String terminalCode, String appId, String version, String interfaceCode, 
-            String userName,String taxpayerId, String authorizationCode, String requestCode, String responseCode) {
+    public GlobalInfoEctype(String terminalCode, String appId, String version, String interfaceCode, String userName,
+            String passWord, String taxpayerId, String authorizationCode, String requestCode, String requestTime,
+            String responseCode, String dataExchangeId) {
+        super();
         this.terminalCode = terminalCode;
         this.appId = appId;
         this.version = version;
         this.interfaceCode = interfaceCode;
         this.userName = userName;
+        this.passWord = passWord;
         this.taxpayerId = taxpayerId;
         this.authorizationCode = authorizationCode;
         this.requestCode = requestCode;
+        this.requestTime = requestTime;
         this.responseCode = responseCode;
+        this.dataExchangeId = dataExchangeId;
     }
     private String terminalCode;//终端类型标识码
     private String appId; //DZFP:普通发票；ZZS_PT_DZFP:增值税普通电子发票

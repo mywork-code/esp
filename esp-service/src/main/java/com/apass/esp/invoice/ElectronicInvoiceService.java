@@ -71,7 +71,7 @@ public class ElectronicInvoiceService {
   }
 
   private String createReturnStateInfoXml() {
-    ReturnStateInfo stateInfo = ReturnStateInfo.RETURNSTATEINFOEMP;
+    ReturnStateInfo stateInfo = new ReturnStateInfo("1");;
     XStream xStream = new XStream();
     xStream.alias("returnStateInfo", ReturnStateInfo.class);
     String xml = xStream.toXML(stateInfo);

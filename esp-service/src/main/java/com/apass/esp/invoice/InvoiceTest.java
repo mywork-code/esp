@@ -92,10 +92,10 @@ public class InvoiceTest {
         System.out.println(s);
         System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
 
-        FaPiaoDLoad   faPiaoDLoad = new FaPiaoDLoad();
-        faPiaoDLoad.setDdh("2492684718512345");
+        FaPiaoDLoad faPiaoDLoad = new FaPiaoDLoad();
+        faPiaoDLoad.setDdh("2492684718573093");
         faPiaoDLoad.setDsptbm("111MFWIK");
-        faPiaoDLoad.setFpqqlsh("d22222222222222255667");
+        faPiaoDLoad.setFpqqlsh("d2222222222222221234");
         faPiaoDLoad.setNsrsbh("310101000000090");
         faPiaoDLoad.setPdfXzfs("3");
         String sS = service.requestFaPiaoDL(faPiaoDLoad);
