@@ -322,6 +322,7 @@ public class StaticFileController {
         LOGGER.info("bsdiff下载开始执行了,参数:{}", GsonUtils.toJson(paramMap));
         Map<String,String> resultMap = Maps.newHashMap();
         String path = null;
+        String md5 = null;
         try{
             String ver = (String)paramMap.get("ver");
             List<BsdiffInfoEntity> bsdiffInfoEntities = bsdiffinfoService.listAll();
@@ -333,15 +334,19 @@ public class StaticFileController {
 
             if(StringUtils.isBlank(ver)){//如果版本号为空，说明是第一次打开。返回最新zip包
                 path = appWebDomain+"/static"+ nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip";
-            }else{//如果不是空，判断版本号是否是最新版本号，如果是url返回空，否则返回对应patch包
+                md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
+            }else{//如果不是空，判断版本号是否是最新版本号，如果是 url返回空，否则 返回对应patch包
                 if(StringUtils.equals(ver,bsdiffInfoEntity.getBsdiffVer())){
                     path = "";
+                    md5 = "";
                 }else {
                     path = appWebDomain+"/static" + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip";
+                    md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
                 }
             }
             resultMap.put("ver",bsdiffInfoEntity.getBsdiffVer());
             resultMap.put("url",path);
+            resultMap.put("md5",md5);
             LOGGER.info("bsdiff下载执行结束了,返回值:{}", GsonUtils.toJson(resultMap));
         }catch (Exception e){
             LOGGER.error("下载失败",e);
