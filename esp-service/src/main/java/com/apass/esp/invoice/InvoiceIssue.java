@@ -110,10 +110,11 @@ public class InvoiceIssue implements InvoiceHandler{
 
     /**
      * 解密
+     * 0:不压缩；1：压缩
      */
-    public String decrypt(String encryTxt) throws Exception{
+    public String decrypt(String encryTxt, String zipCode) throws Exception{
         byte[] bytes = encryTxt.getBytes();
-        if(bytes.length < maxContentByteSize){
+        if("0".equals(zipCode)){
             return decodeText(encryTxt);
         } else {
             return decodeTextByGzip(encryTxt);
