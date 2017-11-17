@@ -1,4 +1,8 @@
 package com.apass.esp.third.party.weizhi.entity;
+
+import java.util.List;
+
+
 /**
  * 
  * @author pyc
@@ -9,7 +13,54 @@ package com.apass.esp.third.party.weizhi.entity;
  */
 public class OrderReq {
 	
-	private String orderId;//订单Id
+	private String orderNo;//订单Id
 	
-	private AddressInfo address;//收货地址
+	private AddressInfo addressInfo;//收货地址
+	
+	private List<SkuNum> skuNumList;
+	 
+	private String remark;
+	
+	private List<PriceSnap> orderPriceSnap;
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public AddressInfo getAddressInfo() {
+		return addressInfo;
+	}
+
+	public void setAddressInfo(AddressInfo addressInfo) {
+		this.addressInfo = addressInfo;
+	}
+
+	public List<SkuNum> getSkuNumList() {
+		return skuNumList;
+	}
+
+	public void setSkuNumList(List<SkuNum> skuNumList) {
+		this.skuNumList = skuNumList;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public List<PriceSnap> getOrderPriceSnap() {
+		return orderPriceSnap;
+	}
+
+	public void setOrderPriceSnap(List<PriceSnap> orderPriceSnap) {
+		this.orderPriceSnap = orderPriceSnap;
+	}
+	
 }

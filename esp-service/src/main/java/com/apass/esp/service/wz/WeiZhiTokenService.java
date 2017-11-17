@@ -27,12 +27,10 @@ public class WeiZhiTokenService {
 		if (null != token && StringUtils.isNotEmpty(token.getAccess_token())) {
 			// 将token和其有效期存放到redies中
 			cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN,
-					token.getAccess_token());
+					token.getAccess_token(),WeiZhiConstants.TOKEN_EXPIRED);
 			cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME,
 					token.getExpired_time());
-			// 设置Token的有效期
-			cacheManager.expire(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN,
-					WeiZhiConstants.TOKEN_EXPIRED);
+			
 			return "success";
 		}
 		return "fail";

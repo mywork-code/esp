@@ -24,7 +24,7 @@ public class WeiZhiConstants {
     
     public static final String EXPIRED_TIME = "EXPIRED_TIME";
     //Token在redis中的有效期
-    public static final int TOKEN_EXPIRED =86400 ;
+    public static final int TOKEN_EXPIRED = 80000 ;
 
     
     //获取sign
