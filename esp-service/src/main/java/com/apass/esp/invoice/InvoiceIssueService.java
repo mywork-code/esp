@@ -1,9 +1,7 @@
 package com.apass.esp.invoice;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
 import com.apass.esp.invoice.model.FaPiaoKJ;
@@ -11,13 +9,12 @@ import com.apass.esp.invoice.model.FaPiaoKJDD;
 import com.apass.esp.invoice.model.FaPiaoKJXM;
 import com.apass.esp.invoice.model.GlobalInfoEctype;
 import com.apass.esp.invoice.model.ReturnStateInfo;
+import com.apass.gfb.framework.utils.RandomUtils;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import sun.misc.BASE64Decoder;
-
 /**
  * 电子发票
  * @author Administrator
@@ -65,6 +62,7 @@ public class InvoiceIssueService {
      */
     public String requestFaPiaoKJ(GlobalInfoEctype globalInfo,ReturnStateInfo stateInfo,FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
         String params = createContentXml(globalInfo,stateInfo,ensale,list,enbuy);
+        System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
         org.apache.cxf.endpoint.Client client = jwdc.createClient(testUrl);
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
@@ -119,6 +117,8 @@ public class InvoiceIssueService {
         sb.append("\r\n");
         InvoiceHandler invoice = new InvoiceIssue();
         String invoicedata = invoice.fapiaoKJData(ensale,list,enbuy);
+//        System.out.println("invoicedata--LOG BY CA:\n"+invoicedata);
+//        System.out.println("-----------------invoicedata--over----------");
         sb.append(invoicedata);
         sb.append("\r\n");
         sb.append("</content>");
@@ -138,6 +138,7 @@ public class InvoiceIssueService {
      * @throws Exception
      */
     private String generateXMl(GlobalInfoEctype globalInfo,ReturnStateInfo stateInfo) throws Exception {
+        globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version='1.0' encoding='utf-8' ?>\n" +
             "<interface xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n" +
@@ -148,12 +149,16 @@ public class InvoiceIssueService {
         XStream xStreamglobal = new XStream();
         xStreamglobal.alias("globalInfo", GlobalInfoEctype.class);
         String globalInfostr = xStreamglobal.toXML(globalInfo);
+//        System.out.println("globalInfostr--LOG:\n"+globalInfostr);
+//        System.out.println("-----------------globalInfostr--over----------");
         sb.append(globalInfostr);
         sb.append("\r\n");
         //returnStateInfo
         XStream xStreamreturn = new XStream();
         xStreamreturn.alias("returnStateInfo", ReturnStateInfo.class);
         String stateInfostr = xStreamreturn.toXML(stateInfo);
+//        System.out.println("stateInfostr--LOG:\n"+stateInfostr);
+//        System.out.println("-----------------stateInfostr--over----------");
         sb.append(stateInfostr);
         sb.append("\r\n");
         sb.append("<Data>");
@@ -161,11 +166,13 @@ public class InvoiceIssueService {
         //dataDescription
         DataDescription dataDescription = new DataDescription();
         dataDescription.setZipCode("0");
-        dataDescription.setCodeType("2");
         dataDescription.setEncryptCode("2");
+        dataDescription.setCodeType("CA加密");
         XStream xStreamdataDesc = new XStream();
         xStreamdataDesc.alias("dataDescription", DataDescription.class);
         String dataDescriptionXml = xStreamdataDesc.toXML(dataDescription);
+//        System.out.println("dataDescriptionXml--LOG:\n"+dataDescriptionXml);
+//        System.out.println("-----------------dataDescriptionXml--over----------");
         sb.append(dataDescriptionXml);
         sb.append("\r\n");
         return sb.toString();

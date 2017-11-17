@@ -98,8 +98,6 @@ public class InvoiceTest {
         faPiaoKJXM.setByzd4("");
         faPiaoKJXM.setByzd5("");
         list.add(faPiaoKJXM);
-        list.add(faPiaoKJXM);
-        list.add(faPiaoKJXM);
 
 //        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
 //        faPiaoKJDD.setDdh("2492684718573093");
@@ -107,6 +105,7 @@ public class InvoiceTest {
 //        faPiaoKJDD.setDddate("2016-10-31 10:47:17");
 //        InvoiceIssueService service = new InvoiceIssueService();
 //        String s = service.requestFaPiaoKJ(globalInfo,stateInfo,faPiaoKJ,list,faPiaoKJDD);
+//        System.out.println(s);
 //        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
 
         FaPiaoDLoad   faPiaoDLoad = new FaPiaoDLoad();
