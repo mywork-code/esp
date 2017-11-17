@@ -994,6 +994,11 @@ public class GoodsService {
     return goodsDao.updateGoods(entity);
   }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
+        return goodsDao.updateServiceForBaseInfoColler(entity);
+    }
+
   /**
    * 主键查询
    *
