@@ -2,7 +2,25 @@ package com.apass.esp.invoice.model;
 /**
  * Created by jie.xu on 17/3/29.
  */
-public class GlobalInfoEctype {
+public enum GlobalInfoEctype {
+    GLOBALFPKJ(TerminalCode.TERMINALBS.getCode(), "DZFP", "1.0", InterfaceCode.INTERFACEKJ.getCode(), "111MFWIK",
+            "310101000000090", "3100000090", "111MFWIK", "121"),
+    GLOBALFPXZ(TerminalCode.TERMINALBS.getCode(), "DZFP", "1.0", InterfaceCode.INTERFACEXZ.getCode(), "111MFWIK",
+            "310101000000090", "3100000090", "111MFWIK", "121");
+    private GlobalInfoEctype() {
+    }
+    private GlobalInfoEctype(String terminalCode, String appId, String version, String interfaceCode, 
+            String userName,String taxpayerId, String authorizationCode, String requestCode, String responseCode) {
+        this.terminalCode = terminalCode;
+        this.appId = appId;
+        this.version = version;
+        this.interfaceCode = interfaceCode;
+        this.userName = userName;
+        this.taxpayerId = taxpayerId;
+        this.authorizationCode = authorizationCode;
+        this.requestCode = requestCode;
+        this.responseCode = responseCode;
+    }
     private String terminalCode;//终端类型标识码
     private String appId; //DZFP:普通发票；ZZS_PT_DZFP:增值税普通电子发票
     private String version;//api版本

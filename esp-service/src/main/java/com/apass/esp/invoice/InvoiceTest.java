@@ -4,27 +4,8 @@ import java.util.List;
 
 import com.apass.esp.invoice.model.*;
 import org.apache.commons.lang.StringUtils;
-
 public class InvoiceTest {
     public static void main(String[] args) throws Exception {
-        GlobalInfoEctype globalInfo = new GlobalInfoEctype();
-        globalInfo.setTerminalCode("0");
-        globalInfo.setAppId("DZFP");
-        globalInfo.setVersion("1.0");
-        globalInfo.setInterfaceCode("ECXML.FPXZ.CX.E_INV");//开具发票
-        globalInfo.setRequestCode("111MFWIK");
-        globalInfo.setRequestTime("2016-11-28 10:19:16");
-        globalInfo.setResponseCode("121");
-        globalInfo.setDataExchangeId("111MFWIKECXML.FPXZ.CX.E_INV20161128eXl4EymmJ");
-        globalInfo.setUserName("111MFWIK");
-        globalInfo.setPassWord("6051435131bDo4Vs6uBMpJfjwVUdCiSwyy");
-        globalInfo.setTaxpayerId("310101000000090");
-        globalInfo.setAuthorizationCode("3100000090");
-
-        ReturnStateInfo stateInfo = new ReturnStateInfo();
-        stateInfo.setReturnCode(StringUtils.EMPTY);
-        stateInfo.setReturnMessage(StringUtils.EMPTY);
-
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
         faPiaoKJ.setFpqqlsh("d2222222222222221234");
         faPiaoKJ.setDsptbm("111MFWIK");
@@ -99,14 +80,14 @@ public class InvoiceTest {
         faPiaoKJXM.setByzd5("");
         list.add(faPiaoKJXM);
 
-//        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-//        faPiaoKJDD.setDdh("2492684718573093");
-//        faPiaoKJDD.setThdh("2492684718573093");
-//        faPiaoKJDD.setDddate("2016-10-31 10:47:17");
-//        InvoiceIssueService service = new InvoiceIssueService();
-//        String s = service.requestFaPiaoKJ(globalInfo,stateInfo,faPiaoKJ,list,faPiaoKJDD);
-//        System.out.println(s);
-//        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
+        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
+        faPiaoKJDD.setDdh("2492684718573093");
+        faPiaoKJDD.setThdh("2492684718573093");
+        faPiaoKJDD.setDddate("2016-10-31 10:47:17");
+        InvoiceIssueService service = new InvoiceIssueService();
+        String s = service.requestFaPiaoKJ(faPiaoKJ,list,faPiaoKJDD);
+        System.out.println(s);
+        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
 
         FaPiaoDLoad   faPiaoDLoad = new FaPiaoDLoad();
         faPiaoDLoad.setDdh("2492684718512345");
@@ -114,9 +95,8 @@ public class InvoiceTest {
         faPiaoDLoad.setFpqqlsh("d22222222222222255667");
         faPiaoDLoad.setNsrsbh("310101000000090");
         faPiaoDLoad.setPdfXzfs("3");
-        InvoiceIssueService service = new InvoiceIssueService();
-       String s = service.requestFaPiaoDL(globalInfo,stateInfo,faPiaoDLoad);
-        System.out.println(s);
+        String sS = service.requestFaPiaoDL(faPiaoDLoad);
+        System.out.println(sS);
         System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
     }
 }

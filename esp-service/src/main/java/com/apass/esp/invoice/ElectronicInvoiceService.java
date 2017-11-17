@@ -1,5 +1,7 @@
 package com.apass.esp.invoice;
-
+import java.io.UnsupportedEncodingException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoKJ;
 import com.apass.esp.invoice.model.FaPiaoKJDD;
@@ -9,21 +11,13 @@ import com.apass.esp.invoice.model.ReturnStateInfo;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.XppDriver;
-import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
-import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created by jie.xu on 17/3/28.
  * 电子发票
  */
 public class ElectronicInvoiceService {
   private static final String testUrl = "http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
-
-
 
   public String requestFaPiao() throws Exception {
     EncryptInvoiceContentHandler handler = new EncryptInvoiceContentHandler();
@@ -77,9 +71,7 @@ public class ElectronicInvoiceService {
   }
 
   private String createReturnStateInfoXml() {
-    ReturnStateInfo stateInfo = new ReturnStateInfo();
-    stateInfo.setReturnCode(StringUtils.EMPTY);
-    stateInfo.setReturnMessage(StringUtils.EMPTY);
+    ReturnStateInfo stateInfo = ReturnStateInfo.RETURNSTATEINFOEMP;
     XStream xStream = new XStream();
     xStream.alias("returnStateInfo", ReturnStateInfo.class);
     String xml = xStream.toXML(stateInfo);

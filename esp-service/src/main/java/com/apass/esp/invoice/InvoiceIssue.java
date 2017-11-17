@@ -93,41 +93,31 @@ public class InvoiceIssue implements InvoiceHandler{
      */
     private String createFaPiaoKJXml(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">");
-        sb.append("\r\n");
-        XStream xStream = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
-        xStream.autodetectAnnotations(true);
-        String faPiaoKJXml = xStream.toXML(ensale);
-        faPiaoKJXml = faPiaoKJXml.replaceFirst("<FPKJXX_FPTXX>", "<FPKJXX_FPTXX class=\"FPKJXX_FPTXX\">");
-        sb.append(faPiaoKJXml);
-//        System.out.println("faPiaoKJXml--LOG:\n"+faPiaoKJXml);
-//        System.out.println("-----------------faPiaoKJXml--over----------");
-        sb.append("\r\n");
-        sb.append("<FPKJXX_XMXXS class=\"FPKJXX_XMXX;\" size=").append("\""+list.size()+"\">");
-        sb.append("\r\n");
-        for(FaPiaoKJXM entity : list){
-            XStream xStream2 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
-            xStream2.autodetectAnnotations(true);
-            String str = xStream2.toXML(entity);
-            sb.append(str);
-            sb.append("\r\n");
-//            System.out.println("FaPiaoKJXM--LOG:\n"+str);
-//            System.out.println("-----------------FaPiaoKJXM--one by one----------");
-        }
-        sb.append("</FPKJXX_XMXXS>");
-        sb.append("\r\n");
-        XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
-        xStream3.autodetectAnnotations(true);
-        String ddXml = xStream3.toXML(enbuy);
-        ddXml = ddXml.replaceFirst("<FPKJXX_DDXX>", "<FPKJXX_DDXX class=\"FPKJXX_DDXX\">");
-        sb.append(ddXml);
-//        System.out.println("FaPiaoKJDD--LOG:\n"+ddXml);
-//        System.out.println("-----------------FaPiaoKJDD--over----------");
-        sb.append("\r\n");
+        sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">").append("\r\n");
+        
+            XStream xStream = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
+            xStream.autodetectAnnotations(true);
+            String faPiaoKJXml = xStream.toXML(ensale);
+            faPiaoKJXml = faPiaoKJXml.replaceFirst("<FPKJXX_FPTXX>", "<FPKJXX_FPTXX class=\"FPKJXX_FPTXX\">");
+            sb.append(faPiaoKJXml).append("\r\n");
+            
+            sb.append("<FPKJXX_XMXXS class=\"FPKJXX_XMXX;\" size=").append("\""+list.size()+"\">").append("\r\n");
+                for(FaPiaoKJXM entity : list){
+                    XStream xStream2 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
+                    xStream2.autodetectAnnotations(true);
+                    String str = xStream2.toXML(entity);
+                    sb.append(str).append("\r\n");
+                }
+            sb.append("</FPKJXX_XMXXS>").append("\r\n");
+            
+            XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
+            xStream3.autodetectAnnotations(true);
+            String ddXml = xStream3.toXML(enbuy);
+            ddXml = ddXml.replaceFirst("<FPKJXX_DDXX>", "<FPKJXX_DDXX class=\"FPKJXX_DDXX\">");
+            sb.append(ddXml).append("\r\n");
+            
         sb.append("</REQUEST_FPKJXX>");
         String content = sb.toString();
-//        System.out.println("content--LOG:\n"+content);
-//        System.out.println("-----------------content--over----------");
         return encodeText(content);
     }
     private String encodeText(String source) throws Exception{
