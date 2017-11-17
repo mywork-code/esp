@@ -278,9 +278,7 @@ public class WeiZhiProductApiClient {
 			}else{
 				BasicNameValuePair param6 = new BasicNameValuePair("town", "0");
 				parameters.add(param6);
-			}
-		}
-
+			}		}
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
 		List<AreaLimitEntity>  areaLimitEntityList = new ArrayList<>();
