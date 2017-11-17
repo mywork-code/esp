@@ -139,7 +139,7 @@ public class InvoiceIssue implements InvoiceHandler{
 
     /**
      * 解密
-     * 0:不压缩；1：压缩
+     * 0:不解压缩；1：解压缩
      */
     public String decrypt(String encryTxt, String zipCode) throws Exception{
         byte[] bytes = encryTxt.getBytes();
