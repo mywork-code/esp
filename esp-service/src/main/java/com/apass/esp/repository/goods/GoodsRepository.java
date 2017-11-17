@@ -288,4 +288,8 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     public List<GoodsInfoEntity> getGoodsListBySkuIds(List<String> skuIdList) {
         return this.getSqlSession().selectList("getGoodsListBySkuIds", skuIdList);
     }
+
+    public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
+        return this.getSqlSession().update("updateServiceForBaseInfoColler", entity);
+    }
 }
