@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.jd.JdProductState;
+import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
+import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
@@ -144,5 +146,36 @@ public class WeiZhiProductService {
 		}
 		return list;
 	}
-	
+
+	/**
+	 * 商品区域购买限制查询(单个商品查询)
+	 */
+	public Boolean getWeiZhiCheckAreaLimit(String skuId, Region region) throws Exception {
+		List<AreaLimitEntity> areaLimitEntityList = weiZhiProductApiClient.getWeiZhiCheckAreaLimit(skuId, region);
+		if (null != areaLimitEntityList && areaLimitEntityList.size() > 0) {
+			AreaLimitEntity areaLimitEntity = areaLimitEntityList.get(0);
+			return areaLimitEntity.getIsAreaRestrict();
+		}
+		return false;
+	}
+	/**
+	 * 商品区域购买限制查询(多个商品查询)
+	 */
+	public List<AreaLimitEntity> getWeiZhiCheckAreaLimitList(List<String> skuIdList, Region region) throws Exception {
+		StringBuilder sb=new StringBuilder();
+		if(null !=skuIdList && skuIdList.size()>0){
+			int legth=0;
+			if(skuIdList.size()<=20){
+				legth=skuIdList.size();
+			}else{
+				legth=20;
+			}
+			for(int i=0;i<legth;i++){
+				sb.append(skuIdList.get(i));
+				sb.append(",");
+			}
+		}
+		List<AreaLimitEntity> areaLimitEntityList = weiZhiProductApiClient.getWeiZhiCheckAreaLimit(sb.toString(), region);
+		return areaLimitEntityList;
+	}
 }
