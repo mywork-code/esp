@@ -68,7 +68,9 @@ public class WeiZhiConstants {
     public static final String WZAPI_ORDER_SELECTORDER = "http://180.168.49.94:65530/jdapi/order/selectOrder";
     //根据订单号查询物流信息
     public static final String WZAPI_ORDER_ORDERTRACK = "http://180.168.49.94:65530/jdapi/order/orderTrack";
-
+    //根据本地订单号查询微知订单号
+    public static final String WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER = "http://180.168.49.94:65530/jdapi/order/selectOrderIdByThirdOrder";
+    
     
     //批量查询商品价格
     public static final String WZAPI_PRICE_GETWZPRICE = "http://180.168.49.94:65530/jdapi/price/getWzPrice";

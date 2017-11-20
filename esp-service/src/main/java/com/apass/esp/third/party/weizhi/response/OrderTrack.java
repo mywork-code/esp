@@ -10,16 +10,18 @@ public class OrderTrack implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String skuid;
+	private String skuId;//商品Id
 	
-	private List<TrackData> tackList;
+	private List<TrackData> tackList;//物流轨迹
+	
+	private String massge;//信息（主要是用来保存物流信息）
 
-	public String getSkuid() {
-		return skuid;
+	public String getSkuId() {
+		return skuId;
 	}
 
-	public void setSkuid(String skuid) {
-		this.skuid = skuid;
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
 	}
 
 	public List<TrackData> getTackList() {
@@ -30,14 +32,22 @@ public class OrderTrack implements Serializable{
 		this.tackList = tackList;
 	}
 
-	public OrderTrack(String skuid, List<TrackData> tackList) {
+	public OrderTrack(String skuId, List<TrackData> tackList) {
 		super();
-		this.skuid = skuid;
+		this.skuId = skuId;
 		this.tackList = tackList;
 	}
 
 	public OrderTrack() {
 		super();
+	}
+
+	public String getMassge() {
+		return massge;
+	}
+
+	public void setMassge(String massge) {
+		this.massge = massge;
 	}
 	
 }

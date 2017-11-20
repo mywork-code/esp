@@ -191,6 +191,16 @@ public class TestWZController {
 	}
 	
 	/**
+	 * 6.4 订单反查接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/selectOrderIdByThirdOrder")
+	@ResponseBody
+	public Response selectOrderIdByThirdOrder() throws Exception {
+		return Response.successResponse(order.selectOrderIdByThirdOrder("11234567890"));
+	}
+	
+	/**
 	 * 确认预占库存
 	 * @throws Exception 
 	 */

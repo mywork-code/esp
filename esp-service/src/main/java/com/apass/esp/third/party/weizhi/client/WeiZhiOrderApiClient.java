@@ -1,6 +1,5 @@
 package com.apass.esp.third.party.weizhi.client;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +20,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.service.wz.WeiZhiTokenService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.weizhi.entity.AddressInfo;
 import com.apass.esp.third.party.weizhi.entity.OrderReq;
 import com.apass.esp.third.party.weizhi.response.OrderInfoResponse;
+import com.apass.esp.third.party.weizhi.response.OrderTrack;
 import com.apass.esp.third.party.weizhi.response.OrderTrackResponse;
 import com.apass.esp.third.party.weizhi.response.OrderUnitResponse;
+import com.apass.esp.third.party.weizhi.response.TrackData;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 @Service
 public class WeiZhiOrderApiClient {
@@ -85,18 +86,19 @@ public class WeiZhiOrderApiClient {
         parameters.add(param11);parameters.add(param12);
         parameters.add(param13);parameters.add(param14);
         parameters.add(param15);
+        logger.info("----submitOrder------ params:{}",JsonUtil.toJsonString(parameters));
         
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
         String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_SUBMITORDER, entity);
         
-        logger.info("----getWzPrice------ response:{}",responseJson);
+        logger.info("----submitOrder------ response:{}",responseJson);
         /**
          * 返回json
          */
         JSONObject datas = JSON.parseObject(responseJson);
         
         if(null == datas){
-        	logger.error("----orderUniteSubmit--- callback is null");
+        	logger.error("----submitOrder--- callback is null");
         	return null;
         }
         
@@ -104,7 +106,7 @@ public class WeiZhiOrderApiClient {
         
         if(!StringUtils.equals(result, "0")){
         	String message = datas.getString("detail");
-        	logger.error("---orderUniteSubmit---- callback result:{},message:{}",result,message);
+        	logger.error("---submitOrder---- callback result:{},message:{}",result,message);
         	return null;
         }
         
@@ -131,6 +133,7 @@ public class WeiZhiOrderApiClient {
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
 		parameters.add(param1);
 		parameters.add(param2);
+		logger.info("----orderOccupyStockConfirm------ params:{}",JsonUtil.toJsonString(parameters));
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
@@ -171,6 +174,7 @@ public class WeiZhiOrderApiClient {
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
 		parameters.add(param1);
 		parameters.add(param2);
+		logger.info("----selectOrder------ params:{}",JsonUtil.toJsonString(parameters));
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
@@ -224,7 +228,8 @@ public class WeiZhiOrderApiClient {
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
 		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
-	    
+	    //String responseJson = "{'data':{'wzOrderId':'订单号','orderTrack':[{'skuid1,skuid2':[{'msgTime':'操作时间1', 'content':'配送内容1', 'operator':'操作人1'},{'msgTime':'操作时间2', 'content':'配送内容2', 'operator':'操作人2'}]}]},'result':0,'detail':''}";
+		
 		logger.info("----orderTrack------ response:{}",responseJson);
 		
 		/**
@@ -244,13 +249,12 @@ public class WeiZhiOrderApiClient {
 	    	logger.error("---orderTrack---- callback result:{},message:{}",result,message);
 	    	return null;
 	    }
-	    
+	    OrderTrackResponse response = new OrderTrackResponse();
+	    List<OrderTrack> orderTrack = Lists.newArrayList();
 	    JSONObject object = datas.getJSONObject("data");
-	    
 	    String orderId = object.getString("wzOrderId");
-	    
+	    response.setWzOrderId(orderId);
 	    JSONArray array = object.getJSONArray("orderTrack");
-	   
 	    /**
 	     * 先把返回的数据按照key-value的格式保存一下
 	     */
@@ -258,8 +262,64 @@ public class WeiZhiOrderApiClient {
 	    for (Object obj : array) {
 	    	String content =  JSONObject.toJSONString(obj);
 	    	Map<String,String> ss = GsonUtils.convertObj(content,Map.class);
+	    	results.putAll(ss);
 		}
 	    
-		return null;
+	    for (String key : results.keySet()) {
+	    	String[] keys = key.split(",");//可能存在多个skuId并且用","隔开
+	    	for (String str : keys) {
+	    		OrderTrack track = new OrderTrack();
+	    		track.setSkuId(str);
+	    		Object value = results.get(key);
+		    	if(value instanceof List){
+		    		List<TrackData> trackList = (List<TrackData>) value;
+		    		track.setTackList(trackList);
+		    	}else{
+		    	    track.setMassge((String)value);
+		    	}
+		    	orderTrack.add(track);
+			}
+	    }
+	    response.setOrderTrack(orderTrack);
+		return response;
+    }
+    
+    /**
+     * 订单反查接口:根据本地订单的编号，反查微知订单号
+     * @param thirdOrder
+     * @return
+     * @throws Exception 
+     */
+    public String selectOrderIdByThirdOrder(String thirdOrder) throws Exception{
+    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
+		BasicNameValuePair param2 = new BasicNameValuePair("thirdOrder",thirdOrder);
+		parameters.add(param1);
+		parameters.add(param2);
+		logger.info("----selectOrderIdByThirdOrder------ params:{}",JsonUtil.toJsonString(parameters));
+		
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		
+		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER, entity);
+	    
+		logger.info("----selectOrderIdByThirdOrder------ response:{}",responseJson);
+	    /**
+	     * 返回json
+	     */
+	    JSONObject datas = JSON.parseObject(responseJson);
+	    
+	    if(null == datas){
+	    	logger.error("----selectOrderIdByThirdOrder--- callback is null");
+	    	return "";
+	    }
+	    
+	    String result = datas.getString("result");
+	    
+	    if(!StringUtils.equals(result, "0")){
+	    	String message = datas.getString("detail");
+	    	logger.error("---selectOrderIdByThirdOrder---- callback result:{},message:{}",result,message);
+	    	return "";
+	    }
+	    return datas.getString("WzOrder");
     }
 }
