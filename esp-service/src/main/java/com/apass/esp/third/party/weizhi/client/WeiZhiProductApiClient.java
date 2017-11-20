@@ -22,6 +22,7 @@ import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.CheckSale;
+import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -334,5 +335,38 @@ public class WeiZhiProductApiClient {
 			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
 		}
 		return checkSale;
+	}
+	/**
+	 * 同类商品查询
+	 */
+	public WZJdSimilarSku getWeiZhiSimilarSku(String skuId) throws Exception {
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("skuId", skuId);
+		parameters.add(param1);
+		parameters.add(param2);
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		WZJdSimilarSku  wZJdSimilarSku = new WZJdSimilarSku();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SIMILARSKU,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<WZJdSimilarSku>>() {
+			}.getType();
+			WeiZhiResponse<WZJdSimilarSku> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				wZJdSimilarSku = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
+		}
+		return wZJdSimilarSku;
 	}
 }

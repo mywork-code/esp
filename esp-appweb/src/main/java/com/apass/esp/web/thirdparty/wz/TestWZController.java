@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
+import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.gfb.framework.utils.CommonUtils;
 
@@ -161,7 +163,7 @@ public class TestWZController {
 	/**
 	 * 商品区域购买限制查询(单个商品查询)
 	 */
-	@RequestMapping(value = "/CheckAreaLimit", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkAreaLimit", method = RequestMethod.POST)
 	@ResponseBody
 	public Boolean getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) throws Exception {
 		Region region =new Region();
@@ -171,10 +173,19 @@ public class TestWZController {
 	/**
 	 * 商品可售验证接口
 	 */
-	@RequestMapping(value = "/CheckSale", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkSale", method = RequestMethod.POST)
 	@ResponseBody
 	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
 		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1593516,1686504");
 		return result;
+	}
+	/**
+	 * 同类商品查询
+	 */
+	@RequestMapping(value = "/similarSku", method = RequestMethod.POST)
+	@ResponseBody
+	public List<JdSimilarSku> getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
+		List<JdSimilarSku> list=weiZhiProductService.getWeiZhiSimilarSku("1686504");
+		return list;
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.jd.JdProductState;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
@@ -17,6 +18,7 @@ import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.CheckSale;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
+import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
@@ -189,6 +191,14 @@ public class WeiZhiProductService {
 	public List<WZCheckSale> getWeiZhiCheckSale(String skuIds) throws Exception {
 		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
 		List<WZCheckSale>  list=checkSale.getResult();
+		return list;
+	}
+	/**
+	 * 同类商品查询
+	 */
+	public List<JdSimilarSku> getWeiZhiSimilarSku(String skuId) throws Exception {
+		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId);
+		List<JdSimilarSku> list=wZJdSimilarSku.getResult();
 		return list;
 	}
 
