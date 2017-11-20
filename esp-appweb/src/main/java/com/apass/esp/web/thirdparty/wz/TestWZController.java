@@ -287,7 +287,6 @@ public class TestWZController {
 		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
 		return result;
 	}
-<<<<<<< HEAD
 
 	/**
 	 * 服务单保存申请
@@ -303,7 +302,8 @@ public class TestWZController {
 		} catch (Exception e) {
 			return Response.fail("服务单保存申请失败！");
 		}
-=======
+	}
+
 	/**
 	 * 同类商品查询
 	 */
@@ -322,6 +322,5 @@ public class TestWZController {
 	@ResponseBody
 	public int  getWeiZhiGetBalance() throws Exception {
 		return weiZhiProductService.getWeiZhiGetBalance();
->>>>>>> 8980a0a0f2787fd2452f91630493dd83c66e8f4d
 	}
 }
