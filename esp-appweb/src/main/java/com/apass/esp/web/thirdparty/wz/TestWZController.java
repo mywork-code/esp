@@ -3,6 +3,9 @@ package com.apass.esp.web.thirdparty.wz;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
+import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
+import com.apass.esp.third.party.weizhi.entity.aftersale.WeiZhiAfterSaleDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,9 @@ public class TestWZController {
 	@Autowired
 	private WeiZhiProductService weiZhiProductService;
 
+	@Autowired
+	private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
+
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
 	public Response testGetToken() {
@@ -46,6 +52,7 @@ public class TestWZController {
 		} catch (Exception e) {
 			LOGGER.error("微知token获取出错！");
 		}
+
 		return Response.fail("微知token获取失败！");
 	}
 
@@ -176,5 +183,21 @@ public class TestWZController {
 	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
 		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1593516,1686504");
 		return result;
+	}
+
+	/**
+	 * 服务单保存申请
+	 */
+	@RequestMapping(value = "/createAfsApply", method = RequestMethod.POST)
+	@ResponseBody
+	public Response createAfsApply(@RequestBody Map<String, Object> paramMap) {
+		try {
+			AfsApplyWeiZhiDto AfsApplyWeiZhiDto = new AfsApplyWeiZhiDto();
+			WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = weiZhiAfterSaleApiClient.afterSaleAfsApplyCreate(AfsApplyWeiZhiDto);
+
+			return Response.success("服务单保存申请成功！",weiZhiAfterSaleApplyDto);
+		} catch (Exception e) {
+			return Response.fail("服务单保存申请失败！");
+		}
 	}
 }

@@ -70,6 +70,7 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductDetail;
 	}
+
 	/**
 	 * 获取商品上下架状态接口
 	 */
@@ -104,7 +105,6 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductState;
 	}
-	
 	
 	/**
 	 * 查询一级分类列表信息接口
@@ -166,6 +166,7 @@ public class WeiZhiProductApiClient {
 		}
 		return firstCategorys;
 	}
+
 	/**
 	 * 获取分类商品编号接口
 	 */
@@ -215,6 +216,7 @@ public class WeiZhiProductApiClient {
 		}
 		return wzSkuListPage;
 	}
+
 	/**
 	 *获取所有图片信息
 	 */
@@ -335,4 +337,7 @@ public class WeiZhiProductApiClient {
 		}
 		return checkSale;
 	}
+
+
+
 }
