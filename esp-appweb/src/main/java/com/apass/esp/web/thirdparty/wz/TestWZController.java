@@ -1,5 +1,7 @@
 package com.apass.esp.web.thirdparty.wz;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,14 +19,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.entity.AddressInfo;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.OrderReq;
+import com.apass.esp.third.party.weizhi.entity.PriceSnap;
+import com.apass.esp.third.party.weizhi.entity.SkuNum;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
+import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.google.common.collect.Lists;
 
 /**
  * @author zengqingshan
@@ -37,6 +48,11 @@ public class TestWZController {
 	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
 	private WeiZhiProductService weiZhiProductService;
+	@Autowired
+	private WeiZhiOrderApiClient order;
+	@Autowired
+	private WeiZhiPriceApiClient price;
+	
 
 	@Autowired
 	private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
@@ -125,14 +141,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiThirdCategorys", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
+	public List<Category> getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
+		List<Category> categorys=null;
 		try {
-			List<Category> categorys = weiZhiProductService.getWeiZhiThirdCategorys();
+			 categorys = weiZhiProductService.getWeiZhiThirdCategorys();
 			System.out.println(categorys);
 		} catch (Exception e) {
-			return Response.fail("查询三级分类列表信息接口失败！");
+			return null;
 		}
-		return Response.success("查询三级分类列表信息接口成功！");
+		return categorys;
 	}
 
 	/**
@@ -140,14 +157,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiGetSku", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
+	public List<String> getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
+		List<String> categorys=null;
 		try {
-			List<String> categorys = weiZhiProductService.getWeiZhiGetSku();
+			 categorys = weiZhiProductService.getWeiZhiGetSku();
 			System.out.println(categorys);
 		} catch (Exception e) {
-			return Response.fail("获取分类商品编号接口失败！");
+			return null;
 		}
-		return Response.success("获取分类商品编号接口成功！");
+		return categorys;
 	}
 
 	/**
@@ -165,10 +183,95 @@ public class TestWZController {
 		}
 		return Response.success("获取所有图片信息成功！");
 	}
+	
+	/**
+	 * 根据skuid，获取微知 和京东的价格
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/price")
+	@ResponseBody
+	public Response getWzPrice() throws Exception{
+		List<String> skuList = Lists.newArrayList();
+		skuList.add("1331125");
+		List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+		return Response.successResponse(priceList);
+	}
+	
+	/**
+	 * 确认预占库存
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/orderOccupyStockConfirm")
+	@ResponseBody
+	public Response orderOccupyStockConfirm() throws Exception {
+		return Response.successResponse(order.orderOccupyStockConfirm("2017111716513561"));
+	}
+	
+	/**
+	 * 查询订单信息接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/selectOrder")
+	@ResponseBody
+	public Response selectOrder() throws Exception {
+		return Response.successResponse(order.selectOrder("2017111716513561"));
+	}
+	
+	/**
+	 * 根据订单号，获取物流信息
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/orderTrack")
+	@ResponseBody
+	public Response orderTrack() throws Exception {
+		return Response.successResponse(order.orderTrack("2017111716513561"));
+	}
+	
+	/**
+	 * 统一下单接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/unitOrder")
+	@ResponseBody
+	public Response getWeiZhiUnitOrder() throws Exception {
+		OrderReq req = new OrderReq();
+		req.setOrderNo("11234567890");
+		req.setRemark("hahah");
+		
+		AddressInfo addressInfo = new AddressInfo();
+	    addressInfo.setProvinceId(2);
+        addressInfo.setCityId(2815);
+        addressInfo.setCountyId(51975);
+        addressInfo.setTownId(0);
+        addressInfo.setAddress("延安西路726号华敏翰尊大厦3层A-5");
+        addressInfo.setReceiver("victorpeng");
+        addressInfo.setEmail("jdsupport@apass.cn");
+        addressInfo.setMobile("18321017352");
+        
+        req.setAddressInfo(addressInfo);
+       
+        List<SkuNum> skuNumList = new ArrayList<>();
+        List<PriceSnap> priceSnaps = new ArrayList<>();
+        SkuNum skuNum = new SkuNum();
+        skuNum.setNum(1);
+        skuNum.setSkuId(1331125);
+        skuNum.setPrice(new BigDecimal(1763.0));
+        skuNumList.add(skuNum);
+        req.setSkuNumList(skuNumList);
+        
+    	PriceSnap priceSnap = new PriceSnap();
+    	priceSnap.setSkuId(1331125);
+    	priceSnap.setPrice(new BigDecimal(1763.0));
+    	priceSnaps.add(priceSnap);
+        req.setOrderPriceSnap(priceSnaps);
+        
+        return Response.successResponse(order.submitOrder(req));
+	}
 	/**
 	 * 商品区域购买限制查询(单个商品查询)
 	 */
-	@RequestMapping(value = "/CheckAreaLimit", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkAreaLimit", method = RequestMethod.POST)
 	@ResponseBody
 	public Boolean getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) throws Exception {
 		Region region =new Region();
@@ -178,12 +281,13 @@ public class TestWZController {
 	/**
 	 * 商品可售验证接口
 	 */
-	@RequestMapping(value = "/CheckSale", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkSale", method = RequestMethod.POST)
 	@ResponseBody
 	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1593516,1686504");
+		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
 		return result;
 	}
+<<<<<<< HEAD
 
 	/**
 	 * 服务单保存申请
@@ -199,5 +303,25 @@ public class TestWZController {
 		} catch (Exception e) {
 			return Response.fail("服务单保存申请失败！");
 		}
+=======
+	/**
+	 * 同类商品查询
+	 */
+	@RequestMapping(value = "/similarSku", method = RequestMethod.POST)
+	@ResponseBody
+	public List<JdSimilarSku> getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
+		List<JdSimilarSku> list=weiZhiProductService.getWeiZhiSimilarSku("1815738");
+		return list;
+	}
+	/**
+	 * 统一余额查询接口
+	 * @param skuId
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getBalance", method = RequestMethod.GET)
+	@ResponseBody
+	public int  getWeiZhiGetBalance() throws Exception {
+		return weiZhiProductService.getWeiZhiGetBalance();
+>>>>>>> 8980a0a0f2787fd2452f91630493dd83c66e8f4d
 	}
 }

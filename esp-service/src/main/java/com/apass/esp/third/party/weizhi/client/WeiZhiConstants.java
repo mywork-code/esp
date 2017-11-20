@@ -49,6 +49,9 @@ public class WeiZhiConstants {
     public static final String WZAPI_PRODUCT_GETCATEGORY  = "http://180.168.49.94:65530/jdapi/product/getCategory";
     //微知获取分类商品编号接口
     public static final String WZAPI_PRODUCT_GETSKU  = "http://180.168.49.94:65530/jdapi/product/getSku";
+    //微知统一余额查询接口
+    public static final String WZAPI_PRODUCT_GETBALANCE  = "http://180.168.49.94:65530/jdapi/price/getBalance";
+    
     //微知商品区域购买限制查询
     public static final String WZAPI_PRODUCT_CHECKAREALIMIT  = "http://180.168.49.94:65530/jdapi/product/checkAreaLimit";
     //微知商品可售验证接口
@@ -86,4 +89,8 @@ public class WeiZhiConstants {
     public static final String WZAPI_AFTERSALE_SERVIVELIST = "http://180.168.49.94:65530/jdapi/afterSales/getServiveList";
 
 
+
+    //批量查询商品价格
+    public static final String WZAPI_PRICE_GETWZPRICE = "http://180.168.49.94:65530/jdapi/price/getWzPrice";
+    
 }
