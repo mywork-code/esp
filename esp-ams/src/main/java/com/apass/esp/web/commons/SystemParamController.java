@@ -1,32 +1,15 @@
 package com.apass.esp.web.commons;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.BsdiffEntity;
+import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.entity.common.SystemParamEntity;
 import com.apass.esp.domain.enums.PaymentStatusEnum;
 import com.apass.esp.domain.kvattr.JdSystemParamVo;
 import com.apass.esp.domain.kvattr.PaymentVo;
+import com.apass.esp.service.common.BsdiffinfoService;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.SystemParamService;
 import com.apass.esp.service.common.WeexInfoService;
@@ -42,6 +25,21 @@ import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 
@@ -58,10 +56,15 @@ public class SystemParamController {
     private String rootPath;
     @Value("${nfs.weex}")
     private String nfsWeexRoot;
+    @Value("${nfs.bsdiff}")
+    private String nfsBsdiffPath;
+
     /**
      * 日志
      */
     private static final Logger LOG = LoggerFactory.getLogger(SystemParamController.class);
+    private static final String VERPATH = "/verzip";
+    private static final String PATCHPATH = "/patchzip";
 
     @Autowired
     private SystemParamService  systemParamService;
@@ -75,11 +78,15 @@ public class SystemParamController {
     @Autowired
     private SystemEnvConfig systemEnvConfig;
 
+    @Autowired
+    private BsdiffinfoService bsdiffinfoEntityService;
+
     /**
      * 系统参数信息页面
      */
     @RequestMapping("/page")
     public String handlePage() {
+
         return "common/param/systemParam";
     }
 
@@ -403,6 +410,23 @@ public class SystemParamController {
         return Response.success("更新weex成功");
     }
 
+    @ResponseBody
+    @RequestMapping("/bsdiffUpload")
+    public Response bsdiffUpload(@ModelAttribute("bsdiffEntiry")BsdiffEntity bsdiffEntity) {
+        try{
+            LOG.info("bsdiff增量更新开始上传,参数 版本号:{},文件名:{}",bsdiffEntity.getBsdiffVer(),bsdiffEntity.getBsdiffFile().getOriginalFilename());
+            BsdiffInfoEntity bsdiffInfoEntity = new BsdiffInfoEntity();
+            bsdiffInfoEntity.setCreateData(new Date());
+            bsdiffInfoEntity.setCreateUser(SpringSecurityUtils.getCurrentUser());
+            bsdiffInfoEntity.setUpdateDate(new Date());
+            bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
+            bsdiffinfoEntityService.bsdiffUpload(bsdiffEntity,bsdiffInfoEntity);
+        }catch (Exception e){
+            LOG.error("增量添加上传失败",e);
+            return Response.fail(e.getMessage());
+        }
+        return Response.success("增量添加上传成功");
+    }
 
     public void paramCheck(Map<String, String> map) throws BusinessException {
 

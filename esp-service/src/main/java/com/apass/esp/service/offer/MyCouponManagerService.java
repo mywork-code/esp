@@ -305,6 +305,7 @@ public class MyCouponManagerService {
 		if(StringUtils.isNotBlank(coupon.getGoodsCode())){
 			GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(coupon.getGoodsCode());
 			vo.setGoodsId(goods.getId()+"");
+			vo.setSource(goods.getSource());
 		}
 		vo.setType(coupon.getType());
 		String type = coupon.getType();

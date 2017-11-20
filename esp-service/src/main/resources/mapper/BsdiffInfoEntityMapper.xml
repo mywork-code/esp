@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.BsdiffInfoEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.BsdiffInfoEntity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="bsdiff_ver" property="bsdiffVer" jdbcType="VARCHAR" />
+    <result column="patch_name" property="patchName" jdbcType="VARCHAR" />
+    <result column="create_data" property="createData" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, bsdiff_ver, patch_name, create_data, update_date, create_user, update_user
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_bsdiff_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_bsdiff_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_bsdiff_info (bsdiff_ver, patch_name, create_data, 
+      update_date, create_user, update_user
+      )
+    values (#{bsdiffVer,jdbcType=VARCHAR}, #{patchName,jdbcType=VARCHAR}, #{createData,jdbcType=TIMESTAMP}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_bsdiff_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bsdiffVer != null" >
+        bsdiff_ver,
+      </if>
+      <if test="patchName != null" >
+        patch_name,
+      </if>
+      <if test="createData != null" >
+        create_data,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bsdiffVer != null" >
+        #{bsdiffVer,jdbcType=VARCHAR},
+      </if>
+      <if test="patchName != null" >
+        #{patchName,jdbcType=VARCHAR},
+      </if>
+      <if test="createData != null" >
+        #{createData,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" >
+    update t_esp_bsdiff_info
+    <set >
+      <if test="bsdiffVer != null" >
+        bsdiff_ver = #{bsdiffVer,jdbcType=VARCHAR},
+      </if>
+      <if test="patchName != null" >
+        patch_name = #{patchName,jdbcType=VARCHAR},
+      </if>
+      <if test="createData != null" >
+        create_data = #{createData,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.BsdiffInfoEntity" >
+    update t_esp_bsdiff_info
+    set bsdiff_ver = #{bsdiffVer,jdbcType=VARCHAR},
+      patch_name = #{patchName,jdbcType=VARCHAR},
+      create_data = #{createData,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,19 +1,13 @@
 package com.apass.esp.repository.goods;
-
 import java.util.List;
-import java.util.Set;
-
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.mybatis.support.BaseMybatisRepository;
-
 @MyBatisRepository
 public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockInfoEntity, Long>{
-
     /**
      * 获取商品详细信息(尺寸规格价格大小等)
      * 
@@ -55,8 +49,8 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	/**
 	 * 加库存
 	 */
-	public void updateService(GoodsStockInfoEntity entity){
-		this.getSqlSession().update("updateService", entity);
+	public Integer updateService(GoodsStockInfoEntity entity){
+		return this.getSqlSession().update("updateService", entity);
 	}
 	/**
      * 
@@ -94,7 +88,7 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 		return this.getSqlSession().selectOne("stockById", stockId);
 	}
 
-	public void insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
-		this.getSqlSession().insert("insertGoodsAttr",goodsStockentoty);
+	public Integer insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
+		return this.getSqlSession().insert("insertGoodsAttr",goodsStockentoty);
 	}
 }

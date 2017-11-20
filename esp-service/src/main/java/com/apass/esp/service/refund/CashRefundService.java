@@ -26,6 +26,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.payment.PaymentService;
 import com.apass.esp.utils.BeanUtils;
@@ -85,6 +86,9 @@ public class CashRefundService {
     
     @Autowired
     public OrderRefundRepository  orderRefundRepository;
+
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
 
     /**
      * @param orderId
@@ -377,6 +381,21 @@ public class CashRefundService {
                 cashRefund.setStatusD(date);
                 cashRefund.setAgreeD(date);
                 cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+
+                Long couponId = orderEntity.getCouponId();
+                OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
+                orderInfoEntity.setId(orderEntity.getId());
+                if(couponId > 0){
+                    //返回优惠券时，订单的优惠券id 置为负数，比如couponId = -418
+                    orderInfoEntity.setCouponId(couponId * -1);
+                }
+                orderInfoRepository.update(orderInfoEntity);
+
+                //同意退款，立刻返回优惠券
+                myCouponManagerService.returnCoupon(Long.valueOf(userId),couponId,orderId);
+
+
+
                 try {
                     orderService.addGoodsStock("", orderId);
                 } catch (BusinessException e) {
@@ -491,6 +510,18 @@ public class CashRefundService {
                     cashRefund.setStatus(2);
                     cashRefund.setAgreeD(new Date());
                     cashRefundMapper.updateByPrimaryKeySelective(cashRefund);
+
+                    Long couponId = orderEntity.getCouponId();
+                    OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
+                    orderInfoEntity.setId(orderEntity.getId());
+                    if(couponId > 0){
+                        //返回优惠券时，订单的优惠券id 置为负数，比如couponId = -418
+                        orderInfoEntity.setCouponId(couponId * -1);
+                    }
+                    orderInfoRepository.update(orderInfoEntity);
+
+                    //同意退款，立刻返回优惠券
+                    myCouponManagerService.returnCoupon(Long.valueOf(userId),couponId,orderId);
                     try {
                         orderService.addGoodsStock("", orderId);
                     } catch (BusinessException e) {

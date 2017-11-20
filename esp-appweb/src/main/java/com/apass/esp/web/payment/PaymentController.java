@@ -206,8 +206,7 @@ public class PaymentController {
             	LOGGER.error("请选择要支付的订单!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            payPage = paymentService.defary(requestId,userId, orderList, paymentType,cardNo,systemType,downPayType);
-            
+            payPage = paymentService.defary1(requestId,userId, orderList, paymentType,cardNo,systemType,downPayType);
         } catch (BusinessException e) {
         	if(BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR.equals(e.getBusinessErrorCode())){//商品价格已变动，请重新下单
             orderService.updateOrderCancel(e.getErrorCode());

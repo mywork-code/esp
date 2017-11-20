@@ -1,6 +1,7 @@
 package com.apass.esp.nothing;
 
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.domain.vo.CommissionWalletVo;
@@ -8,13 +9,17 @@ import com.apass.esp.domain.vo.CommissionWalletVoOld;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.schedule.JdAfterSaleScheduleTask;
+import com.apass.esp.service.common.BsdiffinfoService;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.common.WeexInfoService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.logstash.LOG;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.MD5Utils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,10 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -49,6 +51,8 @@ public class StaticFileController {
     private String appWebDomain;
     @Value("${nfs.rootPath}")
     private String rootPath;
+    @Value("${nfs.bsdiff}")
+    private String nfsBsdiffPath;
 
     @Autowired
     private  OrderInfoRepository orderInfoRepository;
@@ -68,7 +72,12 @@ public class StaticFileController {
     @Autowired
     private JdAfterSaleScheduleTask jdAfterSaleScheduleTask;
 
+    @Autowired
+    private BsdiffinfoService bsdiffinfoService;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StaticFileController.class);
+    private static final String VERPATH = "/verzip";
+    private static final String PATCHPATH = "/patchzip";
 
     @RequestMapping(value = "v1/app_weex")
     @ResponseBody
@@ -305,6 +314,45 @@ public class StaticFileController {
         }
 
         return Response.successResponse(commissionWalletVos);
+    }
+
+    @RequestMapping(value = "bsdiff/download")
+    @ResponseBody
+    public Response downLoad(@RequestBody(required=true) Map<String,Object> paramMap){
+        LOGGER.info("bsdiff下载开始执行了,参数:{}", GsonUtils.toJson(paramMap));
+        Map<String,String> resultMap = Maps.newHashMap();
+        String path = null;
+        String md5 = null;
+        try{
+            String ver = (String)paramMap.get("ver");
+            List<BsdiffInfoEntity> bsdiffInfoEntities = bsdiffinfoService.listAll();
+            if(CollectionUtils.isEmpty(bsdiffInfoEntities)){
+                return Response.fail("数据有误！");
+            }
+
+            BsdiffInfoEntity bsdiffInfoEntity = bsdiffInfoEntities.get(0);//选择已上传最大版本号vermax_ver.返回的文件路径为patchpath目录下的vermax_ver.zip文件
+
+            if(StringUtils.isBlank(ver)){//如果版本号为空，说明是第一次打开。返回最新zip包
+                path = appWebDomain+"/static"+ nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip";
+                md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + VERPATH + "/"+ bsdiffInfoEntity.getBsdiffVer()+".zip"));
+            }else{//如果不是空，判断版本号是否是最新版本号，如果是 url返回空，否则 返回对应patch包
+                if(StringUtils.equals(ver,bsdiffInfoEntity.getBsdiffVer())){
+                    path = "";
+                    md5 = "";
+                }else {
+                    path = appWebDomain+"/static" + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip";
+                    md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
+                }
+            }
+            resultMap.put("ver",bsdiffInfoEntity.getBsdiffVer());
+            resultMap.put("url",path);
+            resultMap.put("md5",md5);
+            LOGGER.info("bsdiff下载执行结束了,返回值:{}", GsonUtils.toJson(resultMap));
+        }catch (Exception e){
+            LOGGER.error("下载失败",e);
+            return Response.fail("下载失败");
+        }
+        return Response.success("下载成功",resultMap);
     }
 
     @RequestMapping(value = "jsUtils/test1", method = RequestMethod.POST)

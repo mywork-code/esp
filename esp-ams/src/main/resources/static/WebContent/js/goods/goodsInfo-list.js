@@ -96,9 +96,7 @@ $(function() {
 			success : function(data) {
 				//刷新前置页面库存列表（无需刷新）
 				//关闭本窗口 无需关闭
-				if(data.status==1){
-					$.messager.alert("提示", data.msg, "info");
-				}
+				$.messager.alert("提示", data.msg, "info");
 				//$('#addGoodsInfo').window('close');
 			}
 		});
@@ -155,9 +153,7 @@ $(function() {
 			success : function(data) {
 				//刷新前置页面库存列表（无需刷新）
 				//关闭本窗口 无需关闭
-				if(data.status==1){
-					$.messager.alert("提示", data.msg, "info");
-				}
+				$.messager.alert("提示", data.msg, "info");
 				//$('#editGoodsInfo').window('close');
 			}
 		});
@@ -3188,15 +3184,15 @@ function flushAttrList(){//表格   刷新       弹框 后才刷新
             align : 'center',//库存剩余删除可编辑
         },{
         	field:'action',
-        	title:'Action',
+        	title:'操作',
         	width:100,
         	align:'center',
 			formatter:function(value,row,index){
 				if (row.editing){
-					var r = '<a href="#" onclick="saverow(this)">Save</a> ';
+					var r = '<a href="#" onclick="saverow(this)">保存</a> ';
 					return r;
 				} else {
-					var e = '<a href="#" onclick="editrow(this)">Edit</a> ';
+					var e = '<a href="#" onclick="editrow(this)">修改</a> ';
 					return e;
 				}
 			}
@@ -3464,14 +3460,14 @@ function flushtableattrEditlist(){
             align : 'center',
         },{
         	field:'action',
-        	title:'Action',
+        	title:'操作',
         	width:100,
         	align:'center',
 			formatter:function(value,row,index){
 				if (row.editing){
-					return '<a href="#" onclick="saverowE(this)">Save</a> ';
+					return '<a href="#" onclick="saverowE(this)">保存</a> ';
 				} else {
-					return '<a href="#" onclick="editrowE(this)">Edit</a> ';
+					return '<a href="#" onclick="editrowE(this)">修改</a> ';
 				}
 			}
         }]],
@@ -3518,7 +3514,6 @@ function getRowIndexE(target){//可编辑动态表格
 }
 /*=================================修改商品类目修改  此时逻辑与  新增商品库存的逻辑完全一致  只是页面DIV不同重写一遍。=====================================*/
 function function1(){
-	debugger
 	if(catenum>2){
 		$.messager.alert("提示", "商品属性最多选择3个！", "info");
 		return;
@@ -3574,9 +3569,7 @@ function function2(){
 		success : function(data) {
 			//刷新前置页面库存列表（无需刷新）
 			//关闭本窗口 无需关闭
-			if(data.status==1){
-				$.messager.alert("提示", data.msg, "info");
-			}
+			$.messager.alert("提示", data.msg, "info");
 			//$('#editGoodsInfo').window('close');
 		}
 	});

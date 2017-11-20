@@ -343,7 +343,7 @@ public class ShopHomeController {
     }
 
     /**
-     * 加载商品列表(根据类目id查询商品)
+     * 加载商品列表(根据类目id查询商品):老方法，新方法请看:/loadGoodsListByCategoryId
      *
      * @return
      */
@@ -533,7 +533,7 @@ public class ShopHomeController {
 			pages = StringUtils.isEmpty(page) ? 1 : Integer.valueOf(page);
 			//查询ES
 			Pagination<Goods> pagination = new Pagination<>();
-			pagination=IndexManager.goodSearchCategoryId2(categoryId, goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),(pages - 1) * row, row);
+			pagination=IndexManager.goodSearchCategoryId2ForOtherCategory(categoryId, SortMode.SORD_ASC.getSortField(),goodsSearchCondition.getSortMode().getSortField(), goodsSearchCondition.getSortMode().isDesc(),(pages - 1) * row, row);
 			//当es查询不到结果时，到数据库查询
 			if(null==pagination || pagination.getDataList().size()==0){
 				returnMap= loadGoodsListByCategoryIdByMysql(paramMap);

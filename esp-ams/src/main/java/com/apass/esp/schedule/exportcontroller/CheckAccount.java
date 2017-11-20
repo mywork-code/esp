@@ -49,6 +49,7 @@ public class CheckAccount {
             LOGGER.info("开始时间，beginDate:{}",beginDate);
             //获取数据
             List<CheckAccountOrderDetail> checkAccountOrderDetailList = getCheckOrderDetail(beginDate);
+
             //重新包装数据
             for (CheckAccountOrderDetail chOrder: checkAccountOrderDetailList) {
                 //用户名：注册手机号
@@ -64,7 +65,6 @@ public class CheckAccount {
                         chOrder.setOrderstatus(orderStatuses[i].getMessage());
                     }
                 }
-
 
                 //1,付款方式,2,首付金额,3,额度支付,4,支付方式
                 if (StringUtils.isNotBlank(chOrder.getTxnType())) {
@@ -124,7 +124,7 @@ public class CheckAccount {
         csvWriter.writeRecord(headers);
         for(CheckAccountOrderDetail chOrder : checkAccountOrderDetailList){
             List<String> contentList = new ArrayList<String>();
-            contentList.add(chOrder.getOrderId());
+            contentList.add("'"+chOrder.getOrderId());
             contentList.add(chOrder.getMerchantName());
             contentList.add(chOrder.getTelephone());
             contentList.add(chOrder.getCreateDate()==null?"":DateFormatUtil.dateToString(chOrder.getCreateDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));

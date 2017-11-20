@@ -49,9 +49,8 @@ public class WeiZhiConstants {
     public static final String WZAPI_PRODUCT_GETCATEGORY  = "http://180.168.49.94:65530/jdapi/product/getCategory";
     //微知获取分类商品编号接口
     public static final String WZAPI_PRODUCT_GETSKU  = "http://180.168.49.94:65530/jdapi/product/getSku";
-    //微知获取所有图片信息
-    public static final String WZAPI_PRODUCT_SKUIMAGE  = "http://180.168.49.94:65530/jdapi/product/skuImage";
-
+    //微知统一余额查询接口
+    public static final String WZAPI_PRODUCT_GETBALANCE  = "http://180.168.49.94:65530/jdapi/price/getBalance";
     
     //微知商品区域购买限制查询
     public static final String WZAPI_PRODUCT_CHECKAREALIMIT  = "http://180.168.49.94:65530/jdapi/product/checkAreaLimit";
@@ -71,7 +70,27 @@ public class WeiZhiConstants {
     //根据本地订单号查询微知订单号
     public static final String WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER = "http://180.168.49.94:65530/jdapi/order/selectOrderIdByThirdOrder";
     
-    
+
+    //微知获取所有图片信息
+    public static final String WZAPI_PRODUCT_SKUIMAGE  = "http://180.168.49.94:65530/jdapi/product/skuImage";
+
+
+    /**
+     * 小海的weizhi接口
+     */
+    //服务单保存申请
+    public static final String WZAPI_AFTERSALES_AFSAPPLY = "http://180.168.49.94:65530/jdapi/afterSales/createAfsApply";
+    //填写客户发运信息
+    public static final String WZAPI_AFTERSALES_SENDSKU = "";//TODO
+    //校验某订单中某商品是否可以提交售后服务
+    public static final String WZAPI_AFTERSALE_AVAILABLENUMBERCOMP = "http://180.168.49.94:65530/jdapi/afterSales/getAvailableNumberComp";
+    //根据订单号、商品编号查询支持的服务类型
+    public static final String WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP = "http://180.168.49.94:65530/jdapi/afterSales/getCustomerExpectComp";
+    //根据订单号、商品编号查询支持的商品返回微知方式
+    public static final String WZAPI_AFTERSALE_WARERETURNJDCOMP = "http://180.168.49.94:65530/jdapi/afterSales/getWareReturnJdComp";
+    //根据客户账号和订单号分页查询服务单概要信息
+    public static final String WZAPI_AFTERSALE_SERVIVELIST = "http://180.168.49.94:65530/jdapi/afterSales/getServiveList";
+
     //批量查询商品价格
     public static final String WZAPI_PRICE_GETWZPRICE = "http://180.168.49.94:65530/jdapi/price/getWzPrice";
     

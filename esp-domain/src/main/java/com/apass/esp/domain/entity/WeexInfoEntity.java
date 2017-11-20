@@ -35,6 +35,8 @@ public class WeexInfoEntity {
         return weexBlong;
     }
 
+    private MultipartFile weexFile;//文件
+
     public void setWeexBlong(String weexBlong) {
         this.weexBlong = weexBlong;
     }
@@ -70,8 +72,6 @@ public class WeexInfoEntity {
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
     }
-
-    private MultipartFile weexFile;//文件
 
     public MultipartFile getWeexFile() {
         return weexFile;

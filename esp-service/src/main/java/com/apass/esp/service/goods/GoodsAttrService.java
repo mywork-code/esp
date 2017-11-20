@@ -429,7 +429,7 @@ public class GoodsAttrService {//450
     }
     @Transactional
     private Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
-            List<GoodsStockInfoEntity> goodsStocken,Long goodsId,String userName,String status){
+            List<GoodsStockInfoEntity> goodsStocken,Long goodsId,String userName,String status) throws BusinessException{
         Boolean falgstatus = "undefined".equals(status)||StringUtils.isBlank(status);
         //修改商品库存维护使用新增商品库存维护逻辑  因为类目修改库存被删除
         if(!falgstatus&&"editstatusaddmethod".equals(status)){
@@ -456,7 +456,10 @@ public class GoodsAttrService {//450
             goodsStockentoty.setUpdateUser(userName);
             goodsStockentoty.setMarketPrice(new BigDecimal(entity.getGoodsPrice()));//1h
 //            goodsStockentoty.setStockLogo(url);
-            goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
+            Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
+            if(i!=1){
+                throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+            }
         }
         return Response.success("批量保存库存！");
     }
@@ -692,7 +695,7 @@ public class GoodsAttrService {//450
                 entity.setAttrId(Long.parseLong(attrId));
                 entity.setSort(1);
                 entity.setUpdatedTime(new Date());
-                if(!checkAttrValListByAttrId(attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
+                if(!checkAttrValListByAttrId(null,attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
                     throw new BusinessException("新增属性规格名称验重失败!");
                     //return Response.fail("新增属性规格名称验重失败!");
                 }
@@ -714,15 +717,15 @@ public class GoodsAttrService {//450
                         }
                     }
                 }
-            }else{//规格表名称为空   更新该属性规格    更新该属性规格库存
+            }else{//规格表名称非空   更新该属性规格    更新该属性规格库存
                 GoodsAttrVal entity = goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValId));
+                String attrvalold = entity.getAttrVal();
                 entity.setAttrVal(attrVal);
                 entity.setUpdatedTime(new Date());
-                if(!checkAttrValListByAttrId(attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
+                if(!checkAttrValListByAttrId(Long.parseLong(attrValId),attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
                     throw new BusinessException("修改属性规格名称验重失败!");
                     //return Response.fail("修改属性规格名称验重失败!");
                 }
-                String attrvalold = goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValId)).getAttrVal();
                 int i =goodsAttrValService.updateByPrimaryKeySelective(entity);
                 if(i==0){
                     throw new BusinessException("修改属性规格名称验重失败!");
@@ -784,9 +787,10 @@ public class GoodsAttrService {//450
      * @param goodsId
      * @param username
      * @return
+     * @throws BusinessException 
      */
     @Transactional
-    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) {
+    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) throws BusinessException {
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
         for(GoodsStockInfoEntity entity : list){
@@ -807,12 +811,18 @@ public class GoodsAttrService {//450
                 String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
                 String skuId = sku+rand;
                 entity.setSkuId(skuId);
-                goodsStockInfoService.insertGoodsAttr(entity);
+                Integer i = goodsStockInfoService.insertGoodsAttr(entity);
+                if(i!=1){
+                    throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+                }
             }else{
                 GoodsStockInfoEntity en = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
                 entity.setStockTotalAmt(en.getStockTotalAmt());
                 entity.setStockCurrAmt(en.getStockCurrAmt());
-                goodsStockInfoService.updateService(entity);
+                Integer i = goodsStockInfoService.updateService(entity);
+                if(i!=1){
+                    throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+                }
             }
         }
         return Response.success("批量保存库存！");
@@ -839,9 +849,12 @@ public class GoodsAttrService {//450
         goodsService.updateService(entity);
         return Response.success(message);
     }
-    private Boolean checkAttrValListByAttrId(String attrval,Long attrId,Long goodsId){
+    private Boolean checkAttrValListByAttrId(Long attrValId,String attrval,Long attrId,Long goodsId){
         List<GoodsAttrVal> listcheck = goodsAttrValService.goodsAttrValListByAttrId(attrId, goodsId);
         for(GoodsAttrVal en : listcheck){
+            if(attrValId!=null&&attrValId.equals(en.getId())){
+                continue;
+            }
             if(StringUtils.contains(en.getAttrVal(), attrval)){
                 return false;
             }

@@ -71,6 +71,7 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductDetail;
 	}
+
 	/**
 	 * 获取商品上下架状态接口
 	 */
@@ -105,7 +106,6 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductState;
 	}
-	
 	
 	/**
 	 * 查询一级分类列表信息接口
@@ -167,6 +167,7 @@ public class WeiZhiProductApiClient {
 		}
 		return firstCategorys;
 	}
+
 	/**
 	 * 获取分类商品编号接口
 	 */
@@ -216,6 +217,7 @@ public class WeiZhiProductApiClient {
 		}
 		return wzSkuListPage;
 	}
+
 	/**
 	 *获取所有图片信息
 	 */
@@ -336,6 +338,7 @@ public class WeiZhiProductApiClient {
 		}
 		return checkSale;
 	}
+
 	/**
 	 * 同类商品查询
 	 */
@@ -368,5 +371,36 @@ public class WeiZhiProductApiClient {
 			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
 		}
 		return wZJdSimilarSku;
+	}
+	/**
+	 * 统一余额查询接口
+	 */
+	public int  getWeiZhiGetBalance() throws Exception {
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		parameters.add(param1);
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		Integer price=0;
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETBALANCE,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return 0;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<Integer>>() {
+			}.getType();
+			WeiZhiResponse<Integer> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				price = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
+		}
+		return price;
 	}
 }

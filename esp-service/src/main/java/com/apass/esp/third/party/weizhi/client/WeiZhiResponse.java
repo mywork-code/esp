@@ -37,4 +37,5 @@ public class WeiZhiResponse<T> {
     public boolean successResp(){
         return result == 0;
     }
+
 }

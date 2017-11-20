@@ -29,12 +29,15 @@
 </head>
 <body>
 
-
+	<div id="tb">
+		&nbsp;&nbsp;
+		<a href="javascript:void(0);" class="easyui-linkbutton" id="bsDiffUpload"
+		   data-options="iconCls:'icon-add'">增/全 &nbsp;量 &nbsp;更 &nbsp;新 &nbsp;上 &nbsp;传 &nbsp;</a>&nbsp;&nbsp;
+	</div>
 	<!-- 系统参数查询列表 -->
 	<div id="weexJslist"></div>
 
 	<!-- 系统参数编辑窗口 -->
-
 	<div id="editWeexJsInfo" class="easyui-dialog" title="weex信息更新"
 		style="width: 600px; height: 260px;"
 		data-options="iconCls:'icon-save',resizable:true,modal:true">
@@ -89,5 +92,30 @@
 			</table>
 		</form>
 	</div>
+
+	<!--增量更新上传窗口-->
+	<div id="bsdiffDiv" style="display: none;margin-bottom: 10px;margin-top: 10px;">
+		<form id="bsdiffForm" method="POST" enctype="multipart/form-data" modelAttribute="bsdiffEntiry">
+			<table>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>文件：
+					</td>
+					<td width="30%">
+						<input type="file" id="bsdiffFile" name="bsdiffFile" style="width: 130px;">
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" align="right"><span style="color: red">*</span>版本号：
+					</td>
+					<td width="30%">
+						<input type="text" id="bsdiffVer" name="bsdiffVer" style="width: 130px;">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+
+
+
 </body>
 </html>

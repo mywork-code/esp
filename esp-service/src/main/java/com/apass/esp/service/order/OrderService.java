@@ -438,6 +438,7 @@ public class OrderService {
             if (!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())) {
                 entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
                 entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+                entity.setParentOrderId(entity.getParentOrderId());
                 orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
             }
 
@@ -463,8 +464,7 @@ public class OrderService {
      * @param purchaseList 商品列表
      * @throws BusinessException
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class,
-            BusinessException.class })
+    @Transactional(rollbackFor = { Exception.class,BusinessException.class })
     public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment,BigDecimal discountMoneydiscountMoney, Long addressId,
             List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType,String myCouponId,String goodStockIds)
             throws BusinessException {
@@ -490,13 +490,15 @@ public class OrderService {
             }
         }
         // 4 生成订单
-        List<String> orders = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
+        Map<String,List<String>> params = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
                 deviceType,myCouponId,goodStockIds);
 
+        List<String> orders = params.get("orderList");//主订单的Id
+        List<String> comfirmOrders = params.get("confirmList");//子订单的Id
         /**
          * 设置预占库存和修改订单的信息
          */
-        preStockStatus(orders, addressId);
+        preStockStatus(comfirmOrders, addressId);
         /**
          * 使用优惠券
          */
@@ -531,6 +533,7 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
     public String preStockStatus(List<String> orderIdList, Long addressId) throws BusinessException {
         /**
          * 根据传入订单号，检测是京东的订单
@@ -817,10 +820,12 @@ public class OrderService {
      * @throws BusinessException
      */
     @Transactional(rollbackFor = { Exception.class, BusinessException.class })
-    public List<String> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
+    public Map<String,List<String>> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
             List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId,String goodStockIds)
             throws BusinessException {
+    	Map<String,List<String>> params = Maps.newHashMap();
         List<String> orderList = Lists.newArrayList();
+        List<String> confirmOrderList = Lists.newArrayList();
         // 每商户订单金额
         Map<String, BigDecimal> merchantPaymentMap = sumMerchantAndActivityIdPayment(purchaseList,myCouponId,goodStockIds);
         AddressInfoEntity address = addressInfoDao.select(addressId);
@@ -831,8 +836,10 @@ public class OrderService {
          * sprint 12 如果存在多个商户的商品,为订单生成一个主订单，如果只是一个商户的商品，不需要
          */
         String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
+        String negativeParentOrderId = "0";
         if(size > 1){
         	orderList.add(parentOrderId);
+        	negativeParentOrderId = "-"+ parentOrderId;
         }
         for (Map.Entry<String, BigDecimal> merchant : merchantPaymentMap.entrySet()) {
         	index++;
@@ -878,11 +885,12 @@ public class OrderService {
             orderInfo.setPreDelivery("N");
             orderInfo.setExtOrderId("");
             orderInfo.setPreStockStatus("");
-            orderInfo.setParentOrderId(parentOrderId);
+            orderInfo.setParentOrderId(negativeParentOrderId);
             if(size > 1){
             	orderInfo.setMainOrderId(parentOrderId);
             }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
+            confirmOrderList.add(orderId);
             if (successStatus < 1) {
                 LOG.info(requestId, "生成订单", "订单表数据插入失败");
                 throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);
@@ -953,7 +961,9 @@ public class OrderService {
                 }
             }
         }
-        return orderList;
+        params.put("orderList", orderList);
+        params.put("confirmList",confirmOrderList);
+        return params;
     }
     
     /**
@@ -2460,14 +2470,31 @@ public class OrderService {
                 	order.setParentOrderId("-1");
                 }
                 updateOrderStatusAndPreDelivery(order);
-                if(!StringUtils.equals(order.getMerchantCode(),"-1")){
-                	orderIdList.add(order.getOrderId());
+                if(StringUtils.equals(order.getMerchantCode(),"-1")){
+                	changeParentOrderId("-"+order.getOrderId());
                 }
+                orderIdList.add(order.getOrderId());
             }
             updateJdGoodsSaleVolume(orderIdList);
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void changeParentOrderId(String orderId){
+    	/**
+    	 * 根据主订单Id，查询子订单的信息
+    	 */
+    	List<OrderInfoEntity> subList = orderInfoRepository.selectByParentOrderId(orderId);
+    	for (OrderInfoEntity order : subList) {
+    		String parent = order.getParentOrderId().replace("-", "");
+			order.setParentOrderId(parent+"");
+			order.setPreDelivery(PreDeliveryType.PRE_DELIVERY_N.getCode());
+            order.setStatus(OrderStatus.ORDER_SEND.getCode());
+            order.setUpdateDate(new Date());
+			orderInfoRepository.update(order);
+		}
+    }
+    
     /**
      * 更新销量
      * 

@@ -201,5 +201,12 @@ public class WeiZhiProductService {
 		List<JdSimilarSku> list=wZJdSimilarSku.getResult();
 		return list;
 	}
-
+	/**
+	 * 统一余额查询接口
+	 * @param skuId
+	 * @throws Exception
+	 */
+	public int  getWeiZhiGetBalance() throws Exception {
+		return weiZhiProductApiClient.getWeiZhiGetBalance();
+	}
 }

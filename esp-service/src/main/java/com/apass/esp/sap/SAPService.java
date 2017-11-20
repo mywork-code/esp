@@ -706,7 +706,7 @@ public class SAPService {
         contentList.add(entity.getOrderId().toString());
         contentList.add(i + "");
         i++;
-        contentList.add(entity.getGoodsCode());
+        contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
         contentList.add(entity.getGoodsSkuAttr());
@@ -845,9 +845,9 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
-          contentList.add("Z047");
+          contentList.add("Z067");
         } else {
-          contentList.add("Z044");
+          contentList.add("Z051");
         }
         contentList.add(txn.getTxnAmt() + "");
         contentList.add("");
