@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xiaohai on 2017/11/20.
@@ -54,7 +55,7 @@ public class WeiZhiAfterSaleApiClient {
         LOGGER.info("服务单保存申请,请求参数：{}", GsonUtils.toJson(params));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
-        //发差评示封装返回值
+        //发送请求并封装返回值
         String responseJson = null;
         try{
             responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY,entity);
@@ -76,7 +77,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public WeiZhiAfterSaleDto getAvailableNumberComp() throws Exception {
+    public WeiZhiAfterSaleDto getAvailableNumberComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -84,7 +85,25 @@ public class WeiZhiAfterSaleApiClient {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("token",token));
         AfsAvailableCompVo availableCompVo = new AfsAvailableCompVo();
-        //params.add(new BasicNameValuePair(""));
+        availableCompVo.setSkuId(paramMap.get("skuId"));
+        availableCompVo.setWzOrderId(paramMap.get("wzOrderId"));
+        params.add(new BasicNameValuePair("param",GsonUtils.toJson(availableCompVo)));
+        LOGGER.info("校验某订单中某商品是否可以提交售后服务,请求参数：{}", GsonUtils.toJson(params));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+        //发送请求并封装返回值
+        String responseJson = null;
+        try{
+            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP,entity);
+            LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
+
+            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+
+            return weiZhiAfterSaleApplyDto;
+
+        }catch (Exception e){
+            LOGGER.error("getAvailableNumberComp response:{} return is not 200",e);
+        }
 
         return null;
     }

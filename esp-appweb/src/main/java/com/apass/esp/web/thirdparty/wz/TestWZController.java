@@ -308,9 +308,26 @@ public class TestWZController {
 			AfsApplyWeiZhiDto AfsApplyWeiZhiDto = new AfsApplyWeiZhiDto();
 			WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = weiZhiAfterSaleApiClient.afterSaleAfsApplyCreate(AfsApplyWeiZhiDto);
 
-			return Response.success("服务单保存申请成功！",weiZhiAfterSaleApplyDto);
+			return Response.success("服务单保存申请成功！", weiZhiAfterSaleApplyDto);
 		} catch (Exception e) {
 			return Response.fail("服务单保存申请失败！");
+		}
+	}
+
+
+	/**
+	 * 校验某订单中某商品是否可以提交售后服务
+	 */
+	@RequestMapping(value = "/availableNumberComp", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getAvailableNumberComp(@RequestBody Map<String, String> paramMap) {
+		try {
+			AfsApplyWeiZhiDto AfsApplyWeiZhiDto = new AfsApplyWeiZhiDto();
+			WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = weiZhiAfterSaleApiClient.getAvailableNumberComp(paramMap);
+
+			return Response.success("校验某订单中某商品是否可以提交售后服务成功！", weiZhiAfterSaleApplyDto);
+		} catch (Exception e) {
+			return Response.fail("校验某订单中某商品是否可以提交售后服务失败！");
 		}
 	}
 
