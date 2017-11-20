@@ -9,9 +9,9 @@ public class BsdiffInfoEntity {
 
     private String patchName;
 
-    private Date createData;
+    private Date createdTime;
 
-    private Date updateDate;
+    private Date updatedTime;
 
     private String createUser;
 
@@ -41,20 +41,20 @@ public class BsdiffInfoEntity {
         this.patchName = patchName;
     }
 
-    public Date getCreateData() {
-        return createData;
+    public Date getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreateData(Date createData) {
-        this.createData = createData;
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 
-    public Date getUpdateDate() {
-        return updateDate;
+    public Date getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 
     public String getCreateUser() {
