@@ -55,7 +55,7 @@ $(function() {
 				str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="buttonclick(this.id)"/>';
 //				str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton buttonclick">删除</a>'
 			str+='</div>';
-			str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:650px;">';
+			str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:550px;">';
 			for(var i = 0;i<10;i++){
 				id = catenum+"+"+i+"goodsAttrId";
 				str+='<input style="width:100px" onblur="createTableByCate(this.value,this.id)" id='+id+' name='+id+'/>'
@@ -63,7 +63,7 @@ $(function() {
 			str+='</div>';
 		str+='</div>';
 		$('#inputDiv').append(str);
-		dropdown(selectnum);
+		dropdown(selectnum,"add");
 		catenum++;
 	});
 	//新增商品  保存库存
@@ -97,7 +97,9 @@ $(function() {
 				//刷新前置页面库存列表（无需刷新）
 				//关闭本窗口 无需关闭
 				$.messager.alert("提示", data.msg, "info");
-				//$('#addGoodsInfo').window('close');
+				if(data.status==1){
+					$('#addGoodsInfo').window('close');
+				}
 			}
 		});
 	});
@@ -154,7 +156,9 @@ $(function() {
 				//刷新前置页面库存列表（无需刷新）
 				//关闭本窗口 无需关闭
 				$.messager.alert("提示", data.msg, "info");
-				//$('#editGoodsInfo').window('close');
+				if(data.status==1){
+					$('#editGoodsInfo').window('close');
+				}
 			}
 		});
 	});
@@ -3013,11 +3017,16 @@ var categorynameArr3 = [];
 var categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
 var categorynameArrY = [];
 var categorynameArrZ = [];
-function dropdown(selectId){
+function dropdown(selectId,type){
+	if(type=="add"){
+		var cate = categoryId1;
+	}else if (type=="edit"){
+		var cate = editCategoryId1;
+	}
 	//下拉框
-	$('#'+selectId).combobox({//categoryId1 是新增商品时一级类目ID，editCategoryId1是修改商品时一级目录ID
+	$('#'+selectId).combobox({//categoryId1 是新增商品时一级类目ID，     后面的不需要了 editCategoryId1是修改商品时一级目录ID
 		method: "get",
-        url: ctx + '/application/goods/management/goodAttrListByCategory?categoryId1='+categoryId1+"&=editCategoryId1"+editCategoryId1,   
+        url: ctx + '/application/goods/management/goodAttrListByCategory?categoryId1='+cate,   
         panelHeight: '100',  
         valueField: 'id',
         textField: 'name',
@@ -3047,6 +3056,10 @@ function dropdown(selectId){
 	});
 }
 function buttonclick(id){//删除本条属性下属十个规格，刷新表格
+	if(catenum==1){
+		$.messager.alert("提示", "库存列表唯一属性不可删除！", "info");
+		return;
+	}
 	var attnum = id.split("+")[0];
 	if(catenum>0){
 		catenum--;
@@ -3075,7 +3088,6 @@ function buttonclick(id){//删除本条属性下属十个规格，刷新表格
 		categorynameArr3=[];
 		categorynameArrZ=[];
 	}
-	debugger
 	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
 }
 function createTableByCate(value,id){//根据每个属性  十条规格   失焦事件  刷新表格
@@ -3086,7 +3098,7 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 	var childmyatt = childmy.childNodes[0];//本input归属属性下拉框
 	var childattVlaue = $('#'+childmyatt.id).combobox('getValue');//本input归属属性下拉框ID
 	var reg = /^[1-9]\d*$/;
-	if(!reg.test(childattVlaue)){
+	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
 		return;
@@ -3254,10 +3266,10 @@ function flushGoodsStock(finalGoodId){
 				var attr3 = da.attr3;
 				var str = "";
 				if(typeof(attrVal1)!='undefined'&&attrVal1!=null&&attrVal1.length>0){
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr1.name+' disabled="true">';
 					str+='</div>';
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					var attrId1 = attrVal1[0].attrId;
 					for(var i = 0;i<10;i++){
 						var en = attrVal1[i];
@@ -3274,10 +3286,10 @@ function flushGoodsStock(finalGoodId){
 					str+='</div>';
 				}
 				if(typeof(attrVal2)!='undefined'&&attrVal2!=null&&attrVal2.length>0){
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr2.name+' disabled="true">';
 					str+='</div>';
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					var attrId2 = attrVal2[0].attrId;
 					for(var i = 0;i<10;i++){
 						var en = attrVal2[i];
@@ -3294,10 +3306,10 @@ function flushGoodsStock(finalGoodId){
 					str+='</div>';
 				}
 				if(typeof(attrVal3)!='undefined'&&attrVal3!=null&&attrVal3.length>0){
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					str+='<input class="easyui-combobox" style="width:95px;"  value='+attr3.name+' disabled="true">';
 					str+='</div>';
-					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">';
+					str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">';
 					var attrId3 = attrVal3[0].attrId;
 					for(var i = 0;i<10;i++){
 						var en = attrVal3[i];
@@ -3528,7 +3540,7 @@ function function1(){
 			str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="function5(this.id)"/>';
 //			str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton function5">删除</a>'
 		str+='</div>';
-		str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:650px;">';
+		str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:550px;">';
 		for(var i = 0;i<10;i++){
 			id = catenum+"+"+i+"goodsAttrId";
 			str+='<input style="width:100px" onblur="function3(this.value,this.id)" id='+id+' name='+id+'/>'
@@ -3536,7 +3548,7 @@ function function1(){
 		str+='</div>';
 	str+='</div>';
 	$('#inputDivEdit').append(str);
-	dropdown(selectnum);
+	dropdown(selectnum,"edit");
 	catenum++;
 }
 function function2(){
@@ -3570,7 +3582,9 @@ function function2(){
 			//刷新前置页面库存列表（无需刷新）
 			//关闭本窗口 无需关闭
 			$.messager.alert("提示", data.msg, "info");
-			//$('#editGoodsInfo').window('close');
+			if(data.status==1){
+				$('#editGoodsInfo').window('close');
+			}
 		}
 	});
 }
@@ -3582,7 +3596,7 @@ function function3(value,id){//根据每个属性  十条规格   失焦事件  
 	var childmyatt = childmy.childNodes[0];//本input归属属性下拉框
 	var childattVlaue = $('#'+childmyatt.id).combobox('getValue');//本input归属属性下拉框ID
 	var reg = /^[1-9]\d*$/;
-	if(!reg.test(childattVlaue)){
+	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
 		return;
@@ -3626,6 +3640,10 @@ function function4(value1,value2,value3){
     $('#tableattrEditlist').datagrid('load', params);
 }
 function function5(id){//删除本条属性下属十个规格，刷新表格
+	if(catenum==1){
+		$.messager.alert("提示", "库存列表唯一属性不可删除！", "info");
+		return;
+	}
 	var attnum = id.split("+")[0];
 	if(catenum>0){
 		catenum--;
