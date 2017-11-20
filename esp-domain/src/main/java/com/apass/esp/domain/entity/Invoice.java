@@ -36,6 +36,8 @@ public class Invoice {
 
     private String seller;
 
+    private String pdfUrl;
+
     public Long getId() {
         return id;
     }
@@ -162,5 +164,13 @@ public class Invoice {
 
     public void setSeller(String seller) {
         this.seller = seller;
+    }
+
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 }

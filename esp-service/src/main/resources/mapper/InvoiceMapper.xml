@@ -18,10 +18,11 @@
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="invoice_num" property="invoiceNum" jdbcType="VARCHAR" />
     <result column="seller" property="seller" jdbcType="VARCHAR" />
+    <result column="pdf_url" property="pdfUrl" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, created_time, updated_time, user_id, order_id, order_amt, tax, no_tax_amt, head_type, 
-    telphone, company_name, taxpayer_num, content, status, invoice_num, seller
+    telphone, company_name, taxpayer_num, content, status, invoice_num, seller, pdf_url
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -38,14 +39,14 @@
       order_id, order_amt, tax, 
       no_tax_amt, head_type, telphone, 
       company_name, taxpayer_num, content, 
-      status, invoice_num, seller
-      )
+      status, invoice_num, seller, 
+      pdf_url)
     values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, 
       #{orderId,jdbcType=VARCHAR}, #{orderAmt,jdbcType=DECIMAL}, #{tax,jdbcType=DECIMAL}, 
       #{noTaxAmt,jdbcType=DECIMAL}, #{headType,jdbcType=TINYINT}, #{telphone,jdbcType=VARCHAR}, 
       #{companyName,jdbcType=VARCHAR}, #{taxpayerNum,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
-      #{status,jdbcType=TINYINT}, #{invoiceNum,jdbcType=VARCHAR}, #{seller,jdbcType=VARCHAR}
-      )
+      #{status,jdbcType=TINYINT}, #{invoiceNum,jdbcType=VARCHAR}, #{seller,jdbcType=VARCHAR}, 
+      #{pdfUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.Invoice" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_invoice
@@ -95,6 +96,9 @@
       <if test="seller != null" >
         seller,
       </if>
+      <if test="pdfUrl != null" >
+        pdf_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="createdTime != null" >
@@ -141,6 +145,9 @@
       </if>
       <if test="seller != null" >
         #{seller,jdbcType=VARCHAR},
+      </if>
+      <if test="pdfUrl != null" >
+        #{pdfUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -192,6 +199,9 @@
       <if test="seller != null" >
         seller = #{seller,jdbcType=VARCHAR},
       </if>
+      <if test="pdfUrl != null" >
+        pdf_url = #{pdfUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -211,7 +221,8 @@
       content = #{content,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
       invoice_num = #{invoiceNum,jdbcType=VARCHAR},
-      seller = #{seller,jdbcType=VARCHAR}
+      seller = #{seller,jdbcType=VARCHAR},
+      pdf_url = #{pdfUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
