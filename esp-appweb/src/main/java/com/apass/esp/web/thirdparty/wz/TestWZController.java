@@ -1,5 +1,7 @@
 package com.apass.esp.web.thirdparty.wz;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +19,17 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.entity.AddressInfo;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.OrderReq;
+import com.apass.esp.third.party.weizhi.entity.PriceSnap;
+import com.apass.esp.third.party.weizhi.entity.SkuNum;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
+import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.google.common.collect.Lists;
 
 /**
  * @author zengqingshan
@@ -32,6 +42,11 @@ public class TestWZController {
 	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
 	private WeiZhiProductService weiZhiProductService;
+	@Autowired
+	private WeiZhiOrderApiClient order;
+	@Autowired
+	private WeiZhiPriceApiClient price;
+	
 
 	@ResponseBody
 	@RequestMapping(value = "/getToken", method = RequestMethod.GET)
@@ -155,5 +170,90 @@ public class TestWZController {
 			return Response.fail("获取所有图片信息失败！");
 		}
 		return Response.success("获取所有图片信息成功！");
+	}
+	
+	/**
+	 * 根据skuid，获取微知 和京东的价格
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/price")
+	@ResponseBody
+	public Response getWzPrice() throws Exception{
+		List<String> skuList = Lists.newArrayList();
+		skuList.add("1331125");
+		List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+		return Response.successResponse(priceList);
+	}
+	
+	/**
+	 * 确认预占库存
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/orderOccupyStockConfirm")
+	@ResponseBody
+	public Response orderOccupyStockConfirm() throws Exception {
+		return Response.successResponse(order.orderOccupyStockConfirm("2017111716513561"));
+	}
+	
+	/**
+	 * 查询订单信息接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/selectOrder")
+	@ResponseBody
+	public Response selectOrder() throws Exception {
+		return Response.successResponse(order.selectOrder("2017111716513561"));
+	}
+	
+	/**
+	 * 根据订单号，获取物流信息
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/orderTrack")
+	@ResponseBody
+	public Response orderTrack() throws Exception {
+		return Response.successResponse(order.orderTrack("2017111716513561"));
+	}
+	
+	/**
+	 * 统一下单接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/unitOrder")
+	@ResponseBody
+	public Response getWeiZhiUnitOrder() throws Exception {
+		OrderReq req = new OrderReq();
+		req.setOrderNo("11234567890");
+		req.setRemark("hahah");
+		
+		AddressInfo addressInfo = new AddressInfo();
+	    addressInfo.setProvinceId(2);
+        addressInfo.setCityId(2815);
+        addressInfo.setCountyId(51975);
+        addressInfo.setTownId(0);
+        addressInfo.setAddress("延安西路726号华敏翰尊大厦3层A-5");
+        addressInfo.setReceiver("victorpeng");
+        addressInfo.setEmail("jdsupport@apass.cn");
+        addressInfo.setMobile("18321017352");
+        
+        req.setAddressInfo(addressInfo);
+       
+        List<SkuNum> skuNumList = new ArrayList<>();
+        List<PriceSnap> priceSnaps = new ArrayList<>();
+        SkuNum skuNum = new SkuNum();
+        skuNum.setNum(1);
+        skuNum.setSkuId(1331125);
+        skuNum.setPrice(new BigDecimal(1763.0));
+        skuNumList.add(skuNum);
+        req.setSkuNumList(skuNumList);
+        
+    	PriceSnap priceSnap = new PriceSnap();
+    	priceSnap.setSkuId(1331125);
+    	priceSnap.setPrice(new BigDecimal(1763.0));
+    	priceSnaps.add(priceSnap);
+        req.setOrderPriceSnap(priceSnaps);
+        
+        return Response.successResponse(order.submitOrder(req));
 	}
 }
