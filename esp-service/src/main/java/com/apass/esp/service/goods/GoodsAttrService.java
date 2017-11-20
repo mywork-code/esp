@@ -192,37 +192,27 @@ public class GoodsAttrService {//450
     /**
      * 根据类目查询商品属性下拉框数据填充
      * @param categoryId1
-     * @param editCategoryId1
      * @return
      */
-    public List<GoodsAttr> goodAttrListByCategory(String categoryId1, String editCategoryId1) {
-        Boolean falg1 = "undefined".equals(categoryId1)||StringUtils.isBlank(categoryId1);
-        Boolean falg2 = "undefined".equals(editCategoryId1)||StringUtils.isBlank(editCategoryId1);
-        if(!falg1&&!falg2){
-            return null;
-        }
-        if(falg1&&falg2){
-//            return null;
-            return this.getGoodsAttrList(new GoodsAttr());
-        }
-        List<CategoryAttrRel> categoryAttrRellist = null;
-        if(falg1&&!falg2){
-            categoryAttrRellist = categoryAttrRelService.categoryAttrRelListByCategory(Long.parseLong(editCategoryId1));
-        }
-        if(!falg1&&falg2){
+    public List<GoodsAttr> goodAttrListByCategory(String categoryId1) {
+        Boolean falg = "undefined".equals(categoryId1)||StringUtils.isBlank(categoryId1);
+        List<CategoryAttrRel> categoryAttrRellist = new ArrayList<CategoryAttrRel>();
+        List<GoodsAttr> GoodsAttrList = new ArrayList<GoodsAttr>();
+        GoodsAttr goodsattr = new GoodsAttr();
+        goodsattr.setId(0L);
+        goodsattr.setName("无");
+        GoodsAttrList.add(goodsattr);
+        if(falg){
+            return GoodsAttrList;
+        }else{
             categoryAttrRellist = categoryAttrRelService.categoryAttrRelListByCategory(Long.parseLong(categoryId1));
         }
-        List<GoodsAttr> GoodsAttrList = new ArrayList<GoodsAttr>();
-        if(categoryAttrRellist!=null&&categoryAttrRellist.size()>0){
-            for(Iterator<CategoryAttrRel> it = categoryAttrRellist.iterator();it.hasNext();){
-                CategoryAttrRel relEntity = it.next();
-                GoodsAttr entity = getGoodsAttr(relEntity.getGoodsAttrId());
-                GoodsAttrList.add(entity);
-            }
+        for(Iterator<CategoryAttrRel> it = categoryAttrRellist.iterator();it.hasNext();){
+            CategoryAttrRel relEntity = it.next();
+            GoodsAttr entity = getGoodsAttr(relEntity.getGoodsAttrId());
+            GoodsAttrList.add(entity);
         }
-//        return GoodsAttrList;
-        //类目功能未完善   先全部查询
-        return this.getGoodsAttrList(new GoodsAttr());
+        return GoodsAttrList;
     }
     /**
      * 根据属性规格组合 排列 组合 列表
@@ -250,7 +240,7 @@ public class GoodsAttrService {//450
         Boolean falg2 = "undefined".equals(categoryname2)||StringUtils.isBlank(categoryname2);
         Boolean falg3 = "undefined".equals(categoryname3)||StringUtils.isBlank(categoryname3);
         if(falg1&&falg2&&falg3){
-            list.add(new StockInfoFileModel());
+            //list.add(new StockInfoFileModel());
         }
         String str = null;
         String[] arr1 = null;
@@ -410,15 +400,15 @@ public class GoodsAttrService {//450
         arr3 = famartsubStringarr(arr3);
         Boolean fDELETE = this.delgoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
         if(!fDELETE){
-            throw new BusinessException("DELETE goodsAttrValByAttrId ERROE ");
+            throw new BusinessException("批量保存库存，删除旧库存属性和规格信息失败！");
         }
         Boolean fCREATE = this.savegoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
         if(!fCREATE){
-            throw new BusinessException("CREATE goodsAttrValByAttrId ERROE ATTRVAL REPETITION");
+            throw new BusinessException("批量保存库存，保存新库存属性和规格信息失败！");
         }
         Boolean dsCREATE = goodsStockInfoService.deletegoodsStockInfoByGoodsId(goodsId);
         if(!dsCREATE){
-            throw new BusinessException("DELETE goodsStockInfoByGoodsId ERROE ");
+            throw new BusinessException("批量保存库存，删除商品旧库存信息失败！");
         }
         String fileDiName = RandomUtils.nextInt(10)+"";
         String imgType = "jpg";
@@ -458,7 +448,7 @@ public class GoodsAttrService {//450
 //            goodsStockentoty.setStockLogo(url);
             Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
             if(i!=1){
-                throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+                throw new BusinessException("批量保存库存，商品新库存信息保存失败，检查库存非空字段验证！");
             }
         }
         return Response.success("批量保存库存！");
@@ -467,7 +457,7 @@ public class GoodsAttrService {//450
      * 修改商品第四页面
      * 修改库存信息
      * 读取商品已有属性 和已有属性下属规格
-     * 以及根据属性规格组合 排列 组合 库存列表   本列表前端带入不了
+     * 以及根据属性规格组合 排列 组合 库存列表   本列表前端带入不了   此处本请求未实现 在别处请求
      * @param request
      * @return
      */

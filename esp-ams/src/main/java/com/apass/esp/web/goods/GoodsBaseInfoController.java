@@ -1047,8 +1047,7 @@ public class GoodsBaseInfoController {
     public List<GoodsAttr> goodAttrListByCategory(HttpServletRequest request) {
         try{
             String categoryId1 = HttpWebUtils.getValue(request, "categoryId1");
-            String editCategoryId1 = HttpWebUtils.getValue(request, "editCategoryId1");
-            return goodsAttrService.goodAttrListByCategory(categoryId1,editCategoryId1);
+            return goodsAttrService.goodAttrListByCategory(categoryId1);
         }catch (Exception e) {
             LOGGER.error("商品属性下拉框载入失败!", e);
             return null;
@@ -1124,7 +1123,7 @@ public class GoodsBaseInfoController {
      * 修改商品第四页面
      * 修改库存信息
      * 读取商品已有属性 和已有属性下属规格
-     * 以及根据属性规格组合 排列 组合 库存列表
+     * 以及根据属性规格组合 排列 组合 库存列表  此处本请求未实现 在别处请求
      * @param request
      * @return
      */
