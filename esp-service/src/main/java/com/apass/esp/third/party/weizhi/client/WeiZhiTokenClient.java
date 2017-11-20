@@ -45,7 +45,7 @@ public class WeiZhiTokenClient {
 		parameters.add(param3);
 		parameters.add(param4);
 		parameters.add(param5);
-		parameters.add(param6);
+		parameters.add(param6); 
 
 		UrlEncodedFormEntity ent = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
