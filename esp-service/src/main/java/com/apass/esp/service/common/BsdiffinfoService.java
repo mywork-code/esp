@@ -5,6 +5,7 @@ import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.tencent.tinker.bsdiff.BSDiff;
+import com.tencent.tinker.bsdiff.BSPatch;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,12 +36,13 @@ public class BsdiffinfoService {
 	private static final String PATCHPATH = "/patchzip";
 
 
-	@Transactional
-	public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
-		StringBuffer sb = new StringBuffer();
+    @Transactional
+    public void bsdiffUpload(BsdiffEntity bsdiffEntity, BsdiffInfoEntity bsdiffInfoEntity) throws IOException {
+        StringBuffer sb = new StringBuffer();
 
-		String bsdiffVer = bsdiffEntity.getBsdiffVer();
 		//如果版本号已存在，给出提示
+        String bsdiffVer = bsdiffEntity.getBsdiffVer();
+
         List<BsdiffInfoEntity> bsdiffInfoEntities = listAll();
         if(CollectionUtils.isNotEmpty(bsdiffInfoEntities)){
             for (BsdiffInfoEntity bsEn: bsdiffInfoEntities) {
@@ -47,10 +50,17 @@ public class BsdiffinfoService {
                     throw new RuntimeException("版本号已经存在，请重新填写版本号!");
                 }
             }
-
         }
 
         MultipartFile bsdiffFile = bsdiffEntity.getBsdiffFile();
+        String[] split = bsdiffFile.getOriginalFilename().split("\\.");
+        if(!StringUtils.equals("zip",split[1])){
+            throw new RuntimeException("请上传zip文件 .");
+        }
+        if(!StringUtils.equals(bsdiffVer,split[0])){
+            throw new RuntimeException("版本要与zip文件名一致.");
+        }
+
 		String originalFilename = bsdiffFile.getOriginalFilename();
 
 		bsdiffInfoEntity.setBsdiffVer(bsdiffVer);
@@ -91,8 +101,7 @@ public class BsdiffinfoService {
 				}
 			}
 		}
-
-	}
+    }
 
 	public List<BsdiffInfoEntity> listAll(){
 		return bsdiffInfoEntityMapper.selectAllBsdiff();

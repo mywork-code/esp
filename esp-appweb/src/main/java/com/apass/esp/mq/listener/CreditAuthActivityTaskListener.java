@@ -60,15 +60,14 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 		}
 		LOGGER.info("creditAuthActivityMessage:" + GsonUtils.toJson(cAAMessage));
 		BigDecimal creditAuthMmount = BigDecimal.ZERO;
-		BigDecimal yjfqAmount = BigDecimal.ZERO;
+//		BigDecimal yjfqAmount = BigDecimal.ZERO;
 		if (null != cAAMessage.getAmount()) {
 			creditAuthMmount = cAAMessage.getAmount();
 		}
-		if (null != cAAMessage.getYjfqAmount()) {
-			yjfqAmount = cAAMessage.getYjfqAmount();
-		}
-		if (!cAAMessage.getIsException() && !cAAMessage.getIsUpdate() && cAAMessage.getSource() == 0) {
-			if (creditAuthMmount.compareTo(BigDecimal.ZERO) > 0 || yjfqAmount.compareTo(BigDecimal.ZERO) > 0) {
+//		if (null != cAAMessage.getYjfqAmount()) {
+//			yjfqAmount = cAAMessage.getYjfqAmount();
+//		}
+		if (!cAAMessage.getIsException() && !cAAMessage.getIsUpdate() && cAAMessage.getSource() == 0 && creditAuthMmount.compareTo(BigDecimal.ZERO) > 0 ) {
 				try {
 					Response response = registerInfoService
 							.customerIsFirstCredit(cAAMessage.getCustomerId().toString());
@@ -166,7 +165,7 @@ public class CreditAuthActivityTaskListener implements MessageListener {
 				} catch (BusinessException e) {
 					LOGGER.error("customerId 用户获得额度时：customerId=" + cAAMessage.getCustomerId().toString());
 				}
-			}
+
 		}
 	}
 

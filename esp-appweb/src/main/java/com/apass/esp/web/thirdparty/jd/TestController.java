@@ -101,7 +101,7 @@ public class TestController {
     public Response test(@RequestBody Map<String, Object> paramMap) {
          JSONObject jsonObject = jdTokenClient.getToken();
 //    	JSONObject jsonObject = jdTokenClient.refreshToken();
-    	System.out.println(jsonObject);
+    	System.out.println(jsonObject); 
         cacheManager.set(JD_TOKEN_REDIS_KEY, jsonObject.toJSONString());
         return Response.success("1", "");
     }

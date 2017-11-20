@@ -131,15 +131,18 @@ $ (function (){
 			buttons:[{
 				text : "确定",
 				handler : function() {
+					//$('.ui-dialog-buttonpane').find('button:contains("确定")').attr("disabled", "disabled");
 					var theForm = $("#bsdiffForm");
 					var bsdiffFile = $("#bsdiffFile").val();
 					if(bsdiffFile == null || bsdiffFile == ''){
 						$.messager.alert ('消息', "请选择上传文件.");
+						return;
 					}
 
 					var bsdiffVer = $("#bsdiffVer").val();
 					if(bsdiffVer == null || bsdiffVer == ''){
 						$.messager.alert ('消息', "请填写版本号(版本号只能是1,2,3......等正整数)");
+						return;
 					}
 
 					theForm.form("submit",{
@@ -155,6 +158,7 @@ $ (function (){
 
 						}
 					});
+
 				}
 			},{
 				text : "取消",

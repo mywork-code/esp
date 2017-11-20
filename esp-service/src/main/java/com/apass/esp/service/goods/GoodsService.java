@@ -433,7 +433,21 @@ public class GoodsService {
 	}
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
   }
-
+  /**
+   * 获取 非京东商品变成多规格商品规格
+   */
+  public Map<String, Object> loadGoodsBasicInfoById3(Long goodsId) throws BusinessException {
+	Map<String, Object> returnMap =new HashMap<>();
+    //商品价格最低
+    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
+    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+    List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+    List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+    returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+    returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+    returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+    return returnMap;
+  }
 	/**
 	 * 通过商品goodsId组装非京东上商品的JdSimilarSkuToList
 	 * 
@@ -979,6 +993,11 @@ public class GoodsService {
   public Integer updateService(GoodsInfoEntity entity) {
     return goodsDao.updateGoods(entity);
   }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
+        return goodsDao.updateServiceForBaseInfoColler(entity);
+    }
 
   /**
    * 主键查询

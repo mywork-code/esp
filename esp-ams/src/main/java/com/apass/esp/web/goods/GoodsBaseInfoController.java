@@ -425,7 +425,7 @@ public class GoodsBaseInfoController {
         try {
 //            String goodsName = URLDecoder.decode(pageModelEdit.getGoodsName(), "UTF-8");
             pageModelEdit.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());// 更新人
-            goodsService.updateService(pageModelEdit);
+            goodsService.updateServiceForBaseInfoColler(pageModelEdit);
         } catch (Exception e) {
             LOGGER.error("编辑商品失败", e);
             return Response.fail("编辑商品失败");
@@ -648,10 +648,10 @@ public class GoodsBaseInfoController {
                 return "商品类目不能为空，请先选择类目！";
             }
         } else {
-            if (StringUtils.isAnyBlank(listTime, delistTime) || "null".equals(listTime)
-                    || "null".equals(delistTime)) {
-                return "商品上架和下架时间不能为空，请先选择类目！";
-            }
+//            if (StringUtils.isAnyBlank(listTime, delistTime) || "null".equals(listTime)
+//                    || "null".equals(delistTime)) {
+//                return "商品上架和下架时间不能为空，请先选择类目！";
+//            }
 
             //查询商品价格
             List<GoodsStockSkuDto> goodsStockSkuInfo = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));

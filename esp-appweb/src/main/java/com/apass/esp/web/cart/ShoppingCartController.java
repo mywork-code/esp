@@ -329,6 +329,45 @@ public class ShoppingCartController {
         return Response.successResponse(resultMap);
 
     }
+    /**
+     * 查看商品规格(非京东商品多规格)
+     * 
+     * @param paramMap
+     * @return
+     */
+    @POST
+    @Path("/v3/viewSku")
+    public Response viewSkuV3(Map<String, Object> paramMap) {
+
+        String logStashSign = LogStashKey.CART_VIEWSKU.getValue();
+        String methodDesc = LogStashKey.CART_VIEWSKU.getName();
+        
+        String goodsId = CommonUtils.getValue(paramMap, "goodsId");
+        
+        String requestId = logStashSign + "_" + goodsId;
+        paramMap.remove("x-auth-token"); //输出日志前删除会话token
+        LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
+
+        if (StringUtils.isBlank(goodsId)) {
+        	logger.error("商品id不能为空");
+            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+        }
+        
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        try {
+            resultMap = shoppingCartService.getGoodsStockSkuInfoV3(requestId, goodsId);
+        } catch (BusinessException e) {
+            LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
+            return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
+        } catch (Exception e) {
+            LOG.logstashException(requestId, methodDesc, e.getMessage(), e);
+            return Response.fail(BusinessErrorCode.DETAIL_INFO_FAILED);
+        }
+
+        return Response.successResponse(resultMap);
+
+    }
 
     /**
      * 修改商品规格
