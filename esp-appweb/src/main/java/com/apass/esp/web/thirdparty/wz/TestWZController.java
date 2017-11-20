@@ -29,7 +29,6 @@ import com.apass.esp.third.party.weizhi.entity.OrderReq;
 import com.apass.esp.third.party.weizhi.entity.PriceSnap;
 import com.apass.esp.third.party.weizhi.entity.SkuNum;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
-import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -135,14 +134,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiThirdCategorys", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
+	public List<Category> getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
+		List<Category> categorys=null;
 		try {
-			List<Category> categorys = weiZhiProductService.getWeiZhiThirdCategorys();
+			 categorys = weiZhiProductService.getWeiZhiThirdCategorys();
 			System.out.println(categorys);
 		} catch (Exception e) {
-			return Response.fail("查询三级分类列表信息接口失败！");
+			return null;
 		}
-		return Response.success("查询三级分类列表信息接口成功！");
+		return categorys;
 	}
 
 	/**
@@ -150,14 +150,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiGetSku", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
+	public List<String> getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
+		List<String> categorys=null;
 		try {
-			List<String> categorys = weiZhiProductService.getWeiZhiGetSku();
+			 categorys = weiZhiProductService.getWeiZhiGetSku();
 			System.out.println(categorys);
 		} catch (Exception e) {
-			return Response.fail("获取分类商品编号接口失败！");
+			return null;
 		}
-		return Response.success("获取分类商品编号接口成功！");
+		return categorys;
 	}
 
 	/**
@@ -276,7 +277,7 @@ public class TestWZController {
 	@RequestMapping(value = "/checkSale", method = RequestMethod.POST)
 	@ResponseBody
 	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1593516,1686504");
+		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
 		return result;
 	}
 	/**
@@ -285,7 +286,17 @@ public class TestWZController {
 	@RequestMapping(value = "/similarSku", method = RequestMethod.POST)
 	@ResponseBody
 	public List<JdSimilarSku> getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<JdSimilarSku> list=weiZhiProductService.getWeiZhiSimilarSku("1686504");
+		List<JdSimilarSku> list=weiZhiProductService.getWeiZhiSimilarSku("1815738");
 		return list;
+	}
+	/**
+	 * 统一余额查询接口
+	 * @param skuId
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getBalance", method = RequestMethod.GET)
+	@ResponseBody
+	public int  getWeiZhiGetBalance() throws Exception {
+		return weiZhiProductService.getWeiZhiGetBalance();
 	}
 }
