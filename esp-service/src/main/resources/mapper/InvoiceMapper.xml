@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.InvoiceMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.Invoice" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="order_amt" property="orderAmt" jdbcType="DECIMAL" />
+    <result column="tax" property="tax" jdbcType="DECIMAL" />
+    <result column="no_tax_amt" property="noTaxAmt" jdbcType="DECIMAL" />
+    <result column="head_type" property="headType" jdbcType="TINYINT" />
+    <result column="telphone" property="telphone" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="taxpayer_num" property="taxpayerNum" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="invoice_num" property="invoiceNum" jdbcType="VARCHAR" />
+    <result column="seller" property="seller" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, created_time, updated_time, user_id, order_id, order_amt, tax, no_tax_amt, head_type, 
+    telphone, company_name, taxpayer_num, content, status, invoice_num, seller
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_invoice
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_invoice
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.Invoice" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_invoice (created_time, updated_time, user_id, 
+      order_id, order_amt, tax, 
+      no_tax_amt, head_type, telphone, 
+      company_name, taxpayer_num, content, 
+      status, invoice_num, seller
+      )
+    values (#{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=BIGINT}, 
+      #{orderId,jdbcType=VARCHAR}, #{orderAmt,jdbcType=DECIMAL}, #{tax,jdbcType=DECIMAL}, 
+      #{noTaxAmt,jdbcType=DECIMAL}, #{headType,jdbcType=TINYINT}, #{telphone,jdbcType=VARCHAR}, 
+      #{companyName,jdbcType=VARCHAR}, #{taxpayerNum,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{status,jdbcType=TINYINT}, #{invoiceNum,jdbcType=VARCHAR}, #{seller,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.Invoice" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_invoice
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="orderAmt != null" >
+        order_amt,
+      </if>
+      <if test="tax != null" >
+        tax,
+      </if>
+      <if test="noTaxAmt != null" >
+        no_tax_amt,
+      </if>
+      <if test="headType != null" >
+        head_type,
+      </if>
+      <if test="telphone != null" >
+        telphone,
+      </if>
+      <if test="companyName != null" >
+        company_name,
+      </if>
+      <if test="taxpayerNum != null" >
+        taxpayer_num,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="invoiceNum != null" >
+        invoice_num,
+      </if>
+      <if test="seller != null" >
+        seller,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderAmt != null" >
+        #{orderAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="tax != null" >
+        #{tax,jdbcType=DECIMAL},
+      </if>
+      <if test="noTaxAmt != null" >
+        #{noTaxAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="headType != null" >
+        #{headType,jdbcType=TINYINT},
+      </if>
+      <if test="telphone != null" >
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxpayerNum != null" >
+        #{taxpayerNum,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="invoiceNum != null" >
+        #{invoiceNum,jdbcType=VARCHAR},
+      </if>
+      <if test="seller != null" >
+        #{seller,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.Invoice" >
+    update t_esp_invoice
+    <set >
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderAmt != null" >
+        order_amt = #{orderAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="tax != null" >
+        tax = #{tax,jdbcType=DECIMAL},
+      </if>
+      <if test="noTaxAmt != null" >
+        no_tax_amt = #{noTaxAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="headType != null" >
+        head_type = #{headType,jdbcType=TINYINT},
+      </if>
+      <if test="telphone != null" >
+        telphone = #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="taxpayerNum != null" >
+        taxpayer_num = #{taxpayerNum,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="invoiceNum != null" >
+        invoice_num = #{invoiceNum,jdbcType=VARCHAR},
+      </if>
+      <if test="seller != null" >
+        seller = #{seller,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.Invoice" >
+    update t_esp_invoice
+    set created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=BIGINT},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      order_amt = #{orderAmt,jdbcType=DECIMAL},
+      tax = #{tax,jdbcType=DECIMAL},
+      no_tax_amt = #{noTaxAmt,jdbcType=DECIMAL},
+      head_type = #{headType,jdbcType=TINYINT},
+      telphone = #{telphone,jdbcType=VARCHAR},
+      company_name = #{companyName,jdbcType=VARCHAR},
+      taxpayer_num = #{taxpayerNum,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      invoice_num = #{invoiceNum,jdbcType=VARCHAR},
+      seller = #{seller,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
