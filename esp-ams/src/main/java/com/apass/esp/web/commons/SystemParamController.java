@@ -416,9 +416,9 @@ public class SystemParamController {
         try{
             LOG.info("bsdiff增量更新开始上传,参数 版本号:{},文件名:{}",bsdiffEntity.getBsdiffVer(),bsdiffEntity.getBsdiffFile().getOriginalFilename());
             BsdiffInfoEntity bsdiffInfoEntity = new BsdiffInfoEntity();
-            bsdiffInfoEntity.setCreateData(new Date());
+            bsdiffInfoEntity.setCreatedTime(new Date());
             bsdiffInfoEntity.setCreateUser(SpringSecurityUtils.getCurrentUser());
-            bsdiffInfoEntity.setUpdateDate(new Date());
+            bsdiffInfoEntity.setUpdatedTime(new Date());
             bsdiffInfoEntity.setUpdateUser(SpringSecurityUtils.getCurrentUser());
             bsdiffinfoEntityService.bsdiffUpload(bsdiffEntity,bsdiffInfoEntity);
         }catch (Exception e){

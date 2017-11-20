@@ -5,6 +5,6 @@
   <!--查询所有:按创建时间倒序排序-->
   <select id="selectAllBsdiff" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" />
-    from t_esp_bsdiff_info ORDER BY create_data DESC
+    from t_esp_bsdiff_info ORDER BY created_time DESC
   </select>
 </mapper>
