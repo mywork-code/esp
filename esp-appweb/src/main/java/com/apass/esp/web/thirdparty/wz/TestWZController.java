@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
+import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.gfb.framework.utils.CommonUtils;
 
@@ -155,5 +157,24 @@ public class TestWZController {
 			return Response.fail("获取所有图片信息失败！");
 		}
 		return Response.success("获取所有图片信息成功！");
+	}
+	/**
+	 * 商品区域购买限制查询(单个商品查询)
+	 */
+	@RequestMapping(value = "/CheckAreaLimit", method = RequestMethod.POST)
+	@ResponseBody
+	public Boolean getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) throws Exception {
+		Region region =new Region();
+		Boolean result = weiZhiProductService.getWeiZhiCheckAreaLimit("", region);
+		return result;
+	}
+	/**
+	 * 商品可售验证接口
+	 */
+	@RequestMapping(value = "/CheckSale", method = RequestMethod.POST)
+	@ResponseBody
+	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
+		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1593516,1686504");
+		return result;
 	}
 }
