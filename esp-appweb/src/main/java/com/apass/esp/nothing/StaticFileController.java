@@ -341,7 +341,7 @@ public class StaticFileController {
                     md5 = "";
                 }else {
                     path = appWebDomain+"/static" + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip";
-                    md5 = MD5Utils.getMd5ByFile(new FileInputStream(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
+                    md5 = MD5Utils.getMD5(new File(rootPath + nfsBsdiffPath + PATCHPATH +"/" + bsdiffInfoEntity.getBsdiffVer()+"_"+ver+".zip"));
                 }
             }
             resultMap.put("ver",bsdiffInfoEntity.getBsdiffVer());
