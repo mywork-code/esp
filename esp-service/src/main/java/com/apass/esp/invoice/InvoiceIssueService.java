@@ -1,6 +1,8 @@
 package com.apass.esp.invoice;
 import java.util.List;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+
+import com.aisino.EncryptionDecryption;
 import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
@@ -24,9 +26,7 @@ import sun.misc.BASE64Decoder;
 public class InvoiceIssueService {
     private static final String testUrl = "http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
     /**
-     * 3.2
-     * @param globalInfo
-     * @param stateInfo
+     * 3.2  返回报文示例与数据项说明
      * @param entity
      * @return
      * @throws Exception
@@ -39,22 +39,8 @@ public class InvoiceIssueService {
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
     }
-
-    public ReturnStateInfo getFaPiaoReturnState(String respXML) throws Exception{
-        Document doc = DocumentHelper.parseText(respXML);
-        Element root = doc.getRootElement();
-        Element returnEle = root.element("returnStateInfo");
-        String returnCode = returnEle.element("returnCode").getText();
-        String returnMessage =  returnEle.element("returnMessage").getText();
-        ReturnStateInfo result = ReturnStateInfo.RETURNSTATEINFOEMP;
-        result.setReturnCode(returnCode);
-        result.setReturnMessage(new String(new BASE64Decoder().decodeBuffer(returnMessage)));
-        return result;
-    }
     /**
-     * 3.1
-     * @param globalInfo
-     * @param stateInfo
+     * 3.1  返回报文示例（只有外层报文，没 Content ）：返回报文只有外层报文，Content 内容为空，无数据项。  直接返回
      * @param ensale
      * @param list
      * @param enbuy
@@ -82,7 +68,7 @@ public class InvoiceIssueService {
         //globalInfo
         //returnStateInfo
         //dataDescription
-        sb.append(generateXMl(GlobalInfoEctype.GLOBALFPXZ, ReturnStateInfo.RETURNSTATEINFOEMP));
+        sb.append(generateXMl("2"));
         //content
         sb.append("<content>");
         sb.append("\r\n");
@@ -112,7 +98,7 @@ public class InvoiceIssueService {
         //globalInfo
         //returnStateInfo
         //dataDescription
-        sb.append(generateXMl(GlobalInfoEctype.GLOBALFPKJ, ReturnStateInfo.RETURNSTATEINFOEMP));
+        sb.append(generateXMl("1"));
         //content
         sb.append("<content>");
         sb.append("\r\n");
@@ -133,12 +119,13 @@ public class InvoiceIssueService {
      * 报文发送通用信息
      * @param globalInfo  <!--全局信息-->
      * @param stateInfo <!--返回信息-->
-     * !
-     * <dataDescription><!--数据描述-->
+     * !<dataDescription><!--数据描述-->
      * @return
      * @throws Exception
      */
-    private String generateXMl(GlobalInfoEctype globalInfo,ReturnStateInfo stateInfo) throws Exception {
+    private String generateXMl(String type) throws Exception {
+        GlobalInfoEctype globalInfo = new GlobalInfoEctype(type);
+        ReturnStateInfo stateInfo = new ReturnStateInfo("1");
         globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
         globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
         StringBuffer sbex = new StringBuffer(globalInfo.getRequestCode());

@@ -2,6 +2,7 @@ package com.apass.esp.invoice;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aisino.EncryptionDecryption;
 import com.aisino.FarmartJavaBean;
 import com.apass.esp.invoice.model.*;
 import org.apache.commons.lang.StringUtils;
@@ -90,16 +91,18 @@ public class InvoiceTest {
         InvoiceIssueService service = new InvoiceIssueService();
         String s = service.requestFaPiaoKJ(faPiaoKJ,list,faPiaoKJDD);
         System.out.println(s);
-        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
+        System.out.println(EncryptionDecryption.getFaPiaoReturnState(s).getReturnMessage());
 
-        FaPiaoDLoad   faPiaoDLoad = new FaPiaoDLoad();
-        faPiaoDLoad.setDdh("2492684718512345");
+        FaPiaoDLoad faPiaoDLoad = new FaPiaoDLoad();
+        faPiaoDLoad.setDdh("2492684718573093");
         faPiaoDLoad.setDsptbm("111MFWIK");
-        faPiaoDLoad.setFpqqlsh("d22222222222222255667");
+        faPiaoDLoad.setFpqqlsh("d2222222222222221234");
         faPiaoDLoad.setNsrsbh("310101000000090");
         faPiaoDLoad.setPdfXzfs("3");
         String sS = service.requestFaPiaoDL(faPiaoDLoad);
         System.out.println(sS);
-        System.out.println(service.getFaPiaoReturnState(s).getReturnMessage());
+//        System.out.println(EncryptionDecryption.getFaPiaoReturnState(sS).getReturnMessage());
+        System.out.println(EncryptionDecryption.getRequestFaPiaoDL(sS));
+        System.out.println(EncryptionDecryption.getRequestFaPiaoDLRetuen(sS));
     }
 }

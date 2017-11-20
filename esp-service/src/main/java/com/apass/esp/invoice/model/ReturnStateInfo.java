@@ -3,11 +3,16 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Created by jie.xu on 17/3/29.
  */
-public enum ReturnStateInfo {
-    RETURNSTATEINFOEMP(StringUtils.EMPTY,StringUtils.EMPTY);
-    private ReturnStateInfo() {
+public class ReturnStateInfo {
+    public ReturnStateInfo() {
     }
-    private ReturnStateInfo(String returnCode, String returnMessage) {
+    public ReturnStateInfo(String type) {
+        if("1".equals(type)){
+            this.returnCode = StringUtils.EMPTY;
+            this.returnMessage = StringUtils.EMPTY;
+        }
+    }
+    public ReturnStateInfo(String returnCode, String returnMessage) {
         this.returnCode = returnCode;
         this.returnMessage = returnMessage;
     }
