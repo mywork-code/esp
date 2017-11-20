@@ -15,6 +15,8 @@ import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.CheckSale;
+import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
@@ -178,4 +180,16 @@ public class WeiZhiProductService {
 		List<AreaLimitEntity> areaLimitEntityList = weiZhiProductApiClient.getWeiZhiCheckAreaLimit(sb.toString(), region);
 		return areaLimitEntityList;
 	}
+	/**
+	 * 商品可售验证接口
+	 * @param skuIds
+	 * @return
+	 * @throws Exception
+	 */
+	public List<WZCheckSale> getWeiZhiCheckSale(String skuIds) throws Exception {
+		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		List<WZCheckSale>  list=checkSale.getResult();
+		return list;
+	}
+
 }

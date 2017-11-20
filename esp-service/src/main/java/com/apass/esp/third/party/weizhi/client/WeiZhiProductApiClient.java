@@ -21,6 +21,7 @@ import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.CheckSale;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -301,5 +302,37 @@ public class WeiZhiProductApiClient {
 		}
 		return areaLimitEntityList;
 	}
-	
+	/**
+	 * 商品可售验证接口
+	 */
+	public CheckSale getWeiZhiCheckSale(String skuIds) throws Exception {
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("skuIds", skuIds);
+		parameters.add(param1);
+		parameters.add(param2);
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		CheckSale  checkSale = new com.apass.esp.third.party.weizhi.entity.CheckSale();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_CHECKSALE,entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<CheckSale>>() {
+			}.getType();
+			WeiZhiResponse<CheckSale> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				checkSale = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
+		}
+		return checkSale;
+	}
 }
