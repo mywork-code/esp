@@ -377,7 +377,7 @@ public class GoodsBaseInfoController {
             pageModel.setExternalId("");
             pageModel.setGoodsSkuType("");
             Integer sordNo = pageModel.getSordNo();
-            if(sordNo != null){
+            if(sordNo != null){//如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
                 List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
                 for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
                     if(sordNo == goodsInfoEntity.getSordNo()){
@@ -389,7 +389,6 @@ public class GoodsBaseInfoController {
                         for (GoodsInfoEntity good: goods) {
                             good.setSordNo(good.getSordNo()+1);
                             good.setUpdateDate(new Date());
-                            good.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                             goodsService.updateService(good);
                         }
                     }
