@@ -347,9 +347,13 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/similarSku", method = RequestMethod.POST)
 	@ResponseBody
-	public List<JdSimilarSku> getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<JdSimilarSku> list=weiZhiProductService.getWeiZhiSimilarSku("1815738");
-		return list;
+	public Response getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
+		try {
+			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku("1815738");
+			return Response.success("同类商品查询成功！", list);
+		} catch (Exception e) {
+			return Response.fail("同类商品查询失败！");
+		}
 	}
 	/**
 	 * 统一余额查询接口
@@ -358,8 +362,13 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getBalance", method = RequestMethod.GET)
 	@ResponseBody
-	public int  getWeiZhiGetBalance() throws Exception {
-		return weiZhiProductService.getWeiZhiGetBalance();
+	public Response  getWeiZhiGetBalance() {
+		try {
+			int price=weiZhiProductService.getWeiZhiGetBalance();
+			return Response.success("统一余额查询成功！", price);
+		} catch (Exception e) {
+			return Response.fail("统一余额查询失败！");
+		}
 	}
 
 	/**
@@ -367,17 +376,22 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getNewStockById", method = RequestMethod.POST)
 	@ResponseBody
-	public List<GoodsStock> getNewStockById(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<StockNum> skuNums = new ArrayList<>();
-		StockNum stockNum=new StockNum();
-		stockNum.setSkuId(Long.parseLong("4163957"));
-		stockNum.setNum(1);
-		skuNums.add(stockNum);
-		Region region = new Region();
-		region.setProvinceId(1);
-		region.setCityId(0);
-		region.setCountyId(0);
-		List<GoodsStock> result = weiZhiProductService.getNewStockById(skuNums, region);
-		return result;
+	public Response getNewStockById(@RequestBody Map<String, Object> paramMap){
+		try {
+			List<StockNum> skuNums = new ArrayList<>();
+			StockNum stockNum=new StockNum();
+			stockNum.setSkuId(Long.parseLong("4163957"));
+			stockNum.setNum(1);
+			skuNums.add(stockNum);
+			Region region = new Region();
+			region.setProvinceId(1);
+			region.setCityId(0);
+			region.setCountyId(0);
+			List<GoodsStock> result = weiZhiProductService.getNewStockById(skuNums, region);
+			return Response.success("微知批量获取库存成功！", result);
+		} catch (Exception e) {
+			return Response.fail("微知批量获取库存失败！");
+		}
+
 	}
 }
