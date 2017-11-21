@@ -51,6 +51,11 @@ public class WeiZhiConstants {
     public static final String WZAPI_PRODUCT_GETSKU  = "http://180.168.49.94:65530/jdapi/product/getSku";
     //微知统一余额查询接口
     public static final String WZAPI_PRODUCT_GETBALANCE  = "http://180.168.49.94:65530/jdapi/price/getBalance";
+    //微知批量获取库存接口
+    public static final String WZAPI_PRODUCT_GETNEWSTOCKBYID  = "https:// openapi.exinbao.com/jdapi/stock/getNewStockById";
+    
+    
+    
     
     //微知商品区域购买限制查询
     public static final String WZAPI_PRODUCT_CHECKAREALIMIT  = "http://180.168.49.94:65530/jdapi/product/checkAreaLimit";
