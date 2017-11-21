@@ -1,8 +1,6 @@
 package com.apass.esp.invoice;
 import java.util.List;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
-
-import com.aisino.EncryptionDecryption;
 import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
@@ -14,10 +12,6 @@ import com.apass.esp.invoice.model.ReturnStateInfo;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.thoughtworks.xstream.XStream;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import sun.misc.BASE64Decoder;
 /**
  * 电子发票
  * @author Administrator

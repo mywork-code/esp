@@ -7,7 +7,7 @@ public class GlobalInfoEctype {
     public GlobalInfoEctype(String type) {
         if("1".equals(type)){
             this.terminalCode = TerminalCode.TERMINALBS.getCode();
-            this.appId = "DZFP";
+            this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEKJ.getCode();
             this.userName = "111MFWIK";
@@ -17,7 +17,7 @@ public class GlobalInfoEctype {
             this.responseCode = "121";
         }else if("2".equals(type)){
             this.terminalCode = TerminalCode.TERMINALBS.getCode();
-            this.appId = "DZFP";
+            this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEXZ.getCode();
             this.userName = "111MFWIK";
