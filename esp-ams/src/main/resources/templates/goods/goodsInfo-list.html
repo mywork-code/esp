@@ -66,7 +66,6 @@
 <!-- 授权标示 -->
 <input id="grantedAuthority" type="hidden" value="${grantedAuthority!}">
 <input id="goodCostpriceIf" type="hidden" value="${goodCostpriceIf!}">
-
 	<div id="tb" style="display:none; ">
 		<table style="margin-right: 20px;">
 			<tr>
@@ -265,10 +264,9 @@
 					</tr>
 	
 					<tr style="margin-top: 22px;">
-						<td colspan="4"><a href="javascript:void(0);" id="previousStepAddGood"
-							style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;一&nbsp;步&nbsp;</a>
-							<a href="javascript:void(0);" id="nextStepAddGood"
-							style="margin-right: 15px;" class="easyui-linkbutton">下&nbsp;一&nbsp;步&nbsp;</a>
+						<td colspan="4">
+						  <a href="javascript:void(0);" id="previousStepAddGood" style="margin-right: 15px;" class="easyui-linkbutton">上&nbsp;一&nbsp;步&nbsp;</a>
+						  <a href="javascript:void(0);" id="nextStepAddGood" style="margin-right: 15px;" class="easyui-linkbutton">下&nbsp;一&nbsp;步&nbsp;</a>
 						</td>
 					</tr>
 				</table>
@@ -939,7 +937,6 @@
 		data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
 		 <img id='previewBannerImg'   src=""/>
 	</div>
-	
 	<script type="text/javascript">
 	//实例化
     var ue = UE.getEditor('addEditor');
