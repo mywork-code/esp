@@ -229,8 +229,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		//String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
-	    String responseJson = "{'data':{'wzOrderId':'订单号','orderTrack':[{'物流单号':{{'skuid1,skuid2':[{'msgTime':'操作时间','content':'配送内容','operator':'操作人'},{'msgTime':'操作时间','content':'配送内容','operator':'操作人'}]}}},{'物流单号':{{'skuid':[{'msgTime':'操作时间','content':'配送内容','operator':'操作人'},{'msgTime':'操作时间','content':'配送内容','operator':'操作人'}]}}}]},'result':0,'detail':''}";
+		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
 		
 		logger.info("----orderTrack------ response:{}",responseJson);
 		
@@ -324,5 +323,44 @@ public class WeiZhiOrderApiClient {
 	    	return "";
 	    }
 	    return datas.getString("WzOrder");
+    }
+    
+    /**
+     * 取消未确认订单接口（未调用确认预占库存）
+     * @param wzOrderId 微知订单号
+     * @return
+     * @throws Exception 
+     */
+    public boolean cancelOrder(String wzOrderId) throws Exception{
+    	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
+		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
+		parameters.add(param1);
+		parameters.add(param2);
+		logger.info("----cancelOrder------ params:{}",JsonUtil.toJsonString(parameters));
+		
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		
+		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_CANCEL, entity);
+	    
+		logger.info("----cancelOrder------ response:{}",responseJson);
+	    /**
+	     * 返回json
+	     */
+	    JSONObject datas = JSON.parseObject(responseJson);
+	    
+	    if(null == datas){
+	    	logger.error("----cancelOrder--- callback is null");
+	    	return false;
+	    }
+	    
+	    String result = datas.getString("result");
+	    
+	    if(!StringUtils.equals(result, "0")){
+	    	String message = datas.getString("detail");
+	    	logger.error("---cancelOrder---- callback result:{},message:{}",result,message);
+	    	return false;
+	    }
+	    return datas.getBooleanValue("data");
     }
 }

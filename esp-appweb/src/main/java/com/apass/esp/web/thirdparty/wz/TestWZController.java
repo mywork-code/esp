@@ -199,7 +199,17 @@ public class TestWZController {
 	}
 	
 	/**
-	 * 6.4 订单反查接口
+	 * 6.4 取消订单接口
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/cancelOrder")
+	@ResponseBody
+	public Response cancelOrder() throws Exception {
+		return Response.successResponse(order.cancelOrder("2017112115593775"));
+	}
+	
+	/**
+	 * 订单反查接口
 	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/selectOrderIdByThirdOrder")
@@ -246,7 +256,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiUnitOrder() throws Exception {
 		OrderReq req = new OrderReq();
-		req.setOrderNo("11234567890");
+		req.setOrderNo("11134567890");
 		req.setRemark("hahah");
 		
 		AddressInfo addressInfo = new AddressInfo();

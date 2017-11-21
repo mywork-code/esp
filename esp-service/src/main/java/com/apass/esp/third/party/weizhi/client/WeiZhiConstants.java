@@ -69,7 +69,8 @@ public class WeiZhiConstants {
     public static final String WZAPI_ORDER_ORDERTRACK = "http://180.168.49.94:65530/jdapi/order/orderTrack";
     //根据本地订单号查询微知订单号
     public static final String WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER = "http://180.168.49.94:65530/jdapi/order/selectOrderIdByThirdOrder";
-    
+    //根据订单号取消未确认订单接口
+    public static final String WZAPI_ORDER_CANCEL = "http://180.168.49.94:65530/jdapi/order/cancel";
 
     //微知获取所有图片信息
     public static final String WZAPI_PRODUCT_SKUIMAGE  = "http://180.168.49.94:65530/jdapi/product/skuImage";
