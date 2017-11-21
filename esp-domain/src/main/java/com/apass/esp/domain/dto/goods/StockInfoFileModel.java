@@ -15,6 +15,7 @@ public class StockInfoFileModel {
 	private String stockTotalAmt;//库存
 	private String stockAmt;//库存剩余
     private MultipartFile stockLogoFile;
+    private String stockLogo;//缩略图URL
 	private String goodsCompareUrl;//比价链接1
 	private String goodsCompareUrl2;//比价链接2
 	public Long getAddstockInfogoodsId() {
@@ -99,5 +100,11 @@ public class StockInfoFileModel {
     }
     public void setStockAmt(String stockAmt) {
         this.stockAmt = stockAmt;
+    }
+    public String getStockLogo() {
+        return stockLogo;
+    }
+    public void setStockLogo(String stockLogo) {
+        this.stockLogo = stockLogo;
     }
 }
