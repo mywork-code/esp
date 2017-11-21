@@ -1,5 +1,7 @@
 package com.apass.esp.web.goods;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -207,7 +209,48 @@ public class GoodsStockInfoController {
             return Response.fail("上传logo缩略图失败!");
         }
     }
-
+    /**
+     * 新增库存  上传缩略图  返回该缩略图URL给前端。
+     * 
+     * @param stockInfo
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addForLogo", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "新增库存", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response addForLogo(@ModelAttribute("stockInfoFileModel") StockInfoFileModel stockInfo) {
+        InputStream is = null;
+        try {
+            MultipartFile file = stockInfo.getStockLogoFile();
+            String imgType = ImageTools.getImgType(file);
+            String fileDiName = RandomUtils.getRandom(10);
+            String fileName = "stocklogo_"+ fileDiName + "." + imgType;
+            String url = nfsGoods + stockInfo.getAddstockInfogoodsId() + "/" + fileName;
+            //缩略图校验
+            boolean checkSiftGoodsImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
+            boolean checkImgType = ImageTools.checkImgType(file);// 类型
+            int size = file.getInputStream().available();// 大小
+            is = file.getInputStream();
+            if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
+            } else if (size > 1024 * 300) {
+                return Response.fail("文件不能大于300kb!");
+            }
+            //上传文件
+            FileUtilsCommons.uploadFilesUtil(rootPath, url, stockInfo.getStockLogoFile());
+            return Response.success("success", url);
+        } catch (Exception e) {
+            LOGGER.error("上传logo缩略图失败!", e);
+            return Response.fail("上传logo缩略图失败!");
+        }finally{
+            try {
+                if(is!=null){
+                    is.close();
+                }
+            } catch (IOException e) {
+            }
+        }
+    }
     /**
      * 加库存
      * 
@@ -263,14 +306,10 @@ public class GoodsStockInfoController {
         
         //根据库存的Id获取库存信息，然后根据goodsid获取
         GoodsStockInfoEntity stock = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
-        /**
-         * 更新base表中的数据
-         */
-        if(null != stock && null != stock.getGoodsId()){
-        	updateDB(stock.getGoodsId());
-        }
-        
+        //更新base表中的数据
+//        if(null != stock && null != stock.getGoodsId()){
+//        	updateDB(stock.getGoodsId());
+//        }
         return Response.success("success");
     }
-
 }

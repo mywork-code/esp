@@ -911,12 +911,10 @@ public class GoodsBaseInfoController {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);
             }
-
             /**
              * 上传文件
              */
             FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
-
             // 保存url到数据库
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             entity.setStockLogo(url);
@@ -924,20 +922,14 @@ public class GoodsBaseInfoController {
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
-
-            /**
-             * 更新goodsbase中的数据
-             */
-            updateDB(goodsId + "");
-
+            //更新goodsbase中的数据
+//            updateDB(goodsId + "");
             return Response.success("上传成功", url);
-
         } catch (Exception e) {
             LOGGER.error("上传logo失败!", e);
             return Response.fail("上传logo失败!");
         }
     }
-
     /**
      * 商品预览
      *
