@@ -81,7 +81,7 @@ public class WeiZhiConstants {
     //服务单保存申请
     public static final String WZAPI_AFTERSALES_AFSAPPLY = "http://180.168.49.94:65530/jdapi/afterSales/createAfsApply";
     //填写客户发运信息
-    public static final String WZAPI_AFTERSALES_SENDSKU = "";//TODO
+    public static final String WZAPI_AFTERSALES_SENDSKU = "http://180.168.49.94:65530/jdapi/afterSales/updateSendSku";//TODO
     //校验某订单中某商品是否可以提交售后服务
     public static final String WZAPI_AFTERSALE_AVAILABLENUMBERCOMP = "http://180.168.49.94:65530/jdapi/afterSales/getAvailableNumberComp";
     //根据订单号、商品编号查询支持的服务类型

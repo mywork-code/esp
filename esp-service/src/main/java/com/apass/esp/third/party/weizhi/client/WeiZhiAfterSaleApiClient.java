@@ -56,20 +56,40 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = null;
-        try{
-            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY,entity);
-            LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
+        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY,entity);
+        LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
-            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
 
-            return weiZhiAfterSaleApplyDto;
+        return weiZhiAfterSaleApplyDto;
 
-        }catch (Exception e){
-            LOGGER.error("afterSaleAfsApplyCreate response:{} return is not 200",e);
-        }
+    }
 
-        return null;
+    /**
+     * 填写客户发运信息
+     * @param afsApply
+     * @return
+     */
+    public WeiZhiAfterSaleDto afterUpdateSendSku(Map<String,String> paramMap) throws Exception {
+        //获取Token
+        String token = weiZhiTokenService.getTokenFromRedis();
+        //封装参数：表单提交
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("token",token));
+        params.add(new BasicNameValuePair("afsServiceId",paramMap.get("afsServiceId")));
+        params.add(new BasicNameValuePair("freightMoney",paramMap.get("freightMoney")));
+        params.add(new BasicNameValuePair("expressCompany",paramMap.get("expressCompany")));
+        params.add(new BasicNameValuePair("deliverDate",paramMap.get("deliverDate")));
+        params.add(new BasicNameValuePair("expressCode",paramMap.get("expressCode")));
+        LOGGER.info("填写客户发运信息,请求参数：{}", GsonUtils.toJson(params));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_SENDSKU,entity);
+        LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
+
+        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+
+        return weiZhiAfterSaleApplyDto;
     }
 
     /**
@@ -99,7 +119,6 @@ public class WeiZhiAfterSaleApiClient {
         WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
 
         return weiZhiAfterSaleApplyDto;
-
     }
 
     /**
@@ -121,20 +140,12 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = null;
-        try{
-            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP,entity);
-            LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
+        String  responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP,entity);
+        LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
 
-            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
 
-            return weiZhiAfterSaleApplyDto;
-
-        }catch (Exception e){
-            LOGGER.error("getCustomerExpectComp response return is not 200",e);
-        }
-
-        return null;
+        return weiZhiAfterSaleApplyDto;
     }
 
     /**
