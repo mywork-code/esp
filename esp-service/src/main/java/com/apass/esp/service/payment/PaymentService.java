@@ -351,7 +351,7 @@ public class PaymentService {
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderInfo.getOrderId() + "");
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
         	if(StringUtils.equals(orderDetail.getSource(), SourceType.JD.getCode())){
-        		return;
+        		continue;
         	}
             // 商品购买数量
             Long buyNum = orderDetail.getGoodsNum();
