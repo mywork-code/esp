@@ -350,6 +350,9 @@ public class PaymentService {
         //获取该订单详情列表
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderInfo.getOrderId() + "");
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
+        	if(StringUtils.equals(orderDetail.getSource(), SourceType.JD.getCode())){
+        		return;
+        	}
             // 商品购买数量
             Long buyNum = orderDetail.getGoodsNum();
             // 商品Id
