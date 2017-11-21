@@ -599,7 +599,12 @@ public class GoodsService {
       throw new BusinessException("商品信息不存在");
     }
     Date now = new Date();
-    if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+    boolean ifHasDelistTime = true;
+    if(goodsBasicInfo.getDelistTime() == null){
+        ifHasDelistTime = now.after(goodsBasicInfo.getDelistTime());
+
+    }
+    if (now.before(goodsBasicInfo.getListTime()) || ifHasDelistTime
         || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
       goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
     }
