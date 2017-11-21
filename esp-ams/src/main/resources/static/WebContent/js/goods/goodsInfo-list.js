@@ -711,6 +711,7 @@ $(function() {
 	
 	//添加商品：下一步
 	$("#nextStepAddGood").click(function() {
+		$('#nextStepAddGood').linkbutton('disable');
 		saveGoodsInfo(categoryId1,categoryId2,categoryId3);
 	});
 	
@@ -2427,6 +2428,7 @@ function saveGoodsInfo(categoryId1,categoryId2,categoryId3){
 	formObj.form("submit",{ 
 		url : ctx + '/application/goods/management/add',
 		success : function(data) {
+			$('#nextStepAddGood').linkbutton('enable');
 			var flag1 = data.indexOf('登录系统');
 			var flag2 = data.indexOf('</div');
 			//console.log(data+"==========>"+flag);;
