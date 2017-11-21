@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import java.util.Date;
+import com.apass.esp.domain.dto.InvoiceDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.aisino.EncryptionDecryption;
 import com.apass.esp.domain.Response;
@@ -20,6 +23,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
  * @author Administrator
  *
  */
+@Service
 public class InvoiceService {
 //    @Autowired
 //    private GoodsAttrService goodsService;
@@ -181,5 +185,26 @@ public class InvoiceService {
             return Response.success("success", retu);
         }
         return Response.fail("fail");
+    }
+    /**
+     *创建发票
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Invoice createInvoice(InvoiceDto invoiceDto){
+        Invoice in = new Invoice();
+        in.setCompanyName(invoiceDto.getCompanyName());
+        in.setContent(invoiceDto.getContent());
+        in.setCreatedTime(new Date());
+        in.setOrderAmt(invoiceDto.getOrderAmt());
+        in.setTelphone(invoiceDto.getTelphone());
+        in.setUserId(invoiceDto.getUserId());
+        in.setUpdatedTime(new Date());
+        in.setStatus((byte)1);
+        in.setHeadType((byte)1);
+        in.setTaxpayerNum(invoiceDto.getTaxpayerNum());
+        in.setOrderId(invoiceDto.getOrderId());
+        in.setSeller("上海奥派数据科技有限公司");
+        invoiceMapper.insertSelective(in);
+        return in;
     }
 }
