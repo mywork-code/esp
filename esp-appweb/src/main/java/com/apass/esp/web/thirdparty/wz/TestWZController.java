@@ -370,7 +370,7 @@ public class TestWZController {
 	public List<GoodsStock> getNewStockById(@RequestBody Map<String, Object> paramMap) throws Exception {
 		List<StockNum> skuNums = new ArrayList<>();
 		StockNum stockNum=new StockNum();
-		stockNum.setSkuId(Long.parseLong("1815738"));
+		stockNum.setSkuId(Long.parseLong("4163957"));
 		stockNum.setNum(1);
 		skuNums.add(stockNum);
 		Region region = new Region();
