@@ -1107,7 +1107,7 @@ public class GoodsBaseInfoController {
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品库存保存失败，检查非空字段验证!");
+            return Response.fail("请您完整填写商品库存相关信息!");
         }
     }
     /**
@@ -1219,7 +1219,7 @@ public class GoodsBaseInfoController {
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品库存保存失败，检查非空字段验证!");
+            return Response.fail("请您完整填写商品库存相关信息!");
         }
     }
 }
