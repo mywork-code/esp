@@ -12,13 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -50,6 +53,9 @@ public class CouponManagerService {
 	
 	@Autowired
 	private MyCouponManagerService myCouponManagerService;
+	
+	@Autowired
+	private CategoryMapper categoryMapper;
 	
 	/**
 	 * 根据活动的Id，获取优惠券
@@ -108,12 +114,27 @@ public class CouponManagerService {
 		   if(null !=activityCfg && ActivityStatus.PROCESSING == activityCfgService.getActivityStatus(activityCfg)){
 				//获取优惠券信息
 			    ProCoupon proCoupon = couponMapper.selectByPrimaryKey(rel.getCouponId());
+			    StringBuffer buffer = new StringBuffer();
+			    String activityName = "";
 				ProCouponVo proCouponVo=new ProCouponVo();
 				proCouponVo.setId(proCoupon.getId());
 				proCouponVo.setActivityId(rel.getProActivityId());
-				proCouponVo.setName(proCoupon.getName());
+				
 				proCouponVo.setCouponSill(proCoupon.getCouponSill());
 				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+				
+				String type = proCoupon.getType();
+				if(StringUtils.equals(type, CouponType.COUPON_ZDPL.getCode())){
+					String categoryId = StringUtils.isBlank(proCoupon.getCategoryId1()) ? proCoupon.getCategoryId2():proCoupon.getCategoryId1();
+					Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(categoryId));
+					buffer.append("【限"+categroy.getCategoryName()+"类】\t");
+				}else if(StringUtils.equals(type, CouponType.COUPON_HDSP.getCode())){
+					buffer.append("【限"+activityName+"活动商品】\t");
+				}else{
+					buffer.append("【"+CouponType.getMessage(type)+"】\t");
+				}
+				proCouponVo.setName(buffer.append(proCoupon.getName()).toString());
+				
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
 				String startTimeString = formatter.format(activityCfg.getStartTime());
 				String endTimeTimeString = formatter.format(activityCfg.getEndTime());
