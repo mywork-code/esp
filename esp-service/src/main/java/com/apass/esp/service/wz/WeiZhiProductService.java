@@ -17,6 +17,8 @@ import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.Category;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.CheckSale;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
@@ -208,5 +210,11 @@ public class WeiZhiProductService {
 	 */
 	public int  getWeiZhiGetBalance() throws Exception {
 		return weiZhiProductApiClient.getWeiZhiGetBalance();
+	}
+	/**
+	 * 微知批量获取库存接口
+	 */
+	public List<GoodsStock> getNewStockById(List<StockNum> skuNums, Region region) throws Exception {
+		return weiZhiProductApiClient.getNewStockById(skuNums, region);
 	}
 }

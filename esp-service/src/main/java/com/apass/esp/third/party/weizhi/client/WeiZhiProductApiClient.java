@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -22,6 +23,8 @@ import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.CategoryPage;
 import com.apass.esp.third.party.weizhi.entity.CheckSale;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
 import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
 import com.apass.esp.third.party.weizhi.entity.WzPicture;
 import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
@@ -402,5 +405,43 @@ public class WeiZhiProductApiClient {
 			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
 		}
 		return price;
+	}
+
+	/**
+	 * 微知批量获取库存接口
+	 */
+	public List<GoodsStock> getNewStockById(List<StockNum> skuNums, final Region region) throws Exception {
+		// 获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("skuNums", JSON.toJSONString(skuNums));
+		String area = region.getProvinceId() + "_" + region.getCityId() + "_" + region.getCountyId();
+		BasicNameValuePair param3 = new BasicNameValuePair("area", area);
+
+		parameters.add(param1);
+		parameters.add(param2);
+		parameters.add(param3);
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		List<GoodsStock> goodsStockList = new ArrayList<>();
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETNEWSTOCKBYID, entity);
+			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if (null == responseJson) {
+				LOGGER.info("微知获取token失败！");
+				return null;
+			}
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<List<GoodsStock>>>() {
+			}.getType();
+			WeiZhiResponse<List<GoodsStock>> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				goodsStockList = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckAreaLimit response {} return is not 200");
+		}
+		return goodsStockList;
 	}
 }

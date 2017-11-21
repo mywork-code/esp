@@ -28,9 +28,11 @@ import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
 import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
 import com.apass.esp.third.party.weizhi.entity.AddressInfo;
 import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
 import com.apass.esp.third.party.weizhi.entity.OrderReq;
 import com.apass.esp.third.party.weizhi.entity.PriceSnap;
 import com.apass.esp.third.party.weizhi.entity.SkuNum;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
 import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
@@ -358,5 +360,24 @@ public class TestWZController {
 	@ResponseBody
 	public int  getWeiZhiGetBalance() throws Exception {
 		return weiZhiProductService.getWeiZhiGetBalance();
+	}
+
+	/**
+	 * 微知批量获取库存接口
+	 */
+	@RequestMapping(value = "/getNewStockById", method = RequestMethod.POST)
+	@ResponseBody
+	public List<GoodsStock> getNewStockById(@RequestBody Map<String, Object> paramMap) throws Exception {
+		List<StockNum> skuNums = new ArrayList<>();
+		StockNum stockNum=new StockNum();
+		stockNum.setSkuId(Long.parseLong("1815738"));
+		stockNum.setNum(1);
+		skuNums.add(stockNum);
+		Region region = new Region();
+		region.setProvinceId(1);
+		region.setCityId(0);
+		region.setCountyId(0);
+		List<GoodsStock> result = weiZhiProductService.getNewStockById(skuNums, region);
+		return result;
 	}
 }
