@@ -59,7 +59,7 @@ public class WeiZhiConstants {
     //微知统一余额查询接口
     public static final String WZAPI_PRODUCT_GETBALANCE  =  COMMON_URL + "/jdapi/price/getBalance";
     //微知批量获取库存接口
-    public static final String WZAPI_PRODUCT_GETNEWSTOCKBYID  =  "https://openapi.exinbao.com/jdapi/stock/getNewStockById";
+    public static final String WZAPI_PRODUCT_GETNEWSTOCKBYID  =  COMMON_URL+ "/jdapi/stock/getNewStockById";
     
     
     
