@@ -93,22 +93,118 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String responseJson = null;
+        responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP,entity);
+        LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
+
+        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+
+        return weiZhiAfterSaleApplyDto;
+
+    }
+
+    /**
+     * 根据订单号、商品编号查询支持的服务类型
+     * @return
+     * @throws Exception
+     */
+    public WeiZhiAfterSaleDto getCustomerExpectComp(Map<String,String> paramMap) throws Exception {
+        //获取Token
+        String token = weiZhiTokenService.getTokenFromRedis();
+
+        //封装参数：表单提交
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("token",token));
+        params.add(new BasicNameValuePair("wzOrderId",paramMap.get("wzOrderId")));
+        params.add(new BasicNameValuePair("pageIndex",paramMap.get("pageIndex")));
+        params.add(new BasicNameValuePair("pageSize",paramMap.get("pageSize")));
+        LOGGER.info("根据订单号、商品编号查询支持的服务类型,请求参数：{}", GsonUtils.toJson(params));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+        //发送请求并封装返回值
+        String responseJson = null;
         try{
-            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP,entity);
-            LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
+            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP,entity);
+            LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
 
             WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
 
             return weiZhiAfterSaleApplyDto;
 
         }catch (Exception e){
-            LOGGER.error("getAvailableNumberComp response:{} return is not 200",e);
+            LOGGER.error("getCustomerExpectComp response return is not 200",e);
+        }
+
+        return null;
+    }
+
+    /**
+     * 根据订单号、商品编号查询支持的商品返回微知方式
+     * @return
+     * @throws Exception
+     */
+    public WeiZhiAfterSaleDto getWareReturnJdComp(Map<String,String> paramMap) throws Exception {
+        //获取Token
+        String token = weiZhiTokenService.getTokenFromRedis();
+
+        //封装参数：表单提交
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("wzOrderId",paramMap.get("wzOrderId")));
+        params.add(new BasicNameValuePair("skuId",paramMap.get("skuId")));
+        params.add(new BasicNameValuePair("token",paramMap.get("token")));
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,请求参数：{}", GsonUtils.toJson(params));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+        //发送请求并封装返回值
+        String responseJson = null;
+        try{
+            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP,entity);
+            LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+
+            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+
+            return weiZhiAfterSaleApplyDto;
+
+        }catch (Exception e){
+            LOGGER.error("getWareReturnJdComp response return is not 200",e);
         }
 
         return null;
     }
 
 
+    /**
+     * 根据客户账号和订单号分页查询服务单概要信息
+     * @return
+     * @throws Exception
+     */
+    public WeiZhiAfterSaleDto getServiveList(Map<String,String> paramMap) throws Exception {
+        //获取Token
+        String token = weiZhiTokenService.getTokenFromRedis();
 
+        //封装参数：表单提交
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("wzOrderId",paramMap.get("wzOrderId")));
+        params.add(new BasicNameValuePair("token",token));
+        params.add(new BasicNameValuePair("pageSize",paramMap.get("pageSize")));
+        params.add(new BasicNameValuePair("pageIndex",paramMap.get("pageIndex")));
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,请求参数：{}", GsonUtils.toJson(params));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+
+        //发送请求并封装返回值
+        String responseJson = null;
+        try{
+            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST,entity);
+            LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+
+            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+
+            return weiZhiAfterSaleApplyDto;
+
+        }catch (Exception e){
+            LOGGER.error("getServiveList response return is not 200",e);
+        }
+
+        return null;
+    }
 
 }

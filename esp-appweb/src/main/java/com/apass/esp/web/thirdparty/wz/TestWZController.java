@@ -322,7 +322,6 @@ public class TestWZController {
 	@ResponseBody
 	public Response getAvailableNumberComp(@RequestBody Map<String, String> paramMap) {
 		try {
-			AfsApplyWeiZhiDto AfsApplyWeiZhiDto = new AfsApplyWeiZhiDto();
 			WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = weiZhiAfterSaleApiClient.getAvailableNumberComp(paramMap);
 
 			return Response.success("校验某订单中某商品是否可以提交售后服务成功！", weiZhiAfterSaleApplyDto);
