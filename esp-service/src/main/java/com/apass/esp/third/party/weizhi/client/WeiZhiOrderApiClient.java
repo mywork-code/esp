@@ -274,7 +274,7 @@ public class WeiZhiOrderApiClient {
 		    	if(value instanceof List){
 		    		List<TrackData> trackList = (List<TrackData>) value;
 		    		track.setTackList(trackList);
-		    	}else{
+		    	}else if(value instanceof String){
 		    	    track.setMassge((String)value);
 		    	}
 		    	orderTrack.add(track);
