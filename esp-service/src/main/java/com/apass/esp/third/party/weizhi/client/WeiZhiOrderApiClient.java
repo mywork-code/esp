@@ -1,6 +1,7 @@
 package com.apass.esp.third.party.weizhi.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -219,6 +220,7 @@ public class WeiZhiOrderApiClient {
      * @throws Exception 
      */
     public OrderTrackResponse orderTrack(String wzOrderId) throws Exception {
+
     	List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
 		BasicNameValuePair param2 = new BasicNameValuePair("wzOrderId",wzOrderId);
@@ -227,8 +229,8 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
-	    //String responseJson = "{'data':{'wzOrderId':'订单号','orderTrack':[{'skuid1,skuid2':[{'msgTime':'操作时间1', 'content':'配送内容1', 'operator':'操作人1'},{'msgTime':'操作时间2', 'content':'配送内容2', 'operator':'操作人2'}]}]},'result':0,'detail':''}";
+		//String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
+	    String responseJson = "{'data':{'wzOrderId':'订单号','orderTrack':[{'物流单号':{{'skuid1,skuid2':[{'msgTime':'操作时间','content':'配送内容','operator':'操作人'},{'msgTime':'操作时间','content':'配送内容','operator':'操作人'}]}}},{'物流单号':{{'skuid':[{'msgTime':'操作时间','content':'配送内容','operator':'操作人'},{'msgTime':'操作时间','content':'配送内容','operator':'操作人'}]}}}]},'result':0,'detail':''}";
 		
 		logger.info("----orderTrack------ response:{}",responseJson);
 		
@@ -258,28 +260,29 @@ public class WeiZhiOrderApiClient {
 	    /**
 	     * 先把返回的数据按照key-value的格式保存一下
 	     */
-	    Map<String,String> results = Maps.newHashMap();
 	    for (Object obj : array) {
 	    	String content =  JSONObject.toJSONString(obj);
-	    	Map<String,String> ss = GsonUtils.convertObj(content,Map.class);
-	    	results.putAll(ss);
-		}
-	    
-	    for (String key : results.keySet()) {
-	    	String[] keys = key.split(",");//可能存在多个skuId并且用","隔开
-	    	for (String str : keys) {
+	    	Map<String,Object> ss = GsonUtils.convertObj(content,Map.class);
+	    	for (String key : ss.keySet()) {
 	    		OrderTrack track = new OrderTrack();
-	    		track.setSkuId(str);
-	    		Object value = results.get(key);
-		    	if(value instanceof List){
-		    		List<TrackData> trackList = (List<TrackData>) value;
-		    		track.setTackList(trackList);
-		    	}else if(value instanceof String){
-		    	    track.setMassge((String)value);
-		    	}
-		    	orderTrack.add(track);
+	    		track.setTrackId(key);//设置物流单号
+				Map<String,String> hh = (Map)ss.get(key);
+				for (String key1 : hh.keySet()) {
+			    	List<String> keys =  Arrays.asList(key1.split(","));
+			    	track.setSkuId(keys);
+		    		Object value = hh.get(key1);
+			    	if(value instanceof List){
+			    		List<TrackData> trackList = (List<TrackData>) value;
+			    		track.setTackList(trackList);
+			    	}else if(value instanceof String){
+			    	    track.setMassge((String)value);
+			    	}else{
+			    		track.setMassge("");
+			    	}
+			    	orderTrack.add(track);
+			    }
 			}
-	    }
+		}
 	    response.setOrderTrack(orderTrack);
 		return response;
     }

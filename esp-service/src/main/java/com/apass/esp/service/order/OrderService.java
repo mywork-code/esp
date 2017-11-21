@@ -114,6 +114,8 @@ import com.apass.esp.third.party.jd.entity.order.PriceSnap;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.person.AddressInfo;
 import com.apass.esp.third.party.jd.entity.product.Stock;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -234,12 +236,15 @@ public class OrderService {
     
     @Autowired
     private ProCouponMapper couponMapper;
-    
-    @Autowired
-    private ProCouponRelMapper couponRelMapper;
 
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    
+    @Autowired
+	private WeiZhiOrderApiClient orderApi;
+    
+	@Autowired
+	private WeiZhiPriceApiClient priceApi;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -573,6 +578,109 @@ public class OrderService {
             priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"),
                     jsonObject.getBigDecimal("jdPrice")));
         }
+
+        OrderReq orderReq = new OrderReq();
+        orderReq.setSkuNumList(skuNumList);
+        orderReq.setAddressInfo(addressInfo);
+        orderReq.setOrderPriceSnap(priceSnaps);
+        orderReq.setRemark("");
+        orderReq.setOrderNo(orders.get(0));
+        /**
+         * 验证商品是否可售
+         */
+        if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
+        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
+        }
+        /**
+         * 批量获取库存接口
+         */
+        List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo()
+                .toRegion());
+        for (Stock stock : stocks) {
+            if (!"有货".equals(stock.getStockStateDesc())) {
+                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
+                        stock.getStockStateDesc());
+                LOGGER.info(stock.getSkuId() + "_");
+                throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+            }
+        }
+        /**
+         * 统一下单接口
+         */
+        JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
+        LOGGER.info(orderResponse.toString());
+        if ((!orderResponse.isSuccess())) {
+
+            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
+            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
+            throw new BusinessException("抱歉,该订单暂时无法结算!");
+        }
+        String jdOrderId = orderResponse.getResult().getString("jdOrderId");
+
+        /**
+         * 在京东那边占完库存后，要修改order表中的信息
+         */
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("preStockStatus", PreStockStatus.PRE_STOCK.getCode());
+        params.put("updateTime", new Date());
+        params.put("extOrderId", jdOrderId);
+        for (String orderId : orders) {
+            params.put("orderId", orderId);
+            orderInfoRepository.updatePreStockStatusByOrderId(params);
+        }
+
+        return jdOrderId;
+    }
+    
+    /**
+     * 设置微知京东商品预占库存
+     * 
+     * @return
+     * @throws BusinessException
+     */
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
+    public String preStockStatusWeiZhi(List<String> orderIdList, Long addressId) throws BusinessException {
+        /**
+         * 根据传入订单号，检测是京东的订单
+         */
+        List<String> orders = getJdOrder(orderIdList);
+        /**
+         * 如果集合为空，就不需要往下一步走
+         */
+        if (CollectionUtils.isEmpty(orders)) {
+            return null;
+        }
+        /**
+         *
+         * 首先根据订单的id，获取订单的detail信息，拿到detail信息， 获取goodId,
+         * 根据goodId获取good信息，然后获取京东商品skuId
+         *
+         */
+        List<SkuNum> skuNumList = new ArrayList<>();
+        List<PriceSnap> priceSnaps = new ArrayList<>();
+        List<OrderDetailInfoEntity> details = orderDetailInfoRepository
+                .queryOrderDetailListByOrderList(orders);
+        for (OrderDetailInfoEntity detail : details) {
+            GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+            SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
+            skuNumList.add(num);
+        }
+
+        /**
+         * 获取用户的地址信息
+         */
+        AddressInfo addressInfo = getAddressByOrderId(addressId);
+        /**
+         * 批量查询京东价格
+         */
+        JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skuNumList).getResult();
+        for (Object jsonArray : productPriceList) {
+            JSONObject jsonObject = (JSONObject) jsonArray;
+            priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"),
+                    jsonObject.getBigDecimal("jdPrice")));
+        }
+        
+        
 
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
