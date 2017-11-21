@@ -3254,9 +3254,11 @@ function flushAttrList(){//表格   刷新       弹框 后才刷新
 var addindex;
 function updateActions(index){//可编辑动态表格
 	addindex = index;
-	$("#goodsCostPrice").textbox('clear');
-	$("#goodsPrice").textbox('clear');
-	$("#stockTotalAmt").textbox('clear');
+	var rows = $('#tableattrlist').datagrid('getRows');
+	var r = rows[addindex];
+	$("#goodsCostPrice").textbox('setValue',r.goodsCostPrice);
+	$("#goodsPrice").textbox('setValue',r.goodsPrice);
+	$("#stockTotalAmt").textbox('setValue',r.stockTotalAmt);
 	$("#stockLogoFile").val('');
 	
 	$('#addGoodsStockInfoWin').window({modal: true});
@@ -3522,9 +3524,11 @@ function editrowForEdit1(target){
 }
 function editrowForEdit2(target){
 	editindex = getRowIndexE(target);
-	$("#editaddgoodsCostPrice").textbox('clear');
-	$("#editaddgoodsPrice").textbox('clear');
-	$("#editaddstockTotalAmt").textbox('clear');
+	var rows = $('#tableattrEditlist').datagrid('getRows');
+	var r = rows[editindex];
+	$("#editaddgoodsCostPrice").textbox('setValue',r.goodsCostPrice);
+	$("#editaddgoodsPrice").textbox('setValue',r.goodsPrice);
+	$("#editaddstockTotalAmt").textbox('setValue',r.stockTotalAmt);
 	$("#editaddstockLogoFile").val('');
 	
 	$('#editaddGoodsStockInfoWin').window({modal: true});
@@ -3545,7 +3549,7 @@ function function1(){
 	var buttonid = catenum+"+buttonId";
 	var str ='<div id ='+divid+'>';
 		str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
-			str+='<input class="easyui-combobox" style="width:95px"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
+			str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
 			str+="&nbsp;&nbsp;"
 			str+='<input  type = "button" id = '+buttonid+' value = "删除" style="width:40px;height: 20px;color : blue" onclick ="function5(this.id)"/>';
 //			str+='<a href="javascript:void(0);" id = '+buttonid+' class="easyui-linkbutton function5">删除</a>'
