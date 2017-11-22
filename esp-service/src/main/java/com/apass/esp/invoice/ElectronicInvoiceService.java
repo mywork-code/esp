@@ -1,5 +1,7 @@
 package com.apass.esp.invoice;
-
+import java.io.UnsupportedEncodingException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import com.apass.esp.invoice.model.DataDescription;
 import com.apass.esp.invoice.model.FaPiaoKJ;
 import com.apass.esp.invoice.model.FaPiaoKJDD;
@@ -9,20 +11,13 @@ import com.apass.esp.invoice.model.ReturnStateInfo;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 import com.thoughtworks.xstream.io.xml.XppDriver;
-import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import sun.misc.BASE64Encoder;
-
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created by jie.xu on 17/3/28.
  * 电子发票
  */
 public class ElectronicInvoiceService {
   private static final String testUrl = "http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
-
-
 
   public String requestFaPiao() throws Exception {
     EncryptInvoiceContentHandler handler = new EncryptInvoiceContentHandler();
@@ -57,8 +52,8 @@ public class ElectronicInvoiceService {
   private String createGlobalInfoXml() {
     GlobalInfo globalInfo = new GlobalInfo();
     globalInfo.setTerminalCode("0");
-    globalInfo.setAppId("ZZS_PT_DZFP");
-    globalInfo.setVersion("1.42");
+    globalInfo.setAppId("DZFP");
+    globalInfo.setVersion("1.0");
     globalInfo.setInterfaceCode("ECXML.FPKJ.BC.E_INV");//开具发票
     globalInfo.setRequestCode("111MFWIK");
     globalInfo.setRequestTime("2016-11-28 10:19:16");
@@ -76,9 +71,7 @@ public class ElectronicInvoiceService {
   }
 
   private String createReturnStateInfoXml() {
-    ReturnStateInfo stateInfo = new ReturnStateInfo();
-    stateInfo.setReturnCode(StringUtils.EMPTY);
-    stateInfo.setReturnMessage(StringUtils.EMPTY);
+    ReturnStateInfo stateInfo = new ReturnStateInfo("1");;
     XStream xStream = new XStream();
     xStream.alias("returnStateInfo", ReturnStateInfo.class);
     String xml = xStream.toXML(stateInfo);
@@ -117,7 +110,7 @@ public class ElectronicInvoiceService {
     sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">");
     sb.append("\r\n");
     FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-    faPiaoKJ.setFpqqlsh("d2222222222222222217");
+    faPiaoKJ.setFpqqlsh("d2222222222222221234");
     faPiaoKJ.setDsptbm("111MFWIK");
     faPiaoKJ.setNsrsbh("310101000000090");
     faPiaoKJ.setNsrmc("雅诗兰黛（上海）商贸有限公司");
@@ -202,7 +195,7 @@ public class ElectronicInvoiceService {
     sb.append("</FPKJXX_XMXXS>");
     sb.append("\r\n");
     FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-    faPiaoKJDD.setDdh("2492684718573093");
+    faPiaoKJDD.setDdh("456456789123");
     faPiaoKJDD.setThdh("2492684718573093");
     faPiaoKJDD.setDddate("2016-10-31 10:47:17");
     XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
@@ -219,6 +212,6 @@ public class ElectronicInvoiceService {
   public static void main(String[] args) throws Exception {
     ElectronicInvoiceService service = new ElectronicInvoiceService();
     System.out.println(service.requestFaPiao());
-//   System.out.println(new String(new BASE64Decoder().decodeBuffer("5Y+R56Wo6K+35rGC5rWB5rC05Y+35bey57uP5a2Y5Zyo")));
+//  System.out.println(new String(new BASE64Decoder().decodeBuffer("5o6l5pS25byA56Wo5pWw5o2u5oiQ5Yqf77yB")));
   }
 }
