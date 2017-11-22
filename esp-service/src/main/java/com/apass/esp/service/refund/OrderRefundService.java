@@ -255,8 +255,6 @@ public class OrderRefundService {
             	//根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
             	if(StringUtils.equals(dto.getRefundType(), "0")){
             		status = OrderStatus.ORDER_TRADCLOSED.getCode();
-            		//支付宝退款
-            		//cashRefundService.agreeRefundInAfterSalesTask(dto.getOrderId());
             	}
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                 int i = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
