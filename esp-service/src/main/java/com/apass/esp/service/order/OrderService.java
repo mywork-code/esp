@@ -736,7 +736,7 @@ public class OrderService {
         if(CollectionUtils.isEmpty(stockList)){
         	for (GoodsStock stock : stockList) {
         		String desc = stock.getStockStateDesc();
-        		if(!StringUtils.equals(desc, "无货")){
+        		if(!StringUtils.equals(desc, "有货")){
         			throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
         		}
 			}
