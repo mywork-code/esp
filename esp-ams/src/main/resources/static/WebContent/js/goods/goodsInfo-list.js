@@ -101,6 +101,7 @@ $(function() {
 				if(data.status==1){
 					$('#addGoodsInfo').window('close');
 				}
+				window.location.reload();
 			}
 		});
 	});
