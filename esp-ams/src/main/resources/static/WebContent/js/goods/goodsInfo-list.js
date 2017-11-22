@@ -101,6 +101,7 @@ $(function() {
 				if(data.status==1){
 					$('#addGoodsInfo').window('close');
 				}
+				window.location.reload();
 			}
 		});
 	});
@@ -115,7 +116,7 @@ $(function() {
 			return;
     	}
     	if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
-    		function1()
+    		window.setTimeout(function1(),500);
     	}
     });
 	//修改商品保存库存
