@@ -599,8 +599,8 @@ public class GoodsService {
       throw new BusinessException("商品信息不存在");
     }
     Date now = new Date();
-    boolean ifHasDelistTime = true;
-    if(goodsBasicInfo.getDelistTime() == null){
+    boolean ifHasDelistTime = false;
+    if(goodsBasicInfo.getDelistTime() != null){
         ifHasDelistTime = now.after(goodsBasicInfo.getDelistTime());
 
     }
