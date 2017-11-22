@@ -5,7 +5,6 @@ import com.apass.esp.domain.entity.BsdiffInfoEntity;
 import com.apass.esp.mapper.BsdiffInfoEntityMapper;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.tencent.tinker.bsdiff.BSDiff;
-import com.tencent.tinker.bsdiff.BSPatch;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

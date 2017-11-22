@@ -56,10 +56,10 @@ public class EncryptInvoiceContentHandler implements InvoiceContentHandler{
     sb.append("<REQUEST_FPKJXX class=\"REQUEST_FPKJXX\">");
     sb.append("\r\n");
     FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-    faPiaoKJ.setFpqqlsh("d2222222222222222217");
+    faPiaoKJ.setFpqqlsh("d22222222222222255667");
     faPiaoKJ.setDsptbm("111MFWIK");
     faPiaoKJ.setNsrsbh("310101000000090");
-    faPiaoKJ.setNsrmc("雅诗兰黛（上海）商贸有限公司");
+    faPiaoKJ.setNsrmc("上海奥派数据科技有限公司");
     faPiaoKJ.setNsrdzdah(StringUtils.EMPTY);
     faPiaoKJ.setSwjgDm(StringUtils.EMPTY);
     faPiaoKJ.setDkbz("0");
@@ -67,8 +67,8 @@ public class EncryptInvoiceContentHandler implements InvoiceContentHandler{
     faPiaoKJ.setKpxm("化妆品");
     faPiaoKJ.setBmbBbh("1.0");
     faPiaoKJ.setXhfNsrsbh("310101000000090");
-    faPiaoKJ.setXhfmc("雅诗兰黛（上海）商贸有限公司");
-    faPiaoKJ.setXhfDz("上海市闵行区金都路3688号301、302、306室");
+    faPiaoKJ.setXhfmc("上海奥派数据科技有限公司");
+    faPiaoKJ.setXhfDz("上海市長寧區");
     faPiaoKJ.setXhfDh("22039999");
     faPiaoKJ.setXhfYhzh("");
     faPiaoKJ.setGhfmc("许嘉心");
@@ -141,7 +141,7 @@ public class EncryptInvoiceContentHandler implements InvoiceContentHandler{
     sb.append("</FPKJXX_XMXXS>");
     sb.append("\r\n");
     FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-    faPiaoKJDD.setDdh("2492684718573093");
+    faPiaoKJDD.setDdh("2492684718512345");
     faPiaoKJDD.setThdh("2492684718573093");
     faPiaoKJDD.setDddate("2016-10-31 10:47:17");
     XStream xStream3 = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));

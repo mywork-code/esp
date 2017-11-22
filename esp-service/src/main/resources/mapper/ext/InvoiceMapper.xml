@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.InvoiceMapper" >
+    <!-- 查询条件 -->
+    <sql id="QueryConditionSql">
+        <where>
+            <if test="userId!=null and userId!=''"> AND user_id = '${userId}' </if>
+            <if test="orderId!=null and orderId!=''"> AND order_id = '${orderId}' </if>
+            <if test="headType!=null and headType!=''"> AND head_type = '${headType}' </if>
+            <if test="telphone!=null and telphone!=''"> AND telphone = '${telphone}' </if>
+            <if test="status!=null and status!=''"> AND status = '${status}' </if>
+            <if test="pdfUrl!=null and pdfUrl!=''"> AND pdf_url = '${pdfUrl}' </if>
+        </where>
+    </sql>
+    <select id="getInvoicePage" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.entity.Invoice">
+        SELECT 
+            <include refid="Base_Column_List" />
+        FROM t_esp_invoice
+            <include refid="QueryConditionSql" />
+        <![CDATA[ 
+         ORDER BY created_time desc
+        ]]>
+        <if test="startRecordIndex != null"> <include refid="PAGINATION.MYSQL_PAGINATION" /> </if>
+    </select>
+    <select id ="getInvoicePageCount" resultType="java.lang.Integer" parameterType="com.apass.esp.domain.entity.Invoice">
+        SELECT COUNT(*) FROM t_esp_invoice
+        <include refid="QueryConditionSql" />
+    </select>
+    <select id="getInvoiceList" resultType="com.apass.esp.domain.entity.Invoice">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM
+            t_esp_invoice t
+        WHERE 1=1
+        <if test="userId!=null and userId!=''"> AND t.user_id = '${userId}' </if>
+    </select>
+</mapper>
