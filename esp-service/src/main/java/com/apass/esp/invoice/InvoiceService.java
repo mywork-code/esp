@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -175,5 +176,10 @@ public class InvoiceService {
         in.setSeller("上海奥派数据科技有限公司");
         invoiceMapper.insertSelective(in);
         return in;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatusByOrderId( byte status,  String orderId){
+         invoiceMapper.updateStatusByOrderId(status,orderId);
     }
 }

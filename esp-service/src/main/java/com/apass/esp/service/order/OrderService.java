@@ -893,7 +893,12 @@ public class OrderService {
                 //向下兼容，老版本invoiceDto = null
                 invoiceDto.setOrderId(orderId);
                 invoiceDto.setOrderAmt(orderInfo.getOrderAmt());
-                invoiceDto.setStatus((byte) InvoiceStatusEnum.INVISIBLE.getCode());
+                if(size > 1){
+                    //有子订单时发票先不可见
+                    invoiceDto.setStatus((byte) InvoiceStatusEnum.INVISIBLE.getCode());
+                }else{
+                    invoiceDto.setStatus((byte) InvoiceStatusEnum.APPLYING.getCode());
+                }
                 invoiceService.createInvoice(invoiceDto);
             }
 
@@ -2488,6 +2493,8 @@ public class OrderService {
                 }
                 updateOrderStatusAndPreDelivery(order);
                 if(StringUtils.equals(order.getMerchantCode(),"-1")){
+                    //父发票状态改为不可见
+                    invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),order.getOrderId());
                 	changeParentOrderId("-"+order.getOrderId());
                 }
                 orderIdList.add(order.getOrderId());
@@ -2509,6 +2516,8 @@ public class OrderService {
             order.setStatus(OrderStatus.ORDER_SEND.getCode());
             order.setUpdateDate(new Date());
 			orderInfoRepository.update(order);
+			//子发票状态改为申请中
+			invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.APPLYING.getCode(),order.getOrderId());
 		}
     }
     

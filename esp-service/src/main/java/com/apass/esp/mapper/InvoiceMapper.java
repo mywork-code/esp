@@ -2,6 +2,8 @@ package com.apass.esp.mapper;
 import java.util.List;
 import com.apass.esp.domain.entity.Invoice;
 import com.apass.gfb.framework.mybatis.GenericMapper;
+import org.apache.ibatis.annotations.Param;
+
 /**
  * Created by DELL on 2017/11/20.
  */
@@ -24,4 +26,9 @@ public interface InvoiceMapper extends GenericMapper<Invoice,Long> {
      * @return
      */
     public List<Invoice> getInvoiceList(Invoice entity);
+
+    /**
+     * 根据订单号修改状态
+     */
+    public void updateStatusByOrderId(@Param("status") byte status,@Param("orderId") String orderId);
 }

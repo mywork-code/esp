@@ -34,4 +34,9 @@
         WHERE 1=1
         <if test="userId!=null and userId!=''"> AND t.user_id = '${userId}' </if>
     </select>
+
+    <update id="updateStatusByOrderId">
+        UPDATE t_esp_invoice set updated_time = now(),
+        set status = #{status} where order_id = #{orderId}
+    </update>
 </mapper>
