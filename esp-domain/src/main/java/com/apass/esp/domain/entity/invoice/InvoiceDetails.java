@@ -3,6 +3,7 @@ package com.apass.esp.domain.entity.invoice;
 import java.math.BigDecimal;
 
 public class InvoiceDetails {
+    private String id;
     private String orderId;
     private BigDecimal orderAmt;
     private String invoiceType;
@@ -11,6 +12,7 @@ public class InvoiceDetails {
     private String AParty;
     private String date;
     private String invoiceNum;
+    private String pdfUrl;
     public String getOrderId() {
         return orderId;
     }
@@ -58,5 +60,17 @@ public class InvoiceDetails {
     }
     public void setInvoiceNum(String invoiceNum) {
         this.invoiceNum = invoiceNum;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 }

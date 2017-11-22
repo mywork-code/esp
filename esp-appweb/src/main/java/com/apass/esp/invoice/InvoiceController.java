@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.enums.StatusCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 /**
@@ -38,7 +39,7 @@ public class InvoiceController {
             return invoiceService.invoiceDetails(Long.parseLong(userId),orderId);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail(StatusCode.FAILED_CODE.getCode(),"发票详情查询失败");
         }
     }
     /**
@@ -54,24 +55,7 @@ public class InvoiceController {
             return invoiceService.invoiceRecord(Long.parseLong(userId));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
-        }
-    }
-    /**
-     * 查看发票具体详情
-     * @param paramMap
-     * @return
-     */
-    @POST
-    @Path("/invoiceDetails")
-    public Response invoiceCheck(Map<String, Object> paramMap) {
-        try{
-            String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
-            String orderId = CommonUtils.getValue(paramMap, "orderId");
-            return invoiceService.invoiceCheck(Long.parseLong(userId),orderId);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return Response.fail(BusinessErrorCode.QUREY_INFO_FAILED);
+            return Response.fail(StatusCode.FAILED_CODE.getCode(),"开票记录查询失败");
         }
     }
 }
