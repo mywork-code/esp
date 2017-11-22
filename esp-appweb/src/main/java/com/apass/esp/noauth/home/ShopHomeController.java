@@ -62,6 +62,7 @@ import com.apass.esp.service.nation.NationService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
@@ -136,6 +137,8 @@ public class ShopHomeController {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    @Autowired
+    private WeiZhiProductService weiZhiProductService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -1020,7 +1023,63 @@ public class ShopHomeController {
                 returnMap.put("source", "jd");
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
-            } else {
+            }  else if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于微知
+                String externalId = goodsInfo.getExternalId();// 外部商品id
+                Boolean checkSale = weiZhiProductService.getWeiZhiCheckSale(externalId);
+                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+                if(!checkSale){
+                	goodsInfo.setStatus("G03");//商品下架
+                }
+                returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
+                        Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
+                
+                //添加活动id
+            	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+            	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
+            	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
+            	}
+            	//获取商品的优惠券
+            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
+            	if(proCoupons.size()>3){
+            		returnMap.put("proCouponList",proCoupons.subList(0, 3));
+            	}else{
+            		 returnMap.put("proCouponList",proCoupons);
+            	}
+                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
+                returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
+                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
+                returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
+                List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
+                        .loadByGoodsId(goodsId);
+                if (jdGoodsStockInfoList.size() == 1) {
+                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0)
+                            .getId());
+                    returnMap.put("goodsPrice", price);// 商品价格
+                    returnMap.put("goodsPriceFirstPayment",
+                            (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+                    // 京东商品没有规格情况拼凑数据格式
+                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
+                    if (jdSimilarSkuListSize == 0) {
+                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
+                                .get("JdSimilarSkuToList");
+                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
+                        jdSimilarSkuVo.setSkuId(externalId);
+                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+                        jdSimilarSkuVo.setPrice(price);
+                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                BigDecimal.ROUND_DOWN));
+                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                        jdSimilarSkuTo.setSkuIdOrder("");
+                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+                        JdSimilarSkuToList.add(jdSimilarSkuTo);
+                    }
+                }
+                returnMap.put("source", "jd");
+                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
+                returnMap.put("status", goodsInfo.getStatus());
+            }else {
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 获取购物车中商品种类数
