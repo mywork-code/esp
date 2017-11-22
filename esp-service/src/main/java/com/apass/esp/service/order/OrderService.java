@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.apass.esp.domain.dto.InvoiceDto;
+import com.apass.esp.invoice.InvoiceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -241,6 +243,9 @@ public class OrderService {
     @Autowired
     private MyCouponManagerService myCouponManagerService;
 
+    @Autowired
+    private InvoiceService invoiceService;
+
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
     private static final String ORDERSOURCECARTFLAG = "cart";
@@ -465,8 +470,9 @@ public class OrderService {
      * @throws BusinessException
      */
     @Transactional(rollbackFor = { Exception.class,BusinessException.class })
-    public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment,BigDecimal discountMoneydiscountMoney, Long addressId,
-            List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType,String myCouponId,String goodStockIds)
+    public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment, BigDecimal discountMoneydiscountMoney, Long addressId,
+                                     List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType, String myCouponId, String goodStockIds,
+                                     InvoiceDto invoiceDto)
             throws BusinessException {
         int index = 0;
         String[] goodsStockArray = new String[purchaseList.size()];
@@ -491,7 +497,7 @@ public class OrderService {
         }
         // 4 生成订单
         Map<String,List<String>> params = generateOrder(requestId, userId, totalPayment, purchaseList, addressId,
-                deviceType,myCouponId,goodStockIds);
+                deviceType,myCouponId,goodStockIds,invoiceDto);
 
         List<String> orders = params.get("orderList");//主订单的Id
         List<String> comfirmOrders = params.get("confirmList");//子订单的Id
@@ -821,7 +827,8 @@ public class OrderService {
      */
     @Transactional(rollbackFor = { Exception.class, BusinessException.class })
     public Map<String,List<String>> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
-            List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId,String goodStockIds)
+            List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId,String goodStockIds,
+                                                  InvoiceDto invoiceDto)
             throws BusinessException {
     	Map<String,List<String>> params = Maps.newHashMap();
         List<String> orderList = Lists.newArrayList();
@@ -891,6 +898,14 @@ public class OrderService {
             }
             Integer successStatus = orderInfoRepository.insert(orderInfo);
             confirmOrderList.add(orderId);
+            //插入发票信息
+            if(invoiceDto != null){
+                //向下兼容，老版本invoiceDto = null
+                invoiceDto.setOrderId(orderId);
+                invoiceDto.setOrderAmt(orderInfo.getOrderAmt());
+                invoiceService.createInvoice(invoiceDto);
+            }
+
             if (successStatus < 1) {
                 LOG.info(requestId, "生成订单", "订单表数据插入失败");
                 throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);

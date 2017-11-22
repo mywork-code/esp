@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.apass.esp.domain.dto.InvoiceDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -113,6 +114,14 @@ public class OrderInfoController {
     // 或
     // 直接购买]
     String deviceType = CommonUtils.getValue(paramMap, "deviceType");//订单渠道
+
+    //发票
+    String invoiceHeadType = CommonUtils.getValue(paramMap,"invoiceHeadType");//发票抬头
+    String invoiceTelphone = CommonUtils.getValue(paramMap,"invoiceTelphone");//收票人手机
+    String invoiceCompanyName =  CommonUtils.getValue(paramMap,"invoiceCompanyName");//发票单位名称
+    String invoiceTaxpayerNum = CommonUtils.getValue(paramMap,"invoiceTaxpayerNum");//纳税人识别号
+    String invoiceContent = CommonUtils.getValue(paramMap,"invoiceContent");//收票内容
+
     String requestId = logStashSign + "_" + userIdStr;
     paramMap.remove("x-auth-token"); // 输出日志前删除会话token
     LOG.info(requestId, methodDesc, GsonUtils.toJson(paramMap));
@@ -165,6 +174,7 @@ public class OrderInfoController {
         LOGGER.error("请选择所购买的商品");
         return Response.fail(BusinessErrorCode.PARAM_CONVERT_ERROR);
       }
+
       /**
        * 如果根据addressId ,获取地址详细信息，如果存在京东商品，则towns必填
        */
@@ -176,8 +186,21 @@ public class OrderInfoController {
     	  resultMap.putAll(orderService.validateGoodsUnSupportProvince(requestId, addressId, purchaseList));
           //如果map为空，则说明订单下，不存在不支持配送的区域
           if(resultMap.isEmpty()){
-         		 List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment,discountMoney, addressId,
-         			        purchaseList, sourceFlag, deviceType,myCouponId,goodStockIds);
+            //生成发票参数
+            InvoiceDto invoiceDto = null;
+            if(StringUtils.isNotEmpty(invoiceTelphone)){
+               invoiceDto = new InvoiceDto();
+              invoiceDto.setCompanyName(invoiceCompanyName);
+              invoiceDto.setContent(invoiceContent);
+              invoiceDto.setHeadType(Byte.valueOf(invoiceHeadType));
+              invoiceDto.setTelphone(invoiceTelphone);
+              invoiceDto.setUserId(userId);
+              invoiceDto.setTaxpayerNum(invoiceTaxpayerNum);
+            }
+
+
+            List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment,discountMoney, addressId,
+         			        purchaseList, sourceFlag, deviceType,myCouponId,goodStockIds,invoiceDto);
          		 List<String> merchantCodeList = orderService.merchantCodeList(orders);
          			     resultMap.put("orderList", orders);
          			     resultMap.put("merchantCodeList", merchantCodeList);

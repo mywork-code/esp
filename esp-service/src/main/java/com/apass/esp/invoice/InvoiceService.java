@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.apass.esp.domain.enums.InvoiceStatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import java.util.Date;
@@ -92,7 +94,6 @@ public class InvoiceService {
     }
     /**
      * DELETE BY ID
-     * @param entity
      * @return
      */
     @Transactional
@@ -160,7 +161,6 @@ public class InvoiceService {
     }
     /**
      * 发票明细
-     * @param parseLong
      * @param orderId
      * @return
      * @throws Exception 
@@ -190,15 +190,16 @@ public class InvoiceService {
     @Transactional(rollbackFor = Exception.class)
     public Invoice createInvoice(InvoiceDto invoiceDto){
         Invoice in = new Invoice();
+        Date d = new Date();
         in.setCompanyName(invoiceDto.getCompanyName());
         in.setContent(invoiceDto.getContent());
-        in.setCreatedTime(new Date());
+        in.setCreatedTime(d);
         in.setOrderAmt(invoiceDto.getOrderAmt());
         in.setTelphone(invoiceDto.getTelphone());
         in.setUserId(invoiceDto.getUserId());
-        in.setUpdatedTime(new Date());
-        in.setStatus((byte)1);
-        in.setHeadType((byte)1);
+        in.setUpdatedTime(d);
+        in.setStatus((byte) InvoiceStatusEnum.APPLYING.getCode());
+        in.setHeadType(invoiceDto.getHeadType());
         in.setTaxpayerNum(invoiceDto.getTaxpayerNum());
         in.setOrderId(invoiceDto.getOrderId());
         in.setSeller("上海奥派数据科技有限公司");
