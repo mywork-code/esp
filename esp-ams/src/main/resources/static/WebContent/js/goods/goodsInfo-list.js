@@ -3562,7 +3562,7 @@ function function1(){
 		str+='</div>';
 	str+='</div>';
 	$('#inputDivEdit').append(str);
-	window.setTimeout(dropdown(selectnum,"edit"),500);
+	dropdown(selectnum,"edit");
 	catenum++;
 }
 function function2(){
