@@ -76,10 +76,10 @@ public class TestWZController {
 		String sku = CommonUtils.getValue(paramMap, "sku");// 商品号
 		try {
 			Product wzProductDetail = weiZhiProductService.getWeiZhiProductDetail(sku);
+			return Response.success("微知获取商品详情成功！", wzProductDetail);
 		} catch (Exception e) {
-			e.printStackTrace();
+			return Response.fail("微知获取商品详情失败！");
 		}
-		return Response.success("1", "微知获取商品详情成功！");
 	}
 
 	/**
@@ -107,10 +107,10 @@ public class TestWZController {
 		try {
 			List<Category> categorys = weiZhiProductService.getWeiZhiFirstCategorys();
 			System.out.println(categorys);
+			return Response.success("查询一级分类列表信息接口成功！",categorys);
 		} catch (Exception e) {
 			return Response.fail("查询一级分类列表信息接口失败！");
 		}
-		return Response.success("查询一级分类列表信息接口成功！");
 	}
 
 	/**
@@ -122,10 +122,11 @@ public class TestWZController {
 		try {
 			List<Category> categorys = weiZhiProductService.getWeiZhiSecondCategorys();
 			System.out.println(categorys);
+			return Response.success("查询二级分类列表信息接口成功！",categorys);
 		} catch (Exception e) {
 			return Response.fail("查询二级分类列表信息接口失败！");
 		}
-		return Response.success("查询二级分类列表信息接口成功！");
+		
 	}
 
 	/**
@@ -133,15 +134,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiThirdCategorys", method = RequestMethod.POST)
 	@ResponseBody
-	public List<Category> getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
+	public Response getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
 		List<Category> categorys=null;
 		try {
 			 categorys = weiZhiProductService.getWeiZhiThirdCategorys();
 			System.out.println(categorys);
+			return Response.success("查询三级分类列表信息接口成功！",categorys);
 		} catch (Exception e) {
-			return null;
+			return Response.fail("查询三级分类列表信息接口失败！");
 		}
-		return categorys;
 	}
 
 	/**
@@ -149,15 +150,15 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getWeiZhiGetSku", method = RequestMethod.POST)
 	@ResponseBody
-	public List<String> getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
+	public Response getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
 		List<String> categorys=null;
 		try {
 			 categorys = weiZhiProductService.getWeiZhiGetSku();
 			System.out.println(categorys);
+			return Response.success("获取分类商品编号接口成功！", categorys);
 		} catch (Exception e) {
-			return null;
+			return Response.fail("获取分类商品编号接口失败！");
 		}
-		return categorys;
 	}
 
 	/**
@@ -170,10 +171,10 @@ public class TestWZController {
 			List<WzSkuPicture> wzSkuPictureList = weiZhiProductService
 					.getWeiZhiProductSkuImage(1593516 + "," + 1686504);
 			System.out.println(wzSkuPictureList);
+			return Response.success("获取所有图片信息成功！",wzSkuPictureList);
 		} catch (Exception e) {
 			return Response.fail("获取所有图片信息失败！");
 		}
-		return Response.success("获取所有图片信息成功！");
 	}
 	
 	/**
@@ -280,24 +281,33 @@ public class TestWZController {
         
         return Response.successResponse(order.submitOrder(req));
 	}
+
 	/**
 	 * 商品区域购买限制查询(单个商品查询)
 	 */
 	@RequestMapping(value = "/checkAreaLimit", method = RequestMethod.POST)
 	@ResponseBody
-	public Boolean getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) throws Exception {
-		Region region =new Region();
-		Boolean result = weiZhiProductService.getWeiZhiCheckAreaLimit("", region);
-		return result;
+	public Response getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) {
+		try {
+			Region region = new Region();
+			Boolean result = weiZhiProductService.getWeiZhiCheckAreaLimit("", region);
+			return Response.success("商品区域购买限制查询成功！", result);
+		} catch (Exception e) {
+			return Response.fail("商品区域购买限制查询失败！");
+		}
 	}
 	/**
 	 * 商品可售验证接口
 	 */
 	@RequestMapping(value = "/checkSale", method = RequestMethod.POST)
 	@ResponseBody
-	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
-		return result;
+	public Response getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap)  {
+		try {
+			Boolean result = weiZhiProductService.getWeiZhiCheckSale("180389");
+			return Response.success("商品可售验证接口成功！", result);
+		} catch (Exception e) {
+			return Response.fail("商品可售验证接口失败！");
+		}
 	}
 
 	/**

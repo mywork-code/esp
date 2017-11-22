@@ -29,14 +29,23 @@ public class FreedJdStockScheduleTask {
     /**
      * 取消京东预占库存
      */
-    @Scheduled(cron = "0 0 1 * * ?")
-    public void freedJdStock(){
-        try {
-            orderService.freedJdStock();
-        } catch (Exception e) {
-        	logger.error("cancle jd order stock is failture! ", e);
-        }
-        
-    }
+//    @Scheduled(cron = "0 0 1 * * ?")
+//    public void freedJdStock(){
+//        try {
+//            orderService.freedJdStock();
+//        } catch (Exception e) {
+//        	logger.error("cancle jd order stock is failture! ", e);
+//        }
+//        
+//    }
+	  @Scheduled(cron = "0 0 1 * * ?")
+	  public void freedJdStock(){
+	      try {
+	          orderService.freedWzStock();
+	      } catch (Exception e) {
+	      	logger.error("cancle wz order stock is failture! ", e);
+	      }
+	      
+	  }
 
 }
