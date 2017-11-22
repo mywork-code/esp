@@ -21,4 +21,12 @@ public class StockNum  implements Serializable {
 	public void setNum(int num) {
 		this.num = num;
 	}
+	public StockNum() {
+		super();
+	}
+	public StockNum(long skuId, int num) {
+		super();
+		this.skuId = skuId;
+		this.num = num;
+	}
 }

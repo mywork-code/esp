@@ -108,14 +108,17 @@ import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
-
-import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
 import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.AddressInfo;
+import com.apass.esp.third.party.weizhi.entity.CheckSale;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
 import com.apass.esp.third.party.weizhi.entity.OrderReq;
 import com.apass.esp.third.party.weizhi.entity.PriceSnap;
 import com.apass.esp.third.party.weizhi.entity.SkuNum;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
+import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.third.party.weizhi.response.OrderUnitResponse;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -247,6 +250,9 @@ public class OrderService {
     
 	@Autowired
 	private WeiZhiPriceApiClient priceApi;
+	
+	@Autowired
+	private WeiZhiProductApiClient productApi;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -685,6 +691,10 @@ public class OrderService {
          * 批量获取微知的价格
          */
         List<WZPriceResponse> priceResponse = priceApi.getWzPrice(skuList);
+        if(CollectionUtils.isEmpty(priceResponse)){
+        	LOGGER.error("call wz getWzPrice is failed {}",JsonUtil.toJsonString(skuList));
+        	throw new BusinessException("抱歉,该订单暂时无法结算!");
+        }
         for (WZPriceResponse price : priceResponse) {
 			for (SkuNum num : skuNumList) {
 				if(StringUtils.equals(num.getSkuId()+"", price.getSkuId())){
@@ -696,51 +706,56 @@ public class OrderService {
         /**
          * 获取快照
          */
-        List<PriceSnap> priceSnaps = new ArrayList<>();
+        List<PriceSnap> priceSnaps = new ArrayList<>();//快照
+        List<StockNum> skuNums = new ArrayList<>();//库存
         for (SkuNum num : skuNumList) {
         	BigDecimal count = num.getPrice().multiply(new BigDecimal(num.getNum()));
 			PriceSnap snap = new PriceSnap(num.getSkuId(),count);
+			StockNum stock = new StockNum(num.getSkuId(),num.getNum());
 			priceSnaps.add(snap);
+			skuNums.add(stock);
 		}
 
+        /**
+         * 验证商品是否可售
+         */
+        String skuIds = StringUtils.join(skuList,",");
+        CheckSale sale = productApi.getWeiZhiCheckSale(skuIds);
+        if(null == sale || CollectionUtils.isEmpty(sale.getResult())){
+        	throw new BusinessException("抱歉,该订单暂时无法结算!");
+        }
+        for (WZCheckSale checkSale : sale.getResult()) {
+			if(checkSale.getSaleState() == 0){
+				throw new BusinessException("抱歉,订单中包含不可售的商品!");
+			}
+		} 
+        /**
+         * 批量获取库存接口
+         */
+        List<GoodsStock> stockList = productApi.getNewStockById(skuNums, addressInfo.toRegion());
+        if(CollectionUtils.isEmpty(stockList)){
+        	for (GoodsStock stock : stockList) {
+        		String desc = stock.getStockStateDesc();
+        		if(!StringUtils.equals(desc, "无货")){
+        			throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+        		}
+			}
+        }
+        
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
         orderReq.setRemark("");
         orderReq.setOrderNo(orders.get(0));
-        /**
-         * 验证商品是否可售
-         */
-//        if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
-//        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
-//        }
-        /**
-         * 批量获取库存接口
-         */
-//        List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo()
-//                .toRegion());
-//        for (Stock stock : stocks) {
-//            if (!"有货".equals(stock.getStockStateDesc())) {
-//                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
-//                        stock.getStockStateDesc());
-//                LOGGER.info(stock.getSkuId() + "_");
-//                throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-//            }
-//        }
+        
         /**
          * 统一下单接口
          */
-//        JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
-//        LOGGER.info(orderResponse.toString());
-//        if ((!orderResponse.isSuccess())) {
-//
-//            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
-//            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
-//            throw new BusinessException("抱歉,该订单暂时无法结算!");
-//        }
-//        String jdOrderId = orderResponse.getResult().getString("jdOrderId");
         OrderUnitResponse orderResponse = orderApi.submitOrder(orderReq);
+        if(null == orderResponse){
+        	throw new BusinessException("抱歉,该订单暂时无法结算!");
+        }
         /**
          * 在京东那边占完库存后，要修改order表中的信息
          */
@@ -755,7 +770,6 @@ public class OrderService {
 
         return orderResponse.getWzOrderId();
     }
-
     /**
      * 验证商品是否可售
      */
