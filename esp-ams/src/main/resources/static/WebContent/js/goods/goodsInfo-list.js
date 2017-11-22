@@ -3155,8 +3155,6 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
-		flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
-		return;
 	}
 	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
 	var valuearr=[];
