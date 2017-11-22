@@ -177,7 +177,7 @@ public class InvoiceService {
         }
         return Response.success("开票记录查询成功", detailsApply);
     }
-    private Invoice getInvoice(String orderId) {
+    public Invoice getInvoice(String orderId) {
         Invoice invoice = new Invoice();
         invoice.setOrderId(orderId);
         List<Invoice> list = readEntityList(invoice);
@@ -187,15 +187,17 @@ public class InvoiceService {
         return null;
     }
     /**
-     * 请求第三方发票接口
-     * 无售后监控交易，有售后监控售后，
-     * 1、交易完成后7天  2、售后完成后3天
+     * 1先请求第三方发票开具接口
+     * A、无售后监控交易， 交易完成后7天  
+     * B、有售后监控售后，售后完成后3天
+     * 2请求发票开具之后 在请求发票下载
      * @param userId
      * @return
      * @throws Exception 
      * @throws BusinessException 
      * @throws NumberFormatException 
      */
+    @Transactional
     public int invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getId().toString());
         if(in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
@@ -204,12 +206,12 @@ public class InvoiceService {
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
         faPiaoKJ.setFpqqlsh("111MFWIKDSPTBMapsk"+order.getId());
         faPiaoKJ.setDsptbm("111MFWIK");
-        faPiaoKJ.setNsrsbh(order.getMerchantCode());
+        faPiaoKJ.setNsrsbh("310101000000090");
         faPiaoKJ.setNsrmc(order.getMerchantCode());
         faPiaoKJ.setDkbz("0");
         faPiaoKJ.setKpxm(in.getContent());
         faPiaoKJ.setBmbBbh("1.0");
-        faPiaoKJ.setXhfNsrsbh(order.getMerchantCode());
+        faPiaoKJ.setXhfNsrsbh("310101000000090");
         faPiaoKJ.setXhfmc(order.getMerchantCode());
         faPiaoKJ.setGhfmc(order.getName());
         faPiaoKJ.setGhfqylx("01");
@@ -248,10 +250,15 @@ public class InvoiceService {
             faPiaoKJDD.setThdh(retuenList.get(0).getId().toString());
         }
         faPiaoKJDD.setDddate(DateFormatUtil.datetime2String(order.getCreateDate()));
+        faPiaoKJDD = (FaPiaoKJDD) FarmartJavaBean.farmartJavaB(faPiaoKJDD, FaPiaoKJDD.class);
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         if("0000".equals(sS.getReturnCode())){
+            updateStatusByOrderId((byte)1,order.getId().toString());
+            DownloadInvoiceExecutor.downloadFaPiao(order.getId().toString());
             return 8;
+        }else{
+            updateStatusByOrderId((byte)3,order.getId().toString());
         }
         return 10;
     }

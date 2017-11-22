@@ -3259,7 +3259,7 @@ function editrowForAdd(target){//可编辑动态表格
 	$("#goodsCostPrice").textbox('setValue',r.goodsCostPrice);
 	$("#goodsPrice").textbox('setValue',r.goodsPrice);
 	$("#stockTotalAmt").textbox('setValue',r.stockTotalAmt);
-	if(r.stockLogo!=null&&r.stockLogo!=""){
+	if(r.stockLogo!=null&&r.stockLogo!=""&&r.goodsCostPrice!=null&&r.goodsCostPrice!=""){
 		$("#addStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
 	}
 	$("#stockLogoFile").val('');
@@ -3529,7 +3529,7 @@ function editrowForEdit2(target){
 	$("#editaddgoodsCostPrice").textbox('setValue',r.goodsCostPrice);
 	$("#editaddgoodsPrice").textbox('setValue',r.goodsPrice);
 	$("#editaddstockTotalAmt").textbox('setValue',r.stockTotalAmt);
-	if(r.stockLogo!=null&&r.stockLogo!=""){
+	if(r.stockLogo!=null&&r.stockLogo!=""&&r.goodsCostPrice!=null&&r.goodsCostPrice!=""){
 		$("#editaddStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
 	}
 	$("#editaddstockLogoFile").val('');
