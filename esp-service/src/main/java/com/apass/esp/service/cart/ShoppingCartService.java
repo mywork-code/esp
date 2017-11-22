@@ -108,7 +108,7 @@ public class ShoppingCartService {
         
         GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
         Date date = new Date();
-    	if (null == goodsInfo || goodsInfo.getDelistTime().before(date) || goodsInfo.getIsDelete().equals("00")
+    	if (null == goodsInfo || (null !=goodsInfo.getDelistTime() && goodsInfo.getDelistTime().before(date)) || goodsInfo.getIsDelete().equals("00")
 				|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
 			LOG.info(requestId, "该商品已下架", goodsStockId);
 			throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
