@@ -28,6 +28,7 @@ import com.apass.esp.third.party.weizhi.response.OrderTrack;
 import com.apass.esp.third.party.weizhi.response.OrderTrackResponse;
 import com.apass.esp.third.party.weizhi.response.OrderUnitResponse;
 import com.apass.esp.third.party.weizhi.response.TrackData;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.collect.Lists;
@@ -53,7 +54,7 @@ public class WeiZhiOrderApiClient {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         
         if (orderReq.getSkuNumList().size() > 50) {
-            throw new RuntimeException("最大数量为50，当前:" + orderReq.getSkuNumList().size());
+            throw new BusinessException("最大数量为50，当前:" + orderReq.getSkuNumList().size());
         }
         
         BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
