@@ -1,20 +1,34 @@
 package com.apass.esp.invoice;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import com.apass.esp.domain.enums.InvoiceStatusEnum;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.aisino.EncryptionDecryption;
+import com.aisino.FarmartJavaBean;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.InvoiceDto;
 import com.apass.esp.domain.entity.Invoice;
 import com.apass.esp.domain.entity.invoice.InvoiceDetails;
+import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
+import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.InvoiceStatusEnum;
+import com.apass.esp.invoice.model.FaPiaoKJ;
+import com.apass.esp.invoice.model.FaPiaoKJDD;
+import com.apass.esp.invoice.model.FaPiaoKJXM;
+import com.apass.esp.invoice.model.ReturnStateInfo;
 import com.apass.esp.mapper.InvoiceMapper;
+import com.apass.esp.repository.order.OrderDetailInfoRepository;
+import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 电子发票
@@ -27,6 +41,14 @@ public class InvoiceService {
     private InvoiceMapper invoiceMapper;
     @Autowired
     private InvoiceIssueService invoiceIssueService;
+//    @Autowired
+//    private CategoryInfoService categoryInfoService;
+    @Autowired
+    private OrderDetailInfoRepository orderDetailInfoRepository;
+//    @Autowired
+//    private GoodsService goodsService;
+    @Autowired
+    private OrderRefundRepository orderRefundDao;
     /**
      * CREATED
      * @param entity
@@ -154,6 +176,84 @@ public class InvoiceService {
             detailsApply.add(en);
         }
         return Response.success("开票记录查询成功", detailsApply);
+    }
+    private Invoice getInvoice(String orderId) {
+        Invoice invoice = new Invoice();
+        invoice.setOrderId(orderId);
+        List<Invoice> list = readEntityList(invoice);
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
+    /**
+     * 请求第三方发票接口
+     * 无售后监控交易，有售后监控售后，
+     * 1、交易完成后7天  2、售后完成后3天
+     * @param userId
+     * @return
+     * @throws Exception 
+     * @throws BusinessException 
+     * @throws NumberFormatException 
+     */
+    public int invoiceCheck(OrderInfoEntity order) throws Exception {
+        Invoice in = getInvoice(order.getId().toString());
+        if(in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
+            return in.getStatus();
+        }
+        FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
+        faPiaoKJ.setFpqqlsh("111MFWIKDSPTBMapsk"+order.getId());
+        faPiaoKJ.setDsptbm("111MFWIK");
+        faPiaoKJ.setNsrsbh(order.getMerchantCode());
+        faPiaoKJ.setNsrmc(order.getMerchantCode());
+        faPiaoKJ.setDkbz("0");
+        faPiaoKJ.setKpxm(in.getContent());
+        faPiaoKJ.setBmbBbh("1.0");
+        faPiaoKJ.setXhfNsrsbh(order.getMerchantCode());
+        faPiaoKJ.setXhfmc(order.getMerchantCode());
+        faPiaoKJ.setGhfmc(order.getName());
+        faPiaoKJ.setGhfqylx("01");
+        faPiaoKJ.setKpy("财务");
+        faPiaoKJ.setKplx("1");
+        faPiaoKJ.setCzdm("10");
+        faPiaoKJ.setQdBz("0");
+        faPiaoKJ.setKphjje("20");
+        faPiaoKJ.setHjbhsje("0");
+        faPiaoKJ.setHjse("0");
+        faPiaoKJ.setGhfSj(order.getTelephone());
+        faPiaoKJ = (FaPiaoKJ) FarmartJavaBean.farmartJavaB(faPiaoKJ, FaPiaoKJ.class);
+        List<OrderDetailInfoEntity> delist = orderDetailInfoRepository.queryOrderDetailInfo(order.getId().toString());
+        List<FaPiaoKJXM> list = new ArrayList<FaPiaoKJXM>();
+        for(OrderDetailInfoEntity de : delist){
+            FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
+            faPiaoKJXM.setXmmc(de.getGoodsName());
+            faPiaoKJXM.setXmsl(de.getGoodsNum().toString());
+            faPiaoKJXM.setHsbz("1");
+            faPiaoKJXM.setFphxz("0");
+            faPiaoKJXM.setXmdj(de.getGoodsPrice().toString());
+            faPiaoKJXM.setSpbm(de.getCategoryCode());
+            faPiaoKJXM.setYhzcbs("0");
+            faPiaoKJXM.setKce("0");
+            faPiaoKJXM.setXmje(de.getGoodsPrice().multiply(new BigDecimal(de.getGoodsNum())).toString());
+            faPiaoKJXM.setSl("0.17");
+            faPiaoKJXM = (FaPiaoKJXM) FarmartJavaBean.farmartJavaB(faPiaoKJXM, FaPiaoKJXM.class);
+            list.add(faPiaoKJXM);
+        }
+        FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
+        faPiaoKJDD.setDdh(order.getId().toString());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("orderId", order.getId());
+        List<RefundInfoEntity> retuenList = orderRefundDao.queryRefundInfoByParam(map);
+        if(retuenList!=null&&retuenList.size()>0){
+            faPiaoKJDD.setThdh(retuenList.get(0).getId().toString());
+        }
+        faPiaoKJDD.setDddate(DateFormatUtil.datetime2String(order.getCreateDate()));
+        String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
+        ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
+        if("0000".equals(sS.getReturnCode())){
+            return 8;
+        }
+        return 10;
     }
     /**
      *创建发票

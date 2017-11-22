@@ -1,8 +1,6 @@
 package com.apass.esp.schedule;
-
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +9,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import com.apass.esp.client.jpush.JpushClient;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.AcceptGoodsType;
 import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.utils.DateFormatUtil;
-
 /**
  * 定时任务
  * @description  
@@ -35,7 +32,8 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 public class OrderScheduleTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderScheduleTask.class);
-    
+    @Autowired
+    private InvoiceService invoiceService;
     @Autowired
     private OrderInfoRepository orderInfoDao;
     
@@ -78,6 +76,7 @@ public class OrderScheduleTask {
 
     /**
      * 订单签收7天后，自动确认收货[1小时一次 0 0 0/1 * * *]
+     * 订单签收7天后   开具发票  《监控无售后交易》
      */
     @Scheduled(cron = "0 0 0/1 * * *")
     public void handleAutoSignOrder() {
@@ -93,8 +92,12 @@ public class OrderScheduleTask {
                         order.setAcceptGoodsDate(now);
                         orderInfoDao.update(order);
                         LOGGER.info("自动确认收货成功!orderId:{}", order.getOrderId());
-                        
                         jpushClient.jpushSendPushAlias(order.getUserId().toString(), "确认收货", "您的订单" + order.getOrderId() + "已自动确认收货");
+                        int i = invoiceService.invoiceCheck(order);
+                        if(i!=10){
+                            LOGGER.info("自动开具发票成功!orderId:{}", order.getOrderId());
+                        }
+                        jpushClient.jpushSendPushAlias(order.getUserId().toString(), "开具发票", "您的订单" + order.getOrderId() + "已自动开具电子发票");
                     }
                 }
             } catch (Exception e) {
@@ -107,6 +110,7 @@ public class OrderScheduleTask {
 
     /**
      * 售后完成的订单1天后订单状态改为交易完成(sprint8中退货的订单修改为交易关闭)；每3小时处理一次，订单状态售后服务中、售后流程状态售后完成
+     * 售后完成的订单1天后   开具发票  《监控有售后交易》
      */
     @Scheduled(cron = "0 0 0/3 * * *")
     public void handleReturningOrders(){

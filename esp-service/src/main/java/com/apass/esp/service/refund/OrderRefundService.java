@@ -17,6 +17,7 @@ import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
@@ -41,6 +42,8 @@ public class OrderRefundService {
     
     @Autowired
     private LogisticsService logisticsService;
+    @Autowired
+    private InvoiceService invoiceService;
     
     /**
      * 查询订单退货详情信息
@@ -228,9 +231,11 @@ public class OrderRefundService {
     
     /**
      * 售后完成的订单,1天后订单状态改为交易完成
+     * 售后完成的订单1天后   开具发票  《监控有售后交易》
+     * @throws Exception 
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleReturningOrders() {
+    public void handleReturningOrders() throws Exception {
         
         Date date = new Date();
         Date startDate = DateFormatUtil.addDays(date, -2);
@@ -252,6 +257,10 @@ public class OrderRefundService {
             		status = OrderStatus.ORDER_TRADCLOSED.getCode();
             	}
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                int i = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
+                if(i!=10){
+                    LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
+                }
             }
         }
     }

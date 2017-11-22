@@ -37,7 +37,7 @@ public class InvoiceTest {
 //        faPiaoKJ.setGhfSf("");
 //        faPiaoKJ.setGhfDz("");
 //        faPiaoKJ.setGhfDz("");
-//        faPiaoKJ.setGhfSj("");
+        faPiaoKJ.setGhfSj("");
 //        faPiaoKJ.setGhfEmail("");
 //        faPiaoKJ.setGhfYhzh("");
 //        faPiaoKJ.setHyDm("");
