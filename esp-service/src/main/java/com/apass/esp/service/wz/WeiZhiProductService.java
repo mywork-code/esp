@@ -185,13 +185,30 @@ public class WeiZhiProductService {
 		return areaLimitEntityList;
 	}
 	/**
-	 * 商品可售验证接口
+	 * 商品可售验证接口（单个商品验证）
 	 * @param skuIds
 	 * @return
 	 * @throws Exception
 	 */
-	public List<WZCheckSale> getWeiZhiCheckSale(String skuIds) throws Exception {
+	public WZCheckSale getWeiZhiCheckSale(String skuIds) throws Exception {
 		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		List<WZCheckSale>  list=checkSale.getResult();
+		WZCheckSale wZCheckSale=list.get(0);
+		return wZCheckSale;
+	}
+	/**
+	 * 商品可售验证接口(多个商品验证)
+	 * @param skuIds
+	 * @return
+	 * @throws Exception
+	 */
+	public List<WZCheckSale> getWeiZhiCheckSaleList(List<String> skuIdList) throws Exception {
+		StringBuffer skuIds=new StringBuffer();
+		for (String string : skuIdList) {
+			skuIds.append(string);
+			skuIds.append(",");
+		}
+		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds.toString());
 		List<WZCheckSale>  list=checkSale.getResult();
 		return list;
 	}

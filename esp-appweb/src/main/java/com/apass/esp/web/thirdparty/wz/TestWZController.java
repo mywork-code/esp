@@ -313,7 +313,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap)  {
 		try {
-			List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
+		    WZCheckSale result = weiZhiProductService.getWeiZhiCheckSale("180389");
 			return Response.success("商品可售验证接口成功！", result);
 		} catch (Exception e) {
 			return Response.fail("商品可售验证接口失败！");
