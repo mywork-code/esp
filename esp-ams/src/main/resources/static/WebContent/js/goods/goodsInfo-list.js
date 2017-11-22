@@ -3155,7 +3155,6 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
-		return;
 	}
 	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
 	var valuearr=[];
@@ -3253,20 +3252,20 @@ function flushAttrList(){//表格   刷新       弹框 后才刷新
 	});
 }
 var addindex;
-function updateActions(index){//可编辑动态表格
-	addindex = index;
+function editrowForAdd(target){//可编辑动态表格
+	addindex = getRowIndex(target);
 	var rows = $('#tableattrlist').datagrid('getRows');
 	var r = rows[addindex];
 	$("#goodsCostPrice").textbox('setValue',r.goodsCostPrice);
 	$("#goodsPrice").textbox('setValue',r.goodsPrice);
 	$("#stockTotalAmt").textbox('setValue',r.stockTotalAmt);
+	if(r.stockLogo!=null&&r.stockLogo!=""){
+		$("#addStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
+	}
 	$("#stockLogoFile").val('');
 	
 	$('#addGoodsStockInfoWin').window({modal: true});
 	$('#addGoodsStockInfoWin').window('open');
-}
-function editrowForAdd(target){//可编辑动态表格
-	updateActions(getRowIndex(target));
 }
 function getRowIndex(target){//可编辑动态表格
 	var tr = $(target).closest('tr.datagrid-row');
@@ -3530,6 +3529,9 @@ function editrowForEdit2(target){
 	$("#editaddgoodsCostPrice").textbox('setValue',r.goodsCostPrice);
 	$("#editaddgoodsPrice").textbox('setValue',r.goodsPrice);
 	$("#editaddstockTotalAmt").textbox('setValue',r.stockTotalAmt);
+	if(r.stockLogo!=null&&r.stockLogo!=""){
+		$("#editaddStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
+	}
 	$("#editaddstockLogoFile").val('');
 	
 	$('#editaddGoodsStockInfoWin').window({modal: true});
@@ -3614,7 +3616,6 @@ function function3(value,id){//根据每个属性  十条规格   失焦事件  
 	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
-		return;
 	}
 	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
 	var valuearr=[];

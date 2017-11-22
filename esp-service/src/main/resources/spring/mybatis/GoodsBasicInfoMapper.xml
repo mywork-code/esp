@@ -45,7 +45,6 @@
 		WHERE
 			a.id = c.goodsId
 		AND CURRENT_TIMESTAMP > a.list_time
-		AND CURRENT_TIMESTAMP < a.delist_time
 		AND STATUS = 'G02'
 		AND is_delete = '01'
 	]]>
@@ -97,7 +96,6 @@
 				WHERE
 					a.id = c.goodsId
 				AND CURRENT_TIMESTAMP > a.list_time
-				AND CURRENT_TIMESTAMP < a.delist_time
 				AND STATUS = 'G02'
 				AND is_delete = '01'
 		]]>
@@ -127,7 +125,6 @@
 				AND a.is_delete = '01'
 				AND a.source = 'jd'
 				AND CURRENT_TIMESTAMP > a.list_time
-				AND CURRENT_TIMESTAMP < a.delist_time
 				limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
 	]]>
     </select>
@@ -148,7 +145,6 @@
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
 				AND CURRENT_TIMESTAMP > a.list_time
-				AND CURRENT_TIMESTAMP < a.delist_time
 	]]>
 	   <if test="goodsCode != null or externalId != null">
             AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
@@ -169,7 +165,6 @@
 				AND a.is_delete = '01'
 				AND a.source = 'jd'
 				AND CURRENT_TIMESTAMP > a.list_time
-				AND CURRENT_TIMESTAMP < a.delist_time
 	]]>
     </select>
 
@@ -221,7 +216,6 @@
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
 				AND CURRENT_TIMESTAMP > a.list_time
-				AND CURRENT_TIMESTAMP < a.delist_time
 	]]>
         <!-- 按商品上架时间降序排列 （默认）（sort不传值时默认default）-->
         <!-- 添加商品类目查询条件 -->
@@ -281,7 +275,6 @@
 						a.`status` = 'G02'
 					AND a.is_delete = '01'
 					AND CURRENT_TIMESTAMP > a.list_time
-					AND CURRENT_TIMESTAMP < a.delist_time
 				
 	   ]]>
         <!-- 添加商品类目查询条件 -->
@@ -316,7 +309,6 @@
 							AND t.`status` = 'G02'
 							AND t.is_delete = '01'
 							AND CURRENT_TIMESTAMP > t.list_time
-							AND CURRENT_TIMESTAMP < t.delist_time
 			       
 		 ]]>
 	     <!-- 按商品上架时间降序排列 （默认）（sort不传值时默认default）-->
@@ -354,7 +346,6 @@
 							AND t.`status` = 'G02'
 							AND t.is_delete = '01'
 							AND CURRENT_TIMESTAMP > t.list_time
-							AND CURRENT_TIMESTAMP < t.delist_time
 			       
 		 ]]>
 	</select>
@@ -389,7 +380,6 @@
 							AND t.`status` = 'G02'
 							AND t.is_delete = '01'
 							AND CURRENT_TIMESTAMP > t.list_time
-							AND CURRENT_TIMESTAMP < t.delist_time
 			       
 		 ]]>
 	     <!-- 按商品销量降序排列(销量) -->
@@ -453,7 +443,6 @@
 							AND t.`status` = 'G02'
 							AND t.is_delete = '01'
 							AND CURRENT_TIMESTAMP > t.list_time
-							AND CURRENT_TIMESTAMP < t.delist_time
 			       
 		 ]]>
 	    <!-- 按商品售价排序  DESC 降序，ASC 升序-->
@@ -532,7 +521,6 @@
          AND teg.goods_type != 2
 		 AND teg.is_delete = '01'
          AND CURRENT_TIMESTAMP > teg.list_time
-         AND CURRENT_TIMESTAMP < teg.delist_time
          AND teg.id not in (
                 SELECT
                     goods_id
@@ -567,7 +555,6 @@
         AND teg.`status` = 'G02'
         AND teg.is_delete='01'
         AND CURRENT_TIMESTAMP > teg.list_time
-        AND CURRENT_TIMESTAMP < teg.delist_time
         )
         order by teg.update_date desc,teg.list_time desc
         limit #{pageBegin},#{count}
@@ -583,7 +570,6 @@
          AND teg.goods_type != 2
 		 AND teg.is_delete = '01'
          AND CURRENT_TIMESTAMP > teg.list_time
-         AND CURRENT_TIMESTAMP < teg.delist_time
          AND teg.id not in (
                 SELECT
                     goods_id
@@ -618,7 +604,6 @@
         AND teg.`status` = 'G02'
         AND teg.is_delete='01'
         AND CURRENT_TIMESTAMP > teg.list_time
-        AND CURRENT_TIMESTAMP < teg.delist_time
         )
         ]]>
     </select>
@@ -649,7 +634,6 @@
         AND teg.`status` = 'G02'
         AND teg.is_delete='01'
         AND CURRENT_TIMESTAMP > teg.list_time
-        AND CURRENT_TIMESTAMP < teg.delist_time
         limit #{begin},#{count}
         ]]>
 	</select>
@@ -679,7 +663,6 @@
         AND teg.`status` = 'G02'
         AND teg.is_delete = '01'
         AND CURRENT_TIMESTAMP > teg.list_time
-        AND CURRENT_TIMESTAMP < teg.delist_time
         ]]>
     </select>
 
