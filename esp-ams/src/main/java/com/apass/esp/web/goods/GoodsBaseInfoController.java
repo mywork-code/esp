@@ -1070,14 +1070,18 @@ public class GoodsBaseInfoController {
             String categoryname3 = HttpWebUtils.getValue(request, "categoryname3");
             // 获取分页结果返回给页面
             PaginationManage<StockInfoFileModel> pagination = goodsAttrService.tableattrlist(categoryname1,categoryname2,categoryname3,page);
-            if (pagination == null) {
-                respBody.setTotal(0);
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            if (pagination == null||pagination.getDataList()==null||pagination.getDataList().size()==0) {
+                respBody.setTotal(1);
+                List<StockInfoFileModel> arr = new ArrayList<StockInfoFileModel>();
+                StockInfoFileModel en = new StockInfoFileModel();
+                en.setAttrnameByAfter(" ");
+                arr.add(en);
+                respBody.setRows(arr);
             }else{
                 respBody.setTotal(pagination.getTotalCount());
                 respBody.setRows(pagination.getDataList());
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
             }
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
             respBody.setMsg("根据属性规格组合 排列 组合 列表 失败");
         }
@@ -1162,14 +1166,19 @@ public class GoodsBaseInfoController {
             // 获取分页结果返回给页面
             PaginationManage<GoodsStockInfoEntity> pagination = goodsAttrService.flushtableattrEditlist(goodsId,
                     categoryname1,categoryname2,categoryname3,category1,category2,category3,page,status);
-            if (pagination == null) {
-                respBody.setTotal(0);
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
+            if (pagination == null||pagination.getDataList()==null||pagination.getDataList().size()==0) {
+                //增加空规格库存
+                respBody.setTotal(1);
+                List<GoodsStockInfoEntity> arr = new ArrayList<GoodsStockInfoEntity>();
+                GoodsStockInfoEntity en = new GoodsStockInfoEntity();
+                en.setGoodsSkuAttr(" ");
+                arr.add(en);
+                respBody.setRows(arr);
             }else{
                 respBody.setTotal(pagination.getTotalCount());
                 respBody.setRows(pagination.getDataList());
-                respBody.setStatus(CommonCode.SUCCESS_CODE);
             }
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
             respBody.setMsg("根据商品 ID 属性规格组合 排列 组合 列表 失败");
         }
