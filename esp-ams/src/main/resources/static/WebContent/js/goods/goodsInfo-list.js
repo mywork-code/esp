@@ -115,7 +115,7 @@ $(function() {
 			return;
     	}
     	if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
-    		function1()
+    		window.setTimeout(function1(),500);
     	}
     });
 	//修改商品保存库存
@@ -3562,7 +3562,7 @@ function function1(){
 		str+='</div>';
 	str+='</div>';
 	$('#inputDivEdit').append(str);
-	dropdown(selectnum,"edit");
+	window.setTimeout(dropdown(selectnum,"edit"),500);
 	catenum++;
 }
 function function2(){
