@@ -311,9 +311,13 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/checkSale", method = RequestMethod.POST)
 	@ResponseBody
-	public List<WZCheckSale> getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap) throws Exception {
-		List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
-		return result;
+	public Response getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap)  {
+		try {
+			List<WZCheckSale> result = weiZhiProductService.getWeiZhiCheckSale("1815738");
+			return Response.success("商品可售验证接口成功！", result);
+		} catch (Exception e) {
+			return Response.fail("商品可售验证接口失败！");
+		}
 	}
 
 	/**
@@ -325,7 +329,6 @@ public class TestWZController {
 		try {
 			AfsApplyWeiZhiDto AfsApplyWeiZhiDto = new AfsApplyWeiZhiDto();
 			WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = weiZhiAfterSaleApiClient.afterSaleAfsApplyCreate(AfsApplyWeiZhiDto);
-
 			return Response.success("服务单保存申请成功！", weiZhiAfterSaleApplyDto);
 		} catch (Exception e) {
 			return Response.fail("服务单保存申请失败！");
