@@ -1,11 +1,17 @@
 package com.apass.esp.third.party.weizhi.client;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsAvailableCompVo;
-import com.apass.esp.third.party.weizhi.entity.aftersale.WeiZhiAfterSaleDto;
+import com.apass.esp.third.party.weizhi.entity.aftersale.AfterSaleExpectCompType;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
@@ -34,7 +40,7 @@ public class WeiZhiAfterSaleApiClient {
      * @param afsApply
      * @return
      */
-    public WeiZhiAfterSaleDto afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
+    public boolean afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -59,10 +65,25 @@ public class WeiZhiAfterSaleApiClient {
         String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY,entity);
         LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
-        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        /**
+         * 返回json
+         */
+        JSONObject datas = JSON.parseObject(responseJson);
 
-        return weiZhiAfterSaleApplyDto;
+        if(null == datas){
+            LOGGER.error("----getAvailableNumberComp--- callback is null");
+            return false;
+        }
 
+        String result = datas.getString("result");
+
+        if(!StringUtils.equals(result, "0")){
+            String message = datas.getString("detail");
+            LOGGER.error("---getAvailableNumberComp---- callback result:{},message:{}",result,message);
+            return false;
+        }
+
+        return datas.getBooleanValue("data");
     }
 
     /**
@@ -70,7 +91,7 @@ public class WeiZhiAfterSaleApiClient {
      * @param afsApply
      * @return
      */
-    public WeiZhiAfterSaleDto afterUpdateSendSku(Map<String,String> paramMap) throws Exception {
+    public boolean afterUpdateSendSku(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
         //封装参数：表单提交
@@ -87,9 +108,25 @@ public class WeiZhiAfterSaleApiClient {
         String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_SENDSKU,entity);
         LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
-        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        /**
+         * 返回json
+         */
+        JSONObject datas = JSON.parseObject(responseJson);
 
-        return weiZhiAfterSaleApplyDto;
+        if(null == datas){
+            LOGGER.error("----getAvailableNumberComp--- callback is null");
+            return false;
+        }
+
+        String result = datas.getString("result");
+
+        if(!StringUtils.equals(result, "0")){
+            String message = datas.getString("detail");
+            LOGGER.error("---getAvailableNumberComp---- callback result:{},message:{}",result,message);
+            return false;
+        }
+
+        return datas.getBooleanValue("data");
     }
 
     /**
@@ -97,7 +134,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public WeiZhiAfterSaleDto getAvailableNumberComp(Map<String,String> paramMap) throws Exception {
+    public boolean getAvailableNumberComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -116,9 +153,25 @@ public class WeiZhiAfterSaleApiClient {
         responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP,entity);
         LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
 
-        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        /**
+         * 返回json
+         */
+        JSONObject datas = JSON.parseObject(responseJson);
 
-        return weiZhiAfterSaleApplyDto;
+        if(null == datas){
+            LOGGER.error("----getAvailableNumberComp--- callback is null");
+            return false;
+        }
+
+        String result = datas.getString("result");
+
+        if(!StringUtils.equals(result, "0")){
+            String message = datas.getString("detail");
+            LOGGER.error("---getAvailableNumberComp---- callback result:{},message:{}",result,message);
+            return false;
+        }
+
+        return datas.getBooleanValue("data");
     }
 
     /**
@@ -126,7 +179,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public WeiZhiAfterSaleDto getCustomerExpectComp(Map<String,String> paramMap) throws Exception {
+    public List<AfterSaleExpectCompType> getCustomerExpectComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -143,9 +196,30 @@ public class WeiZhiAfterSaleApiClient {
         String  responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP,entity);
         LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
 
-        WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
+        JSONObject datas = JSON.parseObject(responseJson);
+        if(null == datas){
+            LOGGER.error("----getCustomerExpectComp--- callback is null");
+            return null;
+        }
 
-        return weiZhiAfterSaleApplyDto;
+        String result = datas.getString("result");
+        if(!StringUtils.equals(result, "0")){
+            String message = datas.getString("detail");
+            LOGGER.error("---getCustomerExpectComp---- callback result:{},message:{}",result,message);
+            return null;
+        }
+
+        //如果返回数据正确，且有支持的服务类型
+        List<AfterSaleExpectCompType> compTypes = Lists.newArrayList();
+        JSONArray jsonArray = datas.getJSONArray("data");
+
+        for (Object obj: jsonArray) {
+            String content = JSONObject.toJSONString(obj);
+            AfterSaleExpectCompType afterSaleExpectCompType = GsonUtils.convertObj(content, AfterSaleExpectCompType.class);
+            compTypes.add(afterSaleExpectCompType);
+        }
+
+        return compTypes;
     }
 
     /**
@@ -153,7 +227,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public WeiZhiAfterSaleDto getWareReturnJdComp(Map<String,String> paramMap) throws Exception {
+    public List<AfterSaleExpectCompType> getWareReturnJdComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -166,20 +240,31 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = null;
-        try{
-            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP,entity);
-            LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP,entity);
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
 
-            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
-
-            return weiZhiAfterSaleApplyDto;
-
-        }catch (Exception e){
-            LOGGER.error("getWareReturnJdComp response return is not 200",e);
+        JSONObject jsonObject = JSON.parseObject(responseJson);
+        if(null == jsonObject){
+            LOGGER.error("-----------getWareReturnJdComp----------response is null");
+            return null;
         }
 
-        return null;
+        String result = jsonObject.getString("result");
+        if(!StringUtils.equals(result, "0")){
+            String message = jsonObject.getString("detail");
+            LOGGER.error("---getWareReturnJdComp---- callback result:{},message:{}",result,message);
+            return null;
+        }
+        List<AfterSaleExpectCompType> compTypes = Lists.newArrayList();
+        JSONArray jsonArray = jsonObject.getJSONArray("data");
+
+        for (Object obj: jsonArray) {
+            String content = JSONObject.toJSONString(obj);
+            AfterSaleExpectCompType afterSaleExpectCompType = GsonUtils.convertObj(content, AfterSaleExpectCompType.class);
+            compTypes.add(afterSaleExpectCompType);
+        }
+
+        return compTypes;
     }
 
 
@@ -188,7 +273,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public WeiZhiAfterSaleDto getServiveList(Map<String,String> paramMap) throws Exception {
+    public String getServiveList(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -202,20 +287,30 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = null;
-        try{
-            responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST,entity);
-            LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
-
-            WeiZhiAfterSaleDto weiZhiAfterSaleApplyDto = GsonUtils.convertObj(responseJson, WeiZhiAfterSaleDto.class);
-
-            return weiZhiAfterSaleApplyDto;
-
-        }catch (Exception e){
-            LOGGER.error("getServiveList response return is not 200",e);
+        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST,entity);
+        LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
+        JSONObject jsonObject = JSON.parseObject(responseJson);
+        if(null == jsonObject){
+            LOGGER.error("-----------getServiveList----------response is null");
+            return null;
         }
 
+        String result = jsonObject.getString("result");
+        if(!StringUtils.equals(result, "0")){
+            String message = jsonObject.getString("detail");
+            LOGGER.error("---getServiveList---- callback result:{},message:{}",result,message);
+            return null;
+        }
+
+        String data = jsonObject.getString("data");
+
+        //TODO 封装到一个类里，类中的字段与data中的相同
+//        GsonUtils.convertObj(data,);
+
+
+
         return null;
+
     }
 
 }

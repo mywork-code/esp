@@ -92,25 +92,25 @@ public class WeiZhiConstants {
      * 小海的weizhi接口
      */
     //服务单保存申请
-    public static final String WZAPI_AFTERSALES_AFSAPPLY = "/jdapi/afterSales/createAfsApply";
+    public static final String WZAPI_AFTERSALES_AFSAPPLY =COMMON_URL +  "/jdapi/afterSales/createAfsApply";
     //填写客户发运信息
-    public static final String WZAPI_AFTERSALES_SENDSKU = "/jdapi/afterSales/updateSendSku";//TODO
+    public static final String WZAPI_AFTERSALES_SENDSKU =COMMON_URL +  "/jdapi/afterSales/updateSendSku";
     //校验某订单中某商品是否可以提交售后服务
-    public static final String WZAPI_AFTERSALE_AVAILABLENUMBERCOMP = "/jdapi/afterSales/getAvailableNumberComp";
+    public static final String WZAPI_AFTERSALE_AVAILABLENUMBERCOMP =COMMON_URL +  "/jdapi/afterSales/getAvailableNumberComp";
     //根据订单号、商品编号查询支持的服务类型
-    public static final String WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP = "/jdapi/afterSales/getCustomerExpectComp";
+    public static final String WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP =COMMON_URL +  "/jdapi/afterSales/getCustomerExpectComp";
     //根据订单号、商品编号查询支持的商品返回微知方式
-    public static final String WZAPI_AFTERSALE_WARERETURNJDCOMP = "/jdapi/afterSales/getWareReturnJdComp";
+    public static final String WZAPI_AFTERSALE_WARERETURNJDCOMP =COMMON_URL +  "/jdapi/afterSales/getWareReturnJdComp";
     //根据客户账号和订单号分页查询服务单概要信息
-    public static final String WZAPI_AFTERSALE_SERVIVELIST = "/jdapi/afterSales/getServiveList";
+    public static final String WZAPI_AFTERSALE_SERVIVELIST =COMMON_URL +  "/jdapi/afterSales/getServiveList";
 
     //批量查询商品价格
-    public static final String WZAPI_PRICE_GETWZPRICE = "/jdapi/price/getWzPrice";
+    public static final String WZAPI_PRICE_GETWZPRICE = COMMON_URL +  "/jdapi/price/getWzPrice";
 
 
     //删除消息
-    public static final String WZAPI_MESSAGE_DEL = "/jdapi/message/del";
+    public static final String WZAPI_MESSAGE_DEL = COMMON_URL +  "/jdapi/message/del";
     //获取消息
-    public static final String WZAPI_MESSAGE_GET = "/jdapi/message/get";
+    public static final String WZAPI_MESSAGE_GET = COMMON_URL +  "/jdapi/message/get";
     
 }
