@@ -14,6 +14,7 @@ public class InvoiceDto {
     private String companyName;//单位名称
     private String taxpayerNum;//纳税人识别号
     private String content;//收票内容
+    private Byte status;//状态
 
     public Long getUserId() {
         return userId;
@@ -77,5 +78,13 @@ public class InvoiceDto {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

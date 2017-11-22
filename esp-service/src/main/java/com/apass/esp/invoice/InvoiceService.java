@@ -198,7 +198,7 @@ public class InvoiceService {
         in.setTelphone(invoiceDto.getTelphone());
         in.setUserId(invoiceDto.getUserId());
         in.setUpdatedTime(d);
-        in.setStatus((byte) InvoiceStatusEnum.APPLYING.getCode());
+        in.setStatus(invoiceDto.getStatus());
         in.setHeadType(invoiceDto.getHeadType());
         in.setTaxpayerNum(invoiceDto.getTaxpayerNum());
         in.setOrderId(invoiceDto.getOrderId());

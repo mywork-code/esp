@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.apass.esp.domain.dto.InvoiceDto;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.invoice.InvoiceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,18 +57,6 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
-import com.apass.esp.domain.enums.AcceptGoodsType;
-import com.apass.esp.domain.enums.ActivityStatus;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CouponMessage;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PaymentStatus;
-import com.apass.esp.domain.enums.PaymentType;
-import com.apass.esp.domain.enums.PreDeliveryType;
-import com.apass.esp.domain.enums.PreStockStatus;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
@@ -842,7 +831,8 @@ public class OrderService {
         /**
          * sprint 12 如果存在多个商户的商品,为订单生成一个主订单，如果只是一个商户的商品，不需要
          */
-        String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList, myCouponId, totalPayment);
+        String parentOrderId = saveParentOrder(requestId, userId, deviceType, address, size, purchaseList,
+                myCouponId, totalPayment,invoiceDto);
         String negativeParentOrderId = "0";
         if(size > 1){
         	orderList.add(parentOrderId);
@@ -903,6 +893,7 @@ public class OrderService {
                 //向下兼容，老版本invoiceDto = null
                 invoiceDto.setOrderId(orderId);
                 invoiceDto.setOrderAmt(orderInfo.getOrderAmt());
+                invoiceDto.setStatus((byte) InvoiceStatusEnum.INVISIBLE.getCode());
                 invoiceService.createInvoice(invoiceDto);
             }
 
@@ -991,7 +982,8 @@ public class OrderService {
      * @throws BusinessException 
      */
     public String saveParentOrder(String requestId,Long userId,String deviceType,AddressInfoEntity address,Integer mapSize,
-    		List<PurchaseRequestDto> purchaseList,String myCouponId,BigDecimal totalPayment) throws BusinessException{
+    		List<PurchaseRequestDto> purchaseList,String myCouponId,BigDecimal totalPayment,
+                                  InvoiceDto invoiceDto) throws BusinessException{
     	/**
     	 * mapSize大于1标志着有多个商户的商品
     	 */
@@ -1028,6 +1020,16 @@ public class OrderService {
         orderInfo.setParentOrderId("0");
         orderInfo.setMainOrderId(orderId);
         Integer successStatus = orderInfoRepository.insert(orderInfo);
+
+        //插入发票信息
+        if(invoiceDto != null){
+            //向下兼容，老版本invoiceDto = null
+            invoiceDto.setOrderId(orderId);
+            invoiceDto.setOrderAmt(orderInfo.getOrderAmt());
+            invoiceDto.setStatus((byte) InvoiceStatusEnum.APPLYING.getCode());
+            invoiceService.createInvoice(invoiceDto);
+        }
+
         if (successStatus < 1) {
             LOG.info(requestId, "生成订单", "订单表数据插入失败");
             throw new BusinessException("订单生成失败!", BusinessErrorCode.ORDER_NOT_EXIST);
@@ -2685,7 +2687,6 @@ public class OrderService {
     
     /**
      * 计算商品购买总件数，实际支付金额，优惠金额
-     * @param addreesId
      * @param purchaseList
      * @return
      * @throws BusinessException
@@ -2740,7 +2741,6 @@ public class OrderService {
     
     /**
      * 计算商品购买总件数，实际支付金额，优惠金额
-     * @param addreesId
      * @param purchaseList
      * @return
      * @throws BusinessException

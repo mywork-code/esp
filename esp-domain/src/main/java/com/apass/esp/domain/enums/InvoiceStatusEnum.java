@@ -8,7 +8,7 @@ public enum InvoiceStatusEnum {
     APPLYING(1,"申请中"),
     SUCCESS(2,"成功"),
     FAIL(3,"失败"),
-    CANCEL(4,"取消"),
+    INVISIBLE(4,"不可见"),
     ;
     private int code;
     private String desc;
