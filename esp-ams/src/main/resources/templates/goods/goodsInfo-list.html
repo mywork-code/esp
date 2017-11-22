@@ -627,7 +627,7 @@
 <!-- ==================================-----------维护库存旧（新增修改）（始）------------========================== -->
 	<!-- 新增商品新加库存 -->
 	<div id="addGoodsStockInfoWin" class="easyui-window" title="<font color='black'>新加库存</font>" 
-	   hidden="hidden" style="width: 500px; height: 250px; display: none; text-align: center;"
+	   hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
 	   data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
 		<form id="stockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">	
 			<table class="details_table" style="width: 92%">
@@ -679,8 +679,11 @@
 					 </td>
 				</tr> -->
 			    <tr>
-					<td align="right"><font color="red">*</font>缩略图Logo:</td>
-					<td><input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/></td>
+					<td width="20%" align="right" valign="top" width=""><font color="red">*</font>库存缩略图:</td>
+					<td colspan="3" width="60%">
+					   <img id='addStockGoodsLogoImg' src=""/>
+					   <input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/>
+				    </td>
 				</tr>
 				<tr>
 					<td align="right"><font color="red"></font></td>
@@ -699,7 +702,7 @@
 	
 	<!-- 修改商品新加库存 -->
     <div id="editaddGoodsStockInfoWin" class="easyui-window" title="<font color='black'>新加库存</font>" 
-       hidden="hidden" style="width: 500px; height: 250px; display: none; text-align: center;"
+       hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
        data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
         <form id="editaddstockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">  
             <table class="details_table" style="width: 92%">
@@ -726,8 +729,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td align="right"><font color="red">*</font>缩略图Logo:</td>
-                    <td><input width="20%" type="file" id="editaddstockLogoFile" name="stockLogoFile"/></td>
+                    <td width="20%" align="right" valign="top" width=""><font color="red">*</font>库存缩略图:</td>
+                    <td colspan="3" width="60%">
+                        <img id='editaddStockGoodsLogoImg' src=""/>
+                        <input width="20%" type="file" id="editaddstockLogoFile" name="stockLogoFile"/>
+                    </td>
                 </tr>
                 <tr>
                     <td align="right"><font color="red"></font></td>
@@ -806,7 +812,7 @@
 				    <input type="hidden" name = "editStockinfoIdInForm" id = "editStockinfoIdInForm">
 				    <span style="color:red">支持格式：.png,.jpg;尺寸：130 *130px;大小：≤300kb</span>
 			    </form>
-			</td>
+			    </td>
 		    </tr>
 			<tr style="margin-top: 22px;">
 				<td colspan="4">

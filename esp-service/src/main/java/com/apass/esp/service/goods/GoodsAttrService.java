@@ -31,6 +31,8 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.google.common.collect.Lists;
+
+import freemarker.template.utility.StringUtil;
 /**
  * 商品属性
  * @author ht
@@ -424,8 +426,13 @@ public class GoodsAttrService {//450
         for(StockInfoFileModel entity : goodsStock){
             String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
             String skuId = sku+rand;
-            String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getAttrnameByAfter(),goodsId);
             GoodsStockInfoEntity goodsStockentoty = new GoodsStockInfoEntity();
+            if(StringUtils.isBlank(entity.getAttrnameByAfter())){
+                goodsStockentoty.setAttrValIds(" ");
+            }else{
+                String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getAttrnameByAfter(),goodsId);
+                goodsStockentoty.setAttrValIds(skuIdStr);
+            }
             goodsStockentoty.setGoodsId(goodsId);
             goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             goodsStockentoty.setGoodsPrice(new BigDecimal(entity.getGoodsPrice()));
@@ -433,7 +440,6 @@ public class GoodsAttrService {//450
             goodsStockentoty.setStockTotalAmt(Long.valueOf(entity.getStockTotalAmt()));// 库存总量
             goodsStockentoty.setStockCurrAmt(Long.valueOf(entity.getStockAmt()));// 库存剩余
             goodsStockentoty.setStockLogo(entity.getStockLogo());//缩略图URL
-            goodsStockentoty.setAttrValIds(skuIdStr);
             goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             goodsStockentoty.setSkuId(skuId);
             goodsStockentoty.setDeleteFlag("N");
@@ -648,6 +654,7 @@ public class GoodsAttrService {//450
                     list3.add(ennew);
                 }
             }
+            //增加空规格库存
             result.setDataList(list3);
             result.setTotalCount(list3.size());
         }else{
@@ -791,15 +798,19 @@ public class GoodsAttrService {//450
             entity.setDeleteFlag("N");
             entity.setCreateUser(userName);
             entity.setUpdateUser(userName);
-            String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getGoodsSkuAttr(),goodsId);
-            entity.setAttrValIds(skuIdStr);
+            if(StringUtils.isBlank(entity.getGoodsSkuAttr())){
+                entity.setAttrValIds(" ");
+            }else{
+                String skuIdStr = goodsAttrValService.findGoodsAttrValId(entity.getGoodsSkuAttr(),goodsId);
+                entity.setAttrValIds(skuIdStr);
+            }
             if(entity.getId()==null){
                 String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
                 String skuId = sku+rand;
                 entity.setSkuId(skuId);
                 Integer i = goodsStockInfoService.insertGoodsAttr(entity);
                 if(i!=1){
-                    throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+                    throw new BusinessException("请您完整填写商品库存相关信息!");
                 }
             }else{
                 GoodsStockInfoEntity en = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
@@ -807,11 +818,11 @@ public class GoodsAttrService {//450
                 entity.setStockCurrAmt(en.getStockCurrAmt());
                 Integer i = goodsStockInfoService.updateService(entity);
                 if(i!=1){
-                    throw new BusinessException("商品库存保存失败，检查非空字段验证！");
+                    throw new BusinessException("请您完整填写商品库存相关信息!");
                 }
             }
         }
-        return Response.success("批量保存库存！");
+        return Response.success("批量保存库存成功！");
     }
     /**
      * 类目修改
