@@ -190,11 +190,16 @@ public class WeiZhiProductService {
 	 * @return
 	 * @throws Exception
 	 */
-	public WZCheckSale getWeiZhiCheckSale(String skuIds) throws Exception {
-		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
-		List<WZCheckSale>  list=checkSale.getResult();
-		WZCheckSale wZCheckSale=list.get(0);
-		return wZCheckSale;
+	public Boolean getWeiZhiCheckSale(String skuIds) throws Exception {
+		Boolean falge = false;
+		CheckSale checkSale = weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+			WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+			if (1 == wZCheckSale.getSaleState()) {
+				falge = true;
+			}
+		}
+		return falge;
 	}
 	/**
 	 * 商品可售验证接口(多个商品验证)
@@ -203,12 +208,13 @@ public class WeiZhiProductService {
 	 * @throws Exception
 	 */
 	public List<WZCheckSale> getWeiZhiCheckSaleList(List<String> skuIdList) throws Exception {
-		StringBuffer skuIds=new StringBuffer();
-		for (String string : skuIdList) {
-			skuIds.append(string);
-			skuIds.append(",");
-		}
-		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds.toString());
+//		StringBuffer skuIds=new StringBuffer();
+//		for (String string : skuIdList) {
+//			skuIds.append(string);
+//			skuIds.append(",");
+//		}
+		String skuIds = StringUtils.join(skuIdList,",");
+		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
 		List<WZCheckSale>  list=checkSale.getResult();
 		return list;
 	}

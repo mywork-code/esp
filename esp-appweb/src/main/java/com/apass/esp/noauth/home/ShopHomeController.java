@@ -62,8 +62,10 @@ import com.apass.esp.service.nation.NationService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.weizhi.entity.WZCheckSale;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -136,6 +138,8 @@ public class ShopHomeController {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    @Autowired
+    private WeiZhiProductService weiZhiProductService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -962,13 +966,18 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<SkuNum> skuNumList=new ArrayList<>();
-                SkuNum skuNum=new SkuNum();
-                skuNum.setNum(1);
-                skuNum.setSkuId(Long.parseLong(externalId));
-                skuNumList.add(skuNum);
-                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+//                List<SkuNum> skuNumList=new ArrayList<>();
+//                SkuNum skuNum=new SkuNum();
+//                skuNum.setNum(1);
+//                skuNum.setSkuId(Long.parseLong(externalId));
+//                skuNumList.add(skuNum);
+//                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+//                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+//                	goodsInfo.setStatus("G03");//商品下架
+//                }
+                //weizhi验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+                Boolean  wZCheckSale= weiZhiProductService.getWeiZhiCheckSale(externalId);
+                if(!wZCheckSale){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
