@@ -3250,19 +3250,56 @@ public class OrderService {
      * 
      * @throws BusinessException
      */
-    public void freedJdStock() throws BusinessException {
+//    public void freedJdStock() throws BusinessException {
+//        /**
+//         * 1.首先查询 失效和删除的京东订单 2.循环，拿到订单信息中的京东订单的id 3.调用释放占用库存的接口，传入京东订单的id
+//         * 4.释放完库存后，修改订单的pre_stock_status状态为3
+//         */
+//        List<OrderInfoEntity> orderList = orderInfoRepository.getInvalidAndDeleteJdOrder();
+//        if (!CollectionUtils.isEmpty(orderList)) {
+//            for (OrderInfoEntity order : orderList) {
+//                JdApiResponse<Boolean> jd = jdOrderApiClient.orderCancelorder(Long.valueOf(order
+//                        .getExtOrderId()));
+//                if (!jd.isSuccess() || !jd.getResult()) {
+//                    throw new BusinessException("取消未确认的订单失败!");
+//                }
+//            }
+//        }
+//
+//        /**
+//         * 修改订单占用库存字段为取消占用，更新时间
+//         */
+//        Map<String, Object> params = Maps.newHashMap();
+//        params.put("preStockStatus", PreStockStatus.CANCLE_PRE_STOCK.getCode());
+//        params.put("updateTime", new Date());
+//        for (OrderInfoEntity order : orderList) {
+//            params.put("orderId", order.getOrderId());
+//            orderInfoRepository.updatePreStockStatusByOrderId(params);
+//        }
+//    }
+    /**
+     * 释放预占库存
+     * 
+     * @throws BusinessException
+     */
+    public void freedWzStock() throws BusinessException {
         /**
          * 1.首先查询 失效和删除的京东订单 2.循环，拿到订单信息中的京东订单的id 3.调用释放占用库存的接口，传入京东订单的id
          * 4.释放完库存后，修改订单的pre_stock_status状态为3
          */
         List<OrderInfoEntity> orderList = orderInfoRepository.getInvalidAndDeleteJdOrder();
+        List<OrderInfoEntity> cancelSuccList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orderList)) {
             for (OrderInfoEntity order : orderList) {
-                JdApiResponse<Boolean> jd = jdOrderApiClient.orderCancelorder(Long.valueOf(order
-                        .getExtOrderId()));
-                if (!jd.isSuccess() || !jd.getResult()) {
-                    throw new BusinessException("取消未确认的订单失败!");
-                }
+            	try {
+            		boolean bl = orderApi.cancelOrder(order.getExtOrderId());
+            		if(!bl){
+            			throw new BusinessException("取消未确认的订单失败!");
+            		}
+            		cancelSuccList.add(order);
+				} catch (Exception e) {
+					LOGGER.error("orderId equals {},cancel is failed！！",order.getOrderId());
+				}
             }
         }
 
@@ -3272,7 +3309,7 @@ public class OrderService {
         Map<String, Object> params = Maps.newHashMap();
         params.put("preStockStatus", PreStockStatus.CANCLE_PRE_STOCK.getCode());
         params.put("updateTime", new Date());
-        for (OrderInfoEntity order : orderList) {
+        for (OrderInfoEntity order : cancelSuccList) {
             params.put("orderId", order.getOrderId());
             orderInfoRepository.updatePreStockStatusByOrderId(params);
         }
