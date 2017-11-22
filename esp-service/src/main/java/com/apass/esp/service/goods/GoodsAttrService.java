@@ -388,7 +388,6 @@ public class GoodsAttrService {//450
      * @return
      * @throws BusinessException 
      */
-    @SuppressWarnings("unused")
     @Transactional
     public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
             List<GoodsStockInfoEntity> goodsStocken,
@@ -410,11 +409,6 @@ public class GoodsAttrService {//450
         if(!dsCREATE){
             throw new BusinessException("批量保存库存，删除商品旧库存信息失败！");
         }
-        String fileDiName = RandomUtils.nextInt(10)+"";
-        String imgType = "jpg";
-        String fileName = "stocklogo_"+ fileDiName + "." + imgType;
-//        String url = nfsGoods + goodsId + "/" + fileName;
-//        FileUtilsCommons.uploadFilesUtil(rootPath, url, ImageUtils.scale(data, 130,130));
         return saveGoodsCateAttrAndStock(goodsStock, goodsStocken, goodsId, userName,status);
     }
     @Transactional
@@ -438,13 +432,14 @@ public class GoodsAttrService {//450
             goodsStockentoty.setGoodsCostPrice(new BigDecimal(entity.getGoodsCostPrice()));
             goodsStockentoty.setStockTotalAmt(Long.valueOf(entity.getStockTotalAmt()));// 库存总量
             goodsStockentoty.setStockCurrAmt(Long.valueOf(entity.getStockAmt()));// 库存剩余
+            goodsStockentoty.setStockLogo(entity.getStockLogo());//缩略图URL
             goodsStockentoty.setAttrValIds(skuIdStr);
             goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             goodsStockentoty.setSkuId(skuId);
             goodsStockentoty.setDeleteFlag("N");
             goodsStockentoty.setCreateUser(userName);
             goodsStockentoty.setUpdateUser(userName);
-            goodsStockentoty.setMarketPrice(new BigDecimal(entity.getGoodsPrice()));//1h
+            goodsStockentoty.setMarketPrice(new BigDecimal(entity.getGoodsPrice()));
 //            goodsStockentoty.setStockLogo(url);
             Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
             if(i!=1){
@@ -673,7 +668,7 @@ public class GoodsAttrService {//450
     @SuppressWarnings("unused")
     @Transactional
     public Response createTableByCateEdit(String attrValId, String attrId, String attrVal,String goodsId) throws BusinessException {
-        Boolean falg1 = "undefined".equals(attrValId)||StringUtils.isBlank(attrValId);
+        Boolean falg1 = "undefined".equals(attrValId)||StringUtils.isBlank(attrValId);//验证该INPUT有没有规格ID
         Boolean falg3 = "undefined".equals(attrVal)||StringUtils.isBlank(attrVal);
         if(falg1){//规格表无ID
             if(falg3){//规格表名称为空    无操作
@@ -694,6 +689,7 @@ public class GoodsAttrService {//450
                     throw new BusinessException("新增属性规格名称验重失败!");
                     //return Response.fail("新增属性规格名称验重失败!");
                 }
+                return Response.success("刷新库存！",entity.getId());
             }
         }else{//规格表有ID
             if(falg3){//规格表名称为空    //删除该属性规格 删除该属性规格库存
@@ -701,7 +697,7 @@ public class GoodsAttrService {//450
                 List<GoodsStockInfoEntity>  list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
                 for(GoodsStockInfoEntity en : list){
                     if(StringUtils.contains(en.getAttrValIds(), attrValId)){
-                        if(goodsStockInfoService.deletegoodsStockInfoById(en.getId())){
+                        if(!goodsStockInfoService.deletegoodsStockInfoById(en.getId())){
                             throw new BusinessException("库存删除失败!");
                             //return Response.fail("库存删除失败!");
                         }
@@ -721,7 +717,7 @@ public class GoodsAttrService {//450
                     throw new BusinessException("修改属性规格名称验重失败!");
                     //return Response.fail("修改属性规格名称验重失败!");
                 }
-                List<GoodsStockInfoEntity>  list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+                List<GoodsStockInfoEntity> list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
                 for(GoodsStockInfoEntity en : list){
                     if(StringUtils.contains(en.getAttrValIds(), attrValId)){
                         String attrValIds = en.getAttrValIds();

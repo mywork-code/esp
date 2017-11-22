@@ -372,7 +372,7 @@ public class GoodsService {
     }
     returnMap.put("status", goodsBasicInfo.getStatus());//商品状态
     Date now = new Date();
-    if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+    if (now.before(goodsBasicInfo.getListTime()) || (null !=goodsBasicInfo.getDelistTime() && now.after(goodsBasicInfo.getDelistTime()))
         || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
       returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
@@ -599,7 +599,12 @@ public class GoodsService {
       throw new BusinessException("商品信息不存在");
     }
     Date now = new Date();
-    if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+    boolean ifHasDelistTime = false;
+    if(goodsBasicInfo.getDelistTime() != null){
+        ifHasDelistTime = now.after(goodsBasicInfo.getDelistTime());
+
+    }
+    if (now.before(goodsBasicInfo.getListTime()) || ifHasDelistTime
         || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
       goodsBasicInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
     }

@@ -377,7 +377,7 @@ public class GoodsBaseInfoController {
             pageModel.setExternalId("");
             pageModel.setGoodsSkuType("");
             Integer sordNo = pageModel.getSordNo();
-            if(sordNo != null){
+            if(sordNo != null){//如果有排序字段，判断同一二级类目下是否有相同排序商品。如果后，其后的都—sordNo都+1
                 List<GoodsInfoEntity> goodsInfoEntities = goodsService.selectByCategoryId2(pageModel.getCategoryId2());
                 for (GoodsInfoEntity goodsInfoEntity:goodsInfoEntities) {
                     if(sordNo == goodsInfoEntity.getSordNo()){
@@ -389,7 +389,6 @@ public class GoodsBaseInfoController {
                         for (GoodsInfoEntity good: goods) {
                             good.setSordNo(good.getSordNo()+1);
                             good.setUpdateDate(new Date());
-                            good.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                             goodsService.updateService(good);
                         }
                     }
@@ -911,12 +910,10 @@ public class GoodsBaseInfoController {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!", url);
             }
-
             /**
              * 上传文件
              */
             FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
-
             // 保存url到数据库
             GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
             entity.setStockLogo(url);
@@ -924,20 +921,14 @@ public class GoodsBaseInfoController {
             entity.setId(stockinfoIdInForm);
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             goodsStockInfoService.update(entity);
-
-            /**
-             * 更新goodsbase中的数据
-             */
-            updateDB(goodsId + "");
-
+            //更新goodsbase中的数据
+//            updateDB(goodsId + "");
             return Response.success("上传成功", url);
-
         } catch (Exception e) {
             LOGGER.error("上传logo失败!", e);
             return Response.fail("上传logo失败!");
         }
     }
-
     /**
      * 商品预览
      *
@@ -1116,7 +1107,7 @@ public class GoodsBaseInfoController {
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品库存保存失败，检查非空字段验证!");
+            return Response.fail("请您完整填写商品库存相关信息!");
         }
     }
     /**
@@ -1228,7 +1219,7 @@ public class GoodsBaseInfoController {
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
             LOGGER.error("商品属性规格和库存信息录入失败!", e);
-            return Response.fail("商品库存保存失败，检查非空字段验证!");
+            return Response.fail("请您完整填写商品库存相关信息!");
         }
     }
 }

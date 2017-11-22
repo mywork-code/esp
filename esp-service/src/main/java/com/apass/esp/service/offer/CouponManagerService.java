@@ -12,13 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -50,6 +53,9 @@ public class CouponManagerService {
 	
 	@Autowired
 	private MyCouponManagerService myCouponManagerService;
+	
+	@Autowired
+	private CategoryMapper categoryMapper;
 	
 	/**
 	 * 根据活动的Id，获取优惠券
@@ -111,9 +117,9 @@ public class CouponManagerService {
 				ProCouponVo proCouponVo=new ProCouponVo();
 				proCouponVo.setId(proCoupon.getId());
 				proCouponVo.setActivityId(rel.getProActivityId());
-				proCouponVo.setName(proCoupon.getName());
 				proCouponVo.setCouponSill(proCoupon.getCouponSill());
 				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
+				proCouponVo.setName("【限"+activityCfg.getActivityName()+"活动商品】\t"+proCoupon.getName());
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
 				String startTimeString = formatter.format(activityCfg.getStartTime());
 				String endTimeTimeString = formatter.format(activityCfg.getEndTime());

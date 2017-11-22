@@ -713,6 +713,7 @@ public class ShopHomeController {
     @POST
     @Path("/v2/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD(Map<String, Object> paramMap) {
+        LOGGER.info("获取商品详细信息 基本信息+详细信息,v2 loadGoodsBasicInfo方法开始执行,参数:{}",GsonUtils.toJson(paramMap));
         try {
             Map<String, Object> returnMap = new HashMap<>();
             Long goodsId = CommonUtils.getLong(paramMap, "goodsId");

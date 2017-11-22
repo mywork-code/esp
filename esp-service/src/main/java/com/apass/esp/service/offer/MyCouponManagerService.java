@@ -286,6 +286,7 @@ public class MyCouponManagerService {
 		StringBuffer buffer = new StringBuffer();
 		vo.setId(p.getId());
 		String activityName = "";
+		String goodsName = "";
 		if(null != p.getCouponRelId()){
 			ProCouponRel rel = couponRelMapper.selectByPrimaryKey(p.getCouponRelId());
 			if(null != rel){//此做法主要是适配于测试环境直接删库数据不完全，可能导致的问题
@@ -306,21 +307,25 @@ public class MyCouponManagerService {
 			GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(coupon.getGoodsCode());
 			vo.setGoodsId(goods.getId()+"");
 			vo.setSource(goods.getSource());
+			goodsName = goods.getGoodsName();
 		}
 		vo.setType(coupon.getType());
 		String type = coupon.getType();
 		if(StringUtils.equals(type, CouponType.COUPON_ZDPL.getCode())){
 			String categoryId = StringUtils.isBlank(coupon.getCategoryId1()) ? coupon.getCategoryId2():coupon.getCategoryId1();
 			Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(categoryId));
-			buffer.append("【限"+categroy.getCategoryName()+"类】\t");
+			buffer.append("【限"+categroy.getCategoryName()+"类】\t").append(coupon.getName());
 		}else if(StringUtils.equals(type, CouponType.COUPON_HDSP.getCode())){
-			buffer.append("【限"+activityName+"活动商品】\t");
-		}else{
-			buffer.append("【"+CouponType.getMessage(type)+"】\t");
+			buffer.append("【限"+activityName+"活动商品】\t").append(coupon.getName());
+		}else if(StringUtils.equals(type, CouponType.COUPON_ZDSP.getCode())){
+			buffer.append("【指定商品】\t" + goodsName);
+		}
+		else{
+			buffer.append("【"+CouponType.getMessage(type)+"】\t").append(coupon.getName());
 		}
 		vo.setCouponSill(coupon.getCouponSill());
 		vo.setDiscountAmonut(coupon.getDiscountAmonut());
-		vo.setCouponName(buffer.append(coupon.getName()).toString());
+		vo.setCouponName(buffer.toString());
 		vo.setEndDate(DateFormatUtil.dateToString(p.getEndDate(),""));
 		vo.setRemarks(p.getRemarks());
 		vo.setStartDate(DateFormatUtil.dateToString(p.getStartDate(),""));

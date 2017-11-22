@@ -350,6 +350,9 @@ public class PaymentService {
         //获取该订单详情列表
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderInfo.getOrderId() + "");
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
+        	if(StringUtils.equals(orderDetail.getSource(), SourceType.JD.getCode())){
+        		continue;
+        	}
             // 商品购买数量
             Long buyNum = orderDetail.getGoodsNum();
             // 商品Id
@@ -564,7 +567,6 @@ public class PaymentService {
 			 * 查询订单下的所有的订单详情
 			 */
 			List<OrderDetailInfoEntity> orderDetailList =  orderDetailDao.queryOrderDetailInfo(orderId);
-			OrderInfoEntity orderEntity = orderService.getOrderInfoEntityByOrderId(orderId);
 			/**
 			 * 如果是京东订单，则不要做验证，如果是其他商户订单则正常验证
 			 */
@@ -593,7 +595,7 @@ public class PaymentService {
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//如果是京东订单，则不要做以下判断
-				if(!StringUtils.equals(orderEntity.getSource(), SourceType.JD.getCode())){
+				if(!StringUtils.equals(detail.getSource(), SourceType.JD.getCode())){
 					//商品的购买数量
 					Long goodNum = detail.getGoodsNum();
 					//商品的当前库存
