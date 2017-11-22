@@ -1370,7 +1370,7 @@ public class OrderService {
             throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
         }
         if (goodsInfo.getSource() == null) {
-            if (now.after(goodsInfo.getDelistTime())) {
+            if (null !=goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime())) {
                 LOG.info(requestId, "校验商品下架,商品已下架", goodsId.toString());
                 throw new BusinessException("抱歉，您的订单内含下架商品\n请重新下单");
             }
@@ -1407,7 +1407,7 @@ public class OrderService {
             LOG.info(requestId, "商品:" + goodsId + "不存在", "");
             throw new BusinessException("商品号:" + goodsId + ",不存在或商户号不存在！");
         }
-        if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
+        if (now.before(goodsInfo.getListTime()) || (null !=goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
                 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
             LOG.info(requestId, "支付失败您的订单含有下架商品", "");
             throw new BusinessException("支付失败您的订单含有下架商品");
@@ -2159,7 +2159,7 @@ public class OrderService {
             // step1:下架或库存为零商品不做处理
             // 下架商品不处理
             GoodsInfoEntity goodsInfo = goodsDao.select(orderDetail.getGoodsId());
-            if (now.before(goodsInfo.getListTime()) || now.after(goodsInfo.getDelistTime())
+            if (now.before(goodsInfo.getListTime()) || (null !=goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
                     || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
                 continue;
             }
