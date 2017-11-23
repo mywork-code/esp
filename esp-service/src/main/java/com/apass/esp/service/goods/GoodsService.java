@@ -47,7 +47,6 @@ import com.apass.esp.repository.banner.BannerInfoRepository;
 import com.apass.esp.repository.goods.GoodsBasicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
-import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.utils.Pinyin4jUtil;
 import com.apass.esp.service.common.CommonService;
@@ -61,7 +60,7 @@ import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.weizhi.entity.SkuNum;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -109,9 +108,6 @@ public class GoodsService {
 
   @Autowired
   private CategoryMapper categoryMapper;
-
-  @Autowired
-  private GoodsEsDao goodsEsDao;
 
   @Autowired
   private JdGoodsMapper jdGoodsMapper;
@@ -788,8 +784,8 @@ public class GoodsService {
      */
     public String getsupport7dRefund(Long skuId) {
         String value = "N";
-        List<SkuNum> skuNumList = new ArrayList<>();
-        SkuNum skuNum = new SkuNum();
+        List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList = new ArrayList<>();
+        com.apass.esp.third.party.weizhi.entity.SkuNum skuNum = new com.apass.esp.third.party.weizhi.entity.SkuNum();
         skuNum.setNum(1);
         skuNum.setSkuId(skuId);
         skuNumList.add(skuNum);

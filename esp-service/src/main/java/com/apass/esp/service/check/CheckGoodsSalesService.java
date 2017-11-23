@@ -43,8 +43,8 @@ public class CheckGoodsSalesService {
 				Goods goods = IndexManager.getDocument("goods", IndexType.GOODS,
 						Integer.parseInt(goodslist.get(j).getGoodId().toString()));
 				String externalId = goodslist.get(j).getExternalId();// 外部商品id
-				List<SkuNum> skuNumList = new ArrayList<>();
-				SkuNum skuNum = new SkuNum();
+				List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList = new ArrayList<>();
+				com.apass.esp.third.party.weizhi.entity.SkuNum skuNum = new com.apass.esp.third.party.weizhi.entity.SkuNum();
 				skuNum.setNum(1);
 				skuNum.setSkuId(Long.parseLong(externalId));
 				skuNumList.add(skuNum);
