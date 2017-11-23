@@ -1,5 +1,8 @@
 package com.aisino;
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 public class FarmartJavaBean{
     private FarmartJavaBean() {}
     /**
@@ -56,6 +59,23 @@ public class FarmartJavaBean{
             }catch ( Exception e ) {  
             }  
         }  
+        return o;
+    }
+    /**
+     * 
+     * @param o
+     * @param c
+     * @param value
+     * @param name
+     * @return
+     */
+    public static Object map2entity(Object o, Class< ? > c ,Map<String,Object> map){
+        Set<Entry<String, Object>> set = map.entrySet();
+        for(Entry<String, Object> s : set){
+            Object value = s.getValue();
+            String name = s.getKey();
+            o = farmartJavaB(o, c, value, name);
+        }
         return o;
     }
     /**

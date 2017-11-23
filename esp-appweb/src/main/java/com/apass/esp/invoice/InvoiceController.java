@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
-import com.apass.esp.domain.enums.StatusCode;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 /**
@@ -36,7 +35,7 @@ public class InvoiceController {
            // return invoiceService.invoiceDetails("346738");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail(StatusCode.FAILED_CODE.getCode(),"发票详情查询失败");
+            return Response.fail("发票详情查询失败");
         }
     }
     /**
@@ -52,7 +51,22 @@ public class InvoiceController {
             return invoiceService.invoiceRecord(Long.parseLong(userId));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return Response.fail(StatusCode.FAILED_CODE.getCode(),"开票记录查询失败");
+            return Response.fail("开票记录查询失败");
+        }
+    }
+    /**
+     * 申请中发票记录修改
+     * @param paramMap
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/invoiceUpdate")
+    public Response invoiceUpdate(@RequestBody Map<String, Object> paramMap) {
+        try{
+            return invoiceService.invoiceUpdate(paramMap);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("发票信息修改失败");
         }
     }
 }
