@@ -798,8 +798,8 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<SkuNum> skuNumList=new ArrayList<>();
-                SkuNum skuNum=new SkuNum();
+                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
                 skuNum.setNum(1);
                 skuNum.setSkuId(Long.parseLong(externalId));
                 skuNumList.add(skuNum);
@@ -965,8 +965,8 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<SkuNum> skuNumList=new ArrayList<>();
-                SkuNum skuNum=new SkuNum();
+                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
                 skuNum.setNum(1);
                 skuNum.setSkuId(Long.parseLong(externalId));
                 skuNumList.add(skuNum);

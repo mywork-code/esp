@@ -48,6 +48,10 @@ import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.jd.JdLogisticsService;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.response.OrderTrack;
+import com.apass.esp.third.party.weizhi.response.OrderTrackResponse;
+import com.apass.esp.third.party.weizhi.response.TrackData;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -77,6 +81,9 @@ public class LogisticsService {
 
     @Autowired
     private  JdLogisticsService jdLogisticsService;
+    
+    @Autowired
+    private WeiZhiOrderApiClient orderApi;
     /**
      * 快递鸟查询物流详情
      * 
@@ -387,7 +394,7 @@ public class LogisticsService {
     
     public Map<String, Object> loadLogisticInfo(String orderId) throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
-        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+        if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
         	return jdLogisticsService.getSignleTrackings(orderId);
         }else{
         	return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
@@ -416,8 +423,8 @@ public class LogisticsService {
 					
 			try{
 				//如果查询物流出现异常的时候，就默认轨迹不存在
-				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
-					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
+				if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
+					traceList =  getTraceListByWzOrderId(orderInfo.getExtOrderId());
 				}else{
 					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
 				}
@@ -437,5 +444,34 @@ public class LogisticsService {
     	return logisticInfo;
     }
     
+    /**
+     * 根据微知订单号，获取订单物流轨迹
+     * @param wzOrderId
+     * @return
+     */
+    public List<Trace> getTraceListByWzOrderId(String wzOrderId){
+    	List<Trace> trackList = new ArrayList<>();
+    	List<TrackData> trackData = new ArrayList<>();
+    	OrderTrackResponse track = null;
+    	try {
+    		track = orderApi.orderTrack(wzOrderId);
+    		if(null != track && CollectionUtils.isNotEmpty(track.getOrderTrack())){
+    			for (OrderTrack trace : track.getOrderTrack()) {
+    				if(CollectionUtils.isNotEmpty(trace.getTackList())){
+    					trackData = trace.getTackList();
+    					break;
+    				}
+				}
+    		}
+		} catch (Exception e) {}
+    	for (TrackData data : trackData) {
+    		Trace tack = new Trace();
+    		tack.setAcceptTime(data.getMsgTime());
+    		tack.setAcceptStation(data.getContent());
+    		tack.setRemark(data.getOperator());
+    		trackList.add(tack);
+		}
+    	return trackList;
+    }
     
 }

@@ -664,8 +664,8 @@ public class GoodsBaseInfoController {
                 return "京东协议价格低于99元，不能上架";
             }
             
-            List<SkuNum> skuNumList=new ArrayList<>();
-            SkuNum skuNum=new SkuNum();
+            List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+            com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
             skuNum.setNum(1);
             skuNum.setSkuId(Long.parseLong(goodsEntity.getExternalId()));
             skuNumList.add(skuNum);

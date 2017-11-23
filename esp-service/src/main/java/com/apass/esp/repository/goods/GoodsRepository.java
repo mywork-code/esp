@@ -262,15 +262,15 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
     }
 
 
-    public List<GoodsInfoEntity> selectJdGoods(int index,int size){
+    public List<GoodsInfoEntity> selectJdGoods(int index,int size,String source){
         HashMap<String, Object> param = new HashMap<>();
         param.put("index", index);
         param.put("size", size);
+        param.put("source", source);
         return getSqlSession().selectList("selectJdGoods",param);
     }
     /**
      * 精选商品列表
-     * @param goodsInfoEntity
      * @return
      */
     public List<GoodsInfoEntity> goodsSiftList(GoodsInfoEntity entity) {

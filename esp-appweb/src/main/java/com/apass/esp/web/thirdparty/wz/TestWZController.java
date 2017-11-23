@@ -10,11 +10,10 @@ import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
-import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.client.*;
 import com.apass.esp.third.party.weizhi.entity.*;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
@@ -63,7 +62,8 @@ public class TestWZController {
 
 	@Autowired
 	private JdCategoryMapper jdCategoryMapper;
-	
+	private WeiZhiMessageClient weiZhiMessageClient;
+
 
 	@Autowired
 	private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
@@ -376,7 +376,6 @@ public class TestWZController {
 	}
 	/**
 	 * 统一余额查询接口
-	 * @param skuId
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/getBalance", method = RequestMethod.GET)
@@ -413,8 +412,6 @@ public class TestWZController {
 		}
 
 	}
-
-
 
 	//微知商品初始化接口
 	@RequestMapping("/initJdGoods")
@@ -567,4 +564,19 @@ public class TestWZController {
 
 	}
 
+	/**
+	 * 测试获取消息
+	 */
+	@RequestMapping(value = "/getWZMsg", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getWZMsg(@RequestBody Map<String, Object> paramMap){
+		String messageType = (String) paramMap.get("messageType");
+		List<JdApiMessage> resp = null;
+		try {
+			 resp =  weiZhiMessageClient.getMsg(Integer.parseInt(messageType));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Response.successResponse(resp);
+	}
 }

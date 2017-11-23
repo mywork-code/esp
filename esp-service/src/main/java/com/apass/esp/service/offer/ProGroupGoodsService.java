@@ -237,7 +237,7 @@ public class ProGroupGoodsService {
 			vo.setGoodsId(goods.getGoodsId());
 			vo.setGroupId(goods.getGroupId());
 			vo.setSource(g.getSource());
-			if(StringUtils.equalsIgnoreCase(g.getSource(), SourceType.JD.getCode())){
+			if(StringUtils.equalsIgnoreCase(g.getSource(), SourceType.WZ.getCode())){
 				vo.setGoodsPic("http://img13.360buyimg.com/n1/" + g.getGoodsLogoUrl());
 			}else{
 				try {

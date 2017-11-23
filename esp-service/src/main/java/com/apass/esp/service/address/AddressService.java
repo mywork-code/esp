@@ -312,7 +312,7 @@ public class AddressService {
         if (!CollectionUtils.isEmpty(purchaseList)) {
             for (PurchaseRequestDto purchase : purchaseList) {
                 GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
-                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
                     bl = true;
                     break;
                 }

@@ -1,5 +1,7 @@
 package com.apass.esp.third.party.weizhi.entity;
 
+import com.apass.esp.third.party.jd.entity.base.Region;
+
 /**
  * 
  * @author pyc
@@ -94,5 +96,8 @@ public class AddressInfo {
     public void setEmail(String email) {
         this.email = email;
     }
-
+    
+    public Region toRegion() {
+        return new Region(provinceId, cityId, countyId, townId);
+    }
 }
