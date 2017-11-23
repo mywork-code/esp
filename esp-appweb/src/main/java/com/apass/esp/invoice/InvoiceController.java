@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 /**
  * 发票接口相关
  * @author Administrator
@@ -47,6 +48,7 @@ public class InvoiceController {
     @RequestMapping("/invoiceRecord")
     public Response invoiceRecord(@RequestBody Map<String, Object> paramMap) {
         try{
+            logger.info("invoiceRecord方法开始执行了，参数哦:{}", GsonUtils.toJson(paramMap));            
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             return invoiceService.invoiceRecord(Long.parseLong(userId));
         } catch (Exception e) {
