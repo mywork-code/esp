@@ -770,6 +770,7 @@ $(function() {
     	categorynameArrZ = [];
     	flushAttrList();
     	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+    	$(".add-btn1").click();
 	});
 	
 	//大图：上一步
@@ -891,9 +892,12 @@ $(function() {
     	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
     	flushtableattrEditlist();
-    	//类目未修改才刷新下方规格
+    	//类目未修改才刷新下方规格   并且判断商品属性  是否无属性  规格  那么就新增十条不可编辑的属性和规格
     	if(goodsCateChangeFalg==1){
     		flushGoodsStock(finalGoodId);
+    		functionX(finalGoodId);
+    	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
+    		$(".add-btn2").click();
     	}
 	});
 	
@@ -1273,9 +1277,12 @@ $(function() {
 				    	loadStockGoods('editGoodsStockList',id,externalsource);
 //				    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
 				    	flushtableattrEditlist();
-				    	//类目未修改才刷新规格
+				    	//类目未修改才刷新规格  并且判断商品属性  是否无属性  规格 那么就新增十条不可编辑的属性和规格   京东不加
 				    	if(goodsCateChangeFalg==1){
 				    		flushGoodsStock(id);
+				    		//functionX(id);
+				    	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
+				    		$(".add-btn2").click();
 				    	}
 						return;
 					}
@@ -1503,9 +1510,12 @@ $(function() {
 			    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //			    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
 			    	flushtableattrEditlist();
-			    	//类目未修改才刷新规格
+			    	//类目未修改才刷新规格  并且判断商品属性  是否无属性  规格  那么就新增十条不可编辑的属性和规格   京东不加
 			    	if(goodsCateChangeFalg==1){
 			    		flushGoodsStock(finalGoodId);
+			    		functionX(finalGoodId);
+			    	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
+			    		$(".add-btn2").click();
 			    	}
 				}
 			}
@@ -3296,14 +3306,13 @@ function flushGoodsStock(finalGoodId){
 					for(var i = 0;i<10;i++){
 						var en = attrVal1[i];
 						var id = 1+"+"+i+"goodsAttrIdEd"+attrId1;
+						var val = "";
 						if(typeof(en)!='undefined'){
-							var val = en.attrVal;
+							val = en.attrVal;
 							id+="Ed";
 							id+=en.id;
-						}else{
-							var val = "";
 						}
-						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+						str+="<input style='width:100px' onblur='createTableByCateEdit(this.value,this.id,"+finalGoodId+")' id="+id+" name="+id+" value="+val+">";
 					}
 					str+='</div>';
 				}
@@ -3316,14 +3325,13 @@ function flushGoodsStock(finalGoodId){
 					for(var i = 0;i<10;i++){
 						var en = attrVal2[i];
 						var id = 2+"+"+i+"goodsAttrIdEd"+attrId2;
+						var val = "";
 						if(typeof(en)!='undefined'){
-							var val = en.attrVal;
+							val = en.attrVal;
 							id+="Ed";
 							id+=en.id;
-						}else{
-							var val = "";
 						}
-						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>';
 					}
 					str+='</div>';
 				}
@@ -3336,14 +3344,13 @@ function flushGoodsStock(finalGoodId){
 					for(var i = 0;i<10;i++){
 						var en = attrVal3[i];
 						var id = 3+"+"+i+"goodsAttrIdEd"+attrId3;
+						var val = "";
 						if(typeof(en)!='undefined'){
-							var val = en.attrVal;
+							val = en.attrVal;
 							id+="Ed";
 							id+=en.id;
-						}else{
-							var val = "";
 						}
-						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>'
+						str+='<input style="width:100px" onblur="createTableByCateEdit(this.value,this.id,'+finalGoodId+')" id='+id+' name='+id+' value='+val+'>';
 					}
 					str+='</div>';
 				}
@@ -3691,4 +3698,26 @@ function function5(id){//删除本条属性下属十个规格，刷新表格
 		categorynameArrZ=[];
 	}
 	function4(categorynameArr1,categorynameArr2,categorynameArr3);
+}
+
+function functionX(goodsId){
+	$.ajax({url : ctx + '/application/goods/management/checkoutshock',data : {"goodsId":goodsId}, type : "post",dataType : "json",
+        success : function(data) {
+        	if(data.msg==1){
+        		var str ='<div>';
+	        		str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
+	        			str+='<input class="easyui-combobox" style="width:95px;" name="属性" value="无" editable="false" disabled="true">';
+	        			str+="&nbsp;&nbsp;"
+	        			str+='<input  type = "button" value = "删除" style="width:40px;height: 20px;color : blue"/>';
+	        		str+='</div>';
+	        		str+='<div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:550px;">';
+	        		for(var i = 0;i<10;i++){
+	        			str+='<input style="width:100px" disabled="true"/>'
+	        		}
+	        		str+='</div>';
+	        	str+='</div>';
+	        	$('#inputDivEdit').append(str);
+        	}
+        }
+	})
 }
