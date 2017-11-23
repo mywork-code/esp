@@ -329,8 +329,12 @@ public class GoodsService {
       if(null == goodsBasicInfo){
           return false;
       }
-      
-      if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
+      boolean ifHasDelistTime = false;
+      if(goodsBasicInfo.getDelistTime() != null){
+          ifHasDelistTime = now.after(goodsBasicInfo.getDelistTime());
+
+      }
+      if (now.before(goodsBasicInfo.getListTime()) || ifHasDelistTime
             || !StringUtils.equals(goodsBasicInfo.getStatus(), GoodStatus.GOOD_UP.getCode())) {
           //下架
          return false;
