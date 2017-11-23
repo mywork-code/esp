@@ -168,7 +168,8 @@ public class InvoiceService {
         Invoice condi = new Invoice();
         condi.setUserId(userId);
         List<Invoice> list = readEntityList(condi);
-        List<InvoiceDetails> detailsApply = new ArrayList<InvoiceDetails>();
+        List<InvoiceDetails> detailsApplying = new ArrayList<InvoiceDetails>();
+        List<InvoiceDetails> detailsApplyed = new ArrayList<InvoiceDetails>();
         for(Invoice invoice : list){
             InvoiceDetails entity = new InvoiceDetails();
             BeanUtils.copyProperties(invoice, entity);
@@ -188,13 +189,17 @@ public class InvoiceService {
             if(status==(byte)2){
                 entity.setStatus("开票成功");
                 entity.setInvoiceNum(entity.getInvoiceNum());
+                detailsApplyed.add(entity);
             }else{
                 entity.setStatus("申请中");
                 entity.setInvoiceNum("暂无");
+                detailsApplying.add(entity);
             }
-            detailsApply.add(entity);
         }
-        return Response.success("开票记录查询成功", detailsApply);
+        List<Object> arr = new ArrayList<Object>();
+        arr.add(detailsApplying);
+        arr.add(detailsApplyed);
+        return Response.success("开票记录查询成功", arr);
     }
     /**
      * 申请中发票修改
