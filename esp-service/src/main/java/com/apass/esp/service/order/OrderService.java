@@ -2477,7 +2477,7 @@ public class OrderService {
     /**
      * 批量把待发货的订单的状态修改为待收货，切PreDelivery为N(未发货)
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public void updateOrderStatusAndPreDelivery() {
         // 获取数据库中所有的待发货状态的订单
         List<OrderInfoEntity> orderList = toBeDeliver();
