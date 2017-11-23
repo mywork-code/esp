@@ -129,23 +129,24 @@ public class InvoiceService {
         Invoice invoice = new Invoice();
         invoice.setOrderId(orderId);
         List<Invoice> list = readEntityList(invoice);
-        InvoiceDetails de = new InvoiceDetails();
+        InvoiceDetails entity = new InvoiceDetails();
         if(list!=null&&list.size()>0){
             invoice = list.get(0);
-            BeanUtils.copyProperties(invoice, de);
-            de.setInvoiceType("电子增值税普通发票");
-            de.setAParty("上海奥派数据科技有限公司");
-            de.setOrderAmt(invoice.getOrderAmt());
-            de.setInvoiceHead(invoice.getHeadType()==new Byte("1")?"个人发票":invoice.getCompanyName());
-            de.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
+            BeanUtils.copyProperties(invoice,entity);
+            entity.setId(invoice.getId().toString());
+            entity.setInvoiceType("电子增值税普通发票");
+            entity.setAParty("上海奥派数据科技有限公司");
+            entity.setOrderAmt(invoice.getOrderAmt());
+            entity.setInvoiceHead(invoice.getHeadType()==(byte)1?"个人发票":invoice.getCompanyName());
+            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             Byte status = invoice.getStatus();
-            if(status==new Byte("2")){
-                de.setStatus("申请成功");
+            if(status==(byte)2){
+                entity.setStatus("申请成功");
             }else{
-                de.setStatus("申请中");
+                entity.setStatus("申请中");
             }
         }
-        return Response.success("发票详情查询成功", de);
+        return Response.success("发票详情查询成功", entity);
     }
     /**
      * 查询用户开票记录
@@ -153,27 +154,27 @@ public class InvoiceService {
      * @return
      */
     public Response invoiceRecord(Long userId) {
-        Invoice entity = new Invoice();
-        entity.setUserId(userId);
-        List<Invoice> list = readEntityList(entity);
+        Invoice condi = new Invoice();
+        condi.setUserId(userId);
+        List<Invoice> list = readEntityList(condi);
         List<InvoiceDetails> detailsApply = new ArrayList<InvoiceDetails>();
         for(Invoice invoice : list){
-            InvoiceDetails en = new InvoiceDetails();
-            BeanUtils.copyProperties(invoice, en);
-            en.setDate(DateFormatUtil.getCurrentTime(null));
-            en.setInvoiceType("电子增值税普通发票");
-            en.setInvoiceHead(entity.getHeadType()==new Byte("1")?"个人发票":entity.getCompanyName());
-            en.setAParty("上海奥派数据科技有限公司");
-            en.setOrderAmt(invoice.getOrderAmt());
-            en.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
+            InvoiceDetails entity = new InvoiceDetails();
+            BeanUtils.copyProperties(invoice, entity);
+            entity.setDate(DateFormatUtil.getCurrentTime(null));
+            entity.setInvoiceType("电子增值税普通发票");
+            entity.setInvoiceHead(invoice.getHeadType()==(byte)1?"个人发票":invoice.getCompanyName());
+            entity.setAParty("上海奥派数据科技有限公司");
+            entity.setOrderAmt(invoice.getOrderAmt());
+            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             if(StringUtils.isBlank(invoice.getInvoiceNum())){
-                en.setStatus("申请中");
-                en.setInvoiceNum("暂无");
+                entity.setStatus("申请中");
+                entity.setInvoiceNum("暂无");
             }else{
-                en.setStatus("开票成功");
-                en.setInvoiceNum(entity.getInvoiceNum());
+                entity.setStatus("开票成功");
+                entity.setInvoiceNum(entity.getInvoiceNum());
             }
-            detailsApply.add(en);
+            detailsApply.add(entity);
         }
         return Response.success("开票记录查询成功", detailsApply);
     }
