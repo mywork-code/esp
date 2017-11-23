@@ -51,11 +51,12 @@ public class WeiZhiProductApiClient {
 		Product wzProductDetail = new Product();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
-			if (null == responseJson) {
-				LOGGER.info("微知获取token失败！");
+			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
+
+			if(!StringUtils.equals("0",JSON.parseObject(responseJson).getString("result"))){
 				return null;
 			}
+
 			Gson gson = new Gson();
 			Type objectType = new TypeToken<WeiZhiResponse<Product>>() {
 			}.getType();
@@ -86,7 +87,7 @@ public class WeiZhiProductApiClient {
 		List<JdProductState>  wzProductState = new ArrayList<>();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUSTATE,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("获取商品上下架状态接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
@@ -244,7 +245,7 @@ public class WeiZhiProductApiClient {
 		List<Map<String,List<WzPicture>>> map=new ArrayList<>();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUIMAGE,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("获取所有图片信息返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
@@ -297,7 +298,7 @@ public class WeiZhiProductApiClient {
 		List<AreaLimitEntity>  areaLimitEntityList = new ArrayList<>();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_CHECKAREALIMIT,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("商品区域购买限制查询返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
@@ -330,7 +331,7 @@ public class WeiZhiProductApiClient {
 		CheckSale  checkSale = new com.apass.esp.third.party.weizhi.entity.CheckSale();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_CHECKSALE,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("商品可售验证接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
@@ -364,7 +365,7 @@ public class WeiZhiProductApiClient {
 		WZJdSimilarSku  wZJdSimilarSku = new WZJdSimilarSku();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SIMILARSKU,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("同类商品查询返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;
@@ -395,7 +396,7 @@ public class WeiZhiProductApiClient {
 		Integer price=0;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETBALANCE,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("统一余额查询接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return 0;
@@ -433,7 +434,7 @@ public class WeiZhiProductApiClient {
 		List<GoodsStock> goodsStockList = new ArrayList<>();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETNEWSTOCKBYID, entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("微知批量获取库存接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
 				return null;

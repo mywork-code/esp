@@ -20,6 +20,7 @@ import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -418,110 +419,148 @@ public class TestWZController {
 	@ResponseBody
 	public Response initJdGoods(){
 		/*整体逻辑：先查一级类目,根据一级类目查二级类目,根据二级类目查三级类目,根据三级类目查询skuId集合
-		根据skuid查询商品详情,根据详情中的category字段查类目信息插jd_category表。再把商品详情插入jd_goods表*/
+		根据skuid查询商品详情,根据详情中的category字段查类目信息插jd_category表。再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
 		//分页参数
+		long startTime = System.currentTimeMillis();
+		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}",startTime+"");
 		int pageNum = 1;
 		List<Category> weiZhiFirstCategorys = null;
-		while (true){
+		while (true) {
 			try {
+				//查询一级类目
 				CategoryPage firstCategorys = weiZhiProductService.getWeiZhiFirstCategorys(pageNum, 20);
 				weiZhiFirstCategorys = firstCategorys.getCategorys();
-				pageNum++;
-				//查询一级类目
-				if(CollectionUtils.isEmpty(weiZhiFirstCategorys)){
+				pageNum++;//查询二级类目 页面+1
+				if (CollectionUtils.isEmpty(weiZhiFirstCategorys)) {
 					break;
 				}
 
-				for (Category category: weiZhiFirstCategorys) {
-					//根据一级类目查询二级类目
+				//根据一级类目查询二级类目
+				for (Category category : weiZhiFirstCategorys) {
 					int pageNum2 = 1;
-					int secondCategorysCount = 0;
+					int secondCategorysCount = 0;//记录已执行的 某一级类目下二级类目的数量
 					CategoryPage secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
 
-					if(CollectionUtils.isEmpty(secondCategorys.getCategorys())){
+					if (CollectionUtils.isEmpty(secondCategorys.getCategorys())) {
 						continue;
-					}else {
-						//判断循环何时结束
-						secondCategorysCount = secondCategorysCount + secondCategorys.getCategorys().size();
-						if(secondCategorysCount == secondCategorys.getTotalRows()){
-							break;
-						}
 					}
-
-					for (Category category2: secondCategorys.getCategorys()) {
-						//根据二级类目查询三级类目
-						int pageNum3 = 1;
-						int thirdCategorysCount = 0;
-						CategoryPage thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
-						if(CollectionUtils.isEmpty(thirdCategorys.getCategorys())){
-							continue;
-						}else {
-							//判断循环何时结束
-							thirdCategorysCount = thirdCategorysCount + thirdCategorys.getCategorys().size();
-							if(thirdCategorysCount == thirdCategorys.getTotalRows()){
-								break;
-							}
+					while(secondCategorysCount<secondCategorys.getTotalRows()){//当已执行数量小于该一级类目下二级类目总数量，页面+1，一级类目不变，继续执行
+						if(pageNum2>1){
+							secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
 						}
+						pageNum2++;//查询二级类目 页面+1
 
-						for (Category category3:thirdCategorys.getCategorys()) {
-							//根据三级类目查询商品编号。
-							int pageNumForSku = 1;
-							int skuCount = 0;
-							WzSkuListPage wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
-							if(CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())){
+						for (Category category2 : secondCategorys.getCategorys()) {
+							int pageNum3 = 1;
+							int thirdCategorysCount = 0;
+							//根据二级类目查询三级类目
+							CategoryPage thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
+							if (CollectionUtils.isEmpty(thirdCategorys.getCategorys())) {
 								continue;
-							}else {
-								skuCount = skuCount + wzSkuListPage.getSkuIds().size();
-								if(skuCount == wzSkuListPage.getTotalRows()){
+							}
+
+							while(thirdCategorysCount < thirdCategorys.getTotalRows()){
+								if(pageNum3>1){
+									thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
+								}
+								pageNum3++;
+
+								for (Category category3 : thirdCategorys.getCategorys()) {
+									int pageNumForSku = 1;
+									int skuCount = 0;
+									//根据三级类目查询商品编号。
+									WzSkuListPage wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
+									if (CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())) {
+										continue;
+									}
+									while (skuCount < wzSkuListPage.getTotalRows()){
+										if(pageNumForSku>1){
+											wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
+										}
+										pageNumForSku++;
+										for (String skuId : wzSkuListPage.getSkuIds()) {
+											//商品详情,往京东商品表和京东类目表中插数据
+											Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
+											if (null == goodDetail) {
+												continue;
+											}
+											List<Integer> categories = goodDetail.getCategories();//一级类目二级类目和三级类目
+											//先插类目表
+											for (int i = 0; i < categories.size(); i++) {
+												addCategory(categories.get(i), i + 1);//类目id和级别
+											}
+
+											//插入商品表
+											JdGoods jdGoods = new JdGoods();
+											jdGoods.setFirstCategory(categories.get(0));
+											jdGoods.setSecondCategory(categories.get(1));
+											jdGoods.setThirdCategory(categories.get(2));
+											jdGoods.setSkuId(Long.valueOf(skuId));
+											jdGoods.setBrandName(goodDetail.getBrandName());
+											jdGoods.setImagePath(goodDetail.getImagePath());
+											jdGoods.setName(goodDetail.getName());
+											jdGoods.setProductArea(goodDetail.getProductArea());
+											//批量查询商品价格
+											List<String> skuList = Lists.newArrayList();
+											skuList.add(skuId);
+											List<WZPriceResponse> priceList = price.getWzPrice(skuList);
+											WZPriceResponse wzPriceResponse = null;
+											if (CollectionUtils.isNotEmpty(priceList)) {
+												try {
+													wzPriceResponse = priceList.get(0);
+												} catch (Exception e) {
+													LOGGER.error("批量商品价格查询结果为空,参数skuList:{}", GsonUtils.toJson(skuList));
+													continue;
+												}
+											}
+											jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
+											jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
+											jdGoods.setSaleUnit(goodDetail.getSaleUnit());
+//								jdGoods.setWareQd(wareQD);
+											jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
+											jdGoods.setUpc(goodDetail.getUpc());
+											jdGoods.setState(goodDetail.getState() == 1 ? true : false);
+											jdGoods.setCreateDate(new Date());
+											jdGoods.setUpdateDate(new Date());
+											jdGoods.setSimilarSkus("");
+											try {
+												jdGoodsMapper.insertSelective(jdGoods);
+											} catch (Exception e) {
+												LOGGER.error("insert jdGoodsMapper sql skuid:{},Exception:{}", skuId, e);
+											}
+										}
+										skuCount = skuCount + wzSkuListPage.getSkuIds().size();
+										if (skuCount == wzSkuListPage.getTotalRows()) {
+											break;
+										}
+									}
+								}
+								//判断循环何时结束:同一个二级类目下的循环
+								thirdCategorysCount = thirdCategorysCount + thirdCategorys.getCategorys().size();
+								if (thirdCategorysCount == thirdCategorys.getTotalRows()) {
 									break;
 								}
 							}
-							for (String skuId: wzSkuListPage.getSkuIds()){
-								//商品详情,往京东商品表和京东类目表中插数据
-								Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
-								if(null == goodDetail){
-									continue;
-								}
-								List<Integer> categories = goodDetail.getCategories();//一级类目二级类目和三级类目
-								//先插类目表
-								for(int i=0;i<categories.size();i++){
-									addCategory(categories.get(i), i + 1);//类目id和级别
-								}
 
-								//插入商品表
-								JdGoods jdGoods = new JdGoods();
-								jdGoods.setFirstCategory(categories.get(0));
-								jdGoods.setSecondCategory(categories.get(1));
-								jdGoods.setThirdCategory(categories.get(2));
-								jdGoods.setSkuId(Long.valueOf(skuId));
-								jdGoods.setBrandName(goodDetail.getBrandName());
-								jdGoods.setImagePath(goodDetail.getImagePath());
-								jdGoods.setName(goodDetail.getName());
-								jdGoods.setProductArea(goodDetail.getProductArea());
-								jdGoods.setJdPrice(goodDetail.getJdPrice());
-								jdGoods.setPrice(goodDetail.getPrice());
-								jdGoods.setSaleUnit(goodDetail.getSaleUnit());
-//								jdGoods.setWareQd(wareQD);
-								jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
-								jdGoods.setUpc(goodDetail.getUpc());
-								jdGoods.setState(goodDetail.getState() == 1 ? true : false);
-								jdGoods.setCreateDate(new Date());
-								jdGoods.setUpdateDate(new Date());
-								jdGoods.setSimilarSkus("");
-								try {
-									jdGoodsMapper.insertSelective(jdGoods);
-								} catch (Exception e) {
-									LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
-								}
-							}
+
+						}
+
+						//判断循环何时结束:同一个一级类目下的循环
+						secondCategorysCount = secondCategorysCount + secondCategorys.getCategorys().size();
+						if (secondCategorysCount == secondCategorys.getTotalRows()) {
+							break;//跳出while循环
 						}
 					}
+
 				}
 			} catch (Exception e) {
-				LOGGER.error("微知商品初始化失败",e);
+				LOGGER.error("微知商品初始化失败", e);
 				return Response.fail("微知商品初始化失败!");
 			}
 		}
+		long endTime = System.currentTimeMillis();
+		long costTime = (endTime - startTime) / 1000;
+		LOGGER.info("微知商品初始化接口接口执行结束了,结束时间:endTime:{},共耗时:{}s", endTime + "", costTime + "");
 		return Response.success("微知商品初始化成功",weiZhiFirstCategorys);
 	}
 
