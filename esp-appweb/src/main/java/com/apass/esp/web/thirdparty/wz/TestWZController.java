@@ -406,7 +406,7 @@ public class TestWZController {
 		String messageType = (String) paramMap.get("messageType");
 		List<JdApiMessage> resp = null;
 		try {
-			 resp =  weiZhiMessageClient.getMsg(messageType);
+			 resp =  weiZhiMessageClient.getMsg(Integer.parseInt(messageType));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
