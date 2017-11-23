@@ -588,7 +588,7 @@ public class JdGoodsInfoService {
     				proCouponVo.setId(proCoupon.getId());
     				proCouponVo.setActivityId(Long.parseLong(activityId));
     				proCouponVo.setActivityFalge(true);
-    				proCouponVo.setName(proCoupon.getName());
+    				proCouponVo.setName("【限"+activityCfg.getActivityName()+"活动商品】\t"+proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
     				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
