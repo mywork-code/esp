@@ -43,6 +43,6 @@
 
     <update id="updateStatusByOrderId">
         UPDATE t_esp_invoice set updated_time = now(),
-        set status = #{status} where order_id = #{orderId}
+        status = #{status} where order_id = #{orderId}
     </update>
 </mapper>
