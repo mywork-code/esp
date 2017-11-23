@@ -1,26 +1,22 @@
 package com.apass.esp.invoice;
 import java.util.Map;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.apass.esp.common.code.BusinessErrorCode;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.enums.StatusCode;
-import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
+import com.apass.gfb.framework.utils.CommonUtils;
 /**
  * 发票接口相关
  * @author Administrator
  *
  */
-@Path("/invoiceController")
-@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Controller
+@RequestMapping("/invoiceController")
 public class InvoiceController {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceController.class);
     @Autowired
@@ -30,8 +26,8 @@ public class InvoiceController {
      * @param paramMap
      * @return
      */
-    @POST
-    @Path("/invoiceDetails")
+    @ResponseBody
+    @RequestMapping("/invoiceDetails")
     public Response invoiceDetails(Map<String, Object> paramMap) {
         try{
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
@@ -47,8 +43,8 @@ public class InvoiceController {
      * @param paramMap
      * @return
      */
-    @POST
-    @Path("/invoiceRecord")
+    @ResponseBody
+    @RequestMapping(value = "/invoiceRecord")
     public Response invoiceRecord(Map<String, Object> paramMap) {
         try{
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);

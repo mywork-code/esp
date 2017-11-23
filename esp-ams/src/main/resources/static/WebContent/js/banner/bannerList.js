@@ -12,22 +12,25 @@ $(function(){
         singleSelect : true,
         striped:true,
         toolbar : '#tb',
-        columns :[[
-			{
+        columns :[[{
+	        	title : '主键',
+				field : 'id',
+				width : 50,
+				align : 'center'
+			},{
 				title : '类型',
 				field : 'bannerType',
 				width : 100,
 				align : 'center'
-			},
-			{
+			},{
 				title : '排序',
 				field : 'bannerOrder',
-				width : 120,
+				width : 100,
 				align : 'center'
 			},{
 				title : '操作',
 				field : 'opt',
-				width : 150,
+				width : 100,
 				align : 'center',
 				formatter : function(value, row, index) {
 					// 授权标示
