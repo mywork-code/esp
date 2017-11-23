@@ -264,9 +264,21 @@ public class ShopHomeController {
                 banners.add(bity);
                 returnMap.put("banners", banners);
             } else if (null != flage && flage.equals("recommend")) {
-                // goodsList = goodService.loadRecommendGoods();//加载精选商品
-                goodsList = goodService.loadRecommendGoodsList();// 加载精选商品列表
-
+            	String page = CommonUtils.getValue(paramMap, "page");
+            	String rows = CommonUtils.getValue(paramMap, "rows");
+                int pageSize = 20;
+                int pageIndex = 1;
+                if(StringUtils.isNotBlank(page) && StringUtils.isNotBlank(rows)){
+                	try {
+                		pageIndex = Integer.parseInt(page);
+                		pageSize = Integer.parseInt(rows);
+					} catch (Exception e) {
+					}
+                }
+                int pageBegin = pageSize * (pageIndex - 1);
+                Pagination<GoodsBasicInfoEntity> goodsPageList = goodService.loadRecommendGoods(pageBegin, pageSize);//加载精选商品
+                //goodsList = goodService.loadRecommendGoodsList();// 加载精选商品列表
+                goodsList = goodsPageList.getDataList();
                 List<BannerInfoEntity> banners = bannerService.loadIndexBanners(BannerType.BANNER_SIFT
                         .getIdentify());
                 for (BannerInfoEntity banner : banners) {
