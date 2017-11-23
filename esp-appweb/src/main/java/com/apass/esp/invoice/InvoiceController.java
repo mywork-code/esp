@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
@@ -28,11 +29,11 @@ public class InvoiceController {
      */
     @ResponseBody
     @RequestMapping("/invoiceDetails")
-    public Response invoiceDetails(Map<String, Object> paramMap) {
+    public Response invoiceDetails(@RequestBody Map<String, Object> paramMap) {
         try{
-            String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             String orderId = CommonUtils.getValue(paramMap, "orderId");
-            return invoiceService.invoiceDetails(Long.parseLong(userId),orderId);
+            return invoiceService.invoiceDetails(orderId);
+           // return invoiceService.invoiceDetails("346738");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail(StatusCode.FAILED_CODE.getCode(),"发票详情查询失败");
@@ -44,8 +45,8 @@ public class InvoiceController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/invoiceRecord")
-    public Response invoiceRecord(Map<String, Object> paramMap) {
+    @RequestMapping("/invoiceRecord")
+    public Response invoiceRecord(@RequestBody Map<String, Object> paramMap) {
         try{
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             return invoiceService.invoiceRecord(Long.parseLong(userId));

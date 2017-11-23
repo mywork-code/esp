@@ -30,9 +30,11 @@
         SELECT
             <include refid="Base_Column_List" />
         FROM
-            t_esp_invoice t
-        WHERE 1=1
-        <if test="userId!=null and userId!=''"> AND t.user_id = '${userId}' </if>
+            t_esp_invoice
+        <include refid="QueryConditionSql" />
+        <![CDATA[ 
+            ORDER BY created_time desc
+        ]]>
     </select>
 
     <update id="updateStatusByOrderId">

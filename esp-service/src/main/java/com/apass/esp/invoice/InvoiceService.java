@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,9 +125,8 @@ public class InvoiceService {
      * @param orderId
      * @return
      */
-    public Response invoiceDetails(Long userId, String orderId) {
+    public Response invoiceDetails(String orderId) {
         Invoice invoice = new Invoice();
-        invoice.setUserId(userId);
         invoice.setOrderId(orderId);
         List<Invoice> list = readEntityList(invoice);
         InvoiceDetails de = new InvoiceDetails();
