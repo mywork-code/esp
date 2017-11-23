@@ -13,7 +13,7 @@ $(function(){
         striped:true,
         toolbar : '#tb',
         columns :[[{
-	        	title : '主键',
+	        	title : 'BannerID',
 				field : 'id',
 				width : 50,
 				align : 'center'
