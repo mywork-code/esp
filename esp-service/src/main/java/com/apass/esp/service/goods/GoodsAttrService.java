@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
 import com.apass.esp.domain.entity.CategoryAttrRel;
@@ -31,8 +32,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.google.common.collect.Lists;
-
-import freemarker.template.utility.StringUtil;
 /**
  * 商品属性
  * @author ht
@@ -675,6 +674,7 @@ public class GoodsAttrService {//450
     @SuppressWarnings("unused")
     @Transactional
     public Response createTableByCateEdit(String attrValId, String attrId, String attrVal,String goodsId) throws BusinessException {
+        attrVal = famartsubStringTrim(attrVal);
         Boolean falg1 = "undefined".equals(attrValId)||StringUtils.isBlank(attrValId);//验证该INPUT有没有规格ID
         Boolean falg3 = "undefined".equals(attrVal)||StringUtils.isBlank(attrVal);
         if(falg1){//规格表无ID
@@ -859,6 +859,18 @@ public class GoodsAttrService {//450
         return true;
     }
     /**
+     * 校验商品是否无库存
+     * @param goodsId
+     * @return
+     */
+    public Response checkoutshock(Long goodsId) {
+        List<GoodsAttrVal> list = goodsAttrValService.goodsAttrValListByAttrId(null, goodsId);
+        if(list==null||list.size()==0){
+            return Response.success("1");
+        }
+        return Response.success("2");
+    }
+    /**
      * 判断2个库存对象哪一个应该添加到前端
      * @param ennew
      * @param enold
@@ -915,6 +927,13 @@ public class GoodsAttrService {//450
             str = str.substring(0,str.length()-1);
             return famartsubStringComma2(str);
         }
+        return str;
+    }
+    private String famartsubStringTrim(String str){
+        if(StringUtils.isBlank(str)){
+            return str;
+        }
+        str = str.replace(" ", "");
         return str;
     }
 }

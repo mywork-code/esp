@@ -66,7 +66,9 @@ public class GoodsAttrValService {
             Integer sort = 0;
             for(String str : arr){
                 entity = new GoodsAttrVal();
-                entity.setAttrVal(str.split("-")[0]);
+                String s = str.split("-")[0];
+                s= famartsubStringTrim(s);
+                entity.setAttrVal(s);
                 entity.setGoodsId(goodsId);
                 List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
                 if(list!=null&&list.size()>0){
@@ -155,7 +157,7 @@ public class GoodsAttrValService {
 	 */
 	public List<GoodsAttrVal> queryGoodsAttrValsByGoodsId(Long goodsId){
 		return goodsAttrValMapper.queryGoodsAttrValsByGoodsId(goodsId);
-	}; 
+	}
 	
 	/**
 	 * 根据goodsId,attrId查询商品的规格详情
@@ -164,5 +166,12 @@ public class GoodsAttrValService {
 	 */
 	public List<GoodsAttrVal> queryByGoodsIdAndAttrId(Long goodsId,Long attrId){
 		return goodsAttrValMapper.queryByGoodsIdAndAttrId(goodsId,attrId);
-	};
+	}
+	private String famartsubStringTrim(String str){
+        if(StringUtils.isBlank(str)){
+            return str;
+        }
+        str = str.replace(" ", "");
+        return str;
+    }
 }
