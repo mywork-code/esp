@@ -1,9 +1,15 @@
 package com.apass.esp.web.thirdparty.wz;
 
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.mapper.JdCategoryMapper;
+import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.service.wz.WeiZhiTokenService;
+import com.apass.esp.third.party.jd.client.JdApiResponse;
+import com.apass.esp.third.party.jd.entity.base.JdCategory;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
@@ -13,7 +19,9 @@ import com.apass.esp.third.party.weizhi.entity.*;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
 import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +34,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zengqingshan
@@ -36,6 +46,9 @@ import java.util.Map;
 @RequestMapping("wz")
 public class TestWZController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestWZController.class);
+
+
+	private ConcurrentHashMap<String, JdCategory> concurrentHashMap = new ConcurrentHashMap<>();
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
@@ -44,6 +57,12 @@ public class TestWZController {
 	private WeiZhiOrderApiClient order;
 	@Autowired
 	private WeiZhiPriceApiClient price;
+
+	@Autowired
+	private JdGoodsMapper jdGoodsMapper;
+
+	@Autowired
+	private JdCategoryMapper jdCategoryMapper;
 	
 
 	@Autowired
@@ -105,9 +124,9 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiFirstCategorys(@RequestBody Map<String, Object> paramMap) {
 		try {
-			List<Category> categorys = weiZhiProductService.getWeiZhiFirstCategorys();
-			System.out.println(categorys);
-			return Response.success("查询一级分类列表信息接口成功！",categorys);
+			CategoryPage firstCategorys = weiZhiProductService.getWeiZhiFirstCategorys(2,20);
+			System.out.println(firstCategorys.getCategorys());
+			return Response.success("查询一级分类列表信息接口成功！",firstCategorys.getCategorys());
 		} catch (Exception e) {
 			return Response.fail("查询一级分类列表信息接口失败！");
 		}
@@ -120,9 +139,9 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiSecondCategorys(@RequestBody Map<String, Object> paramMap) {
 		try {
-			List<Category> categorys = weiZhiProductService.getWeiZhiSecondCategorys();
-			System.out.println(categorys);
-			return Response.success("查询二级分类列表信息接口成功！",categorys);
+			CategoryPage  secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(1,20,670l);
+			System.out.println(secondCategorys.getCategorys());
+			return Response.success("查询二级分类列表信息接口成功！",secondCategorys.getCategorys());
 		} catch (Exception e) {
 			return Response.fail("查询二级分类列表信息接口失败！");
 		}
@@ -137,9 +156,9 @@ public class TestWZController {
 	public Response getWeiZhiThirdCategorys(@RequestBody Map<String, Object> paramMap) {
 		List<Category> categorys=null;
 		try {
-			 categorys = weiZhiProductService.getWeiZhiThirdCategorys();
-			System.out.println(categorys);
-			return Response.success("查询三级分类列表信息接口成功！",categorys);
+			CategoryPage  thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(1,29,671l);
+			System.out.println(thirdCategorys.getCategorys());
+			return Response.success("查询三级分类列表信息接口成功！",thirdCategorys.getCategorys());
 		} catch (Exception e) {
 			return Response.fail("查询三级分类列表信息接口失败！");
 		}
@@ -151,11 +170,10 @@ public class TestWZController {
 	@RequestMapping(value = "/getWeiZhiGetSku", method = RequestMethod.POST)
 	@ResponseBody
 	public Response getWeiZhiGetSku(@RequestBody Map<String, Object> paramMap) {
-		List<String> categorys=null;
 		try {
-			 categorys = weiZhiProductService.getWeiZhiGetSku();
-			System.out.println(categorys);
-			return Response.success("获取分类商品编号接口成功！", categorys);
+			WzSkuListPage  wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(1,20,672+"");
+			System.out.println(wzSkuListPage.getSkuIds());
+			return Response.success("获取分类商品编号接口成功！", wzSkuListPage.getSkuIds());
 		} catch (Exception e) {
 			return Response.fail("获取分类商品编号接口失败！");
 		}
@@ -395,4 +413,158 @@ public class TestWZController {
 		}
 
 	}
+
+
+
+	//微知商品初始化接口
+	@RequestMapping("/initJdGoods")
+	@ResponseBody
+	public Response initJdGoods(){
+		/*整体逻辑：先查一级类目,根据一级类目查二级类目,根据二级类目查三级类目,根据三级类目查询skuId集合
+		根据skuid查询商品详情,根据详情中的category字段查类目信息插jd_category表。再把商品详情插入jd_goods表*/
+		//分页参数
+		int pageNum = 1;
+		List<Category> weiZhiFirstCategorys = null;
+		while (true){
+			try {
+				CategoryPage firstCategorys = weiZhiProductService.getWeiZhiFirstCategorys(pageNum, 20);
+				weiZhiFirstCategorys = firstCategorys.getCategorys();
+				pageNum++;
+				//查询一级类目
+				if(CollectionUtils.isEmpty(weiZhiFirstCategorys)){
+					break;
+				}
+
+				for (Category category: weiZhiFirstCategorys) {
+					//根据一级类目查询二级类目
+					int pageNum2 = 1;
+					int secondCategorysCount = 0;
+					CategoryPage secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
+
+					if(CollectionUtils.isEmpty(secondCategorys.getCategorys())){
+						continue;
+					}else {
+						//判断循环何时结束
+						secondCategorysCount = secondCategorysCount + secondCategorys.getCategorys().size();
+						if(secondCategorysCount == secondCategorys.getTotalRows()){
+							break;
+						}
+					}
+
+					for (Category category2: secondCategorys.getCategorys()) {
+						//根据二级类目查询三级类目
+						int pageNum3 = 1;
+						int thirdCategorysCount = 0;
+						CategoryPage thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
+						if(CollectionUtils.isEmpty(thirdCategorys.getCategorys())){
+							continue;
+						}else {
+							//判断循环何时结束
+							thirdCategorysCount = thirdCategorysCount + thirdCategorys.getCategorys().size();
+							if(thirdCategorysCount == thirdCategorys.getTotalRows()){
+								break;
+							}
+						}
+
+						for (Category category3:thirdCategorys.getCategorys()) {
+							//根据三级类目查询商品编号。
+							int pageNumForSku = 1;
+							int skuCount = 0;
+							WzSkuListPage wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
+							if(CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())){
+								continue;
+							}else {
+								skuCount = skuCount + wzSkuListPage.getSkuIds().size();
+								if(skuCount == wzSkuListPage.getTotalRows()){
+									break;
+								}
+							}
+							for (String skuId: wzSkuListPage.getSkuIds()){
+								//商品详情,往京东商品表和京东类目表中插数据
+								Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
+								if(null == goodDetail){
+									continue;
+								}
+								List<Integer> categories = goodDetail.getCategories();//一级类目二级类目和三级类目
+								//先插类目表
+								for(int i=0;i<categories.size();i++){
+									addCategory(categories.get(i), i + 1);//类目id和级别
+								}
+
+								//插入商品表
+								JdGoods jdGoods = new JdGoods();
+								jdGoods.setFirstCategory(categories.get(0));
+								jdGoods.setSecondCategory(categories.get(1));
+								jdGoods.setThirdCategory(categories.get(2));
+								jdGoods.setSkuId(Long.valueOf(skuId));
+								jdGoods.setBrandName(goodDetail.getBrandName());
+								jdGoods.setImagePath(goodDetail.getImagePath());
+								jdGoods.setName(goodDetail.getName());
+								jdGoods.setProductArea(goodDetail.getProductArea());
+								jdGoods.setJdPrice(goodDetail.getJdPrice());
+								jdGoods.setPrice(goodDetail.getPrice());
+								jdGoods.setSaleUnit(goodDetail.getSaleUnit());
+//								jdGoods.setWareQd(wareQD);
+								jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
+								jdGoods.setUpc(goodDetail.getUpc());
+								jdGoods.setState(goodDetail.getState() == 1 ? true : false);
+								jdGoods.setCreateDate(new Date());
+								jdGoods.setUpdateDate(new Date());
+								jdGoods.setSimilarSkus("");
+								try {
+									jdGoodsMapper.insertSelective(jdGoods);
+								} catch (Exception e) {
+									LOGGER.error("insert jdGoodsMapper sql skuid {}", skuId);
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.error("微知商品初始化失败",e);
+				return Response.fail("微知商品初始化失败!");
+			}
+		}
+		return Response.success("微知商品初始化成功",weiZhiFirstCategorys);
+	}
+
+	/**
+	 * 往京东类目表中插入数据
+	 * @param integer
+	 * @param i
+     */
+	private void addCategory(Integer catId, int level) throws Exception {
+		LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
+		if (concurrentHashMap.get(catId) == null) {
+
+			Category category = weiZhiProductService.getcategory(Long.valueOf(catId));
+			LOGGER.info("微知接口返回数据,category:{}", GsonUtils.toJson(category));
+			if (category == null) {
+				return;
+			}
+
+			JdCategory jdCategory = new JdCategory();
+			jdCategory.setName(category.getName());
+			jdCategory.setParentId(category.getParentId());
+			jdCategory.setCatClass(category.getCatClass());
+			jdCategory.setFlag(false);
+			jdCategory.setCatId(Long.valueOf(catId));
+			jdCategory.setStatus(category.getState() == 1 ? true : false);
+			jdCategory.setCategoryId1(0l);
+			jdCategory.setCategoryId2(0l);
+			jdCategory.setCategoryId3(0l);
+			jdCategory.setCreateDate(new Date());
+			jdCategory.setUpdateDate(new Date());
+
+			try {
+				jdCategoryMapper.insertSelective(jdCategory);
+
+			} catch (Exception e) {
+				LOGGER.error("insert jdCategoryMapper sql error catId {}", catId);
+			}
+			concurrentHashMap.putIfAbsent(catId+"", jdCategory);
+		}
+
+	}
+
 }

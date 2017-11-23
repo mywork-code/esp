@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
+import com.apass.esp.third.party.weizhi.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -20,14 +22,6 @@ import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
-import com.apass.esp.third.party.weizhi.entity.CategoryPage;
-import com.apass.esp.third.party.weizhi.entity.CheckSale;
-import com.apass.esp.third.party.weizhi.entity.GoodsStock;
-import com.apass.esp.third.party.weizhi.entity.StockNum;
-import com.apass.esp.third.party.weizhi.entity.WZJdSimilarSku;
-import com.apass.esp.third.party.weizhi.entity.WzPicture;
-import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.reflect.TypeToken;
@@ -116,7 +110,7 @@ public class WeiZhiProductApiClient {
 	 * categoryFalge=2 为二级类目
 	 * categoryFalge=3 为三级类目
 	 */
-	public CategoryPage getWeiZhiGetCategorys(Integer pageNo,Integer pageSize,Integer categoryFalge,Integer parentId) throws Exception {
+	public CategoryPage getWeiZhiGetCategorys(Integer pageNo,Integer pageSize,Integer categoryFalge,Long parentId) throws Exception {
 		Integer Num=0;
 	    Integer Size=0;
 		if(null ==pageNo || pageNo<1){
@@ -155,9 +149,21 @@ public class WeiZhiProductApiClient {
 		CategoryPage firstCategorys =null;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(url,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			if(categoryFalge == 1){
+				LOGGER.info("查询一级分类列表信息接口,返回数据：{}", responseJson);
+			}else if(categoryFalge == 2){
+				LOGGER.info("查询二级分类列表信息接口,返回数据：{}", responseJson);
+			}else {
+				LOGGER.info("查询三级分类列表信息接口,返回数据：{}", responseJson);
+			}
 			if (null == responseJson) {
-				LOGGER.info("微知获取token失败！");
+				if(categoryFalge == 1){
+					LOGGER.info("查询一级分类列表信息失败");
+				}else if(categoryFalge == 2){
+					LOGGER.info("查询二级分类列表信息失败");
+				}else {
+					LOGGER.info("查询三级分类列表信息失败");
+				}
 				return null;
 			}			
 			WeiZhiCategorysResponse response =GsonUtils.convertObj(responseJson, WeiZhiCategorysResponse.class);
@@ -205,9 +211,9 @@ public class WeiZhiProductApiClient {
 		WzSkuListPage wzSkuListPage =null;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETSKU,entity);
-			LOGGER.info("微知获取token返回Json数据：" + responseJson);
+			LOGGER.info("获取分类商品编号接口返回Json数据:{}", responseJson);
 			if (null == responseJson) {
-				LOGGER.info("微知获取token失败！");
+				LOGGER.info("获取分类商品编号失败！");
 				return null;
 			}			
 			WeiZhiSkuListResponse response =GsonUtils.convertObj(responseJson, WeiZhiSkuListResponse.class);
@@ -444,4 +450,37 @@ public class WeiZhiProductApiClient {
 		}
 		return goodsStockList;
 	}
+
+
+	/**
+	 * 查询分类信息接口
+	 */
+	public Category getCategory(String catId) throws Exception {
+		// 获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+
+		parameters.add(new BasicNameValuePair("token", token));
+		parameters.add(new BasicNameValuePair("catId", catId));
+
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETCATEGORY, entity);
+		LOGGER.info("getCategory查询分类信息返回数据responseJson：{}", responseJson);
+
+		JSONObject datas = JSON.parseObject(responseJson);
+		if (null == datas) {
+			LOGGER.info("查询分类信息失败,参数 toekn:{},catId:{}",token,catId);
+			return null;
+		}
+		String result = datas.getString("result");
+		if(!StringUtils.equals("0",result)){
+			LOGGER.info("查询分类信息失败,参数 toekn:{},catId:{}",token,catId);
+			return null;
+		}
+
+		String data = datas.getString("data");
+
+		return  GsonUtils.convertObj(data, Category.class);
+	}
+
 }
