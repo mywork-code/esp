@@ -402,7 +402,7 @@ public class OrderService {
      *
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void updateLogisticsInfoAndOrderInfoByOrderId(Map<String, String> map) throws BusinessException {
         try {
             // 调用第三方物流信息查询机构
@@ -458,7 +458,7 @@ public class OrderService {
      * @param purchaseList 商品列表
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = { Exception.class,BusinessException.class })
+    @Transactional(rollbackFor = { Exception.class,BusinessException.class,RuntimeException.class })
     public List<String> confirmOrder(String requestId, Long userId, BigDecimal totalPayment, BigDecimal discountMoneydiscountMoney, Long addressId,
                                      List<PurchaseRequestDto> purchaseList, String sourceFlag, String deviceType, String myCouponId, String goodStockIds,
                                      InvoiceDto invoiceDto)
@@ -528,7 +528,7 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class,RuntimeException.class})
     public String preStockStatus(List<String> orderIdList, Long addressId) throws BusinessException {
         /**
          * 根据传入订单号，检测是京东的订单
@@ -719,7 +719,7 @@ public class OrderService {
      * @throws BusinessException
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class,
-            BusinessException.class })
+            BusinessException.class,RuntimeException.class })
     public void modifyGoodsQuantity(Long goodsId, Long goodsStockId, Long goodsNum, Integer additionFlag,
             int errorNo) throws BusinessException {
         LOGGER.info("进入商品库存修改.商品ID[{}],库存ID[{}],修改数量[{}],加减标记[{}].", errorNo, goodsId, goodsStockId,
@@ -814,7 +814,7 @@ public class OrderService {
      * @param purchaseList
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class,RuntimeException.class })
     public Map<String,List<String>> generateOrder(String requestId, Long userId, BigDecimal totalPayment,
             List<PurchaseRequestDto> purchaseList, Long addressId, String deviceType,String myCouponId,String goodStockIds,
                                                   InvoiceDto invoiceDto)
