@@ -394,7 +394,7 @@ public class LogisticsService {
     
     public Map<String, Object> loadLogisticInfo(String orderId) throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
-        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+        if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
         	return jdLogisticsService.getSignleTrackings(orderId);
         }else{
         	return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
@@ -424,7 +424,7 @@ public class LogisticsService {
 			try{
 				//如果查询物流出现异常的时候，就默认轨迹不存在
 				if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
-					traceList =  getTraceListByWzOrderId(orderInfo.getExtOrderId());//jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
+					traceList =  getTraceListByWzOrderId(orderInfo.getExtOrderId());
 				}else{
 					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
 				}
