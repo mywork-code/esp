@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
@@ -41,10 +42,12 @@ import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponGoodsDetailVo;
 import com.apass.esp.domain.vo.ProCouponVo;
+import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -101,6 +104,10 @@ public class JdGoodsInfoService {
     private ProCouponMapper proCouponMapper;
     @Autowired
     private GoodsRepository goodsDao;
+	@Autowired
+	private CategoryMapper categoryMapper;
+	@Autowired
+	private GoodsRepository goodsMapper;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -588,7 +595,7 @@ public class JdGoodsInfoService {
     				proCouponVo.setId(proCoupon.getId());
     				proCouponVo.setActivityId(Long.parseLong(activityId));
     				proCouponVo.setActivityFalge(true);
-    				proCouponVo.setName(proCoupon.getName());
+    				proCouponVo.setName("【限"+activityCfg.getActivityName()+"活动商品】\t"+proCoupon.getName());
     				proCouponVo.setCouponSill(proCoupon.getCouponSill());
     				proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
     				SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
@@ -646,18 +653,18 @@ public class JdGoodsInfoService {
 		for (ProMyCoupon proMyCoupon : ProMyCoupons) {
 			proMyCoupon.setActivityFalge(false);
 			ProCoupon pro = proCouponMapper.selectByPrimaryKey(proMyCoupon.getCouponId());
-			if (StringUtils.equals(pro.getType(), "ZDPL")) {
+			if (StringUtils.equals(pro.getType(), CouponType.COUPON_ZDPL.getCode())) {
 				if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", pro.getCategoryId1())) {
 					proMyCouponList.add(proMyCoupon);
 				} else if (StringUtils.equals(goodsBasicInfo.getCategoryId2() + "", pro.getCategoryId2())) {
 					proMyCouponList.add(proMyCoupon);
 				}
-			} else if (StringUtils.equals(pro.getType(), "ZDSP")) {
+			} else if (StringUtils.equals(pro.getType(), CouponType.COUPON_ZDSP.getCode())) {
 				String[] similarGoods = pro.getSimilarGoodsCode().split(",");
 				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
 					proMyCouponList.add(proMyCoupon);
 				}
-			} else if (StringUtils.equals(pro.getType(), "QPL")) {
+			} else if (StringUtils.equals(pro.getType(), CouponType.COUPON_QPL.getCode())) {
 				proMyCouponList.add(proMyCoupon);
 			}
 		}
@@ -670,8 +677,27 @@ public class JdGoodsInfoService {
 			}else{
 				proCouponVo.setActivityId(null);
 			}
+			if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDPL.getCode())) {
+				if (StringUtils.equals(goodsBasicInfo.getCategoryId1() + "", proCoupon.getCategoryId1())) {
+					Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(proCoupon.getCategoryId1()));
+				    proCouponVo.setName("【限"+categroy.getCategoryName()+"类】\t"+proCoupon.getName());
+				} else if (StringUtils.equals(goodsBasicInfo.getCategoryId2() + "", proCoupon.getCategoryId2())) {
+					Category categroy = categoryMapper.selectByPrimaryKey(Long.parseLong(proCoupon.getCategoryId2()));
+				    proCouponVo.setName("【限"+categroy.getCategoryName()+"类】\t"+proCoupon.getName());
+				}
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_ZDSP.getCode())) {
+				String[] similarGoods = proCoupon.getSimilarGoodsCode().split(",");
+				if (Arrays.asList(similarGoods).contains(goodsBasicInfo.getGoodsCode())) {
+					GoodsInfoEntity goods = goodsMapper.selectGoodsByGoodsCode(proCoupon.getGoodsCode());
+				    proCouponVo.setName("【指定商品】\t" + goods.getGoodsName());
+				}
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_QPL.getCode())) {
+			    proCouponVo.setName("【全品类】\t" + proCoupon.getName());
+
+			}
+			
 			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());
-			proCouponVo.setName(proCoupon.getName());
+//			proCouponVo.setName(proCoupon.getName());
 			proCouponVo.setCouponSill(proCoupon.getCouponSill());
 			proCouponVo.setDiscountAmonut(proCoupon.getDiscountAmonut());
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");

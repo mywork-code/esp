@@ -28,11 +28,17 @@
     </select>
     <select id="getInvoiceList" resultType="com.apass.esp.domain.entity.Invoice">
         SELECT
-            <include refid="Base_Column_List" />
+            id id,created_time createdTime,updated_time updatedTime,
+            user_id userId,order_id orderId,order_amt orderAmt,tax tax,
+            no_tax_amt noTaxAmt,head_type headType,telphone telphone,
+            company_name companyName,taxpayer_num taxpayerNum,content content,
+            status status,invoice_num invoiceNum,seller seller,pdf_url pdfUrl
         FROM
-            t_esp_invoice t
-        WHERE 1=1
-        <if test="userId!=null and userId!=''"> AND t.user_id = '${userId}' </if>
+            t_esp_invoice
+        <include refid="QueryConditionSql" />
+        <![CDATA[ 
+            ORDER BY created_time desc
+        ]]>
     </select>
 
     <update id="updateStatusByOrderId">
