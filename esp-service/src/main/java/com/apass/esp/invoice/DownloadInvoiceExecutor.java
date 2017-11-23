@@ -3,11 +3,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.aisino.EncryptionDecryption;
-import com.apass.esp.domain.entity.Invoice;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
-import com.apass.esp.invoice.model.InvoiceDLReturn;
 import com.apass.esp.invoice.model.ReturnStateInfo;
-import com.apass.esp.mapper.InvoiceMapper;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 /**
@@ -16,20 +13,20 @@ import java.util.concurrent.Executors;
 public class DownloadInvoiceExecutor {
     private static Logger LOG = LoggerFactory.getLogger(DownloadInvoiceExecutor.class);
     private static final ExecutorService executorService = Executors.newFixedThreadPool(6);
+    @Autowired
+    private InvoiceService invoiceService;
     /**
      * 轮询执行发票下载接口
      * @param orderId
      */
-    public static void downloadFaPiao(String orderId){
+    public void downloadFaPiao(String orderId){
         executorService.execute(new DownLoadFaPiaoThread(orderId));
     }
-    private static class DownLoadFaPiaoThread extends  Thread {
+    private class DownLoadFaPiaoThread extends  Thread {
         private boolean flag = true;
         private String orderId;
-        private InvoiceService invoiceService;
         private DownLoadFaPiaoThread(String orderId){
             this.orderId = orderId;
-            invoiceService = new InvoiceService();
         }
         @Override
         public void run() {

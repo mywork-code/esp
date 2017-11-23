@@ -49,6 +49,8 @@ public class InvoiceService {
 //    private GoodsService goodsService;
     @Autowired
     private OrderRefundRepository orderRefundDao;
+    @Autowired
+    private DownloadInvoiceExecutor downloadInvoice;
     /**
      * CREATED
      * @param entity
@@ -255,7 +257,7 @@ public class InvoiceService {
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         if("0000".equals(sS.getReturnCode())){
             updateStatusByOrderId((byte)1,order.getId().toString());
-            DownloadInvoiceExecutor.downloadFaPiao(order.getId().toString());
+            downloadInvoice.downloadFaPiao(order.getId().toString());
             return 8;
         }else{
             updateStatusByOrderId((byte)3,order.getId().toString());
