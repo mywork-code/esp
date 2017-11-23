@@ -1271,8 +1271,8 @@ public class GoodsService {
     return goodsDao.selectUpGoods(index, size);
   }
 
-  public List<GoodsInfoEntity> selectJdGoods(int index, int size) {
-    return goodsDao.selectJdGoods(index, size);
+  public List<GoodsInfoEntity> selectJdGoods(int index, int size,SourceType sourceType) {
+    return goodsDao.selectJdGoods(index, size,sourceType.getCode());
   }
 
   public List<Goods> esInit(int index, int size) {
@@ -1432,10 +1432,11 @@ public class GoodsService {
    * @param param
    * @return
    */
-  public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param) {
+  public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode(String param,SourceType sourceType) {
     GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
     entity.setGoodsCode(Long.parseLong(param));
     entity.setExternalId(param);
+    entity.setSource(sourceType.getCode());
     List<GoodsBasicInfoEntity> result=goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity);
     if(null !=result && result.size()==1){
         return result.get(0);
@@ -1448,10 +1449,11 @@ public class GoodsService {
      * @param param
      * @return
      */
-    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
+    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param,SourceType sourceType) {
         GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
         entity.setGoodsCode(Long.parseLong(param));
         entity.setExternalId(param);
+        entity.setSource(sourceType.getCode());
         return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
     }
 

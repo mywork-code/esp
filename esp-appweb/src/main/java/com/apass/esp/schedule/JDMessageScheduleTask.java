@@ -55,7 +55,6 @@ public class JDMessageScheduleTask {
 //        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(), JdMessageEnum.DELETEADD_SKU.getType(),JdMessageEnum.PRICE_SKU.getType());
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
-        messageEnumList.add(JdMessageEnum.SPLIT_ORDER);
         messageEnumList.add(JdMessageEnum.WITHDRAW_SKU);
         messageEnumList.add(JdMessageEnum.DELETEADD_SKU);
         messageEnumList.add(JdMessageEnum.PRICE_SKU);

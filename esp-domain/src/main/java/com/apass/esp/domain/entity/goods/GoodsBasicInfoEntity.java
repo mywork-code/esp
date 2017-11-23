@@ -50,7 +50,6 @@ public class GoodsBasicInfoEntity {
 
     /** 精选商品地址 **/
     private String goodsSiftUrl;
-
     public String getGoodsLogoUrlNew() {
         return goodsLogoUrlNew;
     }

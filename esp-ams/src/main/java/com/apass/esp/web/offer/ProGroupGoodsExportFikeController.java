@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.apass.esp.domain.enums.SourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -277,7 +278,7 @@ public class ProGroupGoodsExportFikeController {
 					Pattern pattern = Pattern.compile("[0-9]*");   
 					Matcher isNum = pattern.matcher(id);  
 					if(null !=id && isNum.matches()){
-						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id);
+						gbity=goodsService.getByGoodsBySkuIdOrGoodsCode(id, SourceType.WZ);
 					}
 					if (null !=id && null != gbity && null != marketPrice && marketPrice.compareTo(zero)>0 && null != activityPrice && activityPrice.compareTo(zero)>0 && countSuccess <= 200) {
 						//判断该商品是否存在其他有效的活动中

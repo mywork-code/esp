@@ -6,6 +6,7 @@ import com.apass.esp.domain.dto.category.CategoryDto;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.enums.BannerType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -236,7 +237,7 @@ public class BannerController extends BaseController {
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
                   entity.setAttrVal(activityUrl);
-                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl);
+                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl, SourceType.WZ);
                   if(goodsInfo == null){
                       return Response.fail("请添加已上架的商品");
                   }
