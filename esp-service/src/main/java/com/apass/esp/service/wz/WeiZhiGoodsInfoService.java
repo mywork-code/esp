@@ -20,6 +20,7 @@ import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
+import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.vo.ProCouponGoodsDetailVo;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -93,7 +94,7 @@ public class WeiZhiGoodsInfoService {
 			// 商品的邮费
 			map.put("postage", "0");
 			// 查询商品图片
-			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString());
+			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString(), JdGoodsImageType.TYPEN1.getCode());
 			map.put("jdImagePathList", wzSkuPictureList);
 			// 查询商品是否有货
 			String jdGoodStock = weiZhiProductService.getStockBySku(sku.toString(), region);

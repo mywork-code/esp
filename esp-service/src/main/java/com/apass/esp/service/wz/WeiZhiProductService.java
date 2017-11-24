@@ -161,20 +161,24 @@ public class WeiZhiProductService {
 		}
 		return list;
 	}
+
 	/**
 	 * 获取所有图片信息(单个商品)
 	 */
-	public List<String> getWeiZhiSingleProductSkuImage(String sku) throws Exception {
+	public List<String> getWeiZhiSingleProductSkuImage(String sku, String type) throws Exception {
 		List<String> list = new ArrayList<>();
 		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
-		if(null !=mapList && mapList.size()==1){
-			Map<String, List<WzPicture>> map=mapList.get(0);
-			List<WzPicture> listWzPicture=map.get("sku");
+		if (null != mapList && mapList.size() == 1) {
+			Map<String, List<WzPicture>> map = mapList.get(0);
+			List<WzPicture> listWzPicture = map.get(sku);
 			for (WzPicture wzPicture : listWzPicture) {
-				list.add(wzPicture.getPath());
+				if (wzPicture.getIsPrimary() == 0) {
+					String pictureUrl = wzPicture.getPath();
+					String str = pictureUrl.replace("n2", type);
+					list.add(str);
+				}
 			}
 		}
-		
 		return list;
 	}
 	/**

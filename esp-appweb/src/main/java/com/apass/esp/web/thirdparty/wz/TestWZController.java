@@ -1,26 +1,12 @@
 package com.apass.esp.web.thirdparty.wz;
 
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.jd.JdSimilarSku;
-import com.apass.esp.mapper.JdCategoryMapper;
-import com.apass.esp.mapper.JdGoodsMapper;
-import com.apass.esp.service.wz.WeiZhiProductService;
-import com.apass.esp.service.wz.WeiZhiTokenService;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.entity.base.JdCategory;
-import com.apass.esp.third.party.jd.entity.base.JdGoods;
-import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
-import com.apass.esp.third.party.jd.entity.base.Region;
-import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.esp.third.party.weizhi.client.*;
-import com.apass.esp.third.party.weizhi.entity.*;
-import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
-import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,12 +18,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.domain.enums.JdGoodsImageType;
+import com.apass.esp.mapper.JdCategoryMapper;
+import com.apass.esp.mapper.JdGoodsMapper;
+import com.apass.esp.service.wz.WeiZhiProductService;
+import com.apass.esp.service.wz.WeiZhiTokenService;
+import com.apass.esp.third.party.jd.entity.base.JdApiMessage;
+import com.apass.esp.third.party.jd.entity.base.JdCategory;
+import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiMessageClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.entity.AddressInfo;
+import com.apass.esp.third.party.weizhi.entity.Category;
+import com.apass.esp.third.party.weizhi.entity.CategoryPage;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
+import com.apass.esp.third.party.weizhi.entity.OrderReq;
+import com.apass.esp.third.party.weizhi.entity.PriceSnap;
+import com.apass.esp.third.party.weizhi.entity.SkuNum;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
+import com.apass.esp.third.party.weizhi.entity.WzSkuListPage;
+import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
+import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
+import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
+import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Lists;
 
 /**
  * @author zengqingshan
@@ -193,6 +204,19 @@ public class TestWZController {
 					.getWeiZhiProductSkuImage(list);
 			System.out.println(wzSkuPictureList);
 			return Response.success("获取所有图片信息成功！",wzSkuPictureList);
+		} catch (Exception e) {
+			return Response.fail("获取所有图片信息失败！");
+		}
+	}
+	/**
+	 * 获取所有图片信息(单个商品)
+	 */
+	@RequestMapping(value = "/getWeiZhiSingleProductSkuImage", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getWeiZhiSingleProductSkuImage(@RequestBody Map<String, Object> paramMap) {
+		try {
+			List<String> list=weiZhiProductService.getWeiZhiSingleProductSkuImage("1815738", JdGoodsImageType.TYPEN1.getCode());
+			return Response.success("获取所有图片信息成功！",list);
 		} catch (Exception e) {
 			return Response.fail("获取所有图片信息失败！");
 		}
