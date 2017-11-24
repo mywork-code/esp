@@ -10,10 +10,6 @@ public class SystemEnvConfig {
      */
     @Value("${spring.profiles.active}")
     private String activeProfile;
-    @Value("${spring.invoice.testurl}")
-    private String testurl;
-    @Value("${spring.invoice.producturl}")
-    private String producturl;
     /**
      * 是否为生产环境
      */
@@ -32,7 +28,6 @@ public class SystemEnvConfig {
     public boolean isDEV() {
         return checkProfileMatch("dev");
     }
-
     public String getEve(){
         if(isDEV()){
             return "sit";
@@ -44,18 +39,6 @@ public class SystemEnvConfig {
             return "prod";
         }
         return "环境有误 ";
-    }
-    public String getInvoiceUrl(){
-        if(isDEV()){
-            return testurl;
-        }
-        if(isUAT()){
-            return testurl;
-        }
-        if(isPROD()){
-            return producturl;
-        }
-        return null;
     }
     // Check Profiles
     private boolean checkProfileMatch(String compare) {
