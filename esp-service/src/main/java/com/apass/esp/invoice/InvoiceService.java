@@ -42,14 +42,10 @@ public class InvoiceService {
     private InvoiceMapper invoiceMapper;
     @Autowired
     private InvoiceIssueService invoiceIssueService;
-//    @Autowired
-//    private CategoryInfoService categoryInfoService;
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
     @Autowired
     private OrderInfoRepository orderInfoRepository;
-//    @Autowired
-//    private GoodsService goodsService;
     @Autowired
     private OrderRefundRepository orderRefundDao;
     @Autowired
@@ -206,7 +202,7 @@ public class InvoiceService {
      * @param params
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public Response invoiceUpdate(Map<String, Object> params) {
         InvoiceDetails entity = new InvoiceDetails();
         entity = (InvoiceDetails)FarmartJavaBean.map2entity(entity, InvoiceDetails.class, params);
@@ -245,7 +241,7 @@ public class InvoiceService {
      * @throws BusinessException 
      * @throws NumberFormatException 
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public int invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getOrderId());
         if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
@@ -313,7 +309,7 @@ public class InvoiceService {
     /**
      *创建发票
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public Invoice createInvoice(InvoiceDto invoiceDto){
         Invoice in = new Invoice();
         Date d = new Date();
@@ -333,7 +329,7 @@ public class InvoiceService {
         return in;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void updateStatusByOrderId( byte status,  String orderId){
          invoiceMapper.updateStatusByOrderId(status,orderId);
     }
