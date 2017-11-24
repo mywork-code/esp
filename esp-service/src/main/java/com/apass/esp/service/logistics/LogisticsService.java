@@ -464,6 +464,9 @@ public class LogisticsService {
     					break;
     				}
 				}
+    			if(null == ss){
+    				ss = track.getOrderTrack().get(0);
+    			}
     		}
 		} catch (Exception e) {}
     	List<Trace> trackList = new ArrayList<>();

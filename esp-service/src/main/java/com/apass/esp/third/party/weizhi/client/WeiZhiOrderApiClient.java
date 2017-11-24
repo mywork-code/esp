@@ -106,7 +106,7 @@ public class WeiZhiOrderApiClient {
         
         String result = datas.getString("result");
         
-        if(!StringUtils.equals(result, "0")){
+        if(!StringUtils.equals(result, "0") && !StringUtils.equals(result, "0008")){
         	String message = datas.getString("detail");
         	logger.error("---submitOrder---- callback result:{},message:{}",result,message);
         	return null;
@@ -118,8 +118,6 @@ public class WeiZhiOrderApiClient {
         
         return response;
     }
-    
-    
     
     /**
      * 根据微知订单号，确认预占库存
