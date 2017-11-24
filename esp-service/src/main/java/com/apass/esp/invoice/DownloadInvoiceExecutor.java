@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aisino.EncryptionDecryption;
+import com.apass.esp.domain.entity.Invoice;
 import com.apass.esp.invoice.model.FaPiaoDLoad;
+import com.apass.esp.invoice.model.InvoiceDLReturn;
 import com.apass.esp.invoice.model.ReturnStateInfo;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,12 +51,12 @@ public class DownloadInvoiceExecutor {
                     ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
                     if("0000".equals(sS.getReturnCode())){
                         httpClientFlag = true;
-                        invoiceService.updateStatusByOrderId((byte)2,orderId);
-//                        InvoiceDLReturn re= EncryptionDecryption.getRequestFaPiaoDLRetuen(s);
-//                        Invoice in = invoiceService.getInvoice(orderId);
-//                        in.setPdfUrl(re.getPdfUrl());
-//                        in.setStatus((byte)2);
-//                        invoiceService.updatedEntity(in);
+//                        invoiceService.updateStatusByOrderId((byte)2,orderId);
+                        InvoiceDLReturn re= EncryptionDecryption.getRequestFaPiaoDLRetuen(s);
+                        Invoice in = invoiceService.getInvoice(orderId);
+                        in.setPdfUrl(re.getPdfUrl());
+                        in.setStatus((byte)2);
+                        invoiceService.updatedEntity(in);
                     }
                     if(httpClientFlag){
                         //如果调用成功
