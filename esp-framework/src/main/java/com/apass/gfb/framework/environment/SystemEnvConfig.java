@@ -1,11 +1,8 @@
 package com.apass.gfb.framework.environment;
-
 import java.util.StringTokenizer;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 @Component
 public class SystemEnvConfig {
     /**
@@ -13,21 +10,22 @@ public class SystemEnvConfig {
      */
     @Value("${spring.profiles.active}")
     private String activeProfile;
-
+    @Value("${spring.invoice.testurl}")
+    private String testurl;
+    @Value("${spring.invoice.producturl}")
+    private String producturl;
     /**
      * 是否为生产环境
      */
     public boolean isPROD() {
         return checkProfileMatch("production");
     }
-
     /**
      * 是否为UAT环境
      */
     public boolean isUAT() {
         return checkProfileMatch("uat");
     }
-
     /**
      * 是否为开发环境
      */
@@ -45,10 +43,20 @@ public class SystemEnvConfig {
         if(isPROD()){
             return "prod";
         }
-
         return "环境有误 ";
     }
-
+    public String getInvoiceUrl(){
+        if(isDEV()){
+            return testurl;
+        }
+        if(isUAT()){
+            return testurl;
+        }
+        if(isPROD()){
+            return producturl;
+        }
+        return null;
+    }
     // Check Profiles
     private boolean checkProfileMatch(String compare) {
         if (StringUtils.isBlank(activeProfile)) {

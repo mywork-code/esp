@@ -9,11 +9,12 @@ import com.apass.esp.invoice.model.FaPiaoKJDD;
 import com.apass.esp.invoice.model.FaPiaoKJXM;
 import com.apass.esp.invoice.model.GlobalInfoEctype;
 import com.apass.esp.invoice.model.ReturnStateInfo;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.thoughtworks.xstream.XStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 /**
  * 电子发票
  * @author Administrator
@@ -21,7 +22,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class InvoiceIssueService {
-    private static final String testUrl = "http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
     /**
      * 3.2  返回报文示例与数据项说明
      * @param entity
@@ -32,7 +34,7 @@ public class InvoiceIssueService {
         String params = createContentDL(entity);
         System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(testUrl);
+        org.apache.cxf.endpoint.Client client = jwdc.createClient(systemEnvConfig.getInvoiceUrl());
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
     }
@@ -48,7 +50,7 @@ public class InvoiceIssueService {
         String params = createContentXml(ensale,list,enbuy);
         System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(testUrl);
+        org.apache.cxf.endpoint.Client client = jwdc.createClient(systemEnvConfig.getInvoiceUrl());
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
     }
@@ -109,7 +111,7 @@ public class InvoiceIssueService {
     private String generateXMl(String type) throws Exception {
         GlobalInfoEctype globalInfo = new GlobalInfoEctype(type);
         ReturnStateInfo stateInfo = new ReturnStateInfo("1");
-        globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
+        globalInfo.setPassWord(PassWordCreate.passWordCreate("38201136", RandomUtils.getNum(10)));
         globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
         StringBuffer sbex = new StringBuffer(globalInfo.getRequestCode());
         sbex.append(globalInfo.getInterfaceCode());

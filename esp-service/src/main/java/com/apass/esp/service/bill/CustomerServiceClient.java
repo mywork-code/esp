@@ -1,5 +1,4 @@
 package com.apass.esp.service.bill;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -12,10 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * 
  * @description 客户信息获取
@@ -25,22 +22,44 @@ import java.util.Map;
  */
 @Component
 public class CustomerServiceClient {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServiceClient.class);
-
 	/**
 	 * 供房包服务地址
 	 */
 	@Value("${gfb.service.url}")
 	private String gfbServiceUrl;
-
+	@Value("${gfbapp.service.url}")
+    private String gfbappbServiceUrl;
 	private static final String SUBCREDITREQURL="/interfaceForOrder/reduce/limit";
-	
 	private static final String GETCUSTOMERREQURL="/interfaceForOrder/getCustomerInfo";
-	
     private static final String CREDITPAYAUTH="/pay/creditpay/available";
-    
     private static final String SAVEAGREEMENT="/interfaceForOrder/saveContract";
+    private static final String USERHEAD="/fileView/query";
+    /**
+     * 获取客户头像
+     * @param userId
+     * @return
+     * @throws BusinessException
+     */
+    public String getCustomerHead(Long userId) throws BusinessException {
+        try {
+            Long customerId = getCustomerInfo(userId).getCustomerId();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("customerId", customerId);
+            map.put("imgType", "head");
+            String reqUrl = gfbappbServiceUrl + USERHEAD;
+            LOGGER.info("获取客户信息::RequestUrl::[{}]", reqUrl);
+            String json = GsonUtils.toJson(map);
+            LOGGER.info("获取客户信息请求::Request::[{}]", json);
+            StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+            String respJson = HttpClientUtils.getMethodGetResponse(reqUrl);
+            LOGGER.info("获取客户信息::Response::[{}]", respJson);
+            return respJson;
+        } catch (Exception e) {
+            LOGGER.error("调用gfb客户信息查询异常:[{}]", e);
+            throw new BusinessException("调用gfb客户信息查询异常", e);
+        }
+    }
 	/**
 	 * 获取客户信息
 	 * 

@@ -5,10 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.aisino.EncryptionDecryption;
 import com.aisino.FarmartJavaBean;
 import com.apass.esp.domain.Response;
@@ -19,7 +21,6 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
-import com.apass.esp.domain.enums.StatusCode;
 import com.apass.esp.invoice.model.FaPiaoKJ;
 import com.apass.esp.invoice.model.FaPiaoKJDD;
 import com.apass.esp.invoice.model.FaPiaoKJXM;
@@ -28,6 +29,7 @@ import com.apass.esp.mapper.InvoiceMapper;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
+import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -54,6 +56,8 @@ public class InvoiceService {
     private OrderRefundRepository orderRefundDao;
     @Autowired
     private DownloadInvoiceExecutor downloadInvoice;
+    @Autowired
+    private CustomerServiceClient customerServiceClient;
     /**
      * CREATED
      * @param entity
@@ -127,8 +131,10 @@ public class InvoiceService {
      * 根据订单查询发票 以及发票状态
      * @param orderId
      * @return
+     * @throws BusinessException 
+     * @throws NumberFormatException 
      */
-    public Response invoiceDetails(String orderId) {
+    public Response invoiceDetails(String orderId,String userId) throws NumberFormatException, BusinessException {
         Invoice invoice = new Invoice();
         invoice.setOrderId(orderId);
         List<Invoice> list = readEntityList(invoice);
@@ -156,8 +162,11 @@ public class InvoiceService {
                 entity.setStatus("申请中");
                 entity.setInvoiceNum("暂无");
             }
+            String url = customerServiceClient.getCustomerHead(Long.parseLong(userId));
+            entity.setPicture(url);
+            return Response.success("发票详情查询成功", entity);
         }
-        return Response.success("发票详情查询成功", entity);
+        return Response.fail("没有查询到发票详情记录");
     }
     /**
      * 查询用户开票记录
@@ -245,21 +254,21 @@ public class InvoiceService {
      * @throws BusinessException 
      * @throws NumberFormatException 
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public int invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getOrderId());
         if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
             return 3;
         }
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-        faPiaoKJ.setFpqqlsh("111MFWIKDSPTBMapsk"+order.getId());
-        faPiaoKJ.setDsptbm("111MFWIK");
+        faPiaoKJ.setFpqqlsh("131JJ2R8DSPTBMapsk"+order.getOrderId());
+        faPiaoKJ.setDsptbm("131JJ2R8");
         faPiaoKJ.setNsrsbh("310101000000090");
         faPiaoKJ.setNsrmc(order.getMerchantCode());
         faPiaoKJ.setDkbz("0");
         faPiaoKJ.setKpxm(in.getContent());
         faPiaoKJ.setBmbBbh("1.0");
-        faPiaoKJ.setXhfNsrsbh("310101000000090");
+        faPiaoKJ.setXhfNsrsbh("91310000MA1G57A97F");
         faPiaoKJ.setXhfmc(order.getMerchantCode());
         faPiaoKJ.setGhfmc(order.getName());
         faPiaoKJ.setGhfqylx("01");
@@ -302,11 +311,11 @@ public class InvoiceService {
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         if("0000".equals(sS.getReturnCode())){
-            updateStatusByOrderId((byte)1,order.getOrderId());
+            updateStatusByOrderId((byte)InvoiceStatusEnum.APPLYING.getCode(),order.getOrderId());
             downloadInvoice.downloadFaPiao(order.getOrderId());
             return 8;
         }else{
-            updateStatusByOrderId((byte)3,order.getOrderId());
+            updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
         }
         return 10;
     }

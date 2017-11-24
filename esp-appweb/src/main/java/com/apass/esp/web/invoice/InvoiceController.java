@@ -33,7 +33,8 @@ public class InvoiceController {
     public Response invoiceDetails(@RequestBody Map<String, Object> paramMap) {
         try{
             String orderId = CommonUtils.getValue(paramMap, "orderId");
-            return invoiceService.invoiceDetails(orderId);
+            String userId = CommonUtils.getValue(paramMap, "userId");
+            return invoiceService.invoiceDetails(orderId,userId);
            // return invoiceService.invoiceDetails("346738");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
