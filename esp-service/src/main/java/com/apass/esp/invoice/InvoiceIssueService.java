@@ -154,13 +154,13 @@ public class InvoiceIssueService {
         return sb.toString();
     }
     private String getInvoiceUrl(){
-        if(StringUtils.equals(systemEnvConfig.getEve(),"sit")){
+        if(systemEnvConfig.isDEV()){
             return TESTURL;
         }
-        if(StringUtils.equals(systemEnvConfig.getEve(),"uat")){
+        if(systemEnvConfig.isUAT()){
             return TESTURL;
         }
-        if(StringUtils.equals(systemEnvConfig.getEve(),"prod")){
+        if(systemEnvConfig.isPROD()){
             return PRODUCTURL;
         }
         return null;
