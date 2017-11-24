@@ -412,35 +412,39 @@ public class LogisticsService {
     	LogisticsFirstDataVo logisticInfo = new LogisticsFirstDataVo();
     	//根据订单的id获取订单详情
     	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
-    	if(orderInfo != null){
-    		//如果物流商编号和物流单号任何一项为空，则返回空
-    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsName()) ){
+    	if(null == orderInfo){
+    		LOGGER.error("loadFristLogisticInfo orderInfo is null ");
+    		throw new BusinessException("订单信息缺失，请稍后再试!");
+    	}
+		/**
+		 * 如果物流商编号和物流单号任何一项为空，则返回空(sprint 12 微知接口，物流单号和物流商是为空)
+		 */
+		if(!StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
+			if(StringUtils.isAnyBlank(orderInfo.getLogisticsNo(),orderInfo.getLogisticsName())){
     			return null;
     		}
-    		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
-    		
-			List<Trace> traceList =  null;
-					
-			try{
-				//如果查询物流出现异常的时候，就默认轨迹不存在
-				if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
-					traceList =  getTraceListByWzOrderId(orderInfo.getExtOrderId());
-				}else{
-					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
-				}
-			}catch(Exception e){
-				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+		}
+		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());//如果是微知订单，此处为空
+		List<Trace> traceList =  null;
+		try{
+			//如果查询物流出现异常的时候，就默认轨迹不存在
+			if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
+				com.apass.esp.third.party.weizhi.response.Track track =  getTraceListByWzOrderId(orderInfo.getExtOrderId());
+				logisticInfo.setLogisticsNo(track.getTrackId());//微知订单，物流单号，重新赋值
+				traceList = track.getTraceList();
+				orderInfo.setLogisticsName(SourceType.JD.getCode());
+			}else{
+				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
 			}
-					
-        	if(!CollectionUtils.isEmpty(traceList)){
-        		logisticInfo.setTrace(traceList.get(0));
-        	}
-        	
-        	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
-                    orderInfo.getLogisticsName());
-        	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
+		}catch(Exception e){
+			LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+		}
+    	if(!CollectionUtils.isEmpty(traceList)){
+    		logisticInfo.setTrace(traceList.get(0));
     	}
-    	
+    	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
+                orderInfo.getLogisticsName());
+    	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
     	return logisticInfo;
     }
     
@@ -449,29 +453,33 @@ public class LogisticsService {
      * @param wzOrderId
      * @return
      */
-    public List<Trace> getTraceListByWzOrderId(String wzOrderId){
-    	List<Trace> trackList = new ArrayList<>();
-    	List<TrackData> trackData = new ArrayList<>();
-    	OrderTrackResponse track = null;
+    public com.apass.esp.third.party.weizhi.response.Track getTraceListByWzOrderId(String wzOrderId){
+    	OrderTrack ss = null;
     	try {
-    		track = orderApi.orderTrack(wzOrderId);
+    		OrderTrackResponse track = orderApi.orderTrack(wzOrderId);
     		if(null != track && CollectionUtils.isNotEmpty(track.getOrderTrack())){
     			for (OrderTrack trace : track.getOrderTrack()) {
     				if(CollectionUtils.isNotEmpty(trace.getTackList())){
-    					trackData = trace.getTackList();
+    					ss = trace;
     					break;
     				}
 				}
     		}
 		} catch (Exception e) {}
-    	for (TrackData data : trackData) {
-    		Trace tack = new Trace();
-    		tack.setAcceptTime(data.getMsgTime());
-    		tack.setAcceptStation(data.getContent());
-    		tack.setRemark(data.getOperator());
-    		trackList.add(tack);
-		}
-    	return trackList;
+    	List<Trace> trackList = new ArrayList<>();
+    	if(null != ss){
+    		for (TrackData data : ss.getTackList()) {
+        		Trace tack = new Trace();
+        		tack.setAcceptTime(data.getMsgTime());
+        		tack.setAcceptStation(data.getContent());
+        		tack.setRemark(data.getOperator());
+        		trackList.add(tack);
+    		}
+    	}
+    	
+    	com.apass.esp.third.party.weizhi.response.Track t = new com.apass.esp.third.party.weizhi.response.Track();
+    	t.setTraceList(trackList);
+    	t.setTrackId(null == ss ? "" : ss.getTrackId());
+    	return t;
     }
-    
 }
