@@ -291,11 +291,12 @@ public class OrderInfoController {
 		  return Response.fail("参数值传递有误!");
 	  }
 	  boolean exitstJDGood = false;
+	  String oldAddress = null;
 	  if(StringUtils.isNotBlank(addressId)){
 		  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
 		  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
 		  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
-			  return Response.fail("您填写的收货地址所在地址不完整，请重新填写！");
+			  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
 		  }
 	  }
 	  
@@ -309,6 +310,7 @@ public class OrderInfoController {
 		  //计算商品数量和金额
 		  Map<String,Object> param = orderService.calcGoodsBuyNum1(Long.parseLong(userId),purchaseList);
 		  params.putAll(param);
+		  params.put("oldAddress", oldAddress);
 		  params.put("purchaseList", purchaseList);
 	  } catch(BusinessException e){
 		  LOGGER.error(e.getErrorDesc());
