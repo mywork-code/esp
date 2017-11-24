@@ -48,7 +48,9 @@ import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.vo.ProCouponGoodsDetailVo;
 import com.apass.esp.domain.vo.ProCouponVo;
 import com.apass.esp.mapper.CategoryMapper;
+import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProCouponMapper;
+import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -108,6 +110,10 @@ public class JdGoodsInfoService {
 	private CategoryMapper categoryMapper;
 	@Autowired
 	private GoodsRepository goodsMapper;
+	@Autowired
+	private ProCouponRelMapper couponRelMapper;
+	@Autowired
+	private ProActivityCfgMapper activityCfgMapper;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -694,6 +700,18 @@ public class JdGoodsInfoService {
 			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_QPL.getCode())) {
 			    proCouponVo.setName("【全品类】\t" + proCoupon.getName());
 
+			} else if (StringUtils.equals(proCoupon.getType(), CouponType.COUPON_HDSP.getCode())) {
+				String activityName = "";
+				if (null != proMyCoupon.getCouponRelId()) {
+					ProCouponRel rel = couponRelMapper.selectByPrimaryKey(proMyCoupon.getCouponRelId());
+					if (null != rel) {// 此做法主要是适配于测试环境直接删库数据不完全，可能导致的问题
+						ProActivityCfg cfg = activityCfgMapper.selectByPrimaryKey(rel.getProActivityId());
+						if (null != cfg) {
+							activityName = cfg.getActivityName();
+						}
+					}
+				}
+				proCouponVo.setName("【限" + activityName + "活动商品】\t" + proCoupon.getName());
 			}
 			
 			proCouponVo.setActivityFalge(proMyCoupon.getActivityFalge());

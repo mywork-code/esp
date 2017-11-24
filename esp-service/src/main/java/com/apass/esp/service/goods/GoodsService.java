@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
@@ -38,6 +41,7 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -71,6 +75,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
+import com.google.common.collect.Maps;
 
 @Service
 public class GoodsService {
@@ -437,6 +442,49 @@ public class GoodsService {
 	}
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
   }
+	/**
+	 * 根据商品编号获取商品需要展示前端信息
+	 */
+	public Map<String, Object> loadAllBannerPicNotJd(Long goodsId) throws BusinessException {
+		Map<String, Object> returnMap = Maps.newHashMap();
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+	    if (null == goodsBasicInfo) {
+	      LOGGER.error("商品信息不存在:{}", goodsId);
+	      throw new BusinessException("商品信息不存在");
+	    }
+	    //商品价格最低
+	    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
+	    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+	    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
+	    if(BigDecimal.ZERO.compareTo(minPrice)==0){
+	    	 returnMap.put("goodsPrice",null);
+	    }else{
+	    	 returnMap.put("goodsPrice",minPrice);
+	    }
+	    returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
+	    returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
+	    returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
+	    // 查询商品图片
+	 	List<String> JdImagePathList=new ArrayList<>();
+	    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+	    for (BannerInfoEntity banner : goodsBannerList) {
+	    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
+	    }
+	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
+	    if(null !=MinGoodsPriceStock.getAttrValIds()){
+		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+	    }
+	    if(null ==jdSimilarSkuList ){
+	    	 List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
+	 	    returnMap.put("jdSimilarSkuList", jdSimilarSkuList2);
+		    returnMap.put("jdSimilarSkuListSize", 0);
+	    }else{
+		    returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+		    returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+	    }
+	    returnMap.put("jdImagePathList",JdImagePathList);
+	    return returnMap;
+	}
   /**
    * 获取 非京东商品变成多规格商品规格
    */
