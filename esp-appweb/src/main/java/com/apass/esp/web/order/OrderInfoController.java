@@ -290,11 +290,10 @@ public class OrderInfoController {
 	  if(StringUtils.isEmpty(userId)){
 		  return Response.fail("参数值传递有误!");
 	  }
-	  boolean exitstJDGood = false;
-	  String oldAddress = null;
 	  try {
+		  String oldAddress = null;
 		  if(StringUtils.isNotBlank(addressId)){
-			  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
+			  boolean exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
 			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
 			  if(!StringUtils.isNotBlank(address.getTownsCode()) && exitstJDGood){
 				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
