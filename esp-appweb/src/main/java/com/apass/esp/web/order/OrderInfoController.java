@@ -307,10 +307,8 @@ public class OrderInfoController {
 			  }
 		  }
 		  //计算商品数量和金额
-		  if(StringUtils.isNotBlank(oldAddress)){
-			  Map<String,Object> param = orderService.calcGoodsBuyNum1(Long.parseLong(userId),purchaseList);
-			  params.putAll(param);
-		  }
+		  Map<String,Object> param = orderService.calcGoodsBuyNum1(Long.parseLong(userId),purchaseList);
+		  params.putAll(param);
 		  params.put("oldAddress", oldAddress);
 		  params.put("purchaseList", purchaseList);
 	  } catch(BusinessException e){
