@@ -46,9 +46,26 @@ $(function() {
 			$.messager.alert("提示", "商品属性最多选择3个！", "info");
 			return;
 		}
-		var divid = "goodsAttrId"+catenum;
-		var selectnum = "selectnum"+catenum;
-		var buttonid = catenum+"+buttonId";
+		var last;
+		if(catenum==0){
+			last=0;
+		}else{
+			last=0;
+			var ddd = document.getElementById("inputDiv").childNodes;
+			var dir = [];
+			for(var x = 0;x<ddd.length;x++){
+				dir.push(ddd[x].id.substring(11)/1);
+			}
+			dir.sort();
+			for(var x = 0;x<dir.length;x++){
+				if(dir[x]/1==last/1){
+					last++;
+				}
+			}
+		}
+		var divid = "goodsAttrId"+last;
+		var selectnum = "selectnum"+last;
+		var buttonid = last+"+buttonId";
 		var str ='<div id ='+divid+'>';
 			str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
 				str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
@@ -116,7 +133,7 @@ $(function() {
 			return;
     	}
     	if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
-    		window.setTimeout(function1(),500);
+    		function1();
     	}
     });
 	//修改商品保存库存
@@ -3556,9 +3573,26 @@ function function1(){
 		$.messager.alert("提示", "商品属性最多选择3个！", "info");
 		return;
 	}
-	var divid = "goodsAttrId"+catenum;
-	var selectnum = "selectnum"+catenum;
-	var buttonid = catenum+"+buttonId";
+	var last;
+	if(catenum==0){
+		last=0;
+	}else{
+		last=0;
+		var ddd = document.getElementById("inputDivEdit").childNodes;
+		var dir = [];
+		for(var x = 0;x<ddd.length;x++){
+			dir.push(ddd[x].id.substring(11)/1);
+		}
+		dir.sort();
+		for(var x = 0;x<dir.length;x++){
+			if(dir[x]/1==last/1){
+				last++;
+			}
+		}
+	}
+	var divid = "goodsAttrId"+last;
+	var selectnum = "selectnum"+last;
+	var buttonid = last+"+buttonId";
 	var str ='<div id ='+divid+'>';
 		str+='<div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;">'
 			str+='<input class="easyui-combobox" style="width:95px;"  id='+selectnum+' name="属性" value="请选择商品属性" editable="false">';
