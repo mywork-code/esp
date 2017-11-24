@@ -11,8 +11,8 @@ public class GlobalInfoEctype {
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEKJ.getCode();
             this.userName = "111MFWIK";
-            this.taxpayerId = "310101000000090";
-            this.authorizationCode = "3100000090";
+            this.taxpayerId = "91310000MA1G57A97F";
+            this.authorizationCode = "911G57A97F";
             this.requestCode = "111MFWIK";
             this.responseCode = "121";
         }else if("2".equals(type)){
@@ -21,8 +21,8 @@ public class GlobalInfoEctype {
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEXZ.getCode();
             this.userName = "111MFWIK";
-            this.taxpayerId = "310101000000090";
-            this.authorizationCode = "3100000090";
+            this.taxpayerId = "91310000MA1G57A97F";
+            this.authorizationCode = "911G57A97F";
             this.requestCode = "111MFWIK";
             this.responseCode = "121";
         }
