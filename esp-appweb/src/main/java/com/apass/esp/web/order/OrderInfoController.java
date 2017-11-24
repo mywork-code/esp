@@ -292,20 +292,19 @@ public class OrderInfoController {
 	  }
 	  boolean exitstJDGood = false;
 	  String oldAddress = null;
-	  if(StringUtils.isNotBlank(addressId)){
-		  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
-		  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
-		  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
-			  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
-		  }
-	  }
-	  
 	  try {
 		  if(StringUtils.isNotBlank(addressId)){
-			  //验证是否支持配送区域
-			  orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
-			  //验证是否有货
-			  orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood);
+			  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
+			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
+			  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
+				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
+			  }
+			  if(StringUtils.isNotBlank(address.getTownsCode())){
+				//验证是否支持配送区域
+			    orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+			    //验证是否有货
+			    orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood);
+			  }
 		  }
 		  //计算商品数量和金额
 		  Map<String,Object> param = orderService.calcGoodsBuyNum1(Long.parseLong(userId),purchaseList);
