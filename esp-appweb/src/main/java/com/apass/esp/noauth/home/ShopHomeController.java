@@ -65,7 +65,6 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.wz.WeiZhiGoodsInfoService;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.entity.base.Region;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -1051,7 +1050,7 @@ public class ShopHomeController {
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
-                returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
+                returnMap.put("support7dRefund",weiZhiProductService.getsupport7dRefund(externalId));// 是否支持7天无理由退货,Y、N
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(goodsId);
                 if (jdGoodsStockInfoList.size() == 1) {

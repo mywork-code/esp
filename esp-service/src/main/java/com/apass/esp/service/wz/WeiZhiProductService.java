@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +11,7 @@ import org.springframework.stereotype.Service;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.third.party.jd.entity.base.Region;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.product.Product;
-import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.Category;
@@ -229,6 +225,21 @@ public class WeiZhiProductService {
 		}
 		return falge;
 	}
+	  /**
+     * 微知商品是否支持7天无理由退货,Y、N（单个商品）
+	 * @throws Exception 
+     */
+    public String getsupport7dRefund(String skuIds) throws Exception {
+        String value = "N";
+        CheckSale checkSale = weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+			WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+			if (1 == wZCheckSale.getIs7ToReturn()) {
+				value = "Y";
+			}
+		}
+        return value;
+    }
 	/**
 	 * 商品可售验证接口(多个商品验证)
 	 * @param skuIds
@@ -236,11 +247,6 @@ public class WeiZhiProductService {
 	 * @throws Exception
 	 */
 	public List<WZCheckSale> getWeiZhiCheckSaleList(List<String> skuIdList) throws Exception {
-//		StringBuffer skuIds=new StringBuffer();
-//		for (String string : skuIdList) {
-//			skuIds.append(string);
-//			skuIds.append(",");
-//		}
 		String skuIds = StringUtils.join(skuIdList,",");
 		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
 		List<WZCheckSale>  list=checkSale.getResult();
