@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.jd.entity.product.Stock;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.AreaLimitEntity;
 import com.apass.esp.third.party.weizhi.entity.Category;
@@ -266,7 +268,29 @@ public class WeiZhiProductService {
 	public List<GoodsStock> getNewStockById(List<StockNum> skuNums, Region region) throws Exception {
 		return weiZhiProductApiClient.getNewStockById(skuNums, region);
 	}
-
+	/**
+     * 微知获取单个sku库存接口
+     *
+     * @return
+	 * @throws Exception 
+     */
+    public String getStockBySku(String sku, Region region) throws Exception {
+    	int isStock=0;
+    	List<StockNum> skuNums =new ArrayList<>();
+    	StockNum skuNum=new StockNum();
+    	skuNum.setSkuId(Long.parseLong(sku));
+    	skuNum.setNum(1);
+    	skuNums.add(skuNum);
+    	List<GoodsStock> result =weiZhiProductApiClient.getNewStockById(skuNums, region);
+        if(result.size()==1){
+        	isStock=result.get(0).getStockStateId();
+        }
+        if(33==isStock|| 39==isStock||40==isStock){
+        	return "有货";
+        }else{
+        	return "无货";
+        }
+    }
 	public Category getcategory(Long catId) throws Exception {
 		return weiZhiProductApiClient.getCategory(catId.toString());
 	}

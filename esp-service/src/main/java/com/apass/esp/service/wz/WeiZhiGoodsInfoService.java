@@ -71,9 +71,9 @@ public class WeiZhiGoodsInfoService {
 			// 查询商品图片
 			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString());
 			map.put("jdImagePathList", wzSkuPictureList);
-//			// 查询商品是否有货
-//			String jdGoodStock = getStockBySku(sku.toString(), region);
-//			map.put("goodsStockDes", jdGoodStock);
+			// 查询商品是否有货
+			String jdGoodStock = weiZhiProductService.getStockBySku(sku.toString(), region);
+			map.put("goodsStockDes", jdGoodStock);
 //			//查询京东商品规格
 //			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region);
 //			map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
