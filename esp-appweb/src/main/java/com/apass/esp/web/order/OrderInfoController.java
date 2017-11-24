@@ -296,14 +296,14 @@ public class OrderInfoController {
 		  if(StringUtils.isNotBlank(addressId)){
 			  exitstJDGood = orderService.validatePurchaseExistJdGoods(purchaseList);
 			  AddressInfoEntity address = addressService.queryOneAddressByAddressId(Long.parseLong(addressId));
-			  if(StringUtils.isBlank(address.getTownsCode()) && exitstJDGood){
+			  if(!StringUtils.isNotBlank(address.getTownsCode()) && exitstJDGood){
 				  oldAddress = "您填写的收货地址所在地址不完整，请重新填写！";
 			  }
-			  if(StringUtils.isNotBlank(address.getTownsCode())){
+			  if(!StringUtils.isNotBlank(oldAddress)){
 				//验证是否支持配送区域
-			    orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
-			    //验证是否有货
-			    orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood);
+				orderService.validateGoodsUnSupportProvince(Long.parseLong(addressId), purchaseList);
+				//验证是否有货
+				orderService.validateGoodsStock(Long.parseLong(addressId), purchaseList,exitstJDGood); 
 			  }
 		  }
 		  //计算商品数量和金额
