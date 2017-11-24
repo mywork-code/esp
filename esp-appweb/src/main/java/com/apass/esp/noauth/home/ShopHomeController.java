@@ -1078,7 +1078,7 @@ public class ShopHomeController {
                         JdSimilarSkuToList.add(jdSimilarSkuTo);
                     }
                 }
-                returnMap.put("source", "jd");
+                returnMap.put("source", "wz");
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
             }else {
