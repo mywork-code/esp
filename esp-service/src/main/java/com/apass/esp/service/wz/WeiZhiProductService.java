@@ -139,7 +139,16 @@ public class WeiZhiProductService {
 	/**
 	 * 获取所有图片信息(商品编号，支持批量，以，分隔  (最高支持20个商品))
 	 */
-	public List<WzSkuPicture> getWeiZhiProductSkuImage(String sku) throws Exception {
+	public List<WzSkuPicture> getWeiZhiProductSkuImage(List<String> skuIdList) throws Exception {
+		List<String> listString=new ArrayList<>();
+		if(null !=skuIdList && skuIdList.size()>0){
+			if(skuIdList.size()<=20){
+				listString=skuIdList;
+			}else{
+				listString=skuIdList.subList(0, 20);
+			}
+		}
+		String sku=StringUtils.join(listString, ",");
 		List<WzSkuPicture> list = new ArrayList<>();
 		List<Map<String, List<WzPicture>>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
 		for (Map<String, List<WzPicture>> map2 : map) {
@@ -154,7 +163,22 @@ public class WeiZhiProductService {
 		}
 		return list;
 	}
-
+	/**
+	 * 获取所有图片信息(单个商品)
+	 */
+	public List<String> getWeiZhiSingleProductSkuImage(String sku) throws Exception {
+		List<String> list = new ArrayList<>();
+		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		if(null !=mapList && mapList.size()==1){
+			Map<String, List<WzPicture>> map=mapList.get(0);
+			List<WzPicture> listWzPicture=map.get("sku");
+			for (WzPicture wzPicture : listWzPicture) {
+				list.add(wzPicture.getPath());
+			}
+		}
+		
+		return list;
+	}
 	/**
 	 * 商品区域购买限制查询(单个商品查询)
 	 */

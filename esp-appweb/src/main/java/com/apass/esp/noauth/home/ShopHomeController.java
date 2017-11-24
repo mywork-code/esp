@@ -62,6 +62,7 @@ import com.apass.esp.service.nation.NationService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.wz.WeiZhiGoodsInfoService;
 import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
@@ -139,6 +140,8 @@ public class ShopHomeController {
     private MyCouponManagerService myCouponManagerService;
     @Autowired
     private WeiZhiProductService weiZhiProductService;
+    @Autowired
+	private WeiZhiGoodsInfoService weiZhiGoodsInfoService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -1030,7 +1033,7 @@ public class ShopHomeController {
                 if(!checkSale){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
-                returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
+                returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(
                         Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
                 
                 //添加活动id

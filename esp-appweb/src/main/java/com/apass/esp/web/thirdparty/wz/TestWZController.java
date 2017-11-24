@@ -187,8 +187,10 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiProductSkuImage(@RequestBody Map<String, Object> paramMap) {
 		try {
+			List<String> list=new ArrayList<>();
+			list.add(1815738+"");
 			List<WzSkuPicture> wzSkuPictureList = weiZhiProductService
-					.getWeiZhiProductSkuImage(1593516 + "," + 1686504);
+					.getWeiZhiProductSkuImage(list);
 			System.out.println(wzSkuPictureList);
 			return Response.success("获取所有图片信息成功！",wzSkuPictureList);
 		} catch (Exception e) {
