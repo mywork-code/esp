@@ -1,5 +1,6 @@
 package com.apass.esp.invoice;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class InvoiceIssueService {
+    private static String TESTURL="http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
+    private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
     @Autowired
     private SystemEnvConfig systemEnvConfig;
     /**
@@ -34,7 +37,7 @@ public class InvoiceIssueService {
         String params = createContentDL(entity);
         System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(systemEnvConfig.getInvoiceUrl());
+        org.apache.cxf.endpoint.Client client = jwdc.createClient(getInvoiceUrl());
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
     }
@@ -50,7 +53,7 @@ public class InvoiceIssueService {
         String params = createContentXml(ensale,list,enbuy);
         System.out.println(params);
         JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(systemEnvConfig.getInvoiceUrl());
+        org.apache.cxf.endpoint.Client client = jwdc.createClient(getInvoiceUrl());
         Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
         return (String) tsobjects[0];
     }
@@ -149,5 +152,17 @@ public class InvoiceIssueService {
         sb.append(dataDescriptionXml);
         sb.append("\r\n");
         return sb.toString();
+    }
+    private String getInvoiceUrl(){
+        if(StringUtils.equals(systemEnvConfig.getEve(),"sit")){
+            return TESTURL;
+        }
+        if(StringUtils.equals(systemEnvConfig.getEve(),"uat")){
+            return TESTURL;
+        }
+        if(StringUtils.equals(systemEnvConfig.getEve(),"prod")){
+            return PRODUCTURL;
+        }
+        return null;
     }
 }
