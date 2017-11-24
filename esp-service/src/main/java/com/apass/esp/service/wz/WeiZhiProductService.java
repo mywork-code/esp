@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.third.party.jd.client.JdApiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,9 +135,18 @@ public class WeiZhiProductService {
 	}
 
 	/**
-	 * 获取所有图片信息
+	 * 获取所有图片信息(商品编号，支持批量，以，分隔  (最高支持20个商品))
 	 */
-	public List<WzSkuPicture> getWeiZhiProductSkuImage(String sku) throws Exception {
+	public List<WzSkuPicture> getWeiZhiProductSkuImage(List<String> skuIdList) throws Exception {
+		List<String> listString=new ArrayList<>();
+		if(null !=skuIdList && skuIdList.size()>0){
+			if(skuIdList.size()<=20){
+				listString=skuIdList;
+			}else{
+				listString=skuIdList.subList(0, 20);
+			}
+		}
+		String sku=StringUtils.join(listString, ",");
 		List<WzSkuPicture> list = new ArrayList<>();
 		List<Map<String, List<WzPicture>>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
 		for (Map<String, List<WzPicture>> map2 : map) {
@@ -155,6 +162,25 @@ public class WeiZhiProductService {
 		return list;
 	}
 
+	/**
+	 * 获取所有图片信息(单个商品)
+	 */
+	public List<String> getWeiZhiSingleProductSkuImage(String sku, String type) throws Exception {
+		List<String> list = new ArrayList<>();
+		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		if (null != mapList && mapList.size() == 1) {
+			Map<String, List<WzPicture>> map = mapList.get(0);
+			List<WzPicture> listWzPicture = map.get(sku);
+			for (WzPicture wzPicture : listWzPicture) {
+				if (wzPicture.getIsPrimary() == 0) {
+					String pictureUrl = wzPicture.getPath();
+					String str = pictureUrl.replace("n2", type);
+					list.add(str);
+				}
+			}
+		}
+		return list;
+	}
 	/**
 	 * 商品区域购买限制查询(单个商品查询)
 	 */
@@ -203,6 +229,21 @@ public class WeiZhiProductService {
 		}
 		return falge;
 	}
+	  /**
+     * 微知商品是否支持7天无理由退货,Y、N（单个商品）
+	 * @throws Exception 
+     */
+    public String getsupport7dRefund(String skuIds) throws Exception {
+        String value = "N";
+        CheckSale checkSale = weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
+		if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+			WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+			if (1 == wZCheckSale.getIs7ToReturn()) {
+				value = "Y";
+			}
+		}
+        return value;
+    }
 	/**
 	 * 商品可售验证接口(多个商品验证)
 	 * @param skuIds
@@ -210,11 +251,6 @@ public class WeiZhiProductService {
 	 * @throws Exception
 	 */
 	public List<WZCheckSale> getWeiZhiCheckSaleList(List<String> skuIdList) throws Exception {
-//		StringBuffer skuIds=new StringBuffer();
-//		for (String string : skuIdList) {
-//			skuIds.append(string);
-//			skuIds.append(",");
-//		}
 		String skuIds = StringUtils.join(skuIdList,",");
 		CheckSale checkSale=weiZhiProductApiClient.getWeiZhiCheckSale(skuIds);
 		List<WZCheckSale>  list=checkSale.getResult();
@@ -242,7 +278,29 @@ public class WeiZhiProductService {
 	public List<GoodsStock> getNewStockById(List<StockNum> skuNums, Region region) throws Exception {
 		return weiZhiProductApiClient.getNewStockById(skuNums, region);
 	}
-
+	/**
+     * 微知获取单个sku库存接口
+     *
+     * @return
+	 * @throws Exception 
+     */
+    public String getStockBySku(String sku, Region region) throws Exception {
+    	int isStock=0;
+    	List<StockNum> skuNums =new ArrayList<>();
+    	StockNum skuNum=new StockNum();
+    	skuNum.setSkuId(Long.parseLong(sku));
+    	skuNum.setNum(1);
+    	skuNums.add(skuNum);
+    	List<GoodsStock> result =weiZhiProductApiClient.getNewStockById(skuNums, region);
+        if(result.size()==1){
+        	isStock=result.get(0).getStockStateId();
+        }
+        if(33==isStock|| 39==isStock||40==isStock){
+        	return "有货";
+        }else{
+        	return "无货";
+        }
+    }
 	public Category getcategory(Long catId) throws Exception {
 		return weiZhiProductApiClient.getCategory(catId.toString());
 	}

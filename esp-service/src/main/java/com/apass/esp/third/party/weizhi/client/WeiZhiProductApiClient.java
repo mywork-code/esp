@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -33,11 +34,15 @@ public class WeiZhiProductApiClient {
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
 	/**
-	 * 获取微知商品详情信息
+	 * 获取微知商品详情信息（sku不为8位）
 	 * @return
 	 * @throws Exception
 	 */
 	public Product getWeiZhiProductDetail(String sku) throws Exception {
+		Product wzProductDetail = new Product();
+		if(sku.length()==8){
+			return null;
+		}
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -48,7 +53,6 @@ public class WeiZhiProductApiClient {
 
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Product wzProductDetail = new Product();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
 			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
@@ -69,7 +73,46 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductDetail;
 	}
+	/**
+	 * 获取微知商品详情信息（sku为8位图书音像类目）
+	 * @return
+	 * @throws Exception
+	 */
+	public JdGoodsBooks getWeiZhiRelatedProductDetail(String sku) throws Exception {
+		JdGoodsBooks wzProductDetail = new JdGoodsBooks();
+		if(sku.length()!=8){
+			return null;
+		}
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("sku", sku);
+		parameters.add(param1);
+		parameters.add(param2);
 
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
+			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
+
+			if(!StringUtils.equals("0",JSON.parseObject(responseJson).getString("result"))){
+				return null;
+			}
+
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<JdGoodsBooks>>() {
+			}.getType();
+			WeiZhiResponse<JdGoodsBooks> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				wzProductDetail = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiProductDetail response {} return is not 200");
+		}
+		return wzProductDetail;
+	}
 	/**
 	 * 获取商品上下架状态接口
 	 */
@@ -230,6 +273,15 @@ public class WeiZhiProductApiClient {
 
 	/**
 	 *获取所有图片信息
+	 *返回参数：sku=1815738
+	 *{"result":0,"detail":"OK","data":[{"1815738":[
+     * {"path":"http://img13.360buyimg.com/n0/jfs/t1927/130/1244887032/107943/3a4d2a69/56483347Nf58173b4.jpg","orderSort":0,"isPrimary":1},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t1927/130/1244887032/107943/3a4d2a69/56483347Nf58173b4.jpg","orderSort":1,"isPrimary":0},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t1876/146/1223581733/121305/2c6db051/56483358Nc592e907.jpg","orderSort":2,"isPrimary":0},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t2500/143/1212814375/81730/4942c1e2/56483364N42203979.jpg","orderSort":3,"isPrimary":0},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t1921/319/1209091955/143234/3efe3f4b/5648336aN4a555860.jpg","orderSort":4,"isPrimary":0},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t1996/302/1187346914/121250/ef213ac1/56483372N8e315b50.jpg","orderSort":5,"isPrimary":0},
+     * {"path":"http://img13.360buyimg.com/n2/jfs/t2413/297/1143079640/121287/75fd8aa/56483375Nb3ef6185.jpg","orderSort":6,"isPrimary":0}]}]}
 	 */
 	public List<Map<String,List<WzPicture>>> getWeiZhiProductSkuImage(String sku) throws Exception {
 		//获取Token
