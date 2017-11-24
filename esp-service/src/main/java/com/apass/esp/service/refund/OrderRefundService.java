@@ -68,7 +68,7 @@ public class OrderRefundService {
      * @param orderId,refundId
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void agreeRefundApplyByOrderId(Map<String, String> map) throws BusinessException {
         try {
             // 修改售后表
@@ -86,20 +86,14 @@ public class OrderRefundService {
 
     /**
      * 售后驳回换货请求，售后状态为 RS06：售後失敗
-     * 
-     * @param orderId
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void rejectRequestByOrderId(Map<String, String> map) throws BusinessException {
         try {
             //修改售后状态为RS06
             map.put("status", RefundStatus.REFUND_STATUS06.getCode());
             orderRefundRepository.rejectRequestByOrderId(map);
-
-            //修改订单状态为订单完成
-            //售后拒绝 暂时不改订单状态  等待 需求确认后续流程  edit by lc 2017-03-15
-            //orderInfoRepository.updateStatusByOrderId(map.get("orderId"), OrderStatus.ORDER_COMPLETED.getCode());
 
             // 判断售后流程表是否有记录根据nodeName ,无记录就插入一条确认收货记录
             String refundId = map.get("refundId");
@@ -125,7 +119,7 @@ public class OrderRefundService {
      * @param orderId
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void confirmReceiptByOrderId(Map<String, String> map) throws BusinessException {
         try {
             map.put("status", RefundStatus.REFUND_STATUS03.getCode());
@@ -163,7 +157,7 @@ public class OrderRefundService {
      * @param map
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void sendGoodsAgain(Map<String, String> map) throws BusinessException {
         try {
             
@@ -200,16 +194,12 @@ public class OrderRefundService {
      * @param map
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void confirmRefundByOrderId(Map<String, String> map) throws BusinessException {
         try {
             //修改售后状态为售后完成
             map.put("status", RefundStatus.REFUND_STATUS05.getCode());
             orderRefundRepository.updateRefundStatusAndCtimeByOrderId(map);
-
-            //修改订单状态为交易完成
-//            String orderId = map.get("orderId");
-//            orderInfoRepository.updateStatusByOrderId(orderId, OrderStatus.ORDER_COMPLETED.getCode());
 
             // 确认退款,插入售后完成记录
             String refundId = map.get("refundId");
@@ -234,7 +224,7 @@ public class OrderRefundService {
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * @throws Exception 
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void handleReturningOrders() throws Exception {
         
         Date date = new Date();
@@ -244,7 +234,7 @@ public class OrderRefundService {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("startDate", startDate);
         map.put("endDate", endDate);
-        
+        map.put("status",RefundStatus.REFUND_STATUS05.getCode());
         List<RefundedOrderInfoDto> refundedOrderInfoList = orderRefundRepository.queryReturningOrderInfo(map);
         
         LOGGER.info("售后完成订单状态修改：" + refundedOrderInfoList.toString());
@@ -261,6 +251,19 @@ public class OrderRefundService {
                 if(i!=10){
                     LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
                 }
+            }
+        }
+
+        //查询售后失败的订单，改成交易完成
+        Map<String, Object> refundFailMap = new HashMap<String, Object>();
+        refundFailMap.put("startDate", startDate);
+        refundFailMap.put("endDate", endDate);
+        refundFailMap.put("status",RefundStatus.REFUND_STATUS06.getCode());
+        List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryReturningOrderInfo(refundFailMap);
+        if(null != refundedFailOrderInfoList && !refundedFailOrderInfoList.isEmpty()){
+            for(RefundedOrderInfoDto dto: refundedOrderInfoList){
+                String status = OrderStatus.ORDER_COMPLETED.getCode();
+                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
         }
     }
@@ -304,7 +307,7 @@ public class OrderRefundService {
     /**
      * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void updateReturningOrderStatus(){
       /**
        * 首先查看订单的状态  此时状态应为D05,并且此时的售后服务表中的状态status应该为RS06 ,售后服务进程表中的nodename应该为RS06</br>

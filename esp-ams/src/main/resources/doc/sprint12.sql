@@ -22,7 +22,7 @@ create table `t_esp_invoice` (
   `user_id`  bigint(20) NOT NULL COMMENT '用户id',
   `order_id` varchar(128) NOT NULL COMMENT '订单编号',
   `order_amt` decimal(15,4) NOT NULL COMMENT '订单金额',
-  `tax` decimal(15,4) NOT NULL COMMENT '税金额',
+  `tax` decimal(15,4) NOT NULL DEFAULT 0 COMMENT '税金额',
   `no_tax_amt` decimal(15,4) NOT NULL DEFAULT 0 COMMENT '不含税金额',
   `head_type` tinyint not null DEFAULT 1 COMMENT '抬头类型 1：个人；2：单位',
   `telphone` varchar(32) not null DEFAULT '' COMMENT '收票人手机号',

@@ -176,7 +176,7 @@
 			WHERE
 			    t2.orderstatus = 'D05'
 			AND t1.order_id = t2.order_id
-			AND t1.status = 'RS05'
+			AND t1.status = #{status}
 			AND t1.completion_time BETWEEN #{startDate} AND #{endDate}          
         ]]>
 	</select>
