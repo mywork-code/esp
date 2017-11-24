@@ -1247,4 +1247,21 @@ public class GoodsBaseInfoController {
             return Response.fail("请您完整填写商品库存相关信息!");
         }
     }
+    /**
+     * 校验商品是否无库存
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkoutshock", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "查询商品是否无库存", valueType = LogValueTypeEnum.VALUE_REQUEST)
+    public Response checkoutshock(HttpServletRequest request) {
+        try{
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            return goodsAttrService.checkoutshock(Long.parseLong(goodsId));
+        }catch (Exception e) {
+            LOGGER.error("校验商品是否无库存失败!", e);
+            return Response.fail("2");
+        }
+    }
 }

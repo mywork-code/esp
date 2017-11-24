@@ -1,4 +1,4 @@
-package com.apass.esp.invoice;
+package com.apass.esp.web.invoice;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 /**
  * 发票接口相关
  * @author Administrator
@@ -47,6 +49,7 @@ public class InvoiceController {
     @RequestMapping("/invoiceRecord")
     public Response invoiceRecord(@RequestBody Map<String, Object> paramMap) {
         try{
+            logger.info("invoiceRecord方法开始执行了，参数:{}", GsonUtils.toJson(paramMap));            
             String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
             return invoiceService.invoiceRecord(Long.parseLong(userId));
         } catch (Exception e) {

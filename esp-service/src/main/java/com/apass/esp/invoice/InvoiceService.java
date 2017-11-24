@@ -168,7 +168,8 @@ public class InvoiceService {
         Invoice condi = new Invoice();
         condi.setUserId(userId);
         List<Invoice> list = readEntityList(condi);
-        List<InvoiceDetails> detailsApply = new ArrayList<InvoiceDetails>();
+        List<InvoiceDetails> detailsApplying = new ArrayList<InvoiceDetails>();
+        List<InvoiceDetails> detailsApplyed = new ArrayList<InvoiceDetails>();
         for(Invoice invoice : list){
             InvoiceDetails entity = new InvoiceDetails();
             BeanUtils.copyProperties(invoice, entity);
@@ -188,13 +189,17 @@ public class InvoiceService {
             if(status==(byte)2){
                 entity.setStatus("开票成功");
                 entity.setInvoiceNum(entity.getInvoiceNum());
+                detailsApplyed.add(entity);
             }else{
                 entity.setStatus("申请中");
                 entity.setInvoiceNum("暂无");
+                detailsApplying.add(entity);
             }
-            detailsApply.add(entity);
         }
-        return Response.success("开票记录查询成功", detailsApply);
+        List<Object> arr = new ArrayList<Object>();
+        arr.add(detailsApplying);
+        arr.add(detailsApplyed);
+        return Response.success("开票记录查询成功", arr);
     }
     /**
      * 申请中发票修改
@@ -242,9 +247,9 @@ public class InvoiceService {
      */
     @Transactional
     public int invoiceCheck(OrderInfoEntity order) throws Exception {
-        Invoice in = getInvoice(order.getId().toString());
-        if(in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
-            return in.getStatus();
+        Invoice in = getInvoice(order.getOrderId());
+        if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
+            return 3;
         }
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
         faPiaoKJ.setFpqqlsh("111MFWIKDSPTBMapsk"+order.getId());
@@ -267,7 +272,7 @@ public class InvoiceService {
         faPiaoKJ.setHjse("0");
         faPiaoKJ.setGhfSj(order.getTelephone());
         faPiaoKJ = (FaPiaoKJ) FarmartJavaBean.farmartJavaB(faPiaoKJ, FaPiaoKJ.class);
-        List<OrderDetailInfoEntity> delist = orderDetailInfoRepository.queryOrderDetailInfo(order.getId().toString());
+        List<OrderDetailInfoEntity> delist = orderDetailInfoRepository.queryOrderDetailInfo(order.getOrderId());
         List<FaPiaoKJXM> list = new ArrayList<FaPiaoKJXM>();
         for(OrderDetailInfoEntity de : delist){
             FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
@@ -285,9 +290,9 @@ public class InvoiceService {
             list.add(faPiaoKJXM);
         }
         FaPiaoKJDD faPiaoKJDD = new FaPiaoKJDD();
-        faPiaoKJDD.setDdh(order.getId().toString());
+        faPiaoKJDD.setDdh(order.getOrderId());
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("orderId", order.getId());
+        map.put("orderId", order.getOrderId());
         List<RefundInfoEntity> retuenList = orderRefundDao.queryRefundInfoByParam(map);
         if(retuenList!=null&&retuenList.size()>0){
             faPiaoKJDD.setThdh(retuenList.get(0).getId().toString());
@@ -297,11 +302,11 @@ public class InvoiceService {
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         if("0000".equals(sS.getReturnCode())){
-            updateStatusByOrderId((byte)1,order.getId().toString());
-            downloadInvoice.downloadFaPiao(order.getId().toString());
+            updateStatusByOrderId((byte)1,order.getOrderId());
+            downloadInvoice.downloadFaPiao(order.getOrderId());
             return 8;
         }else{
-            updateStatusByOrderId((byte)3,order.getId().toString());
+            updateStatusByOrderId((byte)3,order.getOrderId());
         }
         return 10;
     }

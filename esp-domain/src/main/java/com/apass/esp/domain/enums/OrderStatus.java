@@ -14,8 +14,6 @@ public enum OrderStatus {
     
     ORDER_NOPAY("D00","待付款"),
     
-    ORDER_PAYING("D01","付款中"),
-    
     ORDER_PAYED("D02","待发货"),
     
     ORDER_SEND("D03","待收货"),
