@@ -1,18 +1,18 @@
 package com.apass.esp.service.bill;
-import com.apass.esp.domain.Response;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpClientUtils;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.Map;
+import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.customer.CustomerInfo;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.logstash.LOG;
+import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.HttpClientUtils;
 /**
  * 
  * @description 客户信息获取
@@ -44,15 +44,11 @@ public class CustomerServiceClient {
     public String getCustomerHead(Long userId) throws BusinessException {
         try {
             Long customerId = getCustomerInfo(userId).getCustomerId();
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("customerId", customerId);
-            map.put("imgType", "head");
             String reqUrl = gfbappbServiceUrl + USERHEAD;
             LOGGER.info("获取客户信息::RequestUrl::[{}]", reqUrl);
-            String json = GsonUtils.toJson(map);
-            LOGGER.info("获取客户信息请求::Request::[{}]", json);
-            StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
-            String respJson = HttpClientUtils.getMethodGetResponse(reqUrl);
+            String params = "?customerId="+customerId+"&imgType=head";
+            LOGGER.info("获取客户信息请求参数:{}", params);
+            String respJson = reqUrl + params;
             LOGGER.info("获取客户信息::Response::[{}]", respJson);
             return respJson;
         } catch (Exception e) {
