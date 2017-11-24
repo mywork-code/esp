@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.service.wz.WeiZhiTokenService;
-import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
-import com.apass.esp.third.party.weizhi.entity.aftersale.AfsAvailableCompVo;
-import com.apass.esp.third.party.weizhi.entity.aftersale.AfterSaleExpectCompType;
+import com.apass.esp.third.party.weizhi.entity.aftersale.*;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.collect.Lists;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by xiaohai on 2017/11/20.
@@ -38,9 +37,9 @@ public class WeiZhiAfterSaleApiClient {
     /**
      * 服务单保存申请
      * @param afsApply
-     * @return
+     * @return 微知返回的所有数据data始终为{}
      */
-    public boolean afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
+    public WeiZhiAfterSaleResponse afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -66,13 +65,13 @@ public class WeiZhiAfterSaleApiClient {
         LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
         /**
-         * 返回json
+         * 解析json
          */
         JSONObject datas = JSON.parseObject(responseJson);
 
         if(null == datas){
             LOGGER.error("----getAvailableNumberComp--- callback is null");
-            return false;
+            return null;
         }
 
         String result = datas.getString("result");
@@ -80,18 +79,18 @@ public class WeiZhiAfterSaleApiClient {
         if(!StringUtils.equals(result, "0")){
             String message = datas.getString("detail");
             LOGGER.error("---getAvailableNumberComp---- callback result:{},message:{}",result,message);
-            return false;
+            return null;
         }
 
-        return datas.getBooleanValue("data");
+        return GsonUtils.convertObj(responseJson, WeiZhiAfterSaleResponse.class);
     }
 
     /**
      * 填写客户发运信息
      * @param afsApply
-     * @return
+     * @return 微知返回的所有数据data始终为{}
      */
-    public boolean afterUpdateSendSku(Map<String,String> paramMap) throws Exception {
+    public WeiZhiAfterSaleResponse afterUpdateSendSku(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
         //封装参数：表单提交
@@ -115,7 +114,7 @@ public class WeiZhiAfterSaleApiClient {
 
         if(null == datas){
             LOGGER.error("----getAvailableNumberComp--- callback is null");
-            return false;
+            return null;
         }
 
         String result = datas.getString("result");
@@ -123,15 +122,15 @@ public class WeiZhiAfterSaleApiClient {
         if(!StringUtils.equals(result, "0")){
             String message = datas.getString("detail");
             LOGGER.error("---getAvailableNumberComp---- callback result:{},message:{}",result,message);
-            return false;
+            return null;
         }
 
-        return datas.getBooleanValue("data");
+        return GsonUtils.convertObj(responseJson, WeiZhiAfterSaleResponse.class);
     }
 
     /**
      * 校验某订单中某商品是否可以提交售后服务
-     * @return
+     * @return true:支持,false:不支持
      * @throws Exception
      */
     public boolean getAvailableNumberComp(Map<String,String> paramMap) throws Exception {
@@ -176,10 +175,10 @@ public class WeiZhiAfterSaleApiClient {
 
     /**
      * 根据订单号、商品编号查询支持的服务类型
-     * @return
+     * @return data:List<ComponentExport > 或null
      * @throws Exception
      */
-    public List<AfterSaleExpectCompType> getCustomerExpectComp(Map<String,String> paramMap) throws Exception {
+    public List<ComponentExport> getCustomerExpectComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -187,8 +186,7 @@ public class WeiZhiAfterSaleApiClient {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("token",token));
         params.add(new BasicNameValuePair("wzOrderId",paramMap.get("wzOrderId")));
-        params.add(new BasicNameValuePair("pageIndex",paramMap.get("pageIndex")));
-        params.add(new BasicNameValuePair("pageSize",paramMap.get("pageSize")));
+        params.add(new BasicNameValuePair("skuId",paramMap.get("skuId")));
         LOGGER.info("根据订单号、商品编号查询支持的服务类型,请求参数：{}", GsonUtils.toJson(params));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
@@ -210,12 +208,12 @@ public class WeiZhiAfterSaleApiClient {
         }
 
         //如果返回数据正确，且有支持的服务类型
-        List<AfterSaleExpectCompType> compTypes = Lists.newArrayList();
+        List<ComponentExport> compTypes = Lists.newArrayList();
         JSONArray jsonArray = datas.getJSONArray("data");
 
         for (Object obj: jsonArray) {
             String content = JSONObject.toJSONString(obj);
-            AfterSaleExpectCompType afterSaleExpectCompType = GsonUtils.convertObj(content, AfterSaleExpectCompType.class);
+            ComponentExport afterSaleExpectCompType = GsonUtils.convertObj(content, ComponentExport.class);
             compTypes.add(afterSaleExpectCompType);
         }
 
@@ -224,10 +222,10 @@ public class WeiZhiAfterSaleApiClient {
 
     /**
      * 根据订单号、商品编号查询支持的商品返回微知方式
-     * @return
+     * @return data:List<ComponentExport > 或null
      * @throws Exception
      */
-    public List<AfterSaleExpectCompType> getWareReturnJdComp(Map<String,String> paramMap) throws Exception {
+    public List<ComponentExport> getWareReturnJdComp(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -255,12 +253,12 @@ public class WeiZhiAfterSaleApiClient {
             LOGGER.error("---getWareReturnJdComp---- callback result:{},message:{}",result,message);
             return null;
         }
-        List<AfterSaleExpectCompType> compTypes = Lists.newArrayList();
+        List<ComponentExport> compTypes = Lists.newArrayList();
         JSONArray jsonArray = jsonObject.getJSONArray("data");
 
         for (Object obj: jsonArray) {
             String content = JSONObject.toJSONString(obj);
-            AfterSaleExpectCompType afterSaleExpectCompType = GsonUtils.convertObj(content, AfterSaleExpectCompType.class);
+            ComponentExport afterSaleExpectCompType = GsonUtils.convertObj(content, ComponentExport.class);
             compTypes.add(afterSaleExpectCompType);
         }
 
@@ -273,7 +271,7 @@ public class WeiZhiAfterSaleApiClient {
      * @return
      * @throws Exception
      */
-    public String getServiveList(Map<String,String> paramMap) throws Exception {
+    public List<SkuObject> getServiveList(Map<String,String> paramMap) throws Exception {
         //获取Token
         String token = weiZhiTokenService.getTokenFromRedis();
 
@@ -302,15 +300,48 @@ public class WeiZhiAfterSaleApiClient {
             return null;
         }
 
-        String data = jsonObject.getString("data");
+        //转成SkuObject对象
+        List<SkuObject> skuObjects = Lists.newArrayList();
+        JSONArray jsonArray = jsonObject.getJSONArray("data");
+        for (Object obj: jsonArray) {
+            String content = JSONObject.toJSONString(obj);
+            Map<String, Object> contentMap = GsonUtils.convertObj(content,Map.class);//只有一个元素
+
+            SkuObject skuObject = new SkuObject();
+            AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = new AfsServicebyCustomerPinPage();
+            List<AfsServicebyCustomerPin> serviceInfoList = Lists.newArrayList();
+
+            for (Map.Entry<String, Object> entry : contentMap.entrySet()) {//只会循环一次
+                String key = entry.getKey();
+                skuObject.setSkuId(key);
+
+                String resultStr = String.valueOf(entry.getValue());
+                ResultObject resultObject = GsonUtils.convertObj(resultStr, ResultObject.class);
+
+
+                /*Map<String,Object> resultMap = (Map)entry.getValue();
+                resultObject.setResult(null);
+                resultObject.setResultCode(String.valueOf(resultMap.get("resultCode")));
+                resultObject.setResultMessage(String.valueOf(resultMap.get("resultMessage")));
+                resultObject.setSuccess(String.valueOf(resultMap.get("success")).equals("true"));
+                skuObject.setResult(resultObject);
+
+                if(resultMap.containsKey("result")){//如果result不为空
+                    String result1 = String.valueOf(resultMap.get("result"));
+
+
+                    for (Map.Entry<String, Object> entry2 : resultMap.entrySet()){
+                        entry2.getKey();
+
+                    }
+                }*/
+
+            }
+            skuObjects.add(skuObject);
+        }
 
         //TODO 封装到一个类里，类中的字段与data中的相同
-//        GsonUtils.convertObj(data,);
-
-
-
-        return null;
-
+        return skuObjects;
     }
 
 }

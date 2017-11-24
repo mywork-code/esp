@@ -347,6 +347,22 @@ public class TestWZController {
 
 
 	/**
+	 * 填写客户发运信息
+	 */
+	@RequestMapping(value = "/afterUpdateSendSku", method = RequestMethod.POST)
+	@ResponseBody
+	public Response afterUpdateSendSku(@RequestBody Map<String, String> paramMap) {
+		try {
+			weiZhiAfterSaleApiClient.afterUpdateSendSku(paramMap);
+
+			return Response.success("填写客户发运信息成功！");
+		} catch (Exception e) {
+			LOGGER.info("填写客户发运信息失败!",e);
+			return Response.fail("填写客户发运信息失败！");
+		}
+	}
+
+	/**
 	 * 校验某订单中某商品是否可以提交售后服务
 	 */
 	@RequestMapping(value = "/availableNumberComp", method = RequestMethod.POST)
@@ -359,6 +375,41 @@ public class TestWZController {
 		} catch (Exception e) {
 			LOGGER.info("校验某订单中某商品是否可以提交售后服务失败!",e);
 			return Response.fail("校验某订单中某商品是否可以提交售后服务失败！");
+		}
+	}
+
+	/**
+	 * 根据订单号、商品编号查询支持的服务类型
+	 */
+	@RequestMapping(value = "/getCustomerExpectComp", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getCustomerExpectComp(@RequestBody Map<String, String> paramMap) {
+		try {
+			weiZhiAfterSaleApiClient.getCustomerExpectComp(paramMap);
+
+			return Response.success("根据订单号、商品编号查询支持的服务类型成功！");
+		} catch (Exception e) {
+			LOGGER.info("根据订单号、商品编号查询支持的服务类型失败!",e);
+			return Response.fail("根据订单号、商品编号查询支持的服务类型失败！");
+		}
+	}
+
+	/**
+	 * 根据客户账号和订单号分页查询服务单概要信息
+	 */
+	@RequestMapping(value = "/getServiveList", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getServiveList(@RequestBody Map<String, String> paramMap) {
+		try {
+			paramMap.put("wzOrderId","2017050918401173");
+			paramMap.put("pageSize","20");
+			paramMap.put("pageIndex","1");
+			weiZhiAfterSaleApiClient.getServiveList(paramMap);
+
+			return Response.success("根据订单号、商品编号查询支持的服务类型成功！");
+		} catch (Exception e) {
+			LOGGER.info("根据订单号、商品编号查询支持的服务类型失败!",e);
+			return Response.fail("根据订单号、商品编号查询支持的服务类型失败！");
 		}
 	}
 
@@ -516,7 +567,7 @@ public class TestWZController {
 											jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
 											jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
 											jdGoods.setSaleUnit(goodDetail.getSaleUnit());
-//								jdGoods.setWareQd(wareQD);
+//											jdGoods.setWareQd(wareQD);
 											jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
 											jdGoods.setUpc(goodDetail.getUpc());
 											jdGoods.setState(goodDetail.getState() == 1 ? true : false);
@@ -560,7 +611,7 @@ public class TestWZController {
 		}
 		long endTime = System.currentTimeMillis();
 		long costTime = (endTime - startTime) / 1000;
-		LOGGER.info("微知商品初始化接口接口执行结束了,结束时间:endTime:{},共耗时:{}s", endTime + "", costTime + "");
+		LOGGER.info("微知商品初始化接口接口执行结束了,结束时间endTime:{},共耗时costTime:{}s", endTime + "", costTime + "");
 		return Response.success("微知商品初始化成功",weiZhiFirstCategorys);
 	}
 
