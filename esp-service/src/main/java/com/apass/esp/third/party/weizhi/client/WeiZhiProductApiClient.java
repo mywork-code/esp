@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.service.wz.WeiZhiTokenService;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -33,11 +34,15 @@ public class WeiZhiProductApiClient {
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
 	/**
-	 * 获取微知商品详情信息
+	 * 获取微知商品详情信息（sku不为8位）
 	 * @return
 	 * @throws Exception
 	 */
 	public Product getWeiZhiProductDetail(String sku) throws Exception {
+		Product wzProductDetail = new Product();
+		if(sku.length()==8){
+			return null;
+		}
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -48,7 +53,6 @@ public class WeiZhiProductApiClient {
 
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Product wzProductDetail = new Product();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
 			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
@@ -69,7 +73,46 @@ public class WeiZhiProductApiClient {
 		}
 		return wzProductDetail;
 	}
+	/**
+	 * 获取微知商品详情信息（sku为8位图书音像类目）
+	 * @return
+	 * @throws Exception
+	 */
+	public JdGoodsBooks getWeiZhiRelatedProductDetail(String sku) throws Exception {
+		JdGoodsBooks wzProductDetail = new JdGoodsBooks();
+		if(sku.length()!=8){
+			return null;
+		}
+		//获取Token
+		String token = weiZhiTokenService.getTokenFromRedis();
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
+		BasicNameValuePair param2 = new BasicNameValuePair("sku", sku);
+		parameters.add(param1);
+		parameters.add(param2);
 
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
+		String responseJson = null;
+		try {
+			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
+			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
+
+			if(!StringUtils.equals("0",JSON.parseObject(responseJson).getString("result"))){
+				return null;
+			}
+
+			Gson gson = new Gson();
+			Type objectType = new TypeToken<WeiZhiResponse<JdGoodsBooks>>() {
+			}.getType();
+			WeiZhiResponse<JdGoodsBooks> response = gson.fromJson(responseJson, objectType);
+			if (null != response && response.getResult() == 0) {
+				wzProductDetail = response.getData();
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiProductDetail response {} return is not 200");
+		}
+		return wzProductDetail;
+	}
 	/**
 	 * 获取商品上下架状态接口
 	 */

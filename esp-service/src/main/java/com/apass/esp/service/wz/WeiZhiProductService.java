@@ -137,7 +137,7 @@ public class WeiZhiProductService {
 	}
 
 	/**
-	 * 获取所有图片信息
+	 * 获取所有图片信息(商品编号，支持批量，以，分隔  (最高支持20个商品))
 	 */
 	public List<WzSkuPicture> getWeiZhiProductSkuImage(String sku) throws Exception {
 		List<WzSkuPicture> list = new ArrayList<>();
