@@ -43,8 +43,7 @@ public class WeiZhiTokenService {
 	 * @throws Exception
 	 */
 	public String getTokenFromRedis() throws Exception {
-		String token = "";
-		token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
 		if (null == token || StringUtils.isBlank(token)) {
 			getToken();
 			token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
