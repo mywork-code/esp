@@ -69,8 +69,8 @@ public class WeiZhiGoodsInfoService {
 			// BigDecimal postage = goodsService.getPostage(goodsIds);
 			map.put("postage", "0");
 			// 查询商品图片
-			List<WzSkuPicture> wzSkuPictureList = weiZhiProductService.getWeiZhiProductSkuImage(sku.toString());
-//			map.put("jdImagePathList", JdImagePathList);
+			List<String> wzSkuPictureList = weiZhiProductService.getWeiZhiSingleProductSkuImage(sku.toString());
+			map.put("jdImagePathList", wzSkuPictureList);
 //			// 查询商品是否有货
 //			String jdGoodStock = getStockBySku(sku.toString(), region);
 //			map.put("goodsStockDes", jdGoodStock);
