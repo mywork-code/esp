@@ -995,7 +995,23 @@ public class GoodsBaseInfoController {
 
         return new ModelAndView("goods/goodsPreviewProduct-view", map);
     }
-
+    
+    /**
+     * 商品预览（非京东改为多规格）
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/loadAllBannerPicNotJd")
+    public ModelAndView loadAllBannerPicNotJd(HttpServletRequest request) throws Exception {
+        Map<String, Object> returnMap = new HashMap<>();
+        String id = HttpWebUtils.getValue(request, "id");
+        String view = HttpWebUtils.getValue(request, "view");
+        returnMap =goodsService.loadAllBannerPicNotJd(Long.parseLong(id));
+        returnMap.put("view", view);
+        return new ModelAndView("goods/goodsPreviewProductJD-view", returnMap);
+    }
+    
     /**
      * 商品预览
      *
