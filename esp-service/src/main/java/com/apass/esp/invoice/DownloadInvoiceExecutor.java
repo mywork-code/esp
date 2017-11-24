@@ -2,6 +2,7 @@ package com.apass.esp.invoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.aisino.EncryptionDecryption;
@@ -14,7 +15,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by DELL on 2017/11/22.
  */
-@Service
+@Component
 public class DownloadInvoiceExecutor {
     private static Logger LOG = LoggerFactory.getLogger(DownloadInvoiceExecutor.class);
     private static final ExecutorService executorService = Executors.newFixedThreadPool(6);

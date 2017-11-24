@@ -111,6 +111,7 @@ public class OrderScheduleTask {
     /**
      * 售后完成的订单1天后订单状态改为交易完成(sprint8中退货的订单修改为交易关闭)；每3小时处理一次，订单状态售后服务中、售后流程状态售后完成
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
+     * sprint12:售后失败的退换货，订单状态改为交易完成
      */
     @Scheduled(cron = "0 0 0/3 * * *")
     public void handleReturningOrders(){

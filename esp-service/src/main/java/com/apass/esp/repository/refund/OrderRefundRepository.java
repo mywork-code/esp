@@ -89,7 +89,7 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
 	}
 
 	/**
-	 * 查询售后完成1天以上2天以内的售后订单数据
+	 * 根据RefundStatus查询1天以上2天以内的售后订单数据
 	 */
     public List<RefundedOrderInfoDto> queryReturningOrderInfo(Map<String, Object> map) {
         return getSqlSession().selectList(getSQL("queryReturningOrderInfo"), map);

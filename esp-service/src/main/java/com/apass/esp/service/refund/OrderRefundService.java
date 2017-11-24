@@ -86,8 +86,6 @@ public class OrderRefundService {
 
     /**
      * 售后驳回换货请求，售后状态为 RS06：售後失敗
-     * 
-     * @param orderId
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
@@ -244,7 +242,7 @@ public class OrderRefundService {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("startDate", startDate);
         map.put("endDate", endDate);
-        
+        map.put("status",RefundStatus.REFUND_STATUS05.getCode());
         List<RefundedOrderInfoDto> refundedOrderInfoList = orderRefundRepository.queryReturningOrderInfo(map);
         
         LOGGER.info("售后完成订单状态修改：" + refundedOrderInfoList.toString());
@@ -261,6 +259,19 @@ public class OrderRefundService {
                 if(i!=10){
                     LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
                 }
+            }
+        }
+
+        //查询售后失败的订单，改成交易完成
+        Map<String, Object> refundFailMap = new HashMap<String, Object>();
+        refundFailMap.put("startDate", startDate);
+        refundFailMap.put("endDate", endDate);
+        refundFailMap.put("status",RefundStatus.REFUND_STATUS06.getCode());
+        List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryReturningOrderInfo(refundFailMap);
+        if(null != refundedFailOrderInfoList && !refundedFailOrderInfoList.isEmpty()){
+            for(RefundedOrderInfoDto dto: refundedOrderInfoList){
+                String status = OrderStatus.ORDER_COMPLETED.getCode();
+                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
             }
         }
     }
