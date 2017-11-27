@@ -10,20 +10,20 @@ public class GlobalInfoEctype {
             this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEKJ.getCode();
-            this.userName = "111MFWIK";
+            this.userName = "131JJ2R8";
             this.taxpayerId = "91310000MA1G57A97F";
             this.authorizationCode = "911G57A97F";
-            this.requestCode = "111MFWIK";
+            this.requestCode = "131JJ2R8";
             this.responseCode = "121";
         }else if("2".equals(type)){
             this.terminalCode = TerminalCode.TERMINALBS.getCode();
             this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEXZ.getCode();
-            this.userName = "111MFWIK";
+            this.userName = "131JJ2R8";
             this.taxpayerId = "91310000MA1G57A97F";
             this.authorizationCode = "911G57A97F";
-            this.requestCode = "111MFWIK";
+            this.requestCode = "131JJ2R8";
             this.responseCode = "121";
         }
     }

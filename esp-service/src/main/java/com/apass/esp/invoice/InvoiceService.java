@@ -1,11 +1,16 @@
 package com.apass.esp.invoice;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.enums.InvoiceHeadTypeEnum;
+import com.apass.esp.service.goods.GoodsService;
+import freemarker.core.ArithmeticEngine;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +59,9 @@ public class InvoiceService {
     private DownloadInvoiceExecutor downloadInvoice;
     @Autowired
     private CustomerServiceClient customerServiceClient;
+
+    @Autowired
+    private GoodsService goodsService;
     /**
      * CREATED
      * @param entity
@@ -259,36 +267,57 @@ public class InvoiceService {
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
         faPiaoKJ.setFpqqlsh("131JJ2R8DSPTBMapsk"+order.getOrderId());
         faPiaoKJ.setDsptbm("131JJ2R8");
-        faPiaoKJ.setNsrsbh("310101000000090");
-        faPiaoKJ.setNsrmc(order.getMerchantCode());
+        faPiaoKJ.setNsrsbh("91310000MA1G57A97F");
+        faPiaoKJ.setNsrmc("上海奥派数据科技有限公司");
         faPiaoKJ.setDkbz("0");
         faPiaoKJ.setKpxm(in.getContent());
-        faPiaoKJ.setBmbBbh("1.0");
+        faPiaoKJ.setBmbBbh("12.0");
         faPiaoKJ.setXhfNsrsbh("91310000MA1G57A97F");
-        faPiaoKJ.setXhfmc(order.getMerchantCode());
-        faPiaoKJ.setGhfmc(order.getName());
-        faPiaoKJ.setGhfqylx("01");
+        faPiaoKJ.setXhfmc("上海奥派数据科技有限公司");
+        faPiaoKJ.setXhfDh("上海市虹口区欧阳路196号10号楼一层13室");//公司地址
+        faPiaoKJ.setXhfDh("021-60351818");//公司电话
+
+        faPiaoKJ.setGhfmc(InvoiceHeadTypeEnum.getEnum(in.getHeadType()).getDesc());
+        faPiaoKJ.setGhfNsrsbh(in.getTaxpayerNum());
+
+        faPiaoKJ.setGhfqylx("04");
         faPiaoKJ.setKpy("财务");
         faPiaoKJ.setKplx("1");
         faPiaoKJ.setCzdm("10");
         faPiaoKJ.setQdBz("0");
-        faPiaoKJ.setKphjje("20");
-        faPiaoKJ.setHjbhsje("0");
-        faPiaoKJ.setHjse("0");
+        //价税金额
+        faPiaoKJ.setKphjje(order.getOrderAmt() + "");
+        BigDecimal hjbhsje = order.getOrderAmt().divide(new BigDecimal(1.17)).setScale(2, RoundingMode.HALF_UP);
+        faPiaoKJ.setHjbhsje(hjbhsje.toString());
+        faPiaoKJ.setHjse(hjbhsje.multiply(new BigDecimal(0.17)).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+
         faPiaoKJ.setGhfSj(order.getTelephone());
+
         faPiaoKJ = (FaPiaoKJ) FarmartJavaBean.farmartJavaB(faPiaoKJ, FaPiaoKJ.class);
         List<OrderDetailInfoEntity> delist = orderDetailInfoRepository.queryOrderDetailInfo(order.getOrderId());
         List<FaPiaoKJXM> list = new ArrayList<FaPiaoKJXM>();
         for(OrderDetailInfoEntity de : delist){
+            GoodsInfoEntity goods = goodsService.selectByGoodsId(de.getGoodsId());
             FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
             faPiaoKJXM.setXmmc(de.getGoodsName());
             faPiaoKJXM.setXmsl(de.getGoodsNum().toString());
             faPiaoKJXM.setHsbz("1");
             faPiaoKJXM.setFphxz("0");
+
             faPiaoKJXM.setXmdj(de.getGoodsPrice().toString());
-            faPiaoKJXM.setSpbm(de.getCategoryCode());
+            String goodsCode = goods.getGoodsCode();
+            int goodsCodeLength = goodsCode.length();
+            if(goodsCodeLength >= 19){
+                faPiaoKJXM.setSpbm(goodsCode);//商品编码，不足19位后面补0
+            }else{
+               int j = 19 - goodsCodeLength;
+               String zeroStr = "";
+               for(int i = 0; i < j;i++){
+                   zeroStr += "0";
+               }
+                faPiaoKJXM.setSpbm(goodsCode + zeroStr);
+            }
             faPiaoKJXM.setYhzcbs("0");
-            faPiaoKJXM.setKce("0");
             faPiaoKJXM.setXmje(de.getGoodsPrice().multiply(new BigDecimal(de.getGoodsNum())).toString());
             faPiaoKJXM.setSl("0.17");
             faPiaoKJXM = (FaPiaoKJXM) FarmartJavaBean.farmartJavaB(faPiaoKJXM, FaPiaoKJXM.class);
