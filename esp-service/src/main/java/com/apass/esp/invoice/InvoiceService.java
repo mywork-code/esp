@@ -254,7 +254,6 @@ public class InvoiceService {
      * A、无售后监控交易， 交易完成后7天  
      * B、有售后监控售后，售后完成后3天
      * 2请求发票开具之后 在请求发票下载
-     * @param userId
      * @return
      * @throws Exception 
      * @throws NumberFormatException 
@@ -345,7 +344,6 @@ public class InvoiceService {
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         if("0000".equals(sS.getReturnCode())){
-            updateStatusByOrderId((byte)InvoiceStatusEnum.APPLYING.getCode(),order.getOrderId());
             downloadInvoice.downloadFaPiao(order.getOrderId());
             return true;
         }else{

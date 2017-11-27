@@ -28,6 +28,8 @@ public class DownloadInvoiceExecutor {
     @Autowired
     private InvoiceService invoiceService;
     @Autowired
+    private InvoiceIssueService invoiceIssueService;
+    @Autowired
     private SystemEnvConfig systemEnvConfig;
     /**
      * 轮询执行发票下载接口
@@ -63,8 +65,7 @@ public class DownloadInvoiceExecutor {
                         faPiaoDLoad.setNsrsbh("310101000000090");
                     }
                     faPiaoDLoad.setPdfXzfs("3");
-                    InvoiceIssueService service = new InvoiceIssueService();
-                    String s = service.requestFaPiaoDL(faPiaoDLoad);
+                    String s = invoiceIssueService.requestFaPiaoDL(faPiaoDLoad);
                     ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
                     Invoice in = invoiceService.getInvoice(orderId);
                     if("0000".equals(sS.getReturnCode())){
