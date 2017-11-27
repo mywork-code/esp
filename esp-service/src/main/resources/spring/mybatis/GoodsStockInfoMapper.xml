@@ -109,7 +109,37 @@
 		    delete_flag != 'Y'
 	]]>
 	</select>
-	
+		<!-- 根据商品id查询 -->
+	<select id="loadBySkuId" parameterType="Long" resultType="GoodsStockInfoEntity">
+	<![CDATA[
+		SELECT
+		id id,
+		id goodsStockId,
+		goods_id goodsId,
+		goods_sku_attr goodsSkuAttr,
+		goods_price goodsPrice,
+		stock_total_amt stockTotalAmt,
+		stock_curr_amt stockCurrAmt,
+		create_user createUser,
+		update_user updateUser,
+		create_date createDate,
+		update_date updateDate,
+		market_price marketPrice,
+		goods_Cost_Price goodsCostPrice,
+		stock_logo stockLogo,
+		goods_compare_url goodsCompareUrl,
+		goods_compare_url2 goodsCompareUrl2,
+		sku_id          skuId,
+		attr_val_ids    attrValIds,
+		delete_flag     deleteFlag
+		FROM
+			t_esp_goods_stock_info
+		WHERE
+			sku_id=#{value}
+		AND 
+		    delete_flag != 'Y'
+	]]>
+	</select>
 	<!-- 获取商品当前库存量 -->
     <select id="getStockCurrAmt" parameterType="Long" resultType="Long">
     <![CDATA[
