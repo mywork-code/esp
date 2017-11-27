@@ -257,6 +257,7 @@ public class InvoiceService {
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     public Boolean invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getOrderId());
+        order = orderInfoRepository.selectByOrderId(order.getOrderId());
         if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
             return false;
         }
@@ -283,7 +284,7 @@ public class InvoiceService {
         faPiaoKJ.setQdBz("0");
         //价税金额
         faPiaoKJ.setKphjje(order.getOrderAmt() + "");
-        BigDecimal hjbhsje = order.getOrderAmt().divide(new BigDecimal(1.17)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal hjbhsje = order.getOrderAmt().divide(new BigDecimal(1.17),2);
         faPiaoKJ.setHjbhsje(hjbhsje.toString());
         faPiaoKJ.setHjse(hjbhsje.multiply(new BigDecimal(0.17)).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
 
