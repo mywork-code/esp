@@ -609,7 +609,7 @@ public class GoodsService {
 				if(StringUtils.isEmpty(attrValIds2)){
 					attrValIds2=string;
 				}else{
-					attrValIds2=attrValIds2+":"+string;
+					attrValIds2=attrValIds2+";"+string;
 				}
 			}
 			jdSimilarSkuTo.setSkuIdOrder(attrValIds2);
