@@ -1229,7 +1229,7 @@ public class GoodsBaseInfoController {
         }catch(BusinessException e){
             return Response.fail(e.getErrorDesc());
         }catch(Exception e){
-            return Response.fail("按钮失焦事件 刷新规格库存表失败！");
+            return Response.fail("输入框失焦事件 刷新规格库存表失败！");
         }
     }
     /**
