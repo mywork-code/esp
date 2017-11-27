@@ -202,6 +202,65 @@ public class OrderQueryController {
     /**
      *物流信息查询
      */
+//    @ResponseBody
+//    @RequestMapping("/pagelistLogistics")
+//    public ResponsePageBody<OrderSubInfoEntity> pagelistLogistics(HttpServletRequest request) {
+//        ResponsePageBody<OrderSubInfoEntity> respBody = new ResponsePageBody<OrderSubInfoEntity>();
+//        OrderSubInfoEntity orderSubInfoEntity = new OrderSubInfoEntity();
+//        List<OrderSubInfoEntity> list = new ArrayList<>();
+//        try{
+//            String orderId = HttpWebUtils.getValue(request, "orderId");
+//            String logisticsName = HttpWebUtils.getValue(request, "logisticsName");
+//            String logisticsNo = HttpWebUtils.getValue(request, "logisticsNo");
+//            
+//            if(StringUtils.isNotBlank(logisticsNo)){
+//                orderSubInfoEntity.setLogisticsNo(logisticsNo);
+//            }
+//            //物流厂商联系电话和物流公司翻译
+//            Map<String, String> map2 = new HashMap<String, String>();
+//            map2.put("dataTypeNo", "100003");
+//            map2.put("dataNo", logisticsName);
+//            List<DataDicInfoEntity> dataDicByparam = dataDicService.getDataDicByparam(map2);
+//            for (DataDicInfoEntity dataDicInfoEntity : dataDicByparam) {
+//                orderSubInfoEntity.setLogisticsName(dataDicInfoEntity.getDataNo());
+//                orderSubInfoEntity.setLogisticsNameDes(dataDicInfoEntity.getDataName());
+//                orderSubInfoEntity.setLogisticsTel(dataDicInfoEntity.getRemark());
+//                list.add(orderSubInfoEntity);
+//            }
+//            
+//            boolean logisticsFlag = true;//物流查询是否成功标志
+//            //查询物流状态
+//            try {
+//                if (!StringUtils.isAnyBlank(logisticsNo, logisticsName, orderId)) {
+//                    Map<String, Object> signleTrackingsMap = logisticsService.getSignleTrackings(logisticsName,
+//                        logisticsNo, orderId);
+//                    LogisticsResponseDto logisticsResponseDto = (LogisticsResponseDto) signleTrackingsMap
+//                        .get("logisticInfo");
+//                    orderSubInfoEntity.setLogisticsStatus(logisticsResponseDto.getState());
+//                    String signTime = String.valueOf(signleTrackingsMap.get("signTime"));
+//                    orderSubInfoEntity.setSignTime(StringUtils.isBlank(signTime)?"":signTime);
+//                    logisticsFlag = logisticsResponseDto.isSuccess();
+//                }
+//            } catch (BusinessException e) {
+//                LOG.error("物流信息查询失败", e);
+//                LOG.error("handlePageList->logisticsNo:{}物流信息查询失败", logisticsNo);
+//            }
+//            
+//            if(logisticsFlag){
+//                respBody.setMsg("物流信息查询成功！");
+//                respBody.setRows(list);
+//                respBody.setStatus(CommonCode.SUCCESS_CODE);
+//            }else{
+//                respBody.setMsg("暂未查到物流信息！");
+//            }
+//            
+//        }catch(Exception e){
+//            LOG.error("物流信息查询失败！", e);
+//            respBody.setMsg("物流信息查询失败！");
+//        }
+//        
+//        return respBody;
+//    }
     @ResponseBody
     @RequestMapping("/pagelistLogistics")
     public ResponsePageBody<OrderSubInfoEntity> pagelistLogistics(HttpServletRequest request) {
@@ -210,11 +269,17 @@ public class OrderQueryController {
         List<OrderSubInfoEntity> list = new ArrayList<>();
         try{
             String orderId = HttpWebUtils.getValue(request, "orderId");
-            String logisticsName = HttpWebUtils.getValue(request, "logisticsName");
-            String logisticsNo = HttpWebUtils.getValue(request, "logisticsNo");
-            
-            if(StringUtils.isNotBlank(logisticsNo)){
-                orderSubInfoEntity.setLogisticsNo(logisticsNo);
+            if(StringUtils.isBlank(orderId)){
+            	throw new BusinessException("订单号不能为空!");
+            }
+            OrderInfoEntity order = orderService.selectByOrderId(orderId);
+            if(null == order){
+            	throw new BusinessException("所查询订单不存在!");
+            }
+            String logisticsName = SourceType.JD.getCode();
+            if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
+            	orderSubInfoEntity.setLogisticsNo(order.getLogisticsNo());
+            	logisticsName = order.getLogisticsName();
             }
             //物流厂商联系电话和物流公司翻译
             Map<String, String> map2 = new HashMap<String, String>();
@@ -231,19 +296,19 @@ public class OrderQueryController {
             boolean logisticsFlag = true;//物流查询是否成功标志
             //查询物流状态
             try {
-                if (!StringUtils.isAnyBlank(logisticsNo, logisticsName, orderId)) {
-                    Map<String, Object> signleTrackingsMap = logisticsService.getSignleTrackings(logisticsName,
-                        logisticsNo, orderId);
-                    LogisticsResponseDto logisticsResponseDto = (LogisticsResponseDto) signleTrackingsMap
-                        .get("logisticInfo");
-                    orderSubInfoEntity.setLogisticsStatus(logisticsResponseDto.getState());
-                    String signTime = String.valueOf(signleTrackingsMap.get("signTime"));
-                    orderSubInfoEntity.setSignTime(StringUtils.isBlank(signTime)?"":signTime);
-                    logisticsFlag = logisticsResponseDto.isSuccess();
+                Map<String, Object> signleTrackingsMap = logisticsService.loadLogisticInfo(orderId);
+                LogisticsResponseDto logisticsResponseDto = (LogisticsResponseDto) signleTrackingsMap
+                    .get("logisticInfo");
+                if(StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
+                	orderSubInfoEntity.setLogisticsNo(logisticsResponseDto.getLogisticCode());
                 }
+                orderSubInfoEntity.setLogisticsStatus(logisticsResponseDto.getState());
+                String signTime = String.valueOf(signleTrackingsMap.get("signTime"));
+                orderSubInfoEntity.setSignTime(StringUtils.isBlank(signTime)?"":signTime);
+                logisticsFlag = logisticsResponseDto.isSuccess();
             } catch (BusinessException e) {
                 LOG.error("物流信息查询失败", e);
-                LOG.error("handlePageList->logisticsNo:{}物流信息查询失败", logisticsNo);
+                LOG.error("handlePageList->logisticsNo:{}物流信息查询失败", order.getLogisticsNo());
             }
             
             if(logisticsFlag){
@@ -253,15 +318,12 @@ public class OrderQueryController {
             }else{
                 respBody.setMsg("暂未查到物流信息！");
             }
-            
         }catch(Exception e){
             LOG.error("物流信息查询失败！", e);
             respBody.setMsg("物流信息查询失败！");
         }
-        
         return respBody;
     }
-    
 
     /**
      * 订单信息查询

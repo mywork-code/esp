@@ -258,8 +258,8 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
      * 查询预占库存 代发货的订单
      * @return
      */
-    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(){
-        return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus");
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(String souceType){
+        return getSqlSession().selectList("getOrderByOrderStatusAndPreStatus",souceType);
     }
 
     /**

@@ -745,7 +745,7 @@
 			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
 		]]>
 	</select>
-	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
+	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity"  resultType="java.lang.String">
 	<![CDATA[
 		SELECT
 				id	id,
@@ -784,7 +784,7 @@
 		FROM
 			t_esp_order_info
 		WHERE
-			orderstatus = 'D03' and pre_stock_status = '1' and source='jd'
+			orderstatus = 'D03' and pre_stock_status = '1' and source=#{sourceType}
 		]]>
 	</select>
 	<!-- 根据订单的编号，修改字段 -->

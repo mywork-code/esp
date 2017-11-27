@@ -466,6 +466,27 @@ public class OrderService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class,BusinessException.class})
+    public void updateLogisticsInfoAndOrderInfoByOrderId(String orderId) throws BusinessException{
+    	/**
+         * 首先判断一下订单的预发货的状态 1.如果为Y，则不更新此字段 2.如果为空，要把值置成N
+         */
+        OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
+        if(null == entity){
+        	return;
+        }
+        if (!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())) {
+            entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
+            entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+            entity.setParentOrderId(entity.getParentOrderId());
+            orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+        }
+        // 更新订单状态为待收货 D03 : 代收货
+        Map<String,String> map = Maps.newHashMap();
+        map.put("orderId", orderId);
+        map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
+        orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
+    }
     /**
      * 生成商品订单
      *
@@ -3333,10 +3354,11 @@ public class OrderService {
      * 
      * @return
      */
-    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus() {
-        return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(String sourceType) {
+        return orderInfoRepository.getOrderByOrderStatusAndPreStatus(sourceType);
     }
 
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class,BusinessException.class})
     public void wzSplitOrderMessageHandle(OrderInfoEntity order) throws BusinessException{
     	 // 确认预占库存 改变订单状态
         Map<String, Object> params = Maps.newHashMap();
@@ -3345,12 +3367,15 @@ public class OrderService {
         params.put("extOrderId", order.getExtOrderId());
         params.put("orderId", order.getOrderId());
         orderInfoRepository.updatePreStockStatusByOrderId(params);
+        //更新订单的发货状态和时间和订单的状态
+        updateLogisticsInfoAndOrderInfoByOrderId(order.getOrderId());
     }
     /**
      * 京东拆单消息处理
      * 
      * @param orderInfoEntity
      */
+    @Deprecated
     public void jdSplitOrderMessageHandle(JSONObject jsonObject, OrderInfoEntity orderInfoEntity)
             throws BusinessException {
         String jdOrderIdp = orderInfoEntity.getExtOrderId();

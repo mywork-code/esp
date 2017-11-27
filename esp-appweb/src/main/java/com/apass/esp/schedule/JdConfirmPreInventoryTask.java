@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.entity.ServiceError;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.ServiceErrorType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.ServiceErrorMapper;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
@@ -107,7 +108,7 @@ public class JdConfirmPreInventoryTask {
         /**
          * 查询订单状态D03(已发货)，预占库存状态为1(1.预占 2.确认)，并且source 为京东的订单
          */
-        List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus();
+        List<OrderInfoEntity> orderInfoEntityList = orderService.getOrderByOrderStatusAndPreStatus(SourceType.WZ.getCode());
         if (CollectionUtils.isEmpty(orderInfoEntityList)) {
             return;
         }
