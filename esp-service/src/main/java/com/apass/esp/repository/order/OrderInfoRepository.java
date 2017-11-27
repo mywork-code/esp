@@ -365,4 +365,11 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<OrderInfoEntity> selectByParentOrderId(String parentOrderId){
     	 return getSqlSession().selectList(getSQL("selectByParentOrderId"), parentOrderId);
     }
+    /**
+     * findHandSignOrder 查询订单交易完成 7 天后的订单
+     * @return
+     */
+    public List<OrderInfoEntity> findCompelateOrder() {
+        return getSqlSession().selectList("findCompelateOrder");
+    }
 }

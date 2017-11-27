@@ -20,7 +20,7 @@ public final class CaConstant {
     try {
       properties = new Properties();
       properties.load(CaConstant.class.getResourceAsStream("/pkcs7.properties"));
-      rootClassPath = CaConstant.class.getResource("/").getPath();
+      rootClassPath = CaConstant.class.getResource("/ca").getPath();///D:/gitworkspace/esp/esp-service/target/classes/ca
     } catch (Exception e) {
       LOGGER.error("pkcs7接口初始化系统参数失败!", e);
     }
