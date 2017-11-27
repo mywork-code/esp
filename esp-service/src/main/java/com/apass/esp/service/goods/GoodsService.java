@@ -4,15 +4,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.domain.entity.jd.JdGoodsBooks;
 import com.apass.esp.domain.entity.jd.JdSaleAttr;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
@@ -41,7 +39,6 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.CategoryMapper;
 import com.apass.esp.mapper.JdCategoryMapper;
@@ -612,7 +609,7 @@ public class GoodsService {
 				if(StringUtils.isEmpty(attrValIds2)){
 					attrValIds2=string;
 				}else{
-					attrValIds2=attrValIds2+":"+string;
+					attrValIds2=attrValIds2+";"+string;
 				}
 			}
 			jdSimilarSkuTo.setSkuIdOrder(attrValIds2);
@@ -646,18 +643,23 @@ public class GoodsService {
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId,String attrValId) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		String[] attrValIdString=attrValId.split(":");
+		Map<String,Object> map=new HashMap<>();
+		for (int i = 0; i < attrValIdString.length; i++) {
+			GoodsAttrVal gv=goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValIdString[i]));
+			map.put(gv.getAttrId().toString(), i+1);
+		}
 		// 拼凑京东商品jdSimilarSkuList数据格式
 		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
 		// 查出商品属性
 		List<GoodsAttrVal> goodsAttrValList = goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsId);
-		int dim = 1;
 		// 查询 t_esp_goods_attr_val 商品不同规格下对应值表
 		for (GoodsAttrVal goodsAttrVal : goodsAttrValList) {
 			JdSimilarSku jdSimilarSku = new JdSimilarSku();
 			GoodsAttr goodsAttr = goodsAttrService.selectGoodsAttrByid(goodsAttrVal.getAttrId());
+			int dim=(int) map.get(goodsAttrVal.getAttrId().toString());
 			String saleName = goodsAttr.getName();// 京东saleName
 			jdSimilarSku.setSaleName(saleName);
-			jdSimilarSku.setDim(dim++);
+			jdSimilarSku.setDim(dim);
 			List<JdSaleAttr> saleAttrList = new ArrayList<>();
 			List<GoodsAttrVal> GoodsAttrValList = goodsAttrValService.queryByGoodsIdAndAttrId(goodsId,
 					goodsAttrVal.getAttrId());
@@ -689,6 +691,18 @@ public class GoodsService {
 			jdSimilarSku.setSaleAttrList(saleAttrList);
 			jdSimilarSkuList.add(jdSimilarSku);
 		}
+		//根据ProCouponVo里面的开始时间排序
+		Collections.sort(jdSimilarSkuList,new Comparator<JdSimilarSku>(){
+			@Override
+			public int compare(JdSimilarSku o1, JdSimilarSku o2) {
+				if(o1.getDim() > o2.getDim()){
+					return 1;
+				}else{
+					return -1;
+				}
+			}
+			
+		});
 		return jdSimilarSkuList;
 	}
 	
