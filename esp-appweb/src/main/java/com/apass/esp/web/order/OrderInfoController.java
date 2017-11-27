@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.apass.esp.domain.dto.InvoiceDto;
+import com.apass.gfb.framework.utils.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,10 +48,6 @@ import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
-import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
-import com.apass.gfb.framework.utils.EncodeUtils;
-import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 @Path("/order")
@@ -189,6 +186,10 @@ public class OrderInfoController {
             //生成发票参数
             InvoiceDto invoiceDto = null;
             if(StringUtils.isNotEmpty(invoiceTelphone)){
+              if(!RegExpUtils.mobiles(invoiceTelphone)){
+                LOGGER.error("收票人手机号不合法！");
+                return Response.fail(BusinessErrorCode.PHONE_VALIDATE_FAILED);
+              }
                invoiceDto = new InvoiceDto();
               invoiceDto.setCompanyName(invoiceCompanyName);
               invoiceDto.setContent(invoiceContent);
@@ -196,8 +197,14 @@ public class OrderInfoController {
               invoiceDto.setTelphone(invoiceTelphone);
               invoiceDto.setUserId(userId);
               invoiceDto.setTaxpayerNum(invoiceTaxpayerNum);
-            }
 
+              if("2".equals(invoiceHeadType)){
+                if(StringUtils.isEmpty(invoiceCompanyName) || StringUtils.isEmpty(invoiceTaxpayerNum)){
+                  LOGGER.error("发票单位名称或纳税人识别号为空");
+                  return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+                }
+              }
+            }
 
             List<String> orders = orderService.confirmOrder(requestId, userId, totalPayment,discountMoney, addressId,
          			        purchaseList, sourceFlag, deviceType,myCouponId,goodStockIds,invoiceDto);
