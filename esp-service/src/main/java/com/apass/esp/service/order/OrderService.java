@@ -3354,8 +3354,8 @@ public class OrderService {
      * 
      * @return
      */
-    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus() {
-        return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(String sourceType) {
+        return orderInfoRepository.getOrderByOrderStatusAndPreStatus(sourceType);
     }
 
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class,BusinessException.class})
