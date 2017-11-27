@@ -130,7 +130,7 @@ public class InvoiceService {
      * @throws BusinessException 
      * @throws NumberFormatException 
      */
-    public Response invoiceDetails(String orderId,String userId) throws NumberFormatException, BusinessException {
+    public Response invoiceDetails(String orderId,String userId){
         Invoice invoice = new Invoice();
         invoice.setOrderId(orderId);
         List<Invoice> list = readEntityList(invoice);

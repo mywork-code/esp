@@ -1,12 +1,14 @@
 package com.apass.esp.service.bill;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.customer.CustomerInfo;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -41,20 +43,24 @@ public class CustomerServiceClient {
      * @return
      * @throws BusinessException
      */
-    public String getCustomerHead(Long userId) throws BusinessException {
+    public String getCustomerHead(Long userId){
+        CustomerInfo customer = null;
+        String respJson = null;
         try {
-            Long customerId = getCustomerInfo(userId).getCustomerId();
+            customer = getCustomerInfo(userId);
+            Long customerId = customer.getCustomerId();
             String reqUrl = gfbappbServiceUrl + USERHEAD;
             LOGGER.info("获取客户信息::RequestUrl::[{}]", reqUrl);
             String params = "?customerId="+customerId+"&imgType=head";
             LOGGER.info("获取客户信息请求参数:{}", params);
-            String respJson = reqUrl + params;
+            respJson = reqUrl + params;
             LOGGER.info("获取客户信息::Response::[{}]", respJson);
-            return respJson;
-        } catch (Exception e) {
-            LOGGER.error("调用gfb客户信息查询异常:[{}]", e);
-            throw new BusinessException("调用gfb客户信息查询异常", e);
+        } catch (BusinessException e) {
+            LOGGER.error("调用gfb客户信息查询客户信息异常:[{}]", e);
+        }catch (Exception e) {
+            LOGGER.error("调用gfb客户信息查询客户信息异常:[{}]", e);
         }
+        return respJson;
     }
 	/**
 	 * 获取客户信息
@@ -126,6 +132,7 @@ public class CustomerServiceClient {
 	 * @return 1:可以信用支付    0:不能信用支付
 	 * @throws BusinessException
 	 */
+    @SuppressWarnings("unchecked")
     public Integer creditPaymentAuth(Map<String, Object> paramMap) throws BusinessException {
         try {
             String address = gfbServiceUrl + CREDITPAYAUTH;
