@@ -6,8 +6,14 @@ import com.apass.esp.third.party.weizhi.client.WeiZhiResponse;
  * Created by xiaohai on 2017/11/24.
  */
 public class WeiZhiAfterSaleResponse{
-    private Integer result;//错误码
-    private String detail;//错误描述
+    /**
+     * 状态码:0成功，其它：导演
+     */
+    private Integer result;
+    /**
+     * 错误描述
+     */
+    private String detail;
 
     public Integer getResult() {
         return result;

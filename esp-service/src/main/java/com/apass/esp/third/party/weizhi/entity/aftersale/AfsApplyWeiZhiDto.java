@@ -2,7 +2,10 @@ package com.apass.esp.third.party.weizhi.entity.aftersale;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.third.party.jd.entity.aftersale.AfsApply;
+import com.apass.esp.third.party.jd.entity.aftersale.AsCustomerDto;
+import com.apass.esp.third.party.jd.entity.aftersale.AsDetailDto;
+import com.apass.esp.third.party.jd.entity.aftersale.AsPickwareDto;
+import com.apass.esp.third.party.jd.entity.aftersale.AsReturnwareDto;
 
 /**
  * type: class
@@ -13,7 +16,6 @@ import com.apass.esp.third.party.jd.entity.aftersale.AfsApply;
  */
 public class AfsApplyWeiZhiDto {
     private Long wzOrderId;
-    private String token;
     private Long userId;//userId
     private Integer customerExpect;// 客户预期
     private String questionDesc;// 产品问题描述
@@ -180,14 +182,6 @@ public class AfsApplyWeiZhiDto {
 
     public void setWzOrderId(Long wzOrderId) {
         this.wzOrderId = wzOrderId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getAsCustomerDto() {

@@ -1,21 +1,5 @@
 package com.apass.esp.service.aftersale;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.repository.goods.GoodsRepository;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
@@ -37,6 +21,7 @@ import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.datadic.DataDicRepository;
+import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.repository.merchant.MerchantInforRepository;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
@@ -50,18 +35,25 @@ import com.apass.esp.service.fileview.FileViewService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.entity.aftersale.AfsApply;
-import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
-import com.apass.esp.third.party.jd.entity.aftersale.AsCustomerDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsDetailDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsPickwareDto;
-import com.apass.esp.third.party.jd.entity.aftersale.AsReturnwareDto;
-import com.apass.esp.third.party.jd.entity.aftersale.SendSku;
+import com.apass.esp.third.party.jd.entity.aftersale.*;
+import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
+import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
+import com.apass.esp.third.party.weizhi.entity.aftersale.WeiZhiAfterSaleResponse;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class AfterSaleService {
@@ -108,6 +100,8 @@ public class AfterSaleService {
 
     @Autowired
     private JdAfterSaleApiClient jdAfterSaleApiClient;
+    @Autowired
+    private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
 
     @Autowired
     private AddressService addressService;
@@ -184,8 +178,12 @@ public class AfterSaleService {
         List<Long> refuseStockIds = Lists.newArrayList();
         String jdReturnType = "";
         if ("jd".equals(orderInfo.getSource())) {
-            AfsApply afsApply = new AfsApply();
-            afsApply.setJdOrderId(Long.valueOf(orderInfo.getExtOrderId()));// 京东订单号
+//            AfsApply afsApply = new AfsApply();
+//            afsApply.setJdOrderId(Long.valueOf(orderInfo.getExtOrderId()));// 京东订单号
+
+            AfsApplyWeiZhiDto afsApply = new AfsApplyWeiZhiDto();
+            afsApply.setWzOrderId(Long.valueOf(orderInfo.getExtOrderId()));
+
             // afsApply.setJdOrderId(59904143604l);//京东订单号
             afsApply.setUserId(Long.valueOf(userId));
             if (operate.equals(YesNo.NO.getCode())) {
@@ -308,13 +306,23 @@ public class AfterSaleService {
                             jdReturnType = JDReturnType.values()[i].getMessage();
                         }
                     }
-                    afsApply = AfsApply.fromOriginalJson(afsApply);
+                    afsApply = AfsApplyWeiZhiDto.fromOriginalJson(afsApply);
 
-                    // 调用京东接口：申请服务
-                    JdApiResponse<Integer> jdApiResponse1 = jdAfterSaleApiClient
-                            .afterSaleAfsApplyCreate(afsApply);
-                    if (!jdApiResponse1.isSuccess()) {
-                        throw new BusinessException("该商品不支持售后", BusinessErrorCode.PARAM_VALUE_ERROR);
+                    // 调用京东接口：申请服务 TODO(待确认是否成功)
+//                    JdApiResponse<Integer> jdApiResponse1 = jdAfterSaleApiClient
+//                            .afterSaleAfsApplyCreate(afsApply);
+//                    if (!jdApiResponse1.isSuccess()) {
+//                        throw new BusinessException("该商品不支持售后", BusinessErrorCode.PARAM_VALUE_ERROR);
+//                    }
+                    try {
+                        WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterSaleAfsApplyCreate(afsApply);
+                        if(weiZhiAfterSaleResponse.getResult() != 0){
+                            LOGGER.error("服务单保存申请失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
+                            throw new BusinessException("服务单保存申请失败", BusinessErrorCode.PARAM_VALUE_ERROR);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("调用微知服务单保存申请接口异常",e);
+                        throw new BusinessException("调用微知服务单保存申请接口异常", BusinessErrorCode.PARAM_VALUE_ERROR);
                     }
                 } else {
                     refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
