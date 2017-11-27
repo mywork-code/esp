@@ -894,7 +894,7 @@ $(function() {
 		
 		$(".search-btn").click();
 	});
-	//点击新增库存
+	//点击修改库存
 	$("#editPlanDecrible #four").click(function(){
 		$("#editPlanDecrible #one").css('font-weight','lighter');
     	$("#editPlanDecrible #two").css('font-weight','lighter');
@@ -3533,6 +3533,11 @@ function flushtableattrEditlist(){
 }
 var editindex;
 function editrowForEdit1(target){
+	if(viewdisplaybysource == 'jd'){
+		$("#editStockGoodsLogoFile").attr('disabled',true);
+	}else{
+		$("#editStockGoodsLogoFile").removeAttr('disabled');
+	}
 	editindex = getRowIndexE(target);
 	var rows = $('#tableattrEditlist').datagrid('getRows');
 	var r = rows[editindex];
