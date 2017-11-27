@@ -404,7 +404,7 @@ public class GoodsAttrService {//450
         }
         Boolean fCREATE = this.savegoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
         if(!fCREATE){
-            throw new BusinessException("批量保存库存，保存新库存属性和规格信息失败！");
+            throw new BusinessException("批量保存库存，保存新库存属性和规格信息失败,请您完整填写商品规格相关信息！");
         }
         Boolean dsCREATE = goodsStockInfoService.deletegoodsStockInfoByGoodsId(goodsId);
         if(!dsCREATE){
@@ -448,10 +448,10 @@ public class GoodsAttrService {//450
 //            goodsStockentoty.setStockLogo(url);
             Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
             if(i!=1){
-                throw new BusinessException("批量保存库存，商品新库存信息保存失败，检查库存非空字段验证！");
+                throw new BusinessException("批量保存库存，商品新库存信息保存失败，请您完整填写商品库存相关信息！");
             }
         }
-        return Response.success("批量保存库存！");
+        return Response.success("批量保存库存成功！");
     }
     /**
      * 修改商品第四页面
@@ -688,12 +688,12 @@ public class GoodsAttrService {//450
                 entity.setSort(1);
                 entity.setUpdatedTime(new Date());
                 if(!checkAttrValListByAttrId(null,attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
-                    throw new BusinessException("新增属性规格名称验重失败!");
+                    throw new BusinessException("新增属性规格,商品规格名称输入有误，请重新输入!");
                     //return Response.fail("新增属性规格名称验重失败!");
                 }
                 int i = goodsAttrValService.insertAttrVal(entity);
                 if(i==0){
-                    throw new BusinessException("新增属性规格名称验重失败!");
+                    throw new BusinessException("新增属性规格,商品规格名称输入有误，请重新输入!");
                     //return Response.fail("新增属性规格名称验重失败!");
                 }
                 return Response.success("刷新库存！",entity.getId());
@@ -716,12 +716,12 @@ public class GoodsAttrService {//450
                 entity.setAttrVal(attrVal);
                 entity.setUpdatedTime(new Date());
                 if(!checkAttrValListByAttrId(Long.parseLong(attrValId),attrVal,Long.parseLong(attrId),Long.parseLong(goodsId))){
-                    throw new BusinessException("修改属性规格名称验重失败!");
+                    throw new BusinessException("修改属性规格,商品规格名称输入有误，请重新输入!");
                     //return Response.fail("修改属性规格名称验重失败!");
                 }
                 int i =goodsAttrValService.updateByPrimaryKeySelective(entity);
                 if(i==0){
-                    throw new BusinessException("修改属性规格名称验重失败!");
+                    throw new BusinessException("修改属性规格,商品规格名称输入有误，请重新输入!");
                     //return Response.fail("修改属性规格名称验重失败!");
                 }
                 List<GoodsStockInfoEntity> list = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
