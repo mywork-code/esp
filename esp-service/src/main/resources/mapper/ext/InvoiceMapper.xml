@@ -4,12 +4,12 @@
     <!-- 查询条件 -->
     <sql id="QueryConditionSql">
         <where>
-            <if test="userId!=null and userId!=''"> AND user_id = '${userId}' </if>
-            <if test="orderId!=null and orderId!=''"> AND order_id = '${orderId}' </if>
-            <if test="headType!=null and headType!=''"> AND head_type = '${headType}' </if>
-            <if test="telphone!=null and telphone!=''"> AND telphone = '${telphone}' </if>
-            <if test="status!=null and status!=''"> AND status = '${status}' </if>
-            <if test="pdfUrl!=null and pdfUrl!=''"> AND pdf_url = '${pdfUrl}' </if>
+            <if test="userId!=null and userId!=''"> AND user_id = #{userId} </if>
+            <if test="orderId!=null and orderId!=''"> AND order_id = #{orderId} </if>
+            <if test="headType!=null and headType!=''"> AND head_type = #{headType} </if>
+            <if test="telphone!=null and telphone!=''"> AND telphone = #{telphone} </if>
+            <if test="status!=null and status!=''"> AND status = #{status} </if>
+            <if test="pdfUrl!=null and pdfUrl!=''"> AND pdf_url = #{pdfUrl} </if>
         </where>
     </sql>
     <select id="getInvoicePage" resultMap="BaseResultMap" parameterType="com.apass.esp.domain.entity.Invoice">
