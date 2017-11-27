@@ -673,19 +673,20 @@ public class GoodsService {
 					jdSaleAttr.setIsSelect("true");
 				}
 				List<String> skuIds = new ArrayList<>();
-				String skuIdStr = "";
+				List<String> skuIdStrList=new ArrayList<>();
 				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 				for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 					if (StringUtils.isNotEmpty(goodsStockInfoEntity.getAttrValIds())) {
 						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
 							skuIds.add(goodsStockInfoEntity.getSkuId());
-							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId()+",";
+							skuIdStrList.add(goodsStockInfoEntity.getSkuId());
 						}
 					}
 				}
+				
 				jdSaleAttr.setSkuIds(skuIds);
-				jdSaleAttr.setSkuIdStr(skuIdStr);
+				jdSaleAttr.setSkuIdStr(StringUtils.join(skuIdStrList.toArray(), ","));
 				saleAttrList.add(jdSaleAttr);
 			}
 			jdSimilarSku.setSaleAttrList(saleAttrList);
