@@ -2,7 +2,7 @@ $(function(){
 	
     //Grid
     $('#list').datagrid({
-        title : '活动配置信息',
+        title : '转介绍数据管理',
         fit : true,
         fitColumns : true,
         rownumbers : true,
