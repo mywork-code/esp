@@ -118,8 +118,7 @@ public class InvoiceIssueService {
         }else{
             globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
         }
-
-        globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
+        globalInfo.setRequestTime(DateFormatUtil.getCurrentDate());
         StringBuffer sbex = new StringBuffer(globalInfo.getRequestCode());
         sbex.append(globalInfo.getInterfaceCode());
         sbex.append(DateFormatUtil.getCurrentTime("YYYYMMDD"));
