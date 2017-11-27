@@ -6,25 +6,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
-import com.apass.esp.domain.enums.InvoiceHeadTypeEnum;
-import com.apass.esp.service.goods.GoodsService;
-import freemarker.core.ArithmeticEngine;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.aisino.EncryptionDecryption;
 import com.aisino.FarmartJavaBean;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.InvoiceDto;
 import com.apass.esp.domain.entity.Invoice;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.invoice.InvoiceDetails;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.InvoiceHeadTypeEnum;
 import com.apass.esp.domain.enums.InvoiceStatusEnum;
 import com.apass.esp.invoice.model.FaPiaoKJ;
 import com.apass.esp.invoice.model.FaPiaoKJDD;
@@ -35,6 +31,7 @@ import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.bill.CustomerServiceClient;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -255,14 +252,13 @@ public class InvoiceService {
      * @param userId
      * @return
      * @throws Exception 
-     * @throws BusinessException 
      * @throws NumberFormatException 
      */
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
-    public int invoiceCheck(OrderInfoEntity order) throws Exception {
+    public Boolean invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getOrderId());
         if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
-            return 3;
+            return false;
         }
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
         faPiaoKJ.setFpqqlsh("131JJ2R8DSPTBMapsk"+order.getOrderId());
@@ -338,11 +334,11 @@ public class InvoiceService {
         if("0000".equals(sS.getReturnCode())){
             updateStatusByOrderId((byte)InvoiceStatusEnum.APPLYING.getCode(),order.getOrderId());
             downloadInvoice.downloadFaPiao(order.getOrderId());
-            return 8;
+            return true;
         }else{
             updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
+            throw new BusinessException("开票失败："+order.getOrderId());
         }
-        return 10;
     }
     /**
      *创建发票

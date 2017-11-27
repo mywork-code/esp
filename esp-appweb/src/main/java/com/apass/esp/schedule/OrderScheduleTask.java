@@ -17,6 +17,7 @@ import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 定时任务
@@ -73,10 +74,8 @@ public class OrderScheduleTask {
         }
         LOGGER.info("handleOrderInvalidTask执行时间:{}ms", System.currentTimeMillis() - now.getTime());
     }
-
     /**
      * 订单签收7天后，自动确认收货[1小时一次 0 0 0/1 * * *]
-     * 订单签收7天后   开具发票  《监控无售后交易》
      */
     @Scheduled(cron = "0 0 0/1 * * *")
     public void handleAutoSignOrder() {
@@ -93,11 +92,6 @@ public class OrderScheduleTask {
                         orderInfoDao.update(order);
                         LOGGER.info("自动确认收货成功!orderId:{}", order.getOrderId());
                         jpushClient.jpushSendPushAlias(order.getUserId().toString(), "确认收货", "您的订单" + order.getOrderId() + "已自动确认收货");
-                        int i = invoiceService.invoiceCheck(order);
-                        if(i!=10){
-                            LOGGER.info("自动开具发票成功!orderId:{}", order.getOrderId());
-                        }
-                        jpushClient.jpushSendPushAlias(order.getUserId().toString(), "开具发票", "您的订单" + order.getOrderId() + "已自动开具电子发票");
                     }
                 }
             } catch (Exception e) {
@@ -107,7 +101,28 @@ public class OrderScheduleTask {
         }
         LOGGER.info("handleAutoSignOrder执行时间:{}ms", System.currentTimeMillis() - now.getTime());
     }
-
+    /**
+     * 订单交易完成7天后   1小时一次
+     * 开具发票  《监控无售后交易》
+     */
+    @Scheduled(cron = "0 0 0/1 * * *")
+    public void findCompelateOrder() {
+        List<OrderInfoEntity> list = orderInfoDao.findCompelateOrder();
+        for (OrderInfoEntity order : list) {
+            try {
+                Boolean falg = invoiceService.invoiceCheck(order);
+                if(falg){
+                    LOGGER.info("自动开具发票成功!orderId:{}", order.getOrderId());
+                }
+            } catch (BusinessException e) {
+                LOGGER.error("handleAutoSignOrder-orderId:{} 订单交易完成7天后开具发票失败:{}", order.getOrderId(), e);
+                continue;
+            }catch (Exception e) {
+                LOGGER.error("handleAutoSignOrder-orderId:{} 订单交易完成7天后开具发票失败:{}", order.getOrderId(), e);
+                continue;
+            }
+        }
+    }
     /**
      * 售后完成的订单1天后订单状态改为交易完成(sprint8中退货的订单修改为交易关闭)；每3小时处理一次，订单状态售后服务中、售后流程状态售后完成
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
@@ -115,15 +130,12 @@ public class OrderScheduleTask {
      */
     @Scheduled(cron = "0 0 0/3 * * *")
     public void handleReturningOrders(){
-        
         try {
             orderRefundService.handleReturningOrders();
         } catch (Exception e) {
             LOGGER.error("售后完成订单状态修改异常", e);
         }
-        
     }
-    
     /**
      * 售后失败信息亮起后 该订单3天后由“售后服务中”转入“交易完成状态”后
      */

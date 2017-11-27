@@ -485,6 +485,63 @@ public class GoodsService {
 	    returnMap.put("jdImagePathList",JdImagePathList);
 	    return returnMap;
 	}
+	/**
+	 * 根据商品编号获取商品需要展示前端信息
+	 */
+	public Map<String, Object> loadAllBannerPicNotJd2(String skuId) throws BusinessException {
+		Map<String, Object> returnMap = Maps.newHashMap();
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.selectGoodsByExternalId(skuId);
+	    if (null == goodsBasicInfo) {
+	      LOGGER.error("商品信息不存在:{}skuId=", skuId);
+	      throw new BusinessException("商品信息不存在");
+	    }
+	    Long goodsId=goodsBasicInfo.getId();
+	    //商品价格最低
+	    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
+	    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+//	    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
+//	    if(BigDecimal.ZERO.compareTo(minPrice)==0){
+//	    	 returnMap.put("goodsPrice",null);
+//	    }else{
+//	    	 returnMap.put("goodsPrice",minPrice);
+//	    }
+	    BigDecimal goodsPrice= BigDecimal.ZERO;
+		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
+		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
+			if(StringUtils.contains(skuId, goodsStockInfoEntity.getSkuId())){
+				goodsPrice=goodsStockInfoEntity.getGoodsPrice();
+				break;
+			}
+		}
+		if (BigDecimal.ZERO.compareTo(goodsPrice) == 0) {
+			returnMap.put("goodsPrice", null);
+		} else {
+			returnMap.put("goodsPrice", goodsPrice);
+		}
+	    returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
+	    returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
+	    returnMap.put("skuId",skuId);
+	    // 查询商品图片
+	 	List<String> JdImagePathList=new ArrayList<>();
+	    List<BannerInfoEntity> goodsBannerList = bannerInfoDao.loadIndexBanners(String.valueOf(goodsId));
+	    for (BannerInfoEntity banner : goodsBannerList) {
+	    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
+	    }
+	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
+	    if(null !=MinGoodsPriceStock.getAttrValIds()){
+		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+	    }
+	    if(null ==jdSimilarSkuList ){
+	    	 List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
+	 	    returnMap.put("jdSimilarSkuList", jdSimilarSkuList2);
+		    returnMap.put("jdSimilarSkuListSize", 0);
+	    }else{
+		    returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+		    returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+	    }
+	    returnMap.put("jdImagePathList",JdImagePathList);
+	    return returnMap;
+	}
   /**
    * 获取 非京东商品变成多规格商品规格
    */

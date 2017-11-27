@@ -6,6 +6,7 @@ import com.apass.esp.domain.entity.WeexInfoEntity;
 import com.apass.esp.domain.kvattr.ShipmentTimeConfigAttr;
 import com.apass.esp.domain.vo.CommissionWalletVo;
 import com.apass.esp.domain.vo.CommissionWalletVoOld;
+import com.apass.esp.invoice.CaConstant;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.schedule.JdAfterSaleScheduleTask;

@@ -247,8 +247,8 @@ public class OrderRefundService {
             		status = OrderStatus.ORDER_TRADCLOSED.getCode();
             	}
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-                int i = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
-                if(i!=10){
+                Boolean falg = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
+                if(falg){
                     LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
                 }
             }
