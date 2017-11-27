@@ -75,6 +75,7 @@ import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * 商品管理
@@ -1007,9 +1008,17 @@ public class GoodsBaseInfoController {
         Map<String, Object> returnMap = new HashMap<>();
         String id = HttpWebUtils.getValue(request, "id");
         String view = HttpWebUtils.getValue(request, "view");
+        String skuId=HttpWebUtils.getValue(request, "skuId");
+        if(StringUtils.isNotBlank(skuId)){
+            returnMap =goodsService.loadAllBannerPicNotJd2(skuId);
+            returnMap.put("view", view);
+            System.out.println(GsonUtils.toJson(returnMap));
+            return new ModelAndView("goods/goodsPreviewProductNotJD-view", returnMap);
+        }
         returnMap =goodsService.loadAllBannerPicNotJd(Long.parseLong(id));
         returnMap.put("view", view);
-        return new ModelAndView("goods/goodsPreviewProductJD-view", returnMap);
+        System.out.println(GsonUtils.toJson(returnMap));
+        return new ModelAndView("goods/goodsPreviewProductNotJD-view", returnMap);
     }
     
     /**
@@ -1027,6 +1036,7 @@ public class GoodsBaseInfoController {
         if (StringUtils.isNotEmpty(skuId)) {
             map = jdGoodsInfoService.getJdGoodsAllInfoBySku(Long.valueOf(skuId));
             map.put("view", view);
+           System.out.println(GsonUtils.toJson(map)); 
             return new ModelAndView("goods/goodsPreviewProductJD-view", map);
         }
         GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(id));
