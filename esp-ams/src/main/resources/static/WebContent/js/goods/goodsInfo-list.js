@@ -2680,6 +2680,7 @@ function loadStockGoodsAbout(datagridId,goodsId,source){
         }]] 
     });
 }
+
 //添加商品初始化商品信息
 function initGoodsInfo(){
 	var merchantCode=$("#addmerchantCode").textbox('getValue');
