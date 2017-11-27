@@ -745,7 +745,7 @@
 			(orderstatus = 'D07' or  orderstatus = 'D08') and source = 'jd' and pre_stock_status = '1'
 		]]>
 	</select>
-	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity"  resultType="java.lang.String">
+	<select id="getOrderByOrderStatusAndPreStatus" resultType="OrderInfoEntity">
 	<![CDATA[
 		SELECT
 				id	id,

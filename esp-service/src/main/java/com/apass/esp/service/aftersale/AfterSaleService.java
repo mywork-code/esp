@@ -38,12 +38,15 @@ import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.*;
 import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
 import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
+import com.apass.esp.third.party.weizhi.entity.aftersale.ComponentExport;
 import com.apass.esp.third.party.weizhi.entity.aftersale.WeiZhiAfterSaleResponse;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,33 +265,60 @@ public class AfterSaleService {
                 asDetailDto.setSkuNum(goodsStockIdNumDto.getGoodsNum());
                 afsApply.setAsDetailDtok(asDetailDto);
 
-                JdApiResponse<Integer> jdApiResponse = jdAfterSaleApiClient
-                        .afterSaleAvailableNumberCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
-                                Long.valueOf(orderDetailInfoEntity.getSkuId()));
+//                JdApiResponse<Integer> jdApiResponse = jdAfterSaleApiClient
+//                        .afterSaleAvailableNumberCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
+//                                Long.valueOf(orderDetailInfoEntity.getSkuId()));
+                Integer availableNumberComp = null;
+                try {
+                    availableNumberComp = weiZhiAfterSaleApiClient.getAvailableNumberComp(orderInfo.getExtOrderId(),orderDetailInfoEntity.getSkuId());
+                } catch (Exception e) {
+                    LOGGER.error("校验某订单中某商品是否可以提交售后服务异常",e);
+                }
+
+
                 LOGGER.info("skuId为{}的京东商品可退货数量：{}", orderDetailInfoEntity.getSkuId(),
-                        jdApiResponse.toString());
-                if (jdApiResponse.isSuccess()) {// 支持售后
-                    JdApiResponse<JSONArray> jdApiResponse2 = jdAfterSaleApiClient
-                            .afterSaleCustomerExpectCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
-                                    Long.valueOf(orderDetailInfoEntity.getSkuId()));
-                    String jdApiResponse2Str = GsonUtils.toJson(jdApiResponse2.getResult());
+                        availableNumberComp.toString());
+                if (availableNumberComp != null) {// 支持售后
+//                    JdApiResponse<JSONArray> jdApiResponse2 = jdAfterSaleApiClient
+//                            .afterSaleCustomerExpectCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
+//                                    Long.valueOf(orderDetailInfoEntity.getSkuId()));
+                    String jdApiResponse2Str = null;
+                    try {
+                        jdApiResponse2Str = weiZhiAfterSaleApiClient.getCustomerExpectComp(orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
+                        if(jdApiResponse2Str == null){
+                            LOGGER.error("根据订单号、商品编号查询支持的服务类型失败，wzOrderId:{}，skuId:{}",orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("根据订单号、商品编号查询支持的服务类型异常",e);
+                    }
                     String type = "";
                     if (operate.equals(YesNo.NO.getCode())) {
                         type = "退";
                     } else {
                         type = "换";
                     }
+
                     if (!jdApiResponse2Str.contains(operate.equals(YesNo.NO.getCode()) ? "10" : "20")) {
                         LOGGER.error("skuId为{}的京东商品不支持" + type + "货", orderDetailInfoEntity.getSkuId());
                         refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
                         throw new BusinessException("该商品不支持售后", BusinessErrorCode.PARAM_VALUE_ERROR);
                     }
 
-                    JdApiResponse<JSONArray> jdApiResponse3 = jdAfterSaleApiClient
-                            .afterSaleWareReturnJdCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
-                                    Long.valueOf(orderDetailInfoEntity.getSkuId()));
-                    String jdApiResponse3String = GsonUtils.toJson(jdApiResponse3.getResult());
-                    LOGGER.info("订单支持返回的京东方式{}", jdApiResponse3String);
+//                    JdApiResponse<JSONArray> jdApiResponse3 = jdAfterSaleApiClient
+//                            .afterSaleWareReturnJdCompQuery(Long.valueOf(orderInfo.getExtOrderId()),
+//                                    Long.valueOf(orderDetailInfoEntity.getSkuId()));
+
+//                    String jdApiResponse3String = GsonUtils.toJson(jdApiResponse3.getResult());
+                    String jdApiResponse3String = null;
+                    try {
+                        jdApiResponse3String = weiZhiAfterSaleApiClient.getWareReturnJdComp(orderInfo.getExtOrderId(),orderDetailInfoEntity.getSkuId());
+                        if(jdApiResponse3String == null){
+                            LOGGER.error("根据订单号、商品编号查询支持的商品返回微知方式失败，wzOrderId:{}，skuId:{}",orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("根据订单号、商品编号查询支持的商品返回微知方式异常",e);
+                    }
+                    LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式{}", jdApiResponse3String);
                     if (jdApiResponse3String.contains("4")) {
                         asPickwareDto.setPickwareType(4);
                     } else if (jdApiResponse3String.contains("40")) {
@@ -322,7 +352,7 @@ public class AfterSaleService {
                         }
                     } catch (Exception e) {
                         LOGGER.error("调用微知服务单保存申请接口异常",e);
-                        throw new BusinessException("调用微知服务单保存申请接口异常", BusinessErrorCode.PARAM_VALUE_ERROR);
+                        throw new BusinessException("调用微知服务单保存申请接口异常", e);
                     }
                 } else {
                     refuseStockIds.add(goodsStockIdNumDto.getGoodsStockId());
@@ -566,6 +596,13 @@ public class AfterSaleService {
         } else {
             JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(
                     Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
+//            try {
+//                weiZhiAfterSaleApiClient.getServiveList(orderInfo.getExtOrderId(),"1","10");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+
             if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
                 throw new BusinessException("调用第三方接口失败!");
             }
@@ -584,7 +621,16 @@ public class AfterSaleService {
                 sendSku.setExpressCompany(logisticsName);
                 sendSku.setExpressCode(logisticsNo);
                 sendSku.setFreightMoney(new BigDecimal(6));
-                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
+//                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
+                try {
+                    LOGGER.info("填写客户发运信息接口开始执行,参数:{}", GsonUtils.toJson(sendSku));
+                    WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterUpdateSendSku(sendSku);
+                    if(weiZhiAfterSaleResponse.getResult() != 0){
+                        LOGGER.error("填写客户发运信息失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("填写客户发运信息异常",e);
+                }
             }
             /** 4. 保存物流信息 */
             RefundInfoEntity riDto = new RefundInfoEntity();

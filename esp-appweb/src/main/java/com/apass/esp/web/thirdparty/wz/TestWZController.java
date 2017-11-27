@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.apass.esp.third.party.jd.entity.aftersale.SendSku;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -379,7 +380,8 @@ public class TestWZController {
 	@ResponseBody
 	public Response afterUpdateSendSku(@RequestBody Map<String, String> paramMap) {
 		try {
-			weiZhiAfterSaleApiClient.afterUpdateSendSku(paramMap);
+
+			weiZhiAfterSaleApiClient.afterUpdateSendSku(new SendSku());
 
 			return Response.success("填写客户发运信息成功！");
 		} catch (Exception e) {
@@ -393,9 +395,9 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/availableNumberComp", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getAvailableNumberComp(@RequestBody Map<String, String> paramMap) {
+	public Response getAvailableNumberComp() {
 		try {
-			weiZhiAfterSaleApiClient.getAvailableNumberComp(paramMap);
+			weiZhiAfterSaleApiClient.getAvailableNumberComp("2017050918401173","3985573");
 
 			return Response.success("校验某订单中某商品是否可以提交售后服务成功！");
 		} catch (Exception e) {
@@ -409,11 +411,9 @@ public class TestWZController {
 	 */
 	@RequestMapping(value = "/getCustomerExpectComp", method = RequestMethod.POST)
 	@ResponseBody
-	public Response getCustomerExpectComp(@RequestBody Map<String, String> paramMap) {
+	public Response getCustomerExpectComp() {
 		try {
-			paramMap.put("wzOrderId","2017050918401173");
-			paramMap.put("skuId","3985573");
-			weiZhiAfterSaleApiClient.getCustomerExpectComp(paramMap);
+			weiZhiAfterSaleApiClient.getCustomerExpectComp("2017050918401173","3985573");
 
 			return Response.success("根据订单号、商品编号查询支持的服务类型成功！");
 		} catch (Exception e) {
@@ -431,7 +431,7 @@ public class TestWZController {
 		try {
 			paramMap.put("wzOrderId","2017050918401173");
 			paramMap.put("skuId","3985573");
-			weiZhiAfterSaleApiClient.getWareReturnJdComp(paramMap);
+			weiZhiAfterSaleApiClient.getWareReturnJdComp("2017050918401173","3985573");
 
 			return Response.success("根据订单号、商品编号查询支持的商品返回微知方式成功！");
 		} catch (Exception e) {
@@ -450,7 +450,7 @@ public class TestWZController {
 			paramMap.put("wzOrderId","2017050918401173");
 			paramMap.put("pageSize","20");
 			paramMap.put("pageIndex","1");
-			weiZhiAfterSaleApiClient.getServiveList(paramMap);
+			weiZhiAfterSaleApiClient.getServiveList("2017050918401173","20","1");
 
 			return Response.success("根据订单号、商品编号查询支持的服务类型成功！");
 		} catch (Exception e) {

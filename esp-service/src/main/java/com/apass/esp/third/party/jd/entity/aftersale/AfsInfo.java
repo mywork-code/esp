@@ -8,8 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 public class AfsInfo implements Serializable {
 	private static final long serialVersionUID = -6811537132657521899L;
 	private Long afsServiceId;
-	private Long jdOrderId;
 	private Integer customerExpect;
+	private Long jdOrderId;
 	private String customerExpectName;
 	private Long wareId;
 	private String wareName;
