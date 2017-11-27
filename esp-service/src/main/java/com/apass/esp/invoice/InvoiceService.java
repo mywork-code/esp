@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,9 @@ public class InvoiceService {
 
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
     /**
      * CREATED
      * @param entity
@@ -262,14 +267,21 @@ public class InvoiceService {
             return false;
         }
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
-        faPiaoKJ.setFpqqlsh("131JJ2R8DSPTBMapsk"+order.getOrderId());
-        faPiaoKJ.setDsptbm("131JJ2R8");
-        faPiaoKJ.setNsrsbh("91310000MA1G57A97F");
+        if(systemEnvConfig.isPROD()){
+            faPiaoKJ.setFpqqlsh("131JJ2R8DSPTBMapsk"+order.getOrderId());
+            faPiaoKJ.setDsptbm("131JJ2R8");
+            faPiaoKJ.setNsrsbh("91310000MA1G57A97F");
+            faPiaoKJ.setXhfNsrsbh("91310000MA1G57A97F");
+        }else{
+            faPiaoKJ.setFpqqlsh("111MFWIKDSPTBMapsk"+order.getOrderId());
+            faPiaoKJ.setDsptbm("111MFWIK");
+            faPiaoKJ.setNsrsbh("310101000000090");
+            faPiaoKJ.setXhfNsrsbh("310101000000090");
+        }
         faPiaoKJ.setNsrmc("上海奥派数据科技有限公司");
         faPiaoKJ.setDkbz("0");
         faPiaoKJ.setKpxm(in.getContent());
         faPiaoKJ.setBmbBbh("12.0");
-        faPiaoKJ.setXhfNsrsbh("91310000MA1G57A97F");
         faPiaoKJ.setXhfmc("上海奥派数据科技有限公司");
         faPiaoKJ.setXhfDh("上海市虹口区欧阳路196号10号楼一层13室");//公司地址
         faPiaoKJ.setXhfDh("021-60351818");//公司电话

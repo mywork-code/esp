@@ -105,7 +105,7 @@ public class OrderScheduleTask {
      * 订单交易完成7天后   1小时一次
      * 开具发票  《监控无售后交易》
      */
-    @Scheduled(cron = "0 0 0/1 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void findCompelateOrder() {
         List<OrderInfoEntity> list = orderInfoDao.findCompelateOrder();
         for (OrderInfoEntity order : list) {

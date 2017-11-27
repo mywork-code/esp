@@ -4,26 +4,40 @@ package com.apass.esp.invoice.model;
  */
 public class GlobalInfoEctype {
     public GlobalInfoEctype() {}
-    public GlobalInfoEctype(String type) {
+    public GlobalInfoEctype(String type,boolean isProd) {
         if("1".equals(type)){
+            if(isProd){
+                this.userName = "131JJ2R8";
+                this.taxpayerId = "91310000MA1G57A97F";
+                this.authorizationCode = "911G57A97F";
+                this.requestCode = "131JJ2R8";
+            }else{
+                this.userName = "111MFWIK";
+                this.taxpayerId = "310101000000090";
+                this.authorizationCode = "3100000090";
+                this.requestCode = "111MFWIK";
+            }
             this.terminalCode = TerminalCode.TERMINALBS.getCode();
             this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEKJ.getCode();
-            this.userName = "131JJ2R8";
-            this.taxpayerId = "91310000MA1G57A97F";
-            this.authorizationCode = "911G57A97F";
-            this.requestCode = "131JJ2R8";
             this.responseCode = "121";
         }else if("2".equals(type)){
+            if(isProd){
+                this.userName = "131JJ2R8";
+                this.taxpayerId = "91310000MA1G57A97F";
+                this.authorizationCode = "911G57A97F";
+                this.requestCode = "131JJ2R8";
+            }else{
+                this.userName = "111MFWIK";
+                this.taxpayerId = "310101000000090";
+                this.authorizationCode = "3100000090";
+                this.requestCode = "111MFWIK";
+            }
             this.terminalCode = TerminalCode.TERMINALBS.getCode();
             this.appId = "ZZS_PT_DZFP";
             this.version = "1.0";
             this.interfaceCode = InterfaceCode.INTERFACEXZ.getCode();
-            this.userName = "131JJ2R8";
-            this.taxpayerId = "91310000MA1G57A97F";
-            this.authorizationCode = "911G57A97F";
-            this.requestCode = "131JJ2R8";
             this.responseCode = "121";
         }
     }

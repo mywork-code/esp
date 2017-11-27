@@ -1,4 +1,5 @@
 package com.apass.esp.invoice;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class DownloadInvoiceExecutor {
     private static final ExecutorService executorService = Executors.newFixedThreadPool(6);
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private SystemEnvConfig systemEnvConfig;
     /**
      * 轮询执行发票下载接口
      * @param orderId
@@ -50,9 +53,15 @@ public class DownloadInvoiceExecutor {
                     boolean httpClientFlag = false; //请求下载接口 返回成功 或 失败的标识
                     FaPiaoDLoad faPiaoDLoad = new FaPiaoDLoad();
                     faPiaoDLoad.setDdh(orderId);
-                    faPiaoDLoad.setDsptbm("131JJ2R8");
-                    faPiaoDLoad.setFpqqlsh("131JJ2R8DSPTBMapsk"+orderId);
-                    faPiaoDLoad.setNsrsbh("91310000MA1G57A97F");
+                    if(systemEnvConfig.isPROD()){
+                        faPiaoDLoad.setDsptbm("131JJ2R8");
+                        faPiaoDLoad.setFpqqlsh("131JJ2R8DSPTBMapsk"+orderId);
+                        faPiaoDLoad.setNsrsbh("91310000MA1G57A97F");
+                    }else{
+                        faPiaoDLoad.setDsptbm("111MFWIK");
+                        faPiaoDLoad.setFpqqlsh("111MFWIKDSPTBMapsk"+orderId);
+                        faPiaoDLoad.setNsrsbh("310101000000090");
+                    }
                     faPiaoDLoad.setPdfXzfs("3");
                     InvoiceIssueService service = new InvoiceIssueService();
                     String s = service.requestFaPiaoDL(faPiaoDLoad);

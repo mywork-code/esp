@@ -111,9 +111,14 @@ public class InvoiceIssueService {
      * @throws Exception
      */
     private String generateXMl(String type) throws Exception {
-        GlobalInfoEctype globalInfo = new GlobalInfoEctype(type);
+        GlobalInfoEctype globalInfo = new GlobalInfoEctype(type,systemEnvConfig.isPROD());
         ReturnStateInfo stateInfo = new ReturnStateInfo("1");
-        globalInfo.setPassWord(PassWordCreate.passWordCreate("38201136", RandomUtils.getNum(10)));
+        if(systemEnvConfig.isPROD()){
+            globalInfo.setPassWord(PassWordCreate.passWordCreate("38201136", RandomUtils.getNum(10)));
+        }else{
+            globalInfo.setPassWord(PassWordCreate.passWordCreate("92884519", RandomUtils.getNum(10)));
+        }
+
         globalInfo.setRequestTime(DateFormatUtil.getCurrentTime("YYYY-MM-DD HH:MM:SS"));
         StringBuffer sbex = new StringBuffer(globalInfo.getRequestCode());
         sbex.append(globalInfo.getInterfaceCode());
