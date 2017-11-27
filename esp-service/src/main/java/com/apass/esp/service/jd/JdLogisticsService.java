@@ -92,14 +92,13 @@ public class JdLogisticsService {
             LOGGER.error("getSignleTrackings->物流单号:{}查询物流信息失败!",entity.getExtOrderId());
         }
         resultMap.put("logisticInfo", logisticInfo);
-        resultMap.put("logisticTel", "400-603-3600");
         
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderId);
         Long goodsNum = 0L;
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
             goodsNum += orderDetail.getGoodsNum();
         }
-        if (null != orderDetailList && orderDetailList.size() > 0) {
+        if (CollectionUtils.isNotEmpty(orderDetailList)) {
             resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
         }
         resultMap.put("goodsNum", goodsNum);
