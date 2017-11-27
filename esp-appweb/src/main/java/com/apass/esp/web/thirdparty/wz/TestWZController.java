@@ -411,12 +411,32 @@ public class TestWZController {
 	@ResponseBody
 	public Response getCustomerExpectComp(@RequestBody Map<String, String> paramMap) {
 		try {
+			paramMap.put("wzOrderId","2017050918401173");
+			paramMap.put("skuId","3985573");
 			weiZhiAfterSaleApiClient.getCustomerExpectComp(paramMap);
 
 			return Response.success("根据订单号、商品编号查询支持的服务类型成功！");
 		} catch (Exception e) {
 			LOGGER.info("根据订单号、商品编号查询支持的服务类型失败!",e);
 			return Response.fail("根据订单号、商品编号查询支持的服务类型失败！");
+		}
+	}
+
+	/**
+	 * 根据订单号、商品编号查询支持的商品返回微知方式
+	 */
+	@RequestMapping(value = "/getWareReturnJdComp", method = RequestMethod.POST)
+	@ResponseBody
+	public Response getWareReturnJdComp(@RequestBody Map<String, String> paramMap) {
+		try {
+			paramMap.put("wzOrderId","2017050918401173");
+			paramMap.put("skuId","3985573");
+			weiZhiAfterSaleApiClient.getWareReturnJdComp(paramMap);
+
+			return Response.success("根据订单号、商品编号查询支持的商品返回微知方式成功！");
+		} catch (Exception e) {
+			LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式失败!",e);
+			return Response.fail("根据订单号、商品编号查询支持的商品返回微知方式失败！");
 		}
 	}
 

@@ -170,7 +170,12 @@ public class WeiZhiAfterSaleApiClient {
             return false;
         }
 
-        return datas.getBooleanValue("data");
+        String data = datas.getString("data");
+
+        if(data.contains("1")){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -233,7 +238,7 @@ public class WeiZhiAfterSaleApiClient {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("wzOrderId",paramMap.get("wzOrderId")));
         params.add(new BasicNameValuePair("skuId",paramMap.get("skuId")));
-        params.add(new BasicNameValuePair("token",paramMap.get("token")));
+        params.add(new BasicNameValuePair("token",token));
         LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,请求参数：{}", GsonUtils.toJson(params));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
@@ -309,8 +314,6 @@ public class WeiZhiAfterSaleApiClient {
 
             SkuObject skuObject = new SkuObject();
             ResultObject resultObject = new ResultObject();
-//            AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = new AfsServicebyCustomerPinPage();
-            List<AfsServicebyCustomerPin> serviceInfoList = Lists.newArrayList();
 
             for (Map.Entry<String, Object> entry : contentMap.entrySet()) {//只会循环一次
                 String key = entry.getKey();
@@ -322,16 +325,14 @@ public class WeiZhiAfterSaleApiClient {
                 resultObject.setSuccess(String.valueOf(resultMap.get("success")).equals("true"));
 
                 if(resultMap.containsKey("result")){//如果result不为空
-                    String resultIn = String.valueOf(resultMap.get("result"));
-                    AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = GsonUtils.convertObj(resultIn, AfsServicebyCustomerPinPage.class);
-                    resultObject.setResult(afsServicebyCustomerPinPage);
+                    String resultJson = GsonUtils.toJson(resultMap);//map-->json
+                    resultObject = GsonUtils.convertObj(resultJson, ResultObject.class);//json-->对象
                 }
                 skuObject.setResult(resultObject);
             }
             skuObjects.add(skuObject);
         }
 
-        //TODO 封装到一个类里，类中的字段与data中的相同
         return skuObjects;
     }
 
