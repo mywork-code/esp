@@ -17,7 +17,15 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
     public List<GoodsStockInfoEntity> loadByGoodsId(Long goodsId) {
         return this.getSqlSession().selectList("loadByGoodsId", goodsId);
     }
-    
+    /**
+     * 获取商品详细信息(尺寸规格价格大小等)
+     * 
+     * @param SkuId
+     * @return
+     */
+    public List<GoodsStockInfoEntity> loadBySkuId(Long SkuId) {
+        return this.getSqlSession().selectList("loadBySkuId", SkuId);
+    }
     /**
      * 根据商品id查询 商品库存中市场价最高价 
      * @param goodsId
