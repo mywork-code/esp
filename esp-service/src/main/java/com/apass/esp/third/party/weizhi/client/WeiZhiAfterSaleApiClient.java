@@ -308,34 +308,25 @@ public class WeiZhiAfterSaleApiClient {
             Map<String, Object> contentMap = GsonUtils.convertObj(content,Map.class);//只有一个元素
 
             SkuObject skuObject = new SkuObject();
-            AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = new AfsServicebyCustomerPinPage();
+            ResultObject resultObject = new ResultObject();
+//            AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = new AfsServicebyCustomerPinPage();
             List<AfsServicebyCustomerPin> serviceInfoList = Lists.newArrayList();
 
             for (Map.Entry<String, Object> entry : contentMap.entrySet()) {//只会循环一次
                 String key = entry.getKey();
                 skuObject.setSkuId(key);
-
-                String resultStr = String.valueOf(entry.getValue());
-                ResultObject resultObject = GsonUtils.convertObj(resultStr, ResultObject.class);
-
-
-                /*Map<String,Object> resultMap = (Map)entry.getValue();
+                Map<String,Object> resultMap = (Map)entry.getValue();
                 resultObject.setResult(null);
                 resultObject.setResultCode(String.valueOf(resultMap.get("resultCode")));
                 resultObject.setResultMessage(String.valueOf(resultMap.get("resultMessage")));
                 resultObject.setSuccess(String.valueOf(resultMap.get("success")).equals("true"));
-                skuObject.setResult(resultObject);
 
                 if(resultMap.containsKey("result")){//如果result不为空
-                    String result1 = String.valueOf(resultMap.get("result"));
-
-
-                    for (Map.Entry<String, Object> entry2 : resultMap.entrySet()){
-                        entry2.getKey();
-
-                    }
-                }*/
-
+                    String resultIn = String.valueOf(resultMap.get("result"));
+                    AfsServicebyCustomerPinPage afsServicebyCustomerPinPage = GsonUtils.convertObj(resultIn, AfsServicebyCustomerPinPage.class);
+                    resultObject.setResult(afsServicebyCustomerPinPage);
+                }
+                skuObject.setResult(resultObject);
             }
             skuObjects.add(skuObject);
         }
