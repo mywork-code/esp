@@ -720,7 +720,7 @@ public class SAPService {
         contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
-        contentList.add(entity.getGoodsSkuAttr());
+        contentList.add("个");
         contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
