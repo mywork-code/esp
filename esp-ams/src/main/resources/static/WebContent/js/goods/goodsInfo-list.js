@@ -117,8 +117,8 @@ $(function() {
 				$.messager.alert("提示", data.msg, "info");
 				if(data.status==1){
 					$('#addGoodsInfo').window('close');
+					window.location.reload();
 				}
-				window.location.reload();
 			}
 		});
 	});

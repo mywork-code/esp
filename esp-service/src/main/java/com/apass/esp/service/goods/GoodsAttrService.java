@@ -400,15 +400,15 @@ public class GoodsAttrService {//450
         arr3 = famartsubStringarr(arr3);
         Boolean fDELETE = this.delgoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
         if(!fDELETE){
-            throw new BusinessException("批量保存库存，删除旧库存属性和规格信息失败！");
+            throw new BusinessException("删除商品旧属性和规格信息失败！");
         }
         Boolean fCREATE = this.savegoodsAttrValByAttrId(arr1, arr2, arr3,goodsId);
         if(!fCREATE){
-            throw new BusinessException("批量保存库存，保存新库存属性和规格信息失败,请您完整填写商品规格相关信息！");
+            throw new BusinessException("保存商品属性和规格信息失败,请您完整正确填写规格相关信息（规格名称不能重复）！");
         }
         Boolean dsCREATE = goodsStockInfoService.deletegoodsStockInfoByGoodsId(goodsId);
         if(!dsCREATE){
-            throw new BusinessException("批量保存库存，删除商品旧库存信息失败！");
+            throw new BusinessException("删除商品旧库存信息失败！");
         }
         return saveGoodsCateAttrAndStock(goodsStock, goodsStocken, goodsId, userName,status);
     }
@@ -448,7 +448,7 @@ public class GoodsAttrService {//450
 //            goodsStockentoty.setStockLogo(url);
             Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
             if(i!=1){
-                throw new BusinessException("批量保存库存，商品新库存信息保存失败，请您完整填写商品库存相关信息！");
+                throw new BusinessException("保存商品库存信息失败,请您完整正确填写库存相关信息（列表价格不能为空）！");
             }
         }
         return Response.success("批量保存库存成功！");
