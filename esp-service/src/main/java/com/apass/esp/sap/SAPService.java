@@ -60,6 +60,10 @@ import java.util.Map;
 public class SAPService {
   public static final String ZPTMC = "中原项目组（安家趣花）";
   private static final Logger LOG = LoggerFactory.getLogger(SAPService.class);
+  private Map<Long,Object> financialVoucherAdjustmentGuidMap = new HashMap<>();//财务凭证guid
+  private Map<String,Object> salesOrderGuidMap = new HashMap<>();//销售订单guid
+  private Map<String,Object> purchaseOrderGuidMap = new HashMap<>();//采购订单guid
+
   @Autowired
   private TxnInfoService txnInfoService;
   @Autowired
@@ -446,7 +450,7 @@ public class SAPService {
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(salOrder.getOrderPrimayId().toString());
+        contentList.add(getSalesOrderGuidMap(salOrder.getOrderPrimayId()));
         contentList.add(String.valueOf(rowNum));
         contentList.add(salOrder.getGoodsCode());
         contentList.add(salOrder.getGoodsName());
@@ -485,7 +489,9 @@ public class SAPService {
       for (SalesOrderPassOrRefund salOrder : salOrderList) {
 
         List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
+        String guid = ListeningStringUtils.getUUID();
+        contentList.add(guid);
+        salesOrderGuidMap.put(salOrder.getOrderId(),guid);
         contentList.add("6008");
         contentList.add(salOrder.getOrderId());
         if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
@@ -535,7 +541,9 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
+        String guid = ListeningStringUtils.getUUID();
+        contentList.add(guid);
+        financialVoucherAdjustmentGuidMap.put(txn.getTxnId(),guid);
         contentList.add(DateFormatUtil.dateToString(txn.getPayTime(),"yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -649,7 +657,9 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       for (PurchaseReturnOrder txn : txnList) {
         List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
+        String guid = ListeningStringUtils.getUUID();
+        contentList.add(guid);
+        purchaseOrderGuidMap.put(txn.getOrderId(),guid);
         contentList.add(txn.getMainOrderId());
         contentList.add(txn.getCompanyCode());
         contentList.add(txn.getExtOrderId());
@@ -703,7 +713,7 @@ public class SAPService {
         PurchaseOrderDetail entity = it.next();
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(entity.getOrderId().toString());
+        contentList.add( getPurchaseOrderGuidMap(entity.getOrderId()));
         contentList.add(i + "");
         i++;
         contentList.add("200001");
@@ -839,7 +849,7 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(txn.getTxnId() + "");
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()));
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
@@ -1083,5 +1093,24 @@ public class SAPService {
     } catch (Exception e) {
       throw e;
     }
+  }
+
+
+  private String getFinancialVoucherAdjustmentGuidMap(Long key){
+    String val = (String) financialVoucherAdjustmentGuidMap.get(key);
+    financialVoucherAdjustmentGuidMap.remove(key);
+    return val;
+  }
+
+  private String getSalesOrderGuidMap(Long key){
+    String val = (String) salesOrderGuidMap.get(key);
+    salesOrderGuidMap.remove(key);
+    return val;
+  }
+
+  private String getPurchaseOrderGuidMap(String key){
+    String val = (String) purchaseOrderGuidMap.get(key);
+    purchaseOrderGuidMap.remove(key);
+    return val;
   }
 }
