@@ -1,12 +1,10 @@
 package com.apass.esp.invoice;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,9 +225,10 @@ public class InvoiceService {
      * 申请中发票修改
      * @param params
      * @return
+     * @throws BusinessException 
      */
     @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
-    public Response invoiceUpdate(Map<String, Object> params) {
+    public Response invoiceUpdate(Map<String, Object> params) throws BusinessException {
         InvoiceDetails entity = new InvoiceDetails();
         entity = (InvoiceDetails)FarmartJavaBean.map2entity(entity, InvoiceDetails.class, params);
         Invoice in = new Invoice();
@@ -241,9 +240,23 @@ public class InvoiceService {
             in.setCompanyName(entity.getInvoiceHead());
             in.setTaxpayerNum(entity.getTaxesNum());
         }
-        Invoice i = updatedEntity(in);
-        if(i==null){
-            return Response.fail("发票信息修改失败");
+        if(updatedEntity(in)==null){
+            throw new BusinessException("主订单发票信息修改失败！");
+        }
+        List<OrderInfoEntity> orderlist = orderInfoRepository.findOrderByMainOrderId(entity.getOrderId());
+        for(OrderInfoEntity order : orderlist){
+            Invoice invoice = new Invoice();
+            invoice.setId(Long.parseLong(order.getOrderId()));
+            invoice.setHeadType(Byte.valueOf(entity.getHeadType()));
+            invoice.setContent(entity.getContent());
+            invoice.setTelphone(entity.getTelphone());
+            if(entity.getHeadType().equals("2")){
+                invoice.setCompanyName(entity.getInvoiceHead());
+                invoice.setTaxpayerNum(entity.getTaxesNum());
+            }
+            if(updatedEntity(invoice)==null){
+                throw new BusinessException("子订单发票信息修改失败！");
+            }
         }
         return Response.success("发票信息修改成功", entity);
     }

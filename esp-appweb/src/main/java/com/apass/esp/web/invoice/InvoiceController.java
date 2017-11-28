@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.invoice.InvoiceService;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
@@ -69,9 +70,12 @@ public class InvoiceController {
     public Response invoiceUpdate(@RequestBody Map<String, Object> paramMap) {
         try{
             return invoiceService.invoiceUpdate(paramMap);
-        } catch (Exception e) {
+        } catch (BusinessException e) {
             logger.error(e.getMessage(), e);
-            return Response.fail("发票信息修改失败");
+            return Response.fail(e.getErrorDesc());
+        }catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("发票信息修改异常！");
         }
     }
     /**
