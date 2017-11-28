@@ -46,7 +46,7 @@ public class SucceedOrderInfoController {
             String orderDate = orderService.latestSuccessTime(userId);
             Map<String, String> resultMap = Maps.newHashMap();
             resultMap.put("orderDate", orderDate);
-            return Response.success("success", GsonUtils.toJson(resultMap));
+            return Response.success("success", resultMap);
         } catch (Exception e) {
             LOGGER.error("检测最新赊购信息失败", e);
             return Response.fail(BusinessErrorCode.NO);
