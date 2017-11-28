@@ -456,7 +456,7 @@ public class SAPService {
         contentList.add(salOrder.getGoodsName());
         contentList.add(salOrder.getGoodsModel());
         contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add(salOrder.getGoodsSkuAttr());
+        contentList.add("个");
         contentList.add(salOrder.getGoodNum().toString());
 
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
