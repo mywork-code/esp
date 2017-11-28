@@ -113,6 +113,8 @@ public class OrderScheduleTask {
                 Boolean falg = invoiceService.invoiceCheck(order);
                 if(falg){
                     LOGGER.info("自动开具发票成功!orderId:{}", order.getOrderId());
+                }else{
+                    LOGGER.info("自动开具发票失败!orderId:{}", order.getOrderId());
                 }
             } catch (BusinessException e) {
                 LOGGER.error("handleAutoSignOrder-orderId:{} 订单交易完成7天后开具发票失败:{}", order.getOrderId(), e);
@@ -124,11 +126,11 @@ public class OrderScheduleTask {
         }
     }
     /**
-     * 售后完成的订单1天后订单状态改为交易完成(sprint8中退货的订单修改为交易关闭)；每3小时处理一次，订单状态售后服务中、售后流程状态售后完成
+     * 售后完成的订单1天后订单状态改为交易完成(sprint8中退货的订单修改为交易关闭)；每3小时处理一次，0 0 0/3 * * * 订单状态售后服务中、售后流程状态售后完成
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * sprint12:售后失败的退换货，订单状态改为交易完成
      */
-    @Scheduled(cron = "0 0 0/3 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void handleReturningOrders(){
         try {
             orderRefundService.handleReturningOrders();

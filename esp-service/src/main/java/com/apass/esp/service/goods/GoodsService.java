@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.Bus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -409,7 +410,7 @@ public class GoodsService {
     returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
     returnMap.put("goodsStockDes","无货");
 	if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
-	returnMap.put("goodsStockDes","有货");
+	    returnMap.put("goodsStockDes","有货");
 	}
 	returnMap.put("source","notJd");
     // 查询商品图片
@@ -629,6 +630,10 @@ public class GoodsService {
 	 * @throws BusinessException
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId,String attrValId) throws BusinessException {
+        LOGGER.info("getJdSimilarSkuListBygoodsId方法执行,参数goodsId:{},attrValId:{}",goodsId,attrValId);
+        if(StringUtils.isEmpty(attrValId.trim())){
+            throw new BusinessException("商品属性不能为空,数据有误.");
+        }
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		String[] attrValIdString=attrValId.split(":");
 		Map<String,Object> map=new HashMap<>();

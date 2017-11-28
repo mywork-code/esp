@@ -250,6 +250,8 @@ public class OrderRefundService {
                 Boolean falg = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
                 if(falg){
                     LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
+                }else{
+                    LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
                 }
             }
         }

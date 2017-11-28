@@ -368,7 +368,7 @@ public class InvoiceService {
             return true;
         }else{
             updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
-            throw new BusinessException("开票失败："+order.getOrderId());
+            return false;
         }
     }
     /**
