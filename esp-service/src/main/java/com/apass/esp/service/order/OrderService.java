@@ -115,7 +115,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Service
-@Transactional(rollbackFor = { Exception.class })
+@Transactional(rollbackFor = { Exception.class ,RuntimeException.class})
 public class OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
 
@@ -3024,6 +3024,9 @@ public class OrderService {
         orderInfoRepository.update(entity);
         //订单失效 则返回优惠券
         myCouponManagerService.returnCoupon(order.getUserId(),couponId,orderId);
+
+        //发票状态改为不可见
+        invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),orderId);
         
         /**
          * 把orderId作为main_order_id,再次查询（此时如果查询出数据应该是子订单信息）(sprint 12)
@@ -3384,6 +3387,8 @@ public class OrderService {
             }
             order.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
             orderInfoRepository.updateOrderStatus(order);
+            //发票状态改为不可见
+            invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),orderId);
         } else {
             Map<String, Object> map = Maps.newHashMap();
             map.put("orderId", orderId);

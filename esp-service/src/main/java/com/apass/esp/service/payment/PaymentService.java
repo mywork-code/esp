@@ -15,18 +15,10 @@ import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
-import com.apass.esp.domain.enums.ActivityStatus;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundTxnStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PayFailCode;
-import com.apass.esp.domain.enums.PaymentStatus;
-import com.apass.esp.domain.enums.PaymentType;
-import com.apass.esp.domain.enums.SourceType;
-import com.apass.esp.domain.enums.TxnTypeCode;
-import com.apass.esp.domain.enums.YesNo;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -118,6 +110,9 @@ public class PaymentService {
 	
 	@Autowired
 	private ProMyCouponMapper myCouponMapper;
+
+	@Autowired
+	private InvoiceService invoiceService;
 	
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -1052,6 +1047,8 @@ public class PaymentService {
 			orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
 
 			orderService.updateOrderStatus(orderInfoEntity);
+			//发票状态改为不可见
+			invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),orderId);
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());
