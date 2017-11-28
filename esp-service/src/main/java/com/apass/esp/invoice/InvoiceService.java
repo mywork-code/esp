@@ -190,6 +190,10 @@ public class InvoiceService {
         List<InvoiceDetails> detailsApplying = new ArrayList<InvoiceDetails>();
         List<InvoiceDetails> detailsApplyed = new ArrayList<InvoiceDetails>();
         for(Invoice invoice : list){
+            Byte status = invoice.getStatus();
+            if(status==(byte)InvoiceStatusEnum.FAIL.getCode()||status==(byte)InvoiceStatusEnum.INVISIBLE.getCode()){
+                continue;
+            }
             InvoiceDetails entity = new InvoiceDetails();
             BeanUtils.copyProperties(invoice, entity);
             entity.setId(invoice.getId()+"");
@@ -204,7 +208,6 @@ public class InvoiceService {
             entity.setAParty("上海奥派数据科技有限公司");
             entity.setOrderAmt(invoice.getOrderAmt()+"");
             entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
-            Byte status = invoice.getStatus();
             if(status==(byte)2){
                 entity.setStatus("开票成功");
                 entity.setInvoiceNum(entity.getInvoiceNum());
