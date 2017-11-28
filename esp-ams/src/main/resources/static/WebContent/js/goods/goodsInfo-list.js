@@ -3380,8 +3380,9 @@ function flushGoodsStock(finalGoodId){
 	$('#tableattrEditlist').datagrid('load', param);
 }
 function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
-	var attrId = id.split("Ed")[1];
-	var attrValId = id.split("Ed")[2];
+	var arrthis = id.split("Ed");
+	var attrId = arrthis[1];
+	var attrValId = arrthis[2];
 	var param = {};
 	param["attrValId"]=attrValId;
 	param["attrId"]=attrId;
@@ -3438,16 +3439,15 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         		}
             	flushGoodsStock();
             	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
-            	if(value==""){//该规格被删除动态修改该INPUT的ID
-            		var s = id.split("Ed");
-            		document.getElementById(id).id=s[0]+"Ed"+s[1];
+            	if(value==""&&arrthis.length==3){//该规格被删除动态修改该INPUT的ID
+            		document.getElementById(id).id=arrthis[0]+"Ed"+arrthis[1];
             	}
-            	if(data.data!=""){//该规格被保存入数据库动态修改该INPUT的ID
+            	if(data.data!=""&&data.data!=null){//该规格被保存入数据库动态修改该INPUT的ID
             		document.getElementById(id).id=id+"Ed"+data.data;
             	}
         	}else{
         		document.getElementById(id).value="";
-        		$.messager.alert("提示", "商品属性规格名称验重失败，规格名称不可用！", "info");
+        		$.messager.alert("提示",data.msg, "info");
         	}
         },
     })
