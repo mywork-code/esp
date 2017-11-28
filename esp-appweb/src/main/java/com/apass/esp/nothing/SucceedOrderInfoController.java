@@ -18,6 +18,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.service.order.OrderService;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Maps;
 
 @Path("/order")
@@ -47,7 +48,7 @@ public class SucceedOrderInfoController {
             String orderDate = orderService.latestSuccessTime(userId);
             Map<String, String> resultMap = Maps.newHashMap();
             resultMap.put("orderDate", orderDate);
-            return Response.success("success", resultMap);
+            return Response.success("success",  GsonUtils.toJson(resultMap));
         } catch (Exception e) {
             LOGGER.error("检测最新赊购信息失败", e);
             return Response.fail(BusinessErrorCode.NO);
