@@ -753,6 +753,9 @@ public class SAPService {
           SapData sapData = cashRefundHttpClient.querySapData(txnOrderInfoForBss);
           if(sapData!=null&&sapData.getOrderIds()!=null&&sapData.getOrderIds().size()>0){
               for(String ob : sapData.getOrderIds()){
+                if(StringUtils.isEmpty(ob)){
+                  continue;
+                }
                   List<String> contentList = new ArrayList<String>();
                     /*GUID*/
                   contentList.add(ListeningStringUtils.getUUID());
