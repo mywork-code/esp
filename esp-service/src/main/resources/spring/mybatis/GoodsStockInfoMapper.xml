@@ -299,7 +299,28 @@
 		WHERE A.ID =  #{id, jdbcType=BIGINT}
 	]]>
 	</update>
-	
+	<!-- 修改库存 -->
+    <update id="updateGoodsStock" parameterType="GoodsStockInfoEntity">
+    <![CDATA[
+    update t_esp_goods_stock_info A
+    ]]>
+    <set>
+        A.update_date = CURRENT_TIMESTAMP,
+        A.update_user = #{updateUser, jdbcType=VARCHAR}, 
+        <if test="goodsSkuAttr != null and goodsSkuAttr != ''"> A.goods_sku_attr = #{goodsSkuAttr}, </if>
+        <if test="stockTotalAmt != null and stockTotalAmt != ''"> A.stock_total_amt = #{stockTotalAmt, jdbcType=BIGINT}, </if>
+        <if test="stockCurrAmt != null and stockCurrAmt != ''"> A.stock_curr_amt = #{stockCurrAmt, jdbcType=BIGINT}, </if>
+        <if test="goodsPrice != null and goodsPrice != ''"> A.goods_price = #{goodsPrice, jdbcType=BIGINT}, </if>
+        <if test="marketPrice != null and marketPrice != ''"> A.market_price = #{marketPrice, jdbcType=BIGINT}, </if>
+        <if test="goodsCostPrice != null and goodsCostPrice != ''"> A.goods_Cost_Price = #{goodsCostPrice, jdbcType=BIGINT}, </if>
+        <if test="skuId != null"> A.sku_id = #{skuId, jdbcType=VARCHAR}, </if>
+        <if test="attrValIds != null"> A.attr_val_ids = #{attrValIds, jdbcType=VARCHAR}, </if>
+        <if test="deleteFlag != null"> A.delete_flag = #{deleteFlag, jdbcType=VARCHAR}, </if>
+    </set>
+    <![CDATA[
+        WHERE A.ID =  #{id, jdbcType=BIGINT}
+    ]]>
+    </update>
   	<select id="selectByPK" resultType="GoodsStockInfoEntity" parameterType="Long" >
 		SELECT
 			t1.ID                    	 goodsStockId,

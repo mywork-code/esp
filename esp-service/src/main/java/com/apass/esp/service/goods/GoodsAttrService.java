@@ -731,7 +731,7 @@ public class GoodsAttrService {//450
                         String attrSkuAttr = en.getGoodsSkuAttr();
                         attrSkuAttr = attrSkuAttr.replace(attrvalold, attrVal);
                         en.setGoodsSkuAttr(attrSkuAttr);
-                        goodsStockInfoService.updateService(en);
+                        goodsStockInfoService.updateGoodsStock(en);
                     }
                 }
             }
@@ -816,7 +816,7 @@ public class GoodsAttrService {//450
                 GoodsStockInfoEntity en = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
                 entity.setStockTotalAmt(en.getStockTotalAmt());
                 entity.setStockCurrAmt(en.getStockCurrAmt());
-                Integer i = goodsStockInfoService.updateService(entity);
+                Integer i = goodsStockInfoService.updateGoodsStock(entity);
                 if(i!=1){
                     throw new BusinessException("请您完整填写商品库存相关信息!");
                 }

@@ -55,11 +55,17 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	 
 	}
 	/**
-	 * 加库存
+	 * 追加库存
 	 */
 	public Integer updateService(GoodsStockInfoEntity entity){
 		return this.getSqlSession().update("updateService", entity);
 	}
+	/**
+     * 修改库存
+     */
+    public Integer updateGoodsStock(GoodsStockInfoEntity entity){
+        return this.getSqlSession().update("updateGoodsStock", entity);
+    }
 	/**
      * 
      * 

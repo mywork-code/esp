@@ -76,16 +76,22 @@ public class GoodsStockInfoService {
     public void update(GoodsStockInfoEntity entity) {
         goodsStockDao.update(entity);
     }
-
     /**
-     * 新增
+     * 追加库存
      * @param entity
      */
     @Transactional(rollbackFor = Exception.class)
     public Integer updateService(GoodsStockInfoEntity entity) {
         return goodsStockDao.updateService(entity);
     }
-
+    /**
+     * 修改库存
+     * @param entity
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Integer updateGoodsStock(GoodsStockInfoEntity entity) {
+        return goodsStockDao.updateGoodsStock(entity);
+    }
 	/**
 	 * 批量删除京东商品库存
 	 * @param idsStock
