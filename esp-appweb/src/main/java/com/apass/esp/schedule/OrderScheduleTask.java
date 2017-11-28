@@ -128,7 +128,7 @@ public class OrderScheduleTask {
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * sprint12:售后失败的退换货，订单状态改为交易完成
      */
-    @Scheduled(cron = "0 0/5 * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void handleReturningOrders(){
         try {
             orderRefundService.handleReturningOrders();
