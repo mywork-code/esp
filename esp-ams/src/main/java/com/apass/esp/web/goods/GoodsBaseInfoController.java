@@ -1228,8 +1228,8 @@ public class GoodsBaseInfoController {
             return goodsAttrService.createTableByCateEdit(attrValId,attrId,attrVal,goodsId);
         }catch(BusinessException e){
             return Response.fail(e.getErrorDesc());
-        }catch(Exception e){
-            return Response.fail("输入框失焦事件 刷新规格库存表失败！");
+        }catch(Exception e){//输入框失焦事件 刷新规格库存表失败！
+            return Response.fail("商品规格名称输入有误，请重新输入!");
         }
     }
     /**
