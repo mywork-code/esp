@@ -372,4 +372,12 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
     public List<OrderInfoEntity> findCompelateOrder() {
         return getSqlSession().selectList("findCompelateOrder");
     }
+    /**
+     * 查询该订单的子订单  根据mainorderId查询 不包括本订单自身
+     * @param mainOrderId
+     * @return
+     */
+    public List<OrderInfoEntity> findOrderByMainOrderId(String mainOrderId) {
+        return getSqlSession().selectList(getSQL("findOrderByMainOrderId"), mainOrderId);
+    }
 }

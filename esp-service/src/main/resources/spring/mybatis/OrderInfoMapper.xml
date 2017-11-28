@@ -1091,4 +1091,15 @@
 		where parent_order_id = #{parentOrderId}
 		]]>
 	</select>
+	<select id="findOrderByMainOrderId" parameterType="String" resultType="OrderInfoEntity">
+    <![CDATA[
+        SELECT 
+            id id,
+            order_id orderId
+        FROM t_esp_order_info 
+        where 
+            main_order_id = #{mainOrderId} and order_id != #{mainOrderId} 
+        ORDER BY update_date DESC
+    ]]>
+    </select>
 </mapper>
