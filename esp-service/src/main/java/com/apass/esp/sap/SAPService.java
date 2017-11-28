@@ -438,6 +438,10 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderInfo saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderPrimayId()+",");
+    }
 
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -480,6 +484,10 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderPassOrRefund saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderId()+",");
+    }
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着

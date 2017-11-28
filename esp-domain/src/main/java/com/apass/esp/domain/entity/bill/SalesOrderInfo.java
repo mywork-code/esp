@@ -13,7 +13,7 @@ public class SalesOrderInfo {
     /**
      * 订单表主键
      */
-    private Long orderPrimayId;
+    private String orderPrimayId;
 
     /**
      * 商品编码
@@ -53,11 +53,11 @@ public class SalesOrderInfo {
         this.orderdetailId = orderdetailId;
     }
 
-    public Long getOrderPrimayId() {
+    public String getOrderPrimayId() {
         return orderPrimayId;
     }
 
-    public void setOrderPrimayId(Long orderPrimayId) {
+    public void setOrderPrimayId(String orderPrimayId) {
         this.orderPrimayId = orderPrimayId;
     }
 
