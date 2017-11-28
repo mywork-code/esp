@@ -546,7 +546,7 @@
             t_esp_order_info 
         WHERE
             orderstatus = 'D04' and ext_parent_id!='-1'
-            and DATEDIFF(sysdate(),create_date) > 7
+            and DATEDIFF(sysdate(),create_date) = 7
         ]]>
     </select>
 	<!-- 根据物流唯一标识 -->
