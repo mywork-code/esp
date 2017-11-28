@@ -130,6 +130,9 @@ public class GoodsService {
   private GoodsAttrValService goodsAttrValService;
   @Autowired
   private GoodsAttrService goodsAttrService;
+  @Autowired
+  private GoodsStockInfoRepository goodsStockInfoRepository;
+  
   /**
    * app 首页加载精品推荐商品
    *
@@ -469,7 +472,7 @@ public class GoodsService {
 	    }
 	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
 	    if(null !=MinGoodsPriceStock.getAttrValIds()){
-		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId2(goodsId,MinGoodsPriceStock.getAttrValIds());
 	    }
 	    if(null ==jdSimilarSkuList ){
 	    	 List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
@@ -487,33 +490,18 @@ public class GoodsService {
 	 */
 	public Map<String, Object> loadAllBannerPicNotJd2(String skuId) throws BusinessException {
 		Map<String, Object> returnMap = Maps.newHashMap();
-	    GoodsInfoEntity goodsBasicInfo = goodsDao.selectGoodsByExternalId(skuId);
-	    if (null == goodsBasicInfo) {
+	    List<GoodsStockInfoEntity> list=goodsStockInfoRepository.loadBySkuId(Long.parseLong(skuId));
+	    if (null == list) {
 	      LOGGER.error("商品信息不存在:{}skuId=", skuId);
 	      throw new BusinessException("商品信息不存在");
 	    }
-	    Long goodsId=goodsBasicInfo.getId();
-	    //商品价格最低
-	    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
-	    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
-//	    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
-//	    if(BigDecimal.ZERO.compareTo(minPrice)==0){
-//	    	 returnMap.put("goodsPrice",null);
-//	    }else{
-//	    	 returnMap.put("goodsPrice",minPrice);
-//	    }
-	    BigDecimal goodsPrice= BigDecimal.ZERO;
-		List<GoodsStockInfoEntity> goodsStockList = goodsStockDao.loadByGoodsId(goodsId);
-		for (GoodsStockInfoEntity goodsStockInfoEntity : goodsStockList) {
-			if(StringUtils.contains(skuId, goodsStockInfoEntity.getSkuId())){
-				goodsPrice=goodsStockInfoEntity.getGoodsPrice();
-				break;
-			}
-		}
-		if (BigDecimal.ZERO.compareTo(goodsPrice) == 0) {
+	    Long goodsId=list.get(0).getGoodsId();
+	    GoodsInfoEntity goodsBasicInfo = goodsDao.select(list.get(0).getGoodsId());
+
+		if (BigDecimal.ZERO.compareTo(list.get(0).getGoodsPrice()) == 0) {
 			returnMap.put("goodsPrice", null);
 		} else {
-			returnMap.put("goodsPrice", goodsPrice);
+			returnMap.put("goodsPrice", list.get(0).getGoodsPrice());
 		}
 	    returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
 	    returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
@@ -525,8 +513,8 @@ public class GoodsService {
 	    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
 	    }
 	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
-	    if(null !=MinGoodsPriceStock.getAttrValIds()){
-		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+	    if(null !=list.get(0).getAttrValIds()){
+		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,list.get(0).getAttrValIds());
 	    }
 	    if(null ==jdSimilarSkuList ){
 	    	 List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
@@ -673,19 +661,20 @@ public class GoodsService {
 					jdSaleAttr.setIsSelect("true");
 				}
 				List<String> skuIds = new ArrayList<>();
-				String skuIdStr = "";
+				List<String> skuIdStrList=new ArrayList<>();
 				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
 				for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 					if (StringUtils.isNotEmpty(goodsStockInfoEntity.getAttrValIds())) {
 						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
 							skuIds.add(goodsStockInfoEntity.getSkuId());
-							skuIdStr = skuIdStr + goodsStockInfoEntity.getSkuId()+",";
+							skuIdStrList.add(goodsStockInfoEntity.getSkuId());
 						}
 					}
 				}
+				
 				jdSaleAttr.setSkuIds(skuIds);
-				jdSaleAttr.setSkuIdStr(skuIdStr);
+				jdSaleAttr.setSkuIdStr(StringUtils.join(skuIdStrList.toArray(), ","));
 				saleAttrList.add(jdSaleAttr);
 			}
 			jdSimilarSku.setSaleAttrList(saleAttrList);
@@ -705,7 +694,78 @@ public class GoodsService {
 		});
 		return jdSimilarSkuList;
 	}
-	
+	/**
+	 * 后台显示通过商品goodsId组装非京东上商品的jdSimilarSkuList
+	 * 
+	 * @return
+	 * @throws BusinessException
+	 */
+	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId2(Long goodsId,String attrValId) throws BusinessException {
+		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+		String[] attrValIdString=attrValId.split(":");
+		Map<String,Object> map=new HashMap<>();
+		for (int i = 0; i < attrValIdString.length; i++) {
+			GoodsAttrVal gv=goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValIdString[i]));
+			map.put(gv.getAttrId().toString(), i+1);
+		}
+		// 拼凑京东商品jdSimilarSkuList数据格式
+		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
+		// 查出商品属性
+		List<GoodsAttrVal> goodsAttrValList = goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsId);
+		// 查询 t_esp_goods_attr_val 商品不同规格下对应值表
+		for (GoodsAttrVal goodsAttrVal : goodsAttrValList) {
+			JdSimilarSku jdSimilarSku = new JdSimilarSku();
+			GoodsAttr goodsAttr = goodsAttrService.selectGoodsAttrByid(goodsAttrVal.getAttrId());
+			int dim=(int) map.get(goodsAttrVal.getAttrId().toString());
+			String saleName = goodsAttr.getName();// 京东saleName
+			jdSimilarSku.setSaleName(saleName);
+			jdSimilarSku.setDim(dim);
+			List<JdSaleAttr> saleAttrList = new ArrayList<>();
+			List<GoodsAttrVal> GoodsAttrValList = goodsAttrValService.queryByGoodsIdAndAttrId(goodsId,
+					goodsAttrVal.getAttrId());
+			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
+				JdSaleAttr jdSaleAttr = new JdSaleAttr();
+				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
+				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
+//				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
+//				//默认价格最低的商品的属性规格为默认值
+//				if(Arrays.asList(attrValIdString).contains(goodsAttrVal2.getId().toString())){
+//					jdSaleAttr.setIsSelect("true");
+//				}
+				List<String> skuIds = new ArrayList<>();
+				List<String> skuIdStrList=new ArrayList<>();
+				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
+				for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
+					if (StringUtils.isNotEmpty(goodsStockInfoEntity.getAttrValIds())) {
+						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
+						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
+							skuIds.add(goodsStockInfoEntity.getSkuId());
+							skuIdStrList.add(goodsStockInfoEntity.getSkuId());
+						}
+					}
+				}
+				
+				jdSaleAttr.setSkuIds(skuIds);
+				jdSaleAttr.setSkuIdStr(StringUtils.join(skuIdStrList.toArray(), ","));
+				saleAttrList.add(jdSaleAttr);
+			}
+			jdSimilarSku.setSaleAttrList(saleAttrList);
+			jdSimilarSkuList.add(jdSimilarSku);
+		}
+		//根据ProCouponVo里面的开始时间排序
+		Collections.sort(jdSimilarSkuList,new Comparator<JdSimilarSku>(){
+			@Override
+			public int compare(JdSimilarSku o1, JdSimilarSku o2) {
+				if(o1.getDim() > o2.getDim()){
+					return 1;
+				}else{
+					return -1;
+				}
+			}
+			
+		});
+		return jdSimilarSkuList;
+	}
   /**
    * 获取商品基本信息
    *
