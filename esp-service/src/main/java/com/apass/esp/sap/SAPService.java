@@ -729,7 +729,7 @@ public class SAPService {
         contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
-        contentList.add(entity.getGoodsSkuAttr());
+        contentList.add("个");
         contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
@@ -762,6 +762,9 @@ public class SAPService {
           SapData sapData = cashRefundHttpClient.querySapData(txnOrderInfoForBss);
           if(sapData!=null&&sapData.getOrderIds()!=null&&sapData.getOrderIds().size()>0){
               for(String ob : sapData.getOrderIds()){
+                if(StringUtils.isEmpty(ob)){
+                  continue;
+                }
                   List<String> contentList = new ArrayList<String>();
                     /*GUID*/
                   contentList.add(ListeningStringUtils.getUUID());
@@ -785,29 +788,6 @@ public class SAPService {
                   contentList.add("ajqh");
                   csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
               }
-          }else{
-              List<String> contentList = new ArrayList<String>();
-              /*GUID*/
-              contentList.add(ListeningStringUtils.getUUID());
-              /*ZPTMC*/
-              contentList.add(ZPTMC);
-              /*ZPTBM*/
-              contentList.add(SAPConstants.PLATFORM_CODE);
-              /*ZLSH_DD  子订单号*/
-              contentList.add("");
-              /*ZYWH_VBS*/
-              contentList.add(txn.getLoanId().toString());
-              String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
-              String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
-              /*ERDAT*/
-              contentList.add(createdDate);
-              /*ERZET*/
-              contentList.add(createdtime);
-              /*可选表头UNAME,ZSJLY*/
-              /*write*/
-              contentList.add("");
-              contentList.add("ajqh");
-              csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
           }
       }
     } catch (Exception e) {
