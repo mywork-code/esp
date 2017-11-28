@@ -435,6 +435,7 @@ public class SAPService {
   private void generateSalesOrderInfoCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
@@ -450,7 +451,7 @@ public class SAPService {
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(getSalesOrderGuidMap(salOrder.getOrderPrimayId()));
+        contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
         contentList.add(salOrder.getGoodsCode());
         contentList.add(salOrder.getGoodsName());
@@ -476,9 +477,9 @@ public class SAPService {
   private void generateSalesOrderCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
@@ -720,7 +721,7 @@ public class SAPService {
         contentList.add("200001");
         contentList.add(entity.getGoodsName());
         contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
-        contentList.add(entity.getGoodsSkuAttr());
+        contentList.add("个");
         contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
@@ -753,6 +754,9 @@ public class SAPService {
           SapData sapData = cashRefundHttpClient.querySapData(txnOrderInfoForBss);
           if(sapData!=null&&sapData.getOrderIds()!=null&&sapData.getOrderIds().size()>0){
               for(String ob : sapData.getOrderIds()){
+                if(StringUtils.isEmpty(ob)){
+                  continue;
+                }
                   List<String> contentList = new ArrayList<String>();
                     /*GUID*/
                   contentList.add(ListeningStringUtils.getUUID());
@@ -776,29 +780,6 @@ public class SAPService {
                   contentList.add("ajqh");
                   csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
               }
-          }else{
-              List<String> contentList = new ArrayList<String>();
-              /*GUID*/
-              contentList.add(ListeningStringUtils.getUUID());
-              /*ZPTMC*/
-              contentList.add(ZPTMC);
-              /*ZPTBM*/
-              contentList.add(SAPConstants.PLATFORM_CODE);
-              /*ZLSH_DD  子订单号*/
-              contentList.add("");
-              /*ZYWH_VBS*/
-              contentList.add(txn.getLoanId().toString());
-              String createdDate = DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd");
-              String createdtime = DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss");
-              /*ERDAT*/
-              contentList.add(createdDate);
-              /*ERZET*/
-              contentList.add(createdtime);
-              /*可选表头UNAME,ZSJLY*/
-              /*write*/
-              contentList.add("");
-              contentList.add("ajqh");
-              csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
           }
       }
     } catch (Exception e) {
@@ -1103,7 +1084,7 @@ public class SAPService {
     return val;
   }
 
-  private String getSalesOrderGuidMap(Long key){
+  private String getSalesOrderGuidMap(String key){
     String val = (String) salesOrderGuidMap.get(key);
     return val;
   }
