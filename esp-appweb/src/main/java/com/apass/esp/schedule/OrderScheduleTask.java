@@ -113,6 +113,8 @@ public class OrderScheduleTask {
                 Boolean falg = invoiceService.invoiceCheck(order);
                 if(falg){
                     LOGGER.info("自动开具发票成功!orderId:{}", order.getOrderId());
+                }else{
+                    LOGGER.info("自动开具发票失败!orderId:{}", order.getOrderId());
                 }
             } catch (BusinessException e) {
                 LOGGER.error("handleAutoSignOrder-orderId:{} 订单交易完成7天后开具发票失败:{}", order.getOrderId(), e);
