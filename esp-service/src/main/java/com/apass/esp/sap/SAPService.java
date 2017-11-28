@@ -402,7 +402,7 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("T07");
+          contentList.add("400010");
 
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
@@ -413,7 +413,7 @@ public class SAPService {
           }else{
             contentList.add("");
           }
-          contentList.add("T13");
+          contentList.add("Alipay");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum + 1;
@@ -916,7 +916,7 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("T07");
+          contentList.add("400010");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
@@ -926,7 +926,7 @@ public class SAPService {
           }else{
             contentList.add("");
           }
-          contentList.add("T13");
+          contentList.add("Alipay");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum++;
@@ -1072,7 +1072,7 @@ public class SAPService {
               contentList.add(repayId);
               contentList.add(order.getOrderId());
               contentList.add(repayId);
-              contentList.add("T07");
+              contentList.add("400010");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
           }
