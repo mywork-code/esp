@@ -593,24 +593,21 @@ public class AfterSaleService {
             insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode(), "");
 
         } else {
-//            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(
-//                    Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
             List<SkuObject> serviveList = null;
             try {
                 serviveList = weiZhiAfterSaleApiClient.getServiveList(orderInfo.getExtOrderId(), "1", "10");
+                if (serviveList == null) {
+                    throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("根据客户账号和订单号分页查询服务单概要信息失败",e);
             }
 
-
-            if (serviveList == null) {
-                throw new BusinessException("调用第三方接口失败!");
-            }
             if(!CollectionUtils.isEmpty(serviveList)){
                 for(SkuObject skuObj : serviveList){
                     List<AfsServicebyCustomerPin> serviceInfoList = skuObj.getResult().getResult().getServiceInfoList();
                     if (serviceInfoList == null) {
-                        throw new BusinessException("调用第三方接口失败!");
+                        throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!!");
                     }
                     for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
                         String afsServiceId = afsCusPin.getAfsServiceId();
@@ -798,67 +795,73 @@ public class AfterSaleService {
                 .filter(RefundDetailInfoQueryDto);
         if ("jd".equalsIgnoreCase(orderInfo.getSource())) {
             if (!RefundStatus.REFUND_STATUS01.getCode().equalsIgnoreCase(serviceProcessDto.getStatus())) {
-
-                JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(
-                        Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
-                if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
-                    throw new BusinessException("调用第三方接口失败!");
+                List<SkuObject> skuObjects = null;
+                try {
+                    skuObjects = weiZhiAfterSaleApiClient.getServiveList(String.valueOf(orderInfo.getExtOrderId()), "1", "10");
+                    if (skuObjects == null) {
+                        throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!",e);
+                    throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");
                 }
-                String result = afsInfo.getResult().getString("serviceInfoList");
-                if (result == null || "".equals(result)) {
-                    throw new BusinessException("调用第三方接口失败!");
-                }
 
-                JSONArray array = JSONArray.parseArray(result);
-                if (refundInfo.getJdReturnType().equals(JDReturnType.TO_YOUR_HOME1.getCode().toString())) {
-                    StringBuffer sb1 = new StringBuffer();// 京东审核通过
-                    StringBuffer sb2 = new StringBuffer(); // 京东审核拒绝
-                    StringBuffer sb = new StringBuffer(); // 最终
-                    for (int i = 0; i < array.size(); i++) {
-                        JSONObject jsonObject = (JSONObject) array.get(i);
-                        AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+                if(!CollectionUtils.isEmpty(skuObjects)){
+                    for(SkuObject skuObj : skuObjects){
+                        List<AfsServicebyCustomerPin> serviceInfoList = skuObj.getResult().getResult().getServiceInfoList();
+                        if (serviceInfoList == null) {
+                            throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!!");
+                        }
+                        if (refundInfo.getJdReturnType().equals(JDReturnType.TO_YOUR_HOME1.getCode().toString())) {
+                            StringBuffer sb1 = new StringBuffer();// 京东审核通过
+                            StringBuffer sb2 = new StringBuffer(); // 京东审核拒绝
+                            StringBuffer sb = new StringBuffer(); // 最终
+                            for (AfsServicebyCustomerPin afsServicebyCustomerPin :serviceInfoList) {
+                                for (RefundDetailInfoEntity refundDetailInfo : refundDetailInfoList) {
+                                    long skuId = afsServicebyCustomerPin.getWareId();
+                                    Long goodsId = refundDetailInfo.getGoodsId();
+                                    GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsId);
 
-                        for (RefundDetailInfoEntity refundDetailInfo : refundDetailInfoList) {
-                            long skuId = newAfsInfo.getWareId();
-                            Long goodsId = refundDetailInfo.getGoodsId();
-                            GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsId);
+                                    if (goodsInfoEntity == null) {
+                                        continue;
+                                    }
 
-                            if (goodsInfoEntity == null) {
-                                continue;
-                            }
-
-                            if (skuId == Long.valueOf(goodsInfoEntity.getExternalId())) {
-                                OrderDetailInfoEntity orderDetailInfo = orderDetailInfoRepository
-                                        .select(refundDetailInfo.getOrderDetailId());
-                                sb.append("审核结果：");
-                                String goodsNameSt = orderDetailInfo.getGoodsName();
-                                if (newAfsInfo.getAfsServiceStep() != 20
-                                        && newAfsInfo.getAfsServiceStep() != 60
-                                        && newAfsInfo.getAfsServiceStep() != 10) {
-                                    sb1.append((goodsNameSt.length() < 6 ? goodsNameSt : goodsNameSt
-                                            .substring(0, 6) + "...")
-                                            + ",¥" + orderDetailInfo.getGoodsPrice().toString());
-                                } else {
-                                    sb2.append((goodsNameSt.length() < 6 ? goodsNameSt : goodsNameSt
-                                            .substring(0, 6) + "...")
-                                            + ",¥" + orderDetailInfo.getGoodsPrice().toString());
+                                    if (skuId == Long.valueOf(goodsInfoEntity.getExternalId())) {
+                                        OrderDetailInfoEntity orderDetailInfo = orderDetailInfoRepository
+                                                .select(refundDetailInfo.getOrderDetailId());
+                                        sb.append("审核结果：");
+                                        String goodsNameSt = orderDetailInfo.getGoodsName();
+                                        if (afsServicebyCustomerPin.getAfsServiceStep() != 20
+                                                && afsServicebyCustomerPin.getAfsServiceStep() != 60
+                                                && afsServicebyCustomerPin.getAfsServiceStep() != 10) {
+                                            sb1.append((goodsNameSt.length() < 6 ? goodsNameSt : goodsNameSt
+                                                    .substring(0, 6) + "...")
+                                                    + ",¥" + orderDetailInfo.getGoodsPrice().toString());
+                                        } else {
+                                            sb2.append((goodsNameSt.length() < 6 ? goodsNameSt : goodsNameSt
+                                                    .substring(0, 6) + "...")
+                                                    + ",¥" + orderDetailInfo.getGoodsPrice().toString());
+                                        }
+                                    }
                                 }
                             }
+
+                            if (StringUtils.isNotBlank(sb1.toString())) {
+                                sb1.append("，以上商品达成售后申请，趣花采用京东配送将在1-3天内上门取件， 请准备好商品交给配送人员。如实际收货发现商品与描述不符，商品将原物返回。");
+                            }
+                            if (StringUtils.isNotBlank(sb2.toString())) {
+                                sb2.append(" 以上商品未通过售后服务,");
+                            }
+                            serviceProcessDto.setMemo(sb.append(sb2).append(sb1)
+                                    .append("如有疑问请联系客服：021-51349369，感谢您的支持。").toString());
+
+                        } else {
+                            // TODO 京东商品客户发货
                         }
-                    }
 
-                    if (StringUtils.isNotBlank(sb1.toString())) {
-                        sb1.append("，以上商品达成售后申请，趣花采用京东配送将在1-3天内上门取件， 请准备好商品交给配送人员。如实际收货发现商品与描述不符，商品将原物返回。");
                     }
-                    if (StringUtils.isNotBlank(sb2.toString())) {
-                        sb2.append(" 以上商品未通过售后服务,");
-                    }
-                    serviceProcessDto.setMemo(sb.append(sb2).append(sb1)
-                            .append("如有疑问请联系客服：021-51349369，感谢您的支持。").toString());
-
-                } else {
-                    // TODO 京东商品客户发货
                 }
+
             }
         }
         List<GoodsInfoInOrderDto> goodsListInEachOrder = new ArrayList<GoodsInfoInOrderDto>();
