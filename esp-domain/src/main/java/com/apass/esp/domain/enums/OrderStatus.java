@@ -26,7 +26,7 @@ public enum OrderStatus {
     
     ORDER_CANCEL("D07","订单失效"),
     
-    ORDER_DELETED("D08","订单删除"),
+    ORDER_DELETED("D08","订单删除"),//该状态值已不用了，订单删除 is_delete = 01
     
     ORDER_REFUNDPROCESSING("D09","退款处理中"),
     

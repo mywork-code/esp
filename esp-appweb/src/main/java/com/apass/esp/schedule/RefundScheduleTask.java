@@ -5,10 +5,8 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.bill.TxnInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.CashRefundStatus;
-import com.apass.esp.domain.enums.CashRefundTxnStatus;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.*;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.TxnInfoMapper;
 import com.apass.esp.repository.cashRefund.CashRefundHttpClient;
 import com.apass.esp.repository.cashRefund.RefundCashRequest;
@@ -58,6 +56,8 @@ public class RefundScheduleTask {
   public CashRefundTxnService cashRefundTxnService;
   @Autowired
   private OrderService orderService;
+  @Autowired
+  private InvoiceService invoiceService;
 
   /**
    * 换货 商家重新发货物流显示已签收， 3天后标记售后完成
@@ -158,6 +158,9 @@ public class RefundScheduleTask {
       orderInfoEntity.setOrderId(cashRefund.getOrderId());
       orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
       orderService.updateOrderStatus(orderInfoEntity);
+      //发票状态改为不可见
+      invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),cashRefund.getOrderId());
+
     }
     LOGGER.info("退款补偿job执行结束,当前时间{}", DateFormatUtil.dateToString(new Date(), DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 
