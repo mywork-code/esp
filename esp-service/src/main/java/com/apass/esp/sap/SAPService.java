@@ -435,8 +435,13 @@ public class SAPService {
   private void generateSalesOrderInfoCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderInfo saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderPrimayId()+",");
+    }
 
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -450,7 +455,7 @@ public class SAPService {
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add(getSalesOrderGuidMap(salOrder.getOrderPrimayId()));
+        contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
         contentList.add(salOrder.getGoodsCode());
         contentList.add(salOrder.getGoodsName());
@@ -476,9 +481,13 @@ public class SAPService {
   private void generateSalesOrderCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderPassOrRefund saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderId()+",");
+    }
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
@@ -1103,7 +1112,7 @@ public class SAPService {
     return val;
   }
 
-  private String getSalesOrderGuidMap(Long key){
+  private String getSalesOrderGuidMap(String key){
     String val = (String) salesOrderGuidMap.get(key);
     return val;
   }
