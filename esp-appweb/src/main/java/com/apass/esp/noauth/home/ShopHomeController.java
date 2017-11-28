@@ -1002,6 +1002,7 @@ public class ShopHomeController {
             	}else{
             		 returnMap.put("proCouponList",proCoupons);
             	}
+                returnMap.put("unSupportProvince", goodsInfo.getUnSupportProvince());// 不配送区域
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
                 returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
                 returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
@@ -1048,7 +1049,7 @@ public class ShopHomeController {
             return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED+":"+e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
             LOGGER.error("获取商品基本信息失败");
