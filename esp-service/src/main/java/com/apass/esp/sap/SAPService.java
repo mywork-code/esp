@@ -462,6 +462,7 @@ public class SAPService {
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum + 1;
       }
+      salesOrderGuidMap.clear();
       csvWriter.close();
 
     } catch (Exception e) {
@@ -723,6 +724,7 @@ public class SAPService {
         contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+      purchaseOrderGuidMap.clear();
     } catch (Exception e) {
       LOG.error("PurchaseReturnSalesCvs error...", e);
     } finally {
@@ -866,7 +868,7 @@ public class SAPService {
         contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
-
+      financialVoucherAdjustmentGuidMap.clear();
       csvWriter.close();
 
     } catch (Exception e) {
@@ -1098,19 +1100,16 @@ public class SAPService {
 
   private String getFinancialVoucherAdjustmentGuidMap(Long key){
     String val = (String) financialVoucherAdjustmentGuidMap.get(key);
-    financialVoucherAdjustmentGuidMap.remove(key);
     return val;
   }
 
   private String getSalesOrderGuidMap(Long key){
     String val = (String) salesOrderGuidMap.get(key);
-    salesOrderGuidMap.remove(key);
     return val;
   }
 
   private String getPurchaseOrderGuidMap(String key){
     String val = (String) purchaseOrderGuidMap.get(key);
-    purchaseOrderGuidMap.remove(key);
     return val;
   }
 }
