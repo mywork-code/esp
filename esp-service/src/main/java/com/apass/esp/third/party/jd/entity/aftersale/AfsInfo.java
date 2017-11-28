@@ -9,14 +9,14 @@ public class AfsInfo implements Serializable {
 	private static final long serialVersionUID = -6811537132657521899L;
 	private Long afsServiceId;
 	private Integer customerExpect;
-	private Long jdOrderId;
 	private String customerExpectName;
+	private Date afsApplyTime;
+	private Long jdOrderId;
 	private Long wareId;
 	private String wareName;
 	private Integer afsServiceStep;
 	private String afsServiceStepName;
 	private Integer cancel;
-	private Date afsApplyTime;
 
 	private String orderId;
 

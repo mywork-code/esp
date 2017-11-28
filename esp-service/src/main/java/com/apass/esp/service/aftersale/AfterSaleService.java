@@ -37,9 +37,7 @@ import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.*;
 import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
-import com.apass.esp.third.party.weizhi.entity.aftersale.AfsApplyWeiZhiDto;
-import com.apass.esp.third.party.weizhi.entity.aftersale.ComponentExport;
-import com.apass.esp.third.party.weizhi.entity.aftersale.WeiZhiAfterSaleResponse;
+import com.apass.esp.third.party.weizhi.entity.aftersale.*;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -47,6 +45,7 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -594,44 +593,47 @@ public class AfterSaleService {
             insertServiceProcessInfo(refundIdVal, RefundStatus.REFUND_STATUS02.getCode(), "");
 
         } else {
-            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(
-                    Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
-//            try {
-//                weiZhiAfterSaleApiClient.getServiveList(orderInfo.getExtOrderId(),"1","10");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+//            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(
+//                    Long.valueOf(orderInfo.getExtOrderId()), 1, 10);
+            List<SkuObject> serviveList = null;
+            try {
+                serviveList = weiZhiAfterSaleApiClient.getServiveList(orderInfo.getExtOrderId(), "1", "10");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
-            if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
+            if (serviveList == null) {
                 throw new BusinessException("调用第三方接口失败!");
             }
-            String result = afsInfo.getResult().getString("serviceInfoList");
-            if (result == null || "".equals(result)) {
-                throw new BusinessException("调用第三方接口失败!");
-            }
-            JSONArray array = JSONArray.parseArray(result);
-            for (Object object : array) {
-                JSONObject jsonObject = (JSONObject) object;
-                AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-                long afsServiceId = newAfsInfo.getAfsServiceId();
-                SendSku sendSku = new SendSku();
-                sendSku.setAfsServiceId(Integer.parseInt(String.valueOf(afsServiceId)));
-                sendSku.setDeliverDate(DateFormatUtil.getCurrentDate());
-                sendSku.setExpressCompany(logisticsName);
-                sendSku.setExpressCode(logisticsNo);
-                sendSku.setFreightMoney(new BigDecimal(6));
-//                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
-                try {
-                    LOGGER.info("填写客户发运信息接口开始执行,参数:{}", GsonUtils.toJson(sendSku));
-                    WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterUpdateSendSku(sendSku);
-                    if(weiZhiAfterSaleResponse.getResult() != 0){
-                        LOGGER.error("填写客户发运信息失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
+            if(!CollectionUtils.isEmpty(serviveList)){
+                for(SkuObject skuObj : serviveList){
+                    List<AfsServicebyCustomerPin> serviceInfoList = skuObj.getResult().getResult().getServiceInfoList();
+                    if (serviceInfoList == null) {
+                        throw new BusinessException("调用第三方接口失败!");
                     }
-                } catch (Exception e) {
-                    LOGGER.error("填写客户发运信息异常",e);
+                    for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
+                        String afsServiceId = afsCusPin.getAfsServiceId();
+                        SendSku sendSku = new SendSku();
+                        sendSku.setAfsServiceId(Integer.parseInt(afsServiceId));
+                        sendSku.setDeliverDate(DateFormatUtil.getCurrentDate());
+                        sendSku.setExpressCompany(logisticsName);
+                        sendSku.setExpressCode(logisticsNo);
+                        sendSku.setFreightMoney(new BigDecimal(6));
+//                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
+                        try {
+                            LOGGER.info("填写客户发运信息接口开始执行,参数:{}", GsonUtils.toJson(sendSku));
+                            WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterUpdateSendSku(sendSku);
+                            if(weiZhiAfterSaleResponse.getResult() != 0){
+                                LOGGER.error("填写客户发运信息失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("填写客户发运信息异常",e);
+                        }
+                    }
                 }
             }
+
             /** 4. 保存物流信息 */
             RefundInfoEntity riDto = new RefundInfoEntity();
             riDto.setId(refundIdVal);

@@ -275,6 +275,9 @@ public class WeiZhiAfterSaleApiClient {
 
     /**
      * 根据客户账号和订单号分页查询服务单概要信息
+     * @param wzOrderId
+     * @param pageIndex 页码
+     * @param pageSize  每页记录数
      * @return
      * @throws Exception
      */
