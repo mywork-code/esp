@@ -149,7 +149,11 @@ public class InvoiceService {
             invoice = list.get(0);
             BeanUtils.copyProperties(invoice,entity);
             entity.setId(invoice.getId()+"");
-            entity.setName(orderInfoRepository.selectByOrderId(invoice.getOrderId()).getName());
+            OrderInfoEntity order = orderInfoRepository.selectByOrderId(invoice.getOrderId());
+            entity.setName("");
+            if(order!=null){
+                entity.setName(order.getName());
+            }
             entity.setOrderId(orderId);
             entity.setTelphone(invoice.getTelphone());
             entity.setContent(invoice.getContent());
