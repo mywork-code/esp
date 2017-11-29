@@ -445,6 +445,7 @@ public class GoodsService {
         jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
         BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
         jdSimilarSkuVo.setPrice(price);
+        jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
         jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                 BigDecimal.ROUND_DOWN));
         jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
@@ -617,12 +618,26 @@ public class GoodsService {
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
 			String attrValIds=goodsStockInfoEntity.getAttrValIds();
 			String[] attrValIdsList=attrValIds.split(":");
+			//当t_esp_goods_stock_info 中多规格属性组合排序乱时，重新排序
+			//当后台代码按规律排好序时，下列排序代码注释掉
+			String[] attrValIdsList2=new String[attrValIdsList.length];
+			for (String string : attrValIdsList) {
+				for (JdSimilarSku jdSimilarSku : list) {
+					List<JdSaleAttr> saleAttrList=jdSimilarSku.getSaleAttrList();
+					for (JdSaleAttr jdSaleAttr : saleAttrList) {
+							if(StringUtils.equals(jdSaleAttr.getSaleValueId(),string)){
+								int index=jdSimilarSku.getDim()-1;
+								attrValIdsList2[index]=string;
+							}
+					}
+				}
+			}
 			for (JdSimilarSku jdSimilarSku : list) {
 				List<JdSaleAttr> saleAttrList=jdSimilarSku.getSaleAttrList();
 				for (JdSaleAttr jdSaleAttr : saleAttrList) {
-					for(int i=0;i<attrValIdsList.length;i++){
-						if(StringUtils.equals(jdSaleAttr.getSaleValueId(),attrValIdsList[i])){
-							attrValIdsList[i]=jdSimilarSku.getDim()+""+jdSaleAttr.getSaleValueId();
+					for(int i=0;i<attrValIdsList2.length;i++){
+						if(StringUtils.equals(jdSaleAttr.getSaleValueId(),attrValIdsList2[i])){
+							attrValIdsList2[i]=jdSimilarSku.getDim()+""+jdSaleAttr.getSaleValueId();
 							break;
 						}
 						
@@ -631,7 +646,7 @@ public class GoodsService {
 				}
 			}
 			String attrValIds2="";
-			for (String string : attrValIdsList) {
+			for (String string : attrValIdsList2) {
 				if(StringUtils.isEmpty(attrValIds2)){
 					attrValIds2=string;
 				}else{
