@@ -47,6 +47,7 @@
 		goods_price goodsPrice,
 		stock_total_amt stockTotalAmt,
 		stock_curr_amt stockCurrAmt,
+		attr_val_ids    attrValIds,
 		create_user createUser,
 		update_user updateUser,
 		create_date createDate,
