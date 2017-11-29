@@ -416,6 +416,7 @@ public class GoodsService {
 	returnMap.put("googsDetail", goodsBasicInfo.getGoogsDetail());
 	returnMap.put("goodsTitle", goodsBasicInfo.getGoodsTitle());
 	returnMap.put("goodsName", goodsBasicInfo.getGoodsName());
+	returnMap.put("goodsId", goodsId);
 	if (null != MinGoodsPriceStock) {
 		returnMap.put("skuId", MinGoodsPriceStock.getSkuId());
 		returnMap.put("goodsStockDes", "无货");
