@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.apass.gfb.framework.environment.SystemEnvConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,9 @@ import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.bill.CustomerServiceClient;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.CommonUtils;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 电子发票
  * @author Administrator
@@ -44,6 +45,7 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
  */
 @Service
 public class InvoiceService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceService.class);
     @Autowired
     private InvoiceMapper invoiceMapper;
     @Autowired
@@ -163,7 +165,9 @@ public class InvoiceService {
             entity.setOrderAmt(invoice.getOrderAmt()+"");
             entity.setInvoiceHead(invoice.getHeadType()==(byte)1?"个人发票":invoice.getCompanyName());
             entity.setTaxesNum(invoice.getHeadType()==(byte)1?"暂无":invoice.getTaxpayerNum());
-            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            entity.setDate(sdf.format(invoice.getCreatedTime()));
+//            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             Byte status = invoice.getStatus();
             if(status==(byte)2){
                 entity.setStatus("申请成功");
@@ -207,7 +211,9 @@ public class InvoiceService {
             entity.setTaxesNum(invoice.getHeadType()==(byte)1?"暂无":invoice.getTaxpayerNum());
             entity.setAParty("上海奥派数据科技有限公司");
             entity.setOrderAmt(invoice.getOrderAmt()+"");
-            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            entity.setDate(sdf.format(invoice.getCreatedTime()));
+//            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             if(status==(byte)2){
                 entity.setStatus("开票成功");
                 entity.setInvoiceNum(entity.getInvoiceNum());
@@ -284,7 +290,10 @@ public class InvoiceService {
     public Boolean invoiceCheck(OrderInfoEntity order) throws Exception {
         Invoice in = getInvoice(order.getOrderId());
         order = orderInfoRepository.selectByOrderId(order.getOrderId());
-        if(in==null||in.getStatus()!=InvoiceStatusEnum.APPLYING.getCode()){
+        if(in==null){
+            return false;
+        }
+        if(in.getStatus()==InvoiceStatusEnum.SUCCESS.getCode()||in.getStatus()==InvoiceStatusEnum.INVISIBLE.getCode()){
             return false;
         }
         FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
@@ -366,6 +375,7 @@ public class InvoiceService {
         faPiaoKJDD = (FaPiaoKJDD) FarmartJavaBean.farmartJavaB(faPiaoKJDD, FaPiaoKJDD.class);
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
+        LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具详情"+sS.getReturnMessage());
         if("0000".equals(sS.getReturnCode())){
             downloadInvoice.downloadFaPiao(order.getOrderId());
             return true;

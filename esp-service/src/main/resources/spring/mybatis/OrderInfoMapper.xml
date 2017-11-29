@@ -540,7 +540,7 @@
         join t_esp_invoice y on x.order_id = y.order_id
         WHERE
             x.orderstatus = 'D04' and x.ext_parent_id!='-1'
-            and DATEDIFF(sysdate(),x.acceptgoodsdate) > 7
+            and DATEDIFF(sysdate(),x.acceptgoodsdate) >= 7
             and y.`status`!=2 and y.`status`!=4
         ]]>
     </select>
