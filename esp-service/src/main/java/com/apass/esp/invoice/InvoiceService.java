@@ -1,5 +1,7 @@
 package com.apass.esp.invoice;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -359,7 +361,8 @@ public class InvoiceService {
         if(retuenList!=null&&retuenList.size()>0){
             faPiaoKJDD.setThdh(retuenList.get(0).getId().toString());
         }
-        faPiaoKJDD.setDddate(DateFormatUtil.datetime2String(order.getCreateDate()));
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        faPiaoKJDD.setDddate(sdf.format(order.getCreateDate()));
         faPiaoKJDD = (FaPiaoKJDD) FarmartJavaBean.farmartJavaB(faPiaoKJDD, FaPiaoKJDD.class);
         String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
@@ -393,7 +396,6 @@ public class InvoiceService {
         invoiceMapper.insertSelective(in);
         return in;
     }
-
     @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void updateStatusByOrderId( byte status,  String orderId){
          invoiceMapper.updateStatusByOrderId(status,orderId);
