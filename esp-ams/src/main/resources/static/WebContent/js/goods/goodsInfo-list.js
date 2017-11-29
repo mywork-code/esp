@@ -3379,7 +3379,20 @@ function flushGoodsStock(finalGoodId){
 	});
 	$('#tableattrEditlist').datagrid('load', param);
 }
+var last;	
 function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
+	//此处判断  距离上次函数调用时间间隔不可小于500毫秒   否则间隔太短 刷新不出正确表格数据
+	var now = Date.now();
+	if(last){
+		var interval = now - last;
+	}
+    if (last&&(interval<500)){
+    	console.log("距离上次调用本函数间隔只有："+interval+"毫秒，500毫秒以内不可再次调用，请等待技能冷却！");
+    	return
+    }else{
+    	console.log("距离上次调用本函数间隔："+interval+"毫秒，函数正常执行中请等待执行完毕！");
+    }
+    last = now;
 	var arrthis = id.split("Ed");
 	var attrId = arrthis[1];
 	var attrValId = arrthis[2];
@@ -3437,7 +3450,7 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         		}
-            	flushGoodsStock();
+            	flushGoodsStock(goodsId);
             	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
             	if(value==""&&arrthis.length==3){//该规格被删除动态修改该INPUT的ID
             		document.getElementById(id).id=arrthis[0]+"Ed"+arrthis[1];
