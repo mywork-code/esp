@@ -445,6 +445,7 @@ public class GoodsService {
         jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
         BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
         jdSimilarSkuVo.setPrice(price);
+        jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
         jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                 BigDecimal.ROUND_DOWN));
         jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
