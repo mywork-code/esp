@@ -343,6 +343,8 @@
 		</foreach>
 		<![CDATA[ and orderinfo.update_date >= #{dateBegin}]]>
 		<![CDATA[ and orderinfo.update_date < #{dateEnd}]]>
+		GROUP BY orderinfo.order_id
+		ORDER BY orderinfo.order_id
 	</select>
 	
 	
