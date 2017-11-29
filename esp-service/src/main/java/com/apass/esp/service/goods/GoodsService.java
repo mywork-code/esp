@@ -454,7 +454,11 @@ public class GoodsService {
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
     returnMap.put("merchantCode", goodsBasicInfo.getMerchantCode());
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
-    returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+    if(null !=jdSimilarSkuList){
+        returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+    }else{
+    	 returnMap.put("jdSimilarSkuListSize", null);
+    }
     returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
     returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
     //返回活动id
