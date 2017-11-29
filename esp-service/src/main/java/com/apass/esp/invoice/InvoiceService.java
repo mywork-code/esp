@@ -165,7 +165,7 @@ public class InvoiceService {
             entity.setOrderAmt(invoice.getOrderAmt()+"");
             entity.setInvoiceHead(invoice.getHeadType()==(byte)1?"个人发票":invoice.getCompanyName());
             entity.setTaxesNum(invoice.getHeadType()==(byte)1?"暂无":invoice.getTaxpayerNum());
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             entity.setDate(sdf.format(invoice.getCreatedTime()));
 //            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             Byte status = invoice.getStatus();
@@ -211,7 +211,7 @@ public class InvoiceService {
             entity.setTaxesNum(invoice.getHeadType()==(byte)1?"暂无":invoice.getTaxpayerNum());
             entity.setAParty("上海奥派数据科技有限公司");
             entity.setOrderAmt(invoice.getOrderAmt()+"");
-            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             entity.setDate(sdf.format(invoice.getCreatedTime()));
 //            entity.setDate(DateFormatUtil.datetime2String(invoice.getCreatedTime()));
             if(status==(byte)2){
