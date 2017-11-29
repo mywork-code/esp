@@ -16,6 +16,8 @@ import java.util.TreeSet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +61,7 @@ import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -75,6 +78,9 @@ import com.google.gson.Gson;
  */
 @Service
 public class JdGoodsInfoService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(JdGoodsInfoService.class);
+	
 	@Autowired
     private JdProductApiClient jdProductApiClient;
 	@Autowired
@@ -101,6 +107,8 @@ public class JdGoodsInfoService {
     private ProCouponMapper proCouponMapper;
     @Autowired
     private GoodsRepository goodsDao;
+    @Autowired
+    private WeiZhiProductService productService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -703,6 +711,31 @@ public class JdGoodsInfoService {
 	 * 获取京东商品本身的规格描述
 	 * @return
 	 */
+//	public Map<String,Object> getJdGoodsSimilarSku(Long sku) {
+//		Map<String,Object> map=new HashMap<>();
+//		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+//		// 京东商品本身的规格参数
+//		String jdGoodsSimilarSku = "";
+//		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+//			List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+//			for (JdSaleAttr jdSaleAttr : saleAttrList) {
+//				List<String> skuIds = jdSaleAttr.getSkuIds();
+//				for (String skuId : skuIds) {
+//					if (sku.toString().equals(skuId)) {
+//						jdGoodsSimilarSku = jdGoodsSimilarSku+jdSaleAttr.getSaleValue() + " ";
+//					}
+//				}
+//			}
+//		}
+//		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
+//		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+//		return map;
+//	}
+	
+	/**
+	 * 获取京东商品本身的规格描述
+	 * @return
+	 */
 	public Map<String,Object> getJdGoodsSimilarSku(Long sku) {
 		Map<String,Object> map=new HashMap<>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -723,6 +756,7 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 		return map;
 	}
+	
 	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
@@ -835,20 +869,40 @@ public class JdGoodsInfoService {
 	 * 同类商品查询(根据商品编号sku)
 	 *
 	 * @return
+	 * @throws Exception 
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
-		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
-		if(jdSimilarResponse.getResult() == null){
-			return Collections.emptyList();
+		if(null == sku){
+			return JdSimilarSkuList;
 		}
-		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
-			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
-			jp.update(jp.getSaleAttrList());
-			JdSimilarSkuList.add(jp);
+		try {
+			JdSimilarSkuList = productService.getWeiZhiSimilarSku(sku+"");
+		} catch (Exception e) {
+			logger.error("call method getJdSimilarSkuList is failed!!!--------->>>>{}",e);
+			return JdSimilarSkuList;
+		}
+		if(CollectionUtils.isNotEmpty(JdSimilarSkuList)){
+			for (JdSimilarSku jdSimilarSku : JdSimilarSkuList) {
+				jdSimilarSku.update(jdSimilarSku.getSaleAttrList());
+				JdSimilarSkuList.add(jdSimilarSku);
+			}
 		}
 		return JdSimilarSkuList;
 	}
+//	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
+//		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
+//		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
+//		if(jdSimilarResponse.getResult() == null){
+//			return Collections.emptyList();
+//		}
+//		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
+//			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
+//			jp.update(jp.getSaleAttrList());
+//			JdSimilarSkuList.add(jp);
+//		}
+//		return JdSimilarSkuList;
+//	}
 
 	/**
 	 * 京东商品：根据skuId返回相似skuId

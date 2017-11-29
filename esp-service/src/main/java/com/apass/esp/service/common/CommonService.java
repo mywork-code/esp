@@ -84,7 +84,7 @@ public class CommonService {
 																// 保留两位小数
 		} else {
 			GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
-			if (SourceType.JD.getCode().equals(goodsBasicInfo.getSource())) {
+			if (SourceType.WZ.getCode().equals(goodsBasicInfo.getSource())) {
 				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
 				Kvattr kvattr = new Kvattr();
 				if (goodsCostPrice.compareTo(new BigDecimal(99)) >= 0

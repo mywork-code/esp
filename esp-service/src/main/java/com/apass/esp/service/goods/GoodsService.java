@@ -60,6 +60,8 @@ import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
+import com.apass.esp.third.party.jd.entity.product.Product;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.esp.third.party.weizhi.entity.SkuNum;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
@@ -124,6 +126,8 @@ public class GoodsService {
   private GoodsAttrValService goodsAttrValService;
   @Autowired
   private GoodsAttrService goodsAttrService;
+  @Autowired
+  private WeiZhiProductApiClient productApiClient;
   /**
    * app 首页加载精品推荐商品
    *
@@ -1388,7 +1392,7 @@ public class GoodsService {
       goods.setFirstPrice(new BigDecimal(String.valueOf(params.get("minPrice"))).multiply(
           new BigDecimal(0.1)).setScale(2, BigDecimal.ROUND_DOWN));
       goods.setGoodsStockId(Long.valueOf(String.valueOf(params.get("minPriceStockId"))));
-      if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+      if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
         Map<String, Object> descMap = new HashMap<String, Object>();
         try {
           descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(g.getExternalId()));
@@ -1411,13 +1415,17 @@ public class GoodsService {
       } else {
         goods.setGoodsSkuAttrPinyin("");
       }
-      if (SourceType.JD.getCode().equalsIgnoreCase(g.getSource())) {
-        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(Long.valueOf(g.getExternalId()));
-        JSONObject jsonObject = jdApiResponse.getResult();
-        if (jdApiResponse.isSuccess() && jdApiResponse != null && jsonObject != null) {
-          String introduction = (String) jsonObject.get("introduction");
-          goods.setGoodsDetail(introduction);
-        }
+      if (SourceType.WZ.getCode().equalsIgnoreCase(g.getSource())) {
+    	Product product =   productApiClient.getWeiZhiProductDetail(g.getExternalId());
+    	if(product != null){
+    		goods.setGoodsDetail(product.getIntroduction());
+    	}
+//        JdApiResponse<JSONObject> jdApiResponse = jdProductApiClient.productDetailQuery(Long.valueOf(g.getExternalId()));
+//        JSONObject jsonObject = jdApiResponse.getResult();
+//        if (jdApiResponse.isSuccess() && jdApiResponse != null && jsonObject != null) {
+//          String introduction = (String) jsonObject.get("introduction");
+//          goods.setGoodsDetail(introduction);
+//        }
       }
 
     } catch (Exception e) {
