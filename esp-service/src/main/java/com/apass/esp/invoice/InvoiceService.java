@@ -325,8 +325,8 @@ public class InvoiceService {
         faPiaoKJ.setCzdm("10");
         faPiaoKJ.setQdBz("0");
         //价税金额
-        faPiaoKJ.setKphjje(order.getOrderAmt() + "");
-        BigDecimal hjbhsje = order.getOrderAmt().divide(new BigDecimal(1.17),2);
+        faPiaoKJ.setKphjje(in.getOrderAmt() + "");
+        BigDecimal hjbhsje = in.getOrderAmt().divide(new BigDecimal(1.17),2);
         faPiaoKJ.setHjbhsje(hjbhsje.toString());
         faPiaoKJ.setHjse(hjbhsje.multiply(new BigDecimal(0.17)).setScale(2,BigDecimal.ROUND_HALF_UP).toString());
 
