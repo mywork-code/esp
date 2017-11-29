@@ -759,7 +759,7 @@ public class GoodsService {
 	 * 通过stockID获取商品的商品描述
 	 */
 	public String getGoodsStockDesc(Long goodsStockId) {
-		GoodsStockInfoEntity goodsStockInfoEntity = goodsStockDao.select(goodsStockId);
+		GoodsStockInfoEntity goodsStockInfoEntity = goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
 		if (null != goodsStockInfoEntity.getAttrValIds()) {
 			StringBuffer sb = new StringBuffer();
 			String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
