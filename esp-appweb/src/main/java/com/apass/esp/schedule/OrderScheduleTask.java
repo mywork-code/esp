@@ -19,6 +19,8 @@ import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 /**
  * 定时任务
  * @description  
@@ -27,9 +29,10 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
  * @version $Id: InvalidOrderSchedule.java, v 0.1 2017年1月12日 下午5:55:42 liuming Exp $
  */
 @Component
-@Configurable
-@EnableScheduling
-@Profile("Schedule")
+//@Configurable
+//@EnableScheduling
+//@Profile("Schedule")
+@RequestMapping("fapiao")
 public class OrderScheduleTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderScheduleTask.class);
@@ -130,7 +133,8 @@ public class OrderScheduleTask {
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * sprint12:售后失败的退换货，订单状态改为交易完成
      */
-    @Scheduled(cron = "0 0/5 * * * *")
+    //@Scheduled(cron = "0 0/5 * * * *")
+    @RequestMapping("/test1")
     public void handleReturningOrders(){
         try {
             orderRefundService.handleReturningOrders();
