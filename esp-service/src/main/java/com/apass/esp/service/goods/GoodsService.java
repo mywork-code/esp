@@ -402,6 +402,7 @@ public class GoodsService {
     Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
     GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
     BigDecimal minPrice =(BigDecimal) result.get("minPrice");
+    returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());// 不配送区域
     returnMap.put("goodsPrice",minPrice);
     returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(minPrice)).setScale(2, BigDecimal.ROUND_DOWN));
     returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
@@ -420,7 +421,11 @@ public class GoodsService {
     	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
     }
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
-    List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+    List<JdSimilarSkuTo> JdSimilarSkuToList = null;
+    if(jdSimilarSkuList != null){
+        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+    }
+
 
     returnMap.put("jdImagePathList",JdImagePathList);
     returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
@@ -518,7 +523,7 @@ public class GoodsService {
 		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,list.get(0).getAttrValIds());
 	    }
 	    if(null ==jdSimilarSkuList ){
-	    	 List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
+            List<JdSimilarSku>  jdSimilarSkuList2=new ArrayList<>();
 	 	    returnMap.put("jdSimilarSkuList", jdSimilarSkuList2);
 		    returnMap.put("jdSimilarSkuListSize", 0);
 	    }else{
@@ -632,7 +637,8 @@ public class GoodsService {
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId(Long goodsId,String attrValId) throws BusinessException {
         LOGGER.info("getJdSimilarSkuListBygoodsId方法执行,参数goodsId:{},attrValId:{}",goodsId,attrValId);
         if(StringUtils.isEmpty(attrValId.trim())){
-            throw new BusinessException("商品属性不能为空,数据有误.");
+            return null;
+            //throw new BusinessException("商品属性不能为空,数据有误.");
         }
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		String[] attrValIdString=attrValId.split(":");
