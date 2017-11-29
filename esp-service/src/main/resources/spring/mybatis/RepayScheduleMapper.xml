@@ -39,9 +39,7 @@
 
 
 
-	<!-- 根据vbsid查询到期还款日期 -->
-	<select id="scheduleId" parameterType="Long" resultType="RepayScheduleEntity">
-		<![CDATA[
+	<select id="selectByPrimaryKey" parameterType="Long" resultType="RepayScheduleEntity">
 	      SELECT
 		    SCHEDULE_ID AS scheduleId,
 			USER_ID AS userId,
@@ -66,11 +64,7 @@
 			LOAN_STATUS AS loanStatus
 		  FROM
 		    T_APASS_REPAY_SCHEDULE
-	    ]]>
-		<include refid="QueryRepayScheduleSql" />
-		<![CDATA[
-			ORDER BY loan_pmt_due_date DESC,CURR_TERM DESC
-		]]>
+			WHERE SCHEDULE_ID = #{scheduleId}
 	</select>
 	
 </mapper> 

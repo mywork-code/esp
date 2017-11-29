@@ -31,4 +31,7 @@ public interface InvoiceMapper extends GenericMapper<Invoice,Long> {
      * 根据订单号修改状态
      */
     public void updateStatusByOrderId(@Param("status") byte status,@Param("orderId") String orderId);
+
+
+    Invoice getInvoiceByorderId(String orderId);
 }
