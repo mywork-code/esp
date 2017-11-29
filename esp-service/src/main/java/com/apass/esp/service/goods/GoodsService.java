@@ -381,6 +381,7 @@ public class GoodsService {
       throw new BusinessException("商品信息不存在");
     }
     returnMap.put("status", goodsBasicInfo.getStatus());//商品状态
+    //根据商品上架时间，下架时间和状态判断商品的状态
     Date now = new Date();
     if (now.before(goodsBasicInfo.getListTime()) || (null !=goodsBasicInfo.getDelistTime() && now.after(goodsBasicInfo.getDelistTime()))
         || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
@@ -399,10 +400,11 @@ public class GoodsService {
         break;
       }
     }
+    //如果该商品下所有规格都没有库存则该商品的状态为下架状态
     if (offShelfFlag) {
     	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
-    //商品价格最低为默认显示的规格
+    //商品价格最低goodsStock为默认显示的规格
     Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
     GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
     BigDecimal minPrice =(BigDecimal) result.get("minPrice");
@@ -667,9 +669,7 @@ public class GoodsService {
         LOGGER.info("getJdSimilarSkuListBygoodsId方法执行,参数goodsId:{},attrValId:{}",goodsId,attrValId);
         if(StringUtils.isEmpty(attrValId.trim())){
             return null;
-            //throw new BusinessException("商品属性不能为空,数据有误.");
         }
-//		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		String[] attrValIdString=attrValId.split(":");
 		Map<String,Object> map=new HashMap<>();
 		for (int i = 0; i < attrValIdString.length; i++) {
@@ -693,7 +693,6 @@ public class GoodsService {
 					goodsAttrVal.getAttrId());
 			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
 				JdSaleAttr jdSaleAttr = new JdSaleAttr();
-//				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
 				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
 				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
 				//默认价格最低的商品的属性规格为默认值
@@ -746,7 +745,6 @@ public class GoodsService {
 	 * @throws BusinessException
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId2(Long goodsId,String attrValId) throws BusinessException {
-		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		String[] attrValIdString=attrValId.split(":");
 		Map<String,Object> map=new HashMap<>();
 		for (int i = 0; i < attrValIdString.length; i++) {
@@ -770,13 +768,7 @@ public class GoodsService {
 					goodsAttrVal.getAttrId());
 			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
 				JdSaleAttr jdSaleAttr = new JdSaleAttr();
-//				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
 				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
-//				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
-//				//默认价格最低的商品的属性规格为默认值
-//				if(Arrays.asList(attrValIdString).contains(goodsAttrVal2.getId().toString())){
-//					jdSaleAttr.setIsSelect("true");
-//				}
 				Boolean isImageFalge=true;
 				List<String> skuIds = new ArrayList<>();
 				List<String> skuIdStrList=new ArrayList<>();
