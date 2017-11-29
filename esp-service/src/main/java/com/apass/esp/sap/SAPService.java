@@ -457,7 +457,7 @@ public class SAPService {
         contentList.add(ListeningStringUtils.getUUID());
         contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
-        contentList.add(salOrder.getGoodsCode());
+        contentList.add("200001");
         contentList.add(salOrder.getGoodsName());
         contentList.add(salOrder.getGoodsModel());
         contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
@@ -677,16 +677,22 @@ public class SAPService {
         contentList.add(txn.getOrderType());
         String suqNo = txn.getSupNo();
         String merchantCode = txn.getMerchantCode();
+        MerchantCode merchant = null;
         MerchantCode[] codeArr = MerchantCode.values();
         for (MerchantCode entity : codeArr) {
-          if (StringUtils.equals(merchantCode, entity.getCode())) {
+          if (StringUtils.equals(merchantCode, entity.getVal())) {
             suqNo = entity.getName();
-            break;
+            merchant = entity;
           }
         }
-        contentList.add(merchantCode);
-        MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-        contentList.add(merchantInfoEntity.getMerchantName());//商户名称
+        if(merchant != null){
+          contentList.add(merchant.getCode());
+          contentList.add(merchant.getName());//商户名称
+        }else{
+          contentList.add("");
+          contentList.add("");
+        }
+
         contentList.add(suqNo);
         contentList.add(txn.getCarriage());
         contentList.add(txn.getOldOrderId());
