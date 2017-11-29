@@ -70,4 +70,5 @@ public class OrderDetailInfoRepository extends BaseMybatisRepository<OrderDetail
         paramMap.put("dateEnd",dateEnd);
         return getSqlSession().selectList(getSQL("salesorderinfoList"),paramMap);
     }
+
 }

@@ -249,7 +249,10 @@
                     KEEP_DATE                    keepDate,
                     SUP_NO                       supNo,
                     CREATE_DATE                  createDate,
-                    UPDATE_DATE                  updateDate
+                     UPDATE_DATE                  updateDate,
+                    discount_amount				 discountAmount,
+                    coupon_money                 couponMoney,
+                    pro_activity_id			     proActivityId
             FROM t_esp_order_detail_info WHERE ID = #{value}
         ]]>
     </select>
