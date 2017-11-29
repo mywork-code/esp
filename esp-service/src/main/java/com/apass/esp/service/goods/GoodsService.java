@@ -456,11 +456,13 @@ public class GoodsService {
     returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     if(null !=jdSimilarSkuList){
         returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+        returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
     }else{
-    	 returnMap.put("jdSimilarSkuListSize", null);
+    	 jdSimilarSkuList=new ArrayList<>();
+         returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+    	 returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
     }
     returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
-    returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
     //返回活动id
     ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
     if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
