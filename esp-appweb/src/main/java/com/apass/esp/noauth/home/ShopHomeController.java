@@ -199,14 +199,21 @@ public class ShopHomeController {
                     goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                             BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                 }
-                if ("jd".equals(goods.getSource())) {
+               if (SourceType.JD.getCode().equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     if(goods.getGoodsSiftUrl().contains("eshop")){
                         goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
                     }else{
                         goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" +goods.getGoodsLogoUrl());
                     }
-                } else {
+                } else if (SourceType.WZ.getCode().equals(goods.getSource())) {
+                    goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
+                    if(goods.getGoodsSiftUrl().contains("eshop")){
+                        goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    }else{
+                        goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" +goods.getGoodsLogoUrl());
+                    }
+                }else {
                     // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
                     Long marketPrice = goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goods.getGoodId());
                     goods.setMarketPrice(new BigDecimal(marketPrice));
@@ -328,6 +335,9 @@ public class ShopHomeController {
 					String logoUrl = goodsInfo.getGoodsLogoUrl();
 					String siftUrl = goodsInfo.getGoodsSiftUrl();
 					if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
+						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+					} else if (StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode())) {
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
 						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
 					} else {

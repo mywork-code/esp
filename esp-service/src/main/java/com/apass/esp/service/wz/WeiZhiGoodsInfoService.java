@@ -79,10 +79,8 @@ public class WeiZhiGoodsInfoService {
 					jddetail = product.getIntroduction().replaceAll("src=\"//", "src=\"http://").replaceAll("href=\'//",
 							"href=\'http://");
 				}
-				// map.put("goodsName", jdGoods.getName());// 商品名称
-				// java字符串转义,把&lt;&gt;转换成<>等字符
-
-				// 微知没有根据skuid 获取 商品详情的css的接口
+				
+				//*** 微知没有根据skuid 获取 商品详情的css的接口
 				// String skuCss =
 				// getSkuCss(sku).replaceAll("background-image:url\\(//",
 				// "background-image:url\\(http://");
