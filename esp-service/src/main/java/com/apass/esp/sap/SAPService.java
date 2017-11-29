@@ -457,7 +457,7 @@ public class SAPService {
         contentList.add(ListeningStringUtils.getUUID());
         contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
-        contentList.add(salOrder.getGoodsCode());
+        contentList.add("200001");
         contentList.add(salOrder.getGoodsName());
         contentList.add(salOrder.getGoodsModel());
         contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
