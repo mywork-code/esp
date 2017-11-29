@@ -677,16 +677,22 @@ public class SAPService {
         contentList.add(txn.getOrderType());
         String suqNo = txn.getSupNo();
         String merchantCode = txn.getMerchantCode();
+        MerchantCode merchant = null;
         MerchantCode[] codeArr = MerchantCode.values();
         for (MerchantCode entity : codeArr) {
-          if (StringUtils.equals(merchantCode, entity.getCode())) {
+          if (StringUtils.equals(merchantCode, entity.getVal())) {
             suqNo = entity.getName();
-            break;
+            merchant = entity;
           }
         }
-        contentList.add(merchantCode);
-        MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-        contentList.add(merchantInfoEntity.getMerchantName());//商户名称
+        if(merchant != null){
+          contentList.add(merchant.getCode());
+          contentList.add(merchant.getName());//商户名称
+        }else{
+          contentList.add("");
+          contentList.add("");
+        }
+
         contentList.add(suqNo);
         contentList.add(txn.getCarriage());
         contentList.add(txn.getOldOrderId());
