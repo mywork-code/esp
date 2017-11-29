@@ -441,7 +441,7 @@ public class GoodsService {
         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
         jdSimilarSkuVo.setGoodsId(goodsId.toString());
-        jdSimilarSkuVo.setSkuId(goodsBasicInfo.getExternalId());
+        jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
         jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
         BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
         jdSimilarSkuVo.setPrice(price);
@@ -738,6 +738,25 @@ public class GoodsService {
 			
 		});
 		return jdSimilarSkuList;
+	}
+
+	/**
+	 * 通过stockID获取商品的商品描述
+	 */
+	public String getGoodsStockDesc(Long goodsStockId) {
+		GoodsStockInfoEntity goodsStockInfoEntity = goodsStockDao.select(goodsStockId);
+		if (null != goodsStockInfoEntity.getAttrValIds()) {
+			StringBuffer sb = new StringBuffer();
+			String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
+			for (String string : attrValIds) {
+				GoodsAttrVal goodsAttrVal = goodsAttrValService.selectByPrimaryKey(Long.parseLong(string));
+				sb.append(goodsAttrVal.getAttrVal());
+				sb.append(" ");
+			}
+			return sb.toString();
+		} else {
+			return null;
+		}
 	}
 	/**
 	 * 后台显示通过商品goodsId组装非京东上商品的jdSimilarSkuList

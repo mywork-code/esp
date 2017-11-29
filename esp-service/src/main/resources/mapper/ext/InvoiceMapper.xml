@@ -45,4 +45,12 @@
         UPDATE t_esp_invoice set updated_time = now(),
         status = #{status} where order_id = #{orderId}
     </update>
+
+
+    <select id="getInvoiceByorderId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_esp_invoice
+        where order_id = #{orderId,jdbcType=VARCHAR}
+    </select>
 </mapper>
