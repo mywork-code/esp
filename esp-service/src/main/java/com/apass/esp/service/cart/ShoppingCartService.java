@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsAttrValService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.offer.ActivityCfgService;
@@ -28,6 +29,7 @@ import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
 import com.apass.esp.domain.dto.cart.ListCartDto;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
+import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
@@ -79,6 +81,8 @@ public class ShoppingCartService {
     private ProGroupGoodsMapper groupGoodsMapper;
     @Autowired
     private ActivityCfgService activityCfgService;
+    @Autowired
+    private GoodsAttrValService goodsAttrValService;
     /**
      * 添加商品到购物车
      * 
@@ -349,6 +353,13 @@ public class ShoppingCartService {
                         goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
                     }
+                    //如果非京东商品是多规格商品，则调用方法去取商品的规格描述
+            		List<GoodsAttrVal> goodsAttrValList = goodsAttrValService.queryGoodsAttrValsByGoodsId(goodsInfoInCart.getGoodsId());
+            		if(null !=goodsAttrValList && goodsAttrValList.size()>1){
+            	  		//获取非京东商品的多规格描述
+                        String goodsDesc= goodsService.getGoodsStockDesc(goodsInfoInCart.getGoodsStockId());
+                        goodsInfoInCart.setGoodsSkuAttr(goodsDesc);
+            		}
             	}
                 
                 // 计算商品折扣后价格

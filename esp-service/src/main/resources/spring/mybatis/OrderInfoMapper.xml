@@ -524,29 +524,24 @@
 	</select>
 	<select id="findCompelateOrder" resultType="OrderInfoEntity">
     <![CDATA[
-        SELECT
-            id  id,
-            order_id orderId,
-            user_id userId,
-            payType payType,
-            order_amt orderAmt,
-            paystatus payStatus,
-            remark remark,
-            orderstatus status,
-            logistics_name logisticsName,
-            logistics_no logisticsNo,
-            acceptgoodstype      acceptGoodsType,
-            extend_acceptgoodsNum  extendAcceptGoodsNum,
-            send_outgoodsdate      sendOutGoodsDate,
-            last_acceptgoodsdate   lastAcceptGoodsDate,
-            acceptgoodsdate        acceptGoodsDate,
-            create_date createDate,
-            update_date updateDate
+        SELECT 
+            x.id id, x.order_id orderId, x.user_id userId, x.payType payType,
+            x.order_amt orderAmt, x.paystatus payStatus, x.remark remark,
+            x.orderstatus status, x.logistics_name logisticsName,
+            x.logistics_no logisticsNo, x.acceptgoodstype acceptGoodsType,
+            x.extend_acceptgoodsNum  extendAcceptGoodsNum,
+            x.send_outgoodsdate      sendOutGoodsDate,
+            x.last_acceptgoodsdate   lastAcceptGoodsDate,
+            x.acceptgoodsdate        acceptGoodsDate,
+            x.create_date createDate,
+            x.update_date updateDate
         FROM
-            t_esp_order_info 
+            t_esp_order_info x
+        join t_esp_invoice y on x.order_id = y.order_id
         WHERE
-            orderstatus = 'D04' and ext_parent_id!='-1'
-            and DATEDIFF(sysdate(),create_date) = 7
+            x.orderstatus = 'D04' and x.ext_parent_id!='-1'
+            and DATEDIFF(sysdate(),x.acceptgoodsdate) >= 7
+            and y.`status`!=2 and y.`status`!=4
         ]]>
     </select>
 	<!-- 根据物流唯一标识 -->
