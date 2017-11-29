@@ -664,13 +664,14 @@ public class GoodsService {
 					goodsAttrVal.getAttrId());
 			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
 				JdSaleAttr jdSaleAttr = new JdSaleAttr();
-				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
+//				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
 				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
 				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
 				//默认价格最低的商品的属性规格为默认值
 				if(Arrays.asList(attrValIdString).contains(goodsAttrVal2.getId().toString())){
 					jdSaleAttr.setIsSelect("true");
 				}
+				Boolean isImageFalge=true;
 				List<String> skuIds = new ArrayList<>();
 				List<String> skuIdStrList=new ArrayList<>();
 				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
@@ -678,6 +679,10 @@ public class GoodsService {
 					if (StringUtils.isNotEmpty(goodsStockInfoEntity.getAttrValIds())) {
 						String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
+							if(isImageFalge){
+								jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+								isImageFalge=false;
+							}
 							skuIds.add(goodsStockInfoEntity.getSkuId());
 							skuIdStrList.add(goodsStockInfoEntity.getSkuId());
 						}
@@ -736,13 +741,14 @@ public class GoodsService {
 					goodsAttrVal.getAttrId());
 			for (GoodsAttrVal goodsAttrVal2 : GoodsAttrValList) {
 				JdSaleAttr jdSaleAttr = new JdSaleAttr();
-				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
+//				jdSaleAttr.setImagePath(imageService.getImageUrl(goodsBasicInfo.getGoodsLogoUrl()));
 				jdSaleAttr.setSaleValue(goodsAttrVal2.getAttrVal());
 //				jdSaleAttr.setSaleValueId(goodsAttrVal2.getId() + "");
 //				//默认价格最低的商品的属性规格为默认值
 //				if(Arrays.asList(attrValIdString).contains(goodsAttrVal2.getId().toString())){
 //					jdSaleAttr.setIsSelect("true");
 //				}
+				Boolean isImageFalge=true;
 				List<String> skuIds = new ArrayList<>();
 				List<String> skuIdStrList=new ArrayList<>();
 				List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
@@ -752,6 +758,10 @@ public class GoodsService {
 						if (Arrays.asList(attrValIds).contains(goodsAttrVal2.getId().toString())) {
 							skuIds.add(goodsStockInfoEntity.getSkuId());
 							skuIdStrList.add(goodsStockInfoEntity.getSkuId());
+							if(isImageFalge){
+								jdSaleAttr.setImagePath(imageService.getImageUrl(goodsStockInfoEntity.getStockLogo()));
+								isImageFalge=false;
+							}
 						}
 					}
 				}
