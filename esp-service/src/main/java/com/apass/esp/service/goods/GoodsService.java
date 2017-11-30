@@ -66,6 +66,7 @@ import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -416,10 +417,12 @@ public class GoodsService {
 	returnMap.put("goodsTitle", goodsBasicInfo.getGoodsTitle());
 	returnMap.put("goodsName", goodsBasicInfo.getGoodsName());
 	returnMap.put("goodsId", goodsId);
+	//不支持发货地址
+	Boolean isUnSupport=(Boolean) returnMap.get("isUnSupport");
 	if (null != MinGoodsPriceStock) {
 		returnMap.put("skuId", MinGoodsPriceStock.getSkuId());
 		returnMap.put("goodsStockDes", "无货");
-		if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
+		if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0 && !isUnSupport) {
 			returnMap.put("goodsStockDes", "有货");
 		}
 	}
@@ -434,7 +437,7 @@ public class GoodsService {
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
     List<JdSimilarSkuTo> JdSimilarSkuToList = null;
     if(jdSimilarSkuList != null){
-        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport);
     }else{ 
     	JdSimilarSkuToList=new ArrayList<>();
         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
@@ -575,7 +578,8 @@ public class GoodsService {
     GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
     if(null !=jdSimilarSkuList){
-      List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+      Boolean isUnSupport=false;
+      List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport);
       returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
       returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
       returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
@@ -614,7 +618,7 @@ public class GoodsService {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list) throws BusinessException {
+	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list,Boolean isUnSupport) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		Long proActivityId = null;
 		String activityCfg;
@@ -690,7 +694,7 @@ public class GoodsService {
 			jdSimilarSkuVo.setPrice(price);
 			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			jdSimilarSkuVo.setStockDesc("无货");
-			if (null != goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt() > 0) {
+			if (null != goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt() > 0 && !isUnSupport) {
 				jdSimilarSkuVo.setStockDesc("有货");
 			}
 			jdSimilarSkuVo.setActivityCfg(activityCfg);
@@ -792,8 +796,10 @@ public class GoodsService {
 			String[] attrValIds = goodsStockInfoEntity.getAttrValIds().split(":");
 			for (String string : attrValIds) {
 				GoodsAttrVal goodsAttrVal = goodsAttrValService.selectByPrimaryKey(Long.parseLong(string));
-				sb.append(goodsAttrVal.getAttrVal());
-				sb.append(" ");
+				if(null !=goodsAttrVal){
+					sb.append(goodsAttrVal.getAttrVal());
+					sb.append(" ");
+				}
 			}
 			return sb.toString();
 		} else {
