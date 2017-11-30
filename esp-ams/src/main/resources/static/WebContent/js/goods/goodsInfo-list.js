@@ -871,12 +871,15 @@ $(function() {
     	$("#editUpLoadGoodsPicture").css('display','none');
     	$("#editGoodsStock").css('display','block');
     	
-    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
+//    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
     	flushtableattrEditlist();
     	//类目未修改才刷新下方规格   并且判断商品属性  是否无属性  规格  那么就新增十条不可编辑的属性和规格
     	if(goodsCateChangeFalg==1){
     		flushGoodsStock(finalGoodId);
+    		var param = {};
+    		param['goodsId'] = finalGoodId;
+    		$('#tableattrEditlist').datagrid('load', param);
     		functionX(finalGoodId);
     	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
     		$(".add-btn2").click();
