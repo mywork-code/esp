@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.dto.WorkCityJdDto;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.common.DictDTO;
 import com.apass.esp.domain.entity.nation.NationEntity;
@@ -57,6 +58,12 @@ public class NationService {
     public List<WorkCityJd> queryDistrictForAms(String districtCode){
     	return cityJdMapper.selectDateByParentId(districtCode);
     }
+    
+    public WorkCityJd selectByProvinceId(String provinceId){
+    	return cityJdMapper.selectByProvinceId(provinceId);
+    };
+
+
     /**
      * 查询城市公共方法
      *

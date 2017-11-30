@@ -32,4 +32,12 @@
     from t_esp_work_city_jd
     where parent = #{code}
 </select>
+
+<select id="selectByProvinceId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_work_city_jd
+    where CODE = #{value}
+</select>
+
 </mapper>
