@@ -1,5 +1,6 @@
 package com.apass.esp.domain.dto.refund;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -22,8 +23,25 @@ public class RefundedOrderInfoDto {
     private String orderId;
     
     private String orderStatus;
+    private BigDecimal refundAmt;
+    private BigDecimal orderAmt;
 
-    
+    public BigDecimal getRefundAmt() {
+        return refundAmt;
+    }
+
+    public void setRefundAmt(BigDecimal refundAmt) {
+        this.refundAmt = refundAmt;
+    }
+
+    public BigDecimal getOrderAmt() {
+        return orderAmt;
+    }
+
+    public void setOrderAmt(BigDecimal orderAmt) {
+        this.orderAmt = orderAmt;
+    }
+
     public String getRefundType() {
 		return refundType;
 	}

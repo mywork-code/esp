@@ -168,7 +168,9 @@
 			    t1.refund_type			 refundType,
 			    t1.completion_time       completionTime,
 			    t1.order_id              orderId,
-			    t2.orderstatus           orderStatus
+			    t2.orderstatus           orderStatus,
+		        t1.refund_amt   refundAmt,
+		        t2.order_amt   orderAmt
 			FROM
 			    t_esp_refund_info t1,
 			    t_esp_order_info t2
