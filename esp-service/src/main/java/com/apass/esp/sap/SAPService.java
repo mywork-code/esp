@@ -648,41 +648,45 @@ public class SAPService {
    * 采购订单（采购和退货）
    */
   private void transPurchaseReturnSalesCvs() {
-    CsvWriter csvWriter = null;
-    List<String> orderList = new ArrayList<>();
-    orderList.add(OrderStatus.ORDER_COMPLETED.getCode());
-    List<String> returnStatusList = new ArrayList<>();
-    returnStatusList.add(RefundStatus.REFUND_STATUS05.getCode());
-    List<String> returnTypeList = new ArrayList<>();
-    returnTypeList.add("0");
-    List<PurchaseReturnOrder> txnList = txnInfoService.selectPurchaseReturnSalesList(orderList, returnStatusList, returnTypeList, getDateBegin(), getDateEnd());
+   //TODO
+    List<String> orderStatusList = new ArrayList<>();
+    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
+
+    List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderPassOrRefund saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderId()+",");
+    }
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("UTF-8"));
-      //第一行空
+      CsvWriter csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("UTF-8"));
+      //第一行空着
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //表头
       String[] headers = {"GUID", "ZDZ_LSH","BUKRS","ZLSH_DSF", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD",
-          "ZERDAT","ZERZET","ERDAT", "ERZET","UNAME","ZSJLY"};
-      csvWriter.writeRecord(headers);
+              "ZERDAT","ZERZET","ERDAT", "ERZET","UNAME","ZSJLY"};
 
-      for (PurchaseReturnOrder txn : txnList) {
-        boolean flag = true;//对应的商品编号是否能匹配到sap的供应商数据，如果没有则跳过此条数据
+      csvWriter.writeRecord(headers);
+      for (SalesOrderPassOrRefund salOrder : salOrderList) {
+        boolean flag = true;
+
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
-        purchaseOrderGuidMap.put(txn.getOrderId(),guid);
-        contentList.add(txn.getMainOrderId());
-        contentList.add(txn.getCompanyCode());
-        contentList.add(txn.getExtOrderId());
-        contentList.add(txn.getOrderId());
-        contentList.add(txn.getOrderType());
-        String suqNo = txn.getSupNo();
-        String merchantCode = txn.getMerchantCode();
+        purchaseOrderGuidMap.put(salOrder.getOrderId(),guid);
+        contentList.add(salOrder.getOrderId());
+        contentList.add("6008");
+        contentList.add(salOrder.getExtOrderId());
+        contentList.add(salOrder.getOrderId());
+        if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
+          contentList.add("Z002");
+        } else {
+          contentList.add("Z001");
+        }
         MerchantCode merchant = null;
         MerchantCode[] codeArr = MerchantCode.values();
         for (MerchantCode entity : codeArr) {
-          if (StringUtils.equals(merchantCode, entity.getVal())) {
-            suqNo = entity.getName();
+          if (StringUtils.equals(salOrder.getMerchantCode(), entity.getVal())) {
             merchant = entity;
             if(StringUtils.isEmpty(merchant.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
               flag = false;
@@ -699,60 +703,75 @@ public class SAPService {
           contentList.add("");
           contentList.add("");
         }
+        contentList.add("");
+        contentList.add("0");
 
-        contentList.add(suqNo);
-        contentList.add(txn.getCarriage());
-        contentList.add(txn.getOldOrderId());
+        if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
+          contentList.add(salOrder.getOrderId());
+        }else{
+          contentList.add("");
+        }
         contentList.add("");
         contentList.add("");
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "yyyyMMdd"));
-        contentList.add(DateFormatUtil.dateToString(txn.getCreateDate(), "HHmmss"));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "yyyyMMdd"));
+        contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add("");
         contentList.add("ajqh");
+
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+      csvWriter.close();
+
     } catch (Exception e) {
-      LOG.error("PurchaseReturnSalesCvs error...", e);
-    } finally {
-      if (csvWriter != null)
-        csvWriter.close();
+      LOG.error("generateSalesOrderCsv error...", e);
     }
   }
 
+  /**
+   * 采购订单明细
+   *
+   */
   private void transPurchaseOrderCvs() {
-    CsvWriter csvWriter = null;
-    List<String> orderStatus = new ArrayList<String>();
-    orderStatus.add(OrderStatus.ORDER_COMPLETED.getCode());
-    List<PurchaseOrderDetail> txnList = txnInfoService.selectPurchaseOrderList(orderStatus, getDateBegin(), getDateEnd());
+    List<String> orderStatusList = new ArrayList<>();
+    orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
+
+    List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
+    StringBuffer sb = new StringBuffer();
+    for (SalesOrderInfo saleOrderRefund : salOrderList) {
+      sb.append(saleOrderRefund.getOrderPrimayId()+",");
+    }
+
     try {
-      csvWriter = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
+      CsvWriter csvWriter  = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一列空
       csvWriter.writeRecord(new String[]{DateFormatUtil.dateToString(new Date())});
       //必选表头
       String[] headers = {"GUID", "P_GUID", "ZLSH_M", "MATNR", "MAKTX", "NETPR", "BSTME", "KWMENG"};
       csvWriter.writeRecord(headers);
-      int i = 1;
-      for (Iterator<PurchaseOrderDetail> it = txnList.iterator(); it.hasNext(); ) {
-        PurchaseOrderDetail entity = it.next();
+      int rowNum = 1;//行号
+      for (SalesOrderInfo salOrder : salOrderList) {
+
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add( getPurchaseOrderGuidMap(entity.getOrderId()));
-        contentList.add(i + "");
-        i++;
+        contentList.add( getPurchaseOrderGuidMap(salOrder.getOrderPrimayId()));
+        contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
-        contentList.add(entity.getGoodsName());
-        contentList.add(APStringUtils.nullToStr(entity.getGoodsCostPrice()));
+        contentList.add(salOrder.getGoodsName());
+        contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         contentList.add("个");
-        contentList.add(APStringUtils.nullToStr(entity.getStockCurrAmt()));
+        contentList.add(salOrder.getGoodNum().toString());
+
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+        rowNum = rowNum + 1;
       }
       purchaseOrderGuidMap.clear();
+      csvWriter.close();
+
     } catch (Exception e) {
-      LOG.error("PurchaseReturnSalesCvs error...", e);
-    } finally {
-      if (csvWriter != null)
-        csvWriter.close();
+      LOG.error("generateSalesOrderInfoCsv error...", e);
     }
+
   }
 
   private void transVBSBusinessNumCvs() {

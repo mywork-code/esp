@@ -37,6 +37,30 @@ public class SalesOrderPassOrRefund {
      */
     private String name;
 
+    /**
+     * 第三方平台业务流水号
+     */
+    private String extOrderId;
+
+    /**供应商编号 */
+    private String merchantCode;;
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
+    }
+
+    public String getExtOrderId() {
+        return extOrderId;
+    }
+
+    public void setExtOrderId(String extOrderId) {
+        this.extOrderId = extOrderId;
+    }
+
     public Long getOrderPrimayId() {
         return orderPrimayId;
     }
