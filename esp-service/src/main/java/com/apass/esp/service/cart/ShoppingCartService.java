@@ -693,7 +693,7 @@ public class ShoppingCartService {
      * @return
      * @throws BusinessException 
      */
-    public Map<String, Object> getGoodsStockSkuInfo(String requestId, String goodsId) throws BusinessException {
+    public Map<String, Object> getGoodsStockSkuInfo(String requestId, String goodsId,String goodsStockId) throws BusinessException {
         
         Long goodsIdVal = Long.valueOf(goodsId);
         
@@ -729,6 +729,7 @@ public class ShoppingCartService {
 			Map<String,Object> returnMap2=new HashMap<>();
 			Boolean isUnSupport=false;
         	returnMap2.put("isUnSupport", isUnSupport);
+        	returnMap2.put("goodsStockId", goodsStockId);
 			goodsService.loadGoodsBasicInfoById2(goodsIdVal, returnMap2);
 			
 			resultMap.put("goodsSource", "");

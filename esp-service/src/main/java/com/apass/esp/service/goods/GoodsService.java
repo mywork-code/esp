@@ -404,25 +404,38 @@ public class GoodsService {
     if (offShelfFlag) {
     	returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
     }
-    //商品价格最低goodsStock为默认显示的规格
-    Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
-    GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
-    BigDecimal minPrice =(BigDecimal) result.get("minPrice");
+    String  goodsStockId=(String) returnMap.get("goodsStockId");
+    GoodsStockInfoEntity defaultGoodsPriceStock=new GoodsStockInfoEntity();
+    BigDecimal defaultPrice=null;
+    //如果传了goodsStockId则以这个为默认，否则以价格最低者为默认
+    if(StringUtils.isNotEmpty(goodsStockId)){
+    	defaultGoodsPriceStock=goodsStockDao.getGoodsStockInfoEntityByStockId(Long.parseLong(goodsStockId));
+    	defaultPrice = commonService.calculateGoodsPrice(goodsId, Long.parseLong(goodsStockId));
+    }else{
+        //商品价格最低goodsStock为默认显示的规格
+        Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
+        defaultGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
+        defaultPrice=(BigDecimal) result.get("minPrice");
+    }
+
     returnMap.put("unSupportProvince", goodsBasicInfo.getUnSupportProvince());// 不配送区域
-    returnMap.put("goodsPrice",minPrice);
-    if(null !=minPrice){
-        returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(minPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+    returnMap.put("goodsPrice",defaultPrice);
+    if(null !=defaultPrice){
+        returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(defaultPrice)).setScale(2, BigDecimal.ROUND_DOWN));
     }
 	returnMap.put("googsDetail", goodsBasicInfo.getGoogsDetail());
 	returnMap.put("goodsTitle", goodsBasicInfo.getGoodsTitle());
 	returnMap.put("goodsName", goodsBasicInfo.getGoodsName());
 	returnMap.put("goodsId", goodsId);
 	//不支持发货地址
-	Boolean isUnSupport=(Boolean) returnMap.get("isUnSupport");
-	if (null != MinGoodsPriceStock) {
-		returnMap.put("skuId", MinGoodsPriceStock.getSkuId());
+	Boolean isUnSupport=false;
+	if(null !=returnMap.get("isUnSupport")){ 
+		isUnSupport=(Boolean) returnMap.get("isUnSupport");
+	}
+	if (null != defaultGoodsPriceStock) {
+		returnMap.put("skuId", defaultGoodsPriceStock.getSkuId());
 		returnMap.put("goodsStockDes", "无货");
-		if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0 && !isUnSupport) {
+		if (null != defaultGoodsPriceStock.getStockCurrAmt() && defaultGoodsPriceStock.getStockCurrAmt() > 0 && !isUnSupport) {
 			returnMap.put("goodsStockDes", "有货");
 		}
 	}
@@ -434,7 +447,7 @@ public class GoodsService {
     for (BannerInfoEntity banner : goodsBannerList) {
     	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
     }
-    List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
+    List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,defaultGoodsPriceStock.getAttrValIds());
     List<JdSimilarSkuTo> JdSimilarSkuToList = null;
     if(jdSimilarSkuList != null){
         JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport);
