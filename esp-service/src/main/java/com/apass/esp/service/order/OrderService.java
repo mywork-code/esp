@@ -746,13 +746,16 @@ public class OrderService {
          */
         List<GoodsStock> stockList = productApi.getNewStockById(skuNums, addressInfo.toRegion());
         if(CollectionUtils.isEmpty(stockList)){
-        	for (GoodsStock stock : stockList) {
-        		String desc = stock.getStockStateDesc();
-        		if(!StringUtils.equals(desc, "有货")){
-        			throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-        		}
-			}
+        	throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
         }
+        
+    	for (GoodsStock stock : stockList) {
+    		String desc = stock.getStockStateDesc();
+    		if(!StringUtils.equals(desc, "有货")){
+    			throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+    		}
+		}
+        
         
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -180,6 +181,19 @@ public class WeiZhiProductService {
 			}
 		}
 		return list;
+	}
+	
+	/**
+	 * 获取所有图片信息(单个商品)
+	 */
+	public List<WzPicture> getWeiZhiSingleProductSkuImage(String sku) throws Exception {
+		List<WzPicture> listWzPicture = new ArrayList<>();
+		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		if (CollectionUtils.isNotEmpty(mapList)) {
+			Map<String, List<WzPicture>> map = mapList.get(0);
+			return map.get(sku);
+		}
+		return listWzPicture;
 	}
 	/**
 	 * 商品区域购买限制查询(单个商品查询)

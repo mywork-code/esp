@@ -216,7 +216,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiSingleProductSkuImage(@RequestBody Map<String, Object> paramMap) {
 		try {
-			List<String> list=weiZhiProductService.getWeiZhiSingleProductSkuImage("1815738", JdGoodsImageType.TYPEN1.getCode());
+			List<String> list=weiZhiProductService.getWeiZhiSingleProductSkuImage("100376", JdGoodsImageType.TYPEN1.getCode());
 			return Response.success("获取所有图片信息成功！",list);
 		} catch (Exception e) {
 			return Response.fail("获取所有图片信息失败！");
@@ -232,7 +232,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWzPrice() throws Exception{
 		List<String> skuList = Lists.newArrayList();
-		skuList.add("1331125");
+		skuList.add("100376");
 		List<WZPriceResponse> priceList = price.getWzPrice(skuList);
 		return Response.successResponse(priceList);
 	}
@@ -466,7 +466,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
 		try {
-			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku("1815738");
+			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku("100376");
 			return Response.success("同类商品查询成功！", list);
 		} catch (Exception e) {
 			return Response.fail("同类商品查询失败！");
@@ -496,7 +496,7 @@ public class TestWZController {
 		try {
 			List<StockNum> skuNums = new ArrayList<>();
 			StockNum stockNum=new StockNum();
-			stockNum.setSkuId(Long.parseLong("4163957"));
+			stockNum.setSkuId(Long.parseLong("3985573"));
 			stockNum.setNum(1);
 			skuNums.add(stockNum);
 			Region region = new Region();

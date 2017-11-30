@@ -52,11 +52,11 @@ public class CommonService {
      * @throws BusinessException
      */
 	public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
-    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
-      //返回活动价
-      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
-    }
+	    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+	    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
+	      //返回活动价
+	      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
+	    }
 
 		Date now = new Date();
 		// 系统折扣率
