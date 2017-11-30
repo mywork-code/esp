@@ -67,6 +67,7 @@ import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
@@ -962,6 +963,7 @@ public class ShopHomeController {
             for (AddressInfoEntity addressInfoEntity : addressInfoList) {
                 if ("1".equals(addressInfoEntity.getIsDefault())) {
                     region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+                    region2.setProvince(addressInfoEntity.getProvince());
                     region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
                     region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
                     region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer
@@ -1038,6 +1040,12 @@ public class ShopHomeController {
                 returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
                 returnMap.put("status", goodsInfo.getStatus());
             } else {
+            	Boolean isUnSupport=false;
+            	if (StringUtils.isNotBlank(goodsInfo.getUnSupportProvince())
+                        && goodsInfo.getUnSupportProvince().indexOf(region3.getProvince()) > -1) {
+            		isUnSupport = true;
+               }
+            	returnMap.put("isUnSupport", isUnSupport);
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 获取购物车中商品种类数
