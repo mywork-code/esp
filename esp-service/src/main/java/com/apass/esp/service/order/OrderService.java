@@ -2415,7 +2415,7 @@ public class OrderService {
             repayCreateDate = flow.getCreateDate();
         }
 
-        return DateFormatUtil.datetime2String(getMaxDate(orderCreateDate, repayCreateDate));
+        return DateFormatUtil.dateToString(getMaxDate(orderCreateDate, repayCreateDate),"");
     }
 
     /**
