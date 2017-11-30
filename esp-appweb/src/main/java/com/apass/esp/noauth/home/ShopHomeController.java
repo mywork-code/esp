@@ -963,6 +963,7 @@ public class ShopHomeController {
             for (AddressInfoEntity addressInfoEntity : addressInfoList) {
                 if ("1".equals(addressInfoEntity.getIsDefault())) {
                     region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
+                    region2.setProvince(addressInfoEntity.getProvince());
                     region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
                     region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
                     region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer
