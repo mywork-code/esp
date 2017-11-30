@@ -365,6 +365,7 @@
                 T_ESP_GOODS_STOCK_INFO
             WHERE
                 GOODS_ID=#{value}
+            AND delete_flag='N'
         ]]>
     </select>
     	<!-- 根据商品id查询 商品库存中市场价最高价 -->
