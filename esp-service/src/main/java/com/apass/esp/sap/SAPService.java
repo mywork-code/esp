@@ -391,8 +391,8 @@ public class SAPService {
           contentList.add("");
           contentList.add("6008");
           contentList.add("97990155300001887");
-        } else if (txn.getTxnType().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add("cm2017082910000147");
           contentList.add("6008");
@@ -408,8 +408,8 @@ public class SAPService {
           contentList.add(txn.getOrigTxnId());
           contentList.add("400010");
 
-        } else if (txn.getTxnType().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
           if(apassTxnAttr != null){
@@ -558,7 +558,7 @@ public class SAPService {
         contentList.add("2");
         contentList.add("3");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
           contentList.add("Y");
         } else {
@@ -574,8 +574,8 @@ public class SAPService {
           contentList.add("");
           contentList.add("6008");
           contentList.add("97990155300001887");
-        } else if (txn.getTxnType().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add("cm2017082910000147");
           contentList.add("6008");
@@ -604,7 +604,7 @@ public class SAPService {
         contentList.add("2");
         contentList.add("3");
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
-            || cashRefundTxn.getTypeCode().equals(TxnTypeCode.400016_CODE.getCode())) {
+            || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
           contentList.add("Y");
         } else {
@@ -620,8 +620,8 @@ public class SAPService {
           contentList.add("");
           contentList.add("6008");
           contentList.add("97990155300001887");
-        } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || cashRefundTxn.getTypeCode().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add(cashRefundTxn.getOrderId());
           contentList.add("cm2017082910000147");
@@ -850,7 +850,7 @@ public class SAPService {
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
 
           contentList.add("Z067");
         } else {
@@ -910,8 +910,8 @@ public class SAPService {
           contentList.add("");
           contentList.add("6008");
           contentList.add("97990155300001887");
-        } else if (txn.getTxnType().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add("cm2017082910000147");
           contentList.add("6008");
@@ -924,8 +924,8 @@ public class SAPService {
           //银联
           contentList.add(txn.getOrigTxnId());
           contentList.add("400010");
-        } else if (txn.getTxnType().equals(TxnTypeCode.400016_SF_CODE.getCode())
-            || txn.getTxnType().equals(TxnTypeCode.400016_CODE.getCode())) {
+        } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
+            || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           ApassTxnAttr apassTxnAttr = txnInfoService.getApassTxnAttrByTxnId(txn.getTxnId());
           if(apassTxnAttr != null){
