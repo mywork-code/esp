@@ -980,6 +980,8 @@
 		SELECT
 			orderinfo.id orderPrimayId,
 			orderinfo.order_id orderId,
+			orderinfo.ext_order_id extOrderId,
+			orderinfo.merchant_code merchantCode,
 			refundinfo.order_id refundOrderId,
 			orderinfo.telephone telephone,
 			sum(orderinfordetail.discount_amount) totalDiscountAmount,
