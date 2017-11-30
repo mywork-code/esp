@@ -525,7 +525,7 @@ public class GoodsService {
 	    	JdImagePathList.add(imageService.getImageUrl(banner.getBannerImgUrl()));
 	    }
 	    List<JdSimilarSku>  jdSimilarSkuList=new ArrayList<>();
-	    if(null !=MinGoodsPriceStock.getAttrValIds()){
+	    if(StringUtils.isNotEmpty(MinGoodsPriceStock.getAttrValIds())){
 		   jdSimilarSkuList=getJdSimilarSkuListBygoodsId2(goodsId,MinGoodsPriceStock.getAttrValIds());
 	    }
 	    if(null ==jdSimilarSkuList ){
@@ -826,11 +826,16 @@ public class GoodsService {
 	 * @throws BusinessException
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuListBygoodsId2(Long goodsId,String attrValId) throws BusinessException {
-		String[] attrValIdString=attrValId.split(":");
+		String[] attrValIdString=null;
+		if(StringUtils.isNotEmpty(attrValId.trim())){
+			attrValIdString=attrValId.split(":");
+		}
 		Map<String,Object> map=new HashMap<>();
-		for (int i = 0; i < attrValIdString.length; i++) {
-			GoodsAttrVal gv=goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValIdString[i]));
-			map.put(gv.getAttrId().toString(), i+1);
+		if (null != attrValIdString) {
+			for (int i = 0; i < attrValIdString.length; i++) {
+				GoodsAttrVal gv = goodsAttrValService.selectByPrimaryKey(Long.parseLong(attrValIdString[i]));
+				map.put(gv.getAttrId().toString(), i + 1);
+			}
 		}
 		// 拼凑京东商品jdSimilarSkuList数据格式
 		List<JdSimilarSku> jdSimilarSkuList = new ArrayList<>();
