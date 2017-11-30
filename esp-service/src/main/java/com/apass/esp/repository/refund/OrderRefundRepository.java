@@ -95,6 +95,13 @@ public class OrderRefundRepository extends BaseMybatisRepository<RefundInfoEntit
         return getSqlSession().selectList(getSQL("queryReturningOrderInfo"), map);
     }
 
+    /*
+     查询售后失败的
+     */
+	public List<RefundedOrderInfoDto> queryFailReturningOrderInfo(Map<String, Object> map) {
+		return getSqlSession().selectList(getSQL("queryFailReturningOrderInfo"), map);
+	}
+
     /**
      * 查询 商家重新发货物流显示已签收的数据
      * 
