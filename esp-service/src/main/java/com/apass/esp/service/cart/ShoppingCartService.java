@@ -719,26 +719,36 @@ public class ShoppingCartService {
 			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
 		} else {
+			//非京东商品多规格
 			List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
 			if (null == goodsInfo || goodsStockSkuList.isEmpty()) {
 				LOG.info(requestId, "根据商品id查询商品库存信息", "数据为空");
 				throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_ID_ERROR);
 			}
-
-			// 根据市场价和折扣率 计算商品价格
-			for (GoodsStockSkuDto dto : goodsStockSkuList) {
-				// 添加新的图片地址
-				dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
-
-                BigDecimal price = commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId());
-                dto.setGoodsPrice(price);// 商品价格
-                dto.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价
-             
-			}
+			
+			Map<String,Object> returnMap2=new HashMap<>();
+			Boolean isUnSupport=false;
+        	returnMap2.put("isUnSupport", isUnSupport);
+			goodsService.loadGoodsBasicInfoById2(goodsIdVal, returnMap2);
+			
 			resultMap.put("goodsSource", "");
-			resultMap.put("goodsId", goodsInfo.getId());
-			resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
-			resultMap.put("goodsStockSkuList", goodsStockSkuList);
+			resultMap.put("JdSimilarSkuToList", returnMap2.get("JdSimilarSkuToList"));
+			resultMap.put("jdSimilarSkuList", returnMap2.get("jdSimilarSkuList"));
+			resultMap.put("jdSimilarSkuListSize", returnMap2.get("jdSimilarSkuListSize"));
+//			// 根据市场价和折扣率 计算商品价格
+//			for (GoodsStockSkuDto dto : goodsStockSkuList) {
+//				// 添加新的图片地址
+//				dto.setStockLogoNew(imageService.getImageUrl(EncodeUtils.base64Decode(dto.getStockLogo())));
+//
+//                BigDecimal price = commonService.calculateGoodsPrice(goodsIdVal, dto.getGoodsStockId());
+//                dto.setGoodsPrice(price);// 商品价格
+//                dto.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));//商品首付价
+//             
+//			}
+//			resultMap.put("goodsSource", "");
+//			resultMap.put("goodsId", goodsInfo.getId());
+//			resultMap.put("goodsSkuType", goodsInfo.getGoodsSkuType());
+//			resultMap.put("goodsStockSkuList", goodsStockSkuList);
 		}
         return resultMap;
     }
