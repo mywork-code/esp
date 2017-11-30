@@ -1009,6 +1009,9 @@ public class SAPService {
           //统计未出账
           CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
           if (customerCreditInfo != null) {
+            if(StringUtils.isEmpty(customerCreditInfo.getBillDate())){
+              continue;
+            }
             Integer billDate = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
             //每天零晨跑，故天数-1
             Calendar cal = Calendar.getInstance();
