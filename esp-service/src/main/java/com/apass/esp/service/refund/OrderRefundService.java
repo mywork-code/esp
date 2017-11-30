@@ -253,23 +253,11 @@ public class OrderRefundService {
         
         if(!CollectionUtils.isEmpty(refundedOrderInfoList)){
             for(RefundedOrderInfoDto dto: refundedOrderInfoList){
-                //根据订单id查订单详情表
-                List<String> orderIds = Lists.newArrayList();
-                orderIds.add(dto.getOrderId());
-                List<OrderDetailInfoEntity> orderDetailInfoEntities = orderDetailInfoRepository.queryOrderDetailListByOrderList(orderIds);
-
-                //根据订单id查询退货详情表
-                List<RefundDetailInfoEntity> refundDetailList = refundDetailInfoRepository.getRefundDetailList(dto.getOrderId());
-                if(CollectionUtils.isEmpty(orderDetailInfoEntities) || CollectionUtils.isEmpty(refundDetailList)){
-                    LOGGER.error("数据有误,订单详情或退货详情表不能为空;参数orderId:{}",dto.getOrderId());
-                    throw new RuntimeException("数据有误");
-                }
-
                 String status = OrderStatus.ORDER_COMPLETED.getCode();
                     //根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
                     if(StringUtils.equals(dto.getRefundType(), "0")){
                         //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，调invoiceCheck方法
-                        if(refundDetailList.size() < orderDetailInfoEntities.size()){
+                        if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) < 0){
                             boolean flag = false;//自动开具发票成功,默认false
                             status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
                             //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
@@ -289,7 +277,7 @@ public class OrderRefundService {
                                 LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
                             }
                             orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-                        }else if(refundDetailList.size() == orderDetailInfoEntities.size()){
+                        }else if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) == 0){
                             //退货数量=订单中商品数量：订单状态改为交易关闭，发票修改状态，发票金额不动
                             status = OrderStatus.ORDER_TRADCLOSED.getCode();//交易关闭
 
@@ -299,7 +287,7 @@ public class OrderRefundService {
                             invoiceMapper.updateByPrimaryKey(invoice);//修改状态
                             orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                         }else{
-                            LOGGER.error("数据有误,退货商品数量不能大于订单中商品数量;参数orderId:{}",dto.getOrderId());
+                            LOGGER.error("数据有误,退货金额大于订单总金额;参数orderId:{}",dto.getOrderId());
                             throw new RuntimeException("数据有误");
                         }
                     }
