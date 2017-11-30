@@ -274,10 +274,12 @@ public class OrderRefundService {
                             status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
                             //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
                             Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
-                            BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
-                            invoice.setOrderAmt(orderAmt);
-                            //修改金额
-                            invoiceMapper.updateByPrimaryKey(invoice);
+                            if(invoice.getStatus().equals(InvoiceStatusEnum.APPLYING.getCode())){
+                                BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
+                                invoice.setOrderAmt(orderAmt);
+                                //修改金额
+                                invoiceMapper.updateByPrimaryKey(invoice);
+                            }
 
                             //调invoiceCheck方法
                             flag = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
@@ -305,11 +307,14 @@ public class OrderRefundService {
         }
 
         //查询售后失败的订单，改成交易完成
+
         Map<String, Object> refundFailMap = new HashMap<String, Object>();
         refundFailMap.put("startDate", startDate);
         refundFailMap.put("endDate", endDate);
-        refundFailMap.put("status",RefundStatus.REFUND_STATUS06.getCode());
-        List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryReturningOrderInfo(refundFailMap);
+        List<String> rs06StatuList = Lists.newArrayList();
+        rs06StatuList.add(RefundStatus.REFUND_STATUS06.getCode());
+        refundFailMap.put("status",rs06StatuList);
+        List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryFailReturningOrderInfo(refundFailMap);
         if(null != refundedFailOrderInfoList && !refundedFailOrderInfoList.isEmpty()){
             for(RefundedOrderInfoDto dto: refundedFailOrderInfoList){
                 String status = OrderStatus.ORDER_COMPLETED.getCode();
