@@ -258,11 +258,12 @@ public class OrderRefundService {
                     if(StringUtils.equals(dto.getRefundType(), "0")){
                         //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，调invoiceCheck方法
                         if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) < 0){
-                            boolean flag = false;//自动开具发票成功,默认false
                             status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
+                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                            boolean flag = false;//自动开具发票成功,默认false
                             //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
                             Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
-                            if(invoice.getStatus().equals(InvoiceStatusEnum.APPLYING.getCode())){
+                            if(invoice.getStatus().toString().equals(String.valueOf(InvoiceStatusEnum.APPLYING.getCode()))){
                                 BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
                                 invoice.setOrderAmt(orderAmt);
                                 //修改金额
@@ -276,7 +277,6 @@ public class OrderRefundService {
                             }else{
                                 LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
                             }
-                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                         }else if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) == 0){
                             //退货数量=订单中商品数量：订单状态改为交易关闭，发票修改状态，发票金额不动
                             status = OrderStatus.ORDER_TRADCLOSED.getCode();//交易关闭
