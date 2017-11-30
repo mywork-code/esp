@@ -67,6 +67,7 @@ import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.third.party.jd.entity.product.Stock;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -109,14 +110,21 @@ public class JdGoodsInfoService {
     private GoodsRepository goodsDao;
     @Autowired
     private WeiZhiProductService productService;
+    @Autowired
+    private WeiZhiProductApiClient productApiClient;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
-	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
+    public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
-			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
+			JdGoodsBooks jdGoodsBooks = null;
+			try {
+				productApiClient.getWeiZhiRelatedProductDetail(sku+"");
+			} catch (Exception e) {
+				
+			}
 			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
 		} else {
 			// 查询商品名称
@@ -131,11 +139,6 @@ public class JdGoodsInfoService {
 		Collection<Long> skuPrice = new ArrayList<Long>();
 		skuPrice.add(sku);
 
-//		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
-//		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
-//			BigDecimal jdPrice = jdSellPriceList.get(0).getJdPrice();
-//			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
-//		}
 		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
 		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
 		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
@@ -152,6 +155,46 @@ public class JdGoodsInfoService {
 		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
 		return map;
 	}
+//	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
+//		Map<String, Object> map = Maps.newHashMap();
+//		if (sku.toString().length() == 8) {
+//			// 查询商品名称（图书音像类目）
+//			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
+//			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
+//		} else {
+//			// 查询商品名称
+//			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+//			map.put("goodsName", jdGoods.getName());// 商品名称
+//			//java字符串转义,把&lt;&gt;转换成<>等字符
+//			String skuCss = getSkuCss(sku);
+//			String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+//			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
+//		}
+//		// 查询商品价格
+//		Collection<Long> skuPrice = new ArrayList<Long>();
+//		skuPrice.add(sku);
+//
+////		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+////		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
+////			BigDecimal jdPrice = jdSellPriceList.get(0).getJdPrice();
+////			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
+////		}
+//		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
+//		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+//		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
+//		map.put("goodsPrice",goodsPrice);
+//
+//		// 查询商品图片
+//		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
+//		map.put("jdImagePathList", JdImagePathList);
+//		// 查询商品规格
+//		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+//		map.put("skuId",String.valueOf(sku));
+//		map.put("jdSimilarSkuList", jdSimilarSkuList);
+//		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+//		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
+//		return map;
+//	}
 	
 	/**
 	 * 根据商品编号获取商品需要展示App信息
