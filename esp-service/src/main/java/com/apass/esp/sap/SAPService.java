@@ -559,7 +559,6 @@ public class SAPService {
         contentList.add("3");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-
           contentList.add("Y");
         } else {
           contentList.add("N");
@@ -665,7 +664,9 @@ public class SAPService {
       String[] headers = {"GUID", "ZDZ_LSH","BUKRS","ZLSH_DSF", "ZDDH_XMZ", "BSART", "LIFNR", "NAME1", "VERTN", "ZYF", "ZLSH_YDD",
           "ZERDAT","ZERZET","ERDAT", "ERZET","UNAME","ZSJLY"};
       csvWriter.writeRecord(headers);
+
       for (PurchaseReturnOrder txn : txnList) {
+        boolean flag = true;//对应的商品编号是否能匹配到sap的供应商数据，如果没有则跳过此条数据
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
@@ -683,7 +684,13 @@ public class SAPService {
           if (StringUtils.equals(merchantCode, entity.getVal())) {
             suqNo = entity.getName();
             merchant = entity;
+            if(StringUtils.isEmpty(merchant.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
+              flag = false;
+            }
           }
+        }
+        if(flag){
+          continue;
         }
         if(merchant != null){
           contentList.add(merchant.getCode());
