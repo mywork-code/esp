@@ -22,7 +22,6 @@ public class DateFormatUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DateFormatUtil.class);
 	
-    private static SimpleDateFormat sdf                    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final String      ENG_DATE_FROMAT        = "EEE, d MMM yyyy HH:mm:ss z";
     public static final String      YYYY_MM_DD_HH_MM_SS    = "yyyy-MM-dd HH:mm:ss";
     public static final String      YYYY_MM_DD_HH_MM       = "yyyy-MM-dd HH:mm";
@@ -66,7 +65,7 @@ public class DateFormatUtil {
         if (date == null) {
             return "";
         }
-        return sdf.format(date);
+        return dateToString(date, "");
     }
 
     /**
@@ -204,9 +203,8 @@ public class DateFormatUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, -7);
-        return sdf.format(calendar.getTime());
+        return dateToString(calendar.getTime(), "");
     }
-
     /**
      * 获取当前日期的指定格式的字符串
      *
@@ -215,12 +213,7 @@ public class DateFormatUtil {
      * @return
      */
     public static String getCurrentTime(String format) {
-        if (format == null || format.trim().equals("")) {
-            sdf.applyPattern(YYYY_MM_DD_HH_MM_SS);
-        } else {
-            sdf.applyPattern(format);
-        }
-        return sdf.format(new Date());
+       return dateToString(new Date(), format);
     }
 
     public static String getCurrentDate() {

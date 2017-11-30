@@ -417,7 +417,7 @@ public class SAPService {
           }else{
             contentList.add("");
           }
-          contentList.add("Alipay");
+          contentList.add("400016");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum = rowNum + 1;
@@ -933,7 +933,7 @@ public class SAPService {
           }else{
             contentList.add("");
           }
-          contentList.add("Alipay");
+          contentList.add("400016");
         }
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
         rowNum++;
