@@ -22,14 +22,6 @@ public class DateFormatUtil {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DateFormatUtil.class);
 	
-	private static ThreadLocal<DateFormat> threadLocal = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        }
-    };
-	
-    //private static SimpleDateFormat sdf                    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final String      ENG_DATE_FROMAT        = "EEE, d MMM yyyy HH:mm:ss z";
     public static final String      YYYY_MM_DD_HH_MM_SS    = "yyyy-MM-dd HH:mm:ss";
     public static final String      YYYY_MM_DD_HH_MM       = "yyyy-MM-dd HH:mm";
@@ -73,7 +65,7 @@ public class DateFormatUtil {
         if (date == null) {
             return "";
         }
-        return threadLocal.get().format(date);
+        return dateToString(date, "");
     }
 
     /**
@@ -211,9 +203,8 @@ public class DateFormatUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, -7);
-        return threadLocal.get().format(calendar.getTime());
+        return dateToString(calendar.getTime(), "");
     }
-
     /**
      * 获取当前日期的指定格式的字符串
      *
