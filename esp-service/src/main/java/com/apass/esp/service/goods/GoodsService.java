@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.Bus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -575,10 +574,19 @@ public class GoodsService {
     Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
     GoodsStockInfoEntity MinGoodsPriceStock=(GoodsStockInfoEntity) result.get("goodsStock");
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
-    List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
-    returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
-    returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
-    returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+    if(null !=jdSimilarSkuList){
+      List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
+      returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+      returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+      returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
+    }else{
+    	List<JdSimilarSku>  jdSimilarSkuList2=new  ArrayList<>();
+    	List<JdSimilarSkuTo> JdSimilarSkuToList2=new ArrayList<>();
+        returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList2);
+        returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
+        returnMap.put("jdSimilarSkuList", jdSimilarSkuList2);
+    }
+   
     return returnMap;
   }
 	/**
