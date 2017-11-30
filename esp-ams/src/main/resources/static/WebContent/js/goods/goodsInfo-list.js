@@ -3592,10 +3592,6 @@ function function2(){
     var rows = $('#tableattrEditlist').datagrid('getRows');
     for(var i=0; i<rows.length; i++){
     	var d = i+1;
-    	if(rows[i].editing==true){
-    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
-			return;
-    	}
     	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
     		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
 			return;
