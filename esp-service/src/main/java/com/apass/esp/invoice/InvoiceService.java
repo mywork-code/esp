@@ -366,7 +366,8 @@ public class InvoiceService {
                 faPiaoKJXM.setSpbm(goodsCode + zeroStr);
             }
             faPiaoKJXM.setYhzcbs("0");
-            faPiaoKJXM.setXmje(de.getGoodsPrice().multiply(new BigDecimal(de.getGoodsNum())).toString());
+            BigDecimal xmje = de.getGoodsPrice().multiply(new BigDecimal(de.getGoodsNum())).subtract(totalDis);
+            faPiaoKJXM.setXmje(xmje.toString());
             faPiaoKJXM.setSl("0.17");
             faPiaoKJXM = (FaPiaoKJXM) FarmartJavaBean.farmartJavaB(faPiaoKJXM, FaPiaoKJXM.class);
             list.add(faPiaoKJXM);
