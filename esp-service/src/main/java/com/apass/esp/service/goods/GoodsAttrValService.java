@@ -1,12 +1,13 @@
 package com.apass.esp.service.goods;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.mapper.GoodsAttrValMapper;
 /**
@@ -103,6 +104,37 @@ public class GoodsAttrValService {
                 skuId.append(entity.getId().toString());
                 skuId.append(":");
             }
+        }
+        String str = skuId.toString();
+        if(!StringUtils.isBlank(str)&&str.length()>0){
+            return str.substring(0, str.length()-1);
+        }
+        return formartAttrValId(str);
+    }
+    /**
+     * 格式化该字段   按照attrId 排序
+     * @param attrvalids
+     * @return
+     */
+    public String formartAttrValId(String attrvalids) {
+        if(!attrvalids.contains(":")){
+            return attrvalids;
+        }
+        String[] attrvalidarr = attrvalids.split(":");
+        List<GoodsAttrVal> list = new ArrayList<GoodsAttrVal>();
+        for(String strid : attrvalidarr){
+            GoodsAttrVal entity = selectByPrimaryKey(Long.parseLong(strid));
+            list.add(entity);
+        }
+        Collections.sort(list, new Comparator<GoodsAttrVal>(){
+            @Override
+            public int compare(GoodsAttrVal en1, GoodsAttrVal en2) {
+                return en1.getAttrId().compareTo(en2.getAttrId());
+            }});
+        StringBuffer skuId = new StringBuffer();
+        for(GoodsAttrVal val : list){
+            skuId.append(val.getId().toString());
+            skuId.append(":");
         }
         String str = skuId.toString();
         if(!StringUtils.isBlank(str)&&str.length()>0){
