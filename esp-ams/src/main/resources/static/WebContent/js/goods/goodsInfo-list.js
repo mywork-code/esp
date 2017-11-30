@@ -86,14 +86,14 @@ $(function() {
 	});
 	//新增商品  保存库存
 	$(".save-btnAlladd").click(function() {
+		if(!functionY("add")){
+			$.messager.alert("提示", "请先选择商品属性，然后保存库存信息，如若该商品无属性请选择<无>属性！", "info");
+			return;
+		}
 		var ids = [];
 	    var rows = $('#tableattrlist').datagrid('getRows');
 	    for(var i=0; i<rows.length; i++){
 	    	var d = i+1;
-	    	if(rows[i].editing==true){
-	    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
-				return;
-	    	}
 	    	if(rows[i].stockTotalAmt<rows[i].stockAmt){
 	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
 				return;
@@ -150,10 +150,6 @@ $(function() {
 	    var rows = $('#tableattrEditlist').datagrid('getRows');
 	    for(var i=0; i<rows.length; i++){
 	    	var d = i+1;
-	    	if(rows[i].editing==true){
-	    		$.messager.alert("提示", "第"+d+"行表格未保存，不可提交！", "info");
-				return;
-	    	}
 	    	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
 	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
 				return;
@@ -403,12 +399,6 @@ $(function() {
     $(".add-btn").click(function() {
     	ifSaveGoodsFlag = false;//初次弹出添加商品窗口
     	$('#addGoodsInfo').window('open');
-    	//关闭添加商品窗口--监听方法
-//	   ('#addGoodsInfo').window({
-//		   onBeforeClose:function(){ 
-//		     alert(111); 
-//		   }
-//		});
     	addGoodId = '';
     	$("#addPlanDecrible #one").css('font-weight','bold');
     	$("#addPlanDecrible #two").css('font-weight','lighter');
@@ -429,43 +419,35 @@ $(function() {
     		rownumbers : true,
     		singleSelect : true,
     		pagination : false,
-    		columns : [[ 
-    		 {  
+    		columns : [[{  
     			width : '100',  
     			title : '类目名称',  
     			field : 'categoryName',
     			align : 'center',
-    		 }, 
-    		 {  
+    		 },{  
     			 width : '50',  
     			 title : '级别',  
     			 field : 'level',
     			 align : 'center',
     			 hidden: 'hidden',
-    		 }, 
-    		 {  
+    		 },{  
     			 width : '50',  
     			 title : '排序序号',  
     			 field : 'sortOrder',  
     			 align : 'center',
     			 hidden: 'hidden',
-    		 }, 
-    		 {  
+    		 },{  
     			 width : '50',  
     			 title : '类目 id',  
     			 field : 'categoryId',  
     			 align : 'center',
     			 hidden: 'hidden',
-    		 }] ],
+    		 }]],
     		 onClickRow: function (index, row) {
     			 firstClickRowFunction(index,row)
     		 },
              loader : function(param, success, error) {
-                $.ajax({
-                    url : ctx + '/categoryinfo/category/list',
-                    data : param,
-                    type : "get",
-                    dataType : "json",
+                $.ajax({url : ctx + '/categoryinfo/category/list',data : param,type : "get",dataType : "json",
                     success : function(data) {
                         $.validateResponse(data, function() {
                             success(data.rows);
@@ -476,17 +458,32 @@ $(function() {
         });
     });
     /**监听关闭添加商品窗口事件**/
-    $('#addGoodsInfo').window({    
- 	   onBeforeClose:function(){ 
- 		  $("#addgoodsNameL").text('');
- 	      $("#addgoodsTitleL").text('');
- 		   var params = {};
- 	       //$('#tablelist').datagrid('load', params);
- 	   }
+    $('#addGoodsInfo').window({
+    	onBeforeClose:function(){ 
+    		$("#addgoodsNameL").text('');
+    		$("#addgoodsTitleL").text('');
+    		$('#inputDiv').empty();
+    		categorynameArr1 = [];//单纯保存input内容
+	    	categorynameArr2 = [];
+	    	categorynameArr3 = [];
+	    	categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
+	    	categorynameArrY = [];
+	    	categorynameArrZ = [];
+    		var params = {};
+ 	   	}
  	}); 
     /**监听关闭编辑商品窗口事件**/
     $('#editGoodsInfo').window({    
-    	onBeforeClose:function(){ 
+    	onBeforeClose:function(){
+    		$('#inputDivEdit').empty();
+			//新增商品清掉输入框
+	    	//一下全局变量做清空默认值处理(以及表格清空)
+	    	categorynameArr1 = [];//单纯保存input内容
+	    	categorynameArr2 = [];
+	    	categorynameArr3 = [];
+	    	categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
+	    	categorynameArrY = [];
+	    	categorynameArrZ = [];
     		var params = {};
     		//$('#tablelist').datagrid('load', params);
     	}
@@ -495,32 +492,21 @@ $(function() {
     $('#editGoodsInfo').window('close'); 
     /**单击一级类目执行方法**/
 	function firstClickRowFunction(indexFirst,rowFirst){
-		 var id = rowFirst.categoryId;
-//		 $('#eastAttrDataGrid').datagrid({
-//			 url : ctx + '/categoryinfo/category/list',
-//			 rownumbers : false,
-//			 queryParams:{
-//				'parentId':'null',
-//			 }
-//		 })
-		 $('#addEastAttrDataGrid').datagrid({
-		   rownumbers : false,
-		   striped : false,
-		   loader : function(param, success, error) {
-	            $.ajax({
-	                url : ctx + '/categoryinfo/category/list',
-	                data : {'parentId':-2,},
-	                type : "get",
-	                dataType : "json",
-	                success : function(data) {
+		var id = rowFirst.categoryId;
+		$('#addEastAttrDataGrid').datagrid({
+			rownumbers : false,
+			striped : false,
+			loader : function(param, success, error) {
+				$.ajax({url : ctx + '/categoryinfo/category/list',data : {'parentId':-2,},type : "get",dataType : "json",
+					success : function(data) {
 	                    $.validateResponse(data, function() {
 	                        success(data.rows);
 	                    });
 	                }
 	            })
-		       }
-		  });
-		 $('#addCenterAttrDataGrid').datagrid({  
+			}
+		});
+		$('#addCenterAttrDataGrid').datagrid({  
 			striped : true, 
 			fitColumns : true,
 			rownumbers : true,
@@ -528,128 +514,107 @@ $(function() {
 			queryParams:{
 				'parentId':id,
 			},
-			columns : [[ 
-			 {  
+			columns : [[{  
 				width : '100',  
 				title : '类目名称',  
 				field : 'categoryName',
 				align : 'center',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '级别',  
 				 field : 'level',
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '排序序号',  
 				 field : 'sortOrder',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '类目 id',  
 				 field : 'categoryId',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '父id',  
 				 field : 'parentId',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }] ],
+			 }]],
 			 onClickRow: function (index, row) {  //easyui封装好的事件（被单机行的索引，被单击行的值）
 				secondClickRowFunction(index,row);
 			 },
 			 loader : function(param, success, error) {
-	            $.ajax({
-	                url : ctx + '/categoryinfo/category/list',
-	                data : param,
-	                type : "get",
-	                dataType : "json",
+	            $.ajax({url : ctx + '/categoryinfo/category/list',data : param,type : "get",dataType : "json",
 	                success : function(data) {
 	                    $.validateResponse(data, function() {
 	                        success(data.rows);
 	                    });
 	                }
 	            })
-	        }
-		 });
+			 }
+		});
 	}
 	/**单击二级类目执行方法**/
 	function secondClickRowFunction(indexSecond,rowSecond){
-		 var id = rowSecond.categoryId;
-		 $('#addEastAttrDataGrid').datagrid({  
-				striped : true, 
-				fitColumns : true,
-				rownumbers : true,
-				singleSelect : true,
-				queryParams:{
-					'parentId':id,
-				},
-				sortOrder : 'asc',
-				columns : [[ 
-			 {  
+		var id = rowSecond.categoryId;
+		$('#addEastAttrDataGrid').datagrid({  
+			striped : true, 
+			fitColumns : true,
+			rownumbers : true,
+			singleSelect : true,
+			queryParams:{'parentId':id,},
+			sortOrder : 'asc',
+			columns : [[{  
 				width : '100',  
 				title : '类目名称',  
 				field : 'categoryName',
 				align : 'center',
-			 }, 
-			 {  
+			 },{  
 				 width : '100',  
 				 title : '级别',  
 				 field : 'level',
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '排序序号',  
 				 field : 'sortOrder',  
 				 align : 'center',
 				 hidden: 'hidden',
 				 sortable : true  
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '类目 id',  
 				 field : 'categoryId',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '父id',  
 				 field : 'parentId',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }, 
-			 {  
+			 },{  
 				 width : '50',  
 				 title : '图片url',  
 				 field : 'pictureUrl',  
 				 align : 'center',
 				 hidden: 'hidden',
-			 }  ] ],
+			 }]],
 			 loader : function(param, success, error) {
-	            $.ajax({
-	                url : ctx + '/categoryinfo/category/list',
-	                data : param,
-	                type : "get",
-	                dataType : "json",
+	            $.ajax({url : ctx + '/categoryinfo/category/list',data : param,type : "get",dataType : "json",
 	                success : function(data) {
 	                    $.validateResponse(data, function() {
 	                        success(data.rows);
 	                    });
 	                }
 	            })
-	        }
-		 });
+			 }
+		});
 	}
     //商品分类 ：下一步
     $("#confirmGoodsCategory").click(function(){
@@ -989,12 +954,8 @@ $(function() {
 		finalGoodId = editGoodId;
 		support7dRefundFinal = rowData.support7dRefund;
 		if(support7dRefundFinal == null || support7dRefundFinal == ''){
-			$.ajax({
-				type : "POST",
-				url : ctx + '/application/goods/management/getsupport7dRefund',
-				data : {'skuId':rowData.externalId},
+			$.ajax({url : ctx + '/application/goods/management/getsupport7dRefund',type : "POST",data : {'skuId':rowData.externalId},
 				success : function(data) {
-					// debugger;
 					support7dRefundFinal = data.msg;
 				}
 			});
@@ -1048,10 +1009,7 @@ $(function() {
     	/**加载富文本编辑器数据**/
 		var params = {};
 		params['id']=rowData.id;
-		$.ajax({
-			type : "POST",
-			url : ctx + '/application/goods/management/loalEditor',
-			data : params,
+		$.ajax({url : ctx + '/application/goods/management/loalEditor',type : "POST",data : params,
 			success : function(data) {
 				UE.getEditor('editEditor').execCommand('inserthtml', data);//加载编辑器
 			}
@@ -1089,10 +1047,7 @@ $(function() {
 			categoryId3:editCategoryId3,	
 		};
 		
-		$.ajax({
-			type : "POST",
-			url : ctx + '/application/goods/management/editCategory',
-			data : params,
+		$.ajax({url : ctx + '/application/goods/management/editCategory',type : "POST",data : params,
 			success : function(data) {
 				if(data.status == '1'){
 					$.messager.alert("提示", "修改商品分类信息成功！", "info");
@@ -1128,7 +1083,6 @@ $(function() {
 				}
 			}
 		});
-    	
 	});
 	
 	//第二页  -- 上一步  跳页  跳第一页     ||||京东商品不可跳页|||||
@@ -1390,7 +1344,6 @@ $(function() {
 				}else{
 					$.messager.alert("提示", response.msg);
 				}
-				
 			}
 		});
 	});
@@ -1948,7 +1901,7 @@ $(function() {
 //			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
 //			        loadStockGoods('goodsStockList',goodsId,sourceJd);
 			        $('#editGoodsStockInfoWin').window('close');
-			        flushGoodsStock();
+			        flushGoodsStock(goodsId);
 	            	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
 			        $(".search-btn").click();
 				}else{
@@ -3631,6 +3584,10 @@ function function1(){
 	catenum++;
 }
 function function2(){
+	if(!functionY("edit")){
+		$.messager.alert("提示", "请先选择商品属性，然后保存库存信息，如若该商品无属性请选择<无>属性！", "info");
+		return;
+	}
 	var ids = [];
     var rows = $('#tableattrEditlist').datagrid('getRows');
     for(var i=0; i<rows.length; i++){
@@ -3773,4 +3730,40 @@ function functionX(goodsId){
         	}
         }
 	})
+}
+function functionY(type){
+	var reg = /^[1-9]\d*$/;
+	if(type=="add"){
+		var rows = $('#tableattrlist').datagrid('getRows');
+		var ddd = document.getElementById("inputDiv").childNodes;
+		if(rows.length==1){
+			for(var i = 0;i<ddd.length;i++){
+				var ddds = ddd[i].childNodes[0].childNodes[0];
+				var childattVlaue = $('#'+ddds.id).combobox('getValue');
+				if(childattVlaue=="0"){
+					continue;
+				}
+				if(!reg.test(childattVlaue)){
+					return false;
+				}
+			}
+		}
+	}
+	if(type=="edit"){
+		var rows = $('#tableattrEditlist').datagrid('getRows');
+		var ddd = document.getElementById("inputDivEdit").childNodes;
+		if(rows.length==1){
+			for(var i = 0;i<ddd.length;i++){
+				var ddds = ddd[i].childNodes[0].childNodes[0];
+				var childattVlaue = $('#'+ddds.id).combobox('getValue');
+				if(childattVlaue=="0"){
+					continue;
+				}
+				if(!reg.test(childattVlaue)){
+					return false;
+				}
+			}
+		}
+	}
+	return true;
 }
