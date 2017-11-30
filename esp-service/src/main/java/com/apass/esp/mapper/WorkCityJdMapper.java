@@ -24,4 +24,7 @@ public interface WorkCityJdMapper extends GenericMapper<WorkCityJd, Long>{
 	
 	WorkCityJd selectByProvinceName(String provinceName);
 	
+	WorkCityJd selectByProvinceId(String provinceId);
+	
+	
 }

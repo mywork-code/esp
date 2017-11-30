@@ -383,7 +383,15 @@ public class InvoiceService {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         faPiaoKJDD.setDddate(sdf.format(order.getCreateDate()));
         faPiaoKJDD = (FaPiaoKJDD) FarmartJavaBean.farmartJavaB(faPiaoKJDD, FaPiaoKJDD.class);
-        String s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
+        String s = null;
+        try {
+            s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
+        } catch (Exception e) {
+            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,接口返回:"+s);
+            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,异常详情:"+e.getMessage());
+            updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
+            return false;
+        }
         ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
         LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具详情"+sS.getReturnMessage());
         if("0000".equals(sS.getReturnCode())){

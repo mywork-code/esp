@@ -739,7 +739,7 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-		if ("jd".equals(goodsInfo.getSource())) {
+		if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
 			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
 			//京东商品没有规格情况拼凑数据格式
@@ -749,7 +749,7 @@ public class ShoppingCartService {
 			}else{
 				jdSimilarSkuToList=(List<JdSimilarSkuTo>) jdSimilarSkuInfoMap.get("JdSimilarSkuToList");
 			}
-			resultMap.put("goodsSource", "jd");
+			resultMap.put("source", "jd");
 			resultMap.put("JdSimilarSkuToList", jdSimilarSkuToList);
 			resultMap.put("jdSimilarSkuList", jdSimilarSkuInfoMap.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", jdSimilarSkuInfoMap.get("jdSimilarSkuListSize"));
@@ -767,7 +767,7 @@ public class ShoppingCartService {
         	returnMap2.put("goodsStockId", goodsStockId);
 			goodsService.loadGoodsBasicInfoById2(goodsIdVal, returnMap2);
 			
-			resultMap.put("goodsSource", "");
+			resultMap.put("source", "notJd");
 			resultMap.put("JdSimilarSkuToList", returnMap2.get("JdSimilarSkuToList"));
 			resultMap.put("jdSimilarSkuList", returnMap2.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", returnMap2.get("jdSimilarSkuListSize"));
