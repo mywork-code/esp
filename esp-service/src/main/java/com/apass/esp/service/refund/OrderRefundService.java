@@ -63,7 +63,6 @@ public class OrderRefundService {
     /**
      * 查询订单退货详情信息
      * 
-     * @param customerInfo
      * @return
      */
     public List<RefundInfoEntity> queryRefundByOrderId(Map<String, Object> map) throws BusinessException {
@@ -80,7 +79,6 @@ public class OrderRefundService {
     /**
      * 同意售后申请
      * 
-     * @param orderId,refundId
      * @return
      */
     @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
@@ -131,7 +129,6 @@ public class OrderRefundService {
     /**
      * 确认收货 ，售后状态为RS03;插入售后流程表
      * 
-     * @param orderId
      * @return
      */
     @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
@@ -239,7 +236,6 @@ public class OrderRefundService {
      * 售后完成和售后失败的订单1天后   开具发票  《监控有售后交易》
      * @throws Exception 
      */
-    @Transactional(rollbackFor = { Exception.class,RuntimeException.class })
     public void handleReturningOrders() throws Exception {
         
         Date date = new Date();
@@ -251,7 +247,6 @@ public class OrderRefundService {
         map.put("endDate", endDate);
         List<String> statuList = Lists.newArrayList();
         statuList.add(RefundStatus.REFUND_STATUS05.getCode());
-        statuList.add(RefundStatus.REFUND_STATUS06.getCode());
         map.put("status",statuList);
         List<RefundedOrderInfoDto> refundedOrderInfoList = orderRefundRepository.queryReturningOrderInfo(map);
         LOGGER.info("售后完成订单状态修改：" + refundedOrderInfoList.toString());
@@ -271,44 +266,27 @@ public class OrderRefundService {
                 }
 
                 String status = OrderStatus.ORDER_COMPLETED.getCode();
-                boolean flag = false;//自动开具发票成功,默认false
-                if(StringUtils.equals(dto.getRefundStatus(),RefundStatus.REFUND_STATUS05.getCode())){
                     //根据该订单的售后的服务类型（0 退货， 1 换货）,来更新订单状态//退货：退货成功后订单状态由 "交易完成" 改为 "交易关闭"(sprint8)
                     if(StringUtils.equals(dto.getRefundType(), "0")){
                         //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，调invoiceCheck方法
                         if(refundDetailList.size() < orderDetailInfoEntities.size()){
+                            boolean flag = false;//自动开具发票成功,默认false
                             status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
-                            //退货金额=退货详情表中退款总金额-订单详情表中优惠金额
-                            BigDecimal totalRefundCash = new BigDecimal(0);
-                            for(RefundDetailInfoEntity reInfo : refundDetailList){
-                                BigDecimal allRefundCash = reInfo.getGoodsPrice().multiply(new BigDecimal(reInfo.getGoodsNum()));//退货详情表中退款总金额
-                                //根据订单详情id去订单详情表中查询对应的那条数据，然后计算每一件的退款金额再*退货的数量
-                                OrderDetailInfoEntity orDetail = orderDetailInfoRepository.select(reInfo.getOrderDetailId());
-                                BigDecimal discountAmount = orDetail.getDiscountAmount();
-                                BigDecimal couponMoney = orDetail.getCouponMoney();
-                                if(discountAmount == null){
-                                    discountAmount = new BigDecimal(0);
-                                }
-                                if(couponMoney == null){
-                                    couponMoney = new BigDecimal(0);
-                                }
-                                BigDecimal dicountCashOne = discountAmount.add(couponMoney);
-                                dicountCashOne = dicountCashOne.divide(new BigDecimal(orDetail.getGoodsNum()));//订单详情表中单个商品优惠金额
-
-                                BigDecimal refundDiscountCashAll = dicountCashOne.multiply(new BigDecimal(reInfo.getGoodsNum()));
-                                totalRefundCash = totalRefundCash.add(allRefundCash.subtract(refundDiscountCashAll));
-                            }
                             //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
                             Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
-                            BigDecimal orderAmt = invoice.getOrderAmt().subtract(totalRefundCash);
+                            BigDecimal orderAmt = invoice.getOrderAmt().subtract(dto.getRefundAmt());
                             invoice.setOrderAmt(orderAmt);
-
                             //修改金额
                             invoiceMapper.updateByPrimaryKey(invoice);
 
                             //调invoiceCheck方法
                             flag = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
-
+                            if(flag){
+                                LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
+                            }else{
+                                LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
+                            }
+                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                         }else if(refundDetailList.size() == orderDetailInfoEntities.size()){
                             //退货数量=订单中商品数量：订单状态改为交易关闭，发票修改状态，发票金额不动
                             status = OrderStatus.ORDER_TRADCLOSED.getCode();//交易关闭
@@ -317,24 +295,12 @@ public class OrderRefundService {
                             Invoice invoice = invoiceMapper.getInvoiceByorderId(dto.getOrderId());
                             invoice.setStatus((byte)InvoiceStatusEnum.INVISIBLE.getCode());
                             invoiceMapper.updateByPrimaryKey(invoice);//修改状态
-
+                            orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                         }else{
                             LOGGER.error("数据有误,退货商品数量不能大于订单中商品数量;参数orderId:{}",dto.getOrderId());
                             throw new RuntimeException("数据有误");
                         }
                     }
-
-                }else{
-                    status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
-                    flag = invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
-                }
-                orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
-
-                if(flag){
-                    LOGGER.info("自动开具发票成功!orderId:{}", dto.getOrderId());
-                }else{
-                    LOGGER.info("自动开具发票失败!orderId:{}", dto.getOrderId());
-                }
             }
         }
 
@@ -345,9 +311,10 @@ public class OrderRefundService {
         refundFailMap.put("status",RefundStatus.REFUND_STATUS06.getCode());
         List<RefundedOrderInfoDto> refundedFailOrderInfoList = orderRefundRepository.queryReturningOrderInfo(refundFailMap);
         if(null != refundedFailOrderInfoList && !refundedFailOrderInfoList.isEmpty()){
-            for(RefundedOrderInfoDto dto: refundedOrderInfoList){
+            for(RefundedOrderInfoDto dto: refundedFailOrderInfoList){
                 String status = OrderStatus.ORDER_COMPLETED.getCode();
                 orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
+                invoiceService.invoiceCheck(orderInfoRepository.selectByOrderId(dto.getOrderId()));
             }
         }
     }

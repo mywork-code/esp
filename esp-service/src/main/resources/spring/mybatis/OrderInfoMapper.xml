@@ -111,7 +111,7 @@
 			coupon_id  couponId
 		FROM
 			t_esp_order_info
-		where main_order_id=#{value} and ext_parent_id!='-1' and parent_order_id >= 0
+		where main_order_id=#{value} and ext_parent_id!='-1'  and parent_order_id >= 0
 		]]>
 	</select>
 	
@@ -335,17 +335,11 @@
 	        #{parentOrderId, jdbcType=VARCHAR});
 	</insert>
 	
-	<update id="updateStatusByOrderId" parameterType="OrderInfoEntity">
-		<![CDATA[
-		UPDATE t_esp_order_info 
-		]]>
-		<set>
-			update_date = CURRENT_TIMESTAMP,
-			orderstatus = #{status, jdbcType=VARCHAR}
-		</set>
-	<![CDATA[
-		WHERE order_id =  #{orderId, jdbcType=VARCHAR}
-	]]>
+	<update id="updateStatusByOrderId">
+		UPDATE t_esp_order_info
+		SET update_date = CURRENT_TIMESTAMP,
+			orderstatus = #{status}
+		WHERE order_id =  #{orderId}
 	</update>
 	
 	<update id="updateIsDeleteByOrderId" parameterType="OrderInfoEntity">
