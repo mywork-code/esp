@@ -342,8 +342,17 @@ public class InvoiceService {
             faPiaoKJXM.setXmsl(de.getGoodsNum().toString());
             faPiaoKJXM.setHsbz("1");
             faPiaoKJXM.setFphxz("0");
-
-            faPiaoKJXM.setXmdj(de.getGoodsPrice().toString());
+            BigDecimal xmdj = BigDecimal.ZERO;
+            BigDecimal discountAmt = de.getDiscountAmount();
+            BigDecimal couponMoney = de.getCouponMoney();
+            if(discountAmt == null){
+                discountAmt = BigDecimal.ZERO;
+            }
+            if(couponMoney == null){
+                couponMoney = BigDecimal.ZERO;
+            }
+            BigDecimal totalDis = discountAmt.add(couponMoney);
+            faPiaoKJXM.setXmdj((de.getGoodsPrice().subtract(totalDis.divide(new BigDecimal(de.getGoodsNum())))).toString());
             String goodsCode = goods.getGoodsCode();
             int goodsCodeLength = goodsCode.length();
             if(goodsCodeLength >= 19){
