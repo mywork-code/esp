@@ -816,7 +816,8 @@ public class SAPService {
     private String getDateBegin() {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -1);
-    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+//    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+      return "2011-09-01";
   }
 
   private String getDateEnd() {
