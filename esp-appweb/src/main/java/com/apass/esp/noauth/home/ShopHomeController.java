@@ -24,6 +24,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -1041,8 +1042,9 @@ public class ShopHomeController {
                 returnMap.put("status", goodsInfo.getStatus());
             } else {
             	Boolean isUnSupport=false;
-            	if (StringUtils.isNotBlank(goodsInfo.getUnSupportProvince())
-                        && goodsInfo.getUnSupportProvince().indexOf(region3.getProvince()) > -1) {
+            	WorkCityJd workCityJd=nationService.selectByProvinceId(region3.getProvinceId()+"");
+            	if (StringUtils.isNotBlank(goodsInfo.getUnSupportProvince()) && null !=workCityJd
+                        && goodsInfo.getUnSupportProvince().indexOf(workCityJd.getProvince()) > -1) {
             		isUnSupport = true;
                }
             	returnMap.put("isUnSupport", isUnSupport);
