@@ -684,7 +684,9 @@ public class SAPService {
           if (StringUtils.equals(merchantCode, entity.getVal())) {
             suqNo = entity.getName();
             merchant = entity;
-            flag = false;
+            if(StringUtils.isEmpty(merchant.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
+              flag = false;
+            }
           }
         }
         if(flag){
