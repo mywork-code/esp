@@ -304,8 +304,7 @@ public class ShoppingCartController {
         String methodDesc = LogStashKey.CART_VIEWSKU.getName();
         
         String goodsId = CommonUtils.getValue(paramMap, "goodsId");
-        //非京东商品要上传
-        String goodsStockId = CommonUtils.getValue(paramMap, "goodsStockId");
+     
 
         String requestId = logStashSign + "_" + goodsId;
         paramMap.remove("x-auth-token"); //输出日志前删除会话token
@@ -319,7 +318,7 @@ public class ShoppingCartController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
-            resultMap = shoppingCartService.getGoodsStockSkuInfo(requestId, goodsId,goodsStockId);
+            resultMap = shoppingCartService.getGoodsStockSkuInfo(requestId, goodsId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
@@ -345,6 +344,8 @@ public class ShoppingCartController {
         String methodDesc = LogStashKey.CART_VIEWSKU.getName();
         
         String goodsId = CommonUtils.getValue(paramMap, "goodsId");
+        //非京东商品要上传
+        String goodsStockId = CommonUtils.getValue(paramMap, "goodsStockId");
         
         String requestId = logStashSign + "_" + goodsId;
         paramMap.remove("x-auth-token"); //输出日志前删除会话token
@@ -358,7 +359,7 @@ public class ShoppingCartController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
-            resultMap = shoppingCartService.getGoodsStockSkuInfoV3(requestId, goodsId);
+            resultMap = shoppingCartService.getGoodsStockSkuInfoV3(requestId, goodsId,goodsStockId);
         } catch (BusinessException e) {
             LOG.logstashException(requestId, methodDesc, e.getErrorDesc(), e);
             return Response.fail(e.getErrorDesc(),e.getBusinessErrorCode());
