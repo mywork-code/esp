@@ -53,15 +53,6 @@ public class JdGoodsService {
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
 
-
-    @Autowired
-    private GoodsEsDao goodsEsDao;
-    
-//    @Autowired
-//    private UsersService usersService;
-
-    @Autowired
-    private CacheManager cacheManager;
     /**
      * 关联京东类目
      * 
