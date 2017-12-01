@@ -37,7 +37,6 @@ public class InvoiceController {
             String orderId = CommonUtils.getValue(paramMap, "orderId");
             String userId = CommonUtils.getValue(paramMap, "userId");
             return invoiceService.invoiceDetails(orderId,userId);
-           // return invoiceService.invoiceDetails("346738");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("发票详情查询失败");
