@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.jd.JdProductState;
 import com.apass.esp.domain.entity.jd.JdSimilarSku;
+import com.apass.esp.domain.enums.JdGoodsImageType;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
@@ -271,7 +272,7 @@ public class WeiZhiProductService {
 	 * 同类商品查询
 	 */
 	public List<JdSimilarSku> getWeiZhiSimilarSku(String skuId) throws Exception {
-		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId);
+		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId,3);
 		List<JdSimilarSku> list=wZJdSimilarSku.getResult();
 		return list;
 	}
