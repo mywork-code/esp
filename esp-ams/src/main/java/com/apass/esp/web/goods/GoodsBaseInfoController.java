@@ -663,14 +663,8 @@ public class GoodsBaseInfoController {
             if(goodsStockSkuInfo.get(0).getGoodsCostPrice().compareTo(new BigDecimal(99))<0){
                 return "京东协议价格低于99元，不能上架";
             }
-            
-            List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
-            com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
-            skuNum.setNum(1);
-            skuNum.setSkuId(Long.parseLong(goodsEntity.getExternalId()));
-            skuNumList.add(skuNum);
             //验证商品是否可售（当验证为不可售时，提示操作人员）
-            if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+            if(!orderService.checkGoodsSalesOrNot(goodsEntity.getExternalId())){
             	 return "该京东商品暂时不可售，不能上架";
             }
         }

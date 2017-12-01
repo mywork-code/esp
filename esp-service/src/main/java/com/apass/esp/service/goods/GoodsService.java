@@ -345,13 +345,8 @@ public class GoodsService {
              }
       }else{
           String externalId = goodsBasicInfo.getExternalId();// 外部商品id
-          List<SkuNum> skuNumList=new ArrayList<>();
-          SkuNum skuNum=new SkuNum();
-          skuNum.setNum(1);
-          skuNum.setSkuId(Long.parseLong(externalId));
-          skuNumList.add(skuNum);
           //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-          if(orderService.checkGoodsSalesOrNot(skuNumList)){
+          if(orderService.checkGoodsSalesOrNot(externalId)){
              return true;//商品可售
           }
       }
