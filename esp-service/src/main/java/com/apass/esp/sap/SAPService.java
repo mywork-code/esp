@@ -648,7 +648,6 @@ public class SAPService {
    * 采购订单（采购和退货）
    */
   private void transPurchaseReturnSalesCvs() {
-   //TODO
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
@@ -753,7 +752,7 @@ public class SAPService {
 //        MerchantCode[] codeArr = MerchantCode.values();
 //        for (MerchantCode entity : codeArr) {
 //          if (StringUtils.equals(salOrder.getMerchantCode(), entity.getVal())) {
-//            if(StringUtils.isEmpty(entity.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
+//            if(!StringUtils.isEmpty(entity.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
 //              flag = false;
 //            }
 //          }
@@ -1016,6 +1015,9 @@ public class SAPService {
           //统计未出账
           CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
           if (customerCreditInfo != null) {
+            if(StringUtils.isEmpty(customerCreditInfo.getBillDate())){
+              continue;
+            }
             Integer billDate = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
             //每天零晨跑，故天数-1
             Calendar cal = Calendar.getInstance();
