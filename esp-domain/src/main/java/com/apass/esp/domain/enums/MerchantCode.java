@@ -3,7 +3,7 @@ package com.apass.esp.domain.enums;
  * LOGSTASh 日志KEY
  */
 public enum MerchantCode {
-    MERCHANT_JIFAN("上海季繁贸易有限公司", "","0001092"),
+    MERCHANT_JIFAN("上海季繁贸易有限公司", "100213","0001092"),
     MERCHANT_JUNYAO("上海均耀电子科技有限公司", "","0shjs12"),
     MERCHANT_BANGLI("上海邦礼网络信息技术有限公司", "","0shqp2"),
     MERCHANT_XIRUN("上海钿润电子商务有限公司", "","0shsj16"),
