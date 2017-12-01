@@ -1019,6 +1019,7 @@ $(function() {
 		});
 		//加载类目
 		loadEditDatagrid();
+		flushtableattrEditlist();
 	}
 	//取消保存类目 关闭页面
 	$("#disSaveGoodsCategory").click(function(){
