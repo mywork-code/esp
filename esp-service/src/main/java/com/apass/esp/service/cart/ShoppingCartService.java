@@ -113,7 +113,7 @@ public class ShoppingCartService {
 			LOG.info(requestId, "该商品已下架", goodsStockId);
 			throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
 		}
-		if (!SourceType.JD.getCode().equals(goodsInfo.getSource())){
+		if (!SourceType.WZ.getCode().equals(goodsInfo.getSource())){
 			// 商品库存如果都为0 则提示商品下架
 			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
 			boolean offShelfFlag = true;
