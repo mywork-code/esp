@@ -84,8 +84,11 @@ public class WeiZhiPriceApiClient {
 	    }
 	    
 	    String text = JSON.toJSONString(datas.getJSONArray("data"));
-	    
+
 	    List<WZPriceResponse> priceList = JSON.parseArray(text, WZPriceResponse.class);
+	    if(CollectionUtils.isEmpty(priceList)){
+			return null;
+		}
 	    return priceList;
 	}
 	

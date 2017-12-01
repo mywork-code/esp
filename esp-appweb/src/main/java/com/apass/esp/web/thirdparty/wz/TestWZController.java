@@ -601,17 +601,18 @@ public class TestWZController {
 											List<String> skuList = Lists.newArrayList();
 											skuList.add(skuId);
 											List<WZPriceResponse> priceList = price.getWzPrice(skuList);
-											WZPriceResponse wzPriceResponse = null;
+
 											if (CollectionUtils.isNotEmpty(priceList)) {
 												try {
-													wzPriceResponse = priceList.get(0);
+													WZPriceResponse wzPriceResponse = priceList.get(0);
+													jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
+													jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
 												} catch (Exception e) {
 													LOGGER.error("批量商品价格查询结果为空,参数skuList:{}", GsonUtils.toJson(skuList));
 													continue;
 												}
 											}
-											jdGoods.setJdPrice(new BigDecimal(wzPriceResponse.getJDPrice()));//京东价
-											jdGoods.setPrice(new BigDecimal(wzPriceResponse.getWzPrice()));//协议价
+
 											jdGoods.setSaleUnit(goodDetail.getSaleUnit());
 //											jdGoods.setWareQd(wareQD);
 											jdGoods.setWeight(new BigDecimal(goodDetail.getWeight()));
@@ -663,8 +664,6 @@ public class TestWZController {
 
 	/**
 	 * 往京东类目表中插入数据
-	 * @param integer
-	 * @param i
      */
 	private void addCategory(Integer catId, int level) throws Exception {
 		LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
