@@ -1213,7 +1213,7 @@ public class GoodsBaseInfoController {
     /**
      * 修改库存
      * INPUT按钮失焦事件 刷新规格库存表失败
-     * 直接保存规格
+     * 直接保存规格    只对规格做修改操作(修改是同步修改库存)！！  不新增。。
      * @param request
      * @return
      */
@@ -1234,22 +1234,22 @@ public class GoodsBaseInfoController {
     }
     /**
      * 修改商品 保存库存 批量保存  商品的属性规格 和库存信息（无规格）
+     * 并且保存规格  ，只保存新增的规格   已有规格修改，在上一个方法直接修改完毕
      * @param request
      * @return
      */
-    @SuppressWarnings("unused")
     @ResponseBody
     @RequestMapping(value = "/editsaveGoodsCateAttrAndStock", method = RequestMethod.POST)
     @LogAnnotion(operationType = "修改商品 保存库存（无规格）", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editsaveGoodsCateAttrAndStock(HttpServletRequest request) {
-        try{
+        try{                                                      
             String[] categorynameArr1 = request.getParameterValues("categorynameArr1");//HttpWebUtils.getValue(request, "categorynameArr1");
             String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
             String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
             String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
             List<GoodsStockInfoEntity> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
-            return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),SpringSecurityUtils.getLoginUserDetails().getUsername());
+            return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),SpringSecurityUtils.getLoginUserDetails().getUsername(),categorynameArr1,categorynameArr2,categorynameArr3);
         }catch(BusinessException e){
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
