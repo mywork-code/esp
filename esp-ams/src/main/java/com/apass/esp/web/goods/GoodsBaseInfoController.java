@@ -1,5 +1,4 @@
 package com.apass.esp.web.goods;
-
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -9,9 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.Response;
@@ -73,10 +69,7 @@ import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
-import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-
 /**
  * 商品管理
  *
@@ -87,20 +80,14 @@ import com.google.gson.Gson;
 @Controller
 @RequestMapping("/application/goods/management")
 public class GoodsBaseInfoController {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(GoodsBaseInfoController.class);
-
     private static final String SUCCESS = "SUCCESS";
-
     @Autowired
     private GoodsService goodsService;
-
     @Autowired
     private BannerInfoService bannerInfoService;
-
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
-
     @Autowired
     private UsersService usersService;
 
@@ -876,55 +863,6 @@ public class GoodsBaseInfoController {
             goodsService.updateService(entity);
             return Response.success("上传成功", url);
 
-        } catch (Exception e) {
-            LOGGER.error("上传logo失败!", e);
-            return Response.fail("上传logo失败!");
-        }
-    }
-
-    /**
-     * 上传库存logo
-     *
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/upstocklogoFile", method = RequestMethod.POST)
-    public Response upStocklogoFile(@ModelAttribute("logoFileModel") LogoFileModel logoFileModel) {
-        try {
-            MultipartFile file = logoFileModel.getEditGoodsLogoFile();
-            Long goodsId = logoFileModel.getEditLogogoodsId();
-            Long stockinfoIdInForm = logoFileModel.getEditStockinfoIdInForm();
-            String imgType = ImageTools.getImgType(file);
-            String fileDiName = RandomUtils.getRandom(10);
-            String fileName = "stocklogo_" + fileDiName + "." + imgType;
-            String url = nfsGoods + goodsId + "/" + fileName;
-
-            // 图片验证
-            boolean checkLogoImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
-            boolean checkImgType = ImageTools.checkImgType(file);// 类型
-            int size = file.getInputStream().available();
-
-            if (!(checkLogoImgSize && checkImgType)) {
-                file.getInputStream().close();// 254*320px;.jpg .png
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png", url);
-            } else if (size > 1024 * 300) {
-                file.getInputStream().close();
-                return Response.fail("文件不能大于300kb!", url);
-            }
-            /**
-             * 上传文件
-             */
-            FileUtilsCommons.uploadFilesUtil(rootPath, url, logoFileModel.getEditGoodsLogoFile());
-            // 保存url到数据库
-            GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
-            entity.setStockLogo(url);
-            entity.setGoodsId(goodsId);
-            entity.setId(stockinfoIdInForm);
-            entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-            goodsStockInfoService.update(entity);
-            //更新goodsbase中的数据
-//            updateDB(goodsId + "");
-            return Response.success("上传成功", url);
         } catch (Exception e) {
             LOGGER.error("上传logo失败!", e);
             return Response.fail("上传logo失败!");

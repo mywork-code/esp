@@ -1,18 +1,9 @@
 package com.apass.esp.web.goods;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
-import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
-import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.log.LogAnnotion;
-import com.apass.gfb.framework.log.LogValueTypeEnum;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,22 +15,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
-import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
-import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.log.LogAnnotion;
+import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
-
 /**
  * 商品库存
  * 
@@ -50,25 +40,20 @@ import com.apass.gfb.framework.utils.RandomUtils;
 @Controller
 @RequestMapping("/application/goods/stockinfo")
 public class GoodsStockInfoController {
-
     private static final Logger   LOGGER = LoggerFactory.getLogger(GoodsStockInfoController.class);
-
     @Autowired
     private GoodsStockInfoService goodsStockInfoService;
-    @Autowired
-    private GoodsService goodsService;
-
     @Value("${nfs.rootPath}")
     private String                rootPath;
     @Value("${nfs.goods}")
     private String                nfsGoods;
-
     /**
      * 查询库存
      * 
      * @param request
      * @return
      */
+    @SuppressWarnings("unused")
     @ResponseBody
     @RequestMapping("/pagelist")
     public ResponsePageBody<GoodsStockInfoEntity> handlePageList(HttpServletRequest request) {
@@ -98,18 +83,6 @@ public class GoodsStockInfoController {
             respBody.setMsg("商品库存查询失败");
         }
         return respBody;
-    }
-
-    
-    /**
-     * 更新数据库的更新人和更新时间
-     */
-    public void updateDB(Long goodsId){
-    	GoodsInfoEntity goods = new GoodsInfoEntity();
-    	goods.setId(goodsId);
-    	goods.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-    	goods.setUpdateDate(new Date());
-        goodsService.updateService(goods);
     }
     /**
      * 新增库存
@@ -165,10 +138,7 @@ public class GoodsStockInfoController {
                 file.getInputStream().close();
                 return Response.fail("文件不能大于300kb!");
             }
-
-            /**
-             * 上传文件
-             */
+            //上传文件
             FileUtilsCommons.uploadFilesUtil(rootPath, url, stockInfo.getStockLogoFile());
             /**
              * 保存对象
@@ -195,10 +165,6 @@ public class GoodsStockInfoController {
             entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
             Integer count = goodsStockInfoService.insert(entity);
-            /**
-             * 更新base表中的数据
-             */
-            updateDB(stockInfo.getAddstockInfogoodsId());
             if (count == 1) {
                 return Response.success("success");
             } else {
@@ -225,7 +191,11 @@ public class GoodsStockInfoController {
             String imgType = ImageTools.getImgType(file);
             String fileDiName = RandomUtils.getRandom(10);
             String fileName = "stocklogo_"+ fileDiName + "." + imgType;
-            String url = nfsGoods + stockInfo.getAddstockInfogoodsId() + "/" + fileName;
+            Long goodsId = stockInfo.getAddstockInfogoodsId();
+            if(goodsId==null){
+                goodsId = stockInfo.getEditaddstockInfogoodsId();
+            }
+            String url = nfsGoods + goodsId + "/" + fileName;
             //缩略图校验
             boolean checkSiftGoodsImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
             boolean checkImgType = ImageTools.checkImgType(file);// 类型
@@ -299,17 +269,52 @@ public class GoodsStockInfoController {
 //        if (goodsCompareUrl2 != null) {
 //            entity.setGoodsCompareUrl2(goodsCompareUrl2);
 //        }
-
         entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-
         goodsStockInfoService.updateService(entity);
-        
         //根据库存的Id获取库存信息，然后根据goodsid获取
         GoodsStockInfoEntity stock = goodsStockInfoService.goodsStockInfoEntityByStockId(entity.getId());
-        //更新base表中的数据
-//        if(null != stock && null != stock.getGoodsId()){
-//        	updateDB(stock.getGoodsId());
-//        }
         return Response.success("success");
+    }
+    /**
+     * 修改商品  修改库存  LOGO重上传
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/upstocklogoFile", method = RequestMethod.POST)
+    public Response upStocklogoFile(@ModelAttribute("StockInfoFileModel") StockInfoFileModel stockInfo) {
+        try {
+            MultipartFile file = stockInfo.getStockLogoFile();
+            Long stockinfoId = stockInfo.getEditStockinfoIdInForm();
+            Long goodsId = goodsStockInfoService.goodsStockInfoEntityByStockId(stockinfoId).getGoodsId();
+            String imgType = ImageTools.getImgType(file);
+            String fileDiName = RandomUtils.getRandom(10);
+            String fileName = "stocklogo_" + fileDiName + "." + imgType;
+            String url = nfsGoods + goodsId + "/" + fileName;
+            // 图片验证
+            boolean checkLogoImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
+            boolean checkImgType = ImageTools.checkImgType(file);// 类型
+            int size = file.getInputStream().available();
+            if (!(checkLogoImgSize && checkImgType)) {
+                file.getInputStream().close();// 254*320px;.jpg .png
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png", url);
+            } else if (size > 1024 * 300) {
+                file.getInputStream().close();
+                return Response.fail("文件不能大于300kb!", url);
+            }
+            //上传文件
+            FileUtilsCommons.uploadFilesUtil(rootPath, url, stockInfo.getStockLogoFile());
+            // 保存url到数据库
+            GoodsStockInfoEntity entity = new GoodsStockInfoEntity();
+            entity.setStockLogo(url);
+            entity.setGoodsId(goodsId);
+            entity.setId(stockinfoId);
+            entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
+            goodsStockInfoService.update(entity);
+            return Response.success("更新缩略图成功", goodsStockInfoService.goodsStockInfoEntityByStockId(stockinfoId));
+        } catch (Exception e) {
+            LOGGER.error("上传logo失败!", e);
+            return Response.fail("上传logo失败!");
+        }
     }
 }

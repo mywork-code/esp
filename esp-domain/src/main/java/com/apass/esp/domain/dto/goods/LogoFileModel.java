@@ -1,7 +1,5 @@
 package com.apass.esp.domain.dto.goods;
-
 import org.springframework.web.multipart.MultipartFile;
-
 /**
  * 上传logo
  * @author zhanwendong
@@ -44,7 +42,6 @@ public class LogoFileModel {
 	public void setEditStockLogoUrl(String editStockLogoUrl) {
 		this.editStockLogoUrl = editStockLogoUrl;
 	}
-
 	@Override
 	public String toString() {
 		return "LogoFileModel [editLogogoodsId=" + editLogogoodsId
