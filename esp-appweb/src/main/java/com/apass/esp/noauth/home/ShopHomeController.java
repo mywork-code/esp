@@ -199,7 +199,7 @@ public class ShopHomeController {
                     goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                             BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                 }
-               if (SourceType.JD.getCode().equals(goods.getSource())) {
+               if (SourceType.WZ.getCode().equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     if(goods.getGoodsSiftUrl().contains("eshop")){
                         goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
@@ -334,7 +334,7 @@ public class ShopHomeController {
 					// goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
 					String logoUrl = goodsInfo.getGoodsLogoUrl();
 					String siftUrl = goodsInfo.getGoodsSiftUrl();
-					if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
+					if (StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode())) {
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
 						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
 					} else if (StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode())) {
@@ -808,7 +808,7 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
                 com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
@@ -975,7 +975,7 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
                 com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();

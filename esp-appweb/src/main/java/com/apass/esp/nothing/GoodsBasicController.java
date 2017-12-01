@@ -63,7 +63,7 @@ public class GoodsBasicController {
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 Region region = new Region();
                 region.setProvinceId(51975);
                 region.setCityId(2815);

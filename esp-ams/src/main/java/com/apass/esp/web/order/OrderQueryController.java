@@ -175,7 +175,7 @@ public class OrderQueryController {
 	        if(null == entity){
 	        	throw new BusinessException("订单号为【"+orderId+"】的订单不存在!");
 	        }
-	        if(!StringUtils.equals(entity.getSource(), SourceType.JD.getCode())){
+	        if(!StringUtils.equals(entity.getSource(), SourceType.WZ.getCode())){
 	        	throw new BusinessException("订单来源不明确!");
 	        }
         	//调用  京东的接口
@@ -276,7 +276,7 @@ public class OrderQueryController {
             if(null == order){
             	throw new BusinessException("所查询订单不存在!");
             }
-            String logisticsName = SourceType.JD.getCode();
+            String logisticsName = SourceType.WZ.getCode();
             if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
             	orderSubInfoEntity.setLogisticsNo(order.getLogisticsNo());
             	logisticsName = order.getLogisticsName();

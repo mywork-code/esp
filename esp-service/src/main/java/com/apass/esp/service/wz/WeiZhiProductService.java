@@ -149,17 +149,16 @@ public class WeiZhiProductService {
 		}
 		String sku=StringUtils.join(listString, ",");
 		List<WzSkuPicture> list = new ArrayList<>();
-		List<Map<String, List<WzPicture>>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
-		for (Map<String, List<WzPicture>> map2 : map) {
-			for (Map.Entry<String, List<WzPicture>> entry : map2.entrySet()) {
-				WzSkuPicture wzSkuPicture = new WzSkuPicture();
-				String skuStrign = entry.getKey();
-				wzSkuPicture.setSku(skuStrign);
-				List<WzPicture> wzPicturelist = entry.getValue();
-				wzSkuPicture.setWzPicturelist(wzPicturelist);
-				list.add(wzSkuPicture);
-			}
+		Map<String, List<WzPicture>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		for (Map.Entry<String, List<WzPicture>> entry : map.entrySet()) {
+			WzSkuPicture wzSkuPicture = new WzSkuPicture();
+			String skuStrign = entry.getKey();
+			wzSkuPicture.setSku(skuStrign);
+			List<WzPicture> wzPicturelist = entry.getValue();
+			wzSkuPicture.setWzPicturelist(wzPicturelist);
+			list.add(wzSkuPicture);
 		}
+	
 		return list;
 	}
 
@@ -168,14 +167,13 @@ public class WeiZhiProductService {
 	 */
 	public List<String> getWeiZhiSingleProductSkuImage(String sku, String type) throws Exception {
 		List<String> list = new ArrayList<>();
-		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
-		if (null != mapList && mapList.size() == 1) {
-			Map<String, List<WzPicture>> map = mapList.get(0);
+		Map<String, List<WzPicture>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		if (null != map) {
 			List<WzPicture> listWzPicture = map.get(sku);
 			for (WzPicture wzPicture : listWzPicture) {
-				if (wzPicture.getIsPrimary() == 0) {
+				if (wzPicture.getIsPrimary() == 1) {
 					String pictureUrl = wzPicture.getPath();
-					String str = pictureUrl.replace("n2", type);
+					String str = pictureUrl.replace("n0", type);
 					list.add(str);
 				}
 			}
@@ -188,10 +186,9 @@ public class WeiZhiProductService {
 	 */
 	public List<WzPicture> getWeiZhiSingleProductSkuImage(String sku) throws Exception {
 		List<WzPicture> listWzPicture = new ArrayList<>();
-		List<Map<String, List<WzPicture>>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
-		if (CollectionUtils.isNotEmpty(mapList)) {
-			Map<String, List<WzPicture>> map = mapList.get(0);
-			return map.get(sku);
+		Map<String, List<WzPicture>> mapList = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
+		if (null !=mapList) {
+			return mapList.get(sku);
 		}
 		return listWzPicture;
 	}
