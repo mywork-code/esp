@@ -1337,7 +1337,7 @@ public class GoodsService {
       goods.setGoodsNamePinyin(Pinyin4jUtil.converterToSpell(g.getGoodsName()));
       goods.setDelistTime(g.getDelistTime());
       goods.setGoodsLogoUrl(g.getGoodsLogoUrl());
-      if (StringUtils.equals(g.getSource(), SourceType.JD.getCode())) {
+      if (StringUtils.equals(g.getSource(), SourceType.WZ.getCode())) {
         goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + g.getGoodsLogoUrl());
       } else {
         try {

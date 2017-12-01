@@ -186,7 +186,7 @@ public class MonitorController {
 		final int BACH_SIZE = 500;
 		try {
 			while (true) {
-				List<GoodsInfoEntity> goodsInfoEntityList = goodsService.selectJdGoods(index, BACH_SIZE, SourceType.JD);
+				List<GoodsInfoEntity> goodsInfoEntityList = goodsService.selectJdGoods(index, BACH_SIZE, SourceType.WZ);
 				if (CollectionUtils.isEmpty(goodsInfoEntityList)) {
 					break;
 				}

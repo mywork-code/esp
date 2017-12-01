@@ -216,7 +216,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiSingleProductSkuImage(@RequestBody Map<String, Object> paramMap) {
 		try {
-			List<String> list=weiZhiProductService.getWeiZhiSingleProductSkuImage("100376", JdGoodsImageType.TYPEN1.getCode());
+			List<String> list=weiZhiProductService.getWeiZhiSingleProductSkuImage("3985573", JdGoodsImageType.TYPEN1.getCode());
 			return Response.success("获取所有图片信息成功！",list);
 		} catch (Exception e) {
 			return Response.fail("获取所有图片信息失败！");
