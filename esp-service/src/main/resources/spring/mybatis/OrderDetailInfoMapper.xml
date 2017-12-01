@@ -327,6 +327,7 @@
 	
 	<select id="salesorderinfoList" resultType="com.apass.esp.domain.entity.bill.SalesOrderInfo">
 		SELECT
+			orderinfo.merchant_code merchantCode,
 			orderdetail.id orderdetailId,
 			orderdetail.order_id orderPrimayId,
 			goodsbase.goods_code goodsCode,

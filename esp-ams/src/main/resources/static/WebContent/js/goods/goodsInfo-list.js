@@ -157,9 +157,9 @@ $(function() {
 	        ids.push(rows[i]);
 	    }
 	    var param = {};
-//	    param['categorynameArr1']= categorynameArrX.toString();
-//	    param['categorynameArr2']= categorynameArrY.toString();
-//	    param['categorynameArr3']= categorynameArrZ.toString();
+	    param['categorynameArr1']= categorynameArrX.toString();
+	    param['categorynameArr2']= categorynameArrY.toString();
+	    param['categorynameArr3']= categorynameArrZ.toString();
 	    param["goodsStock"]= JSON.stringify(ids);
 	    param["goodsId"]= finalGoodId;
 		var address = ctx + '/application/goods/management/editsaveGoodsCateAttrAndStock';
@@ -1019,6 +1019,7 @@ $(function() {
 		});
 		//加载类目
 		loadEditDatagrid();
+		flushtableattrEditlist();
 	}
 	//取消保存类目 关闭页面
 	$("#disSaveGoodsCategory").click(function(){
@@ -3370,8 +3371,8 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         			if(i==1){
-        				var categorynameArr1=[];
-    					var categorynameArrX=[];
+        				categorynameArr1=[];
+    					categorynameArrX=[];
     					attrId = q[0].id.split("Ed")[1];
         				for(var j =0,ql= q.length;j<ql;j++) {
         					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
@@ -3382,8 +3383,8 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         			if(i==3){
-        				var categorynameArr2=[];
-    					var categorynameArrY=[];
+        				categorynameArr2=[];
+    					categorynameArrY=[];
     					attrId = q[0].id.split("Ed")[1];
         				for(var j =0,ql= q.length;j<ql;j++) {
         					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
@@ -3394,8 +3395,8 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         			if(i==5){
-        				var categorynameArr3=[];
-    					var categorynameArrZ=[];
+        				categorynameArr3=[];
+    					categorynameArrZ=[];
     					attrId = q[0].id.split("Ed")[1];
         				for(var j =0,ql= q.length;j<ql;j++) {
         					if(typeof(q[j].value)!="undefined"&&q[j].value!=null&&q[j].value!=''){
@@ -3406,7 +3407,7 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         		}
-            	flushGoodsStock(goodsId);
+//            	flushGoodsStock(goodsId);
             	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
             	if(value==""&&arrthis.length==3){//该规格被删除动态修改该INPUT的ID
             		document.getElementById(id).id=arrthis[0]+"Ed"+arrthis[1];
