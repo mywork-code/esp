@@ -6,7 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
  *
  */
 public class StockInfoFileModel {
-	private Long addstockInfogoodsId;
+	private Long addstockInfogoodsId;//新增商品新增库存上传接收goodsId
+	private Long editaddstockInfogoodsId;//修改商品新增库存上传接收goodsId
+	private Long editStockinfoIdInForm;//修改商品修改库存上传接收库存Id用于LOGO重上传
 	private String attrnameByAfter;//属性规格名称排列组合新名称
 	private String goodsSkuAttr;
 	private String goodsPrice;//售价
@@ -106,5 +108,17 @@ public class StockInfoFileModel {
     }
     public void setStockLogo(String stockLogo) {
         this.stockLogo = stockLogo;
+    }
+    public Long getEditaddstockInfogoodsId() {
+        return editaddstockInfogoodsId;
+    }
+    public void setEditaddstockInfogoodsId(Long editaddstockInfogoodsId) {
+        this.editaddstockInfogoodsId = editaddstockInfogoodsId;
+    }
+    public Long getEditStockinfoIdInForm() {
+        return editStockinfoIdInForm;
+    }
+    public void setEditStockinfoIdInForm(Long editStockinfoIdInForm) {
+        this.editStockinfoIdInForm = editStockinfoIdInForm;
     }
 }
