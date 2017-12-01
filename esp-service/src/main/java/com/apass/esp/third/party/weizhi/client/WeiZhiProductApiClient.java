@@ -2,6 +2,7 @@ package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -283,7 +284,7 @@ public class WeiZhiProductApiClient {
      * {"path":"http://img13.360buyimg.com/n2/jfs/t1996/302/1187346914/121250/ef213ac1/56483372N8e315b50.jpg","orderSort":5,"isPrimary":0},
      * {"path":"http://img13.360buyimg.com/n2/jfs/t2413/297/1143079640/121287/75fd8aa/56483375Nb3ef6185.jpg","orderSort":6,"isPrimary":0}]}]}
 	 */
-	public List<Map<String,List<WzPicture>>> getWeiZhiProductSkuImage(String sku) throws Exception {
+	public Map<String,List<WzPicture>> getWeiZhiProductSkuImage(String sku) throws Exception {
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -294,7 +295,7 @@ public class WeiZhiProductApiClient {
 
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		List<Map<String,List<WzPicture>>> map=new ArrayList<>();
+		Map<String,List<WzPicture>> map=new HashMap<String, List<WzPicture>>();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUIMAGE,entity);
 			LOGGER.info("获取所有图片信息返回Json数据：" + responseJson);
@@ -303,9 +304,9 @@ public class WeiZhiProductApiClient {
 				return null;
 			}
 			Gson gson = new Gson();
-			Type objectType = new TypeToken<WeiZhiResponse<List<Map<String,List<WzPicture>>>>>() {
+			Type objectType = new TypeToken<WeiZhiResponse<Map<String,List<WzPicture>>>>() {
 			}.getType();
-			WeiZhiResponse<List<Map<String,List<WzPicture>>>> response = gson.fromJson(responseJson, objectType);
+			WeiZhiResponse<Map<String,List<WzPicture>>> response = gson.fromJson(responseJson, objectType);
 			if (null != response && response.getResult() == 0) {
 				map = response.getData();
 			}
