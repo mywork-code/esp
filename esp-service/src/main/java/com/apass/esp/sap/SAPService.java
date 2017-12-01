@@ -648,7 +648,6 @@ public class SAPService {
    * 采购订单（采购和退货）
    */
   private void transPurchaseReturnSalesCvs() {
-   //TODO
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
@@ -669,11 +668,9 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       for (SalesOrderPassOrRefund salOrder : salOrderList) {
         boolean flag = true;
-
         List<String> contentList = new ArrayList<String>();
         String guid = ListeningStringUtils.getUUID();
         contentList.add(guid);
-        purchaseOrderGuidMap.put(salOrder.getOrderId(),guid);
         contentList.add(salOrder.getOrderId());
         contentList.add("6008");
         contentList.add(salOrder.getExtOrderId());
@@ -688,7 +685,7 @@ public class SAPService {
         for (MerchantCode entity : codeArr) {
           if (StringUtils.equals(salOrder.getMerchantCode(), entity.getVal())) {
             merchant = entity;
-            if(StringUtils.isEmpty(merchant.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
+            if(!StringUtils.isEmpty(merchant.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
               flag = false;
             }
           }
@@ -717,7 +714,7 @@ public class SAPService {
         contentList.add(DateFormatUtil.dateToString(salOrder.getCreateDate(), "HHmmss"));
         contentList.add("");
         contentList.add("ajqh");
-
+        purchaseOrderGuidMap.put(salOrder.getOrderId(),guid);
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
       csvWriter.close();
@@ -751,10 +748,21 @@ public class SAPService {
       csvWriter.writeRecord(headers);
       int rowNum = 1;//行号
       for (SalesOrderInfo salOrder : salOrderList) {
-
+//        boolean flag = true;
+//        MerchantCode[] codeArr = MerchantCode.values();
+//        for (MerchantCode entity : codeArr) {
+//          if (StringUtils.equals(salOrder.getMerchantCode(), entity.getVal())) {
+//            if(!StringUtils.isEmpty(entity.getCode())){//如果sap中没有对应的商户编号，则此条数据不推
+//              flag = false;
+//            }
+//          }
+//        }
+//        if(flag){
+//          continue;
+//        }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
-        contentList.add( getPurchaseOrderGuidMap(salOrder.getOrderPrimayId()));
+        contentList.add(getPurchaseOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
         contentList.add(salOrder.getGoodsName());
@@ -842,9 +850,7 @@ public class SAPService {
   private String getDateBegin() {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DATE, -1);
-
-    return "2017-11-01";
-//    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
   }
 
   private String getDateEnd() {
@@ -1009,6 +1015,9 @@ public class SAPService {
           //统计未出账
           CustomerCreditInfo customerCreditInfo = Response.resolveResult(responseCredit, CustomerCreditInfo.class);
           if (customerCreditInfo != null) {
+            if(StringUtils.isEmpty(customerCreditInfo.getBillDate())){
+              continue;
+            }
             Integer billDate = Integer.valueOf(customerCreditInfo.getBillDate());//获取账单日
             //每天零晨跑，故天数-1
             Calendar cal = Calendar.getInstance();

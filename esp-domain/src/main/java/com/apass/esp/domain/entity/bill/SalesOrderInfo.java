@@ -44,6 +44,16 @@ public class SalesOrderInfo {
      * 数量
      */
     private Long goodNum;
+    /**供应商编号 */
+    private String merchantCode;;
+
+    public String getMerchantCode() {
+        return merchantCode;
+    }
+
+    public void setMerchantCode(String merchantCode) {
+        this.merchantCode = merchantCode;
+    }
 
     public Long getOrderdetailId() {
         return orderdetailId;

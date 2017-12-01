@@ -258,7 +258,6 @@ public class OrderRefundService {
                     if(StringUtils.equals(dto.getRefundType(), "0")){
                         //如果退货商品数量<订单中商品数量：订单状态改为交易完成,修改发票金额不修改发票状态，调invoiceCheck方法
                         if(dto.getRefundAmt().compareTo(dto.getOrderAmt()) < 0){
-                            status = OrderStatus.ORDER_COMPLETED.getCode();//交易完成
                             orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                             boolean flag = false;//自动开具发票成功,默认false
                             //根据订单号获取发票金额,并减退货金额.修改发票表中的订单金额
@@ -290,6 +289,9 @@ public class OrderRefundService {
                             LOGGER.error("数据有误,退货金额大于订单总金额;参数orderId:{}",dto.getOrderId());
                             throw new RuntimeException("数据有误");
                         }
+                    }else{
+                        //换货的订单改成交易完成
+                        orderInfoRepository.updateStatusByOrderId(dto.getOrderId(),status);
                     }
             }
         }
