@@ -87,6 +87,38 @@ public class GoodsAttrValService {
         }
     }
     /**
+     * 通过属性D保存属性值列表   新列表保存
+     * 并且保存规格  ，只保存新增的规格   已有规格修改，在上一个方法直接修改完毕
+     * @param parseLong
+     * @param arr1
+     * @return
+     */
+    @Transactional
+    public Boolean savegoodsAttrValByAttrIdForEditAdd(Long attrId, String[] arr,Long goodsId) {
+        try{
+            GoodsAttrVal entity = null;
+            Integer sort = 0;
+            for(String str : arr){
+                entity = new GoodsAttrVal();
+                String s = str.split("-")[0];
+                s= famartsubStringTrim(s);
+                entity.setAttrVal(s);
+                entity.setGoodsId(goodsId);
+                entity.setAttrId(attrId);
+                List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
+                if(list==null||list.size()==0){
+                    entity.setSort(++sort);
+                    entity.setCreatedTime(new Date());
+                    entity.setUpdatedTime(new Date());
+                    goodsAttrValMapper.insertSelective(entity);
+                }
+            }
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+    /**
      * 通过属性规格名称字符串 和goodsid找到每个规格ID（属性值ID）
      * @param attrnameByAfter
      * @param goodsId

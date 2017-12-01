@@ -195,7 +195,7 @@ public class InvoiceService {
         List<InvoiceDetails> detailsApplyed = new ArrayList<InvoiceDetails>();
         for(Invoice invoice : list){
             Byte status = invoice.getStatus();
-            if(status==(byte)InvoiceStatusEnum.FAIL.getCode()||status==(byte)InvoiceStatusEnum.INVISIBLE.getCode()){
+            if(status==(byte)InvoiceStatusEnum.INVISIBLE.getCode()){
                 continue;
             }
             InvoiceDetails entity = new InvoiceDetails();

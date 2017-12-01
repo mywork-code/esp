@@ -381,6 +381,39 @@ public class GoodsAttrService {//450
         return true;
     }
     /**
+     * savegoodsAttrValByAttrIdForEditAdd
+     * 并且保存规格  ，只保存新增的规格   已有规格修改，在上一个方法直接修改完毕
+     * @param arr1
+     * @param arr2
+     * @param arr3
+     * @return
+     */
+    @Transactional
+    private Boolean savegoodsAttrValByAttrIdForEditAdd(String[] arr1, String[] arr2, String[] arr3,Long goodsId) {
+        if(arr1!=null&&arr1.length>0){
+            String id1 = arr1[0].split("-")[1];
+            Boolean falg1 = goodsAttrValService.savegoodsAttrValByAttrIdForEditAdd(Long.parseLong(id1),arr1,goodsId);
+            if(!falg1){
+                return false;
+            }
+        }
+        if(arr2!=null&&arr2.length>0){
+            String id2 = arr2[0].split("-")[1];
+            Boolean falg2 = goodsAttrValService.savegoodsAttrValByAttrIdForEditAdd(Long.parseLong(id2),arr2,goodsId);
+            if(!falg2){
+                return false;
+            }
+        }
+        if(arr3!=null&&arr3.length>0){
+            String id3 = arr3[0].split("-")[1];
+            Boolean falg3 = goodsAttrValService.savegoodsAttrValByAttrIdForEditAdd(Long.parseLong(id3),arr3,goodsId);
+            if(!falg3){
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
      * 批量保存库存   属性规格   信息    需要删除已有库存
      * @param goodsStock
      * @param arr1
@@ -666,7 +699,7 @@ public class GoodsAttrService {//450
     /**
      * 修改库存
      * INPUT按钮失焦事件 刷新规格库存表失败
-     * 直接保存规格
+     * 直接保存规格   只对规格做修改操作(修改是同步修改库存)！！  不新增。。
      * @param request
      * @return
      * @throws BusinessException 
@@ -691,12 +724,13 @@ public class GoodsAttrService {//450
                     throw new BusinessException("新增属性规格,商品规格名称输入有误，请重新输入!");
                     //return Response.fail("新增属性规格名称验重失败!");
                 }
-                int i = goodsAttrValService.insertAttrVal(entity);
-                if(i==0){
-                    throw new BusinessException("新增属性规格,商品规格名称输入有误，请重新输入!");
-                    //return Response.fail("新增属性规格名称验重失败!");
-                }
-                return Response.success("刷新库存！",entity.getId());
+//                int i = goodsAttrValService.insertAttrVal(entity);
+//                if(i==0){
+//                    throw new BusinessException("新增属性规格,商品规格名称输入有误，请重新输入!");
+//                    //return Response.fail("新增属性规格名称验重失败!");
+//                }
+//                return Response.success("刷新库存！",entity.getId());
+                return Response.success("刷新库存！");
             }
         }else{//规格表有ID
             if(falg3){//规格表名称为空    //删除该属性规格 删除该属性规格库存
@@ -783,7 +817,26 @@ public class GoodsAttrService {//450
      * @throws BusinessException 
      */
     @Transactional
-    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) throws BusinessException {
+    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName,String [] arr1,String [] arr2,String [] arr3) throws BusinessException {
+        arr1 = famartsubStringarr(arr1);
+        arr2 = famartsubStringarr(arr2);
+        arr3 = famartsubStringarr(arr3);
+        Boolean fCREATE = this.savegoodsAttrValByAttrIdForEditAdd(arr1, arr2, arr3,goodsId);
+        if(!fCREATE){
+            throw new BusinessException("保存商品属性和规格信息失败,请您完整正确填写规格相关信息（规格名称不能重复）！");
+        }
+        return editsaveGoodsCateAttrAndStock(list, goodsId, userName);
+    }
+    /**
+     * 修改商品 保存库存 批量保存  商品的属性规格 和库存信息（无规格）
+     * @param list
+     * @param goodsId
+     * @param username
+     * @return
+     * @throws BusinessException 
+     */
+    @Transactional
+    private Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) throws BusinessException {
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
         for(GoodsStockInfoEntity entity : list){
