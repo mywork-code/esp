@@ -183,6 +183,8 @@ public class WeiZhiConstants {
 
     //批量查询商品价格
     public static final String WZAPI_PRICE_GETWZPRICE =  "/jdapi/price/getWzPrice";
+    //单个查询商品价格
+    public static final String WZAPI_PRICE_GETWZSINGLEPRICE = "/jdapi/price/getWzSinglePrice";
     //删除消息
     public static final String WZAPI_MESSAGE_DEL =   "/jdapi/message/del";
     //获取消息
