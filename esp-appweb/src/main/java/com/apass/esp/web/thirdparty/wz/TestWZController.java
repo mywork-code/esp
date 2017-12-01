@@ -336,7 +336,7 @@ public class TestWZController {
 	public Response getWeiZhiCheckAreaLimit(@RequestBody Map<String, Object> paramMap) {
 		try {
 			Region region = new Region();
-			Boolean result = weiZhiProductService.getWeiZhiCheckAreaLimit("", region);
+			Boolean result = weiZhiProductService.getWeiZhiCheckAreaLimit("100376", region);
 			return Response.success("商品区域购买限制查询成功！", result);
 		} catch (Exception e) {
 			return Response.fail("商品区域购买限制查询失败！");
@@ -349,7 +349,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWeiZhiCheckSale(@RequestBody Map<String, Object> paramMap)  {
 		try {
-			Boolean result = weiZhiProductService.getWeiZhiCheckSale("180389");
+			Boolean result = weiZhiProductService.getWeiZhiCheckSale("100376");
 			return Response.success("商品可售验证接口成功！", result);
 		} catch (Exception e) {
 			return Response.fail("商品可售验证接口失败！");
