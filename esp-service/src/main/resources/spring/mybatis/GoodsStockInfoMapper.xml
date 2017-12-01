@@ -108,6 +108,7 @@
 			goods_id=#{value}
 		AND 
 		    delete_flag != 'Y'
+		ORDER BY stock_curr_amt DESC
 	]]>
 	</select>
 		<!-- 根据商品id查询 -->
