@@ -1018,7 +1018,7 @@ public class GoodsService {
 			goodsStock=goodsStockList.get(0);
 			for (GoodsStockInfoEntity stock : goodsStockList) {
 				BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsId, stock.getGoodsStockId());
-				if (minPrice.compareTo(goodsPrice) > 0) {
+				if (minPrice.compareTo(goodsPrice) > 0 && stock.getStockCurrAmt() >0) {
 					minPrice = goodsPrice;
 					goodsStock = stock;
 				}
