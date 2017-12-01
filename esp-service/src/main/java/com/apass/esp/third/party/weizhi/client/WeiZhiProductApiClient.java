@@ -406,14 +406,17 @@ public class WeiZhiProductApiClient {
 	/**
 	 * 同类商品查询
 	 */
-	public WZJdSimilarSku getWeiZhiSimilarSku(String skuId) throws Exception {
+	public WZJdSimilarSku getWeiZhiSimilarSku(String skuId,int sizeType) throws Exception {
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("token", token);
 		BasicNameValuePair param2 = new BasicNameValuePair("skuId", skuId);
+		BasicNameValuePair param3 = new BasicNameValuePair("sizeType", JSON.toJSONString(sizeType));
+		
 		parameters.add(param1);
 		parameters.add(param2);
+		parameters.add(param3);
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
 		WZJdSimilarSku  wZJdSimilarSku = new WZJdSimilarSku();
