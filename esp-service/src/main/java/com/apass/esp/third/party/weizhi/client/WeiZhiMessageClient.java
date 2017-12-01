@@ -30,6 +30,8 @@ public class WeiZhiMessageClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiMessageClient.class);
     @Autowired
     private WeiZhiTokenService weiZhiTokenService;
+    @Autowired
+    private WeiZhiConstants weiZhiConstants;
     /**
      * 删除消息
      */
@@ -37,7 +39,7 @@ public class WeiZhiMessageClient {
         try {
             List<NameValuePair> parameters = new ArrayList<NameValuePair>();
             BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
-            BasicNameValuePair param2 = new BasicNameValuePair("clientId",WeiZhiConstants.CLIENT_ID);
+            BasicNameValuePair param2 = new BasicNameValuePair("clientId",weiZhiConstants.getClientId());
             BasicNameValuePair param3 = new BasicNameValuePair("messageId",messageId + "");
             BasicNameValuePair param4 = new BasicNameValuePair("messageType",messageType +"");
             parameters.add(param1);
@@ -47,7 +49,7 @@ public class WeiZhiMessageClient {
 
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 
-            String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_MESSAGE_DEL, entity);
+            String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_MESSAGE_DEL), entity);
 
             LOGGER.info("----del message ------ response:{}",responseJson);
             WeiZhiResponse response = (WeiZhiResponse) JSONObject.parse(responseJson);
@@ -65,14 +67,14 @@ public class WeiZhiMessageClient {
     public List<JdApiMessage> getMsg(int messageType) throws Exception{
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
-        BasicNameValuePair param2 = new BasicNameValuePair("clientId",WeiZhiConstants.CLIENT_ID);
+        BasicNameValuePair param2 = new BasicNameValuePair("clientId",weiZhiConstants.getClientId());
         BasicNameValuePair param3 = new BasicNameValuePair("messageType", StringUtils.join(messageType,","));
         parameters.add(param1);
         parameters.add(param2);
         parameters.add(param3);
 
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_MESSAGE_GET, entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_MESSAGE_GET), entity);
         LOGGER.info("----get message ------ response:{}",responseJson);
         WeiZhiResponse<JSONArray> response = (WeiZhiResponse) JSONObject.parse(responseJson);
         if (response.successResp()) {

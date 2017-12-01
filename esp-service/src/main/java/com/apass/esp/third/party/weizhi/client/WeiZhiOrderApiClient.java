@@ -40,7 +40,8 @@ public class WeiZhiOrderApiClient {
 	
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
-	
+	@Autowired
+	private WeiZhiConstants weiZhiConstants;
 	/**
      * 统一下单接口
      *
@@ -91,7 +92,7 @@ public class WeiZhiOrderApiClient {
         logger.info("----submitOrder------ params:{}",JsonUtil.toJsonString(parameters));
         
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_SUBMITORDER, entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SUBMITORDER), entity);
         
         logger.info("----submitOrder------ response:{}",responseJson);
         /**
@@ -122,7 +123,6 @@ public class WeiZhiOrderApiClient {
     /**
      * 根据微知订单号，确认预占库存
      *
-     * @param jdOrderId
      * @return
      * @throws Exception 
      */
@@ -137,7 +137,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_CONFIRMORDER, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_CONFIRMORDER), entity);
 	    
 		logger.info("----orderOccupyStockConfirm------ response:{}",responseJson);
 	    /**
@@ -178,7 +178,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_SELECTORDER, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SELECTORDER), entity);
 	    
 		logger.info("----selectOrder------ response:{}",responseJson);
 	    /**
@@ -214,7 +214,6 @@ public class WeiZhiOrderApiClient {
     /**
      * 根据微知单号，查询配送信息
      *
-     * @param jdOrderId
      * @return
      * @throws Exception 
      */
@@ -228,7 +227,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_ORDERTRACK), entity);
 		
 		logger.info("----orderTrack------ response:{}",responseJson);
 		
@@ -301,7 +300,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_SELECTORDERIDBYTHIRDORDER), entity);
 	    
 		logger.info("----selectOrderIdByThirdOrder------ response:{}",responseJson);
 	    /**
@@ -340,7 +339,7 @@ public class WeiZhiOrderApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_ORDER_CANCEL, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_ORDER_CANCEL), entity);
 	    
 		logger.info("----cancelOrder------ response:{}",responseJson);
 	    /**

@@ -35,9 +35,9 @@ public class WeiZhiTokenClient {
 		String timestamp = DateFormatUtil.dateToString(new Date(), "");
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		BasicNameValuePair param1 = new BasicNameValuePair("grant_type", WeiZhiConstants.GRANT_TYPE);
-		BasicNameValuePair param2 = new BasicNameValuePair("client_id", WeiZhiConstants.CLIENT_ID);
-		BasicNameValuePair param3 = new BasicNameValuePair("user_name", WeiZhiConstants.USER_NAME);
-		BasicNameValuePair param5 = new BasicNameValuePair("password", DigestUtils.md5Hex(WeiZhiConstants.PASSWORD));
+		BasicNameValuePair param2 = new BasicNameValuePair("client_id", weiZhiConstants.getClientId());
+		BasicNameValuePair param3 = new BasicNameValuePair("user_name", weiZhiConstants.getUserName());
+		BasicNameValuePair param5 = new BasicNameValuePair("password", DigestUtils.md5Hex(weiZhiConstants.getPassword()));
 		BasicNameValuePair param4 = new BasicNameValuePair("timestamp", timestamp);
 		BasicNameValuePair param6 = new BasicNameValuePair("sign", weiZhiConstants.getSign(timestamp));
 		parameters.add(param1);
@@ -51,7 +51,7 @@ public class WeiZhiTokenClient {
 		String responseJson = null;
 		TokenEntity token = null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.TOKEN_URL, ent);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getTokenUrl(), ent);
 			LOGGER.info("微知获取token返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");

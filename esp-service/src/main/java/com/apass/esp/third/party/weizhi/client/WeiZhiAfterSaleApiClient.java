@@ -35,9 +35,11 @@ public class WeiZhiAfterSaleApiClient {
     @Autowired
     private WeiZhiTokenService weiZhiTokenService;
 
+    @Autowired
+    private WeiZhiConstants weiZhiConstants;
+
     /**
      * 服务单保存申请
-     * @param afsApply
      * @return 微知返回的所有数据data始终为{}
      */
     public WeiZhiAfterSaleResponse afterSaleAfsApplyCreate(AfsApplyWeiZhiDto afsWeizhiApply) throws Exception {
@@ -62,7 +64,7 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY,entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALES_AFSAPPLY),entity);
         LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
         /**
@@ -88,7 +90,6 @@ public class WeiZhiAfterSaleApiClient {
 
     /**
      * 填写客户发运信息
-     * @param afsApply
      * @return 微知返回的所有数据data始终为{}
      */
     public WeiZhiAfterSaleResponse afterUpdateSendSku(SendSku sendSku) throws Exception {
@@ -105,7 +106,7 @@ public class WeiZhiAfterSaleApiClient {
         LOGGER.info("填写客户发运信息,请求参数：{}", GsonUtils.toJson(params));
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALES_SENDSKU,entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALES_SENDSKU),entity);
         LOGGER.info("服务单保存申请,返回结果：{}", responseJson);
 
         /**
@@ -150,7 +151,7 @@ public class WeiZhiAfterSaleApiClient {
 
         //发送请求并封装返回值
         String responseJson = null;
-        responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP,entity);
+        responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_AVAILABLENUMBERCOMP),entity);
         LOGGER.info("校验某订单中某商品是否可以提交售后服务,返回结果：{}", responseJson);
 
         /**
@@ -194,7 +195,7 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String  responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP,entity);
+        String  responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_CUSTOMEREXPECTCOMP),entity);
         LOGGER.info("根据订单号、商品编号查询支持的服务类型,返回结果：{}", responseJson);
 
         JSONObject datas = JSON.parseObject(responseJson);
@@ -212,17 +213,6 @@ public class WeiZhiAfterSaleApiClient {
 
         return datas.getString("data");
 
-        //如果返回数据正确，且有支持的服务类型
-//        List<ComponentExport> compTypes = Lists.newArrayList();
-//        JSONArray jsonArray = datas.getJSONArray("data");
-//
-//        for (Object obj: jsonArray) {
-//            String content = JSONObject.toJSONString(obj);
-//            ComponentExport afterSaleExpectCompType = GsonUtils.convertObj(content, ComponentExport.class);
-//            compTypes.add(afterSaleExpectCompType);
-//        }
-//
-//        return compTypes;
     }
 
     /**
@@ -243,7 +233,7 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP,entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_WARERETURNJDCOMP),entity);
         LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
 
         JSONObject jsonObject = JSON.parseObject(responseJson);
@@ -295,7 +285,7 @@ public class WeiZhiAfterSaleApiClient {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 
         //发送请求并封装返回值
-        String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST,entity);
+        String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_AFTERSALE_SERVIVELIST),entity);
         LOGGER.info("根据订单号、商品编号查询支持的商品返回微知方式,返回结果：{}", responseJson);
         JSONObject jsonObject = JSON.parseObject(responseJson);
         if(null == jsonObject){

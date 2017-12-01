@@ -40,10 +40,11 @@ public class WeiZhiPriceApiClient {
 	
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
+	@Autowired
+	private WeiZhiConstants weiZhiConstants;
 	
 	/**
 	 * 根据skuID获取
-	 * @param skuId
 	 * @return
 	 * @throws Exception 
 	 */
@@ -61,7 +62,7 @@ public class WeiZhiPriceApiClient {
 		
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRICE_GETWZPRICE, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRICE_GETWZPRICE), entity);
 	    
 		logger.info("----getWzPrice------ response:{}",responseJson);
 	    /**

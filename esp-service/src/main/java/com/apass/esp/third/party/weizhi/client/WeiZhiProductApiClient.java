@@ -33,6 +33,8 @@ public class WeiZhiProductApiClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WeiZhiProductApiClient.class);
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
+	@Autowired
+	private WeiZhiConstants weiZhiConstants;
 	/**
 	 * 获取微知商品详情信息（sku不为8位）
 	 * @return
@@ -54,7 +56,7 @@ public class WeiZhiProductApiClient {
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(weiZhiConstants.WZAPI_PRODUCT_GETDETAIL),entity);
 			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
 
 			if(!StringUtils.equals("0",JSON.parseObject(responseJson).getString("result"))){
@@ -94,7 +96,7 @@ public class WeiZhiProductApiClient {
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETDETAIL,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(weiZhiConstants.WZAPI_PRODUCT_GETDETAIL),entity);
 			LOGGER.info("获取微知商品详情信息返回Json数据：{},参数：sku={}", responseJson,sku);
 
 			if(!StringUtils.equals("0",JSON.parseObject(responseJson).getString("result"))){
@@ -129,7 +131,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		List<JdProductState>  wzProductState = new ArrayList<>();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUSTATE,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_SKUSTATE),entity);
 			LOGGER.info("获取商品上下架状态接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -192,7 +194,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		CategoryPage firstCategorys =null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(url,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(url),entity);
 			if(categoryFalge == 1){
 				LOGGER.info("查询一级分类列表信息接口,返回数据：{}", responseJson);
 			}else if(categoryFalge == 2){
@@ -254,7 +256,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		WzSkuListPage wzSkuListPage =null;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETSKU,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_GETSKU),entity);
 			LOGGER.info("获取分类商品编号接口返回Json数据:{}", responseJson);
 			if (null == responseJson) {
 				LOGGER.info("获取分类商品编号失败！");
@@ -296,7 +298,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		List<Map<String,List<WzPicture>>> map=new ArrayList<>();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SKUIMAGE,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_SKUIMAGE),entity);
 			LOGGER.info("获取所有图片信息返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -349,7 +351,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		List<AreaLimitEntity>  areaLimitEntityList = new ArrayList<>();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_CHECKAREALIMIT,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_CHECKAREALIMIT),entity);
 			LOGGER.info("商品区域购买限制查询返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -382,7 +384,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		CheckSale  checkSale = new com.apass.esp.third.party.weizhi.entity.CheckSale();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_CHECKSALE,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_CHECKSALE),entity);
 			LOGGER.info("商品可售验证接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -416,7 +418,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		WZJdSimilarSku  wZJdSimilarSku = new WZJdSimilarSku();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_SIMILARSKU,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_SIMILARSKU),entity);
 			LOGGER.info("同类商品查询返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -447,7 +449,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		Integer price=0;
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETBALANCE,entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_GETBALANCE),entity);
 			LOGGER.info("统一余额查询接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -485,7 +487,7 @@ public class WeiZhiProductApiClient {
 		String responseJson = null;
 		List<GoodsStock> goodsStockList = new ArrayList<>();
 		try {
-			responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETNEWSTOCKBYID, entity);
+			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_GETNEWSTOCKBYID), entity);
 			LOGGER.info("微知批量获取库存接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
@@ -517,7 +519,7 @@ public class WeiZhiProductApiClient {
 		parameters.add(new BasicNameValuePair("catId", catId));
 
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
-		String responseJson = HttpClientUtils.getMethodPostResponse(WeiZhiConstants.WZAPI_PRODUCT_GETCATEGORY, entity);
+		String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_GETCATEGORY), entity);
 		LOGGER.info("getCategory查询分类信息返回数据responseJson：{}", responseJson);
 
 		JSONObject datas = JSON.parseObject(responseJson);
