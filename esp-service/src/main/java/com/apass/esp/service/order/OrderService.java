@@ -795,16 +795,17 @@ public class OrderService {
          try {
         	 sale = productApi.getWeiZhiCheckSale(skuIds);
 		} catch (Exception e) {
-			
+			LOGGER.error("getWeiZhiCheckSale is fail:{}",e);
+			return false;
 		}
          if(null != sale && CollectionUtils.isNotEmpty(sale.getResult())){
         	 for (WZCheckSale checkSale : sale.getResult()) {
-      			if(checkSale.getSaleState() == 0){
-      				return false;
+      			if(checkSale.getSaleState() == 1){
+      				return true;
       			}
       		 } 
          }
-        return true;
+        return false;
     }
     
     /**
