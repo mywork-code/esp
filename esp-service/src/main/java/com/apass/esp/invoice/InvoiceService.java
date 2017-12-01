@@ -253,8 +253,7 @@ public class InvoiceService {
         }
         List<OrderInfoEntity> orderlist = orderInfoRepository.findOrderByMainOrderId(entity.getOrderId());
         for(OrderInfoEntity order : orderlist){
-            Invoice invoice = new Invoice();
-            invoice.setId(Long.parseLong(order.getOrderId()));
+            Invoice invoice = getInvoice(order.getOrderId());
             invoice.setHeadType(Byte.valueOf(entity.getHeadType()));
             invoice.setContent(entity.getContent());
             invoice.setTelphone(entity.getTelphone());
