@@ -810,13 +810,13 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
-                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
-                skuNum.setNum(1);
-                skuNum.setSkuId(Long.parseLong(externalId));
-                skuNumList.add(skuNum);
+//                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+//                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
+//                skuNum.setNum(1);
+//                skuNum.setSkuId(Long.parseLong(externalId));
+//                skuNumList.add(skuNum);
                 //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+                if(!orderService.checkGoodsSalesOrNot(externalId)){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
@@ -977,13 +977,13 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
-                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
-                skuNum.setNum(1);
-                skuNum.setSkuId(Long.parseLong(externalId));
-                skuNumList.add(skuNum);
+//                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+//                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
+//                skuNum.setNum(1);
+//                skuNum.setSkuId(Long.parseLong(externalId));
+//                skuNumList.add(skuNum);
                 //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+                if(!orderService.checkGoodsSalesOrNot(externalId)){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(

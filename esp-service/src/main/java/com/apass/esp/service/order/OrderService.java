@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.asm.tree.TryCatchBlockNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -738,7 +737,7 @@ public class OrderService {
         /**
          * 验证商品是否可售
          */
-        if(!checkGoodsSalesOrNot(skuNumList)){
+        if(!checkGoodsSalesOrNot(skuList)){
         	throw new BusinessException("抱歉,订单中包含不可售的商品!");
         }
         /**
@@ -789,7 +788,7 @@ public class OrderService {
     /**
      * 验证商品是否可售
      */
-    public boolean checkGoodsSalesOrNot(List<SkuNum> skuNumList){
+    public boolean checkGoodsSalesOrNot(List<String> skuNumList){
     	 String skuIds = StringUtils.join(skuNumList,",");
          CheckSale sale = null;
          try {
@@ -800,14 +799,37 @@ public class OrderService {
 		}
          if(null != sale && CollectionUtils.isNotEmpty(sale.getResult())){
         	 for (WZCheckSale checkSale : sale.getResult()) {
-      			if(checkSale.getSaleState() == 1){
-      				return true;
+      			if(checkSale.getSaleState() == 0){
+      				return false;
       			}
       		 } 
          }
-        return false;
+        return true;
     }
-    
+
+	/**
+	 * 商品可售验证接口（单个商品验证）
+	 * 
+	 * @param skuIds
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean checkGoodsSalesOrNot(String skuId) {
+		Boolean falge = false;
+		try {
+			CheckSale checkSale = productApi.getWeiZhiCheckSale(skuId);
+			if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+				WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+				if (1 == wZCheckSale.getSaleState()) {
+					falge = true;
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
+			return falge;
+		}
+		return falge;
+	}
     /**
      * 验证京东商品是否支持7天退货
      */
