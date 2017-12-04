@@ -1,4 +1,4 @@
-package com.apass.esp.domain.dto.activity;
+package com.apass.esp.domain.entity.activity;
 
 import java.math.BigDecimal;
 import java.util.Date;
