@@ -892,7 +892,8 @@ public class ShopHomeController {
      * 非京东商品也变成多规格商品
      * @return
      */
-    @POST
+    @SuppressWarnings("unused")
+	@POST
     @Path("/v3/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
         try {
@@ -908,9 +909,9 @@ public class ShopHomeController {
                 LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-			Boolean flage = true;
-			Region region = new Region();// app端传过来的地址
+			Region region = null;// app端传过来的地址
 			if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
+				region = new Region();
 				List<DictDTO> result = nationService.queryDistrictJd(districtCode);
 				region.setProvinceId(Integer.parseInt(provinceCode));
 				region.setCityId(Integer.parseInt(cityCode));
@@ -919,16 +920,13 @@ public class ShopHomeController {
 					return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
 				}
 				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-				flage = false;
 			}
 			// 如果flage = false则地址用前端传递过来的，否则先去查询数据库是否有改用户的地址信息，如果没有再使用平台默认地址信息
 			List<AddressInfoEntity> addressInfoList = new ArrayList<>();//返回给前端对象
-			if (flage) {
-				if (StringUtils.isNotEmpty(userId)) {
+			if (null != region) {
+				region = new Region();
+				if (StringUtils.isNotBlank(userId)) {
 					addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
-					if (addressInfoList.size() > 0) {
-						addressInfoList.get(0).setIsDefault("1");
-					}
 				}
 				if (addressInfoList.size() == 0) {
 					AddressInfoEntity addty = new AddressInfoEntity();
@@ -941,68 +939,20 @@ public class ShopHomeController {
 					addty.setDistrict("城区");
 					addty.setTownsCode("0");
 					addty.setTowns("");
-					addty.setIsDefault("1");
 					addressInfoList.add(addty);
 				}
+				addressInfoList.get(0).setIsDefault("1");
 				region.setProvinceId(Integer.parseInt(addressInfoList.get(0).getProvinceCode()));
 				region.setCityId(Integer.parseInt(addressInfoList.get(0).getCityCode()));
 				region.setCountyId(Integer.parseInt(addressInfoList.get(0).getDistrictCode()));
 				region.setTownId(StringUtils.isEmpty(addressInfoList.get(0).getTownsCode()) ? 0
 						: Integer.parseInt(addressInfoList.get(0).getTownsCode()));
 			}
-			
-			
-//            Region region2 = new Region();
-//            // 查看地址信息
-//            AddressInfoEntity addty = new AddressInfoEntity();
-//            // 查询京东地址
-//            List<AddressInfoEntity> addressInfoList = new ArrayList<>();
-//			if (StringUtils.isNotEmpty(userId)) {
-//				addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
-//				if (addressInfoList.size() > 0) {
-//						addressInfoList.get(0).setIsDefault("1");
-//				}
-//			}
-//			
-//            // app端没传地址并且数据库地址为空时，使用默认地址
-//            if (flage && addressInfoList.size() == 0) {
-//                addty.setId(Long.parseLong("-1"));
-//                addty.setProvinceCode("2");
-//                addty.setProvince("上海");
-//                addty.setCityCode("2815");
-//                addty.setCity("长宁区");
-//                addty.setDistrictCode("51975");
-//                addty.setDistrict("城区");
-//                addty.setTownsCode("0");
-//                addty.setTowns("");
-//                addty.setIsDefault("1");
-//                addressInfoList.add(addty);
-//            }
-//            // 获取地址信息
-//            for (AddressInfoEntity addressInfoEntity : addressInfoList) {
-//                if ("1".equals(addressInfoEntity.getIsDefault())) {
-//                    region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-//                    region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-//                    region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-//                    region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer
-//                            .parseInt(addressInfoEntity.getTownsCode()));
-//                }
-//            }
-//            Region region3 = new Region();
-//            if (flage) {
-//                region3 = region2;
-//            } else {
-//                region3 = region;
-//            }
+
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-//                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
-//                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
-//                skuNum.setNum(1);
-//                skuNum.setSkuId(Long.parseLong(externalId));
-//                skuNumList.add(skuNum);
                 //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                 if(!orderService.checkGoodsSalesOrNot(externalId)){
                 	goodsInfo.setStatus("G03");//商品下架
