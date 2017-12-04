@@ -1066,7 +1066,7 @@ public class ShopHomeController {
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 获取购物车中商品种类数
-            if (!StringUtils.isEmpty(userId)) {
+            if (StringUtils.isNotBlank(userId)) {
                 int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
                 returnMap.put("amountInCart", amountInCart);
             }
