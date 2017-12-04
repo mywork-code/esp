@@ -326,7 +326,7 @@ public class ShoppingCartService {
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
-            	if("jd".equals(goodsInfoInCart.getGoodsSource())){
+            	if(SourceType.WZ.getCode().equals(goodsInfoInCart.getGoodsSource())){
             		String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
             		goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
             		//购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
