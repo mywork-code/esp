@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LimitGoodsSkuMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.LimitGoodsSku" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="limit_buy_act_id" property="limitBuyActId" jdbcType="BIGINT" />
+    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+    <result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="activity_price" property="activityPrice" jdbcType="DECIMAL" />
+    <result column="limit_num_total" property="limitNumTotal" jdbcType="BIGINT" />
+    <result column="limit_num" property="limitNum" jdbcType="BIGINT" />
+    <result column="sort_no" property="sortNo" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, limit_buy_act_id, goods_id, sku_id, market_price, activity_price, limit_num_total, 
+    limit_num, sort_no, url, create_user, update_user, created_time, updated_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_limit_goods_sku
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_limit_goods_sku
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_limit_goods_sku (limit_buy_act_id, goods_id, sku_id, 
+      market_price, activity_price, limit_num_total, 
+      limit_num, sort_no, url, 
+      create_user, update_user, created_time, 
+      updated_time)
+    values (#{limitBuyActId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, 
+      #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{limitNumTotal,jdbcType=BIGINT}, 
+      #{limitNum,jdbcType=BIGINT}, #{sortNo,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
+      #{updatedTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_limit_goods_sku
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="limitBuyActId != null" >
+        limit_buy_act_id,
+      </if>
+      <if test="goodsId != null" >
+        goods_id,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="marketPrice != null" >
+        market_price,
+      </if>
+      <if test="activityPrice != null" >
+        activity_price,
+      </if>
+      <if test="limitNumTotal != null" >
+        limit_num_total,
+      </if>
+      <if test="limitNum != null" >
+        limit_num,
+      </if>
+      <if test="sortNo != null" >
+        sort_no,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="limitBuyActId != null" >
+        #{limitBuyActId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="marketPrice != null" >
+        #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="activityPrice != null" >
+        #{activityPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="limitNumTotal != null" >
+        #{limitNumTotal,jdbcType=BIGINT},
+      </if>
+      <if test="limitNum != null" >
+        #{limitNum,jdbcType=BIGINT},
+      </if>
+      <if test="sortNo != null" >
+        #{sortNo,jdbcType=BIGINT},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" >
+    update t_esp_limit_goods_sku
+    <set >
+      <if test="limitBuyActId != null" >
+        limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null" >
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=VARCHAR},
+      </if>
+      <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="activityPrice != null" >
+        activity_price = #{activityPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="limitNumTotal != null" >
+        limit_num_total = #{limitNumTotal,jdbcType=BIGINT},
+      </if>
+      <if test="limitNum != null" >
+        limit_num = #{limitNum,jdbcType=BIGINT},
+      </if>
+      <if test="sortNo != null" >
+        sort_no = #{sortNo,jdbcType=BIGINT},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" >
+    update t_esp_limit_goods_sku
+    set limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT},
+      goods_id = #{goodsId,jdbcType=BIGINT},
+      sku_id = #{skuId,jdbcType=VARCHAR},
+      market_price = #{marketPrice,jdbcType=DECIMAL},
+      activity_price = #{activityPrice,jdbcType=DECIMAL},
+      limit_num_total = #{limitNumTotal,jdbcType=BIGINT},
+      limit_num = #{limitNum,jdbcType=BIGINT},
+      sort_no = #{sortNo,jdbcType=BIGINT},
+      url = #{url,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
