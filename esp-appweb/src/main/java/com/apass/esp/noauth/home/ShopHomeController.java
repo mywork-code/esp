@@ -917,10 +917,9 @@ public class ShopHomeController {
 				region.setCountyId(Integer.parseInt(districtCode));
 				if (result.size() != 0 && StringUtils.isEmpty(townsCode)) {
 					return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-				} else {
-					region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-					flage = false;
-				}
+				} 
+				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+				flage = false;
 			}
             Region region2 = new Region();
             // 查看地址信息
