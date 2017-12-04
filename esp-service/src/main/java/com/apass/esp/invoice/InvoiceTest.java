@@ -1,13 +1,23 @@
 package com.apass.esp.invoice;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.aisino.EncryptionDecryption;
+import com.aisino.FarmartJavaBean;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.invoice.model.FaPiaoKJ;
+import com.apass.esp.invoice.model.FaPiaoKJDD;
+import com.apass.esp.invoice.model.FaPiaoKJXM;
 public class InvoiceTest {
     public static void main(String[] args) throws Exception {
         
-//        InvoiceService invoiceService = new InvoiceService();
-//        OrderInfoEntity order = new OrderInfoEntity();
-//        order.setOrderId("60901406229");
-//        Integer i = invoiceService.invoiceCheck(order);
-        
+////        InvoiceService invoiceService = new InvoiceService();
+////        OrderInfoEntity order = new OrderInfoEntity();
+////        order.setOrderId("60901406229");
+////        Integer i = invoiceService.invoiceCheck(order);
+//        
 //        FaPiaoKJ faPiaoKJ = new FaPiaoKJ();
 //        faPiaoKJ.setFpqqlsh("d2222222222222221234");
 //        faPiaoKJ.setDsptbm("111MFWIK");

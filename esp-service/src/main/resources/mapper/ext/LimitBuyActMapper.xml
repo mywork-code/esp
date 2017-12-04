@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LimitBuyActMapper" >
+    <!-- 分页查询条件 -->
+    <sql id="QueryConditionSql">
+        <where>
+            <if test="status!=null and status!=''">
+                AND status = '#{status}'
+            </if>
+            <if test="startDate!=null and startDate!=''">
+                AND start_date = '#{startDate}'
+            </if>
+        </where>
+    </sql>
+    <!-- 分页查询 -->
+    <select id="getLimitBuyActPage" resultMap="BaseResultMap" 
+        parameterType="com.apass.esp.domain.entity.LimitBuyAct">
+        SELECT 
+            <include refid="Base_Column_List" />
+        FROM t_esp_limit_buy_act
+            <include refid="QueryConditionSql" />
+        <![CDATA[ 
+         ORDER BY created_time desc
+        ]]>
+        <if test="startRecordIndex != null">
+            <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+    </select>
+    <!-- 分页查询数量 -->
+    <select id ="getLimitBuyActPageCount" resultType="java.lang.Integer"
+        parameterType="com.apass.esp.domain.entity.LimitBuyAct">
+        SELECT COUNT(*) FROM t_esp_limit_buy_act
+        <include refid="QueryConditionSql" />
+    </select>
+    <select id="getLimitBuyActList" resultType="com.apass.esp.domain.entity.LimitBuyAct">
+        <![CDATA[
+        SELECT
+            id id,
+            start_date startDate,
+            end_date endDate,
+            status status,
+            create_user createUser,
+            update_user updateUser,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_limit_buy_act
+        WHERE 1=1
+        ]]>
+        <if test="status!=null and status!=''"> AND status = '#{status}' </if>
+        <if test="startDate!=null and startDate!=''"> AND start_date = '#{startDate}' </if>
+        <if test="endDate!=null and endDate!=''"> AND end_date = '#{endDate}' </if>
+    </select>
+</mapper>

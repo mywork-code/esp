@@ -1,6 +1,25 @@
 package com.apass.esp.mapper;
-import com.apass.esp.domain.entity.activity.LimitBuyAct;
+import java.util.List;
+
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 public interface LimitBuyActMapper extends GenericMapper<LimitBuyAct,Long> {
-    
+    /**
+     * 
+     * @param entity
+     * @return
+     */
+    public List<LimitBuyAct> getLimitBuyActList(LimitBuyAct entity);
+    /**
+     * 分页查询
+     * @param entity
+     * @return
+     */
+    public List<LimitBuyAct> getLimitBuyActPage(LimitBuyAct entity);
+    /**
+     * 分页查询
+     * @param entity
+     * @return
+     */
+    public Integer getLimitBuyActPageCount(LimitBuyAct entity);
 }
