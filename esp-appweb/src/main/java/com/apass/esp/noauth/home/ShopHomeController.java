@@ -909,27 +909,18 @@ public class ShopHomeController {
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             Boolean flage = true;
-            Region region = new Region();// app端传过来的地址
-            if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
-                    List<DictDTO> result = nationService.queryDistrictJd(districtCode);
-                    if (result.size() == 0) {
-                        region.setProvinceId(Integer.parseInt(provinceCode));
-                        region.setCityId(Integer.parseInt(cityCode));
-                        region.setCountyId(Integer.parseInt(districtCode));
-                        region.setTownId(0);
-                        flage = false;
-                    } else {
-                        if (StringUtils.isNotEmpty(townsCode)) {
-                            region.setProvinceId(Integer.parseInt(provinceCode));
-                            region.setCityId(Integer.parseInt(cityCode));
-                            region.setCountyId(Integer.parseInt(districtCode));
-                            region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                            flage = false;
-                        } else {
-                            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                        }
-                    }
-            }
+			Region region = new Region();// app端传过来的地址
+			if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
+				List<DictDTO> result = nationService.queryDistrictJd(districtCode);
+				region.setProvinceId(Integer.parseInt(provinceCode));
+				region.setCityId(Integer.parseInt(cityCode));
+				region.setCountyId(Integer.parseInt(districtCode));
+				if (result.size() != 0 && StringUtils.isEmpty(townsCode)) {
+					return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+				} 
+				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
+				flage = false;
+			}
             Region region2 = new Region();
             // 查看地址信息
             AddressInfoEntity addty = new AddressInfoEntity();
