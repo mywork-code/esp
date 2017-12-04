@@ -361,16 +361,6 @@ public class GoodsService {
    */
   public void loadGoodsBasicInfoById2(Long goodsId, Map<String, Object> returnMap) throws BusinessException {
     GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
-    if (null == goodsBasicInfo) {
-      LOGGER.error("商品信息不存在:{}", goodsId);
-      throw new BusinessException("商品信息不存在");
-    }
-    returnMap.put("status", goodsBasicInfo.getStatus());//商品状态
-    Date now = new Date();
-    if (now.before(goodsBasicInfo.getListTime()) || now.after(goodsBasicInfo.getDelistTime())
-        || !GoodStatus.GOOD_UP.getCode().equals(goodsBasicInfo.getStatus())) {
-      returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
-    }
     //判断该商品下是否有货
     List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsId);
     boolean offShelfFlag = true;
@@ -390,8 +380,6 @@ public class GoodsService {
     returnMap.put("goodsPrice",minPrice);
     returnMap.put("goodsPriceFirstPayment",(new BigDecimal("0.1").multiply(minPrice)).setScale(2, BigDecimal.ROUND_DOWN));
     returnMap.put("googsDetail",goodsBasicInfo.getGoogsDetail());
-    returnMap.put("goodsTitle",goodsBasicInfo.getGoodsTitle());
-    returnMap.put("goodsName",goodsBasicInfo.getGoodsName());
     returnMap.put("skuId",MinGoodsPriceStock.getSkuId());
     returnMap.put("goodsStockDes","无货");
 	if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
@@ -408,24 +396,9 @@ public class GoodsService {
     List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList);
 
     returnMap.put("jdImagePathList",JdImagePathList);
-    returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
-    returnMap.put("merchantCode", goodsBasicInfo.getMerchantCode());
-    returnMap.put("activityCfg",getActivityInfo(goodsId));// 满减活动字段
     returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
     returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
     returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
-    //返回活动id
-    ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-    if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-        returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-    }
-	//获取商品的优惠券
-    List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-	if(proCoupons.size()>3){
-		returnMap.put("proCouponList",proCoupons.subList(0, 3));
-	}else{
-		 returnMap.put("proCouponList",proCoupons);
-	}
     returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
   }
 
