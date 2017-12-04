@@ -923,7 +923,7 @@ public class ShopHomeController {
 			}
 			// 如果flage = false则地址用前端传递过来的，否则先去查询数据库是否有改用户的地址信息，如果没有再使用平台默认地址信息
 			List<AddressInfoEntity> addressInfoList = new ArrayList<>();//返回给前端对象
-			if (null != region) {
+			if (null == region) {
 				region = new Region();
 				if (StringUtils.isNotBlank(userId)) {
 					addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
