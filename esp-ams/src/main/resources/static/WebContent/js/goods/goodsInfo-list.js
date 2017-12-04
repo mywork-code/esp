@@ -299,7 +299,7 @@ $(function() {
                  	 var grantedAuthority=$('#grantedAuthority').val();
                 	 var content = "";
                 	
-            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source != 'jd'){
+            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source != 'jd'&&row.source != 'wz'){
             			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
             				 + index +"');\">库存</a>&nbsp;&nbsp;";
             		 }
@@ -897,7 +897,7 @@ $(function() {
 //		var len = $editMerchantPostcode.textbox('getValue').length;
 //		$edit_last.html(len);
 //	})
-	if(!(externalsource == 'jd')){
+	if(!(externalsource == 'jd' || externalsource == 'wz')){
 		$("input",$("#editgoodsName").next("span")).keyup(function(){
 			var len = $("#editgoodsName").textbox('getText').length;
 			var canLen;
@@ -986,7 +986,7 @@ $(function() {
 		
 		initEditGoodsInfo(rowData);//编辑商品回显
 		$("#editBannerGoodsId").val(rowData.id);
-		if(rowData.source == 'jd'){
+		if(rowData.source == 'jd' || rowData.source == 'wz'){
 			viewdisplaybysource = 'jd';
 			$("#editPlanDecrible #one").css({'display':'none'});
 	    	$("#editPlanDecrible #two").css({'display':'inline','font-weight':'bold'});
@@ -1140,7 +1140,7 @@ $(function() {
 			editSupport7dRefund = "";
 		}
 		//字段效验
-		if (!(externalsource == 'jd') &&(null == goodsModel || ("") == goodsModel)) {
+		if (!(externalsource == 'jd' || externalsource == 'wz') &&(null == goodsModel || ("") == goodsModel)) {
 			$.messager.alert("提示", "商品型号不能为空！", "info");
 			return;
 		}
@@ -1149,7 +1149,7 @@ $(function() {
 			return;
 		}
 
-		if (!(externalsource == 'jd') && goodsName.length>30) {
+		if (!(externalsource == 'jd' || externalsource == 'wz') && goodsName.length>30) {
 			$.messager.alert("提示", "商品名称最多30字！", "info");
 			return;
 		}
@@ -1158,7 +1158,7 @@ $(function() {
 			$.messager.alert("提示", "商品小标题不能为空！", "info");
 			return;
 		}
-		if (!(externalsource == 'jd') && goodsTitle.length>25) {
+		if (!(externalsource == 'jd' || externalsource == 'wz') && goodsTitle.length>25) {
 			$.messager.alert("提示", "商品小标题最多25字！", "info");
 			return;
 		}
@@ -1207,7 +1207,7 @@ $(function() {
 //		}
 		var newGoodsCreatDate="1900-01-01 00:00:00";
 		var time = new Date().Format("yyyy-MM-dd hh:mm:ss");
-		if(externalsource == 'jd' && newGoodsCreatDate==editNewCreatDate){
+		if((externalsource == 'jd' || externalsource == 'wz') && newGoodsCreatDate==editNewCreatDate){
 			editNewCreatDate=time;
 		}
 		
@@ -2468,7 +2468,7 @@ function loadStockGoods(datagridId,goodsId,source){
 		statusV = 'G02';
 	}
 	
-		if(source=='jd'){
+	if(source=='jd' || source=='wz'){
 		$("#editGoodsStockAddButton").css('visibility','hidden');
 	}else{
 		$("#editGoodsStockAddButton").css('visibility','visible');
@@ -2518,7 +2518,7 @@ function loadStockGoods(datagridId,goodsId,source){
                      	var grantedAuthority=$('#grantedAuthority').val();
                     	var content = "";
                     	if(grantedAuthority=='permission'){
-                    		if(source != 'jd'){
+                    		if(source != 'jd' && source!='wz'){
                     			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' " +
                     			"onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">加库存</a>&nbsp;&nbsp;";
                     		}
@@ -2584,7 +2584,7 @@ function loadStockGoodsAbout(datagridId,goodsId,source){
              	var grantedAuthority=$('#grantedAuthority').val();
             	var content = "";
             	if(grantedAuthority=='permission'){
-            		if(source != 'jd'){
+            		if(source != 'jd' && source!='jd'){
             			content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.updateStockinfo('"+row.id+"','"+row.stockTotalAmt+"','"+row.stockCurrAmt+"');\">追加库存</a>&nbsp;&nbsp;";
             		}
             	}else{
@@ -2669,7 +2669,7 @@ function initEditGoodsInfo(row){
 				}  
 			});
 			
-			if(externalsource == 'jd'){
+			if(externalsource == 'jd' || externalsource == 'wz'){
 				$("#editmerchantCode").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsModel").textbox('textbox').attr("disabled","disabled");
 				$("#editgoodsName").textbox('textbox').attr("data-options","");

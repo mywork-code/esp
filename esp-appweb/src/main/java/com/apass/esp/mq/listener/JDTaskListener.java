@@ -2,16 +2,11 @@ package com.apass.esp.mq.listener;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.apass.esp.common.model.JdMerchantCode;
+import com.apass.esp.common.model.ExtentMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
-import com.apass.esp.domain.enums.GoodStatus;
-import com.apass.esp.domain.enums.GoodsIsDelete;
-import com.apass.esp.domain.enums.GoodsType;
-import com.apass.esp.domain.enums.JdMessageEnum;
-import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.PreStockStatus;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.mapper.MessageListenerMapper;
@@ -39,11 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jie.xu on 17/7/14.
@@ -386,7 +377,7 @@ public class JDTaskListener implements MessageListener {
           entity.setCategoryId3(Long.valueOf(thirdCategory));
           entity.setGoodsName(jdGoods.getName());
           entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-          entity.setMerchantCode(JdMerchantCode.JDMERCHANTCODE);
+          entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);
           entity.setStatus(GoodStatus.GOOD_NEW.getCode());
           entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
           entity.setListTime(null);

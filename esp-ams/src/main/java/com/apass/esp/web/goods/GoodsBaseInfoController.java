@@ -632,7 +632,7 @@ public class GoodsBaseInfoController {
             return "商品库存为空,请添加！";
         }
         GoodsInfoEntity entity = new GoodsInfoEntity();
-        if (!"jd".equals(source)) {
+        if (!StringUtils.equals("jd",source) && !StringUtils.equals("wz",source)) {
             List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
             if (bannerList.isEmpty()) {
                 return "商品大图为空，请上传！";
@@ -680,7 +680,7 @@ public class GoodsBaseInfoController {
             BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
             BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
                     .setScale(4, BigDecimal.ROUND_DOWN);
-            if ("jd".equals(source)) {
+            if (StringUtils.equals("jd",source) || StringUtils.equals("wz",source)) {
                 String skuId = goodsEntity.getExternalId();
                 Map<String, Object> descMap = new HashMap<String, Object>();
                 try {
