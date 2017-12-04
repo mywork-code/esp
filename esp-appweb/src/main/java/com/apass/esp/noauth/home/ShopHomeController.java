@@ -3,6 +3,7 @@ package com.apass.esp.noauth.home;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
+import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
@@ -895,20 +897,20 @@ public class ShopHomeController {
     @SuppressWarnings("unused")
 	@POST
     @Path("/v3/loadDetailInfoById")
-    public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
-        try {
-            Map<String, Object> returnMap = new HashMap<>();
-            Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
-            String userId = CommonUtils.getValue(paramMap, "userId");
-            String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
-            String cityCode = CommonUtils.getValue(paramMap, "cityCode");
-            String districtCode = CommonUtils.getValue(paramMap, "districtCode");
-            String townsCode = CommonUtils.getValue(paramMap, "townsCode");
+	public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
+		try {
+			Map<String, Object> returnMap = new HashMap<>();
+			Long goodsId = CommonUtils.getLong(paramMap, "goodsId");
+			String userId = CommonUtils.getValue(paramMap, "userId");
+			String provinceCode = CommonUtils.getValue(paramMap, "provinceCode");
+			String cityCode = CommonUtils.getValue(paramMap, "cityCode");
+			String districtCode = CommonUtils.getValue(paramMap, "districtCode");
+			String townsCode = CommonUtils.getValue(paramMap, "townsCode");
 
-            if (null == goodsId) {
-                LOGGER.error("商品号不能为空!");
-                return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-            }
+			if (null == goodsId) {
+				LOGGER.error("商品号不能为空!");
+				return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
+			}
 			Region region = null;// app端传过来的地址
 			if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
 				region = new Region();
@@ -922,7 +924,7 @@ public class ShopHomeController {
 				region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
 			}
 			// 如果flage = false则地址用前端传递过来的，否则先去查询数据库是否有改用户的地址信息，如果没有再使用平台默认地址信息
-			List<AddressInfoEntity> addressInfoList = new ArrayList<>();//返回给前端对象
+			List<AddressInfoEntity> addressInfoList = new ArrayList<>();// 返回给前端对象
 			if (null == region) {
 				region = new Region();
 				if (StringUtils.isNotBlank(userId)) {
@@ -949,138 +951,102 @@ public class ShopHomeController {
 						: Integer.parseInt(addressInfoList.get(0).getTownsCode()));
 			}
 
-            GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-            // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
-                String externalId = goodsInfo.getExternalId();// 外部商品id
-                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(externalId)){
-                	goodsInfo.setStatus("G03");//商品下架
-                }
-                returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), goodsId.toString(),region);
-                
-                //添加活动id
-            	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-            	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-            	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-            	}
-            	//获取商品的优惠券
-            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-            	if(proCoupons.size()>3){
-            		returnMap.put("proCouponList",proCoupons.subList(0, 3));
-            	}else{
-            		 returnMap.put("proCouponList",proCoupons);
-            	}
-                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
-                returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
-                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
-                returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
-                List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
-                        .loadByGoodsId(goodsId);
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0)
-                            .getId());
-                    returnMap.put("goodsPrice", price);// 商品价格
-                    returnMap.put("goodsPriceFirstPayment",
-                            (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
-                    // 京东商品没有规格情况拼凑数据格式
-                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
-                    if (jdSimilarSkuListSize == 0) {
-                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
-                                .get("JdSimilarSkuToList");
-                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                        jdSimilarSkuVo.setSkuId(externalId);
-                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                        jdSimilarSkuVo.setPrice(price);
-                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));
-                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-                        jdSimilarSkuTo.setSkuIdOrder("");
-                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-                        JdSimilarSkuToList.add(jdSimilarSkuTo);
-                    }
-                }
-                returnMap.put("source", "jd");
-                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
-                returnMap.put("status", goodsInfo.getStatus());
-            }  else if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于微知
-                String externalId = goodsInfo.getExternalId();// 外部商品id
-                Boolean checkSale = weiZhiProductService.getWeiZhiCheckSale(externalId);
-                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!checkSale){
-                	goodsInfo.setStatus("G03");//商品下架
-                }
-                returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), goodsId.toString(),region);
-                
-                //添加活动id
-            	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-            	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-            	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-            	}
-            	//获取商品的优惠券
-            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-            	if(proCoupons.size()>3){
-            		returnMap.put("proCouponList",proCoupons.subList(0, 3));
-            	}else{
-            		 returnMap.put("proCouponList",proCoupons);
-            	}
-                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
-                returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
-                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
-                returnMap.put("support7dRefund",weiZhiProductService.getsupport7dRefund(externalId));// 是否支持7天无理由退货,Y、N
-                List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
-                        .loadByGoodsId(goodsId);
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0)
-                            .getId());
-                    returnMap.put("goodsPrice", price);// 商品价格
-                    returnMap.put("goodsPriceFirstPayment",
-                            (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
-                    // 京东商品没有规格情况拼凑数据格式
-                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
-                    if (jdSimilarSkuListSize == 0) {
-                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
-                                .get("JdSimilarSkuToList");
-                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                        jdSimilarSkuVo.setSkuId(externalId);
-                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                        jdSimilarSkuVo.setPrice(price);
-                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));
-                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-                        jdSimilarSkuTo.setSkuIdOrder("");
-                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-                        JdSimilarSkuToList.add(jdSimilarSkuTo);
-                    }
-                }
-                returnMap.put("source", "wz");
-                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
-                returnMap.put("status", goodsInfo.getStatus());
-            }else {
-                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
-            }
-            // 获取购物车中商品种类数
-            if (StringUtils.isNotBlank(userId)) {
-                int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
-                returnMap.put("amountInCart", amountInCart);
-            }
-            returnMap.put("addressList", addressInfoList);
-            return Response.success("加载成功", returnMap);
-        } catch (BusinessException e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        } catch (Exception e) {
-            LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            LOGGER.error("获取商品基本信息失败");
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
-        }
-    }
+			GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
+			if (null == goodsInfo) {
+				LOGGER.error("商品信息不存在:{}", goodsId);
+				throw new BusinessException("商品信息不存在");
+			}
+			Date now = new Date();
+			if (now.before(goodsInfo.getListTime())
+					|| (null != goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
+					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+				goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+			}
+			returnMap.put("status", goodsInfo.getStatus());
+			String externalId = goodsInfo.getExternalId();// 外部商品id
+			// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+			if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+				returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());// 商品下架
+			}
+			// 商品规格
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+			if (jdGoodsStockInfoList.size() == 1) {
+				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+				returnMap.put("goodsPrice", price);// 商品价格
+				returnMap.put("goodsPriceFirstPayment",
+						(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+			}
+			if (SourceType.JD.getCode().equals(goodsInfo.getSource())
+					|| SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
+				if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+					returnMap.put("source", "jd");
+					returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
+							goodsId.toString(), region);
+				} else {
+					returnMap.put("source", "wz");
+					returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
+							goodsId.toString(), region);
+				}
+			} else {
+				goodService.loadGoodsBasicInfoById2(goodsId, returnMap);// sprint11(商品多规格)
+			}
+
+			// 京东商品没有规格情况拼凑数据格式
+			int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
+			if (jdSimilarSkuListSize == 0) {
+				List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
+				JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+				JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+				jdSimilarSkuVo.setGoodsId(goodsId.toString());
+				jdSimilarSkuVo.setSkuId(externalId);
+				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+				BigDecimal price = (BigDecimal) returnMap.get("goodsPrice");
+				BigDecimal goodsPriceFirstPayment = (BigDecimal) returnMap.get("goodsPriceFirstPayment");
+				jdSimilarSkuVo.setPrice(price);
+				jdSimilarSkuVo.setPriceFirst(goodsPriceFirstPayment);
+				jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+				jdSimilarSkuTo.setSkuIdOrder("");
+				jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+				JdSimilarSkuToList.add(jdSimilarSkuTo);
+			}
+			// 添加活动id
+			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+				returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
+			}
+			// 获取商品的优惠券
+			List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId);
+			if (proCoupons.size() > 3) {
+				returnMap.put("proCouponList", proCoupons.subList(0, 3));
+			} else {
+				returnMap.put("proCouponList", proCoupons);
+			}
+			// 商品名称
+			returnMap.put("goodsName", goodsInfo.getGoodsName());
+			// 商户编码
+			returnMap.put("merchantCode", goodsInfo.getMerchantCode());
+			// 满减活动字段
+			returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
+			// 是否支持7天无理由退货,Y、N
+			returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+			// 商品title
+			returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
+			// 获取购物车中商品种类数
+			if (StringUtils.isNotBlank(userId)) {
+				int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
+				returnMap.put("amountInCart", amountInCart);
+			}
+			returnMap.put("addressList", addressInfoList);
+			return Response.success("加载成功", returnMap);
+		} catch (BusinessException e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		} catch (Exception e) {
+			LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
+			LOGGER.error("获取商品基本信息失败");
+			return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
+		}
+	}
     /**
      * 
      *获取商品优惠券列表
