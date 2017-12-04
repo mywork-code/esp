@@ -382,7 +382,7 @@ public class WeiZhiProductApiClient {
 		parameters.add(param2);
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		CheckSale  checkSale = new com.apass.esp.third.party.weizhi.entity.CheckSale();
+			CheckSale  checkSale = new com.apass.esp.third.party.weizhi.entity.CheckSale();
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_CHECKSALE),entity);
 			LOGGER.info("商品可售验证接口返回Json数据：" + responseJson);
