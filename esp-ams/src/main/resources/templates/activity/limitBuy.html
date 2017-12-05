@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>限时购活动管理</title> 
+<#include "../common/component/library.html"/>
+<script type="text/javascript" src="${rc.contextPath}/WebContent/js/common/dateextence.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/WebContent/easyui/outOfBounds.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/WebContent/js/activity/limitBuy.js"></script>
+</head>
+<body>
+    <!-- 初始查询页面 -->
+    <div id="commonLayer">
+	    <div id="tb">
+	        <div class="search">
+	            <table>
+	                <tr>
+                        <td style="width: 100px; text-align:right">活动开始日期：</td>
+                        <td align="left">
+                            <input id="startDay" name="startDay" class="easyui-datebox" style="width: 120px" editable="false"/>
+                        </td>
+                        <td style="width: 100px; text-align:right">活动开始时间：</td>
+		                <td>
+		                    <input id="startTime" name="startTime" class="easyui-combobox" style="width:120px" editable="false">
+		                </td>
+		                <td style="width: 100px; text-align:right">活动状态：</td>
+                        <td>
+                            <input id="status" name="status" class="easyui-combobox" style="width:120px" editable="false">
+                        </td> 
+		                <td style="width: 250px; text-align:right">
+		                    <a href="javascript:void(0);" class="easyui-linkbutton search-btn" data-options="iconCls:'icon-search'">　查　询　</a>　
+	                        <a href="javascript:void(0);" class="easyui-linkbutton flush-btn" data-options="iconCls:'icon-add'">　重　置　</a>　
+	                        <a href="javascript:void(0);" class="easyui-linkbutton add-btn" data-options="iconCls:'icon-add'">创建活动</a>
+		                </td>
+	                </tr>
+	            </table>
+	        </div>
+	    </div>
+	    <div id="limitBuyActPage"></div>
+    </div>
+    <!-- 限时购活动维护页面 -->
+    <div id="editLayer">
+                    维护
+    </div>
+</body>
+</html>   

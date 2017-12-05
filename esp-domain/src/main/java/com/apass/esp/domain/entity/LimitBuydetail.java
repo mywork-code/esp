@@ -1,8 +1,8 @@
 package com.apass.esp.domain.entity;
 
 import java.util.Date;
-
-public class LimitBuydetail {
+import com.apass.esp.common.model.QueryParams;
+public class LimitBuydetail extends QueryParams{
     private Long id;
 
     private Long limitBuyActId;

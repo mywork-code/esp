@@ -1,9 +1,8 @@
 package com.apass.esp.domain.entity;
-
 import java.math.BigDecimal;
 import java.util.Date;
-
-public class LimitGoodsSku {
+import com.apass.esp.common.model.QueryParams;
+public class LimitGoodsSku extends QueryParams{
     private Long id;
 
     private Long limitBuyActId;

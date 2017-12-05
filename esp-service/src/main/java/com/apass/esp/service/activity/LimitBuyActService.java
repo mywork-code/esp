@@ -1,10 +1,12 @@
 package com.apass.esp.service.activity;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
@@ -92,14 +94,16 @@ public class LimitBuyActService {
      * @return
      */
     public ResponsePageBody<LimitBuyAct> getLimitBuyActPage(LimitBuyActVo entity) {
-        Boolean falg = StringUtils.isAnyBlank(entity.getStartDay(),entity.getStartTime());
+        Boolean falg = StringUtils.isBlank(entity.getStartDay());
         if(!falg){
-            String date = entity.getStartDay()+" "+entity.getStartTime();
-            entity.setStartDate(DateFormatUtil.string2date(date, null));
+            String date1 = entity.getStartDay()+" 00:00:00";
+            String date2 = entity.getStartDay()+" 23:00:00";
+            entity.setStartDayBefore(DateFormatUtil.string2date(date1, null));
+            entity.setStartDayAfter(DateFormatUtil.string2date(date2, null));
         }
         ResponsePageBody<LimitBuyAct> pageBody = new ResponsePageBody<LimitBuyAct>();
-        List<LimitBuyAct> response = limitBuyActMapper.getLimitBuyActPage(entity);
         Integer count = limitBuyActMapper.getLimitBuyActPageCount(entity);
+        List<LimitBuyAct> response = limitBuyActMapper.getLimitBuyActPage(entity);
         pageBody.setTotal(count);
         pageBody.setRows(response);
         pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);

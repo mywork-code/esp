@@ -1,5 +1,6 @@
 package com.apass.esp.web.activity;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,23 +10,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActView;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
+import com.apass.esp.domain.enums.LimitBuyStatus;
+import com.apass.esp.domain.enums.StartTime;
 import com.apass.esp.service.activity.LimitBuyActService;
 import com.apass.esp.service.activity.LimitGoodsSkuService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 @Controller
 @RequestMapping(value = "/activity/limitBuyActContro")
 public class LimitBuyActController {
@@ -39,7 +45,7 @@ public class LimitBuyActController {
      */
     @RequestMapping("/limitBuyPage")
     public String limitBuyPage() {
-        return "";
+        return "activity/limitBuy";
     }
     /**
      * 限时购活动列表查询
@@ -60,6 +66,52 @@ public class LimitBuyActController {
             respBody.setMsg("限时购活动列表查询失败");
         }
         return respBody;
+    }
+    /**
+     * 活动开始时间下拉框
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getStartTimeDorp", method = RequestMethod.GET)
+    public List<Kvattr> getStartTimeDorp() {
+        try{
+            List<Kvattr> list = new ArrayList<Kvattr>();
+            StartTime [] arrtime = StartTime.values();
+            for(int i = 0;i<arrtime.length;i++){
+                StartTime time = arrtime[i];
+                Kvattr kv = new Kvattr();
+                kv.setKey(time.getKey());
+                kv.setValue(time.getValue());
+                list.add(kv);
+            }
+            return list;
+        }catch (Exception e) {
+            LOGGER.error("活动开始时间下拉框载入失败!", e);
+            return null;
+        }
+    }
+    /**
+     * 活动状态下拉框
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getStatusDorp", method = RequestMethod.GET)
+    public List<Kvattr> getStatusDorp() {
+        try{
+            List<Kvattr> list = new ArrayList<Kvattr>();
+            LimitBuyStatus [] arrstatus = LimitBuyStatus.values();
+            for(int i = 0;i<arrstatus.length;i++){
+                LimitBuyStatus status = arrstatus[i];
+                Kvattr kv = new Kvattr();
+                kv.setKey(status.getKey());
+                kv.setValue(status.getValue());
+                list.add(kv);
+            }
+            return list;
+        }catch (Exception e) {
+            LOGGER.error("活动状态下拉框载入失败!", e);
+            return null;
+        }
     }
     /**
      * 限时购活动新增   上传限时购商品列表

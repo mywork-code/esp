@@ -5,28 +5,28 @@
     <sql id="QueryConditionSql">
         <where>
             <if test="status!=null and status!=''">
-                AND status = '#{status}'
-            </if>
-            <if test="startDate!=null and startDate!=''">
-                AND start_date = '#{startDate}'
+                AND status = #{status,jdbcType=VARCHAR}
             </if>
             <if test="startDay!=null and startDay!=''">
-                AND to_char(start_date,'yyyy-MM-dd') LIKE '%${startDay}%'
+                <![CDATA[AND start_date > #{startDayBefore}]]>
             </if>
-            <if test="startTime!=null and startTime!=''">
-                AND to_char(start_date,'HH:mm:ss') LIKE '%${startTime}%'
+            <if test="startDay!=null and startDay!=''">
+                <![CDATA[AND start_date < #{startDayAfter}]]>
             </if>
+            <!-- <if test="startTime!=null and startTime!=''">
+                AND start_time = #{startTime}
+            </if> -->
         </where>
     </sql>
     <!-- 分页查询 -->
     <select id="getLimitBuyActPage" resultMap="BaseResultMap" 
-        parameterType="com.apass.esp.domain.entity.LimitBuyAct">
+        parameterType="com.apass.esp.domain.entity.activity.LimitBuyActVo">
         SELECT 
             <include refid="Base_Column_List" />
         FROM t_esp_limit_buy_act
             <include refid="QueryConditionSql" />
         <![CDATA[ 
-         ORDER BY created_time desc
+        ORDER BY created_time desc
         ]]>
         <if test="startRecordIndex != null">
             <include refid="PAGINATION.MYSQL_PAGINATION" />
@@ -34,7 +34,7 @@
     </select>
     <!-- 分页查询数量 -->
     <select id ="getLimitBuyActPageCount" resultType="java.lang.Integer"
-        parameterType="com.apass.esp.domain.entity.LimitBuyAct">
+        parameterType="com.apass.esp.domain.entity.activity.LimitBuyActVo">
         SELECT COUNT(*) FROM t_esp_limit_buy_act
         <include refid="QueryConditionSql" />
     </select>
@@ -56,5 +56,6 @@
         <if test="status!=null and status!=''"> AND status = '#{status}' </if>
         <if test="startDate!=null and startDate!=''"> AND start_date = '#{startDate}' </if>
         <if test="endDate!=null and endDate!=''"> AND end_date = '#{endDate}' </if>
+        <if test="startTime!=null and startTime!=''"> AND start_time = #{startTime}</if>
     </select>
 </mapper>

@@ -1,26 +1,26 @@
 package com.apass.esp.domain.entity.activity;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.Date;
 import com.apass.esp.domain.entity.LimitBuyAct;
 public class LimitBuyActVo extends LimitBuyAct{
     private String startDay;
-    private String startTime;
-//    private MultipartFile file;
     public String getStartDay() {
         return startDay;
     }
     public void setStartDay(String startDay) {
         this.startDay = startDay;
     }
-    public String getStartTime() {
-        return startTime;
+    private Date startDayBefore;
+    private Date startDayAfter;
+    public Date getStartDayBefore() {
+        return startDayBefore;
     }
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setStartDayBefore(Date startDayBefore) {
+        this.startDayBefore = startDayBefore;
     }
-//    public MultipartFile getFile() {
-//        return file;
-//    }
-//    public void setFile(MultipartFile file) {
-//        this.file = file;
-//    }
+    public Date getStartDayAfter() {
+        return startDayAfter;
+    }
+    public void setStartDayAfter(Date startDayAfter) {
+        this.startDayAfter = startDayAfter;
+    }
 }
