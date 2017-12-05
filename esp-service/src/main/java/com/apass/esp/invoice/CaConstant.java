@@ -47,10 +47,4 @@ public final class CaConstant {
     return rootClassPath + getProperty(key);
   }
 
-  public static void main(String[] args) {
-    final String trustsBytes = CaConstant.getProperty("PUBLIC_TRUSTS");
-    String decryptPFXBytes = CaConstant.getProperty("CLIENT_DECRYPTPFX");
-    System.out.println(trustsBytes);
-    System.out.println(decryptPFXBytes);
-  }
 }
