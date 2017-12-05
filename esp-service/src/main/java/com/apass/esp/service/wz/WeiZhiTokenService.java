@@ -11,6 +11,7 @@ import com.apass.esp.third.party.weizhi.client.WeiZhiConstants;
 import com.apass.esp.third.party.weizhi.client.WeiZhiTokenClient;
 import com.apass.esp.third.party.weizhi.entity.TokenEntity;
 import com.apass.gfb.framework.cache.CacheManager;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 
 @Service
 public class WeiZhiTokenService {
@@ -53,10 +54,15 @@ public class WeiZhiTokenService {
 	 */
 	public String getTokenFromRedis() throws Exception {
 		String token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
-		if (null == token || StringUtils.isBlank(token)) {
-			getToken();
-			token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+		if(StringUtils.isNotBlank(token)){
+			String expiredTime = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME);
+			Date date = DateFormatUtil.string2date(expiredTime, "");
+			if(null != date && date.getTime() >  new Date().getTime()){
+				return token;
+			}
 		}
+		getToken();
+		token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
 		return token;
 	}
 }
