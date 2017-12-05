@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.apass.esp.domain.dto.logistics.JdTrack;
 import com.apass.esp.domain.dto.logistics.LogisticsResponseDto;
+import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.entity.datadic.DataDicInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
@@ -276,7 +278,7 @@ public class OrderQueryController {
             if(null == order){
             	throw new BusinessException("所查询订单不存在!");
             }
-            String logisticsName = SourceType.WZ.getCode();
+            String logisticsName = SourceType.JD.getCode();
             if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
             	orderSubInfoEntity.setLogisticsNo(order.getLogisticsNo());
             	logisticsName = order.getLogisticsName();
@@ -301,6 +303,10 @@ public class OrderQueryController {
                     .get("logisticInfo");
                 if(StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
                 	orderSubInfoEntity.setLogisticsNo(logisticsResponseDto.getLogisticCode());
+                	if(CollectionUtils.isNotEmpty(logisticsResponseDto.getTraces())){
+                		List<Trace> getTraces = logisticsResponseDto.getTraces();
+                		orderSubInfoEntity.setTrackMessage(getTraces.get(0).getAcceptStation());
+                	}
                 }
                 orderSubInfoEntity.setLogisticsStatus(logisticsResponseDto.getState());
                 String signTime = String.valueOf(signleTrackingsMap.get("signTime"));

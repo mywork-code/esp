@@ -340,6 +340,12 @@ $ (function ()
 			                field : 'logisticsStatus',
 			                width : 100,
 			                align : 'center'
+			            },
+			            {
+			                title : '物流信息',
+			                field : 'trackMessage',
+			                width : 150,
+			                align : 'center'
 			            }
 			    ]
 		    ],

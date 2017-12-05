@@ -83,7 +83,7 @@ public class JdLogisticsService {
             logisticInfo.setLogisticCode(track.getTrackId());
             String signTime = "";
             if(CollectionUtils.isNotEmpty(traces)){
-            	signTime = traces.get(traces.size() - 1).getAcceptTime();//获取物流信息的最后一个时间节点
+            	signTime = traces.get(0).getAcceptTime();//获取物流信息的最后一个时间节点
             }
             resultMap.put("signTime", signTime);//签收时间
             logisticInfo.setSuccess(true);
