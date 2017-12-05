@@ -962,19 +962,18 @@ public class ShopHomeController {
 					|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
 				goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
 			}
-			returnMap.put("status", goodsInfo.getStatus());
+//			returnMap.put("status", goodsInfo.getStatus());
 			String externalId = goodsInfo.getExternalId();// 外部商品id
 			// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
 			if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
-				returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());// 商品下架
+				goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());// 商品下架
 			}
 			// 商品规格
 			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
 			if (jdGoodsStockInfoList.size() == 1) {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-				returnMap.put("goodsPrice", price);// 商品价格
-				returnMap.put("goodsPriceFirstPayment",
-						(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
+				goodsInfo.setGoodsPrice(price);
+				goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			}
 			if (SourceType.JD.getCode().equals(goodsInfo.getSource())
 					|| SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
@@ -1000,15 +999,16 @@ public class ShopHomeController {
 				jdSimilarSkuVo.setGoodsId(goodsId.toString());
 				jdSimilarSkuVo.setSkuId(externalId);
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-				BigDecimal price = (BigDecimal) returnMap.get("goodsPrice");
-				BigDecimal goodsPriceFirstPayment = (BigDecimal) returnMap.get("goodsPriceFirstPayment");
-				jdSimilarSkuVo.setPrice(price);
-				jdSimilarSkuVo.setPriceFirst(goodsPriceFirstPayment);
+				jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
+				jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
 				jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
 				jdSimilarSkuTo.setSkuIdOrder("");
 				jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
 				JdSimilarSkuToList.add(jdSimilarSkuTo);
 			}
+			returnMap.put("status", goodsInfo.getStatus());// 商品下架
+			returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
+			returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
 			// 添加活动id
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
