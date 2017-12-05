@@ -959,6 +959,9 @@ public class OrderService {
                     orderDetail.setGoodsLogoUrl(goodsStock.getStockLogo());
                     orderDetail.setMerchantCode(merchantCode);
                     orderDetail.setListTime(goods.getListTime());
+                    if(null == goods.getDelistTime()){
+                    	goods.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                    }
                     orderDetail.setDelistTime(goods.getDelistTime());
                     orderDetail.setProDate(goods.getProDate());
                     orderDetail.setKeepDate(goods.getKeepDate());
@@ -1091,6 +1094,10 @@ public class OrderService {
                 orderDetail.setGoodsLogoUrl(goodsStock.getStockLogo());
                 orderDetail.setMerchantCode(goods.getMerchantCode());
                 orderDetail.setListTime(goods.getListTime());
+                if(null == goods.getDelistTime()){
+                	goods.setDelistTime(DateFormatUtil.string2date("1900-01-01 00:00:00",""));
+                }
+                orderDetail.setDelistTime(goods.getDelistTime());
                 orderDetail.setDelistTime(goods.getDelistTime());
                 orderDetail.setProDate(goods.getProDate());
                 orderDetail.setKeepDate(goods.getKeepDate());
