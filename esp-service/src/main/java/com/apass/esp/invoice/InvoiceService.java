@@ -387,7 +387,7 @@ public class InvoiceService {
             s = invoiceIssueService.requestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         } catch (Exception e) {
             LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,接口返回:"+s);
-            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,异常详情:"+e.getMessage());
+            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,异常详情:",e);
             updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
             return false;
         }
