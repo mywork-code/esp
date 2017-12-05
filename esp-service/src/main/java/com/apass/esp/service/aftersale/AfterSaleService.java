@@ -174,7 +174,8 @@ public class AfterSaleService {
         }
 
         /** 3. 校验 服务端计算的退货金额 与 页面传过来的是否一致 */
-        if (operate.equals(YesNo.NO.getCode()) && refundAmt.compareTo(returnPriceVal) != 0) {
+        if (operate.equals(YesNo.NO.getCode()) && (refundAmt.compareTo(returnPriceVal) != 0
+        && refundAmt.subtract(returnPriceVal).abs().floatValue() != 0.01f) ) {
             LOG.info(requestId, "退货金额计算错误", String.valueOf(refundAmt));
             throw new BusinessException("退货金额错误", BusinessErrorCode.PARAM_VALUE_ERROR);
         }
@@ -327,7 +328,7 @@ public class AfterSaleService {
         RefundInfoEntity refundInfo = new RefundInfoEntity();
         refundInfo.setOrderId(orderInfo.getOrderId());
         refundInfo.setOrderAmt(orderInfo.getOrderAmt());
-        refundInfo.setRefundAmt(refundAmt);
+        refundInfo.setRefundAmt(returnPriceVal);
         refundInfo.setJdReturnType(jdReturnType);
         // Yes-1:换货 No-0:退货
         refundInfo.setRefundType(operate);
