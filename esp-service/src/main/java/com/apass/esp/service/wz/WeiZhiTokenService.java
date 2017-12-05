@@ -1,5 +1,8 @@
 package com.apass.esp.service.wz;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +28,18 @@ public class WeiZhiTokenService {
 	public String getToken() throws Exception {
 		TokenEntity token = weiZhiTokenClient.getToken();
 		if (null != token && StringUtils.isNotEmpty(token.getAccess_token())) {
-			// 将token和其有效期存放到redies中
-			cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN,
-					token.getAccess_token(),WeiZhiConstants.TOKEN_EXPIRED);
-			cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME,
-					token.getExpired_time());
-			
+			//计算Token在redis中的有效期（time=微知有效时间-当前时间）
+			String weiZhitokenExpired=token.getExpired_time();
+			SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+			Date date = format.parse(weiZhitokenExpired);
+			long tokenExpired=date.getTime()-new Date().getTime();
+			if(tokenExpired>0){
+				// 将token和其有效期存放到redies中
+				cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN,
+						token.getAccess_token(),(int)tokenExpired);
+				cacheManager.set(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.EXPIRED_TIME,
+						token.getExpired_time());
+			}
 			return "success";
 		}
 		return "fail";
