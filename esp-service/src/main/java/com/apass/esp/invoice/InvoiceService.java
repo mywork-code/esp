@@ -7,6 +7,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
+import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.repository.refund.RefundDetailInfoRepository;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +65,10 @@ public class InvoiceService {
     private DownloadInvoiceExecutor downloadInvoice;
     @Autowired
     private CustomerServiceClient customerServiceClient;
+    @Autowired
+    private OrderRefundRepository orderRefundRepository;
+    @Autowired
+    private RefundDetailInfoRepository refundDetailInfoRepository;
 
     @Autowired
     private GoodsService goodsService;
@@ -338,7 +347,7 @@ public class InvoiceService {
             GoodsInfoEntity goods = goodsService.selectByGoodsId(de.getGoodsId());
             FaPiaoKJXM faPiaoKJXM = new FaPiaoKJXM();
             faPiaoKJXM.setXmmc(de.getGoodsName());
-            faPiaoKJXM.setXmsl(de.getGoodsNum().toString());
+
             faPiaoKJXM.setHsbz("1");
             faPiaoKJXM.setFphxz("0");
             BigDecimal xmdj = BigDecimal.ZERO;
@@ -365,7 +374,18 @@ public class InvoiceService {
                 faPiaoKJXM.setSpbm(goodsCode + zeroStr);
             }
             faPiaoKJXM.setYhzcbs("0");
-            BigDecimal xmje = de.getGoodsPrice().multiply(new BigDecimal(de.getGoodsNum())).subtract(totalDis);
+            //这里需要考虑售后完成退货问题
+            Map<String,Object> refundParams = new HashMap<>();
+            refundParams.put("refundType","0");
+            refundParams.put("orderId",de.getOrderId());
+            RefundInfoEntity orderRefund = orderRefundRepository.queryRefundInfoByOrderIdAndRefundType(refundParams);
+            Long goodsNum = de.getGoodsNum();
+           if(orderRefund != null && orderRefund.getStatus().equals(RefundStatus.REFUND_STATUS05.getCode())){
+               List<RefundDetailInfoEntity> refundDetailInfoEntityList =  refundDetailInfoRepository.getRefundDetailByOrderDetailId(de.getId());
+               goodsNum = goodsNum - refundDetailInfoEntityList.get(0).getGoodsNum();
+           }
+            faPiaoKJXM.setXmsl(goodsNum.toString());
+            BigDecimal xmje = new BigDecimal(faPiaoKJXM.getXmdj()).multiply(new BigDecimal(goodsNum));
             faPiaoKJXM.setXmje(xmje.toString());
             faPiaoKJXM.setSl("0.17");
             faPiaoKJXM = (FaPiaoKJXM) FarmartJavaBean.farmartJavaB(faPiaoKJXM, FaPiaoKJXM.class);

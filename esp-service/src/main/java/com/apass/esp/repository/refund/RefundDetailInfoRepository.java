@@ -30,4 +30,9 @@ public class RefundDetailInfoRepository extends BaseMybatisRepository<RefundDeta
     	map.put("orderId", orderId);
     	return getSqlSession().selectList(getSQL("select"), map);
     }
+    public List<RefundDetailInfoEntity> getRefundDetailByOrderDetailId(Long orderDetailId){
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("orderDetailId", orderDetailId);
+        return getSqlSession().selectList(getSQL("select"), map);
+    }
 }
