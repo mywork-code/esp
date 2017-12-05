@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LimitGoodsSkuMapper" >
+    <select id="getLimitGoodsSkuList" resultType="com.apass.esp.domain.entity.LimitGoodsSku">
+        <![CDATA[
+        SELECT
+            id id,
+            limit_buy_act_id limitBuyActId,
+            goods_id goodsId,
+            sku_id skuId,
+            market_price marketPrice,
+            activity_price activityPrice,
+            limit_num_total limitNumTotal,
+            limit_num limitNum,
+            sort_no sortNo,
+            url url,
+            sku_id skuId,
+            create_user createUser,
+            update_user updateUser,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_limit_goods_sku
+        WHERE 1=1
+        ]]>
+        <if test="limitBuyActId!=null and limitBuyActId!=''"> AND limit_buy_act_id = '#{limitBuyActId}' </if>
+        <if test="goodsId!=null and goodsId!=''"> AND goods_id = '#{goodsId}' </if>
+        <if test="skuId!=null and skuId!=''"> AND sku_id = '#{skuId}' </if>
+        <![CDATA[ 
+            ORDER BY sort_no desc
+        ]]>
+    </select>
+</mapper>

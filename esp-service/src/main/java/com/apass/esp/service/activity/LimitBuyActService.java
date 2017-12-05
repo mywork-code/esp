@@ -1,14 +1,20 @@
 package com.apass.esp.service.activity;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitGoodsSku;
+import com.apass.esp.domain.entity.activity.LimitBuyActView;
+import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 限时购活动活动
  * @author wht
@@ -16,9 +22,10 @@ import com.apass.gfb.framework.utils.BaseConstants;
  */
 @Service
 public class LimitBuyActService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LimitBuyActService.class);
     @Autowired
     public LimitBuyActMapper limitBuyActMapper;
+    @Autowired
+    public LimitGoodsSkuService limitGoodsSkuService;
     /**
      * CREATE
      * @param entity
@@ -79,12 +86,17 @@ public class LimitBuyActService {
         return limitBuyActMapper.deleteByPrimaryKey(id);
     }
     /**
-     * 商品属性查询
+     * 限时购活动查询
      * @param entity
      * @param page
      * @return
      */
-    public ResponsePageBody<LimitBuyAct> getLimitBuyActPage(LimitBuyAct entity) {
+    public ResponsePageBody<LimitBuyAct> getLimitBuyActPage(LimitBuyActVo entity) {
+        Boolean falg = StringUtils.isAnyBlank(entity.getStartDay(),entity.getStartTime());
+        if(!falg){
+            String date = entity.getStartDay()+" "+entity.getStartTime();
+            entity.setStartDate(DateFormatUtil.string2date(date, null));
+        }
         ResponsePageBody<LimitBuyAct> pageBody = new ResponsePageBody<LimitBuyAct>();
         List<LimitBuyAct> response = limitBuyActMapper.getLimitBuyActPage(entity);
         Integer count = limitBuyActMapper.getLimitBuyActPageCount(entity);
@@ -92,5 +104,105 @@ public class LimitBuyActService {
         pageBody.setRows(response);
         pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
         return pageBody;
+    }
+    /**
+     * 限时购活动新增 
+     * 限时购活动开始日期验证  有没有相同时间活动
+     * 验证通过    
+     * 1。 限时购活动 保存    2。 限时购商品列表  保存
+     * @param buyActView
+     * @return
+     * @throws BusinessException 
+     */
+    public Response addLimitBuyAct(LimitBuyActView buyActView) throws BusinessException {
+        LimitBuyAct entity = new LimitBuyAct();
+        entity.setStartDate(buyActView.getStartDate());
+        List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
+        if(list!=null&&list.size()>0){
+            throw new BusinessException("该活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+        }
+        BeanUtils.copyProperties(buyActView, entity);
+        Long actId =null;
+        if((actId = createEntity(entity))==null){
+            throw new BusinessException("限时购活动保存失败!");
+        }
+        List<LimitGoodsSku> skulist = buyActView.getList();
+        if(skulist.size()>10){
+            throw new BusinessException("每个限时购活动商品数量最多录入10个!");
+        }
+        Long sortNo = 0L;
+        for(LimitGoodsSku sku : skulist){
+            sku.setLimitBuyActId(actId);
+            sku.setSortNo(++sortNo);
+            if(limitGoodsSkuService.createEntity(sku)==null){
+                throw new BusinessException("限时购活动商品保存失败!");
+            }
+        }
+        return Response.success("限时购活动新增成功！");
+    }
+    /**
+     * 限时购活动修改 
+     * 限时购活动开始日期验证  有没有相同时间活动
+     * 验证通过    
+     * 1。 限时购活动 保存    2。 限时购商品列表  保存
+     * @param buyActView
+     * @return
+     * @throws BusinessException 
+     */
+    @SuppressWarnings("unused")
+    public Response editLimitBuyAct(LimitBuyActView buyActView) throws BusinessException {
+        LimitBuyAct entity = new LimitBuyAct();
+        entity.setStartDate(buyActView.getStartDate());
+        List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
+        if(list!=null&&list.size()>0){
+            throw new BusinessException("该活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+        }
+        BeanUtils.copyProperties(buyActView, entity);
+        LimitBuyAct actupdate =null;
+        if((actupdate = updatedEntity(entity))==null){
+            throw new BusinessException("限时购活动修改失败!");
+        }
+        Long actId =entity.getId();
+        List<LimitGoodsSku> skulist = buyActView.getList();
+        if(skulist.size()>10){
+            throw new BusinessException("每个限时购活动商品数量最多录入10个!");
+        }
+        Long sortNo = 0L;
+        for(LimitGoodsSku sku : skulist){
+            sku.setLimitBuyActId(actId);
+            sku.setSortNo(++sortNo);
+            if(sku.getId()==null){
+                if(limitGoodsSkuService.createEntity(sku)==null){
+                    throw new BusinessException("限时购活动商品保存失败!");
+                }
+            }else{
+                if(limitGoodsSkuService.updatedEntity(sku)==null){
+                    throw new BusinessException("限时购活动商品修改失败!");
+                }
+            }
+            
+        }
+        return Response.success("限时购活动修改成功！");
+    }
+    /**
+     * 限时购活动修改
+     * 限时购活动商品删除
+     * @param goodsSkuId
+     * @return
+     * @throws BusinessException 
+     */
+    public Response editLimitBuyActDeleteGoods(Long goodsSkuId) throws BusinessException {
+        LimitGoodsSku goodsSku = limitGoodsSkuService.readEntity(goodsSkuId);
+        if(goodsSku==null||goodsSku.getLimitBuyActId()==null){
+            throw new BusinessException("限时购活动商品不存在!");
+        }
+        LimitBuyAct buyAct = this.readEntity(goodsSku.getLimitBuyActId());
+        if(buyAct==null){
+            throw new BusinessException("限时购活动不存在!");
+        }
+        if(limitGoodsSkuService.deleteEntity(goodsSkuId)==1){
+            throw new BusinessException("限时购活动商品删除成功!");
+        }
+        throw new BusinessException("限时购活动商品删除异常!");
     }
 }

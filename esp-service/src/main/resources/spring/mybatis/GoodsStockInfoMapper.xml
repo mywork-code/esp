@@ -407,5 +407,25 @@
         </foreach>
         )  
    </delete>
-   
+   <select id="getStockInfoEntityBySkuId" parameterType="GoodsStockInfoEntity" resultType="GoodsStockInfoEntity">
+    SELECT
+        id id,
+        goods_id goodsId,
+        goods_sku_attr goodsSkuAttr,
+        goods_price goodsPrice,
+        stock_total_amt stockTotalAmt,
+        stock_curr_amt stockCurrAmt,
+        attr_val_ids    attrValIds,
+        create_user createUser,
+        update_user updateUser,
+        create_date createDate,
+        update_date updateDate,
+        market_price marketPrice,
+        goods_Cost_Price goodsCostPrice,
+        stock_Logo stockLogo
+    FROM
+        t_esp_goods_stock_info
+    WHERE 1=1
+        AND sku_id = #{skuId, jdbcType=BIGINT}
+    </select>
 </mapper> 

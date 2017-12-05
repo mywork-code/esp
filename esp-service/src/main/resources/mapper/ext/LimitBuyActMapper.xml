@@ -10,6 +10,12 @@
             <if test="startDate!=null and startDate!=''">
                 AND start_date = '#{startDate}'
             </if>
+            <if test="startDay!=null and startDay!=''">
+                AND to_char(start_date,'yyyy-MM-dd') LIKE '%${startDay}%'
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                AND to_char(start_date,'HH:mm:ss') LIKE '%${startTime}%'
+            </if>
         </where>
     </sql>
     <!-- 分页查询 -->

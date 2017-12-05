@@ -160,4 +160,12 @@ public class GoodsStockInfoService {
     public Integer insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
         return goodsStockDao.insertGoodsAttr(goodsStockentoty);
     }
+    /**
+     * getStockInfoEntityBySkuId
+     * @param skuId
+     * @return
+     */
+    public GoodsStockInfoEntity getStockInfoEntityBySkuId(String skuId) {
+        return goodsStockDao.getStockInfoEntityBySkuId(skuId);
+    }
 }
