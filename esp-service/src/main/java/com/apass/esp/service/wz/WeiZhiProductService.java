@@ -169,7 +169,7 @@ public class WeiZhiProductService {
 	public List<String> getWeiZhiSingleProductSkuImage(String sku, String type) throws Exception {
 		List<String> list = new ArrayList<>();
 		Map<String, List<WzPicture>> map = weiZhiProductApiClient.getWeiZhiProductSkuImage(sku);
-		if (null != map) {
+		if (null != map && !map.isEmpty()) {
 			List<WzPicture> listWzPicture = map.get(sku);
 			for (WzPicture wzPicture : listWzPicture) {
 				if (wzPicture.getIsPrimary() == 1) {
