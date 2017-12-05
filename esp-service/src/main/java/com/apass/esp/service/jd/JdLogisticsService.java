@@ -34,6 +34,7 @@ import com.apass.esp.service.logistics.LogisticsService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 
 @Service
@@ -99,7 +100,7 @@ public class JdLogisticsService {
             goodsNum += orderDetail.getGoodsNum();
         }
         if (CollectionUtils.isNotEmpty(orderDetailList)) {
-            resultMap.put("logoInfo", imageService.getImageUrl(orderDetailList.get(0).getGoodsLogoUrl())); //图片logo
+            resultMap.put("logoInfo", "http://img13.360buyimg.com/n1/"+orderDetailList.get(0).getGoodsLogoUrl()); //图片logo
         }
         resultMap.put("goodsNum", goodsNum);
         resultMap.put("logisticMerchant", "京东物流"); //物流商户

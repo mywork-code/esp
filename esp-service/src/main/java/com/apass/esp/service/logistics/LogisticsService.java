@@ -56,6 +56,7 @@ import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 
 @Service
 public class LogisticsService {
@@ -471,16 +472,18 @@ public class LogisticsService {
 		} catch (Exception e) {}
     	List<Trace> trackList = new ArrayList<>();
     	if(null != ss){
-    		for (TrackData data : ss.getTackList()) {
-        		Trace tack = new Trace();
-        		tack.setAcceptTime(data.getMsgTime());
-        		tack.setAcceptStation(data.getContent());
-        		tack.setRemark(data.getOperator());
+    		for(int i = 0;i < ss.getTackList().size(); i++){
+    			Map<String,String> map = (Map) ss.getTackList().get(i);
+    			Trace tack = new Trace();
+        		tack.setAcceptTime(map.get("msgTime"));
+        		tack.setAcceptStation(map.get("content"));
+        		tack.setRemark(map.get("operator"));
         		trackList.add(tack);
     		}
     	}
     	
     	com.apass.esp.third.party.weizhi.response.Track t = new com.apass.esp.third.party.weizhi.response.Track();
+    	Collections.reverse(trackList);
     	t.setTraceList(trackList);
     	t.setTrackId(null == ss ? "" : ss.getTrackId());
     	return t;
