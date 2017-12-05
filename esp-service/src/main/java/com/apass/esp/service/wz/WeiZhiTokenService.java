@@ -31,8 +31,10 @@ public class WeiZhiTokenService {
 		if (null != token && StringUtils.isNotEmpty(token.getAccess_token())) {
 			//计算Token在redis中的有效期（time=微知有效时间-当前时间）
 			String weiZhitokenExpired=token.getExpired_time();
-			SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-			Date date = format.parse(weiZhitokenExpired);
+			Date date = DateFormatUtil.string2date(weiZhitokenExpired, "");
+			if(null ==date){
+				return "fail";
+			}
 			long tokenExpired=date.getTime()-new Date().getTime();
 			if(tokenExpired>0){
 				// 将token和其有效期存放到redies中
