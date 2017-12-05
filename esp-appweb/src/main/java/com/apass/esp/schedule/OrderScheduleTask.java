@@ -105,7 +105,7 @@ public class OrderScheduleTask {
      * 订单交易完成7天后   1小时一次
      * 开具发票  《监控无售后交易》
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void findCompelateOrder() {
         List<OrderInfoEntity> list = orderInfoDao.findCompelateOrder();
         for (OrderInfoEntity order : list) {
@@ -130,7 +130,7 @@ public class OrderScheduleTask {
      * 售后完成的订单1天后   开具发票  《监控有售后交易》
      * sprint12:售后失败的退换货，订单状态改为交易完成
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void handleReturningOrders(){
         try {
             orderRefundService.handleReturningOrders();
