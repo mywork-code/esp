@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
-import com.apass.esp.domain.entity.activity.LimitBuyActView;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -118,7 +117,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response addLimitBuyAct(LimitBuyActView buyActView) throws BusinessException {
+    public Response addLimitBuyAct(LimitBuyActVo buyActView) throws BusinessException {
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
@@ -154,7 +153,7 @@ public class LimitBuyActService {
      * @throws BusinessException 
      */
     @SuppressWarnings("unused")
-    public Response editLimitBuyAct(LimitBuyActView buyActView) throws BusinessException {
+    public Response editLimitBuyAct(LimitBuyActVo buyActView) throws BusinessException {
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);

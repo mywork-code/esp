@@ -12,7 +12,6 @@
     <!-- 初始查询页面 -->
     <div id="commonLayer">
 	    <div id="tb">
-	        <div class="search">
 	            <table>
 	                <tr>
                         <td style="width: 100px; text-align:right">活动开始日期：</td>
@@ -34,7 +33,6 @@
 		                </td>
 	                </tr>
 	            </table>
-	        </div>
 	    </div>
 	    <div id="limitBuyActPage"></div>
     </div>
@@ -48,13 +46,13 @@
                 <tr>
                     <td width="20%" align="right"><font color="red">*</font>活动开始日期：</td>
                     <td colspan="1">
-                        <input id="startDayAdd" name="startDay" class="easyui-datebox" style="width: 120px" editable="false"/>
+                        <input id="startDayAdd" name="startDayAdd" class="easyui-datebox" style="width: 120px" editable="false"/>
                     </td>
                 </tr>
                 <tr>
                     <td width="20%" align="right"><font color="red">*</font>活动开始时间：</td>
                     <td colspan="1">
-                        <input id="startTimeAdd" name="startTime" class="easyui-combobox" style="width:120px" editable="false">
+                        <input id="startTimeAdd" name="startTimeAdd" class="easyui-combobox" style="width:120px" editable="false">
                     </td>
                 </tr>
                 <tr>
@@ -98,6 +96,44 @@
                     <td colspan="8">
                        <a href="javascript:void(0);" id="upLoadGoodsFromSumbit" style="margin-right: 30px;" class="easyui-linkbutton">确定</a>
                        <a href="javascript:void(0);" id="upLoadGoodsFromCancle" style="margin-right: 50px;" class="easyui-linkbutton">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <!-- 限时购活动维护页面上传商品列表   后续维护商品列表限购数量   上传限时购商品URL -->
+    <div id="editGoods" class="easyui-window" title="<font color='black'>商品活动信息维护</font>"
+    hidden="hidden" style="width: 350px; height: 200px; display: none; text-align: center;"
+    data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+        <form id="editGoodsFrom"  method="POST" enctype="multipart/form-data" modelAttribute="editFile">  
+            <table class="details_table" style="margin-top: 20px;">
+                <input type="hidden" id = "limitGoodsSkuId" name = "limitGoodsSkuId"/>
+                <tr>
+                    <td width="20%" align="right" valign="top" width=""><font color="red">*</font>限购总量:</td>
+                    <td colspan="3" width="60%">
+                        <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="limitNumTotalAdd" name="limitNumTotalAdd" required="true" missingMessage="1~999之间的正整数" style="width: 90%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right" valign="top" width=""><font color="red">*</font>单人限购:</td>
+                    <td colspan="3" width="60%">
+                        <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="limitNumAdd" name="limitNumAdd" required="true" missingMessage="1~999之间的正整数" style="width: 90%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right" valign="top" width=""><font color="red">*</font>缩略图:</td>
+                    <td colspan="3" width="60%">
+                        <input width="20%" type="file" id="editGoodsFile" name="upLoadGoodsFile"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><span style="color:red;margin-right: 40px;">支持格式：.xls,.exls;大小：≤3096kb</span></td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                       <a href="javascript:void(0);" id="editGoodsFromSumbit" style="margin-right: 30px;" class="easyui-linkbutton">确定</a>
+                       <a href="javascript:void(0);" id="editGoodsFromCancle" style="margin-right: 50px;" class="easyui-linkbutton">取消</a>
                     </td>
                 </tr>
             </table>

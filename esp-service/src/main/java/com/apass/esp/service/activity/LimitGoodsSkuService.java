@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
@@ -102,22 +101,28 @@ public class LimitGoodsSkuService {
      * @param list
      * @return
      */
-    public Response findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
         for(LimitGoodsSku entity : list){
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
-            BeanUtils.copyProperties(entity, vo);
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
-            BeanUtils.copyProperties(stock, vo);
             GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
-            BeanUtils.copyProperties(goods, vo);
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+            //复制商品表
+            BeanUtils.copyProperties(goods, vo);
+            vo.setId(null);
+            //复制库存表
+            vo.setStockCurrAmt(stock.getStockCurrAmt());
+            //复制导入数据
+            vo.setActivityPrice(entity.getActivityPrice());
+            vo.setSkuId(entity.getSkuId());
+            //复制类目名称数据
             vo.setCategoryId1Name(cate.getCategoryName());
             vo.setSortNo(++sortNo);
             skuvolist.add(vo);
         }
-        return Response.success("限时购活动导入商品成功", skuvolist);
+        return skuvolist;
     }
     /**
      * 
