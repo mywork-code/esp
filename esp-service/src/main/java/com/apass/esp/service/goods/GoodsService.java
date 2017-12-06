@@ -144,7 +144,7 @@ public class GoodsService {
     	 List<GoodsBasicInfoEntity> goodsList=result.getDataList();
     	 for (GoodsBasicInfoEntity goodsBasicInfoEntity : goodsList) {
     		 Map<String,Object> map=goodsDao.selectMinGoodsStockByGoodsId(goodsBasicInfoEntity.getGoodId());
-    		 Long goodsStockId=(Long) map.get("goodsStockId");
+    		 Long goodsStockId=(Long) map.get("goodsStockId"); 
     		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
     		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
     		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
