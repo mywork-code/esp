@@ -690,140 +690,81 @@
         WHERE ID =  #{id, jdbcType=BIGINT}
     ]]>
     </update>
-
+    <!--根据goodsId查询goodsStockId中价格最低的规格商品  -->
+	<select id="selectMinGoodsStockByGoodsId" parameterType="Long" resultType="Map" >
+			SELECT
+			id goodsStockId,
+			MIN(goods_price) goodsPrice
+		FROM
+			t_esp_goods_stock_info
+		WHERE
+			goods_id = #{value}
+		GROUP BY
+			goods_id
+	</select>
     <!-- 加载 首页精选商品 -->
     <select id="loadRecommendGoods"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
         SELECT
-            a.ID goodId,
-            c.goodsStockId goodsStockId,
-            a.goods_name goodsName,
-            a.goods_title goodsTitle,
-            a.goods_sell_pt goodsSellPt,
-            a.goods_sift_url goodsSiftUrl,
-            a.goods_logo_url  goodsLogoUrl,
-            c.minPrice goodsPrice,
-            a.source   source
-        FROM
-            t_esp_goods_base_info a,
-         (
-            SELECT
-                a.goods_id goodsId,
-                a.id goodsStockId,
-                b.minprice minPrice
-            FROM
-                t_esp_goods_stock_info a,
-                (
-                    SELECT
-                        goods_id goodsId,
-                        MIN(goods_price) minprice
-                    FROM
-                        t_esp_goods_stock_info
-                    GROUP BY
-                        goods_id
-                ) b
-            WHERE
-                a.goods_id = b.goodsId
-            AND a.goods_price = b.minprice
-            GROUP BY
-                a.goods_id
-        ) c
-        WHERE
-            a.id = c.goodsId
-        AND a.goods_type = '2'
-        AND CURRENT_TIMESTAMP > a.list_time
-        AND a.`status` = 'G02'
-        AND a.is_delete = '01'
-        ORDER BY a.goods_type ASC,a.sift_sort ASC,a.sord_no ASC
-        limit #{pageIndex},#{pageSize}
+				a.ID goodId,
+				a.goods_name goodsName,
+				a.goods_title goodsTitle,
+				a.goods_sell_pt goodsSellPt,
+				a.goods_sift_url goodsSiftUrl,
+				a.goods_logo_url goodsLogoUrl,
+				a.source source
+			FROM
+				t_esp_goods_base_info a
+			WHERE
+				a.goods_type = '2'
+			AND CURRENT_TIMESTAMP > a.list_time
+			AND a.`status` = 'G02'
+			AND a.is_delete = '01'
+			ORDER BY
+				a.sift_sort ASC,
+				a.sord_no ASC
+            limit #{pageIndex},#{pageSize}
     ]]>
     </select>
     <select id="loadRecommendGoodsCount" resultType="java.lang.Integer">
         SELECT COUNT(1) from
         (
-        SELECT
-        a.ID goodId,
-        c.goodsStockId goodsStockId,
-        a.goods_name goodsName,
-        a.goods_title goodsTitle,
-        a.goods_sell_pt goodsSellPt,
-        a.goods_sift_url goodsSiftUrl,
-        c.minPrice goodsPrice
-        FROM
-        t_esp_goods_base_info a,
-        (
-        SELECT
-        a.goods_id goodsId,
-        a.id goodsStockId,
-        b.minprice minPrice
-        FROM
-        t_esp_goods_stock_info a,
-        (
-        SELECT
-        goods_id goodsId,
-        MIN(goods_price) minprice
-        FROM
-        t_esp_goods_stock_info
-        GROUP BY
-        goods_id
-        ) b
-        WHERE
-        a.goods_id = b.goodsId
-        AND a.goods_price = b.minprice
-        GROUP BY
-        a.goods_id
-        ) c
-        WHERE
-        a.id = c.goodsId
-        AND a.goods_type = '2'
-        AND CURRENT_TIMESTAMP > a.list_time
-        AND a.`status` = 'G02'
-        AND a.is_delete = '01'
-        )d
+           SELECT
+				a.ID goodId,
+				a.goods_name goodsName,
+				a.goods_title goodsTitle,
+				a.goods_sell_pt goodsSellPt,
+				a.goods_sift_url goodsSiftUrl,
+				a.goods_logo_url goodsLogoUrl,
+				a.source source
+			FROM
+				t_esp_goods_base_info a
+			WHERE
+				a.goods_type = '2'
+			AND CURRENT_TIMESTAMP > a.list_time
+			AND a.`status` = 'G02'
+			AND a.is_delete = '01'
+		)d
     </select>
 
     <!-- 加载 精选商品列表 -->
     <select id="loadRecommendGoodsList"  resultType="com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity">
         <![CDATA[
-        SELECT
-            a.ID goodId,
-            c.goodsStockId goodsStockId,
-            a.goods_name goodsName,
-            a.goods_title goodsTitle,
-            a.goods_sell_pt goodsSellPt,
-            a.goods_logo_url goodsLogoUrl,
-            c.minPrice goodsPrice,
-            a.source   source
-        FROM
-            t_esp_goods_base_info a,
-         (
-            SELECT
-                a.goods_id goodsId,
-                a.id goodsStockId,
-                b.minprice minPrice
-            FROM
-                t_esp_goods_stock_info a,
-                (
-                    SELECT
-                        goods_id goodsId,
-                        MIN(goods_price) minprice
-                    FROM
-                        t_esp_goods_stock_info
-                    GROUP BY
-                        goods_id
-                ) b
-            WHERE
-                a.goods_id = b.goodsId
-            AND a.goods_price = b.minprice
-            GROUP BY
-                a.goods_id
-        ) c
-        WHERE
-            a.id = c.goodsId
-        AND a.goods_type = '2'
-        AND CURRENT_TIMESTAMP > a.list_time
-        AND a.`status` = 'G02'
-        AND a.is_delete = '01'
+         SELECT
+				a.ID goodId,
+				a.goods_name goodsName,
+				a.goods_title goodsTitle,
+				a.goods_sell_pt goodsSellPt,
+				a.goods_sift_url goodsSiftUrl,
+				a.goods_logo_url goodsLogoUrl,
+				a.source source
+			FROM
+				t_esp_goods_base_info a
+			WHERE
+				a.goods_type = '2'
+			AND CURRENT_TIMESTAMP > a.list_time
+			AND a.`status` = 'G02'
+			AND a.is_delete = '01'
         ORDER BY a.update_date DESC
     ]]>
     </select>
