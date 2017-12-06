@@ -1606,10 +1606,10 @@ $(function() {
 			$.messager.alert("提示", "库存总量不能为空！", "info");
 			return;
 		}
-		if (null == stockLogoFile || ("") == stockLogoFile) {
-			$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
-			return;
-		}
+		//if (null == stockLogoFile || ("") == stockLogoFile) {
+		// 	$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
+		// 	return;
+		// }
 		//提交from
 		var theForm = $("#stockInfoFrom");
 		theForm.form({
@@ -1673,10 +1673,10 @@ $(function() {
 			$.messager.alert("提示", "库存总量不能为空！", "info");
 			return;
 		}
-		if (null == stockLogoFile || ("") == stockLogoFile) {
-			$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
-			return;
-		}
+		// if (null == stockLogoFile || ("") == stockLogoFile) {
+		// 	$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
+		// 	return;
+		// }
 		var theForm = $("#editaddstockInfoFrom");
 		theForm.form({
 			url : ctx + '/application/goods/stockinfo/addForLogo',

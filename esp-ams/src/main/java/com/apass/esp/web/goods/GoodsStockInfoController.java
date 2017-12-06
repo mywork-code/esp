@@ -197,17 +197,19 @@ public class GoodsStockInfoController {
             }
             String url = nfsGoods + goodsId + "/" + fileName;
             //缩略图校验
-            boolean checkSiftGoodsImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
-            boolean checkImgType = ImageTools.checkImgType(file);// 类型
-            int size = file.getInputStream().available();// 大小
-            is = file.getInputStream();
-            if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
-            } else if (size > 1024 * 300) {
-                return Response.fail("文件不能大于300kb!");
+            if (!StringUtils.isBlank(file.getOriginalFilename())) {
+                boolean checkSiftGoodsImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
+                boolean checkImgType = ImageTools.checkImgType(file);// 类型
+                int size = file.getInputStream().available();// 大小
+                is = file.getInputStream();
+                if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
+                    return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
+                } else if (size > 1024 * 300) {
+                    return Response.fail("文件不能大于300kb!");
+                }
+                //上传文件
+                FileUtilsCommons.uploadFilesUtil(rootPath, url, stockInfo.getStockLogoFile());
             }
-            //上传文件
-            FileUtilsCommons.uploadFilesUtil(rootPath, url, stockInfo.getStockLogoFile());
             return Response.success("success", url);
         } catch (Exception e) {
             LOGGER.error("上传logo缩略图失败!", e);
