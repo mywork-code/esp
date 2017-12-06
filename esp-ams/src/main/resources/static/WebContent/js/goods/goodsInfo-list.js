@@ -129,7 +129,7 @@ $(function() {
 			return;
     	}
     	if(goodsCateChangeFalg==1){
-    		$.messager.alert("提示", "商品类目未修改，不可维护商品属性！", "info");
+    		$.messager.alert("提示", "禁止编辑商品属性，请更换一级类目后重试！", "info");
 			return;
     	}
     	if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
