@@ -3,13 +3,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,7 +19,6 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
-import com.apass.esp.domain.entity.activity.LimitBuyActView;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.enums.LimitBuyStatus;
@@ -31,7 +30,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 @Controller
 @RequestMapping(value = "/activity/limitBuyActContro")
 public class LimitBuyActController {
@@ -141,29 +139,35 @@ public class LimitBuyActController {
     @ResponseBody
     @RequestMapping(value = "/upLoadLimitGoodsSku")
     @LogAnnotion(operationType = "限时购活动商品上传", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response upLoadLimitGoodsSku(@ModelAttribute("upFile") LimitBuyActVo actvo) {
+    public ResponsePageBody<LimitGoodsSkuVo> upLoadLimitGoodsSku(@ModelAttribute("upFile") LimitBuyActVo actvo) {
+        ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try{
-            List<LimitGoodsSku> list = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
-            return limitGoodsSkuService.findGoodsInfoListBySkuId(list);
+            List<LimitGoodsSku> listsku = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
+            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku);
+            respBody.setTotal(listgoods.size());
+            respBody.setRows(listgoods);
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+            respBody.setMsg("限时购活动商品上传成功!");
         }catch(InvalidFormatException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常,文件内容转换错误!");
+            respBody.setMsg("限时购活动商品上传异常,文件内容转换错误!");
         }catch(IOException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常,载入文件内容错误!");
+            respBody.setMsg("限时购活动商品上传异常,载入文件内容错误!");
         }catch(InstantiationException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常,实例化Document文件异常!");
+            respBody.setMsg("限时购活动商品上传异常,实例化Document文件异常!");
         }catch(IllegalAccessException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常,非法内存占用错误!");
+            respBody.setMsg("限时购活动商品上传异常,非法内存占用错误!");
         }catch(BusinessException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常,"+e.getErrorDesc());
+            respBody.setMsg("限时购活动商品上传异常,"+e.getErrorDesc());
         }catch(Exception e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            return Response.fail("限时购活动商品上传异常！实例化限时购商品列表错误!");
+            respBody.setMsg("限时购活动商品上传异常！实例化限时购商品列表错误!");
         }
+        return respBody;
     }
     /**
      * 限时购活动新增 
@@ -174,17 +178,10 @@ public class LimitBuyActController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/addLimitBuyAct")
+    @RequestMapping(value = "/addLimitBuyAct", method = RequestMethod.POST)
     @LogAnnotion(operationType = "限时购活动新增", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response addLimitBuyAct(LimitBuyActView buyActView) {
+    public Response addLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            Boolean falg = StringUtils.isAnyBlank(buyActView.getStartDay(),buyActView.getStartTime());
-            if(!falg){
-                String date = buyActView.getStartDay()+" "+buyActView.getStartTime();
-                buyActView.setStartDate(DateFormatUtil.string2date(date, null));
-            }else{
-                return Response.fail("限时购活动新增异常,限时购活动开始日期和时间为空!");
-            }
             return limitBuyActService.addLimitBuyAct(buyActView);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
@@ -205,15 +202,8 @@ public class LimitBuyActController {
     @ResponseBody
     @RequestMapping(value = "/editLimitBuyAct")
     @LogAnnotion(operationType = "限时购活动修改", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response editLimitBuyAct(LimitBuyActView buyActView) {
+    public Response editLimitBuyAct(LimitBuyActVo buyActView) {
         try{
-            Boolean falg = StringUtils.isAnyBlank(buyActView.getStartDay(),buyActView.getStartTime());
-            if(!falg){
-                String date = buyActView.getStartDay()+" "+buyActView.getStartTime();
-                buyActView.setStartDate(DateFormatUtil.string2date(date, null));
-            }else{
-                return Response.fail("限时购活动修改异常,限时购活动开始日期和时间为空!");
-            }
             return limitBuyActService.editLimitBuyAct(buyActView);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);

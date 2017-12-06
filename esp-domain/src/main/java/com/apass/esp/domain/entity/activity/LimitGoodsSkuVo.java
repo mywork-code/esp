@@ -7,12 +7,13 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     private String goodsName;//商品名称
     private String goodsCode;//商品编号
     private String merchantName;//商户编号
-    private Long categoryId1;//商品一级分类
-    private String categoryId1Name;//商品一级分类名称
     private String status;//商品状态
     private String statusDesc;//商品状态描述
     private Date listTime;//上下架时间
     private Date delistTime;
+    private Long categoryId1;//商品一级分类
+    //冗余类目名称字段
+    private String categoryId1Name;//商品一级分类名称
     //冗余库存表字段
     private Long stockCurrAmt;//剩余库存
     public String getGoodsName() {

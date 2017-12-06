@@ -1,7 +1,10 @@
 package com.apass.esp.domain.entity.activity;
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitGoodsSku;
 public class LimitBuyActVo extends LimitBuyAct{
     private String startDay;
     public String getStartDay() {
@@ -9,6 +12,13 @@ public class LimitBuyActVo extends LimitBuyAct{
     }
     public void setStartDay(String startDay) {
         this.startDay = startDay;
+    }
+    private List<LimitGoodsSku> list;
+    public List<LimitGoodsSku> getList() {
+        return list;
+    }
+    public void setList(List<LimitGoodsSku> list) {
+        this.list = list;
     }
     private Date startDayBefore;
     private Date startDayAfter;

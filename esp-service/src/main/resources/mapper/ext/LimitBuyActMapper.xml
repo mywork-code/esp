@@ -13,9 +13,9 @@
             <if test="startDay!=null and startDay!=''">
                 <![CDATA[AND start_date < #{startDayAfter}]]>
             </if>
-            <!-- <if test="startTime!=null and startTime!=''">
+            <if test="startTime!=null and startTime!=''">
                 AND start_time = #{startTime}
-            </if> -->
+            </if>
         </where>
     </sql>
     <!-- 分页查询 -->
@@ -45,6 +45,7 @@
             start_date startDate,
             end_date endDate,
             status status,
+            start_time startTime,
             create_user createUser,
             update_user updateUser,
             created_time createdTime,
@@ -53,9 +54,9 @@
             t_esp_limit_buy_act
         WHERE 1=1
         ]]>
-        <if test="status!=null and status!=''"> AND status = '#{status}' </if>
         <if test="startDate!=null and startDate!=''"> AND start_date = '#{startDate}' </if>
         <if test="endDate!=null and endDate!=''"> AND end_date = '#{endDate}' </if>
+        <if test="status!=null and status!=''"> AND status = '#{status}' </if>
         <if test="startTime!=null and startTime!=''"> AND start_time = #{startTime}</if>
     </select>
 </mapper>

@@ -58,11 +58,11 @@ public class LimitBuyAct extends QueryParams{
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
-    private String startTime;
-    public String getStartTime() {
+    private Byte startTime;
+    public Byte getStartTime() {
         return startTime;
     }
-    public void setStartTime(String startTime) {
+    public void setStartTime(Byte startTime) {
         this.startTime = startTime;
     }
 }

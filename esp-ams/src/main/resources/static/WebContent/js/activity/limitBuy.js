@@ -3,7 +3,8 @@
  */
 $(function () {
 	$('#upLoadGoods').window('close');
-	var limitBuyActId ;
+	$('#editGoods').window('close');
+	var limitBuyActId ;//活动ID
 	// 活动列表
     $('#limitBuyActPage').datagrid({
     	title : '限时购活动管理',
@@ -156,8 +157,10 @@ $(function () {
 	//导入商品  弹窗
 	$(".upload-btn").click(function() {
 		$("#upLoadGoodsFile").val('');
+		$('#upLoadGoods').window({modal: true});
 		$('#upLoadGoods').window('open');
 	});
+	//导入商品  弹窗 确定
 	$("#upLoadGoodsFromSumbit").click(function() {
 		var file=$("#upLoadGoodsFile").val();
 		if (null == file || ("") == file) {
@@ -172,20 +175,93 @@ $(function () {
 			url : ctx + '/activity/limitBuyActContro/upLoadLimitGoodsSku',
 			success : function(data) {
 				var response = JSON.parse(data);
+				$.messager.alert("提示", response.msg, "info");
 				if(response.status=="1"){
 					//刷新商品列表
 					$('#upLoadGoods').window('close');
-					debugger
-					var da = response.data;
-					$('#uploadGoodsList').datagrid('loadData', { total: da.length, rows: [da]});
+					$('#uploadGoodsList').datagrid('loadData', response);
 				}
-				$.messager.alert("提示", response.msg, "info");
 		    }
 		});
 		thisForm.submit();
 	});
+	//导入商品  弹窗 取消
 	$("#upLoadGoodsFromCancle").click(function() {
 		$('#upLoadGoods').window('close');
+	});
+	//编辑商品  上传URL 弹窗  见下方editGoods
+	//编辑商品  上传URL 弹窗   确定
+	$("#editGoodsFromSumbit").click(function() {
+		var limitNumTotalAdd=$("#limitNumTotalAdd").textbox('getValue');
+		var limitNumAdd=$("#limitNumAdd").textbox('getValue');
+		var file=$("#editGoodsFile").val();
+		if (null == limitNumTotalAdd || ("") == limitNumTotalAdd) {
+			$.messager.alert("提示", "请输入限购总量!", "info");
+			return;
+		}
+		if (null == limitNumAdd || ("") == limitNumAdd) {
+			$.messager.alert("提示", "请输入每人限购!", "info");
+			return;
+		}
+		if (limitNumTotalAdd < limitNumAdd) {
+			$.messager.alert("提示", "限购总量不可小于每人限购!", "info");
+			return;
+		}
+		if (stockCurrAmt < limitNumTotalAdd) {
+			$.messager.alert("提示", "限购总量不可大于库存剩余!", "info");
+			return;
+		}
+		if (null == file || ("") == file) {
+			$.messager.alert("提示", "请选择上传缩略图文件!", "info");
+			return;
+		}
+		if(limitGoodsSkuId!=""){
+			$("#limitGoodsSkuId").val(limitGoodsSkuId);
+		}
+		var thisForm = $("#editGoodsFrom");
+		//此处上传缩略图
+		//把URL返回在table里
+		//吧限购数量返回在table里
+		$('#uploadGoodsList').datagrid('updateRow',{
+			index: editindex,
+			row:{
+				"limitNumTotal":limitNumTotalAdd,
+				"limitNum":limitNumAdd,
+				"url":"123",
+				}
+		});
+		$('#editGoods').window('close');
+	});
+	//编辑商品  上传URL 弹窗   取消
+	$("#editGoodsFromCancle").click(function() {save-btn
+		$('#editGoods').window('close');
+	});
+	$(".save-btn").click(function() {
+		var startDay = $("#startDayAdd").datebox('getValue');
+		var startTime = $("#startTimeAdd").combobox('getValue');
+		var goodsrows = $('#uploadGoodsList').datagrid('getRows');
+		if(startDay==""||startTime==""){
+			$.messager.alert("提示", "请输入限时购活动开始日期和时间!", "info");
+			return;
+		}
+		if(goodsrows==""||goodsrows.length==0){
+			$.messager.alert("提示", "请上传限时购活动商品!", "info");
+			return;
+		}
+		var param = {
+			startDay:startDay,
+			startTime:startTime,
+			list:goodsrows
+		};
+		$.ajax({url : ctx + '/activity/limitBuyActContro/addLimitBuyAct',
+			data :JSON.stringify(param),
+			type : "POST",
+			contentType: 'application/json',
+            dataType: "json",
+			success : function(data) {
+				
+			}
+		})
 	});
 });
 function commonLayerShow(){
@@ -207,8 +283,14 @@ function getLimitGoodsList(){
         singleSelect : true,
         striped:true,
         columns : [[{
-            title : '属性主键',
+            title : '主键',
             field : 'id',
+            hidden : true,
+            width : 10,
+            align : 'center'
+        },{
+        	title : 'URL',
+            field : 'url',
             hidden : true,
             width : 10,
             align : 'center'
@@ -249,7 +331,7 @@ function getLimitGoodsList(){
              align : 'center',
              formatter:function(value,row,index){
          		if(value!=null){
-         			return new Date(value).Format("yyyy-MM-dd HH:mm:ss");
+         			return new Date(value).Format("yyyy-MM-dd");
          		}
              }
          },{
@@ -259,7 +341,7 @@ function getLimitGoodsList(){
              align : 'center',
              formatter:function(value,row,index){
          		if(value!=null){
-         			return new Date(value).Format("yyyy-MM-dd HH:mm:ss");
+         			return new Date(value).Format("yyyy-MM-dd");
          		}
              }
          },{
@@ -283,10 +365,10 @@ function getLimitGoodsList(){
             width : 130,
             align : 'center',
             formatter : function(value, row, index) {
-                var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editGoods(\"" + row.id + "\");'>编辑</a>&nbsp;";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleGoods(\"" + row.id + "\");'>删除</a>";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.upGoods(\"" + row.id + "\");'>上移</a>";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.downGoods(\"" + row.id + "\");'>下移</a>";
+                var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this);'>编辑</a>&nbsp;";
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='deleGoods(this);'>删除</a>";
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this);'>上移</a>";
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this);'>下移</a>";
                 return content;
             }
         }]],
@@ -305,3 +387,43 @@ function getLimitGoodsList(){
         }
     });
 }
+var limitGoodsSkuId ;//商品ID
+var stockCurrAmt ;//商品库存剩余
+var editindex;//商品表行号
+//编辑商品弹框
+function editGoods(target){
+	var rowentity = getRowEntity(target);
+	limitGoodsSkuId = rowentity.id;
+	stockCurrAmt = rowentity.stockCurrAmt;
+	$("#editGoodsFile").val('');
+	$("#limitNumTotalAdd").textbox('clear');
+	$("#limitNumAdd").textbox('clear');
+	$('#editGoods').window({modal: true});
+	$('#editGoods').window('open');
+};
+//删除商品弹框
+function deleGoods(target){
+	var rowentity = getRowEntity(target);
+	if(rowentity.id==null){
+		//此处删除数据库中数据！！
+	}
+	$('#uploadGoodsList').datagrid('deleteRow', getRowIndex(target));
+};
+//上移商品
+function upGoods(target){
+	var rowentity = getRowEntity(target);
+};
+//下移商品
+function downGoods(target){
+	var rowentity = getRowEntity(target);
+};
+function getRowIndex(target){
+	var tr = $(target).closest('tr.datagrid-row');
+	var editindex = parseInt(tr.attr('datagrid-row-index'));
+	return editindex;
+};
+function getRowEntity(target){
+	editindex = getRowIndex(target);
+	var rows = $('#uploadGoodsList').datagrid('getRows');
+	return rows[editindex];
+};
