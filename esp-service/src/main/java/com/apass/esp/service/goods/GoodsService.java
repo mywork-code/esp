@@ -140,7 +140,16 @@ public class GoodsService {
    * @return
    */
   public Pagination<GoodsBasicInfoEntity> loadRecommendGoods(int pageIndex, int pageSize) {
-    return goodsDao.loadRecommendGoods(pageIndex, pageSize);
+    	 Pagination<GoodsBasicInfoEntity> result=goodsDao.loadRecommendGoods(pageIndex, pageSize);
+    	 List<GoodsBasicInfoEntity> goodsList=result.getDataList();
+    	 for (GoodsBasicInfoEntity goodsBasicInfoEntity : goodsList) {
+    		 Map<String,Object> map=goodsDao.selectMinGoodsStockByGoodsId(goodsBasicInfoEntity.getGoodId());
+    		 Long goodsStockId=(Long) map.get("goodsStockId");
+    		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
+    		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
+    		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
+		}
+    		return result;
   }
 
   /**
@@ -149,7 +158,15 @@ public class GoodsService {
    * @return
    */
   public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
-    return goodsDao.loadRecommendGoodsList();
+     List<GoodsBasicInfoEntity> resultList=goodsDao.loadRecommendGoodsList();
+	 for (GoodsBasicInfoEntity goodsBasicInfoEntity : resultList) {
+		 Map<String,Object> map=goodsDao.selectMinGoodsStockByGoodsId(goodsBasicInfoEntity.getGoodId());
+		 Long goodsStockId=(Long) map.get("goodsStockId");
+		 BigDecimal goodsPrice=(BigDecimal) map.get("goodsPrice");
+		 goodsBasicInfoEntity.setGoodsStockId(goodsStockId);
+		 goodsBasicInfoEntity.setGoodsPrice(goodsPrice);
+	}
+     return resultList;
   }
 
   /**
