@@ -50,6 +50,19 @@ public class LimitGoodsSkuService {
         return null;
     }
     /**
+     * CREATE
+     * @param entity
+     * @return
+     */
+    @Transactional
+    public Long createEntityBySelect(LimitGoodsSku entity){
+        int i = limitGoodsSkuMapper.insertSelective(entity);
+        if(i==1){
+            return entity.getId();
+        }
+        return null;
+    }
+    /**
      * READ BY ID
      * @param id
      * @return
@@ -111,9 +124,11 @@ public class LimitGoodsSkuService {
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品表
             BeanUtils.copyProperties(goods, vo);
+            vo.setGoodsId(goods.getId());
             vo.setId(null);
             //复制库存表
             vo.setStockCurrAmt(stock.getStockCurrAmt());
+            vo.setMarketPrice(stock.getMarketPrice());
             //复制导入数据
             vo.setActivityPrice(entity.getActivityPrice());
             vo.setSkuId(entity.getSkuId());

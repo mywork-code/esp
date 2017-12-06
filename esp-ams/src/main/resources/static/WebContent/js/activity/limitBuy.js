@@ -259,7 +259,11 @@ $(function () {
 			contentType: 'application/json',
             dataType: "json",
 			success : function(data) {
-				
+				if(data.status==1){
+					$('#editLayer').hide(500,editLayerHide());
+					getLimitGoodsList();
+				}
+				$.messager.alert("提示", data.msg, "info");
 			}
 		})
 	});

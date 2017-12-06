@@ -1,15 +1,11 @@
 package com.apass.esp.domain.entity;
 import java.util.Date;
-import com.apass.esp.common.model.QueryParams;
-public class LimitBuyAct extends QueryParams{
+import com.apass.esp.common.model.CreatedUser;
+public class LimitBuyAct extends CreatedUser{
     private Long id;
     private Date startDate;
     private Date endDate;
     private String status;
-    private String createUser;
-    private String updateUser;
-    private Date createdTime;
-    private Date updatedTime;
     public Long getId() {
         return id;
     }
@@ -33,30 +29,6 @@ public class LimitBuyAct extends QueryParams{
     }
     public void setStatus(String status) {
         this.status = status;
-    }
-    public String getCreateUser() {
-        return createUser;
-    }
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-    public String getUpdateUser() {
-        return updateUser;
-    }
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser;
-    }
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-    public Date getUpdatedTime() {
-        return updatedTime;
-    }
-    public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
     }
     private Byte startTime;
     public Byte getStartTime() {

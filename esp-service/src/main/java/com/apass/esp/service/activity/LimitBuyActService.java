@@ -118,8 +118,8 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response addLimitBuyAct(LimitBuyActVo buyActView) throws BusinessException {
-        byte startTime = buyActView.getStartTime();
+    public Response addLimitBuyAct(LimitBuyActVo buyActView,String username) throws BusinessException {
+        Byte startTime = buyActView.getStartTime();
         String startTimeValue = null;
         switch (startTime) {
             case 1:
@@ -154,6 +154,7 @@ public class LimitBuyActService {
         }else{
             entity.setStatus("proceed");
         }
+        entity.fillAllField(username);
         Long actId =null;
         if((actId = createEntity(entity))==null){
             throw new BusinessException("限时购活动保存失败!");
@@ -166,7 +167,11 @@ public class LimitBuyActService {
         for(LimitGoodsSku sku : skulist){
             sku.setLimitBuyActId(actId);
             sku.setSortNo(++sortNo);
-            if(limitGoodsSkuService.createEntity(sku)==null){
+            if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
+                throw new BusinessException("限时购活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
+            }
+            sku.fillAllField(username);
+            if(limitGoodsSkuService.createEntityBySelect(sku)==null){
                 throw new BusinessException("限时购活动商品保存失败!");
             }
         }

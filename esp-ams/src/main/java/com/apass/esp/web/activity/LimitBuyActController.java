@@ -29,6 +29,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
+import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 @Controller
 @RequestMapping(value = "/activity/limitBuyActContro")
@@ -182,7 +183,8 @@ public class LimitBuyActController {
     @LogAnnotion(operationType = "限时购活动新增", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response addLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            return limitBuyActService.addLimitBuyAct(buyActView);
+            String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            return limitBuyActService.addLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动新增异常,"+e.getErrorDesc());
