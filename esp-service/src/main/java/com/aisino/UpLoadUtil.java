@@ -72,38 +72,36 @@ public class UpLoadUtil{
                 throw new BusinessException("XLS文件出现空行！");
             }
             //表格中共有2列（商品编号/skuid,活动价）
-            int cellNum = hssfRow.getLastCellNum()+1;
+            int cellNum = hssfRow.getLastCellNum();
+            Map<String,Object> map = new HashMap<String,Object>();
             for(int j = 0; j < cellNum; j++){
                 Cell titleCell = titleRow.getCell(j);//第一行标题 字段 每一列
                 Cell cell = hssfRow.getCell(j);
                 if (cell == null) {
                     throw new BusinessException("XLS文件出现空单元格（列）！");
                 }
-                Map<String,Object> map = new HashMap<String,Object>();
                 String value = getValue(cell);
                 Boolean falg1 = !StringUtils.isBlank(value);
                 Boolean falg2 = isBigDecimal(value);
                 switch (j) {
-                case 0:
-                    if (falg1) {
-//                        map.put("skuId", value);
-                        map.put(getValue(titleCell), value);//第一行标题 字段 每一列 取列名
-                    }
-                    break;
-                case 1:
-                    if (falg1 && falg2) {
-//                        map.put("limitPrice", value);
-                        map.put(getValue(titleCell), value);//第一行标题 字段 每一列 取列名
-                    }
-                    break;
-                default:
-                    break;
+                    case 0:
+                        if (falg1) {
+    //                        map.put("skuId", value);
+                            map.put(getValue(titleCell), value);//第一行标题 字段 每一列 取列名
+                        }
+                        continue;
+                    case 1:
+                        if (falg1 && falg2) {
+    //                        map.put("limitPrice", value);
+                            map.put(getValue(titleCell), value);//第一行标题 字段 每一列 取列名
+                        }
+                        continue;
                 }
-                if(map.size()==2){
-                    listMap.add(map);
-                }else{
-                    throw new BusinessException("XLS文件出现多余单元格（列）！");
-                }
+            }
+            if(map.size()==2){
+                listMap.add(map);
+            }else{
+                throw new BusinessException("XLS文件出现多余单元格（列）！");
             }
         }
         T objt = clz.newInstance();

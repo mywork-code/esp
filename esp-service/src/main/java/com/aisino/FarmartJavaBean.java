@@ -1,5 +1,6 @@
 package com.aisino;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -50,11 +51,32 @@ public class FarmartJavaBean{
             field.setAccessible( true );  
             try {  
                 // 设置字段可见，即可用get方法获取属性值。  
+//                if(value!=null&&value!=""){
+//                    if(field.getName().equals(name)){
+//                        field.set(o, value);
+//                        break;
+//                    }
+//                }
                 if(value!=null&&value!=""){
-                    if(field.getName().equals(name)){
-                        field.set(o, value);
-                        break;
-                    }
+                    switch(field.getGenericType().toString()){
+                        case "class java.lang.String":
+                            if(field.getName().equals(name)){
+                                field.set(o, value);
+                            }
+                            break;
+                        case "long":
+                            if(field.getName().equals(name)){
+                                field.setLong(o, (long) value);
+                            }
+                            break;
+                        case "class java.math.BigDecimal":
+                            if(field.getName().equals(name)){
+                                field.set(o, new BigDecimal(value.toString()));
+                            }
+                            break;
+                        default:
+                            break;                           
+                    } 
                 }
             }catch ( Exception e ) {  
             }  

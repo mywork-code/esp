@@ -9,11 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
@@ -22,6 +21,7 @@ import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActView;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.enums.LimitBuyStatus;
 import com.apass.esp.domain.enums.StartTime;
 import com.apass.esp.service.activity.LimitBuyActService;
@@ -114,6 +114,26 @@ public class LimitBuyActController {
         }
     }
     /**
+     * 限时购活动商品列表查询
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getLimitGoodsList")
+    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitBuyActVo entity) {
+        ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
+        try {
+            ResponsePageBody<LimitGoodsSkuVo> pagination=limitGoodsSkuService.getLimitGoodsList(entity);
+            respBody.setTotal(pagination.getTotal());
+            respBody.setRows(pagination.getRows());
+            respBody.setStatus(CommonCode.SUCCESS_CODE);
+        } catch (Exception e) {
+            LOGGER.error("限时购活动列表查询失败", e);
+            respBody.setMsg("限时购活动列表查询失败");
+        }
+        return respBody;
+    }
+    /**
      * 限时购活动新增   上传限时购商品列表
      * @param file
      * @return
@@ -121,9 +141,9 @@ public class LimitBuyActController {
     @ResponseBody
     @RequestMapping(value = "/upLoadLimitGoodsSku")
     @LogAnnotion(operationType = "限时购活动商品上传", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response upLoadLimitGoodsSku(@RequestParam("file") MultipartFile file) {
+    public Response upLoadLimitGoodsSku(@ModelAttribute("upFile") LimitBuyActVo actvo) {
         try{
-            List<LimitGoodsSku> list = UpLoadUtil.readImportExcelByMultipartFile(file, LimitGoodsSku.class);
+            List<LimitGoodsSku> list = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
             return limitGoodsSkuService.findGoodsInfoListBySkuId(list);
         }catch(InvalidFormatException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);

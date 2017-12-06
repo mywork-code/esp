@@ -40,7 +40,68 @@
     </div>
     <!-- 限时购活动维护页面 -->
     <div id="editLayer">
-                    维护
+        <div style="margin-left: 1100px;">
+            <a href="javascript:void(0);" class="easyui-linkbutton cancel-btn" data-options="iconCls:'icon-add'">返回</a>
+        </div>
+        <div style="margin-left: 20px;margin-top: 10px;">
+            <table class="details_table" style="width: 92%">
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动开始日期：</td>
+                    <td colspan="1">
+                        <input id="startDayAdd" name="startDay" class="easyui-datebox" style="width: 120px" editable="false"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动开始时间：</td>
+                    <td colspan="1">
+                        <input id="startTimeAdd" name="startTime" class="easyui-combobox" style="width:120px" editable="false">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动有效时长：</td>
+                    <td colspan="1">
+                        <input style="width:115px" disabled="true" value = "24Hours">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动商品：</td>
+                    <td colspan="1">
+                        <a href="javascript:void(0);" class="easyui-linkbutton upload-btn" data-options="iconCls:'icon-add'">导入商品</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton download-btn" data-options="iconCls:'icon-add'">导入模板下载</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="uploadGoodsList"></div>
+        <div style="margin-left: 10px;">
+            <a href="javascript:void(0);" class="easyui-linkbutton save-btn" data-options="iconCls:'icon-add'">保存限时购活动</a>
+        </div>
+    </div>
+    <!-- 限时购活动维护页面上传商品列表 -->
+    <div id="upLoadGoods" class="easyui-window" title="<font color='black'>商品SKU信息上传</font>"
+    hidden="hidden" style="width: 350px; height: 200px; display: none; text-align: center;"
+    data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+        <form id="upLoadGoodsFrom"  method="POST" enctype="multipart/form-data" modelAttribute="upFile">  
+            <table class="details_table" style="margin-top: 20px;">
+                <input type="hidden" id = "limitBuyActId" name = "limitBuyActId"/>
+                <tr>
+                    <td width="20%" align="right" valign="top" width=""><font color="red">*</font>上传文件:</td>
+                    <td colspan="3" width="60%">
+                        <input width="20%" type="file" id="upLoadGoodsFile" name="upLoadGoodsFile"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><span style="color:red;margin-right: 40px;">支持格式：.xls,.exls;大小：≤3096kb</span></td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                       <a href="javascript:void(0);" id="upLoadGoodsFromSumbit" style="margin-right: 30px;" class="easyui-linkbutton">确定</a>
+                       <a href="javascript:void(0);" id="upLoadGoodsFromCancle" style="margin-right: 50px;" class="easyui-linkbutton">取消</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
     </div>
 </body>
 </html>   

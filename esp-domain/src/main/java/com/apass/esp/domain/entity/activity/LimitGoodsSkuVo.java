@@ -1,5 +1,4 @@
 package com.apass.esp.domain.entity.activity;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -12,10 +11,8 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     private String categoryId1Name;//商品一级分类名称
     private String status;//商品状态
     private String statusDesc;//商品状态描述
-    private Date listTime;
-    private String listTimeString;
+    private Date listTime;//上下架时间
     private Date delistTime;
-    private String delistTimeString;
     //冗余库存表字段
     private Long stockCurrAmt;//剩余库存
     public String getGoodsName() {
@@ -73,23 +70,11 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     public void setListTime(Date listTime) {
         this.listTime = listTime;
     }
-    public String getListTimeString() {
-        return listTimeString;
-    }
-    public void setListTimeString(String listTimeString) {
-        this.listTimeString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(listTime);
-    }
     public Date getDelistTime() {
         return delistTime;
     }
     public void setDelistTime(Date delistTime) {
         this.delistTime = delistTime;
-    }
-    public String getDelistTimeString() {
-        return delistTimeString;
-    }
-    public void setDelistTimeString(String delistTimeString) {
-        this.delistTimeString = delistTimeString;
     }
     public Long getStockCurrAmt() {
         return stockCurrAmt;
