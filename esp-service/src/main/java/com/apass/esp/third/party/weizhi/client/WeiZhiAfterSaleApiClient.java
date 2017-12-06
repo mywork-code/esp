@@ -52,10 +52,10 @@ public class WeiZhiAfterSaleApiClient {
         params.add(new BasicNameValuePair("token",token));
         params.add(new BasicNameValuePair("customerExpect",String.valueOf(afsWeizhiApply.getCustomerExpect())));
         params.add(new BasicNameValuePair("questionDesc",afsWeizhiApply.getQuestionDesc()));
-        params.add(new BasicNameValuePair("isNeedDetectionReport",String.valueOf(afsWeizhiApply.getIsNeedDetectionReport())));
+        params.add(new BasicNameValuePair("isNeedDetectionReport","true"));
         params.add(new BasicNameValuePair("questionPic",afsWeizhiApply.getQuestionPic()));
-        params.add(new BasicNameValuePair("isHasPackage",String.valueOf(afsWeizhiApply.getIsHasPackage())));
-        params.add(new BasicNameValuePair("packageDesc",String.valueOf(afsWeizhiApply.getPackageDesc())));
+        params.add(new BasicNameValuePair("isHasPackage",String.valueOf(afsWeizhiApply.getIsHasPackage()==null ? "0" : afsWeizhiApply.getIsHasPackage())));
+        params.add(new BasicNameValuePair("packageDesc",String.valueOf(afsWeizhiApply.getPackageDesc()==null ? "0" : afsWeizhiApply.getPackageDesc())));
         params.add(new BasicNameValuePair("asCustomerDto",afsWeizhiApply.getAsCustomerDto()));
         params.add(new BasicNameValuePair("asPickwareDto",afsWeizhiApply.getAsPickwareDto()));
         params.add(new BasicNameValuePair("asReturnwareDto",afsWeizhiApply.getAsReturnwareDto()));

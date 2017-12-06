@@ -4,7 +4,7 @@ package com.apass.esp.third.party.weizhi.entity.aftersale;
  * Created by xiaohai on 2017/11/24.
  */
 public class AfsServicebyCustomerPin {
-    private String afsServiceId;
+    private Integer afsServiceId;
     private Integer customerExpect;
     private String customerExpectName;
     private String afsApplyTime;
@@ -15,11 +15,11 @@ public class AfsServicebyCustomerPin {
     private String afsServiceStepName;
     private Integer cancel;
 
-    public String getAfsServiceId() {
+    public Integer getAfsServiceId() {
         return afsServiceId;
     }
 
-    public void setAfsServiceId(String afsServiceId) {
+    public void setAfsServiceId(Integer afsServiceId) {
         this.afsServiceId = afsServiceId;
     }
 

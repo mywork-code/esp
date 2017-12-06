@@ -578,7 +578,7 @@ public class AfterSaleService {
             LOG.info(requestId, "售后状态查询,当前售后状态不允许提交物流信息", refundInfo.getStatus());
             throw new BusinessException("当前售后状态不允许提交物流信息");
         }
-        if (!"jd".equalsIgnoreCase(orderInfo.getSource())) {
+        if (!StringUtils.equals("jd",orderInfo.getSource()) && !StringUtils.equals("wz",orderInfo.getSource())) {
             if (null == refundInfo.getIsAgree() || !refundInfo.getIsAgree().equals("1")) {
                 LOG.info(requestId, "等待客服审核,暂时不能提交物流信息", "");
                 throw new BusinessException("等待客服审核,暂时不能提交物流信息!");
@@ -619,9 +619,9 @@ public class AfterSaleService {
                         throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!!");
                     }
                     for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
-                        String afsServiceId = afsCusPin.getAfsServiceId();
+                        Integer afsServiceId = afsCusPin.getAfsServiceId();
                         SendSku sendSku = new SendSku();
-                        sendSku.setAfsServiceId(Integer.parseInt(afsServiceId));
+                        sendSku.setAfsServiceId(afsServiceId);
                         sendSku.setDeliverDate(DateFormatUtil.getCurrentDate());
                         sendSku.setExpressCompany(logisticsName);
                         sendSku.setExpressCode(logisticsNo);

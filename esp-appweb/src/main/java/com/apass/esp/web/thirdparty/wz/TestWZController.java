@@ -380,6 +380,12 @@ public class TestWZController {
 	@ResponseBody
 	public Response afterUpdateSendSku(@RequestBody Map<String, String> paramMap) {
 		try {
+			SendSku sendSku = new SendSku();
+			sendSku.setAfsServiceId(Integer.valueOf(paramMap.get("afsServiceId")));
+			sendSku.setFreightMoney(new BigDecimal(paramMap.get("freightMoney")));
+			sendSku.setExpressCompany(paramMap.get("expressCompany"));
+			sendSku.setDeliverDate("2017-12-06 18:19:09");
+			sendSku.setExpressCode("69627788265");
 
 			weiZhiAfterSaleApiClient.afterUpdateSendSku(new SendSku());
 
