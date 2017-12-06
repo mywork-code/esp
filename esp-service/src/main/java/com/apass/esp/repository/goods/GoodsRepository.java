@@ -45,7 +45,10 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
         pagination.setTotalCount(this.getSqlSession().selectOne("loadRecommendGoodsCount"));
         return pagination;
     }
-
+    //根据goodsId查询goodsStockId中价格最低的规格商品 
+    public Map <String,Object> selectMinGoodsStockByGoodsId(Long goodsId){
+    	return this.getSqlSession().selectOne("selectMinGoodsStockByGoodsId",goodsId);
+    }
     public List<GoodsBasicInfoEntity> loadRecommendGoodsList() {
         return this.getSqlSession().selectList("loadRecommendGoodsList");
     }
