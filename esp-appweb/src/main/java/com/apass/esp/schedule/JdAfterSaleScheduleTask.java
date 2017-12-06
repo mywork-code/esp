@@ -113,6 +113,7 @@ public class JdAfterSaleScheduleTask {
             ml.setOrderid(orderInfoEntity.getExtOrderId());
             List<SkuObject> serviveList = null;
             try {
+                //TODO 根据客户账号和订单号分页查询服务单概要信息
                 serviveList = weiZhiAfterSaleApiClient.getServiveList(orderInfoEntity.getExtOrderId(), "1", "10");
             } catch (Exception e) {
                 LOGGER.error("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!",e);

@@ -179,7 +179,7 @@ public class AfterSaleService {
         // 存放审核拒绝的商品库存id
         List<Long> refuseStockIds = Lists.newArrayList();
         String jdReturnType = "";
-        if ("jd".equals(orderInfo.getSource())) {
+        if (StringUtils.equals("jd",orderInfo.getSource()) || StringUtils.equals("wz",orderInfo.getSource())) {
 //            AfsApply afsApply = new AfsApply();
 //            afsApply.setJdOrderId(Long.valueOf(orderInfo.getExtOrderId()));// 京东订单号
 
@@ -269,9 +269,11 @@ public class AfterSaleService {
 //                                Long.valueOf(orderDetailInfoEntity.getSkuId()));
                 Integer availableNumberComp = null;
                 try {
+                    //TODO 校验某订单中某商品是否可以提交售后服务
                     availableNumberComp = weiZhiAfterSaleApiClient.getAvailableNumberComp(orderInfo.getExtOrderId(),orderDetailInfoEntity.getSkuId());
                 } catch (Exception e) {
                     LOGGER.error("校验某订单中某商品是否可以提交售后服务异常",e);
+                    throw new BusinessException("调用接口:校验某订单中某商品是否可以提交售后服务失败!");
                 }
 
 
@@ -283,12 +285,15 @@ public class AfterSaleService {
 //                                    Long.valueOf(orderDetailInfoEntity.getSkuId()));
                     String jdApiResponse2Str = null;
                     try {
+                        //TODO 根据订单号、商品编号查询支持的服务类型
                         jdApiResponse2Str = weiZhiAfterSaleApiClient.getCustomerExpectComp(orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
                         if(jdApiResponse2Str == null){
                             LOGGER.error("根据订单号、商品编号查询支持的服务类型失败，wzOrderId:{}，skuId:{}",orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
+                            throw new BusinessException("调用接口:根据订单号、商品编号查询支持的服务类型失败!");
                         }
                     } catch (Exception e) {
                         LOGGER.error("根据订单号、商品编号查询支持的服务类型异常",e);
+                        throw new BusinessException("调用接口:根据订单号、商品编号查询支持的服务类型失败!");
                     }
                     String type = "";
                     if (operate.equals(YesNo.NO.getCode())) {
@@ -310,6 +315,7 @@ public class AfterSaleService {
 //                    String jdApiResponse3String = GsonUtils.toJson(jdApiResponse3.getResult());
                     String jdApiResponse3String = null;
                     try {
+                        //TODO  根据订单号、商品编号查询支持的商品返回微知方式
                         jdApiResponse3String = weiZhiAfterSaleApiClient.getWareReturnJdComp(orderInfo.getExtOrderId(),orderDetailInfoEntity.getSkuId());
                         if(jdApiResponse3String == null){
                             LOGGER.error("根据订单号、商品编号查询支持的商品返回微知方式失败，wzOrderId:{}，skuId:{}",orderInfo.getExtOrderId(), orderDetailInfoEntity.getSkuId());
@@ -344,6 +350,7 @@ public class AfterSaleService {
 //                        throw new BusinessException("该商品不支持售后", BusinessErrorCode.PARAM_VALUE_ERROR);
 //                    }
                     try {
+                        //TODO 服务单保存申请
                         WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterSaleAfsApplyCreate(afsApply);
                         if(weiZhiAfterSaleResponse.getResult() != 0){
                             LOGGER.error("服务单保存申请失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
@@ -595,12 +602,14 @@ public class AfterSaleService {
         } else {
             List<SkuObject> serviveList = null;
             try {
+                //TODO 根据客户账号和订单号分页查询服务单概要信息
                 serviveList = weiZhiAfterSaleApiClient.getServiveList(orderInfo.getExtOrderId(), "1", "10");
                 if (serviveList == null) {
                     throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");
                 }
             } catch (Exception e) {
                 LOGGER.error("根据客户账号和订单号分页查询服务单概要信息失败",e);
+                throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");
             }
 
             if(!CollectionUtils.isEmpty(serviveList)){
@@ -620,12 +629,15 @@ public class AfterSaleService {
 //                jdAfterSaleApiClient.afterSaleSendSkuUpdate(sendSku);
                         try {
                             LOGGER.info("填写客户发运信息接口开始执行,参数:{}", GsonUtils.toJson(sendSku));
+                            //TODO 填写客户发运信息
                             WeiZhiAfterSaleResponse weiZhiAfterSaleResponse = weiZhiAfterSaleApiClient.afterUpdateSendSku(sendSku);
                             if(weiZhiAfterSaleResponse.getResult() != 0){
                                 LOGGER.error("填写客户发运信息失败,错误信息:{}",weiZhiAfterSaleResponse.getDetail());
+                                throw new BusinessException("填写客户发运信息失败", BusinessErrorCode.PARAM_VALUE_ERROR);
                             }
                         } catch (Exception e) {
                             LOGGER.error("填写客户发运信息异常",e);
+                            throw new BusinessException("填写客户发运信息失败", BusinessErrorCode.PARAM_VALUE_ERROR);
                         }
                     }
                 }
@@ -797,6 +809,7 @@ public class AfterSaleService {
             if (!RefundStatus.REFUND_STATUS01.getCode().equalsIgnoreCase(serviceProcessDto.getStatus())) {
                 List<SkuObject> skuObjects = null;
                 try {
+                    //TODO 根据客户账号和订单号分页查询服务单概要信息
                     skuObjects = weiZhiAfterSaleApiClient.getServiveList(String.valueOf(orderInfo.getExtOrderId()), "1", "10");
                     if (skuObjects == null) {
                         throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!");

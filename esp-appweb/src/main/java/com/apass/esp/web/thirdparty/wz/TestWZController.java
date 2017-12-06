@@ -397,7 +397,8 @@ public class TestWZController {
 	@ResponseBody
 	public Response getAvailableNumberComp() {
 		try {
-			weiZhiAfterSaleApiClient.getAvailableNumberComp("2017050918401173","3985573");
+			Integer availableNumberComp = weiZhiAfterSaleApiClient.getAvailableNumberComp("2017120416062034", "2003808");
+
 
 			return Response.success("校验某订单中某商品是否可以提交售后服务成功！");
 		} catch (Exception e) {
