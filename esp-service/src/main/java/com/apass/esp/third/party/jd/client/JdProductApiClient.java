@@ -60,7 +60,7 @@ public class JdProductApiClient extends JdApiClient {
     }
 
     /**
-     * 根据区商品池编号，获取池内商品编号
+     * 查询商品详细信息接口
      *
      * @param sku
      * @return
