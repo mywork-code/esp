@@ -340,8 +340,8 @@ public class ShopHomeController {
 					String logoUrl = goodsInfo.getGoodsLogoUrl();
 					String siftUrl = goodsInfo.getGoodsSiftUrl();
 					if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
-						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
-						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
+						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
 					} else {
 						goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
 						goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
