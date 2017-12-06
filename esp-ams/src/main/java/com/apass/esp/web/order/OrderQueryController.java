@@ -28,6 +28,7 @@ import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.service.datadic.DataDicService;
 import com.apass.esp.service.jd.JdLogisticsService;
 import com.apass.esp.service.logistics.LogisticsService;
+import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -62,6 +63,8 @@ public class OrderQueryController {
     private DataDicService      dataDicService;
     @Autowired
     private JdLogisticsService jdLogisticsService;
+    @Autowired
+    private MyCouponManagerService myCouponManagerService;
 
     /**
      * 订单信息页面
@@ -303,8 +306,17 @@ public class OrderQueryController {
             map.put("parentOrderId", "0");
             Pagination<OrderSubInfoEntity> orderList = orderService.queryOrderSubDetailInfoByParam(map, page);
 
+            List<OrderSubInfoEntity> orderSubList = orderList.getDataList();
+            for (OrderSubInfoEntity order : orderSubList) {
+				if(null != order.getParentOrderId() && order.getParentOrderId() != 0){
+					order.setMainOrder("Y");
+				}
+				String couponName = myCouponManagerService.getMyCouponByMyCouponId(order.getCouponId());
+				order.setUseCoupon(couponName);
+			}
+            
             respBody.setTotal(orderList.getTotalCount());
-            respBody.setRows(orderList.getDataList());
+            respBody.setRows(orderSubList);
             respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
             LOG.error("用户列表查询失败", e);
