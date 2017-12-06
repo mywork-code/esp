@@ -2,16 +2,18 @@ package com.apass.esp.web.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
@@ -28,7 +30,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 @Controller
 @RequestMapping(value = "/activity/limitBuyActContro")
 public class LimitBuyActController {
@@ -179,15 +180,8 @@ public class LimitBuyActController {
     @ResponseBody
     @RequestMapping(value = "/addLimitBuyAct", method = RequestMethod.POST)
     @LogAnnotion(operationType = "限时购活动新增", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response addLimitBuyAct(LimitBuyActVo buyActView) {
+    public Response addLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            Boolean falg = StringUtils.isAnyBlank(buyActView.getStartDay(),buyActView.getStartTime());
-            if(!falg){
-                String date = buyActView.getStartDay()+" "+buyActView.getStartTime();
-                buyActView.setStartDate(DateFormatUtil.string2date(date, null));
-            }else{
-                return Response.fail("限时购活动新增异常,限时购活动开始日期和时间为空!");
-            }
             return limitBuyActService.addLimitBuyAct(buyActView);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
@@ -210,13 +204,6 @@ public class LimitBuyActController {
     @LogAnnotion(operationType = "限时购活动修改", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editLimitBuyAct(LimitBuyActVo buyActView) {
         try{
-            Boolean falg = StringUtils.isAnyBlank(buyActView.getStartDay(),buyActView.getStartTime());
-            if(!falg){
-                String date = buyActView.getStartDay()+" "+buyActView.getStartTime();
-                buyActView.setStartDate(DateFormatUtil.string2date(date, null));
-            }else{
-                return Response.fail("限时购活动修改异常,限时购活动开始日期和时间为空!");
-            }
             return limitBuyActService.editLimitBuyAct(buyActView);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);

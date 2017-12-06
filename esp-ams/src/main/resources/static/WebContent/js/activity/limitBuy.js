@@ -248,11 +248,16 @@ $(function () {
 			$.messager.alert("提示", "请上传限时购活动商品!", "info");
 			return;
 		}
-		var param = {};
-		param['startDay']=startDay;
-		param['startTime']=startTime;
-		param['list']=goodsrows;
-		$.ajax({url : ctx + '/activity/limitBuyActContro/addLimitBuyAct',type : "POST",data : param,
+		var param = {
+			startDay:startDay,
+			startTime:startTime,
+			list:goodsrows
+		};
+		$.ajax({url : ctx + '/activity/limitBuyActContro/addLimitBuyAct',
+			data :JSON.stringify(param),
+			type : "POST",
+			contentType: 'application/json',
+            dataType: "json",
 			success : function(data) {
 				
 			}

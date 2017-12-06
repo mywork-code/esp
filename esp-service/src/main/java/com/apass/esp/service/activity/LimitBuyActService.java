@@ -1,4 +1,5 @@
 package com.apass.esp.service.activity;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +119,26 @@ public class LimitBuyActService {
      * @throws BusinessException 
      */
     public Response addLimitBuyAct(LimitBuyActVo buyActView) throws BusinessException {
+        byte startTime = buyActView.getStartTime();
+        String startTimeValue = null;
+        switch (startTime) {
+            case 1:
+                startTimeValue = " 10:00:00";
+                break;
+            case 2:
+                startTimeValue = " 14:00:00";
+                break;
+            case 3:
+                startTimeValue = " 18:00:00";
+                break;
+            case 4:
+                startTimeValue = " 22:00:00";
+                break;
+            default:
+                throw new BusinessException("该活动开始日期和时间格式化异常!");
+        }
+        String date = buyActView.getStartDay()+startTimeValue;
+        buyActView.setStartDate(DateFormatUtil.string2date(date, null));
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
@@ -125,6 +146,14 @@ public class LimitBuyActService {
             throw new BusinessException("该活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
         }
         BeanUtils.copyProperties(buyActView, entity);
+        entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
+        if(compareTime(entity.getStartDate())){
+            entity.setStatus("start");
+        }else if(compareTime(entity.getEndDate())){
+            entity.setStatus("over");
+        }else{
+            entity.setStatus("proceed");
+        }
         Long actId =null;
         if((actId = createEntity(entity))==null){
             throw new BusinessException("限时购活动保存失败!");
@@ -142,6 +171,13 @@ public class LimitBuyActService {
             }
         }
         return Response.success("限时购活动新增成功！");
+    }
+    private Boolean compareTime(Date date){
+        Date now = new Date();
+        if(date.getTime()>now.getTime()){
+            return true;
+        }
+        return false;
     }
     /**
      * 限时购活动修改 
