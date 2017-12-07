@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +31,14 @@ public class LimitCommonService {
 	public Boolean isLimitByGoodsId(String skuId){
 		LimitGoodsSku entity =new LimitGoodsSku();
 		entity.setSkuId(skuId);
-		List<LimitGoodsSku>  limitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
-		if(CollectionUtils.isEmpty(limitGoodsSkuList)){
+		List<LimitGoodsSku>  LimitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if(null ==LimitGoodsSkuList ||  LimitGoodsSkuList.size()==0 ){
 			return false;
 		}
-		for (LimitGoodsSku limitGoodsSku : limitGoodsSkuList) {
+		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct=limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus =getLimitBuyStatus(limitBuyAct.getStartDate(),limitBuyAct.getEndDate());
-			if(ActivityStatus.PROCESSING == activityStatus || ActivityStatus.NO == activityStatus){
+			if(ActivityStatus.PROCESSING==activityStatus || ActivityStatus.NO==activityStatus){
 				return true;
 			}
 		}
@@ -47,7 +46,7 @@ public class LimitCommonService {
 	}
 
 	/**
-	 * 根据商品skuid查询限时购的相关信息
+	 * 根据商品id查询限时购的相关信息
 	 * 当返回值为null时，代表该商品没有参加限时购或者参加了已经结束
 	 * 1.首先判断该商品存在多少个进行的活动中或者还未开始的活动中
 	 * 2.将活动开始时间与服务器时间的时间差（）
@@ -58,14 +57,14 @@ public class LimitCommonService {
 
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
-		List<LimitGoodsSku>  limitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
-		if(CollectionUtils.isEmpty(limitGoodsSkuList)){
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
 			return null;
 		}
 		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 
-		for (LimitGoodsSku limitGoodsSku : limitGoodsSkuList) {
+		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
 			if (ActivityStatus.PROCESSING == activityStatus) {
@@ -83,8 +82,7 @@ public class LimitCommonService {
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
 		} 
-		
-		if(null == lgs && !mapNo.isEmpty()) {
+		 if(null !=lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;

@@ -23,9 +23,9 @@
             t_esp_limit_goods_sku
         WHERE 1=1
         ]]>
-        <if test="limitBuyActId!=null and limitBuyActId!=''"> AND limit_buy_act_id = '#{limitBuyActId}' </if>
-        <if test="goodsId!=null and goodsId!=''"> AND goods_id = '#{goodsId}' </if>
-        <if test="skuId!=null and skuId!=''"> AND sku_id = '#{skuId}' </if>
+        <if test="limitBuyActId!=null and limitBuyActId!=''"> AND limit_buy_act_id = #{limitBuyActId} </if>
+        <if test="goodsId!=null and goodsId!=''"> AND goods_id = #{goodsId} </if>
+        <if test="skuId!=null and skuId!=''"> AND sku_id = #{skuId} </if>
         <![CDATA[ 
             ORDER BY sort_no desc
         ]]>

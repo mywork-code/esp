@@ -1,16 +1,12 @@
 package com.apass.esp.service.activity;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitGoodsSku;
-import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -20,7 +16,6 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 限时购活动商品
  * @author wht
@@ -32,6 +27,8 @@ public class LimitGoodsSkuService {
     public LimitGoodsSkuMapper limitGoodsSkuMapper;
     @Autowired
     public GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    public LimitCommonService limitCommonService;
     @Autowired
     public GoodsService goodsService;
     @Autowired
@@ -79,6 +76,16 @@ public class LimitGoodsSkuService {
         return limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
     }
     /**
+     * READ LIST
+     * @param userId
+     * @return
+     */
+    public List<LimitGoodsSku> readEntityList(Long limitBuyActId) {
+        LimitGoodsSku entity = new LimitGoodsSku();
+        entity.setLimitBuyActId(limitBuyActId);
+        return limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+    }
+    /**
      * UPDATED
      * @param entity
      * @return
@@ -114,44 +121,100 @@ public class LimitGoodsSkuService {
      * @param list
      * @return
      */
-    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list,Long limitBuyActId) {
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
-        for(LimitGoodsSku entity : list){
-            LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
-            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
-            GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
-            Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
-            //复制商品表
-            BeanUtils.copyProperties(goods, vo);
-            vo.setGoodsId(goods.getId());
-            vo.setId(null);
-            //复制库存表
-            vo.setStockCurrAmt(stock.getStockCurrAmt());
-            vo.setMarketPrice(stock.getMarketPrice());
-            //复制导入数据
-            vo.setActivityPrice(entity.getActivityPrice());
-            vo.setSkuId(entity.getSkuId());
-            //复制类目名称数据
-            vo.setCategoryId1Name(cate.getCategoryName());
-            vo.setSortNo(++sortNo);
-            skuvolist.add(vo);
+        if(limitBuyActId==null){   
+            for(LimitGoodsSku entity : list){
+                if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+                    continue;
+                }
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //清空主键  因为复制商品基本信息表时主键被复制了
+                vo.setId(null);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+            }
+        }else{
+            List<LimitGoodsSku> skulistbydb = readEntityList(limitBuyActId);
+            for(LimitGoodsSku entity : skulistbydb){
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //复制商品活动表   表面复制商品基本信息表带入主键
+                BeanUtils.copyProperties(entity, vo);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+            }
+            for(LimitGoodsSku entity : list){
+                if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+                    continue;
+                }
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //清空主键  因为复制商品基本信息表时主键被复制了
+                vo.setId(null);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+                if(sortNo==10){
+                    break;
+                }
+            }
         }
         return skuvolist;
     }
     /**
-     * 
+     * getLimitGoodsList by LIMITBUYACTID
      * @param entity
      * @return
      */
-    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitBuyActVo entity) {
-        List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
-        Boolean falg = StringUtils.isBlank(""+entity.getId());
-        if(!falg){
-            String date1 = entity.getStartDay()+" 00:00:00";
-            String date2 = entity.getStartDay()+" 23:00:00";
-            entity.setStartDayBefore(DateFormatUtil.string2date(date1, null));
-            entity.setStartDayAfter(DateFormatUtil.string2date(date2, null));
+    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitGoodsSku entity) {
+        List<LimitGoodsSku> skulist = null;
+        List<LimitGoodsSkuVo> skuvolist = null;
+        if(entity.getLimitBuyActId()==null){
+            skuvolist = new ArrayList<LimitGoodsSkuVo>();
+        }else{
+            skulist = readEntityList(entity);
+            skuvolist = findGoodsInfoListBySkuId(skulist,null);
         }
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
         pageBody.setTotal(skuvolist.size());

@@ -119,7 +119,7 @@ public class LimitBuyActController {
      */
     @ResponseBody
     @RequestMapping("/getLimitGoodsList")
-    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitBuyActVo entity) {
+    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitGoodsSku entity) {
         ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try {
             ResponsePageBody<LimitGoodsSkuVo> pagination=limitGoodsSkuService.getLimitGoodsList(entity);
@@ -144,7 +144,7 @@ public class LimitBuyActController {
         ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try{
             List<LimitGoodsSku> listsku = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
-            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku);
+            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku,actvo.getLimitBuyActId());
             respBody.setTotal(listgoods.size());
             respBody.setRows(listgoods);
             respBody.setStatus(CommonCode.SUCCESS_CODE);

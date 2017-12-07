@@ -70,8 +70,9 @@ $(function () {
             width : 200,
             align : 'center',
             formatter : function(value, row, index) {
-                var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\"" + row.id + "\");'>编辑活动</a>&nbsp;";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleteDetails(\"" + row.id + "\");'>删除活动</a>";
+            	var content = ""
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\""+row.id+"\",\""+row.startDate+"\",\""+row.startTime+"\");'>编辑活动</a>&nbsp;";
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleDetails(\""+row.id+"\");'>删除活动</a>";
                 return content;
             }
         }]],
@@ -136,6 +137,16 @@ $(function () {
     	$('#uploadGoodsList').datagrid('load', params);
 		$('#editLayer').show(500,editLayerShow());
     });
+    $.editDetails = function(id,startDate,startTime) {
+    	limitBuyActId = id;
+    	$("#startDayAdd").datebox('setValue', '');
+    	$("#startDayAdd").datebox('setValue', new Date(startDate).Format("yyyy-MM-dd"));
+    	$("#startTimeAdd").combobox('setValue',startTime);
+    	var params = {};
+    	params['limitBuyActId']=limitBuyActId;
+    	$('#uploadGoodsList').datagrid('load', params);
+		$('#editLayer').show(500,editLayerShow());
+	};
     //返回
     $(".cancel-btn").click(function() {
     	$('#editLayer').hide(500,editLayerHide());
@@ -164,6 +175,11 @@ $(function () {
 	});
 	//导入商品  弹窗
 	$(".upload-btn").click(function() {
+		var rows = $('#uploadGoodsList').datagrid('getRows');
+		if(limitBuyActId!=""&&rows.length>9){
+			$.messager.alert("提示", "该限时购活动商品已达上限10个,不可继续上传商品!", "info");
+			return;
+		}
 		$("#upLoadGoodsFile").val('');
 		$('#upLoadGoods').window({modal: true});
 		$('#upLoadGoods').window('open');

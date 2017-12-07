@@ -6,12 +6,20 @@ import com.apass.esp.common.model.QueryParams;
  * Created by jie.xu on 17/4/28.
  */
 public class ActivityBindRelStatisticQuery extends QueryParams {
-
+	private String mobile;
 	private String startCreateDate;
 	private String endCreateDate;
 	private String type;
 	private Long activityId;
 	private Long userId;
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 
 	public String getStartCreateDate() {
 		return startCreateDate;
