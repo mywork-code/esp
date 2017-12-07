@@ -299,6 +299,7 @@ $(function () {
             }
         });
     });
+    
     //单个商品添加至
     $.editGoodsAndActivity = function (goodsId, activityId) {
         /**加载该活动的分组**/
@@ -310,8 +311,9 @@ $(function () {
             onLoadSuccess: function (object) {
                 var l = object.length;
                 if (l > 0) {
-                    $("#addGoodsToGroup").window('open');
-                    $("#addGoodsToGroupActivityId").val(activityId);
+                	$('#addGoodsToGroup').window("resize",{top:$(document).scrollTop() + ($(window).height()-250) * 0.5});//居中显示
+                	$('#addGoodsToGroup').window('open')
+                	$("#addGoodsToGroupActivityId").val(activityId);
                     $("#addGoodsToGroupGoodsId").val(goodsId);
                 } else {
                     alert("请先创建分组！");
