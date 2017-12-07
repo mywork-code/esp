@@ -65,8 +65,8 @@ public class LimitCommonService {
 		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
 			return null;
 		}
-		TreeMap<Integer, Object> mapOn = new TreeMap<>();//正在进行中的活动
-		TreeMap<Integer, Object> mapNo = new TreeMap<>();//还没有开始的活动
+		TreeMap<Long, Object> mapOn = new TreeMap<>();//正在进行中的活动
+		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
@@ -74,18 +74,19 @@ public class LimitCommonService {
 			if (ActivityStatus.PROCESSING == activityStatus) {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
-				limitGoodsSku.setTime((int) time2);
-				mapOn.put((int) time, limitGoodsSku);
-			} 
+				limitGoodsSku.setTime(time2);
+				mapOn.put(time, limitGoodsSku);
+			}
 			if (ActivityStatus.NO == activityStatus) {
 				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
-				limitGoodsSku.setTime((int) time);
-				mapNo.put((int) time, limitGoodsSku);
+				limitGoodsSku.setTime(time);
+				mapNo.put(time, limitGoodsSku);
 			}
 		}
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
-		} else if(!mapNo.isEmpty()) {
+		} 
+		 if(null !=lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
