@@ -60,7 +60,6 @@
         <if test="startTime!=null and startTime!=''"> AND start_time = #{startTime}</if>
         ORDER BY start_date DESC
     </select>
-<<<<<<< HEAD
     <select id="getLimitBuyActListDeSelect" resultType="com.apass.esp.domain.entity.LimitBuyAct">
         <![CDATA[
         SELECT
@@ -82,7 +81,4 @@
         ORDER BY start_date asc
         ]]>
     </select>
-=======
-
->>>>>>> 07fa13432d451ba9f27b532c41d6bd9565d0fc92
 </mapper>
