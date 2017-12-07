@@ -76,7 +76,7 @@ public class LimitCommonService {
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
 				limitGoodsSku.setTime((int) time2);
 				mapOn.put((int) time, limitGoodsSku);
-			}
+			} 
 			if (ActivityStatus.NO == activityStatus) {
 				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
 				limitGoodsSku.setTime((int) time);
