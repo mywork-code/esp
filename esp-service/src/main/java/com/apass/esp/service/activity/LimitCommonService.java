@@ -1,7 +1,12 @@
 package com.apass.esp.service.activity;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +32,9 @@ public class LimitCommonService {
 	 * @param goodsId
 	 * @return
 	 */
-	public Boolean isLimitByGoodsId(Long goodsId){
+	public Boolean isLimitByGoodsId(String skuId){
 		LimitGoodsSku entity =new LimitGoodsSku();
-		entity.setGoodsId(goodsId);
+		entity.setSkuId(skuId);
 		List<LimitGoodsSku>  LimitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if(null ==LimitGoodsSkuList ||  LimitGoodsSkuList.size()==0 ){
 			return false;
@@ -42,6 +47,48 @@ public class LimitCommonService {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 根据商品id查询限时购的相关信息
+	 * 当返回值为null时，代表该商品没有参加限时购或者参加了已经结束
+	 * 1.首先判断该商品存在多少个进行的活动中或者还未开始的活动中
+	 * 2.将活动开始时间与服务器时间的时间差（）
+	 * @return
+	 */
+	public LimitGoodsSku selectLimitByGoodsId(String skuId) {
+		LimitGoodsSku lgs = null;
+
+		LimitGoodsSku entity = new LimitGoodsSku();
+		entity.setSkuId(skuId);
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
+			return null;
+		}
+		TreeMap<Integer, Object> mapOn = new TreeMap<>();//正在进行中的活动
+		TreeMap<Integer, Object> mapNo = new TreeMap<>();//还没有开始的活动
+
+		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
+			if (ActivityStatus.PROCESSING == activityStatus) {
+				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
+				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
+				limitGoodsSku.setTime((int) time2);
+				mapOn.put((int) time, limitGoodsSku);
+			} 
+			if (ActivityStatus.NO == activityStatus) {
+				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
+				limitGoodsSku.setTime((int) time);
+				mapNo.put((int) time, limitGoodsSku);
+			}
+		}
+		if (!mapOn.isEmpty()) {
+			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
+		} else if(!mapNo.isEmpty()) {
+			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
+		}
+		return lgs;
 	}
 	/**
 	 * 判断限时购活动的状态

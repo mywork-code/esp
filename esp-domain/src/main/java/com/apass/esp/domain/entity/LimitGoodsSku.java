@@ -12,6 +12,7 @@ public class LimitGoodsSku extends CreatedUser{
     private Long limitNum;
     private Long sortNo;
     private String url;
+    private int time;//离活动开始时间或活动开始时间与服务器时间差
     public Long getId() {
         return id;
     }
@@ -72,4 +73,11 @@ public class LimitGoodsSku extends CreatedUser{
     public void setUrl(String url) {
         this.url = url;
     }
+	public int getTime() {
+		return time;
+	}
+	public void setTime(int time) {
+		this.time = time;
+	}
+    
 }
