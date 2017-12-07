@@ -738,8 +738,26 @@ public class GoodsService {
 			jdSimilarSkuVo.setGoodsStockId(goodsStockInfoEntity.getId().toString());
 			jdSimilarSkuVo.setStockCurrAmt(goodsStockInfoEntity.getStockCurrAmt());
 			BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsStockInfoEntity.getId());
-			jdSimilarSkuVo.setPrice(price);
-			jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+			
+			//根据skuId查询该规格是否参加了限时购活动
+			LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+			if(null !=limitGS){
+				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+				jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
+				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+				jdSimilarSkuVo.setPriceOriginal(price);//原价
+				jdSimilarSkuVo.setIsLimitActivity(true);
+				jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+				jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+				jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+				jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+				jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+				jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+			}else{
+				jdSimilarSkuVo.setPrice(price);
+				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+			}
 			jdSimilarSkuVo.setStockDesc("无货");
 			if (null != goodsStockInfoEntity.getStockCurrAmt() && goodsStockInfoEntity.getStockCurrAmt() > 0 && !isUnSupport) {
 				jdSimilarSkuVo.setStockDesc("有货");
