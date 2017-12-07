@@ -614,7 +614,11 @@ public class AfterSaleService {
 
             if(!CollectionUtils.isEmpty(serviveList)){
                 for(SkuObject skuObj : serviveList){
-                    List<AfsServicebyCustomerPin> serviceInfoList = skuObj.getResult().getResult().getServiceInfoList();
+                    AfsServicebyCustomerPinPage result = skuObj.getResult().getResult();
+                    if(result == null){
+                        continue;
+                    }
+                    List<AfsServicebyCustomerPin> serviceInfoList = result.getServiceInfoList();
                     if (serviceInfoList == null) {
                         throw new BusinessException("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!!");
                     }
@@ -654,6 +658,7 @@ public class AfterSaleService {
                 LOG.info(requestId, "保存物流厂商、单号信息", "数据入库失败");
                 throw new BusinessException("保存物流厂商、单号信息失败!");
             }
+
         }
 
     }
