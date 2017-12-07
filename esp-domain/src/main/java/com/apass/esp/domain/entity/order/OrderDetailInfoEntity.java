@@ -161,8 +161,20 @@ public class OrderDetailInfoEntity {
     
     //促销活动id
     private String proActivityId;
+    
+    //限时购活动的Id
+    private String limitActivityId;
+    
 
-    public String getProActivityId() {
+    public String getLimitActivityId() {
+		return limitActivityId;
+	}
+
+	public void setLimitActivityId(String limitActivityId) {
+		this.limitActivityId = limitActivityId;
+	}
+
+	public String getProActivityId() {
         return proActivityId;
     }
 

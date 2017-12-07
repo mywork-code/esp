@@ -144,7 +144,7 @@ public class LimitBuyActController {
         ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try{
             List<LimitGoodsSku> listsku = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
-            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku);
+            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku,actvo.getLimitBuyActId());
             respBody.setTotal(listgoods.size());
             respBody.setRows(listgoods);
             respBody.setStatus(CommonCode.SUCCESS_CODE);

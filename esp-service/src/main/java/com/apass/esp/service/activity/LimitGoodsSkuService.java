@@ -28,6 +28,8 @@ public class LimitGoodsSkuService {
     @Autowired
     public GoodsStockInfoService goodsStockInfoService;
     @Autowired
+    public LimitCommonService limitCommonService;
+    @Autowired
     public GoodsService goodsService;
     @Autowired
     private CategoryInfoService categoryInfoService;
@@ -74,6 +76,16 @@ public class LimitGoodsSkuService {
         return limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
     }
     /**
+     * READ LIST
+     * @param userId
+     * @return
+     */
+    public List<LimitGoodsSku> readEntityList(Long limitBuyActId) {
+        LimitGoodsSku entity = new LimitGoodsSku();
+        entity.setLimitBuyActId(limitBuyActId);
+        return limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+    }
+    /**
      * UPDATED
      * @param entity
      * @return
@@ -109,28 +121,84 @@ public class LimitGoodsSkuService {
      * @param list
      * @return
      */
-    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list,Long limitBuyActId) {
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
-        for(LimitGoodsSku entity : list){
-            LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
-            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
-            GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
-            Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
-            //复制商品表
-            BeanUtils.copyProperties(goods, vo);
-            vo.setGoodsId(goods.getId());
-            vo.setId(null);
-            //复制库存表
-            vo.setStockCurrAmt(stock.getStockCurrAmt());
-            vo.setMarketPrice(stock.getMarketPrice());
-            //复制导入数据
-            vo.setActivityPrice(entity.getActivityPrice());
-            vo.setSkuId(entity.getSkuId());
-            //复制类目名称数据
-            vo.setCategoryId1Name(cate.getCategoryName());
-            vo.setSortNo(++sortNo);
-            skuvolist.add(vo);
+        if(limitBuyActId==null){   
+            for(LimitGoodsSku entity : list){
+                if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+                    continue;
+                }
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //清空主键  因为复制商品基本信息表时主键被复制了
+                vo.setId(null);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+            }
+        }else{
+            List<LimitGoodsSku> skulistbydb = readEntityList(limitBuyActId);
+            for(LimitGoodsSku entity : skulistbydb){
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //复制商品活动表   表面复制商品基本信息表带入主键
+                BeanUtils.copyProperties(entity, vo);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+            }
+            for(LimitGoodsSku entity : list){
+                if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+                    continue;
+                }
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //清空主键  因为复制商品基本信息表时主键被复制了
+                vo.setId(null);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制导入数据
+                vo.setActivityPrice(entity.getActivityPrice());
+                vo.setSkuId(entity.getSkuId());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+                if(sortNo==10){
+                    break;
+                }
+            }
         }
         return skuvolist;
     }
@@ -146,7 +214,7 @@ public class LimitGoodsSkuService {
             skuvolist = new ArrayList<LimitGoodsSkuVo>();
         }else{
             skulist = readEntityList(entity);
-            skuvolist = findGoodsInfoListBySkuId(skulist);
+            skuvolist = findGoodsInfoListBySkuId(skulist,null);
         }
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
         pageBody.setTotal(skuvolist.size());

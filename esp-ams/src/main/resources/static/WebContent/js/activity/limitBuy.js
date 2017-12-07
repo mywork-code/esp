@@ -175,6 +175,11 @@ $(function () {
 	});
 	//导入商品  弹窗
 	$(".upload-btn").click(function() {
+		var rows = $('#uploadGoodsList').datagrid('getRows');
+		if(limitBuyActId!=""&&rows.length>9){
+			$.messager.alert("提示", "该限时购活动商品已达上限10个,不可继续上传商品!", "info");
+			return;
+		}
 		$("#upLoadGoodsFile").val('');
 		$('#upLoadGoods').window({modal: true});
 		$('#upLoadGoods').window('open');
