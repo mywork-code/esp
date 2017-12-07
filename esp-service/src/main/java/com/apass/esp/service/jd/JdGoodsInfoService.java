@@ -364,7 +364,7 @@ public class JdGoodsInfoService {
 		}
 		// 在所有参加限时购的规格中判断是否含有传入参数sku
 		if (!LimitMap.isEmpty()) {
-			if (null == LimitMap.get(sku)) {
+			if (null == LimitMap.get(sku+"")) {
 				for (Map.Entry<String, Object> entry : LimitMap.entrySet()) {
 					isSelectSkuIdOrder = (String) entry.getValue();
 					break;
