@@ -156,7 +156,7 @@ public class LimitGoodsSkuService {
             if(sb.toString().contains(entity.getSkuId())){
                 continue;
             }
-            sb.append(entity.getSkuId());
+            sb.append(entity.getSkuId()).append("++");
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
             GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());

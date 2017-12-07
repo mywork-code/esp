@@ -1,5 +1,5 @@
 /**
- * goodsAttribute
+ * 限时购
  */
 $(function () {
 	$('#upLoadGoods').window('close');
@@ -260,6 +260,7 @@ $(function () {
 	$("#editGoodsFromCancle").click(function() {save-btn
 		$('#editGoods').window('close');
 	});
+	/**保存所有数据   限时购   和   限时购商品列表  （新增 修改）	 */
 	$(".save-btn").click(function() {
 		var startDay = $("#startDayAdd").datebox('getValue');
 		var startTime = $("#startTimeAdd").combobox('getValue');
