@@ -119,7 +119,7 @@ public class LimitBuyActController {
      */
     @ResponseBody
     @RequestMapping("/getLimitGoodsList")
-    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitBuyActVo entity) {
+    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitGoodsSku entity) {
         ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try {
             ResponsePageBody<LimitGoodsSkuVo> pagination=limitGoodsSkuService.getLimitGoodsList(entity);

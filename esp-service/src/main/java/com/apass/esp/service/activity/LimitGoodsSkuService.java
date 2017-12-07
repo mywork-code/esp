@@ -1,16 +1,12 @@
 package com.apass.esp.service.activity;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitGoodsSku;
-import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
@@ -20,7 +16,6 @@ import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.utils.BaseConstants;
-import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
  * 限时购活动商品
  * @author wht
@@ -140,18 +135,18 @@ public class LimitGoodsSkuService {
         return skuvolist;
     }
     /**
-     * 
+     * getLimitGoodsList by LIMITBUYACTID
      * @param entity
      * @return
      */
-    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitBuyActVo entity) {
-        List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
-        Boolean falg = StringUtils.isBlank(""+entity.getId());
-        if(!falg){
-            String date1 = entity.getStartDay()+" 00:00:00";
-            String date2 = entity.getStartDay()+" 23:00:00";
-            entity.setStartDayBefore(DateFormatUtil.string2date(date1, null));
-            entity.setStartDayAfter(DateFormatUtil.string2date(date2, null));
+    public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitGoodsSku entity) {
+        List<LimitGoodsSku> skulist = null;
+        List<LimitGoodsSkuVo> skuvolist = null;
+        if(entity.getLimitBuyActId()==null){
+            skuvolist = new ArrayList<LimitGoodsSkuVo>();
+        }else{
+            skulist = readEntityList(entity);
+            skuvolist = findGoodsInfoListBySkuId(skulist);
         }
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
         pageBody.setTotal(skuvolist.size());

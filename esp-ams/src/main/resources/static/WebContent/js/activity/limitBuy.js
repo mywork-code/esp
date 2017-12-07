@@ -70,8 +70,9 @@ $(function () {
             width : 200,
             align : 'center',
             formatter : function(value, row, index) {
-                var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\"" + row.id + "\");'>编辑活动</a>&nbsp;";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleteDetails(\"" + row.id + "\");'>删除活动</a>";
+            	var content = ""
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\""+row.id+"\",\""+row.startDate+"\",\""+row.startTime+"\");'>编辑活动</a>&nbsp;";
+                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleDetails(\""+row.id+"\");'>删除活动</a>";
                 return content;
             }
         }]],
@@ -136,6 +137,16 @@ $(function () {
     	$('#uploadGoodsList').datagrid('load', params);
 		$('#editLayer').show(500,editLayerShow());
     });
+    $.editDetails = function(id,startDate,startTime) {
+    	limitBuyActId = id;
+    	$("#startDayAdd").datebox('setValue', '');
+    	$("#startDayAdd").datebox('setValue', new Date(startDate).Format("yyyy-MM-dd"));
+    	$("#startTimeAdd").combobox('setValue',startTime);
+    	var params = {};
+    	params['limitBuyActId']=limitBuyActId;
+    	$('#uploadGoodsList').datagrid('load', params);
+		$('#editLayer').show(500,editLayerShow());
+	};
     //返回
     $(".cancel-btn").click(function() {
     	$('#editLayer').hide(500,editLayerHide());
