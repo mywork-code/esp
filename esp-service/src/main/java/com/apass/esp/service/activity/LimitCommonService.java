@@ -52,6 +52,8 @@ public class LimitCommonService {
 	/**
 	 * 根据商品id查询限时购的相关信息
 	 * 当返回值为null时，代表该商品没有参加限时购或者参加了已经结束
+	 * 1.首先判断该商品存在多少个进行的活动中或者还未开始的活动中
+	 * 2.将活动开始时间与服务器时间的时间差（）
 	 * @return
 	 */
 	public LimitGoodsSku selectLimitByGoodsId(String skuId) {
@@ -70,19 +72,20 @@ public class LimitCommonService {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
 			if (ActivityStatus.PROCESSING == activityStatus) {
-				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();
-				limitGoodsSku.setTime((int) time);
+				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
+				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
+				limitGoodsSku.setTime((int) time2);
 				mapOn.put((int) time, limitGoodsSku);
-			}
+			} 
 			if (ActivityStatus.NO == activityStatus) {
-				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();
+				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
 				limitGoodsSku.setTime((int) time);
 				mapNo.put((int) time, limitGoodsSku);
 			}
 		}
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
-		} else {
+		} else if(!mapNo.isEmpty()) {
 			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
