@@ -73,11 +73,13 @@ public class LimitCommonService {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
 				limitGoodsSku.setTime(time2);
+				limitGoodsSku.setLimitFalg("InProgress");
 				mapOn.put(time, limitGoodsSku);
 			}
 			if (ActivityStatus.NO == activityStatus) {
 				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
 				limitGoodsSku.setTime(time);
+				limitGoodsSku.setLimitFalg("NotBeginning");
 				mapNo.put(time, limitGoodsSku);
 			}
 		}

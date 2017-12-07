@@ -265,6 +265,8 @@ public class JdGoodsInfoService {
 			}
 		}
 		Map<String,Object> LimitMap=new HashMap<>();
+//		Map<String,Object> LimitGoodsSkuMap=new HashMap<>();
+
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
@@ -333,6 +335,7 @@ public class JdGoodsInfoService {
 				LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(skuId);
 				if(null !=limitGS){
 					LimitMap.put(skuId, skuIdOrder);
+//					LimitGoodsSkuMap.put(skuId, limitGS);
 					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
 					jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
@@ -359,14 +362,14 @@ public class JdGoodsInfoService {
 				isSelectSkuIdOrder = skuIdOrder;
 			}
 		}
-		//在所有参加限时购的规格中判断是否含有传入参数sku
-		if(!LimitMap.isEmpty()){
-			if(null ==LimitMap.get(sku)){
-				 for (Map.Entry<String, Object> entry : LimitMap.entrySet()) {
-					 isSelectSkuIdOrder= (String) entry.getValue();
-					 break;
-				 }
-			}
+		// 在所有参加限时购的规格中判断是否含有传入参数sku
+		if (!LimitMap.isEmpty()) {
+			if (null == LimitMap.get(sku)) {
+				for (Map.Entry<String, Object> entry : LimitMap.entrySet()) {
+					isSelectSkuIdOrder = (String) entry.getValue();
+					break;
+				}
+			} 
 		}
 		// 为app端标记初始化被选中商品的规格
 		if (isSelectSkuIdOrder.length() > 0) {
