@@ -1,11 +1,7 @@
 package com.apass.esp.service.activity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +82,7 @@ public class LimitCommonService {
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
 		} 
-		 if(null !=lgs && !mapNo.isEmpty()) {
+		 if(null ==lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
