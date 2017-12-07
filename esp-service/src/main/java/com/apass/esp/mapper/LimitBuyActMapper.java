@@ -6,7 +6,13 @@ import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 public interface LimitBuyActMapper extends GenericMapper<LimitBuyAct,Long> {
     /**
-     * 
+     * 反选
+     * @param entity
+     * @return
+     */
+    public List<LimitBuyAct> getLimitBuyActListDeSelect(LimitBuyAct entity);
+    /**
+     * 剧条件查询
      * @param entity
      * @return
      */
