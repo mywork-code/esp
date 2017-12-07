@@ -3,6 +3,7 @@ package com.apass.esp.noauth.home;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
@@ -39,9 +41,11 @@ import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
+import com.apass.esp.domain.enums.LimitBuyStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.domain.vo.LimitBuyActBannerVo;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
@@ -51,6 +55,7 @@ import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.activity.LimitBuyActService;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -68,9 +73,9 @@ import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
@@ -138,6 +143,9 @@ public class ShopHomeController {
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+
+    @Autowired
+    private LimitBuyActService limitBuyActService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -213,6 +221,25 @@ public class ShopHomeController {
                     goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
                 }
             }
+
+            //限时购:开始时间和banner图
+            //查询是当前是否有限时购活动：无-->不显示 有显示入口
+            LimitBuyAct limitBuyAct = new LimitBuyAct();
+            limitBuyAct.setStatus((byte)Integer.parseInt(LimitBuyStatus.PROCEED.getValue()));
+            List<LimitBuyAct> limitBuyActs = limitBuyActService.readEntityList(limitBuyAct);
+            if(!CollectionUtils.isEmpty(limitBuyActs)){
+                LimitBuyActBannerVo limitBuyActBannerVo = new LimitBuyActBannerVo();//返回app值
+                limitBuyAct = limitBuyActs.get(0);
+                //TODO 发生产时要在对应目录上传图片 /data/nfs/gfb/eshop/banner/limitbuy
+                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171207161037.png");
+                String time = DateFormatUtil.dateToString(limitBuyAct.getStartDate(),"HH:mm");
+                limitBuyActBannerVo.setTime(time);
+                long millisecond = new Date().getTime() - limitBuyAct.getStartDate().getTime();
+                limitBuyActBannerVo.setMillisecond(millisecond);
+                returnMap.put("limitBuyActBannerVo",limitBuyActBannerVo);
+            }
+
+
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("indexInit fail", e);

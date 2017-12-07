@@ -29,4 +29,5 @@ public interface LimitBuyActMapper extends GenericMapper<LimitBuyAct,Long> {
      * @return
      */
     public Integer getLimitBuyActPageCount(LimitBuyActVo entity);
+
 }
