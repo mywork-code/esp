@@ -49,7 +49,8 @@
 		orderdetail.discount_amount  discountAmount,
 		orderdetail.coupon_money     couponMoney,
 		orderdetail.UPDATE_DATE updateDate,
-		orderdetail.pro_activity_id proActivityId
+		orderdetail.pro_activity_id proActivityId,
+		orderdetail.limit_activity_id limitActivityId
 		FROM
 			t_esp_order_detail_info orderdetail
 				LEFT JOIN t_esp_goods_base_info goodsbaseinfo on orderdetail.goods_id= goodsbaseinfo.id
@@ -120,7 +121,8 @@
              sku_id,
              pro_activity_id,
              discount_amount,
-             coupon_money
+             coupon_money,
+             limit_activity_id
              )
 			values (
 			#{orderId, jdbcType=VARCHAR},
@@ -147,7 +149,8 @@
 	        #{skuId, jdbcType=VARCHAR},
 	        #{proActivityId},
 	        #{discountAmount},
-	        #{couponMoney});
+	        #{couponMoney},
+	        #{limitActivityId});
 	]]>
 	</insert>
 

@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -19,6 +20,7 @@ import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.invoice.InvoiceService;
+import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -113,6 +115,8 @@ public class PaymentService {
 
 	@Autowired
 	private InvoiceService invoiceService;
+	@Autowired
+	public LimitBuyActMapper limitBuyActMapper;
 	
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -584,6 +588,20 @@ public class PaymentService {
 	            	}
 	            	if(cfg.getStartTime().getTime() > now.getTime() || cfg.getEndTime().getTime() < now.getTime() ){
 	            		throw new BusinessException("抱歉，您的订单内含活动已过期的商品");
+	            	}
+	            }
+	            
+	            /**
+	             * 验证限时购活动是否过期
+	             */
+	            String limitActivityId = detail.getLimitActivityId();
+	            if(StringUtils.isNotBlank(limitActivityId)){
+	            	LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(Long.parseLong(limitActivityId));
+	            	if(null == limitBuyAct){
+	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+	            	}
+	            	if(limitBuyAct.getEndDate().getTime() < now.getTime()){
+	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
 	            	}
 	            }
 	            

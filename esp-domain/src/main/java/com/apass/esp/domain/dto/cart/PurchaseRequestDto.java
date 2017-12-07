@@ -33,6 +33,11 @@ public class PurchaseRequestDto {
     private String proActivityId;
     
     /**
+     * 限时购Id
+     */
+    private String limitActivityId;
+    
+    /**
      * 是否有货
      */
     private boolean unStockDesc;
@@ -46,7 +51,15 @@ public class PurchaseRequestDto {
     
     private BigDecimal couponMoney;//优惠券优惠金额
     
-    public String getProActivityId() {
+    public String getLimitActivityId() {
+		return limitActivityId;
+	}
+
+	public void setLimitActivityId(String limitActivityId) {
+		this.limitActivityId = limitActivityId;
+	}
+
+	public String getProActivityId() {
         return proActivityId;
     }
 
