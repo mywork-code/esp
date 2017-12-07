@@ -439,7 +439,7 @@ public class GoodsService {
 			}
 		}
 		LimitGoodsSku limitGS = limitCommonService.selectLimitByGoodsId(defaultGoodsPriceStock.getSkuId());
-		defaultPrice = commonService.calculateGoodsPrice(goodsId, Long.parseLong(goodsStockId));
+		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
 		BigDecimal activityPrice = limitGS.getActivityPrice();
 		activityPrice.setScale(2, BigDecimal.ROUND_DOWN);
 		returnMap.put("goodsPrice", activityPrice);
