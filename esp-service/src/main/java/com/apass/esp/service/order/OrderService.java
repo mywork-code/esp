@@ -38,6 +38,7 @@ import com.apass.esp.domain.entity.AwardDetail;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
@@ -65,6 +66,7 @@ import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
+import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProCouponRelMapper;
@@ -225,15 +227,12 @@ public class OrderService {
     
     @Autowired
     private ProCouponMapper couponMapper;
-    
-    @Autowired
-    private ProCouponRelMapper couponRelMapper;
-
     @Autowired
     private MyCouponManagerService myCouponManagerService;
-
     @Autowired
     private InvoiceService invoiceService;
+	@Autowired
+	public LimitBuyActMapper limitBuyActMapper;
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -912,17 +911,14 @@ public class OrderService {
                 if (goods.getMerchantCode().equals(merchantCode)) {
                     GoodsStockInfoEntity goodsStock = goodsStockDao.select(purchase.getGoodsStockId());
                     OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
-                    if(StringUtils.isNotBlank(purchase.getProActivityId())){
-                    	ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
-                    	if(validActivityFlag != ActivityStatus.PROCESSING){
-                    		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
-                    		throw new BusinessException("订单中包含无效活动的商品!");
-                    	}
-                    }
-                    if(StringUtils.isEmpty(purchase.getProActivityId())){
+                    if(StringUtils.isBlank(purchase.getProActivityId())){
                     	purchase.setProActivityId("");
                     }
+                    if(StringUtils.isBlank(purchase.getLimitActivityId())){
+                    	purchase.setLimitActivityId("");
+                    }
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
+                    orderDetail.setLimitActivityId(purchase.getLimitActivityId());//把限时购活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                     orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
                     if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
@@ -1044,17 +1040,14 @@ public class OrderService {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
                 GoodsStockInfoEntity goodsStock = goodsStockDao.select(purchase.getGoodsStockId());
                 OrderDetailInfoEntity orderDetail = new OrderDetailInfoEntity();
-                if(StringUtils.isNotBlank(purchase.getProActivityId())){
-                	ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
-                	if(validActivityFlag != ActivityStatus.PROCESSING){
-                		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
-                		throw new BusinessException("订单中包含无效活动的商品!");
-                	}
-                }
-                if(StringUtils.isEmpty(purchase.getProActivityId())){
+                if(StringUtils.isBlank(purchase.getProActivityId())){
                 	purchase.setProActivityId("");
                 }
+                if(StringUtils.isBlank(purchase.getLimitActivityId())){
+                	purchase.setLimitActivityId("");
+                }
                 orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
+                orderDetail.setLimitActivityId(purchase.getLimitActivityId());//把限时购活动的id，保存到订单详情的表中
                 orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                 orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
                 if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
@@ -1284,6 +1277,25 @@ public class OrderService {
                 LOG.info(requestId, "id为" + purchase.getGoodsId() + "的商品价格发生改变，请重新购买！", purchase
                         .getGoodsStockId().toString());
                 throw new BusinessException("商品价格已变动，请重新下单");
+            }
+            
+            //验证商品参加的活动是否过期
+            ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+        	if(validActivityFlag != ActivityStatus.PROCESSING){
+        		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
+        		throw new BusinessException("订单中包含无效活动的商品!");
+        	}
+        	
+            //验证限时购活动是否结束
+            String limitActivityId = purchase.getLimitActivityId();
+            if(StringUtils.isNotBlank(limitActivityId)){
+            	LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(Long.parseLong(limitActivityId));
+            	if(null == limitBuyAct){
+            		throw new BusinessException("商品价格已变动，请重新下单");
+            	}
+            	if(limitBuyAct.getEndDate().getTime() < new Date().getTime()){
+            		throw new BusinessException("商品价格已变动，请重新下单");
+            	}
             }
         }
         // 校验商品订单总金额

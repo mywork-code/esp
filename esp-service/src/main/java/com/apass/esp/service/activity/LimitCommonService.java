@@ -1,12 +1,17 @@
 package com.apass.esp.service.activity;
+
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.mapper.LimitGoodsSkuMapper;
 /**
  * 对限时购的公共操作
  * @author aopai
@@ -14,24 +19,24 @@ import com.apass.esp.domain.enums.ActivityStatus;
  */
 @Service
 public class LimitCommonService {
-    @Autowired
-    public LimitBuyActService limitBuyActService;
-	@Autowired
-	public LimitGoodsSkuService limitGoodsSkuService;
+	  @Autowired
+	  public LimitGoodsSkuMapper limitGoodsSkuMapper;
+	  @Autowired
+	  public LimitBuyActMapper limitBuyActMapper;
 	/**
-	 * 根据skuId判断是否是限时购商品
+	 * 根据goodsId判断是否是限时购商品
 	 * @param goodsId
 	 * @return
 	 */
 	public Boolean isLimitByGoodsId(String skuId){
 		LimitGoodsSku entity =new LimitGoodsSku();
 		entity.setSkuId(skuId);
-		List<LimitGoodsSku>  LimitGoodsSkuList=limitGoodsSkuService.readEntityList(entity);
+		List<LimitGoodsSku>  LimitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if(null ==LimitGoodsSkuList ||  LimitGoodsSkuList.size()==0 ){
 			return false;
 		}
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
-			LimitBuyAct limitBuyAct=limitBuyActService.readEntity(limitGoodsSku.getLimitBuyActId());
+			LimitBuyAct limitBuyAct=limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus =getLimitBuyStatus(limitBuyAct.getStartDate(),limitBuyAct.getEndDate());
 			if(ActivityStatus.PROCESSING==activityStatus || ActivityStatus.NO==activityStatus){
 				return true;
@@ -52,7 +57,7 @@ public class LimitCommonService {
 
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
-		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuService.readEntityList(entity);
+		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
 			return null;
 		}
@@ -60,8 +65,10 @@ public class LimitCommonService {
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
-			LimitBuyAct limitBuyAct = limitBuyActService.readEntity(limitGoodsSku.getLimitBuyActId());
+			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
+			limitGoodsSku.setStartTime(limitBuyAct.getStartDate());
+			limitGoodsSku.setEndTime(limitBuyAct.getEndDate());
 			if (ActivityStatus.PROCESSING == activityStatus) {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
@@ -77,7 +84,7 @@ public class LimitCommonService {
 		if (!mapOn.isEmpty()) {
 			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
 		} 
-		 if(null !=lgs && !mapNo.isEmpty()) {
+		 if(null ==lgs && !mapNo.isEmpty()) {
 			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
