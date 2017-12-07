@@ -1,6 +1,7 @@
 package com.apass.esp.domain.entity.jd;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public class JdSimilarSkuVo {
@@ -16,6 +17,8 @@ public class JdSimilarSkuVo {
 	private Long limitBuyActId;//限购活动id
 	private String limitBuyFalg;//限购状态标准（活动未开始NotBeginning；活动进行中  InProgress）
 	private Long limitBuyTime;//距离开始时间或距离结束时间
+	private Date limitBuyStartTime;
+	private Date limitBuyEndTime;
 	private String stockDesc;
 	private String activityCfg;
 	private Long proActivityId;
@@ -122,6 +125,18 @@ public class JdSimilarSkuVo {
 	}
 	public void setLimitBuyTime(Long limitBuyTime) {
 		this.limitBuyTime = limitBuyTime;
+	}
+	public Date getLimitBuyStartTime() {
+		return limitBuyStartTime;
+	}
+	public void setLimitBuyStartTime(Date limitBuyStartTime) {
+		this.limitBuyStartTime = limitBuyStartTime;
+	}
+	public Date getLimitBuyEndTime() {
+		return limitBuyEndTime;
+	}
+	public void setLimitBuyEndTime(Date limitBuyEndTime) {
+		this.limitBuyEndTime = limitBuyEndTime;
 	}
 	
 }

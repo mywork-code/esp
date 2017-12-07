@@ -343,6 +343,8 @@ public class JdGoodsInfoService {
 					jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
 					jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
 					jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+					jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+					jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
 				}else{
 					jdSimilarSkuVo.setPrice(price);
 					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));

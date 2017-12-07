@@ -67,6 +67,8 @@ public class LimitCommonService {
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
+			limitGoodsSku.setStartTime(limitBuyAct.getStartDate());
+			limitGoodsSku.setEndTime(limitBuyAct.getEndDate());
 			if (ActivityStatus.PROCESSING == activityStatus) {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
