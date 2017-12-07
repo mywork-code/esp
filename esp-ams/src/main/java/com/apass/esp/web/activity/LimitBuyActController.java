@@ -202,11 +202,12 @@ public class LimitBuyActController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/editLimitBuyAct")
+    @RequestMapping(value = "/editLimitBuyAct", method = RequestMethod.POST)
     @LogAnnotion(operationType = "限时购活动修改", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response editLimitBuyAct(LimitBuyActVo buyActView) {
+    public Response editLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            return limitBuyActService.editLimitBuyAct(buyActView);
+            String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            return limitBuyActService.editLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动修改异常,"+e.getErrorDesc());

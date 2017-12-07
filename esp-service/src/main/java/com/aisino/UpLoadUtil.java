@@ -104,8 +104,9 @@ public class UpLoadUtil{
                 throw new BusinessException("XLS文件出现多余单元格（列）！");
             }
         }
-        T objt = clz.newInstance();
+        T objt = null;
         for(Map<String,Object> map : listMap){
+            objt = clz.newInstance();
             objt = (T) FarmartJavaBean.map2entity(objt, clz, map);
             list.add(objt);
         }
