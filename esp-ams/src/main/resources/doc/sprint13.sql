@@ -41,3 +41,7 @@ CREATE TABLE `t_esp_limit_buydetail` (
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='限时购活动用户购买商品数量表';
+
+
+ALTER TABLE `t_esp_order_detail_info`
+ADD COLUMN `limit_activity_id`  varchar(20)  NOT NULL DEFAULT '' COMMENT '限时购活动ID' ;
