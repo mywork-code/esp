@@ -51,8 +51,6 @@ public class JDTaskListener implements MessageListener {
   @Autowired
   private GoodsService goodsService;
   @Autowired
-  private OrderService orderService;
-  @Autowired
   private OrderInfoRepository orderInfoRepository;
   @Autowired
   private JdGoodsMapper jdGoodsMapper;
@@ -204,17 +202,23 @@ public class JDTaskListener implements MessageListener {
     }
     if (jdApiMessage.getType() == JdMessageEnum.DELIVERED_ORDER.getType()) {//订单妥投消息
       long orderId = result.getLongValue("orderId");
-      int state = result.getIntValue("state");
+      JSONArray jsonArray = result.getJSONArray("orderTrack");
+      if(jsonArray.isEmpty()){
+        return;
+      }
+      JSONObject orderTrack = (JSONObject) jsonArray.get(0);
+      int state = orderTrack.getIntValue("state");
+      String skuId = orderTrack.getString("skuId");
       ml.setType(JdMessageEnum.DELIVERED_ORDER.getType() + "");
       ml.setOrderid(orderId + "");
-      LOGGER.info("orderId {}, state {}  1表示妥投， 2表示拒收", orderId, state);
+      LOGGER.info("orderId {}, state {},skuId {},  1表示妥投， 2表示拒收", orderId, state,skuId);
       if (state == 1) {
         LOGGER.info("orderId {}, 已投妥 ", orderId);
         OrderInfoEntity orderInfoEntity = new OrderInfoEntity();
         orderInfoEntity.setStatus(OrderStatus.ORDER_COMPLETED.getCode());
         orderInfoEntity.setExtOrderId(String.valueOf(orderId));
         orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
-        ml.setResult("妥投");
+        ml.setResult("skuId = " + skuId +",妥投");
         ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
         messageListenerMapper.insertSelective(ml);
@@ -224,7 +228,7 @@ public class JDTaskListener implements MessageListener {
         orderInfoEntity.setStatus(OrderStatus.ORDER_TRADCLOSED.getCode());
         orderInfoEntity.setExtOrderId(String.valueOf(orderId));
         orderInfoRepository.updateOrderStatusByExtOrderId(orderInfoEntity);
-        ml.setResult("拒收");
+        ml.setResult("skuId = " + skuId +"拒收");
         ml.setCreatedTime(new Date());
         ml.setUpdatedTime(new Date());
         messageListenerMapper.insertSelective(ml);

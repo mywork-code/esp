@@ -1,5 +1,7 @@
 package com.apass.esp.schedule;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.domain.enums.JdMessageEnum;
 import com.apass.esp.mq.listener.JDTaskAmqpAccess;
 import com.apass.esp.service.goods.GoodsService;
@@ -35,24 +37,13 @@ public class JDMessageScheduleTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(JDMessageScheduleTask.class);
 
     @Autowired
-    protected JdMessager jdMessager;
-
-
-    @Autowired
     private JDTaskAmqpAccess jdTaskAmqpAccess;
-
-    @Autowired
-    private SystemEnvConfig systemEnvConfig;
 
     @Autowired
     private WeiZhiMessageClient weiZhiMessageClient;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void handleJDMessageScheduleTask() {
-        if (!systemEnvConfig.isPROD()) {
-            return;
-        }
-//        List<JdApiMessage> jdApiMessageList = jdMessager.getJdApiMessages(JdMessageEnum.DELIVERED_ORDER.getType(), JdMessageEnum.SPLIT_ORDER.getType(), JdMessageEnum.WITHDRAW_SKU.getType(), JdMessageEnum.DELETEADD_SKU.getType(),JdMessageEnum.PRICE_SKU.getType());
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
         messageEnumList.add(JdMessageEnum.WITHDRAW_SKU);
@@ -74,8 +65,17 @@ public class JDMessageScheduleTask {
                     LOGGER.info("handleJDMessageScheduleTask jdApiMessage", jdApiMessage.getType(), jdApiMessage.getResult());
                     continue;
                 }
-//            jdMessager.delete(jdApiMessage.getId());
-                weiZhiMessageClient.delMsg(jdApiMessage.getId(),jdApiMessage.getType());
+                if(jdApiMessage.getType() != JdMessageEnum.DELIVERED_ORDER.getType()){
+                    weiZhiMessageClient.delMsg(jdApiMessage.getId(),jdApiMessage.getType());
+                }else if(jdApiMessage.getType() == JdMessageEnum.DELIVERED_ORDER.getType()){
+                    JSONObject result = jdApiMessage.getResult();
+                    JSONArray jsonArray = result.getJSONArray("orderTrack");
+                    for(Object jo : jsonArray){
+                        JSONObject orderTrack = (JSONObject) jo;
+                        Long id = orderTrack.getLong("id");
+                        weiZhiMessageClient.delMsg(id,JdMessageEnum.DELIVERED_ORDER.getType());
+                    }
+                }
             }
         }
     }
