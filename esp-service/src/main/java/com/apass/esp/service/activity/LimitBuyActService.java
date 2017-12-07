@@ -148,11 +148,11 @@ public class LimitBuyActService {
         BeanUtils.copyProperties(buyActView, entity);
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
         if(compareTime(entity.getStartDate())){
-            entity.setStatus("start");
+            entity.setStatus((byte)1);
         }else if(compareTime(entity.getEndDate())){
-            entity.setStatus("over");
+            entity.setStatus((byte)2);
         }else{
-            entity.setStatus("proceed");
+            entity.setStatus((byte)3);
         }
         entity.fillAllField(username);
         Long actId =null;

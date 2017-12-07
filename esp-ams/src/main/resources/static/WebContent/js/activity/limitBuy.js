@@ -27,7 +27,7 @@ $(function () {
             align : 'center',
             formatter:function(value,row,index){
         		if(value!=null){
-        			return new Date(value).Format("yyyy-MM-dd HH:mm:ss");
+        			return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
         		}
             }
         },{
@@ -37,16 +37,16 @@ $(function () {
             align : 'center',
             formatter:function(value,row,index){
         		if(value!=null){
-        			return new Date(value).Format("yyyy-MM-dd HH:mm:ss");
+        			return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
         		}
             }
         },{
             title : '有效时长',
-            field : 'opt',
+            field : 'option1',
             width : 200,
             align : 'center',
-            formatter : function(value, row, index) {
-            	return "24Hours";
+            formatter:function(value,row,index){
+        		return "24Hours";
             }
         },{
             title : '活动状态',
@@ -54,11 +54,19 @@ $(function () {
             width : 200,
             align : 'center',
             formatter:function(value,row,index){
-    			return "jinxingzhong";
+            	if(value==1){
+            		return "未开始";
+            	}
+            	if(value==2){
+            		return "进行中";
+            	}
+            	if(value==3){
+            		return "已结束";
+            	}
             }
         },{
             title : '操作',
-            field : 'opt',
+            field : 'option2',
             width : 200,
             align : 'center',
             formatter : function(value, row, index) {
@@ -75,9 +83,9 @@ $(function () {
                 dataType : "json",
                 success : function(resp) {
                     $.validateResponse(resp, function() {
-                        success(resp);
+                    	getLimitGoodsList();
                         $('#commonLayer').show(100,commonLayerShow());
-                        getLimitGoodsList();
+                        success(resp);
                     });
                 }
             })

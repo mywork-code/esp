@@ -5,7 +5,8 @@ public class LimitBuyAct extends CreatedUser{
     private Long id;
     private Date startDate;
     private Date endDate;
-    private String status;
+    private Byte status;
+    private Byte startTime;
     public Long getId() {
         return id;
     }
@@ -24,13 +25,12 @@ public class LimitBuyAct extends CreatedUser{
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
-    public String getStatus() {
+    public Byte getStatus() {
         return status;
     }
-    public void setStatus(String status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
-    private Byte startTime;
     public Byte getStartTime() {
         return startTime;
     }

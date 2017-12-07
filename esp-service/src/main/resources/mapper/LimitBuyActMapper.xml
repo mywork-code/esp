@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
     <result column="end_date" property="endDate" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
     <result column="start_time" property="startTime" jdbcType="TINYINT" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
     <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
@@ -31,7 +31,7 @@
         create_user, update_user, created_time, updated_time)
     values 
         (#{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, 
-        #{status,jdbcType=VARCHAR}, #{startTime,jdbcType=TINYINT},
+        #{status,jdbcType=TINYINT}, #{startTime,jdbcType=TINYINT},
         #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
         #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP})
   </insert>
@@ -71,7 +71,10 @@
         #{endDate,jdbcType=TIMESTAMP},
       </if>
       <if test="status != null" >
-        #{status,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TINYINT},
       </if>
       <if test="createUser != null" >
         #{createUser,jdbcType=VARCHAR},
@@ -97,7 +100,7 @@
         end_date = #{endDate,jdbcType=TIMESTAMP},
       </if>
       <if test="status != null" >
-        status = #{status,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
       </if>
       <if test="startTime != null" >
         start_time = #{startTime,jdbcType=TINYINT},
@@ -121,7 +124,7 @@
     update t_esp_limit_buy_act
     set start_date = #{startDate,jdbcType=TIMESTAMP},
       end_date = #{endDate,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
       start_time = #{startTime,jdbcType=TINYINT},
       create_user = #{createUser,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR},

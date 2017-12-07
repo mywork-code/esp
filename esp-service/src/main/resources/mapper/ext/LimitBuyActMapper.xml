@@ -5,7 +5,7 @@
     <sql id="QueryConditionSql">
         <where>
             <if test="status!=null and status!=''">
-                AND status = #{status,jdbcType=VARCHAR}
+                AND status = #{status,jdbcType=TINYINT}
             </if>
             <if test="startDay!=null and startDay!=''">
                 <![CDATA[AND start_date > #{startDayBefore}]]>
@@ -14,7 +14,7 @@
                 <![CDATA[AND start_date < #{startDayAfter}]]>
             </if>
             <if test="startTime!=null and startTime!=''">
-                AND start_time = #{startTime}
+                AND start_time = #{startTime,jdbcType=TINYINT}
             </if>
         </where>
     </sql>

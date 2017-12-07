@@ -1,8 +1,8 @@
 package com.apass.esp.domain.enums;
 public enum LimitBuyStatus {
-    START("未开始","start"),
-    PROCEED("进行中","proceed"),
-    OVER("已结束","over");
+    START("未开始","1"),
+    PROCEED("进行中","2"),
+    OVER("已结束","3");
     private String key;
     private String value;
     private LimitBuyStatus(String key,String value) {

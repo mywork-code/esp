@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- 初始查询页面 -->
-    <div id="commonLayer">
+    <div id="commonLayer" style="display: none ;width:100%;height: 100%">
 	    <div id="tb">
 	            <table>
 	                <tr>
@@ -34,8 +34,9 @@
 	                </tr>
 	            </table>
 	    </div>
-	    <div id="limitBuyActPage"></div>
+	    <div id="limitBuyActPage" style="display: none ;width:100%;height: 400px"></div>
     </div>
+    
     <!-- 限时购活动维护页面 -->
     <div id="editLayer">
         <div style="margin-left: 1100px;">
@@ -75,6 +76,7 @@
             <a href="javascript:void(0);" class="easyui-linkbutton save-btn" data-options="iconCls:'icon-add'">保存限时购活动</a>
         </div>
     </div>
+    
     <!-- 限时购活动维护页面上传商品列表 -->
     <div id="upLoadGoods" class="easyui-window" title="<font color='black'>商品SKU信息上传</font>"
     hidden="hidden" style="width: 350px; height: 200px; display: none; text-align: center;"
@@ -101,6 +103,7 @@
             </table>
         </form>
     </div>
+    
     <!-- 限时购活动维护页面上传商品列表   后续维护商品列表限购数量   上传限时购商品URL -->
     <div id="editGoods" class="easyui-window" title="<font color='black'>商品活动信息维护</font>"
     hidden="hidden" style="width: 350px; height: 200px; display: none; text-align: center;"
