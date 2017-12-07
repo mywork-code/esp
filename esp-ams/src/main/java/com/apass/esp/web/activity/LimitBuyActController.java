@@ -2,7 +2,6 @@ package com.apass.esp.web.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
@@ -202,11 +200,12 @@ public class LimitBuyActController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/editLimitBuyAct")
+    @RequestMapping(value = "/editLimitBuyAct", method = RequestMethod.POST)
     @LogAnnotion(operationType = "限时购活动修改", valueType = LogValueTypeEnum.VALUE_REQUEST)
-    public Response editLimitBuyAct(LimitBuyActVo buyActView) {
+    public Response editLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            return limitBuyActService.editLimitBuyAct(buyActView);
+            String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            return limitBuyActService.editLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动修改异常,"+e.getErrorDesc());

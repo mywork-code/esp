@@ -1,5 +1,7 @@
 package com.apass.esp.domain.entity;
 import java.math.BigDecimal;
+import java.util.Date;
+
 import com.apass.esp.common.model.CreatedUser;
 public class LimitGoodsSku extends CreatedUser{
     private Long id;
@@ -12,9 +14,10 @@ public class LimitGoodsSku extends CreatedUser{
     private Long limitNum;
     private Long sortNo;
     private String url;
-    private long time;//离活动开始时间或活动开始时间与服务器时间差
-
-
+    private Long time;//离活动开始时间或活动开始时间与服务器时间差
+    private Date startTime;
+    private Date endTime;
+    private String limitFalg;//活动标准（活动未开始NotBeginning；活动进行中  InProgress）
     public Long getId() {
         return id;
     }
@@ -80,6 +83,24 @@ public class LimitGoodsSku extends CreatedUser{
 	}
 	public void setTime(Long time) {
 		this.time = time;
+	}
+	public String getLimitFalg() {
+		return limitFalg;
+	}
+	public void setLimitFalg(String limitFalg) {
+		this.limitFalg = limitFalg;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
     
 }

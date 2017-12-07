@@ -1,5 +1,5 @@
 /**
- * goodsAttribute
+ * 限时购
  */
 $(function () {
 	$('#upLoadGoods').window('close');
@@ -140,7 +140,7 @@ $(function () {
     $.editDetails = function(id,startDate,startTime) {
     	limitBuyActId = id;
     	$("#startDayAdd").datebox('setValue', '');
-    	$("#startDayAdd").datebox('setValue', new Date(startDate).Format("yyyy-MM-dd"));
+    	$("#startDayAdd").datebox('setValue', new Date(startDate/1).Format("yyyy-MM-dd"));
     	$("#startTimeAdd").combobox('setValue',startTime);
     	var params = {};
     	params['limitBuyActId']=limitBuyActId;
@@ -260,6 +260,7 @@ $(function () {
 	$("#editGoodsFromCancle").click(function() {save-btn
 		$('#editGoods').window('close');
 	});
+	/**保存所有数据   限时购   和   限时购商品列表  （新增 修改）	 */
 	$(".save-btn").click(function() {
 		var startDay = $("#startDayAdd").datebox('getValue');
 		var startTime = $("#startTimeAdd").combobox('getValue');
@@ -273,19 +274,19 @@ $(function () {
 			return;
 		}
 		var param = {
+			id:limitBuyActId,
 			startDay:startDay,
 			startTime:startTime,
 			list:goodsrows
 		};
-		$.ajax({url : ctx + '/activity/limitBuyActContro/addLimitBuyAct',
-			data :JSON.stringify(param),
-			type : "POST",
-			contentType: 'application/json',
-            dataType: "json",
+		//判断是新增还是修改
+		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
+		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
 				if(data.status==1){
-					$('#editLayer').hide(500,editLayerHide());
-					getLimitGoodsList();
+					var params = {};
+			    	$('#limitBuyActPage').datagrid('load', params);
+			    	$('#editLayer').hide(500,editLayerHide());
 				}
 				$.messager.alert("提示", data.msg, "info");
 			}

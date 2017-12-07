@@ -27,7 +27,7 @@
         <if test="goodsId!=null and goodsId!=''"> AND goods_id = #{goodsId} </if>
         <if test="skuId!=null and skuId!=''"> AND sku_id = #{skuId} </if>
         <![CDATA[ 
-            ORDER BY sort_no desc
+            ORDER BY sort_no ASC
         ]]>
     </select>
 </mapper>

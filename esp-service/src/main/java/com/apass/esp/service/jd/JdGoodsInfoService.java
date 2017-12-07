@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
@@ -57,6 +58,7 @@ import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.offer.ActivityCfgService;
@@ -114,6 +116,8 @@ public class JdGoodsInfoService {
 	private ProCouponRelMapper couponRelMapper;
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
+	@Autowired
+	private LimitCommonService limitCommonService;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
@@ -260,7 +264,7 @@ public class JdGoodsInfoService {
 
 			}
 		}
-
+		Map<String,Object> LimitMap=new HashMap<>();
 		// 查询商品规格中的商品的价格和库存
 		List<JdSimilarSkuTo> JdSimilarSkuToList = new ArrayList<>();
 		Iterator<String> iterator = skusSet.iterator();
@@ -277,13 +281,7 @@ public class JdGoodsInfoService {
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
 			jdSimilarSkuVo.setGoodsId(goodsInfo.getId().toString());
 			Long goodsId = goodsInfo.getId();
-			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-			if (jdGoodsStockInfoList.size() == 1) {
-				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-				jdSimilarSkuVo.setPrice(price);
-				jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-			}
+		
 			// 查询商品是否有货
 			String jdGoodStock = getStockBySku(skuId.toString(), region);
 			//是否支持7天无理由退货,Y、N
@@ -325,11 +323,49 @@ public class JdGoodsInfoService {
 					}
 				}
 			}
+	
+			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+			if (jdGoodsStockInfoList.size() == 1) {
+				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+
+				//根据skuId查询该规格是否参加了限时购活动
+				LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(skuId);
+				if(null !=limitGS){
+					LimitMap.put(skuId, skuIdOrder);
+					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+					jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
+					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+					jdSimilarSkuVo.setPriceOriginal(price);//原价
+					jdSimilarSkuVo.setIsLimitActivity(true);
+					jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+					jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+					jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+					jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+					jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+					jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+				}else{
+					jdSimilarSkuVo.setPrice(price);
+					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+				}
+
+			}
 			jdSimilarSkuTo.setSkuIdOrder(skuIdOrder);
 			jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
 			JdSimilarSkuToList.add(jdSimilarSkuTo);
+		
 			if (skuId.equals(sku.toString())) {
 				isSelectSkuIdOrder = skuIdOrder;
+			}
+		}
+		//在所有参加限时购的规格中判断是否含有传入参数sku
+		if(!LimitMap.isEmpty()){
+			if(null ==LimitMap.get(sku)){
+				 for (Map.Entry<String, Object> entry : LimitMap.entrySet()) {
+					 isSelectSkuIdOrder= (String) entry.getValue();
+					 break;
+				 }
 			}
 		}
 		// 为app端标记初始化被选中商品的规格
