@@ -326,7 +326,7 @@ function getLimitGoodsList(){
         },{
             title : '商品名称',
             field : 'goodsName',
-            width : 90,
+            width : 100,
             align : 'center',
         },{
             title : '商品编码',
@@ -336,27 +336,32 @@ function getLimitGoodsList(){
         },{
             title : 'SKUID',
             field : 'skuId',
-            width : 90,
+            width : 100,
+            align : 'center',
+        },{
+        	title : '活动价',
+            field : 'activityPrice',
+            width : 70,
             align : 'center',
         },{
             title : '商户名称',
             field : 'merchantName',
-            width : 90,
+            width : 80,
             align : 'center',
         },{
         	 title : '类目名称',
              field : 'categoryId1Name',
-             width : 90,
+             width : 70,
              align : 'center',
          },{
         	 title : '商品状态',
              field : 'status',
-             width : 90,
+             width : 70,
              align : 'center',
          },{
         	 title : '商品上架时间',
              field : 'listTime',
-             width : 90,
+             width : 80,
              align : 'center',
              formatter:function(value,row,index){
          		if(value!=null){
@@ -366,7 +371,7 @@ function getLimitGoodsList(){
          },{
         	 title : '商品下架时间',
              field : 'delistTime',
-             width : 90,
+             width : 80,
              align : 'center',
              formatter:function(value,row,index){
          		if(value!=null){
@@ -376,17 +381,17 @@ function getLimitGoodsList(){
          },{
         	 title : '库存剩余',
              field : 'stockCurrAmt',
-             width : 90,
+             width : 80,
              align : 'center',
          },{
         	 title : '限购总量',
              field : 'limitNumTotal',
-             width : 90,
+             width : 80,
              align : 'center',
          },{
         	 title : '每人限购',
              field : 'limitNum',
-             width : 90,
+             width : 80,
              align : 'center',
          },{
             title : '操作',

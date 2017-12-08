@@ -2,6 +2,11 @@ package com.apass.esp.domain.entity.activity;
 import java.util.Date;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.enums.GoodStatus;
+/**
+ * 限时购活动商品  后台查询专用  冗余商品基本信息表相关字段
+ * @author Administrator
+ *
+ */
 public class LimitGoodsSkuVo extends LimitGoodsSku{
     //冗余商品表字段     //商品活动价上传 //商品市场价冗余
     private String goodsName;//商品名称

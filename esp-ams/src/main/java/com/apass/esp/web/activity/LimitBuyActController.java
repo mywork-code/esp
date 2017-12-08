@@ -29,6 +29,11 @@ import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+/**
+ * 限时购后台交互
+ * @author Administrator
+ *
+ */
 @Controller
 @RequestMapping(value = "/activity/limitBuyActContro")
 public class LimitBuyActController {

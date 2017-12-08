@@ -5,6 +5,11 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
+/**
+ * 限时购活动  后台查询专用  封装开始日期  和 商品列表
+ * @author Administrator
+ *
+ */
 public class LimitBuyActVo extends LimitBuyAct{
     private Long limitBuyActId;//冗余活动ID ==活动ID
     private String startDay;

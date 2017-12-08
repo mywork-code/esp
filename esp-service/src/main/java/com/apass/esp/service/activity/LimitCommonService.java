@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
@@ -52,8 +53,8 @@ public class LimitCommonService {
 	 * 2.将活动开始时间与服务器时间的时间差（）
 	 * @return
 	 */
-	public LimitGoodsSku selectLimitByGoodsId(String skuId) {
-		LimitGoodsSku lgs = null;
+	public LimitGoodsSkuVo selectLimitByGoodsId(String skuId) {
+		LimitGoodsSkuVo lgs = null;
 
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
@@ -67,29 +68,45 @@ public class LimitCommonService {
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
-			limitGoodsSku.setStartTime(limitBuyAct.getStartDate());
-			limitGoodsSku.setEndTime(limitBuyAct.getEndDate());
+			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
+			limitGoodsSkuVo.setStartTime(limitBuyAct.getStartDate());
+			limitGoodsSkuVo.setEndTime(limitBuyAct.getEndDate());
 			if (ActivityStatus.PROCESSING == activityStatus) {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间
-				limitGoodsSku.setTime(time2);
-				limitGoodsSku.setLimitFalg("InProgress");
-				mapOn.put(time, limitGoodsSku);
+				limitGoodsSkuVo.setTime(time2);
+				limitGoodsSkuVo.setLimitFalg("InProgress");
+				mapOn.put(time, limitGoodsSkuVo);
 			}
 			if (ActivityStatus.NO == activityStatus) {
 				long time = limitBuyAct.getStartDate().getTime() - new Date().getTime();//离限时购开始还有多少时间
-				limitGoodsSku.setTime(time);
-				limitGoodsSku.setLimitFalg("NotBeginning");
-				mapNo.put(time, limitGoodsSku);
+				limitGoodsSkuVo.setTime(time);
+				limitGoodsSkuVo.setLimitFalg("NotBeginning");
+				mapNo.put(time, limitGoodsSkuVo);
 			}
 		}
 		if (!mapOn.isEmpty()) {
-			lgs = (LimitGoodsSku) mapOn.get(mapOn.firstKey());
+			lgs = (LimitGoodsSkuVo) mapOn.get(mapOn.firstKey());
 		} 
 		 if(null ==lgs && !mapNo.isEmpty()) {
-			lgs = (LimitGoodsSku) mapNo.get(mapNo.firstKey());
+			lgs = (LimitGoodsSkuVo) mapNo.get(mapNo.firstKey());
 		}
 		return lgs;
+	}
+	
+	public LimitGoodsSkuVo getLimitGoodsSkuToLimitGoodsSkuVo(LimitGoodsSku lgs){
+		LimitGoodsSkuVo lgsv=new LimitGoodsSkuVo();
+		lgsv.setId(lgs.getId());
+		lgsv.setLimitBuyActId(lgs.getLimitBuyActId());
+		lgsv.setGoodsId(lgs.getGoodsId());
+		lgsv.setSkuId(lgs.getSkuId());
+		lgsv.setMarketPrice(lgs.getMarketPrice());
+		lgsv.setActivityPrice(lgs.getActivityPrice());
+		lgsv.setLimitNumTotal(lgs.getLimitNumTotal());
+		lgsv.setLimitNum(lgs.getLimitNum());
+		lgsv.setSortNo(lgs.getSortNo());
+		lgsv.setUrl(lgs.getUrl());
+		return lgsv;
 	}
 	/**
 	 * 判断限时购活动的状态

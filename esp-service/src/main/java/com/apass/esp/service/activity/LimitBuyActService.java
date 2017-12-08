@@ -1,4 +1,7 @@
 package com.apass.esp.service.activity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
+import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.utils.ResponsePageBody;
@@ -56,6 +60,14 @@ public class LimitBuyActService {
         return limitBuyActMapper.getLimitBuyActList(entity);
     }
     /**
+     * READ LIST 反选
+     * @param userId
+     * @return
+     */
+    public List<LimitBuyAct> readEntityListDeSelect(LimitBuyAct entity) {
+        return limitBuyActMapper.getLimitBuyActListDeSelect(entity);
+    }
+    /**
      * UPDATED
      * @param entity
      * @return
@@ -85,6 +97,7 @@ public class LimitBuyActService {
     public Integer deleteEntity(Long id) {
         return limitBuyActMapper.deleteByPrimaryKey(id);
     }
+    /*限时购后台方法*/
     /**
      * 限时购活动查询
      * @param entity
@@ -277,5 +290,128 @@ public class LimitBuyActService {
         }
         throw new BusinessException("限时购活动商品删除异常!");
     }
-
+    /*限时购前台方法*/
+    /**
+     * 限时购前台页面时间条展示   包括抢购中的活动商品列表
+     * @return
+     */
+    public Response activityTimeLine() {
+        List<LimitBuyActTimeLine> timelist = new ArrayList<LimitBuyActTimeLine>();
+        LimitBuyAct entity = new LimitBuyAct();
+        entity.setStatus((byte)3);
+        Integer sort = 0;
+        List<LimitBuyAct> list = readEntityListDeSelect(entity);
+        for(LimitBuyAct act : list){
+            //只获取8个时间条
+            if(++sort==8){
+                break;
+            }
+            LimitBuyActTimeLine time = new LimitBuyActTimeLine();
+            time.setLimitBuyActId(act.getId().toString());
+            time.setStartDate(act.getStartDate());
+            time.setStatus(act.getStatus());
+            time.setSort(sort.toString());
+            timelist.add(time);
+        }
+        Collections.sort(timelist, new Comparator<LimitBuyActTimeLine>(){
+            @Override
+            //按照Sort降序
+            public int compare(LimitBuyActTimeLine en1, LimitBuyActTimeLine en2) {
+                return en2.getSort().compareTo(en1.getSort());
+            }});
+        Boolean falg = true;
+        for(LimitBuyActTimeLine time : timelist){
+            //情况1 当前时间早于10  今天所有都是即将开始状态  并且把昨天最后一条记录更新为抢购中
+            //情况2 当前时候晚于今天第一条进行中的开始时间记录 该记录为抢购中 其余都是已开抢
+            if(time.getStatus()==(byte)1){
+                time.setAtPresent("0");
+                time.setActDesc("即将开始");
+            }
+            if(time.getStatus()==(byte)2){
+                if(falg){
+                    time.setAtPresent("1");
+                    time.setActDesc("抢购中");
+                    LimitGoodsSku act = new LimitGoodsSku();
+                    act.setLimitBuyActId(Long.parseLong(time.getLimitBuyActId()));
+                    List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
+                    time.setList(goods);
+                    falg = false;
+                }else{
+                    time.setAtPresent("0");
+                    time.setActDesc("已开抢");
+                }
+            }
+        }
+        for(LimitBuyActTimeLine time : timelist){
+            //该活动开始日期是明天或者以后   （一定是即将开始状态）
+            if(isTomorrowDate(time.getStartDate())){
+                time.setTime(gettDayDate(time.getStartDate()));
+                continue;
+            }
+            //该活动开始日期是今天
+            if(isTodayDate(time.getStartDate())){
+                //（判断是进行中还是即将开始）
+                time.setTime(gettodDayDate(time.getStartDate()));
+                continue;
+            }
+            //该活动开始日期是昨天或者以前  （一定是已开抢状态）
+            if(isYesterdayDate(time.getStartDate())){
+                time.setTime(getyDayDate(time.getStartDate()));
+                continue;
+            }
+        }
+        Collections.sort(timelist, new Comparator<LimitBuyActTimeLine>(){
+            @Override
+            //按照Sort升序重新排列
+            public int compare(LimitBuyActTimeLine en1, LimitBuyActTimeLine en2) {
+                return en1.getSort().compareTo(en2.getSort());
+            }});
+        return Response.success("限时购活动时间条刷新成功！",timelist);
+    }
+    private String getyDayDate(Date date){
+        String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        String time = DateFormatUtil.dateToString(date,"HH:mm");
+        return day+"日 "+time;
+    }
+    private String gettodDayDate(Date date){
+        return DateFormatUtil.dateToString(date,"HH:mm");
+    }
+    private String gettDayDate(Date date){
+        //String day = "明日";
+        String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        String time = DateFormatUtil.dateToString(date,"HH:mm");
+        //return day+" "+time;
+        return day+"日 "+time;
+    }
+    private Boolean isYesterdayDate(Date date){
+        String target = DateFormatUtil.dateToString(new Date());
+        target += " 00:00:00";
+        Date yesterday = DateFormatUtil.string2date(target, null);
+        return yesterday.getTime()>date.getTime();
+    }
+    private Boolean isTodayDate(Date date){
+        String value = DateFormatUtil.dateToString(date);
+        String target = DateFormatUtil.dateToString(new Date());
+        return isSameDay(value, target);
+    }
+    private Boolean isTomorrowDate(Date date){
+        String target = DateFormatUtil.dateToString(new Date());
+        target += " 23:59:59";
+        Date tomorrow = DateFormatUtil.string2date(target, null);
+        return tomorrow.getTime()<date.getTime();
+    }
+    private Boolean isSameDay(String date1,String date2){
+        return StringUtils.equals(date1, date2);
+    }
+    /**
+     * 限时购前台页面刷新商品列表
+     * @param parseLong
+     * @return
+     */
+    public Response activityGoodsList(Long limitBuyActId) {
+        LimitGoodsSku act = new LimitGoodsSku();
+        act.setLimitBuyActId(limitBuyActId);
+        List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
+        return Response.success("限时购活动商品列表刷新成功！",goods);
+    }
 }
