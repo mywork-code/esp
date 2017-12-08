@@ -14,7 +14,12 @@ import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -30,6 +35,10 @@ public class LimitBuyActService {
     public LimitBuyActMapper limitBuyActMapper;
     @Autowired
     public LimitGoodsSkuService limitGoodsSkuService;
+    @Autowired
+    public GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    public GoodsService goodsService;
     /**
      * CREATE
      * @param entity
@@ -302,7 +311,7 @@ public class LimitBuyActService {
         Integer sort = 0;
         List<LimitBuyAct> list = readEntityListDeSelect(entity);
         for(LimitBuyAct act : list){
-            //只获取8个时间条
+            //最多只获取8个活动冗余填充时间条
             if(++sort==8){
                 break;
             }
@@ -334,7 +343,18 @@ public class LimitBuyActService {
                     LimitGoodsSku act = new LimitGoodsSku();
                     act.setLimitBuyActId(Long.parseLong(time.getLimitBuyActId()));
                     List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
-                    time.setList(goods);
+                    List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
+                    for(LimitGoodsSku sku : goods){
+                        LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
+                        BeanUtils.copyProperties(sku, vo);
+                        GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+                        vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+                        GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+                        vo.setGoodsName(goodsBase.getGoodsName());
+                        vo.setGoodsTitle(goodsBase.getGoodsTitle());
+                        goodsinfolist.add(vo);
+                    }
+                    time.setList(goodsinfolist);
                     falg = false;
                 }else{
                     time.setAtPresent("0");
@@ -412,6 +432,17 @@ public class LimitBuyActService {
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
         List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
+        List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
+        for(LimitGoodsSku sku : goods){
+            LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
+            BeanUtils.copyProperties(sku, vo);
+            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+            vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+            GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+            vo.setGoodsName(goodsBase.getGoodsName());
+            vo.setGoodsTitle(goodsBase.getGoodsTitle());
+            goodsinfolist.add(vo);
+        }
         return Response.success("限时购活动商品列表刷新成功！",goods);
     }
     /*限时定时任务*/

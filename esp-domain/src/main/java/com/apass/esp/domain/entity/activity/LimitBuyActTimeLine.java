@@ -1,7 +1,6 @@
 package com.apass.esp.domain.entity.activity;
 import java.util.Date;
 import java.util.List;
-import com.apass.esp.domain.entity.LimitGoodsSku;
 /**
  * 限时购活动  前台展示专用   封装时间条   时间状态   商品列表等信息
  * @author Administrator
@@ -52,7 +51,7 @@ public class LimitBuyActTimeLine{
     private String limitBuyActId;//冗余活动ID ==活动ID
     private Date startDate;//冗余活动开始日期 ==活动开始日期
     private Byte status;//冗余活动状态 ==活动状态
-    private List<LimitGoodsSku> list;//活动商品列表
+    private List<LimitGoodsSkuInfo> list;//活动商品列表
     public String getLimitBuyActId() {
         return limitBuyActId;
     }
@@ -71,10 +70,10 @@ public class LimitBuyActTimeLine{
     public void setStatus(Byte status) {
         this.status = status;
     }
-    public List<LimitGoodsSku> getList() {
+    public List<LimitGoodsSkuInfo> getList() {
         return list;
     }
-    public void setList(List<LimitGoodsSku> list) {
+    public void setList(List<LimitGoodsSkuInfo> list) {
         this.list = list;
     }
 }

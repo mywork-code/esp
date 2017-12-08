@@ -1,6 +1,5 @@
 package com.apass.esp.web.activity;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,6 @@ public class LimitBuyController {
 	private static final Logger logger = LoggerFactory.getLogger(LimitBuyController.class);
 	@Autowired
     private LimitBuyActService limitBuyActService;
-//    @Autowired
-//    private LimitGoodsSkuService limitGoodsSkuService;
     /**
      * 限时购活动时间条
      * @return
