@@ -26,7 +26,7 @@
         FROM t_esp_limit_buy_act
             <include refid="QueryConditionSql" />
         <![CDATA[ 
-        ORDER BY start_date desc
+        ORDER BY start_date DESC
         ]]>
         <if test="startRecordIndex != null">
             <include refid="PAGINATION.MYSQL_PAGINATION" />
