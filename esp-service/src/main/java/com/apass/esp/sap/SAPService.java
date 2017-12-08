@@ -875,7 +875,7 @@ public class SAPService {
         }
         contentList.add(txn.getTxnAmt() + "");
         contentList.add("");
-        contentList.add("txn.getMainOrderId()");
+        contentList.add(txn.getMainOrderId());
         contentList.add("");
         contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
