@@ -11,8 +11,9 @@ public class JdSimilarSkuVo {
 	private Long stockCurrAmt;
 	private BigDecimal price;
 	private BigDecimal priceFirst;
+	private BigDecimal limitActivityPrice;
+	private BigDecimal limitActivityPriceFirst;
 	private Boolean  isLimitActivity;//是否是限时购
-	private BigDecimal priceOriginal;//原价
 	private Long limitNum;//每人限购几件
 	private Long limitBuyActId;//限购活动id
 	private String limitBuyFalg;//限购状态标准（活动未开始NotBeginning；活动进行中  InProgress）
@@ -90,11 +91,18 @@ public class JdSimilarSkuVo {
 	public void setProCouponList(List<String> proCouponList) {
 		this.proCouponList = proCouponList;
 	}
-	public BigDecimal getPriceOriginal() {
-		return priceOriginal;
+	
+	public BigDecimal getLimitActivityPrice() {
+		return limitActivityPrice;
 	}
-	public void setPriceOriginal(BigDecimal priceOriginal) {
-		this.priceOriginal = priceOriginal;
+	public void setLimitActivityPrice(BigDecimal limitActivityPrice) {
+		this.limitActivityPrice = limitActivityPrice;
+	}
+	public BigDecimal getLimitActivityPriceFirst() {
+		return limitActivityPriceFirst;
+	}
+	public void setLimitActivityPriceFirst(BigDecimal limitActivityPriceFirst) {
+		this.limitActivityPriceFirst = limitActivityPriceFirst;
 	}
 	public Boolean getIsLimitActivity() {
 		return isLimitActivity;
