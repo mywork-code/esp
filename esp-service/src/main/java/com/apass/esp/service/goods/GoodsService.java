@@ -28,6 +28,7 @@ import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -400,7 +401,7 @@ public class GoodsService {
 	Map<Long,Object> LimitMap=new HashMap<>();
     for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 		//根据skuId查询该规格是否参加了限时购活动
-		LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+    	LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
 		if(null !=limitGS){
 			LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
 		}
@@ -438,7 +439,7 @@ public class GoodsService {
 				break;
 			}
 		}
-		LimitGoodsSku limitGS = limitCommonService.selectLimitByGoodsId(defaultGoodsPriceStock.getSkuId());
+		LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(defaultGoodsPriceStock.getSkuId());
 		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
 		BigDecimal activityPrice = limitGS.getActivityPrice();
 		activityPrice.setScale(2, BigDecimal.ROUND_DOWN);
@@ -740,7 +741,7 @@ public class GoodsService {
 			BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsStockInfoEntity.getId());
 			
 			//根据skuId查询该规格是否参加了限时购活动
-			LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
 			if(null !=limitGS){
 				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);

@@ -29,6 +29,7 @@ import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdCss;
@@ -332,7 +333,7 @@ public class JdGoodsInfoService {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 
 				//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSku limitGS=limitCommonService.selectLimitByGoodsId(skuId);
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(skuId);
 				if(null !=limitGS){
 					LimitMap.put(skuId, skuIdOrder);
 //					LimitGoodsSkuMap.put(skuId, limitGS);
