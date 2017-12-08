@@ -14,13 +14,18 @@ import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
- * 限时购活动活动
+ * 限时购活动
  * @author wht
  *
  */
@@ -30,6 +35,10 @@ public class LimitBuyActService {
     public LimitBuyActMapper limitBuyActMapper;
     @Autowired
     public LimitGoodsSkuService limitGoodsSkuService;
+    @Autowired
+    public GoodsStockInfoService goodsStockInfoService;
+    @Autowired
+    public GoodsService goodsService;
     /**
      * CREATE
      * @param entity
@@ -302,7 +311,7 @@ public class LimitBuyActService {
         Integer sort = 0;
         List<LimitBuyAct> list = readEntityListDeSelect(entity);
         for(LimitBuyAct act : list){
-            //只获取8个时间条
+            //最多只获取8个活动冗余填充时间条
             if(++sort==8){
                 break;
             }
@@ -334,7 +343,18 @@ public class LimitBuyActService {
                     LimitGoodsSku act = new LimitGoodsSku();
                     act.setLimitBuyActId(Long.parseLong(time.getLimitBuyActId()));
                     List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
-                    time.setList(goods);
+                    List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
+                    for(LimitGoodsSku sku : goods){
+                        LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
+                        BeanUtils.copyProperties(sku, vo);
+                        GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+                        vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+                        GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+                        vo.setGoodsName(goodsBase.getGoodsName());
+                        vo.setGoodsTitle(goodsBase.getGoodsTitle());
+                        goodsinfolist.add(vo);
+                    }
+                    time.setList(goodsinfolist);
                     falg = false;
                 }else{
                     time.setAtPresent("0");
@@ -412,6 +432,65 @@ public class LimitBuyActService {
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
         List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
+        List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
+        for(LimitGoodsSku sku : goods){
+            LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
+            BeanUtils.copyProperties(sku, vo);
+            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+            vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+            GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+            vo.setGoodsName(goodsBase.getGoodsName());
+            vo.setGoodsTitle(goodsBase.getGoodsTitle());
+            goodsinfolist.add(vo);
+        }
         return Response.success("限时购活动商品列表刷新成功！",goods);
+    }
+    /*限时定时任务*/
+    /**
+     * 定时任务   活动自动开始  活动自动结束
+     */
+    public String limitbuyActStartOver(String user) {
+        StringBuffer sb = new StringBuffer();
+        String day = DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
+        String hour = DateFormatUtil.dateToString(new Date(),"HH");
+        String minite = ":00:00";
+        //拼接当前时间字符串   
+        String now = day + " " + hour + minite;
+        //格式化当前时间字符串
+        Date nowDate = DateFormatUtil.string2date(now, null);
+        //当前时间字符串为活动开始时间    需要自动开始的活动
+        LimitBuyAct start = new LimitBuyAct();
+        start.setStartDate(nowDate);
+        List<LimitBuyAct> startlist = readEntityList(start);
+        sb.append("当前时间"+now).append(":");
+        if(startlist==null||startlist.size()==0){
+            sb.append("没有限时购活动自动开始.");
+        }
+        for(LimitBuyAct en : startlist){
+            //当前时间为活动开始时间的活动，状态为未开始，修改为开始
+            if(en.getStatus()==(byte)1){
+                sb.append("限时购活动自动开始,活动id:").append(en.getId()).append(";");
+                en.setStatus((byte)2);
+                en.fillField(user);
+                updatedEntity(en);
+            }
+        }
+        //当前时间字符串为活动结束时间     需要自动结束的活动
+        LimitBuyAct over = new LimitBuyAct();
+        over.setEndDate(nowDate);
+        List<LimitBuyAct> overlist = readEntityList(start);
+        if(overlist==null||overlist.size()==0){
+            sb.append("没有限时购活动自动结束.");
+        }
+        for(LimitBuyAct en : overlist){
+            //当前时间为活动结束时间的活动，状态为开始，修改为结束
+            if(en.getStatus()==(byte)2){
+                sb.append("限时购活动自动结束,活动id:").append(en.getId()).append(";");
+                en.setStatus((byte)3);
+                en.fillField(user);
+                updatedEntity(en);
+            }
+        }
+        return sb.toString();
     }
 }

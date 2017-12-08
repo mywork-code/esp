@@ -1,5 +1,6 @@
 package com.apass.esp.domain.entity.activity;
 import java.util.Date;
+
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.enums.GoodStatus;
 /**
@@ -17,6 +18,10 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     private Date listTime;//上下架时间
     private Date delistTime;
     private Long categoryId1;//商品一级分类
+    private Long time;//离活动开始时间或活动开始时间与服务器时间差
+    private Date startTime;
+    private Date endTime;
+    private String limitFalg;//活动标准（活动未开始NotBeginning；活动进行中  InProgress）
     //冗余类目名称字段
     private String categoryId1Name;//商品一级分类名称
     //冗余库存表字段
@@ -88,4 +93,29 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     public void setStockCurrAmt(Long stockCurrAmt) {
         this.stockCurrAmt = stockCurrAmt;
     }
+	public Long getTime() {
+		return time;
+	}
+	public void setTime(Long time) {
+		this.time = time;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+	public String getLimitFalg() {
+		return limitFalg;
+	}
+	public void setLimitFalg(String limitFalg) {
+		this.limitFalg = limitFalg;
+	}
+    
 }

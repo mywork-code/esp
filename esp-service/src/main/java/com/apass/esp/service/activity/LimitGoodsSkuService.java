@@ -134,14 +134,11 @@ public class LimitGoodsSkuService {
                 //复制商品基本信息表
                 BeanUtils.copyProperties(goods, vo);
                 vo.setGoodsId(goods.getId());
-                //复制商品活动表   表面复制商品基本信息表带入主键
+                //复制限时购活动商品表   避免复制商品基本信息表带入主键
                 BeanUtils.copyProperties(entity, vo);
                 //复制库存表
                 vo.setStockCurrAmt(stock.getStockCurrAmt());
                 vo.setMarketPrice(stock.getMarketPrice());
-                //复制导入数据
-                vo.setActivityPrice(entity.getActivityPrice());
-                vo.setSkuId(entity.getSkuId());
                 //复制类目名称数据
                 vo.setCategoryId1Name(cate.getCategoryName());
                 vo.setSortNo(++sortNo);
@@ -151,9 +148,11 @@ public class LimitGoodsSkuService {
         StringBuffer sb = new StringBuffer();
         for(LimitGoodsSku entity : list){
             if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+                //是否跑出异常   待上传商品列表已经在其他进行中活动中添加
                 continue;
             }
             if(sb.toString().contains(entity.getSkuId())){
+                //是否跑出异常   待上传商品列表含有重复相同商品
                 continue;
             }
             sb.append(entity.getSkuId()).append("++");
@@ -183,18 +182,34 @@ public class LimitGoodsSkuService {
         return skuvolist;
     }
     /**
-     * getLimitGoodsList by LIMITBUYACTID
+     * 刷新 限时购活动商品列表
      * @param entity
      * @return
      */
     public ResponsePageBody<LimitGoodsSkuVo> getLimitGoodsList(LimitGoodsSku entity) {
         List<LimitGoodsSku> skulist = null;
-        List<LimitGoodsSkuVo> skuvolist = null;
-        if(entity.getLimitBuyActId()==null){
-            skuvolist = new ArrayList<LimitGoodsSkuVo>();
-        }else{
+        List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
+        if(entity.getLimitBuyActId()!=null){
+            Long sortNo = 0L;
             skulist = readEntityList(entity);
-            skuvolist = findGoodsInfoListBySkuId(skulist,entity.getLimitBuyActId());
+            for(LimitGoodsSku sku : skulist){
+                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+                //复制商品基本信息表
+                BeanUtils.copyProperties(goods, vo);
+                vo.setGoodsId(goods.getId());
+                //复制限时购活动商品表   避免复制商品基本信息表带入主键
+                BeanUtils.copyProperties(sku, vo);
+                //复制库存表
+                vo.setStockCurrAmt(stock.getStockCurrAmt());
+                vo.setMarketPrice(stock.getMarketPrice());
+                //复制类目名称数据
+                vo.setCategoryId1Name(cate.getCategoryName());
+                vo.setSortNo(++sortNo);
+                skuvolist.add(vo);
+            }
         }
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
         pageBody.setTotal(skuvolist.size());
