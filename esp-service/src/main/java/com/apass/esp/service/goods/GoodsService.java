@@ -490,14 +490,32 @@ public class GoodsService {
     	JdSimilarSkuToList=new ArrayList<>();
         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+        BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
+
+       	//根据skuId查询该规格是否参加了限时购活动
+		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsList.get(0).getSkuId());
+		if(null !=limitGS){
+		BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+		limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+		jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
+		jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+		jdSimilarSkuVo.setPriceOriginal(price);//原价
+		jdSimilarSkuVo.setIsLimitActivity(true);
+		jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+		jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+		jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+		jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+		jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+		jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+		}else{
+          jdSimilarSkuVo.setPrice(price);
+          jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                  BigDecimal.ROUND_DOWN));
+		}
         jdSimilarSkuVo.setGoodsId(goodsId.toString());
         jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
         jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
-        BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-        jdSimilarSkuVo.setPrice(price);
         jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
-        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                BigDecimal.ROUND_DOWN));
         jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
         jdSimilarSkuTo.setSkuIdOrder("");
         jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
