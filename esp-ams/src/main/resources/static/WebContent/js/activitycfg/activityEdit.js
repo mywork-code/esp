@@ -311,7 +311,7 @@ $(function () {
             onLoadSuccess: function (object) {
                 var l = object.length;
                 if (l > 0) {
-                	$('#addGoodsToGroup').window("resize",{top:$(document).scrollTop() + ($(window).height()-250) * 0.5});//居中显示
+                	//$('#addGoodsToGroup').window("resize",{top:$(document).scrollTop() + ($(window).height()-250) * 0.5});//居中显示
                 	$('#addGoodsToGroup').window('open')
                 	$("#addGoodsToGroupActivityId").val(activityId);
                     $("#addGoodsToGroupGoodsId").val(goodsId);
@@ -521,6 +521,7 @@ $(function () {
         });
 
         $("#editGroupDiv").dialog({
+//            autoOpen: false,
             modal: true,
             title: "<span style='color: black'>编辑</span>",
             resizable: false,
@@ -564,6 +565,9 @@ $(function () {
                 }
             }]
         });
+//        var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+//        $('#editGroupDiv').window("resize",{top:evt.pageY * 0.5});//居中显示
+//        $("#editGroupDiv").window("open");
     }
 
     var groupGoodsId,//分组id

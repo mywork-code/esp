@@ -4,14 +4,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitBuydetail;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.mapper.LimitBuydetailMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
 /**
  * 对限时购的公共操作
@@ -20,10 +24,13 @@ import com.apass.esp.mapper.LimitGoodsSkuMapper;
  */
 @Service
 public class LimitCommonService {
-	  @Autowired
-	  public LimitGoodsSkuMapper limitGoodsSkuMapper;
-	  @Autowired
-	  public LimitBuyActMapper limitBuyActMapper;
+	
+	@Autowired
+	public LimitGoodsSkuMapper limitGoodsSkuMapper;
+	@Autowired
+	public LimitBuyActMapper limitBuyActMapper;
+	@Autowired
+	private LimitBuydetailMapper buydetailMapper;
 	/**
 	 * 根据goodsId判断是否是限时购商品
 	 * @param goodsId
@@ -126,5 +133,42 @@ public class LimitCommonService {
 			return ActivityStatus.PROCESSING;
 		}
 	    return ActivityStatus.END;
+	}
+	
+	/**
+	 * 验证限时购的商品购买数量
+	 * @param limitActivityId 限时购活动Id
+	 * @param skuId 商品的skuId
+	 * @param num 商品的数量
+	 * @param userId 用户Id
+	 * @return
+	 */
+	public boolean validteLimitGoodsNums(LimitBuyParam params){
+		/**
+		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
+		 */
+		List<LimitBuydetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(new LimitBuyParam(params.getLimitBuyActId(), params.getUserId(), params.getSkuId()));
+		/**
+		 * 首先根据限时购活动的Id和skuID，查询出活动下，该skuID的限购数量和总限购数量
+		 */
+		LimitGoodsSku limitGoods = limitGoodsSkuMapper.getLimitGoodsSkuList(params.getLimitBuyActId(),params.getSkuId());
+		if(null == limitGoods){
+			return true;
+		}
+		if(limitGoods.getActivityPrice().compareTo(params.getActivityPrice()) != 0){
+			return true;
+		}
+		/**
+		 * 计算用户购买了同一个活动同一商品的件数
+		 */
+		long goodsSum = 0l;
+		for (LimitBuydetail limitBuydetail : buyDetails) {
+			goodsSum += limitBuydetail.getBuyNo();
+		}
+		goodsSum += params.getNum().longValue();
+		if(limitGoods.getLimitNumTotal() > 0 && limitGoods.getLimitNum().longValue() >= goodsSum){
+			return true;
+		}
+		return false;
 	}
 }
