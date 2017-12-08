@@ -20,7 +20,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 /**
- * 限时购活动活动
+ * 限时购活动
  * @author wht
  *
  */
@@ -413,5 +413,53 @@ public class LimitBuyActService {
         act.setLimitBuyActId(limitBuyActId);
         List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
         return Response.success("限时购活动商品列表刷新成功！",goods);
+    }
+    /*限时定时任务*/
+    /**
+     * 定时任务   活动自动开始  活动自动结束
+     */
+    public String limitbuyActStartOver(String user) {
+        StringBuffer sb = new StringBuffer();
+        String day = DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
+        String hour = DateFormatUtil.dateToString(new Date(),"HH");
+        String minite = ":00:00";
+        //拼接当前时间字符串   
+        String now = day + " " + hour + minite;
+        //格式化当前时间字符串
+        Date nowDate = DateFormatUtil.string2date(now, null);
+        //当前时间字符串为活动开始时间    需要自动开始的活动
+        LimitBuyAct start = new LimitBuyAct();
+        start.setStartDate(nowDate);
+        List<LimitBuyAct> startlist = readEntityList(start);
+        sb.append("当前时间"+now).append(":");
+        if(startlist==null||startlist.size()==0){
+            sb.append("没有限时购活动自动开始.");
+        }
+        for(LimitBuyAct en : startlist){
+            //当前时间为活动开始时间的活动，状态为未开始，修改为开始
+            if(en.getStatus()==(byte)1){
+                sb.append("限时购活动自动开始,活动id:").append(en.getId()).append(";");
+                en.setStatus((byte)2);
+                en.fillField(user);
+                updatedEntity(en);
+            }
+        }
+        //当前时间字符串为活动结束时间     需要自动结束的活动
+        LimitBuyAct over = new LimitBuyAct();
+        over.setEndDate(nowDate);
+        List<LimitBuyAct> overlist = readEntityList(start);
+        if(overlist==null||overlist.size()==0){
+            sb.append("没有限时购活动自动结束.");
+        }
+        for(LimitBuyAct en : overlist){
+            //当前时间为活动结束时间的活动，状态为开始，修改为结束
+            if(en.getStatus()==(byte)2){
+                sb.append("限时购活动自动结束,活动id:").append(en.getId()).append(";");
+                en.setStatus((byte)3);
+                en.fillField(user);
+                updatedEntity(en);
+            }
+        }
+        return sb.toString();
     }
 }
