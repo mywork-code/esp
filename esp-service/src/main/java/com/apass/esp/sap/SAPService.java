@@ -1,24 +1,16 @@
 package com.apass.esp.sap;
-import com.apass.esp.common.utils.APStringUtils;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.TxnOrderInfoForBss;
 import com.apass.esp.domain.entity.ApassTxnAttr;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.RepayFlow;
 import com.apass.esp.domain.entity.RepaySchedule.RepayScheduleEntity;
-import com.apass.esp.domain.entity.bill.PurchaseOrderDetail;
-import com.apass.esp.domain.entity.bill.PurchaseReturnOrder;
-import com.apass.esp.domain.entity.bill.SalesOrderInfo;
-import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
-import com.apass.esp.domain.entity.bill.SapData;
-import com.apass.esp.domain.entity.bill.TxnInfoEntity;
-import com.apass.esp.domain.entity.bill.TxnOrderInfo;
-import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
+import com.apass.esp.domain.entity.bill.*;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.enums.CashRefundTxnStatus;
 import com.apass.esp.domain.enums.MerchantCode;
 import com.apass.esp.domain.enums.OrderStatus;
-import com.apass.esp.domain.enums.RefundStatus;
 import com.apass.esp.domain.enums.TxnTypeCode;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
@@ -39,20 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 /**
  * Created by jie.xu on 17/10/16.
  */
@@ -104,7 +86,7 @@ public class SAPService {
   }
 
   /**
-   * 上传财务凭证调整明细
+   * 财务凭证调整明细
    */
   public void sendCaiWuPingZhengCsv2(String ip, int port, String username,
                                      String password, String path) {
@@ -240,8 +222,7 @@ public class SAPService {
   }
 
   /**
-   * (采购,退货）流水   现阶段只有采购
-   *
+   *  采购订单（采购，退货）流水 现阶段只有采购
    * @param ip
    * @param port
    * @param username
@@ -533,6 +514,9 @@ public class SAPService {
 
   }
 
+  /**
+   * 上传财物凭证调整（首付款或全额）
+   */
   private void generateCaiWuPingZhengCsv() throws Exception {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
@@ -885,14 +869,13 @@ public class SAPService {
         contentList.add(i + "");
         if (txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-
-          contentList.add("Z067");
+            contentList.add("Z067");
         } else {
           contentList.add("Z051");
         }
         contentList.add(txn.getTxnAmt() + "");
         contentList.add("");
-        contentList.add("");
+        contentList.add("txn.getMainOrderId()");
         contentList.add("");
         contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
