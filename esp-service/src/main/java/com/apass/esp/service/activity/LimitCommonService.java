@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,9 @@ public class LimitCommonService {
 	 */
 	public LimitGoodsSkuVo selectLimitByGoodsId(String skuId) {
 		LimitGoodsSkuVo lgs = null;
-
+		if(StringUtils.isBlank(skuId)){
+			return null;
+		}
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
 		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
