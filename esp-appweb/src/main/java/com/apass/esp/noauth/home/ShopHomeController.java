@@ -963,11 +963,7 @@ public class ShopHomeController {
 				goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
 			}
 //			returnMap.put("status", goodsInfo.getStatus());
-			String externalId = goodsInfo.getExternalId();// 外部商品id
-			// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-			if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
-				goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());// 商品下架
-			}
+			
 			// 商品规格
 			List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
 			if (jdGoodsStockInfoList.size() == 1) {
@@ -977,6 +973,16 @@ public class ShopHomeController {
 			}
 			if (SourceType.JD.getCode().equals(goodsInfo.getSource())
 					|| SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
+				String externalId = goodsInfo.getExternalId();// 外部商品id
+				// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+				if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+					goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());// 商品下架
+				}
+				// 是否支持7天无理由退货,Y、N
+				returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+				returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
+				returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
+				
 				if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
 					returnMap.put("source", "jd");
 					returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
@@ -997,7 +1003,7 @@ public class ShopHomeController {
 				JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
 				JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
 				jdSimilarSkuVo.setGoodsId(goodsId.toString());
-				jdSimilarSkuVo.setSkuId(externalId);
+				jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
 				jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
@@ -1007,8 +1013,6 @@ public class ShopHomeController {
 				JdSimilarSkuToList.add(jdSimilarSkuTo);
 			}
 			returnMap.put("status", goodsInfo.getStatus());// 商品下架
-			returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
-			returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
 			// 添加活动id
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
@@ -1027,8 +1031,7 @@ public class ShopHomeController {
 			returnMap.put("merchantCode", goodsInfo.getMerchantCode());
 			// 满减活动字段
 			returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
-			// 是否支持7天无理由退货,Y、N
-			returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+		
 			// 商品title
 			returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
 			// 获取购物车中商品种类数
