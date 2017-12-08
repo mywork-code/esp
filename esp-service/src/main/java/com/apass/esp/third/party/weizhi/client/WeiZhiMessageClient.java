@@ -56,7 +56,7 @@ public class WeiZhiMessageClient {
             WeiZhiResponse response = (WeiZhiResponse) JSONObject.parse(responseJson);
             return response;
         }catch (Exception e){
-            LOGGER.error("del weizhi msg error,messageType={},messageId={}",messageType,messageId);
+            LOGGER.error("del weizhi msg error,messageType={},messageId={}",messageType,messageId,e);
             return null;
         }
 
