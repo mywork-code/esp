@@ -166,7 +166,8 @@ public class LimitCommonService {
 			goodsSum += limitBuydetail.getBuyNo();
 		}
 		goodsSum += params.getNum().longValue();
-		if(limitGoods.getLimitNumTotal() > 0 && limitGoods.getLimitNum().longValue() >= goodsSum){
+		long remaining = limitGoods.getLimitNumTotal().longValue() - goodsSum;
+		if(remaining >= 0 && limitGoods.getLimitNum().longValue() >= goodsSum){
 			return true;
 		}
 		return false;
