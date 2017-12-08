@@ -971,18 +971,10 @@ public class ShopHomeController {
 				goodsInfo.setGoodsPrice(price);
 				goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
 			}
+			returnMap.put("status", goodsInfo.getStatus());// 商品下架
 			if (SourceType.JD.getCode().equals(goodsInfo.getSource())
 					|| SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 				String externalId = goodsInfo.getExternalId();// 外部商品id
-				// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-				if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
-					goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());// 商品下架
-				}
-				// 是否支持7天无理由退货,Y、N
-				returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
-				returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
-				returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
-				
 				if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
 					returnMap.put("source", "jd");
 					returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
@@ -992,6 +984,14 @@ public class ShopHomeController {
 					returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
 							goodsId.toString(), region);
 				}
+				// 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+				if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+					returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+				}
+				// 是否支持7天无理由退货,Y、N
+				returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+				returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
+				returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
 			} else {
 				goodService.loadGoodsBasicInfoById2(goodsId, returnMap);// sprint11(商品多规格)
 			}
@@ -1012,7 +1012,7 @@ public class ShopHomeController {
 				jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
 				JdSimilarSkuToList.add(jdSimilarSkuTo);
 			}
-			returnMap.put("status", goodsInfo.getStatus());// 商品下架
+			
 			// 添加活动id
 			ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
 			if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
