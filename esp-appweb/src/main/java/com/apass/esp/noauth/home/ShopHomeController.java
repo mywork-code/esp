@@ -28,6 +28,7 @@ import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.DictDTO;
@@ -56,6 +57,7 @@ import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.activity.LimitBuyActService;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -146,6 +148,8 @@ public class ShopHomeController {
 
     @Autowired
     private LimitBuyActService limitBuyActService;
+    @Autowired
+    private LimitCommonService limitCommonService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -1052,12 +1056,29 @@ public class ShopHomeController {
                                 .get("JdSimilarSkuToList");
                         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+                     	//根据skuId查询该规格是否参加了限时购活动
+        				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(externalId);
+        				if(null !=limitGS){
+    					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+    					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+    					jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
+    					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+    					jdSimilarSkuVo.setPriceOriginal(price);//原价
+    					jdSimilarSkuVo.setIsLimitActivity(true);
+    					jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+    					jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+    					jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+    					jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+    					jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+    					jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+        				}else{
+    			          jdSimilarSkuVo.setPrice(price);
+                          jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
+                                  BigDecimal.ROUND_DOWN));
+        				}
                         jdSimilarSkuVo.setGoodsId(goodsId.toString());
                         jdSimilarSkuVo.setSkuId(externalId);
                         jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                        jdSimilarSkuVo.setPrice(price);
-                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));
                         jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
                         jdSimilarSkuTo.setSkuIdOrder("");
                         jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
