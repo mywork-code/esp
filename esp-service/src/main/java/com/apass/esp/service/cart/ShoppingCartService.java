@@ -32,6 +32,7 @@ import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
 import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -46,6 +47,7 @@ import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
@@ -83,6 +85,8 @@ public class ShoppingCartService {
     private ActivityCfgService activityCfgService;
     @Autowired
     private GoodsAttrValService goodsAttrValService;
+    @Autowired
+    private LimitCommonService limitCommonService;
     /**
      * 添加商品到购物车
      * 
@@ -371,6 +375,15 @@ public class ShoppingCartService {
 						goodsInfoInCart.getGoodsStockId());
 				// 商品价格实时获取，不从购物车中取
 				goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
+				Long goodsStockId=goodsInfoInCart.getGoodsStockId();
+				GoodsStockInfoEntity goodsStockInfoEntity=goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
+				//根据skuId查询该规格是否参加了限时购活动
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+				if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
+					goodsInfoInCart.setLimitFalg(true);
+					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
+					goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
+				}
 			}
 
 			// 取数据时已安装create_date desc 排序，把已下线商品放到最后

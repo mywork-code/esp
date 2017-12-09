@@ -1061,9 +1061,10 @@ public class ShopHomeController {
         				if(null !=limitGS){
     					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
     					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
-    					jdSimilarSkuVo.setPrice(limitActivityPrice);//限时购活动价
-    					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-    					jdSimilarSkuVo.setPriceOriginal(price);//原价
+    					jdSimilarSkuVo.setPrice(price);//限时购活动价
+    					jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+    					jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
+    					jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
     					jdSimilarSkuVo.setIsLimitActivity(true);
     					jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
     					jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());

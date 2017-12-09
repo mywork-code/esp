@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +63,9 @@ public class LimitCommonService {
 	 */
 	public LimitGoodsSkuVo selectLimitByGoodsId(String skuId) {
 		LimitGoodsSkuVo lgs = null;
-
+		if(StringUtils.isBlank(skuId)){
+			return null;
+		}
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
 		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
@@ -154,9 +158,11 @@ public class LimitCommonService {
 		if(null == limitGoods){
 			return true;
 		}
+		//如果传入的价格和限时购价格不一致，则默认不是限时购商品
 		if(limitGoods.getActivityPrice().compareTo(params.getActivityPrice()) != 0){
 			return true;
 		}
+		//如果商品购买件数无限制
 		if(limitGoods.getLimitNum() == 0 && limitGoods.getLimitNumTotal() >= params.getNum()){
 			return true;
 		}
@@ -168,7 +174,8 @@ public class LimitCommonService {
 			goodsSum += limitBuydetail.getBuyNo();
 		}
 		goodsSum += params.getNum().longValue();
-		long remaining = limitGoods.getLimitNumTotal().longValue() - goodsSum;
+		//总件数-本次购买的件数
+		long remaining = limitGoods.getLimitNumTotal().longValue() - params.getNum().longValue();
 		if(remaining >= 0 && limitGoods.getLimitNum().longValue() >= goodsSum){
 			return true;
 		}
