@@ -345,6 +345,7 @@ $(function() {
                                                                     $that.parent().find('.relation-text').css('left','10px');
                                                                     $that.parent().find('.relation-text').html('已关联');
                                                                 }else{
+																	$(".border-circle").removeClass("disabled");
                                                                     $.messager.alert("错误",data.msg,'error');
                                                                 }
                                                             }
@@ -352,6 +353,7 @@ $(function() {
                                                     }
                                                 });
                                             }else{
+												$(".border-circle").removeClass("disabled");
                                                 $.messager.alert("错误",data.msg,'error');
                                             }
                                         }
@@ -371,13 +373,14 @@ $(function() {
 		                						$that.parent().find('.relation-text').css('left','10px');
 		                						$that.parent().find('.relation-text').html('已关联');
 		                					}else{
+												$(".border-circle").removeClass("disabled");
 		                						$.messager.alert("错误",data.msg,'error');  
 		                					}
 		                				}
 		                			});
 		                		}
 	                		} else if($that.css('left')=='54px'){
-	                			$.messager.confirm('确认','您确认想要取消关联吗？',function(r){    
+	                			$.messager.confirm('确认','您确认想要取消关联吗？',function(r){
 	                			    if (r){  
 	                			    	$.ajax({
 	    	        	        			url : ctx + '/application/jd/category/disrelevance',
@@ -393,6 +396,7 @@ $(function() {
 	    	        	                			$that.parent().find('.relation-text').css('left','27px');
 	    	        	                    		$that.parent().find('.relation-text').html('未关联');
 	    	        	                    	}else{
+													$(".border-circle").removeClass("disabled");
 	    	        	                    		$.messager.alert("错误",data.msg,'error');  
 	    	        	                    	}
 	    	        	        			}
