@@ -1038,7 +1038,8 @@ public class JdGoodsInfoService {
 		try {
 			JdSimilarSkuList = productService.getWeiZhiSimilarSku(sku+"");
 			if(CollectionUtils.isNotEmpty(JdSimilarSkuList)){
-				for (int i=0; i<JdSimilarSkuList.size(); i++) {
+				int size = JdSimilarSkuList.size();
+				for (int i=0; i<size; i++) {
 					JdSimilarSkuList.get(i).update(JdSimilarSkuList.get(i).getSaleAttrList());
 					JdSimilarSkuList.add(JdSimilarSkuList.get(i));
 				}
