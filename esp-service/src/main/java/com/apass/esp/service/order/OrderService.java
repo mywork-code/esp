@@ -1289,7 +1289,7 @@ public class OrderService {
         for (PurchaseRequestDto purchase : purchaseList) {
             BigDecimal price = commonService.calculateGoodsPrice(purchase.getGoodsId(),
                     purchase.getGoodsStockId());
-            if (!(purchase.getPrice().compareTo(price) == 0)) {
+            if ( StringUtils.isBlank(purchase.getLimitActivityId()) && !(purchase.getPrice().compareTo(price) == 0)) {
                 LOG.info(requestId, "id为" + purchase.getGoodsId() + "的商品价格发生改变，请重新购买！", purchase
                         .getGoodsStockId().toString());
                 throw new BusinessException("商品价格已变动，请重新下单");

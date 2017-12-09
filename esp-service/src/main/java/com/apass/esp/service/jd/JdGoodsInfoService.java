@@ -393,7 +393,7 @@ public class JdGoodsInfoService {
 		map.put("skuId", String.valueOf(sku));
 		map.put("jdSimilarSkuList", jdSimilarSkuList2);
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList2.size());
-		return map;
+		return map; 
 	}
 
 	// 查询商品规格（包括不包括库存）
