@@ -491,7 +491,7 @@ public class SAPService {
           contentList.add("Y001");
         }
         contentList.add("");
-        contentList.add("");
+        contentList.add(salOrder.getName());
         contentList.add("");
         contentList.add(salOrder.getTelephone());
         contentList.add("");
