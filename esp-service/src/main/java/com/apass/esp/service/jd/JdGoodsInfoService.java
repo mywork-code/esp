@@ -1038,9 +1038,9 @@ public class JdGoodsInfoService {
 		try {
 			JdSimilarSkuList = productService.getWeiZhiSimilarSku(sku+"");
 			if(CollectionUtils.isNotEmpty(JdSimilarSkuList)){
-				for (JdSimilarSku jdSimilarSku : JdSimilarSkuList) {
-					jdSimilarSku.update(jdSimilarSku.getSaleAttrList());
-					JdSimilarSkuList.add(jdSimilarSku);
+				for (int i=0; i<JdSimilarSkuList.size(); i++) {
+					JdSimilarSkuList.get(i).update(JdSimilarSkuList.get(i).getSaleAttrList());
+					JdSimilarSkuList.add(JdSimilarSkuList.get(i));
 				}
 			}
 		} catch (Exception e) {
