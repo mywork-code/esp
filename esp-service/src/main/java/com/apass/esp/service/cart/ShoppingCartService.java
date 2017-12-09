@@ -331,6 +331,7 @@ public class ShoppingCartService {
 		} else {
 			Date date = new Date();
 			for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
+				String skuId;
 				if ("jd".equals(goodsInfoInCart.getGoodsSource())) {
 					String goodsLogoUrlNew = goodsInfoInCart.getGoodsBaseLogoUrl();
 					goodsInfoInCart.setGoodsLogoUrlNew(
@@ -345,6 +346,7 @@ public class ShoppingCartService {
 					goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));// 设置商品的当前库存为200
 					GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
 					goodsInfoInCart.setGoodsSkuAttr(goodsInfoEntity.getAttrDesc());
+					skuId=goodsInfoEntity.getExternalId();
 				} else {
 					// 添加新的图片地址
 					String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
@@ -367,6 +369,9 @@ public class ShoppingCartService {
 						String goodsDesc = goodsService.getGoodsStockDesc(goodsInfoInCart.getGoodsStockId());
 						goodsInfoInCart.setGoodsSkuAttr(goodsDesc);
 					}
+					Long goodsStockId=goodsInfoInCart.getGoodsStockId();
+					GoodsStockInfoEntity goodsStockInfoEntity=goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
+					skuId=goodsStockInfoEntity.getSkuId();
 				}
 
 				// 计算商品折扣后价格
@@ -374,10 +379,9 @@ public class ShoppingCartService {
 						goodsInfoInCart.getGoodsStockId());
 				// 商品价格实时获取，不从购物车中取
 				goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
-				Long goodsStockId=goodsInfoInCart.getGoodsStockId();
-				GoodsStockInfoEntity goodsStockInfoEntity=goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
+				
 				//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(skuId);
 				if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
 					goodsInfoInCart.setLimitFalg(true);
 					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
