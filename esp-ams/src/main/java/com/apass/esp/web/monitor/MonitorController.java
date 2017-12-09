@@ -6,6 +6,7 @@ import com.apass.esp.domain.dto.monitor.MonitorDto;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.enums.MonitorFlag;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.MonitorQuery;
 import com.apass.esp.domain.vo.MonitorVo;
 import com.apass.esp.schedule.MailStatisScheduleTask;
@@ -185,7 +186,7 @@ public class MonitorController {
 		final int BACH_SIZE = 500;
 		try {
 			while (true) {
-				List<GoodsInfoEntity> goodsInfoEntityList = goodsService.selectJdGoods(index, BACH_SIZE);
+				List<GoodsInfoEntity> goodsInfoEntityList = goodsService.selectJdGoods(index, BACH_SIZE, SourceType.WZ);
 				if (CollectionUtils.isEmpty(goodsInfoEntityList)) {
 					break;
 				}

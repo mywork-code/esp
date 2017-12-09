@@ -43,13 +43,13 @@ public class CheckGoodsSalesService {
 				Goods goods = IndexManager.getDocument("goods", IndexType.GOODS,
 						Integer.parseInt(goodslist.get(j).getGoodId().toString()));
 				String externalId = goodslist.get(j).getExternalId();// 外部商品id
-				List<SkuNum> skuNumList = new ArrayList<>();
-				SkuNum skuNum = new SkuNum();
-				skuNum.setNum(1);
-				skuNum.setSkuId(Long.parseLong(externalId));
-				skuNumList.add(skuNum);
+//				List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList = new ArrayList<>();
+//				com.apass.esp.third.party.weizhi.entity.SkuNum skuNum = new com.apass.esp.third.party.weizhi.entity.SkuNum();
+//				skuNum.setNum(1);
+//				skuNum.setSkuId(Long.parseLong(externalId));
+//				skuNumList.add(skuNum);
 				// 验证商品是否可售
-				if (!orderService.checkGoodsSalesOrNot(skuNumList)) {
+				if (!orderService.checkGoodsSalesOrNot(externalId)) {
 					// 京东不可售
 					if (null != goods) {
 						GoodsInfoEntity entity = goodsService.selectByGoodsId(goodslist.get(j).getGoodId());

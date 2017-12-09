@@ -23,6 +23,11 @@ import com.apass.esp.service.refund.ServiceProcessService;
 import com.apass.esp.third.party.jd.client.JdAfterSaleApiClient;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.entity.aftersale.AfsInfo;
+import com.apass.esp.third.party.weizhi.client.WeiZhiAfterSaleApiClient;
+import com.apass.esp.third.party.weizhi.entity.aftersale.AfsServicebyCustomerPin;
+import com.apass.esp.third.party.weizhi.entity.aftersale.SkuObject;
+import com.apass.gfb.framework.exception.BusinessException;
+import com.apass.gfb.framework.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +96,8 @@ public class JdAfterSaleScheduleTask {
     private TxnInfoMapper txnInfoMapper;
     @Autowired
     private MessageListenerMapper messageListenerMapper;
+    @Autowired
+    private WeiZhiAfterSaleApiClient weiZhiAfterSaleApiClient;
     /**
      * 京东售后状态更新
      */
@@ -103,10 +110,15 @@ public class JdAfterSaleScheduleTask {
         LOGGER.info("refund task begin...");
         for (OrderInfoEntity orderInfoEntity : orderInfoEntityList) {
             LOGGER.info("orderInfoEntity.getExtOrderId() {}",orderInfoEntity.getExtOrderId());
-            long jdOrderId = Long.valueOf(orderInfoEntity.getExtOrderId());
-            ml.setOrderid(jdOrderId+"");
-            JdApiResponse<JSONObject> afsInfo = jdAfterSaleApiClient.afterSaleServiceListPageQuery(jdOrderId, 1, 10);
-            if (!afsInfo.isSuccess() || afsInfo.getResult() == null) {
+            ml.setOrderid(orderInfoEntity.getExtOrderId());
+            List<SkuObject> serviveList = null;
+            try {
+                //TODO 根据客户账号和订单号分页查询服务单概要信息
+                serviveList = weiZhiAfterSaleApiClient.getServiveList(orderInfoEntity.getExtOrderId(), "1", "10");
+            } catch (Exception e) {
+                LOGGER.error("调用接口:根据客户账号和订单号分页查询服务单概要信息失败!",e);
+            }
+            if (serviveList == null) {
             	ml.setStatus("0");
             	ml.setResult("afterSaleServiceListPageQuery接口调用失败！");
             	ml.setCreatedTime(new Date());
@@ -114,8 +126,10 @@ public class JdAfterSaleScheduleTask {
             	messageListenerMapper.insertSelective(ml);
                 continue;
             }
-            String result = afsInfo.getResult().getString("serviceInfoList");
-            if (result == null || "".equals(result)) {
+
+            List<AfsServicebyCustomerPin> serviceInfoList = serviveList.get(0).getResult().getResult().getServiceInfoList();
+            //因为提交售后只上传一个skuid,所以serviveList只有一个元素
+            if (CollectionUtils.isEmpty(serviveList)) {
             	ml.setStatus("0");
             	ml.setResult("获取serviceInfoList组件列表失败！");
             	ml.setCreatedTime(new Date());
@@ -123,9 +137,8 @@ public class JdAfterSaleScheduleTask {
             	messageListenerMapper.insertSelective(ml);
                 continue;
             }
-            LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(),result);
-            JSONArray array = JSONArray.parseArray(result);
-            Integer customerExpect = getCustomerExpect(array, orderInfoEntity.getOrderId());
+            LOGGER.info("orderInfoEntity.getExtOrderId() {},result {}",orderInfoEntity.getExtOrderId(), GsonUtils.toJson(serviceInfoList));
+            Integer customerExpect = getCustomerExpect(serviceInfoList, orderInfoEntity.getOrderId());
 
             Map<String, Object> map = new HashMap<>();
             map.put("orderId", orderInfoEntity.getOrderId());
@@ -138,9 +151,9 @@ public class JdAfterSaleScheduleTask {
             if (refundInfoEntity == null) {
                 return;
             }
-            process(array, refundInfoEntity.getId(),orderInfoEntity.getOrderId());
+            process(serviceInfoList, refundInfoEntity.getId(),orderInfoEntity.getOrderId());
             //该售后单的状态改为进度最慢的子售后单进度
-            String refundStatus = getStatus(array);
+            String refundStatus = getStatus(serviceInfoList);
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("orderId", orderInfoEntity.getOrderId());
             if (!refundStatus.equalsIgnoreCase(RefundStatus.REFUND_STATUS01.getCode())) {
@@ -162,19 +175,17 @@ public class JdAfterSaleScheduleTask {
      * @param jsonArray
      * @return
      */
-    private String getStatus(JSONArray jsonArray) {
+    private String getStatus(List<AfsServicebyCustomerPin> serviceInfoList) {
         int j = 0;
         List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-            AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-            Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+        for (int i = 0; i < serviceInfoList.size(); i++) {
+            Integer afsServiceStep = serviceInfoList.get(0).getAfsServiceStep();
             list.add(afsServiceStep);
             if (afsServiceStep == 40 || afsServiceStep == 50) {
                 j++;
             }
         }
-        if (j == jsonArray.size()) {
+        if (j == serviceInfoList.size()) {
             return RefundStatus.REFUND_STATUS05.getCode();
         } else {
             Integer step = Collections.min(list);
@@ -201,12 +212,10 @@ public class JdAfterSaleScheduleTask {
      * @param refundId
      * @return
      */
-    private void process(JSONArray jsonArray, long refundId,String orderId) {
+    private void process(List<AfsServicebyCustomerPin> serviceInfoList, long refundId,String orderId) {
         List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-            AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
-            Integer afsServiceStep = newAfsInfo.getAfsServiceStep();
+        for (int i = 0; i < serviceInfoList.size(); i++) {
+            Integer afsServiceStep = serviceInfoList.get(i).getAfsServiceStep();
             list.add(afsServiceStep);
         }
         Integer i = Collections.min(list);
@@ -235,20 +244,16 @@ public class JdAfterSaleScheduleTask {
      * @param jsonArray
      * @return
      */
-    private Integer getCustomerExpect(JSONArray jsonArray, String orderId) {
-        JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-        AfsInfo newAfsInfo = AfsInfo.fromOriginalJson(jsonObject);
+    private Integer getCustomerExpect(List<AfsServicebyCustomerPin> serviceInfoList, String orderId) {
         MessageListener ml=new MessageListener();
         ml.setType("100");
         ml.setOrderid(orderId);
-        LOGGER.info("newAfsInfo.. {}",JSONObject.toJSONString(newAfsInfo));
-        for (Object object : jsonArray) {
-            JSONObject jsonObject1 = (JSONObject) object;
-            AfsInfo newAfsInfo1 = AfsInfo.fromOriginalJson(jsonObject1);
+        LOGGER.info("newAfsInfo.. {}",GsonUtils.toJson(serviceInfoList.get(0)));
+        for (AfsServicebyCustomerPin afsCusPin : serviceInfoList) {
             RefundDetailInfoEntity refundDetailInfoEntity = new RefundDetailInfoEntity();
-            refundDetailInfoEntity.setGoodsId(newAfsInfo1.getWareId());
+            refundDetailInfoEntity.setGoodsId(afsCusPin.getWareId());
             refundDetailInfoEntity.setOrderId(orderId);
-            Integer i = newAfsInfo1.getAfsServiceStep();
+            Integer i = afsCusPin.getAfsServiceStep();
             if (i == 20 || i == 60) {
             	if(i == 20){
             		ml.setResult("审核不通过");
@@ -285,7 +290,7 @@ public class JdAfterSaleScheduleTask {
             refundDetailInfoRepository.updateByStatusAndGoodsId(refundDetailInfoEntity);
         }
 
-        return newAfsInfo.getCustomerExpect();
+        return serviceInfoList.get(0).getCustomerExpect();
     }
 
     /**

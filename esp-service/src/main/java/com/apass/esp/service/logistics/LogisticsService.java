@@ -48,10 +48,15 @@ import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.jd.JdLogisticsService;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.response.OrderTrack;
+import com.apass.esp.third.party.weizhi.response.OrderTrackResponse;
+import com.apass.esp.third.party.weizhi.response.TrackData;
 import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.GsonUtils;
+import com.google.common.collect.Maps;
 
 @Service
 public class LogisticsService {
@@ -77,6 +82,9 @@ public class LogisticsService {
 
     @Autowired
     private  JdLogisticsService jdLogisticsService;
+    
+    @Autowired
+    private WeiZhiOrderApiClient orderApi;
     /**
      * 快递鸟查询物流详情
      * 
@@ -387,7 +395,7 @@ public class LogisticsService {
     
     public Map<String, Object> loadLogisticInfo(String orderId) throws BusinessException {
         OrderInfoEntity orderInfo = orderInfoDao.selectByOrderIdAndUserId(orderId, null);
-        if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
+        if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
         	return jdLogisticsService.getSignleTrackings(orderId);
         }else{
         	return this.getSignleTrackings(orderInfo.getLogisticsName(), orderInfo.getLogisticsNo(), orderId);
@@ -405,37 +413,79 @@ public class LogisticsService {
     	LogisticsFirstDataVo logisticInfo = new LogisticsFirstDataVo();
     	//根据订单的id获取订单详情
     	OrderInfoEntity orderInfo = orderInfoDao.selectByOrderId(orderId);
-    	if(orderInfo != null){
-    		//如果物流商编号和物流单号任何一项为空，则返回空
-    		if(StringUtils.isBlank(orderInfo.getLogisticsNo()) || StringUtils.isBlank(orderInfo.getLogisticsName()) ){
+    	if(null == orderInfo){
+    		LOGGER.error("loadFristLogisticInfo orderInfo is null ");
+    		throw new BusinessException("订单信息缺失，请稍后再试!");
+    	}
+		/**
+		 * 如果物流商编号和物流单号任何一项为空，则返回空(sprint 12 微知接口，物流单号和物流商是为空)
+		 */
+		if(!StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
+			if(StringUtils.isAnyBlank(orderInfo.getLogisticsNo(),orderInfo.getLogisticsName())){
     			return null;
     		}
-    		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());
-    		
-			List<Trace> traceList =  null;
-					
-			try{
-				//如果查询物流出现异常的时候，就默认轨迹不存在
-				if(StringUtils.equals(orderInfo.getSource(), SourceType.JD.getCode())){
-					traceList = jdLogisticsService.getSignleTracksByOrderId(orderInfo.getExtOrderId());
-				}else{
-					traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
-				}
-			}catch(Exception e){
-				LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+		}
+		logisticInfo.setLogisticsNo(orderInfo.getLogisticsNo());//如果是微知订单，此处为空
+		List<Trace> traceList =  null;
+		try{
+			//如果查询物流出现异常的时候，就默认轨迹不存在
+			if(StringUtils.equals(orderInfo.getSource(), SourceType.WZ.getCode())){
+				com.apass.esp.third.party.weizhi.response.Track track =  getTraceListByWzOrderId(orderInfo.getExtOrderId());
+				logisticInfo.setLogisticsNo(track.getTrackId());//微知订单，物流单号，重新赋值
+				traceList = track.getTraceList();
+				orderInfo.setLogisticsName(SourceType.JD.getCode());
+			}else{
+				traceList =	getSignleTrackingsByOrderId(orderInfo.getOrderId());
 			}
-					
-        	if(!CollectionUtils.isEmpty(traceList)){
-        		logisticInfo.setTrace(traceList.get(0));
-        	}
-        	
-        	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
-                    orderInfo.getLogisticsName());
-        	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
+		}catch(Exception e){
+			LOGGER.error("编号为{}的订单，查询物流信息的时候出现错误！",orderInfo.getOrderId());
+		}
+    	if(!CollectionUtils.isEmpty(traceList)){
+    		logisticInfo.setTrace(traceList.get(0));
     	}
-    	
+    	ConstantEntity constant = constantDao.selectByDataNoAndDataTypeNo(ConstantsUtils.TRACKINGMORE_DATATYPENO,
+                orderInfo.getLogisticsName());
+    	logisticInfo.setLogisticsName(constant!=null?constant.getDataName():orderInfo.getLogisticsName());
     	return logisticInfo;
     }
     
-    
+    /**
+     * 根据微知订单号，获取订单物流轨迹
+     * @param wzOrderId
+     * @return
+     */
+    public com.apass.esp.third.party.weizhi.response.Track getTraceListByWzOrderId(String wzOrderId){
+    	OrderTrack ss = null;
+    	try {
+    		OrderTrackResponse track = orderApi.orderTrack(wzOrderId);
+    		if(null != track && CollectionUtils.isNotEmpty(track.getOrderTrack())){
+    			for (OrderTrack trace : track.getOrderTrack()) {
+    				if(CollectionUtils.isNotEmpty(trace.getTackList())){
+    					ss = trace;
+    					break;
+    				}
+				}
+    			if(null == ss){
+    				ss = track.getOrderTrack().get(0);
+    			}
+    		}
+		} catch (Exception e) {}
+    	List<Trace> trackList = new ArrayList<>();
+    	if(null != ss){
+    		for(int i = 0;i < ss.getTackList().size(); i++){
+    			Map<String,String> map = (Map) ss.getTackList().get(i);
+    			Trace tack = new Trace();
+        		tack.setAcceptTime(map.get("msgTime"));
+        		tack.setAcceptStation(map.get("content"));
+        		tack.setRemark(map.get("operator"));
+        		trackList.add(tack);
+    		}
+    	}
+    	
+    	com.apass.esp.third.party.weizhi.response.Track t = new com.apass.esp.third.party.weizhi.response.Track();
+    	Collections.reverse(trackList);
+    	t.setTraceList(trackList);
+    	t.setTrackId(null == ss ? "" : ss.getTrackId());
+    	return t;
+    }
 }

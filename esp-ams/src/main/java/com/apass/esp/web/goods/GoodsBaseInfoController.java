@@ -55,7 +55,6 @@ import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.FileUtilsCommons;
 import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.PaginationManage;
@@ -70,6 +69,8 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.apass.gfb.framework.utils.ImageUtils;
 import com.google.common.collect.Maps;
+
+
 /**
  * 商品管理
  *
@@ -394,8 +395,6 @@ public class GoodsBaseInfoController {
      * 商品基本信息修改
      *
      * @param pageModelEdit
-     * @param model
-     * @param request
      * @return
      */
     @ResponseBody
@@ -619,7 +618,7 @@ public class GoodsBaseInfoController {
             return "商品库存为空,请添加！";
         }
         GoodsInfoEntity entity = new GoodsInfoEntity();
-        if (!"jd".equals(source)) {
+        if (!StringUtils.equals("jd",source) && !StringUtils.equals("wz",source)) {
             List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
             if (bannerList.isEmpty()) {
                 return "商品大图为空，请上传！";
@@ -635,10 +634,9 @@ public class GoodsBaseInfoController {
                 return "商品类目不能为空，请先选择类目！";
             }
         } else {
-//            if (StringUtils.isAnyBlank(listTime, delistTime) || "null".equals(listTime)
-//                    || "null".equals(delistTime)) {
-//                return "商品上架和下架时间不能为空，请先选择类目！";
-//            }
+            if (StringUtils.isAnyBlank(listTime)) {
+                return "商品上架时间不能为空，请先选择类目！";
+            }
 
             //查询商品价格
             List<GoodsStockSkuDto> goodsStockSkuInfo = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
@@ -650,14 +648,8 @@ public class GoodsBaseInfoController {
             if(goodsStockSkuInfo.get(0).getGoodsCostPrice().compareTo(new BigDecimal(99))<0){
                 return "京东协议价格低于99元，不能上架";
             }
-            
-            List<SkuNum> skuNumList=new ArrayList<>();
-            SkuNum skuNum=new SkuNum();
-            skuNum.setNum(1);
-            skuNum.setSkuId(Long.parseLong(goodsEntity.getExternalId()));
-            skuNumList.add(skuNum);
             //验证商品是否可售（当验证为不可售时，提示操作人员）
-            if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+            if(!orderService.checkGoodsSalesOrNot(goodsEntity.getExternalId())){
             	 return "该京东商品暂时不可售，不能上架";
             }
         }
@@ -673,11 +665,12 @@ public class GoodsBaseInfoController {
             BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
             BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
                     .setScale(4, BigDecimal.ROUND_DOWN);
-            if ("jd".equals(source)) {
+            if (StringUtils.equals("jd",source) || StringUtils.equals("wz",source)) {
                 String skuId = goodsEntity.getExternalId();
                 Map<String, Object> descMap = new HashMap<String, Object>();
                 try {
                     descMap = jdGoodsInfoService.getJdGoodsSimilarSku(Long.valueOf(skuId));
+
                 } catch (Exception e) {
                     return "京东接口报错";
                 }
@@ -727,7 +720,6 @@ public class GoodsBaseInfoController {
             GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
             Goods goods = new Goods();
             goods.setId(entity2.getGoodId().intValue());
-            //goodsService.goodsInfoToGoods(entity2);
             LOGGER.info("商品下架，删除索引传递的参数:{}",GsonUtils.toJson(goods));
             goodsEsDao.delete(goods);
         }
@@ -768,11 +760,6 @@ public class GoodsBaseInfoController {
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
                         LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));
                         goodsEsDao.add(goods);
-//                        if(add){
-//                            LOGGER.info("添加索引成功，添加内容:{}",GsonUtils.toJson(goods));
-//                        }else{
-//                            LOGGER.info("添加索引失败，失败内容:{}",GsonUtils.toJson(goods));
-//                        }
                     }
                 }
             }

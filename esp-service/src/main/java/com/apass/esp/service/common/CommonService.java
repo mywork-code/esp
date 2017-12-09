@@ -52,11 +52,11 @@ public class CommonService {
      * @throws BusinessException
      */
 	public BigDecimal calculateGoodsPrice(Long goodsId, Long goodsStockId) throws BusinessException {
-    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
-      //返回活动价
-      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
-    }
+	    ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+	    if(proGroupGoodsBo != null && proGroupGoodsBo.isValidActivity()){
+	      //返回活动价
+	      return proGroupGoodsBo.getActivityPrice().setScale(2, BigDecimal.ROUND_FLOOR);
+	    }
 
 		Date now = new Date();
 		// 系统折扣率
@@ -103,7 +103,26 @@ public class CommonService {
 					price = goodsStock.getGoodsPrice();
 					return price.setScale(2, BigDecimal.ROUND_FLOOR);
 				}
-			} else {
+			} else if (SourceType.WZ.getCode().equals(goodsBasicInfo.getSource())) {
+				BigDecimal goodsCostPrice = goodsStock.getGoodsCostPrice();
+				Kvattr kvattr = new Kvattr();
+				if (goodsCostPrice.compareTo(new BigDecimal(99)) >= 0
+						&& goodsCostPrice.compareTo(new BigDecimal(500)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE1.getCode());
+				} else if (goodsCostPrice.compareTo(new BigDecimal(500)) > 0
+						&& goodsCostPrice.compareTo(new BigDecimal(2000)) <= 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE2.getCode());
+				} else if (goodsCostPrice.compareTo(new BigDecimal(2000)) > 0) {
+					kvattr = kvattrService.getKvattrByKeyList(kvattrKey.PROTOCOL_PRICE3.getCode());
+				}
+				if(null !=kvattr.getValue()){
+					price = goodsCostPrice.multiply(new BigDecimal(kvattr.getValue()));
+					return price.setScale(0, BigDecimal.ROUND_HALF_UP);
+				}else{
+					price = goodsStock.getGoodsPrice();
+					return price.setScale(2, BigDecimal.ROUND_FLOOR);
+				}
+			}else {
 				price = goodsStock.getGoodsPrice();
 				return price.setScale(2, BigDecimal.ROUND_FLOOR);
 			}

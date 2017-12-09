@@ -1,12 +1,7 @@
 package com.apass.esp.nothing;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.apass.esp.domain.entity.address.AddressInfoEntity;
+import com.apass.esp.common.code.BusinessErrorCode;
+import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
@@ -14,8 +9,10 @@ import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.third.party.jd.entity.base.Region;
+import com.apass.gfb.framework.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.domain.Response;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.gfb.framework.exception.BusinessException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("goodsBasic")
@@ -63,7 +60,7 @@ public class GoodsBasicController {
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 Region region = new Region();
                 region.setProvinceId(51975);
                 region.setCityId(2815);

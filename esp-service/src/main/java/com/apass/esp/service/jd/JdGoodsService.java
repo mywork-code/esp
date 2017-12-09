@@ -1,5 +1,6 @@
 package com.apass.esp.service.jd;
 
+import com.apass.esp.common.model.ExtentMerchantCode;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
@@ -9,12 +10,10 @@ import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
-import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
-import com.apass.gfb.framework.cache.CacheManager;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
@@ -53,15 +52,6 @@ public class JdGoodsService {
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
 
-
-    @Autowired
-    private GoodsEsDao goodsEsDao;
-    
-//    @Autowired
-//    private UsersService usersService;
-
-    @Autowired
-    private CacheManager cacheManager;
     /**
      * 关联京东类目
      * 
@@ -97,25 +87,28 @@ public class JdGoodsService {
             entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
             entity.setGoodsName(jdGoods.getName());
             entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            entity.setMerchantCode("0000097");//usersService.loadBasicInfo().getMerchantCode()
+            entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);//usersService.loadBasicInfo().getMerchantCode()
             entity.setStatus(GoodStatus.GOOD_NEW.getCode());
             entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
             entity.setListTime(null);
             entity.setDelistTime(null);
             entity.setCreateUser(username);
             entity.setUpdateUser(username);
-            entity.setSource("jd");
+            entity.setSource("wz");
             entity.setGoodsLogoUrl(jdGoods.getImagePath());
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
             entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+            entity.setAttrDesc("");
+            entity.setSupport7dRefund("");
+            entity.setSiftSort(0);
 
             //查询数据库是否已经存在此商品
             GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
             if(insertJdGoods != null){
                 // 商品编号
                 StringBuffer sb = new StringBuffer();
-                sb.append("97");
+                sb.append("03");
                 String random = RandomUtils.getNum(8);
                 sb.append(random);
                 entity.setGoodsCode(sb.toString());

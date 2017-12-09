@@ -123,7 +123,7 @@
 				WHERE
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
-				AND a.source = 'jd'
+				AND a.source = #{source}
 				AND CURRENT_TIMESTAMP > a.list_time
 				limit #{page, jdbcType=INTEGER},#{rows, jdbcType=INTEGER}
 	]]>
@@ -145,6 +145,8 @@
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
 				AND CURRENT_TIMESTAMP > a.list_time
+
+				AND SOURCE = #{source}
 	]]>
 	   <if test="goodsCode != null or externalId != null">
             AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
@@ -163,7 +165,7 @@
 				WHERE
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
-				AND a.source = 'jd'
+				AND a.source = 'wz'
 				AND CURRENT_TIMESTAMP > a.list_time
 	]]>
     </select>

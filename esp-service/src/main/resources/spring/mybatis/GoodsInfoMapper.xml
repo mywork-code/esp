@@ -177,7 +177,7 @@
 		FROM
 			t_esp_goods_base_info
 		WHERE
-			source != 'jd'
+			source != 'wz'
 	</select>
     
     
@@ -1056,6 +1056,7 @@
         t.attr_desc     attrDesc
         from t_esp_goods_base_info t
         where external_id = #{externalId}
+        and source = 'wz'
     </select>
     <!-- 根据京东id查询改商品是否已经上架 -->
     <select id="selectGoodsInfoByExternalId" parameterType="java.lang.String" resultType="GoodsInfoEntity">
@@ -1086,6 +1087,7 @@
         AND  a.is_delete ='01'
         AND  CURRENT_TIMESTAMP > a.list_time
         AND  external_id = #{externalId}
+        and source = 'wz'
     </select>
     <!-- 根据二级类目id查询其下所有商品 -->
     <select id="selectByCategoryId2" resultType="GoodsInfoEntity">
@@ -1208,7 +1210,7 @@
         t_esp_goods_base_info t
         WHERE
         t.status in('G01','G02','G04') and
-        t.source = 'jd' and
+        t.source = 'wz' and
         t.external_id = #{skuId}
     </select>
     <select id="getBelongCategoryGoods" parameterType="java.lang.Long" resultType="GoodsInfoEntity">
@@ -1311,7 +1313,7 @@
         FROM
             t_esp_goods_base_info t
         WHERE
-            t.source ='jd'
+            t.source ='wz'
             limit #{index},#{size}
       ]]>
     </select>
@@ -1434,7 +1436,7 @@
         t.newCreat_date   newCreatDate
         FROM
         t_esp_goods_base_info t
-        where
+        where source = 'wz' and
         external_id in
         <foreach collection="list" item="externalId" separator="," open="(" close=")">
             #{externalId}

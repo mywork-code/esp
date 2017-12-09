@@ -341,7 +341,7 @@ public class TestController {
           skuNum.setNum(1);
           skuNum.setSkuId(Long.parseLong(sku));
           skuNumList.add(skuNum);
-          Boolean result= orderService.checkGoodsSalesOrNot(skuNumList);
+          Boolean result= false;//orderService.checkGoodsSalesOrNot(skuNumList);
         return Response.success("1", result);
     }
 

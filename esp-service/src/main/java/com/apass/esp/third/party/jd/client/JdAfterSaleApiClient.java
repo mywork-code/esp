@@ -19,7 +19,7 @@ import javax.ws.rs.PUT;
  * @since JDK 1.8
  */
 @Service
-public class JdAfterSaleApiClient  extends JdApiClient{
+public class JdAfterSaleApiClient extends JdApiClient{
     /**
      * 申请服务
      * @param afsApply

@@ -117,7 +117,7 @@ public class ShoppingCartService {
 			LOG.info(requestId, "该商品已下架", goodsStockId);
 			throw new BusinessException("该商品已下架", BusinessErrorCode.GOODS_ALREADY_REMOV);
 		}
-		if (!SourceType.JD.getCode().equals(goodsInfo.getSource())){
+		if (!SourceType.WZ.getCode().equals(goodsInfo.getSource())){
 			// 商品库存如果都为0 则提示商品下架
 			List<GoodsStockInfoEntity> goodsList = goodsStockDao.loadByGoodsId(goodsStockInfo.getGoodsId());
 			boolean offShelfFlag = true;
@@ -315,152 +315,158 @@ public class ShoppingCartService {
 	 * @param userId
 	 * @throws BusinessException
 	 */
-	public List<ListCartDto> getGoodsInfoInCart(String requestId, String userId) throws BusinessException {
+    public List<ListCartDto> getGoodsInfoInCart(String requestId, String userId) throws BusinessException {
+        Long userIdVal = Long.valueOf(userId);
+        List<GoodsInfoInCartEntity> goodsInfoInCartList = null;
 
-		Long userIdVal = Long.valueOf(userId);
+        goodsInfoInCartList = cartInfoRepository.getGoodsInfoInCart(userIdVal);
 
-		List<GoodsInfoInCartEntity> goodsInfoInCartList = cartInfoRepository.getGoodsInfoInCart(userIdVal);
+        if (null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()) {
+            LOG.info(requestId, "查询数据库购物车表数据", "数据为空");
+            throw new BusinessException("购物车为空",BusinessErrorCode.CART_NULL);
+        } else {
+            Date date = new Date();
+            for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
+                if(SourceType.WZ.getCode().equals(goodsInfoInCart.getGoodsSource())){
+                    String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
+                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
+                    //购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+                    if(goodsInfoInCart.getDelistTime().before(date) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+                        goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+                    }
+                    goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));//设置商品的当前库存为200
+                    GoodsInfoEntity goodsInfoEntity=goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
+                    goodsInfoInCart.setGoodsSkuAttr(goodsInfoEntity.getAttrDesc());
+                }else{
+                    //添加新的图片地址
+                    String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
+                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+                    // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
+                    if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt()
+                            || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
+                            || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+                        goodsInfoInCart.setIsDelete("00");//失效
+                        goodsInfoInCart.setIsSelect("0");//不选中
+                    }
+                }
 
-		if (null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()) {
-			LOG.info(requestId, "查询数据库购物车表数据", "数据为空");
-			List<ListCartDto> list = new ArrayList<>();
-			return list;
-		} else {
-			Date date = new Date();
-			for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
-				if ("jd".equals(goodsInfoInCart.getGoodsSource())) {
-					String goodsLogoUrlNew = goodsInfoInCart.getGoodsBaseLogoUrl();
-					goodsInfoInCart.setGoodsLogoUrlNew(
-							imageService.getJDImageUrl(goodsLogoUrlNew, JdGoodsImageType.TYPEN3.getCode()));
-					// 购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-					if ((null != goodsInfoInCart.getDelistTime() && goodsInfoInCart.getDelistTime().before(date))
-							|| goodsInfoInCart.getGoodsNum() == 0
-							|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())) {
-						goodsInfoInCart.setIsDelete("00");// 失效
-						goodsInfoInCart.setIsSelect("0");// 不选中
-					}
-					goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));// 设置商品的当前库存为200
-					GoodsInfoEntity goodsInfoEntity = goodsService.selectByGoodsId(goodsInfoInCart.getGoodsId());
-					goodsInfoInCart.setGoodsSkuAttr(goodsInfoEntity.getAttrDesc());
-				} else {
-					// 添加新的图片地址
-					String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
-					goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
+                // 计算商品折扣后价格
+                BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoInCart.getGoodsId(), goodsInfoInCart.getGoodsStockId());
+                // 商品价格实时获取，不从购物车中取
+                goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
+            }
+        }
 
-					// 已过下架时间 或 库存为0， 标记该商品已下架 购物车中数量 为 0 的商品也标记已下架，让客户删除
-					// (同步库存为0时导致的)
-					if ((null != goodsInfoInCart.getDelistTime() && goodsInfoInCart.getDelistTime().before(date))
-							|| null == goodsInfoInCart.getStockCurrAmt()
-							|| goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
-							|| !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())) {
-						goodsInfoInCart.setIsDelete("00");// 失效
-						goodsInfoInCart.setIsSelect("0");// 不选中
-					}
-					// 如果非京东商品是多规格商品，则调用方法去取商品的规格描述
-					List<GoodsAttrVal> goodsAttrValList = goodsAttrValService
-							.queryGoodsAttrValsByGoodsId(goodsInfoInCart.getGoodsId());
-					if (null != goodsAttrValList && goodsAttrValList.size() > 1) {
-						// 获取非京东商品的多规格描述
-						String goodsDesc = goodsService.getGoodsStockDesc(goodsInfoInCart.getGoodsStockId());
-						goodsInfoInCart.setGoodsSkuAttr(goodsDesc);
-					}
-				}
+        // 取数据时已安装create_date desc 排序，把已下线商品放到最后
+        List<GoodsInfoInCartEntity> list1 = new ArrayList<GoodsInfoInCartEntity>();
+        List<GoodsInfoInCartEntity> list2 = new ArrayList<GoodsInfoInCartEntity>();
+        for(GoodsInfoInCartEntity goodsInfo : goodsInfoInCartList){
+            if(goodsInfo.getIsDelete().equals("01")){
+                list1.add(goodsInfo);
+            } else {
+                list2.add(goodsInfo);
+            }
+        }
 
-				// 计算商品折扣后价格
-				BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoInCart.getGoodsId(),
-						goodsInfoInCart.getGoodsStockId());
-				// 商品价格实时获取，不从购物车中取
-				goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
-			}
+        // 按 商户编码(merchantCode) 分组
+        Map<String, List<GoodsInfoInCartEntity>> resultMap= new LinkedHashMap<>();
+        GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
+        if(list1 != null && list1.size()>0){
+            for(int i=0; i<list1.size(); i++){
+                goodsInfoInCart = list1.get(i);
+                //根据goodsId查询该商品是否在有效活动中
+                Long  goodsId=goodsInfoInCart.getGoodsId();
+                ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
+                if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
+                    ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
+                    Long activityId = groupGoods.getActivityId();
+                    ProActivityCfg activityCfg = activityCfgService.getById(activityId);
+                    if (null != activityCfg) {
+                        String act = "activity_" + activityId.toString();// 防止商户编码与活动id重复
+                        goodsInfoInCart.setProActivityId(activityId);// 活动id
+                        if (resultMap.containsKey(act)) {
+                            resultMap.get(act).add(goodsInfoInCart);
+                        } else {
+                            List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+                            list.add(goodsInfoInCart);
+                            resultMap.put(act, list);
+                        }
+                    }
+                } else if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
+                    resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
+                } else {
+                    List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
+                    list.add(goodsInfoInCart);
+                    resultMap.put(goodsInfoInCart.getMerchantCode(), list);
+                }
+            }
+        }
 
-			// 取数据时已安装create_date desc 排序，把已下线商品放到最后
-			List<GoodsInfoInCartEntity> list1 = new ArrayList<GoodsInfoInCartEntity>();
-			List<GoodsInfoInCartEntity> list2 = new ArrayList<GoodsInfoInCartEntity>();
-			for (GoodsInfoInCartEntity goodsInfo : goodsInfoInCartList) {
-				if (goodsInfo.getIsDelete().equals("01")) {
-					list1.add(goodsInfo);
-				} else {
-					list2.add(goodsInfo);
-				}
-			}
+//        Map<String, List<GoodsInfoInCartEntity>> resultMap2= new LinkedHashMap<>();
+//        GoodsInfoInCartEntity goodsInfoInCart2 = new GoodsInfoInCartEntity();
+//        for(int i=0; i<list2.size(); i++){
+//            goodsInfoInCart2 = list1.get(i);
+//            if (resultMap2.containsKey(goodsInfoInCart2.getMerchantCode())) {
+//                resultMap2.get(goodsInfoInCart2.getMerchantCode()).add(goodsInfoInCart2);
+//            } else {
+//                List<GoodsInfoInCartEntity> list= new ArrayList<GoodsInfoInCartEntity>();
+//                list.add(goodsInfoInCart2);
+//                resultMap2.put(goodsInfoInCart2.getMerchantCode(), list);
+//            }
+//        }
 
-			// 按 商户编码(merchantCode) 分组
-			Map<String, List<GoodsInfoInCartEntity>> resultMap = new LinkedHashMap<>();
-			GoodsInfoInCartEntity goodsInfoInCart = new GoodsInfoInCartEntity();
-			if (list1 != null && list1.size() > 0) {
-				for (int i = 0; i < list1.size(); i++) {
-					goodsInfoInCart = list1.get(i);
-					// 根据goodsId查询该商品是否在有效活动中
-					Long goodsId = goodsInfoInCart.getGoodsId();
-					ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
-					if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {// 在活动中
-						ProGroupGoods groupGoods = groupGoodsMapper.selectLatestByGoodsId(goodsId);
-						Long activityId = groupGoods.getActivityId();
-						ProActivityCfg activityCfg = activityCfgService.getById(activityId);
-						if (null != activityCfg) {
-							String act = "activity_" + activityId.toString();// 防止商户编码与活动id重复
-							goodsInfoInCart.setProActivityId(activityId);// 活动id
-							if (resultMap.containsKey(act)) {
-								resultMap.get(act).add(goodsInfoInCart);
-							} else {
-								List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
-								list.add(goodsInfoInCart);
-								resultMap.put(act, list);
-							}
-						}
-					} else if (resultMap.containsKey(goodsInfoInCart.getMerchantCode())) {
-						resultMap.get(goodsInfoInCart.getMerchantCode()).add(goodsInfoInCart);
-					} else {
-						List<GoodsInfoInCartEntity> list = new ArrayList<GoodsInfoInCartEntity>();
-						list.add(goodsInfoInCart);
-						resultMap.put(goodsInfoInCart.getMerchantCode(), list);
-					}
-				}
-			}
+        List<ListCartDto> cartDtoList = new ArrayList<ListCartDto>();
 
-			List<ListCartDto> cartDtoList = new ArrayList<ListCartDto>();
+        if(resultMap != null){
+            for(String key : resultMap.keySet()){
+                ListCartDto listCart = new ListCartDto();
+                String[] keys=key.split("_");
+                if(keys.length>1){
+                    String activityId=keys[1];
+                    Map<String,Object>  activityCfgMap =goodsService.getCarActivityInfoByActivityId(Long.parseLong(activityId));
+                    String activityCfgDesc=(String) activityCfgMap.get("activityCfgDesc");
+                    String offerSill1=(String) activityCfgMap.get("offerSill1");
+                    String discountAmonut1=(String) activityCfgMap.get("discountAmonut1");
+                    String offerSill2=(String) activityCfgMap.get("offerSill2");
+                    String discountAmonut2=(String) activityCfgMap.get("discountAmonut2");
+                    ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+                    if( activityCfg.getActivityType().equals("Y")){
+                        listCart.setActivityCfg(activityCfgDesc);
+                    }else{
+                        listCart.setActivityCfg(null);//无优惠不显示满减描述
+                    }
+                    listCart.setOfferSill1(offerSill1);
+                    listCart.setDiscountAmonut1(discountAmonut1);
+                    listCart.setOfferSill2(offerSill2);
+                    listCart.setDiscountAmount2(discountAmonut2);
+                }
+                listCart.setMerchantCode(key);
+                listCart.setGoodsInfoInCartList(resultMap.get(key));
+                cartDtoList.add(listCart);
+            }
+        }
 
-			if (resultMap != null) {
-				for (String key : resultMap.keySet()) {
-					ListCartDto listCart = new ListCartDto();
-					String[] keys = key.split("_");
-					if (keys.length > 1) {
-						String activityId = keys[1];
-						Map<String, Object> activityCfgMap = goodsService
-								.getCarActivityInfoByActivityId(Long.parseLong(activityId));
-						String activityCfgDesc = (String) activityCfgMap.get("activityCfgDesc");
-						String offerSill1 = (String) activityCfgMap.get("offerSill1");
-						String discountAmonut1 = (String) activityCfgMap.get("discountAmonut1");
-						String offerSill2 = (String) activityCfgMap.get("offerSill2");
-						String discountAmonut2 = (String) activityCfgMap.get("discountAmonut2");
-						ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
-						if (activityCfg.getActivityType().equals("Y")) {
-							listCart.setActivityCfg(activityCfgDesc);
-						} else {
-							listCart.setActivityCfg(null);// 无优惠不显示满减描述
-						}
-						listCart.setOfferSill1(offerSill1);
-						listCart.setDiscountAmonut1(discountAmonut1);
-						listCart.setOfferSill2(offerSill2);
-						listCart.setDiscountAmount2(discountAmonut2);
-					}
-					listCart.setMerchantCode(key);
-					listCart.setGoodsInfoInCartList(resultMap.get(key));
-					cartDtoList.add(listCart);
-				}
-			}
+        if(list2 != null && list2.size()>0){
+            ListCartDto listCart = new ListCartDto();
+            listCart.setMerchantCode("unavailability");
+            listCart.setGoodsInfoInCartList(list2);
+            cartDtoList.add(listCart);
+        }
 
-			if (list2 != null && list2.size() > 0) {
-				ListCartDto listCart = new ListCartDto();
-				listCart.setMerchantCode("unavailability");
-				listCart.setGoodsInfoInCartList(list2);
-				cartDtoList.add(listCart);
-			}
+//        List<GoodsInfoInCartEntity> list3 = new ArrayList<GoodsInfoInCartEntity>();
+//        for (ListCartDto listCartDto : cartDtoList) {
+//            List<GoodsInfoInCartEntity> goodsInfoInCartList2 = listCartDto.getGoodsInfoInCartList();
+//            for (GoodsInfoInCartEntity goodsInfoInCartEntity : goodsInfoInCartList2) {
+//                list3.add(goodsInfoInCartEntity);
+//            }
+//        }
+//        list3.addAll(list2);
 
-			return cartDtoList;
-		}
-	}
-    
+        return cartDtoList;
+
+    }
+
     /**
      * 获取购物车中商品总数量
      * 

@@ -34,14 +34,7 @@ import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
 import com.apass.esp.domain.dto.logistics.Trace;
 import com.apass.esp.domain.dto.order.OrderDetailInfoDto;
 import com.apass.esp.domain.dto.payment.PayRequestDto;
-import com.apass.esp.domain.entity.AwardDetail;
-import com.apass.esp.domain.entity.CashRefund;
-import com.apass.esp.domain.entity.CashRefundTxn;
-import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.ProActivityCfg;
-import com.apass.esp.domain.entity.ProCoupon;
-import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.entity.RepayFlow;
+import com.apass.esp.domain.entity.*;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.bill.SalesOrderInfo;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
@@ -57,19 +50,12 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
 import com.apass.esp.domain.vo.ProMyCouponVo;
-import com.apass.esp.mapper.AwardDetailMapper;
-import com.apass.esp.mapper.CashRefundMapper;
-import com.apass.esp.mapper.CashRefundTxnMapper;
-import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
-import com.apass.esp.mapper.ProActivityCfgMapper;
-import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
-import com.apass.esp.mapper.ProMyCouponMapper;
-import com.apass.esp.mapper.RepayFlowMapper;
+import com.apass.esp.mapper.*;
 import com.apass.esp.repository.address.AddressInfoRepository;
 import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -97,14 +83,14 @@ import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.refund.OrderRefundService;
 import com.apass.esp.service.withdraw.WithdrawService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
-import com.apass.esp.third.party.jd.client.JdOrderApiClient;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
-import com.apass.esp.third.party.jd.entity.order.OrderReq;
-import com.apass.esp.third.party.jd.entity.order.PriceSnap;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
-import com.apass.esp.third.party.jd.entity.person.AddressInfo;
-import com.apass.esp.third.party.jd.entity.product.Stock;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
+import com.apass.esp.third.party.weizhi.entity.*;
+import com.apass.esp.third.party.weizhi.response.OrderUnitResponse;
+import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
@@ -182,9 +168,6 @@ public class OrderService {
     private JdProductApiClient jdProductApiClient;
 
     @Autowired
-    private JdOrderApiClient jdOrderApiClient;
-
-    @Autowired
     private CashRefundMapper cashRefundMapper;
 
     @Autowired
@@ -225,12 +208,18 @@ public class OrderService {
     
     @Autowired
     private ProCouponMapper couponMapper;
-    
-    @Autowired
-    private ProCouponRelMapper couponRelMapper;
 
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    
+    @Autowired
+	private WeiZhiOrderApiClient orderApi;
+    
+	@Autowired
+	private WeiZhiPriceApiClient priceApi;
+	
+	@Autowired
+	private WeiZhiProductApiClient productApi;
 
     @Autowired
     private InvoiceService invoiceService;
@@ -449,6 +438,27 @@ public class OrderService {
         }
     }
 
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class,BusinessException.class})
+    public void updateLogisticsInfoAndOrderInfoByOrderId(String orderId) throws BusinessException{
+    	/**
+         * 首先判断一下订单的预发货的状态 1.如果为Y，则不更新此字段 2.如果为空，要把值置成N
+         */
+        OrderInfoEntity entity = orderInfoRepository.selectByOrderId(orderId);
+        if(null == entity){
+        	return;
+        }
+        if (!StringUtils.equals(entity.getPreDelivery(), PreDeliveryType.PRE_DELIVERY_Y.getCode())) {
+            entity.setPreDelivery(PreDeliveryType.PRE_DELIVERY_Y.getCode());
+            entity.setStatus(OrderStatus.ORDER_SEND.getCode());
+            entity.setParentOrderId(entity.getParentOrderId());
+            orderInfoRepository.updateOrderStatusAndPreDelivery(entity);
+        }
+        // 更新订单状态为待收货 D03 : 代收货
+        Map<String,String> map = Maps.newHashMap();
+        map.put("orderId", orderId);
+        map.put("orderStatus", OrderStatus.ORDER_SEND.getCode());
+        orderSubInfoRepository.updateOrderStatusAndLastRtimeByOrderId(map);
+    }
     /**
      * 生成商品订单
      *
@@ -493,7 +503,15 @@ public class OrderService {
         /**
          * 设置预占库存和修改订单的信息
          */
-        preStockStatus(comfirmOrders, addressId);
+        try {
+        	preStockStatusWeiZhi(comfirmOrders, addressId);
+		} catch (BusinessException e) {
+			LOGGER.error("weizhi submitOrder is failed businessException!", e);
+			throw new BusinessException(e.getErrorDesc());
+		} catch (Exception e) {
+			LOGGER.error("weizhi submitOrder is failed exception!", e);
+		}
+		
         /**
          * 使用优惠券
          */
@@ -515,7 +533,7 @@ public class OrderService {
         for (String orderId : orderIdList) {
             OrderInfoEntity entity = selectByOrderId(orderId);
             // 验证订单是否为京东订单
-            if (StringUtils.equals(entity.getSource(), SourceType.JD.getCode())) {
+            if (StringUtils.equals(entity.getSource(), SourceType.WZ.getCode())) {
                 orders.add(orderId);
             }
         }
@@ -528,8 +546,108 @@ public class OrderService {
      * @return
      * @throws BusinessException
      */
-    @Transactional(rollbackFor = { Exception.class, BusinessException.class,RuntimeException.class})
-    public String preStockStatus(List<String> orderIdList, Long addressId) throws BusinessException {
+//    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
+//    public String preStockStatus(List<String> orderIdList, Long addressId) throws BusinessException {
+//        /**
+//         * 根据传入订单号，检测是京东的订单
+//         */
+//        List<String> orders = getJdOrder(orderIdList);
+//        /**
+//         * 如果集合为空，就不需要往下一步走
+//         */
+//        if (CollectionUtils.isEmpty(orders)) {
+//            return null;
+//        }
+//        /**
+//         *
+//         * 首先根据订单的id，获取订单的detail信息，拿到detail信息， 获取goodId,根据goodId获取good信息，然后获取京东商品skuId
+//         *
+//         */
+//        List<SkuNum> skuNumList = new ArrayList<>();
+//        List<PriceSnap> priceSnaps = new ArrayList<>();
+//        List<OrderDetailInfoEntity> details = orderDetailInfoRepository
+//                .queryOrderDetailListByOrderList(orders);
+//        for (OrderDetailInfoEntity detail : details) {
+//            GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+//            SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
+//            skuNumList.add(num);
+//        }
+//
+//        /**
+//         * 获取用户的地址信息
+//         */
+//        AddressInfo addressInfo = getAddressByOrderId(addressId);
+//        /**
+//         * 批量查询京东价格
+//         */
+//        JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skuNumList).getResult();
+//        for (Object jsonArray : productPriceList) {
+//            JSONObject jsonObject = (JSONObject) jsonArray;
+//            priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"),
+//                    jsonObject.getBigDecimal("jdPrice")));
+//        }
+//
+//        OrderReq orderReq = new OrderReq();
+//        orderReq.setSkuNumList(skuNumList);
+//        orderReq.setAddressInfo(addressInfo);
+//        orderReq.setOrderPriceSnap(priceSnaps);
+//        orderReq.setRemark("");
+//        orderReq.setOrderNo(orders.get(0));
+//        /**
+//         * 验证商品是否可售
+//         */
+//        if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
+//        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
+//        }
+//        /**
+//         * 批量获取库存接口
+//         */
+//        List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo()
+//                .toRegion());
+//        for (Stock stock : stocks) {
+//            if (!"有货".equals(stock.getStockStateDesc())) {
+//                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
+//                        stock.getStockStateDesc());
+//                LOGGER.info(stock.getSkuId() + "_");
+//                throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+//            }
+//        }
+//        /**
+//         * 统一下单接口
+//         */
+//        JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
+//        LOGGER.info(orderResponse.toString());
+//        if ((!orderResponse.isSuccess())) {
+//
+//            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
+//            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
+//            throw new BusinessException("抱歉,该订单暂时无法结算!");
+//        }
+//        String jdOrderId = orderResponse.getResult().getString("jdOrderId");
+//
+//        /**
+//         * 在京东那边占完库存后，要修改order表中的信息
+//         */
+//        Map<String, Object> params = Maps.newHashMap();
+//        params.put("preStockStatus", PreStockStatus.PRE_STOCK.getCode());
+//        params.put("updateTime", new Date());
+//        params.put("extOrderId", jdOrderId);
+//        for (String orderId : orders) {
+//            params.put("orderId", orderId);
+//            orderInfoRepository.updatePreStockStatusByOrderId(params);
+//        }
+//
+//        return jdOrderId;
+//    }
+    
+    /**
+     * 设置微知京东商品预占库存
+     * 
+     * @return
+     * @throws Exception 
+     */
+    @Transactional(rollbackFor = { Exception.class, BusinessException.class })
+    public String preStockStatusWeiZhi(List<String> orderIdList, Long addressId) throws Exception  {
         /**
          * 根据传入订单号，检测是京东的订单
          */
@@ -542,150 +660,203 @@ public class OrderService {
         }
         /**
          *
-         * 首先根据订单的id，获取订单的detail信息，拿到detail信息， 获取goodId,根据goodId获取good信息，然后获取京东商品skuId
+         * 首先根据订单的id，获取订单的detail信息，拿到detail信息， 获取goodId,
+         * 根据goodId获取good信息，然后获取京东商品skuId
          *
          */
         List<SkuNum> skuNumList = new ArrayList<>();
-        List<PriceSnap> priceSnaps = new ArrayList<>();
+        List<String> skuList = new ArrayList<>();
         List<OrderDetailInfoEntity> details = orderDetailInfoRepository
                 .queryOrderDetailListByOrderList(orders);
         for (OrderDetailInfoEntity detail : details) {
             GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
             SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
+            skuList.add(goods.getExternalId());
             skuNumList.add(num);
         }
-
         /**
          * 获取用户的地址信息
          */
         AddressInfo addressInfo = getAddressByOrderId(addressId);
+        
         /**
-         * 批量查询京东价格
+         * 批量获取微知的价格
          */
-        JSONArray productPriceList = jdProductApiClient.priceSellPriceGet(skuNumList).getResult();
-        for (Object jsonArray : productPriceList) {
-            JSONObject jsonObject = (JSONObject) jsonArray;
-            priceSnaps.add(new PriceSnap(jsonObject.getLong("skuId"), jsonObject.getBigDecimal("price"),
-                    jsonObject.getBigDecimal("jdPrice")));
+        List<WZPriceResponse> priceResponse = priceApi.getWzPrice(skuList);
+        if(CollectionUtils.isEmpty(priceResponse)){
+        	LOGGER.error("call wz getWzPrice is failed {}",JsonUtil.toJsonString(skuList));
+        	throw new BusinessException("抱歉,该订单暂时无法结算!");
         }
+        for (WZPriceResponse price : priceResponse) {
+			for (SkuNum num : skuNumList) {
+				if(StringUtils.equals(num.getSkuId()+"", price.getSkuId())){
+					num.setPrice(new BigDecimal(price.getWzPrice()));
+				}
+			}
+		}
+        
+        /**
+         * 获取快照
+         */
+        List<PriceSnap> priceSnaps = new ArrayList<>();//快照
+        List<StockNum> skuNums = new ArrayList<>();//库存
+        for (SkuNum num : skuNumList) {
+        	BigDecimal count = num.getPrice().multiply(new BigDecimal(num.getNum()));
+			PriceSnap snap = new PriceSnap(num.getSkuId(),count);
+			StockNum stock = new StockNum(num.getSkuId(),num.getNum());
+			priceSnaps.add(snap);
+			skuNums.add(stock);
+		}
 
+        /**
+         * 验证商品是否可售
+         */
+        if(!checkGoodsSalesOrNot(skuList)){
+        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
+        }
+        /**
+         * 批量获取库存接口
+         */
+        List<GoodsStock> stockList = productApi.getNewStockById(skuNums, addressInfo.toRegion());
+        if(CollectionUtils.isEmpty(stockList)){
+        	throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+        }
+        
+    	for (GoodsStock stock : stockList) {
+    		String desc = stock.getStockStateDesc();
+    		if(!StringUtils.equals(desc, "有货")){
+    			throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
+    		}
+		}
+        
+        
         OrderReq orderReq = new OrderReq();
         orderReq.setSkuNumList(skuNumList);
         orderReq.setAddressInfo(addressInfo);
         orderReq.setOrderPriceSnap(priceSnaps);
         orderReq.setRemark("");
         orderReq.setOrderNo(orders.get(0));
-        /**
-         * 验证商品是否可售
-         */
-        if(!checkGoodsSalesOrNot(orderReq.getSkuNumList())){
-        	throw new BusinessException("抱歉,订单中包含不可售的商品!");
-        }
-        /**
-         * 批量获取库存接口
-         */
-        List<Stock> stocks = jdProductApiClient.getStock(orderReq.getSkuNumList(), orderReq.getAddressInfo()
-                .toRegion());
-        for (Stock stock : stocks) {
-            if (!"有货".equals(stock.getStockStateDesc())) {
-                LOGGER.info("call jd stock inteface is failed[{}] {}", stock.getSkuId(),
-                        stock.getStockStateDesc());
-                LOGGER.info(stock.getSkuId() + "_");
-                throw new BusinessException("抱歉，您的订单内含库存不足商品\n请修改商品数量");
-            }
-        }
+        
         /**
          * 统一下单接口
          */
-        JdApiResponse<JSONObject> orderResponse = jdOrderApiClient.orderUniteSubmit(orderReq);
-        LOGGER.info(orderResponse.toString());
-        if ((!orderResponse.isSuccess())) {
-
-            LOGGER.error("call jd comfireOrder inteface is failed !, {}", orderResponse.toString());
-            LOGGER.error("orderUniteSubmit:--------------->{}",orderResponse.getResultMessage());
-            throw new BusinessException("抱歉,该订单暂时无法结算!");
+        OrderUnitResponse orderResponse = orderApi.submitOrder(orderReq);
+        if(null == orderResponse){
+        	throw new BusinessException("抱歉,该订单暂时无法结算!");
         }
-        String jdOrderId = orderResponse.getResult().getString("jdOrderId");
-
         /**
          * 在京东那边占完库存后，要修改order表中的信息
          */
         Map<String, Object> params = Maps.newHashMap();
         params.put("preStockStatus", PreStockStatus.PRE_STOCK.getCode());
         params.put("updateTime", new Date());
-        params.put("extOrderId", jdOrderId);
+        params.put("extOrderId", orderResponse.getWzOrderId());
         for (String orderId : orders) {
             params.put("orderId", orderId);
             orderInfoRepository.updatePreStockStatusByOrderId(params);
         }
 
-        return jdOrderId;
+        return orderResponse.getWzOrderId();
     }
-
+    
     /**
      * 验证商品是否可售
      */
-    public boolean checkGoodsSalesOrNot(List<SkuNum> skuNumList){
-    	JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(skuNumList);
-        if (!skuCheckResult.isSuccess()) {
-            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
-            return false;
-        }
-        for (Object o : skuCheckResult.getResult()) {
-            JSONObject jsonObject = (JSONObject) o;
-            int saleState = jsonObject.getIntValue("saleState");
-            if (saleState != 1) {
-                LOGGER.info("sku[{}] could not sell,detail:", jsonObject.getLongValue("skuId"),
-                        jsonObject.toJSONString());
-                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
-                return false;
-            }
-        }
+    public boolean checkGoodsSalesOrNot(List<String> skuNumList){
+    	 String skuIds = StringUtils.join(skuNumList,",");
+         CheckSale sale = null;
+         try {
+        	 sale = productApi.getWeiZhiCheckSale(skuIds);
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckSale is fail:{}",e);
+			return false;
+		}
+         if(null != sale && CollectionUtils.isNotEmpty(sale.getResult())){
+        	 for (WZCheckSale checkSale : sale.getResult()) {
+      			if(checkSale.getSaleState() == 0){
+      				return false;
+      			}
+      		 } 
+         }
         return true;
     }
+
+	/**
+	 * 商品可售验证接口（单个商品验证）
+	 * 
+	 * @param skuIds
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean checkGoodsSalesOrNot(String skuId) {
+		Boolean falge = false;
+		try {
+			CheckSale checkSale = productApi.getWeiZhiCheckSale(skuId);
+			if (null != checkSale.getResult() && checkSale.getResult().size() > 0) {
+				WZCheckSale wZCheckSale = checkSale.getResult().get(0);
+				if (1 == wZCheckSale.getSaleState()) {
+					falge = true;
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
+			return falge;
+		}
+		return falge;
+	}
     /**
      * 验证京东商品是否支持7天退货
      */
     public boolean checkGoodsIs7ToReturn(List<SkuNum> skuNumList){
-    	JdApiResponse<JSONArray> skuCheckResult = jdProductApiClient.productSkuCheckWithSkuNum(skuNumList);
-        if (!skuCheckResult.isSuccess()) {
-            LOGGER.warn("check order status error, {}", skuCheckResult.toString());
-            return false;
-        }
-        for (Object o : skuCheckResult.getResult()) {
-            JSONObject jsonObject = (JSONObject) o;
-            int is7ToReturn = jsonObject.getIntValue("is7ToReturn");
-            if (is7ToReturn != 1) {
-                LOGGER.info("sku[{}] could not is7ToReturn,detail:", jsonObject.getLongValue("skuId"),
-                        jsonObject.toJSONString());
-                LOGGER.info(jsonObject.getLongValue("skuId") + "_");
-                return false;
-            }
-        }
+    	String skuIds = StringUtils.join(skuNumList,",");
+    	CheckSale sale = null;
+		try{
+			sale = productApi.getWeiZhiCheckSale(skuIds);
+		}catch(Exception e){
+			
+		}
+		if(null != sale && CollectionUtils.isNotEmpty(sale.getResult())){
+			for (WZCheckSale checkSale : sale.getResult()) {
+				if(checkSale.getIs7ToReturn() == 0){
+					return false;
+				}
+			}
+    	}	
         return true;
     }
+    
     /**
      * 验证区域是否受限
      * @param skus
      * @param region
      * @return
-     * @throws BusinessException
+     * @throws Exception 
      */
-    public boolean productCheckAreaLimitQuery(List<Long> skus,Region region) throws BusinessException{
-    	JdApiResponse<JSONArray> unSupportAddress = jdProductApiClient.productCheckAreaLimitQuery(skus, region);
-    	if((!unSupportAddress.isSuccess())){
+    public boolean productCheckAreaLimitQuery(List<Long> skus,Region region){
+    	String skuIds = StringUtils.join(skus,",");
+    	
+    	List<AreaLimitEntity> limitList = new ArrayList<>();
+    	try {
+    		limitList = productApi.getWeiZhiCheckAreaLimit(skuIds, region);
+		} catch (Exception e) {
+			LOGGER.error("call method productCheckAreaLimitQuery may be Duang ....{}",e);
+		}
+    	if(CollectionUtils.isEmpty(limitList)){
     		return false;
     	}
-    	
-    	 for (Object o : unSupportAddress.getResult()) {
-             JSONObject jsonObject = (JSONObject) o;
-             return jsonObject.getBooleanValue("isAreaRestrict");
-    	 }
-    	 
+    	for (AreaLimitEntity area : limitList) {
+    		/**
+    		 * 存在不支持配送的商品是才返回
+    		 */
+    		Boolean bl = area.getIsAreaRestrict();
+    		if(null != bl && bl){
+    			return area.getIsAreaRestrict();
+    		}
+		} 
     	return false;
     	
     }
-    
+
     public AddressInfo getAddressByOrderId(Long addressId) throws BusinessException {
 
         AddressInfo addressInfo = new AddressInfo();
@@ -855,7 +1026,7 @@ public class OrderService {
             MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
 
             if (StringUtils.equals(merchantInfoEntity.getMerchantName(), ConstantsUtils.MERCHANTNAME)) {
-                orderInfo.setSource(SourceType.JD.getCode());
+                orderInfo.setSource(SourceType.WZ.getCode());
                 orderInfo.setExtParentId("0");
             }
             String orderId = commonService.createOrderIdNew(deviceType, merchantInfoEntity.getId());
@@ -925,23 +1096,23 @@ public class OrderService {
                     orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                     orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                     orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
-                    if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
-                        orderDetail.setSource(SourceType.JD.getCode());
+                    if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
+                        orderDetail.setSource(SourceType.WZ.getCode());
                         orderDetail.setSkuId(goods.getExternalId());
                         
-                        long skuId = Long.parseLong(goods.getExternalId());
-                        Set<Long> skus = new HashSet<>();
-                        skus.add(skuId);
-                        JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
-                        if (jsonArrayJdApiResponse != null
-                            && jsonArrayJdApiResponse.isSuccess()
-                            && jsonArrayJdApiResponse.getResult() != null
-                            && jsonArrayJdApiResponse.getResult().size() != 0
-                            ) {
-                        	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
-                            BigDecimal price = (BigDecimal) jsonObject.get("price");
-                            orderDetail.setGoodsCostPrice(price);
-                        }
+                        List<String> skus = Lists.newArrayList();
+                        skus.add(goods.getExternalId());
+                        
+                        List<WZPriceResponse> priceResponse = Lists.newArrayList();
+                        try {
+                        	priceResponse =	priceApi.getWzPrice(skus);
+                        	if(CollectionUtils.isNotEmpty(priceResponse)){
+                        		String goodsCostPrice = priceResponse.get(0).getWzPrice();
+                        		orderDetail.setGoodsCostPrice(new BigDecimal(goodsCostPrice));//成本价（微知价格）
+                        	}
+						} catch (Exception e) {
+							LOGGER.error("call wz method getWzPrice is failed!!!{}",e);
+						}
                     }
                     if(StringUtils.isBlank(goods.getSource())){
                     	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());
@@ -1060,8 +1231,8 @@ public class OrderService {
                 orderDetail.setProActivityId(purchase.getProActivityId());//把活动id,保存到订单详情的表中
                 orderDetail.setDiscountAmount(purchase.getDisCount());//把优惠的金额，保存到订单详情的表中
                 orderDetail.setCouponMoney(null == purchase.getCouponMoney()?BigDecimal.ZERO:purchase.getCouponMoney());//把优惠券的优惠金额，保存到订单详情表中
-                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
-                    orderDetail.setSource(SourceType.JD.getCode());
+                if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
+                    orderDetail.setSource(SourceType.WZ.getCode());
                     orderDetail.setSkuId(goods.getExternalId());
                     
                     long skuId = Long.parseLong(goods.getExternalId());
@@ -1129,9 +1300,6 @@ public class OrderService {
         Long goodsNum = 0L;
         for (PurchaseRequestDto purchase : purchaseList) {
             // 查询商品商户详情
-        	
-        	
-        	
             GoodsDetailInfoEntity goodsDetail = goodsDao.loadContainGoodsAndGoodsStockAndMerchant(purchase.getGoodsStockId());
             if (goodsDetail.getMerchantCode().equals(merchantCode)) {
                 goodsNum += purchase.getBuyNum();
@@ -1509,7 +1677,7 @@ public class OrderService {
         // 更新订单状态
         LOG.info(requestId, "取消订单,更改订单状态为订单失效", orderId);
         updateOrderCancel(orderId);
-        if (SourceType.JD.getCode().equals(order.getSource())) {
+        if (SourceType.WZ.getCode().equals(order.getSource())) {
             return;
         }
         // 回滚库存
@@ -1586,7 +1754,7 @@ public class OrderService {
     	 * 根据订单的Id，查询该订单下的退货物品(除京东的商品)
     	 */
     	OrderInfoEntity order = orderInfoRepository.selectByOrderId(orderId);
-    	if(StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+    	if(StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
     		return;
     	}
     	List<RefundDetailInfoEntity> list = detailInfoRepository.getRefundDetailList(orderId);
@@ -1894,7 +2062,7 @@ public class OrderService {
                 }
             }
             //如果是京东的商品
-            if(null != goods && StringUtils.equals(goods.getSource(),SourceType.JD.getCode())){
+            if(null != goods && StringUtils.equals(goods.getSource(),SourceType.WZ.getCode())){
             	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
@@ -2130,7 +2298,7 @@ public class OrderService {
             if (null != goods) {
                 goodInfo.setUnSupportProvince(goods.getUnSupportProvince());
             }
-            if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+            if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
             	goodInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goods.getGoodsLogoUrl());
             	goodInfo.setGoodsSkuAttr(goods.getAttrDesc());
             }
@@ -2579,7 +2747,7 @@ public class OrderService {
                 ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
               resultMaps.put(PRO_ACTIVITY_FLAG,validActivityFlag);
 
-                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
                     AddressInfoEntity address = addressInfoDao.select(addreesId);
                     Region region = new Region();
                     if (null != address) {
@@ -2619,7 +2787,7 @@ public class OrderService {
     public boolean validatePurchaseExistJdGoods(List<PurchaseRequestDto> purchaseList){
     	for (PurchaseRequestDto purchase : purchaseList) {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
-            if(StringUtils.equals(goods.getSource(), SourceType.JD.getCode())){
+            if(StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())){
             	return true;
             }
     	}
@@ -2638,7 +2806,7 @@ public class OrderService {
     	for (PurchaseRequestDto purchase : purchaseList) {
             GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
             if (null != goods) {
-                if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
+                if (StringUtils.equals(goods.getSource(), SourceType.WZ.getCode())) {
                     AddressInfoEntity address = addressInfoDao.select(addreesId);
                     Region region = new Region();
                     if (null != address) {
@@ -3155,19 +3323,56 @@ public class OrderService {
      * 
      * @throws BusinessException
      */
-    public void freedJdStock() throws BusinessException {
+//    public void freedJdStock() throws BusinessException {
+//        /**
+//         * 1.首先查询 失效和删除的京东订单 2.循环，拿到订单信息中的京东订单的id 3.调用释放占用库存的接口，传入京东订单的id
+//         * 4.释放完库存后，修改订单的pre_stock_status状态为3
+//         */
+//        List<OrderInfoEntity> orderList = orderInfoRepository.getInvalidAndDeleteJdOrder();
+//        if (!CollectionUtils.isEmpty(orderList)) {
+//            for (OrderInfoEntity order : orderList) {
+//                JdApiResponse<Boolean> jd = jdOrderApiClient.orderCancelorder(Long.valueOf(order
+//                        .getExtOrderId()));
+//                if (!jd.isSuccess() || !jd.getResult()) {
+//                    throw new BusinessException("取消未确认的订单失败!");
+//                }
+//            }
+//        }
+//
+//        /**
+//         * 修改订单占用库存字段为取消占用，更新时间
+//         */
+//        Map<String, Object> params = Maps.newHashMap();
+//        params.put("preStockStatus", PreStockStatus.CANCLE_PRE_STOCK.getCode());
+//        params.put("updateTime", new Date());
+//        for (OrderInfoEntity order : orderList) {
+//            params.put("orderId", order.getOrderId());
+//            orderInfoRepository.updatePreStockStatusByOrderId(params);
+//        }
+//    }
+    /**
+     * 释放预占库存
+     * 
+     * @throws BusinessException
+     */
+    public void freedWzStock() throws BusinessException {
         /**
          * 1.首先查询 失效和删除的京东订单 2.循环，拿到订单信息中的京东订单的id 3.调用释放占用库存的接口，传入京东订单的id
          * 4.释放完库存后，修改订单的pre_stock_status状态为3
          */
         List<OrderInfoEntity> orderList = orderInfoRepository.getInvalidAndDeleteJdOrder();
+        List<OrderInfoEntity> cancelSuccList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orderList)) {
             for (OrderInfoEntity order : orderList) {
-                JdApiResponse<Boolean> jd = jdOrderApiClient.orderCancelorder(Long.valueOf(order
-                        .getExtOrderId()));
-                if (!jd.isSuccess() || !jd.getResult()) {
-                    throw new BusinessException("取消未确认的订单失败!");
-                }
+            	try {
+            		boolean bl = orderApi.cancelOrder(order.getExtOrderId());
+            		if(!bl){
+            			throw new BusinessException("取消未确认的订单失败!");
+            		}
+            		cancelSuccList.add(order);
+				} catch (Exception e) {
+					LOGGER.error("orderId equals {},cancel is failed！！",order.getOrderId());
+				}
             }
         }
 
@@ -3177,7 +3382,7 @@ public class OrderService {
         Map<String, Object> params = Maps.newHashMap();
         params.put("preStockStatus", PreStockStatus.CANCLE_PRE_STOCK.getCode());
         params.put("updateTime", new Date());
-        for (OrderInfoEntity order : orderList) {
+        for (OrderInfoEntity order : cancelSuccList) {
             params.put("orderId", order.getOrderId());
             orderInfoRepository.updatePreStockStatusByOrderId(params);
         }
@@ -3188,15 +3393,28 @@ public class OrderService {
      * 
      * @return
      */
-    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus() {
-        return orderInfoRepository.getOrderByOrderStatusAndPreStatus();
+    public List<OrderInfoEntity> getOrderByOrderStatusAndPreStatus(String sourceType) {
+        return orderInfoRepository.getOrderByOrderStatusAndPreStatus(sourceType);
     }
 
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class,BusinessException.class})
+    public void wzSplitOrderMessageHandle(OrderInfoEntity order) throws BusinessException{
+    	 // 确认预占库存 改变订单状态
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("preStockStatus", PreStockStatus.SURE_STOCK.getCode());
+        params.put("updateTime", new Date());
+        params.put("extOrderId", order.getExtOrderId());
+        params.put("orderId", order.getOrderId());
+        orderInfoRepository.updatePreStockStatusByOrderId(params);
+        //更新订单的发货状态和时间和订单的状态
+        updateLogisticsInfoAndOrderInfoByOrderId(order.getOrderId());
+    }
     /**
      * 京东拆单消息处理
      * 
      * @param orderInfoEntity
      */
+    @Deprecated
     public void jdSplitOrderMessageHandle(JSONObject jsonObject, OrderInfoEntity orderInfoEntity)
             throws BusinessException {
         String jdOrderIdp = orderInfoEntity.getExtOrderId();
@@ -3267,7 +3485,7 @@ public class OrderService {
                 OrderInfoEntity orderInfo = new OrderInfoEntity();
                 orderInfo.setUserId(orderInfoEntity.getUserId());
                 orderInfo.setOrderAmt(jdPrice);
-                orderInfo.setSource(SourceType.JD.getCode());
+                orderInfo.setSource(SourceType.WZ.getCode());
                 orderInfo.setExtParentId(jdOrderIdp);// 为子订单
                 orderInfo.setDeviceType(deviceType);
                 orderInfo.setOrderId(cOrderQh);
@@ -3328,7 +3546,7 @@ public class OrderService {
                     orderDetail.setOrderId(cOrderQh);
                     orderDetail.setGoodsId(goodsId);
                     orderDetail.setSkuId(String.valueOf(skuId));
-                    orderDetail.setSource(SourceType.JD.getCode());
+                    orderDetail.setSource(SourceType.WZ.getCode());
                     orderDetail.setGoodsPrice(price);
                     orderDetail.setGoodsNum(Long.valueOf(num));
                     orderDetail.setMerchantCode(merchantCode);

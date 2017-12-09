@@ -96,7 +96,6 @@ public  class JdApiClient {
         }
 //        requestBuilder.addHeader("Connection", "Keep-Alive");
         return requestBuilder.build();
-
     }
 
     public String request(String method,String jdParams) throws Exception {

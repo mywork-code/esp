@@ -8,6 +8,7 @@ package com.apass.esp.common.model;
  * @see
  * @since JDK 1.8
  */
-public class JdMerchantCode {
+public class ExtentMerchantCode {
     public static  final String JDMERCHANTCODE="0000097";
+    public static final String WZMERCHANTCODE = "05103";
 }

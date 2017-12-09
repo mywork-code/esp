@@ -3,7 +3,8 @@ package com.apass.esp.domain.enums;
 public enum SourceType {
 
 
-	JD("jd", "京东");
+	JD("jd", "京东"),
+	WZ("wz", "微知");
 
 	private String code;
 

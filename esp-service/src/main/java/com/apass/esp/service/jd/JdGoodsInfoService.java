@@ -16,6 +16,8 @@ import java.util.TreeSet;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,12 +66,23 @@ import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.CouponRelService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.client.JdApiResponse;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.third.party.jd.entity.order.SkuNum;
+import com.apass.esp.third.party.jd.entity.product.Product;
 import com.apass.esp.third.party.jd.entity.product.Stock;
+import com.apass.esp.third.party.weizhi.client.WeiZhiOrderApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiPriceApiClient;
+import com.apass.esp.third.party.weizhi.client.WeiZhiProductApiClient;
+import com.apass.esp.third.party.weizhi.entity.GoodsStock;
+import com.apass.esp.third.party.weizhi.entity.StockNum;
+import com.apass.esp.third.party.weizhi.entity.WzPicture;
+import com.apass.esp.third.party.weizhi.entity.WzSkuPicture;
+import com.apass.esp.third.party.weizhi.response.WZPriceResponse;
 import com.apass.gfb.framework.exception.BusinessException;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -80,8 +93,9 @@ import com.google.gson.Gson;
  */
 @Service
 public class JdGoodsInfoService {
-	@Autowired
-    private JdProductApiClient jdProductApiClient;
+	
+	private static final Logger logger = LoggerFactory.getLogger(JdGoodsInfoService.class);
+	
 	@Autowired
 	private GoodsRepository goodsRepository;
 	@Autowired
@@ -114,10 +128,16 @@ public class JdGoodsInfoService {
 	private ProCouponRelMapper couponRelMapper;
 	@Autowired
 	private ProActivityCfgMapper activityCfgMapper;
+    @Autowired
+    private WeiZhiProductService productService;
+    @Autowired
+    private WeiZhiProductApiClient productApiClient;
+    @Autowired
+    private WeiZhiPriceApiClient priceApiClient;
 	/**
 	 * 根据商品编号获取商品需要展示前端信息
 	 */
-	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
+    public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		if (sku.toString().length() == 8) {
 			// 查询商品名称（图书音像类目）
@@ -125,7 +145,7 @@ public class JdGoodsInfoService {
 			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
 		} else {
 			// 查询商品名称
-			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+			Product jdGoods = getJdGoodsInfoBySku(sku);
 			map.put("goodsName", jdGoods.getName());// 商品名称
 			//java字符串转义,把&lt;&gt;转换成<>等字符
 			String skuCss = getSkuCss(sku);
@@ -136,11 +156,6 @@ public class JdGoodsInfoService {
 		Collection<Long> skuPrice = new ArrayList<Long>();
 		skuPrice.add(sku);
 
-//		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
-//		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
-//			BigDecimal jdPrice = jdSellPriceList.get(0).getJdPrice();
-//			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
-//		}
 		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
 		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
 		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
@@ -157,6 +172,46 @@ public class JdGoodsInfoService {
 		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
 		return map;
 	}
+//	public Map<String, Object> getJdGoodsAllInfoBySku(Long sku) throws BusinessException {
+//		Map<String, Object> map = Maps.newHashMap();
+//		if (sku.toString().length() == 8) {
+//			// 查询商品名称（图书音像类目）
+//			JdGoodsBooks jdGoodsBooks = getJdGoodsBooksInfoBySku(sku);
+//			map.put("relatedProducts", jdGoodsBooks.getRelatedProducts());
+//		} else {
+//			// 查询商品名称
+//			JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+//			map.put("goodsName", jdGoods.getName());// 商品名称
+//			//java字符串转义,把&lt;&gt;转换成<>等字符
+//			String skuCss = getSkuCss(sku);
+//			String introduction = jdGoods.getIntroduction().replaceAll("width","width");
+//			map.put("googsDetail", StringEscapeUtils.unescapeXml(skuCss + introduction));// 商品详情
+//		}
+//		// 查询商品价格
+//		Collection<Long> skuPrice = new ArrayList<Long>();
+//		skuPrice.add(sku);
+//
+////		List<JdSellPrice> jdSellPriceList = getJdSellPriceBySku(skuPrice);
+////		if (null != jdSellPriceList && jdSellPriceList.size() == 1) {
+////			BigDecimal jdPrice = jdSellPriceList.get(0).getJdPrice();
+////			map.put("goodsPrice", new DecimalFormat("0.00").format(jdSellPriceList.get(0).getJdPrice()));// 商品价格
+////		}
+//		GoodsInfoEntity goodsInfoEntity = goodsService.selectGoodsByExternalId(String.valueOf(sku));
+//		List<GoodsStockInfoEntity> goodsStockInfoEntityList = goodsStockInfoRepository.loadByGoodsId(goodsInfoEntity.getId());
+//		BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoEntity.getId(), goodsStockInfoEntityList.get(0).getGoodsStockId());
+//		map.put("goodsPrice",goodsPrice);
+//
+//		// 查询商品图片
+//		List<String> JdImagePathList = getJdImagePathListBySku(sku, JdGoodsImageType.TYPEN1.getCode());
+//		map.put("jdImagePathList", JdImagePathList);
+//		// 查询商品规格
+//		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+//		map.put("skuId",String.valueOf(sku));
+//		map.put("jdSimilarSkuList", jdSimilarSkuList);
+//		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+//		map.put("goodsName", goodsInfoEntity.getGoodsName());// 商品名称
+//		return map;
+//	}
 	
 	/**
 	 * 根据商品编号获取商品需要展示App信息
@@ -178,7 +233,7 @@ public class JdGoodsInfoService {
 					jddetail = goods.getGoodsDetail().replaceAll("src=\"//", "src=\"http://");
 				} else {
 					// 查询商品名称
-					JdGoods jdGoods = getJdGoodsInfoBySku(sku);
+					Product jdGoods = getJdGoodsInfoBySku(sku);
 					jddetail = jdGoods.getIntroduction().replaceAll("src=\"//", "src=\"http://").replaceAll("href=\'//","href=\'http://");
 				}
 				// map.put("goodsName", jdGoods.getName());// 商品名称
@@ -216,7 +271,6 @@ public class JdGoodsInfoService {
 		}
 		return map;
 	}
-	
 	// 查询商品规格（包括库存）
 	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
@@ -257,7 +311,7 @@ public class JdGoodsInfoService {
 				} else {
 					saleAttrList.get(i).setSaleValueId("0" + i);
 				}
-
+				
 			}
 		}
 
@@ -747,6 +801,31 @@ public class JdGoodsInfoService {
 	 * 获取京东商品本身的规格描述
 	 * @return
 	 */
+//	public Map<String,Object> getJdGoodsSimilarSku(Long sku) {
+//		Map<String,Object> map=new HashMap<>();
+//		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
+//		// 京东商品本身的规格参数
+//		String jdGoodsSimilarSku = "";
+//		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+//			List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+//			for (JdSaleAttr jdSaleAttr : saleAttrList) {
+//				List<String> skuIds = jdSaleAttr.getSkuIds();
+//				for (String skuId : skuIds) {
+//					if (sku.toString().equals(skuId)) {
+//						jdGoodsSimilarSku = jdGoodsSimilarSku+jdSaleAttr.getSaleValue() + " ";
+//					}
+//				}
+//			}
+//		}
+//		map.put("jdGoodsSimilarSku", jdGoodsSimilarSku);
+//		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
+//		return map;
+//	}
+	
+	/**
+	 * 获取京东商品本身的规格描述
+	 * @return
+	 */
 	public Map<String,Object> getJdGoodsSimilarSku(Long sku) {
 		Map<String,Object> map=new HashMap<>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -767,6 +846,7 @@ public class JdGoodsInfoService {
 		map.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
 		return map;
 	}
+	
 	/**
 	 * 根据商品编号，获取商品明细信息(sku为8位时为图书音像类目商品)
 	 */
@@ -775,28 +855,52 @@ public class JdGoodsInfoService {
 			return null;
 		}
 		JdGoodsBooks jdGoodsBooks = new JdGoodsBooks();
-		// 查询图书音像类目商品信息
-		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
-		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
-			jdGoodsBooks = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoodsBooks>(){});
+		try {
+			productApiClient.getWeiZhiRelatedProductDetail(sku+"");
+		} catch (Exception e) {
+			logger.error("call weizhi method getWeiZhiRelatedProductDetail(goodsBook) is failed!!! {}",e);
 		}
 		return jdGoodsBooks;
 	}
+//	public JdGoodsBooks getJdGoodsBooksInfoBySku(Long sku) {
+//		if (sku.toString().length() != 8) {
+//			return null;
+//		}
+//		JdGoodsBooks jdGoodsBooks = new JdGoodsBooks();
+//		// 查询图书音像类目商品信息
+//		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
+//		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
+//			jdGoodsBooks = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoodsBooks>(){});
+//		}
+//		return jdGoodsBooks;
+//	}
 	/**
 	 * 根据商品编号，获取商品明细信息(sku不为8位时为非图书音像类目商品)
 	 */
-	public JdGoods getJdGoodsInfoBySku(Long sku) {
+	public Product getJdGoodsInfoBySku(Long sku) {
 		if (sku.toString().length() == 8) {
 			return null;
 		}
-		JdGoods jdGoods = new JdGoods();
-		// 查询图书音像类目商品信息
-		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
-		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
-			jdGoods = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoods>(){});
+		Product jdGoods = new Product();
+		try {
+			jdGoods = productApiClient.getWeiZhiProductDetail(sku+"");
+		} catch (Exception e) {
+			logger.error("call weizhi method getWeiZhiRelatedProductDetail(goodsBook) is failed!!! {}",e);
 		}
 		return jdGoods;
 	}
+//	public JdGoods getJdGoodsInfoBySku(Long sku) {
+//		if (sku.toString().length() == 8) {
+//			return null;
+//		}
+//		JdGoods jdGoods = new JdGoods();
+//		// 查询图书音像类目商品信息
+//		JdApiResponse<JSONObject> jdGoodsBooksDetail = jdProductApiClient.productDetailQuery(sku);
+//		if (null != jdGoodsBooksDetail && null != jdGoodsBooksDetail.getResult() && jdGoodsBooksDetail.isSuccess()) {
+//			jdGoods = JSONObject.parseObject(jdGoodsBooksDetail.getResult().toString(),  new TypeReference<JdGoods>(){});
+//		}
+//		return jdGoods;
+//	}
 
 	/**
 	 * 根据商品编号，获取商品价格
@@ -804,17 +908,34 @@ public class JdGoodsInfoService {
 	 * @param sku
 	 * @return
 	 */
-	public List<JdSellPrice> getJdSellPriceBySku(Collection<Long> sku) {
+	public List<JdSellPrice> getJdSellPriceBySku(List<String> sku) {
 		List<JdSellPrice> jdSellPriceList = new ArrayList<>();
-		JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(sku);
-		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
-			for (int i = 0; i < jdSellPrice.getResult().size(); i++) {
-				JdSellPrice jp = JSONObject.parseObject(jdSellPrice.getResult().getString(i),  new TypeReference<JdSellPrice>(){});
-				jdSellPriceList.add(jp);
+		List<WZPriceResponse> priceList = new ArrayList<>();
+		try {
+			priceList = priceApiClient.getWzPrice(sku);
+			for (WZPriceResponse price : priceList) {
+				JdSellPrice jdPrice = new JdSellPrice();
+				jdPrice.setJdPrice(new BigDecimal(price.getJDPrice()));
+				jdPrice.setPrice(new BigDecimal(price.getWzPrice()));
+				jdPrice.setSkuId(Long.parseLong(price.getSkuId()));
+				jdSellPriceList.add(jdPrice);
 			}
+		} catch (Exception e) {
+			logger.error("call method getWzPrice is failed!!!{}",e);
 		}
 		return jdSellPriceList;
 	}
+//	public List<JdSellPrice> getJdSellPriceBySku(Collection<Long> sku) {
+//		List<JdSellPrice> jdSellPriceList = new ArrayList<>();
+//		JdApiResponse<JSONArray> jdSellPrice = jdProductApiClient.priceSellPriceGet(sku);
+//		if (null != jdSellPrice && null != jdSellPrice.getResult() && jdSellPrice.isSuccess()) {
+//			for (int i = 0; i < jdSellPrice.getResult().size(); i++) {
+//				JdSellPrice jp = JSONObject.parseObject(jdSellPrice.getResult().getString(i),  new TypeReference<JdSellPrice>(){});
+//				jdSellPriceList.add(jp);
+//			}
+//		}
+//		return jdSellPriceList;
+//	}
 	/**
 	 * 查询商品的图片地址信息（根据商品编号和图片类型）
 	 * @param sku
@@ -825,78 +946,125 @@ public class JdGoodsInfoService {
 		List<Long> skusImage = new ArrayList<>();
 		skusImage.add(sku);
 		List<String> JdImagePathList = new ArrayList<>();
-		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
-		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
-			Map<String, List<JdImage>> jsonImageResult = JSONObject.parseObject(jdImageResponse.getResult().toString(),
-					new TypeReference<Map<String, List<JdImage>>>(){});
-
-			List<JdImage> jdList = jsonImageResult.get(sku.toString());
-			for (int i = 0; i < jdList.size(); i++) {
-				String path = jdList.get(i).getPath();
-				String pathJd = "http://img13.360buyimg.com/" + type + "/" + path;
-				JdImagePathList.add(pathJd);
-			}
+		try {
+			JdImagePathList = productService.getWeiZhiSingleProductSkuImage(sku+"",type);
+		} catch (Exception e) {
+			logger.error("call weizhi getWeiZhiProductSkuImage is failed!!!,{}",e);
 		}
 		return JdImagePathList;
 	}
+//	public List<String> getJdImagePathListBySku(Long sku, String type) {
+//		List<Long> skusImage = new ArrayList<>();
+//		skusImage.add(sku);
+//		List<String> JdImagePathList = new ArrayList<>();
+//		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
+//		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
+//			Map<String, List<JdImage>> jsonImageResult = JSONObject.parseObject(jdImageResponse.getResult().toString(),
+//					new TypeReference<Map<String, List<JdImage>>>(){});
+//
+//			List<JdImage> jdList = jsonImageResult.get(sku.toString());
+//			for (int i = 0; i < jdList.size(); i++) {
+//				String path = jdList.get(i).getPath();
+//				String pathJd = "http://img13.360buyimg.com/" + type + "/" + path;
+//				JdImagePathList.add(pathJd);
+//			}
+//		}
+//		return JdImagePathList;
+//	}
 	/**
 	 * 查询商品的图片信息（根据商品编号）
 	 * @param sku
 	 * @return
 	 */
 	public List<JdImage> getJdImageListBySku(Long sku) {
-		Gson gson = new Gson();
-		List<Long> skusImage = new ArrayList<>();
-		skusImage.add(sku);
 		List<JdImage> jdList = new ArrayList<>();
-		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
-		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
-			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
-					new TypeToken<Map<String, List<JdImage>>>() {
-					}.getType());
-			jdList = jsonImageResult.get(sku);
+		List<WzPicture> skuPictureList = new ArrayList<>();
+		try {
+			skuPictureList = productService.getWeiZhiSingleProductSkuImage(sku+"");
+			for (WzPicture wz : skuPictureList) {
+				JdImage jd = new JdImage();
+				jd.setIsPrimary(wz.getIsPrimary());
+				jd.setOrderSort(wz.getOrderSort());
+				jd.setPath(wz.getPath());
+				jdList.add(jd);
+			}
+		} catch (Exception e) {
+			logger.error("call weizhi getWeiZhiProductSkuImage is failed!!!,{}",e);
 		}
 		return jdList;
 	}
+//	public List<JdImage> getJdImageListBySku(Long sku) {
+//		Gson gson = new Gson();
+//		List<Long> skusImage = new ArrayList<>();
+//		skusImage.add(sku);
+//		List<JdImage> jdList = new ArrayList<>();
+//		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skusImage);
+//		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
+//			Map<String, List<JdImage>> jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
+//					new TypeToken<Map<String, List<JdImage>>>() {
+//					}.getType());
+//			jdList = jsonImageResult.get(sku);
+//		}
+//		return jdList;
+//	}
 	/**
 	 * 查询商品的图片信息（根据商品编号(多个sku)）
 	 * @param sku
 	 * @return
 	 */
-	public Map<String, List<JdImage>> getJdImageInfoListBySku(List<Long> skus) {
-		Gson gson = new Gson();
-		Map<String, List<JdImage>> jsonImageResult = new HashMap<>();
-		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skus);
-		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
-			jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
-					new TypeToken<Map<String, List<JdImage>>>() {
-					}.getType());
-		}
-		return jsonImageResult;
-	}
+//	public Map<String, List<JdImage>> getJdImageInfoListBySku(List<Long> skus) {
+//		Gson gson = new Gson();
+//		Map<String, List<JdImage>> jsonImageResult = new HashMap<>();
+//		JdApiResponse<JSONObject> jdImageResponse = jdProductApiClient.productSkuImageQuery(skus);
+//		if (null != jdImageResponse && null != jdImageResponse.getResult() && jdImageResponse.isSuccess()) {
+//			jsonImageResult = gson.fromJson(jdImageResponse.getResult().toString(),
+//					new TypeToken<Map<String, List<JdImage>>>() {
+//					}.getType());
+//		}
+//		return jsonImageResult;
+//	}
 
 	/**
 	 * 同类商品查询(根据商品编号sku)
 	 *
 	 * @return
+	 * @throws Exception 
 	 */
 	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
-		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
 		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
-		if(jdSimilarResponse.getResult() == null){
-			return Collections.emptyList();
+		if(null == sku){
+			return JdSimilarSkuList;
 		}
-		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
-			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
-			jp.update(jp.getSaleAttrList());
-			JdSimilarSkuList.add(jp);
+		try {
+			JdSimilarSkuList = productService.getWeiZhiSimilarSku(sku+"");
+			if(CollectionUtils.isNotEmpty(JdSimilarSkuList)){
+				for (JdSimilarSku jdSimilarSku : JdSimilarSkuList) {
+					jdSimilarSku.update(jdSimilarSku.getSaleAttrList());
+					JdSimilarSkuList.add(jdSimilarSku);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("call method getJdSimilarSkuList is failed!!!--------->>>>{}",e);
+			return JdSimilarSkuList;
 		}
 		return JdSimilarSkuList;
 	}
+//	public List<JdSimilarSku> getJdSimilarSkuList(Long sku) {
+//		JdApiResponse<JSONArray> jdSimilarResponse = jdProductApiClient.getSimilarSku(sku);
+//		List<JdSimilarSku> JdSimilarSkuList = new ArrayList<>();
+//		if(jdSimilarResponse.getResult() == null){
+//			return Collections.emptyList();
+//		}
+//		for (int i = 0; i < jdSimilarResponse.getResult().size(); i++) {
+//			JdSimilarSku jp = JSONObject.parseObject(jdSimilarResponse.getResult().getString(i),  new TypeReference<JdSimilarSku>(){});
+//			jp.update(jp.getSaleAttrList());
+//			JdSimilarSkuList.add(jp);
+//		}
+//		return JdSimilarSkuList;
+//	}
 
 	/**
 	 * 京东商品：根据skuId返回相似skuId
-	 * @param sku
 	 * @return
      */
 	public TreeSet<String> getJdSimilarSkuIdList(String skuId) {
@@ -923,22 +1091,37 @@ public class JdGoodsInfoService {
 	 */
 	public Boolean jdProductStateQuery(Long sku){
 		Boolean falge=false;
-		Collection<Long> skus=new ArrayList<>();
-		skus.add(sku);
-		JdApiResponse<JSONArray> jdProductStateResponse=jdProductApiClient.productStateQuery(skus);
-		List<JdProductState> JdProductStateList=new ArrayList<>();
-		if (null != jdProductStateResponse && null != jdProductStateResponse.getResult() && jdProductStateResponse.isSuccess()) {
-			for(int i = 0; i < jdProductStateResponse.getResult().size(); i++){
-				JdProductState jps = JSONObject.parseObject(jdProductStateResponse.getResult().getString(i),  new TypeReference<JdProductState>(){});
-				JdProductStateList.add(jps);
+		
+		List<JdProductState> stateList = new ArrayList<>();
+		try {
+			stateList = productApiClient.getWeiZhiProductSkuState(sku+"");
+			if(CollectionUtils.isNotEmpty(stateList)){
+				int state=stateList.get(0).getState();
+				return state == 1 ? true : false;
 			}
-		}
-		int state=JdProductStateList.get(0).getState();
-		if(1==state){
-			 falge=true;
+		} catch (Exception e) {
+			logger.error("call wz method getWeiZhiProductSkuState is failed!!!!{}",e);
 		}
 		return falge;
 	}
+//	public Boolean jdProductStateQuery(Long sku){
+//		Boolean falge=false;
+//		Collection<Long> skus=new ArrayList<>();
+//		skus.add(sku);
+//		JdApiResponse<JSONArray> jdProductStateResponse=jdProductApiClient.productStateQuery(skus);
+//		List<JdProductState> JdProductStateList=new ArrayList<>();
+//		if (null != jdProductStateResponse && null != jdProductStateResponse.getResult() && jdProductStateResponse.isSuccess()) {
+//			for(int i = 0; i < jdProductStateResponse.getResult().size(); i++){
+//				JdProductState jps = JSONObject.parseObject(jdProductStateResponse.getResult().getString(i),  new TypeReference<JdProductState>(){});
+//				JdProductStateList.add(jps);
+//			}
+//		}
+//		int state=JdProductStateList.get(0).getState();
+//		if(1==state){
+//			 falge=true;
+//		}
+//		return falge;
+//	}
 	/**
 	 * 查询商品的规格(根据商品sku查询商品本身的规格)
 	 * 例如：("颜色":"金色","版本":"全网通")
@@ -966,40 +1149,43 @@ public class JdGoodsInfoService {
 	/**
 	 * 获取商品库存接口
 	 */
-	public JdGoodStock stockForListBatget(String sku, Region region) {
-		Gson gson = new Gson();
-		List<JdGoodStock> jdGoodStockList = new ArrayList<>();
-		JdApiResponse<JSONArray> stockForListBatgetResponse = jdProductApiClient.stockForListBatget(sku, region);
-		if (null != stockForListBatgetResponse && null != stockForListBatgetResponse.getResult() && stockForListBatgetResponse.isSuccess()) {
-			for (int i = 0; i < stockForListBatgetResponse.getResult().size(); i++) {
-				JdGoodStock jdstock= gson.fromJson(stockForListBatgetResponse.getResult().getString(i), JdGoodStock.class);
-				jdGoodStockList.add(jdstock);
-			}
-		}
-		return jdGoodStockList.get(0);
-	}
+//	public JdGoodStock stockForListBatget(String sku, Region region) {
+//		Gson gson = new Gson();
+//		List<JdGoodStock> jdGoodStockList = new ArrayList<>();
+//		JdApiResponse<JSONArray> stockForListBatgetResponse = jdProductApiClient.stockForListBatget(sku, region);
+//		if (null != stockForListBatgetResponse && null != stockForListBatgetResponse.getResult() && stockForListBatgetResponse.isSuccess()) {
+//			for (int i = 0; i < stockForListBatgetResponse.getResult().size(); i++) {
+//				JdGoodStock jdstock= gson.fromJson(stockForListBatgetResponse.getResult().getString(i), JdGoodStock.class);
+//				jdGoodStockList.add(jdstock);
+//			}
+//		}
+//		return jdGoodStockList.get(0);
+//	}
 	   /**
      * 获取当个sku库存接口（建议订单详情页、下单使用）
      *
      * @return
      */
-    public String getStockBySku(String sku, Region region) {
-    	int isStock=0;
-    	List<SkuNum> skuNums =new ArrayList<>();
-    	SkuNum skuNum=new SkuNum();
-    	skuNum.setSkuId(Long.parseLong(sku));
-    	skuNum.setNum(1);
-    	skuNums.add(skuNum);
-        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
-        if(result.size()==1){
-        	isStock=result.get(0).getStockStateId();
-        }
-        if(33==isStock|| 39==isStock||40==isStock){
-        	return "有货";
-        }else{
-        	return "无货";
-        }
+	public String getStockBySku(String sku, Region region) {
+		return getStockBySkuNum(sku, region, 1);
     }
+//    public String getStockBySku(String sku, Region region) {
+//    	int isStock=0;
+//    	List<SkuNum> skuNums =new ArrayList<>();
+//    	SkuNum skuNum=new SkuNum();
+//    	skuNum.setSkuId(Long.parseLong(sku));
+//    	skuNum.setNum(1);
+//    	skuNums.add(skuNum);
+//        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
+//        if(result.size()==1){
+//        	isStock=result.get(0).getStockStateId();
+//        }
+//        if(33==isStock|| 39==isStock||40==isStock){
+//        	return "有货";
+//        }else{
+//        	return "无货";
+//        }
+//    }
     /**
      * 获取当个sku库存接口（建议订单详情页、下单使用）
      *
@@ -1007,23 +1193,41 @@ public class JdGoodsInfoService {
      * @param region
      * @return
      */
-    public String getStockBySkuNum(String sku, Region region,Integer num) {
-    	int isStock=0;
-    	List<SkuNum> skuNums =new ArrayList<>();
-    	SkuNum skuNum=new SkuNum();
+	public String getStockBySkuNum(String sku, Region region,Integer num) {
+        List<StockNum> skuNums =new ArrayList<>();
+		StockNum skuNum=new StockNum();
     	skuNum.setSkuId(Long.parseLong(sku));
     	skuNum.setNum(num);
     	skuNums.add(skuNum);
-        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
-        if(result.size()==1){
-        	isStock=result.get(0).getStockStateId();
-        }
-        if(33==isStock|| 39==isStock||40==isStock){
-        	return "有货";
-        }else{
+		List<GoodsStock> stockList = Lists.newArrayList();
+		try {
+			stockList = productApiClient.getNewStockById(skuNums, region);
+		} catch (Exception e) {
+			logger.error("call weizhi getNewStockById is failed!!!!{}",e);
+		}
+        if(CollectionUtils.isEmpty(stockList)){
         	return "无货";
         }
+        GoodsStock stock = stockList.get(0);
+    	return stock.getStockStateDesc();
     }
+//    public String getStockBySkuNum(String sku, Region region,Integer num) {
+//    	int isStock=0;
+//    	List<SkuNum> skuNums =new ArrayList<>();
+//    	SkuNum skuNum=new SkuNum();
+//    	skuNum.setSkuId(Long.parseLong(sku));
+//    	skuNum.setNum(num);
+//    	skuNums.add(skuNum);
+//        List<Stock> result =jdProductApiClient.getStock(skuNums, region);
+//        if(result.size()==1){
+//        	isStock=result.get(0).getStockStateId();
+//        }
+//        if(33==isStock|| 39==isStock||40==isStock){
+//        	return "有货";
+//        }else{
+//        	return "无货";
+//        }
+//    }
     
     /**
      * 根据skuid 获取  商品详情的css
@@ -1031,16 +1235,22 @@ public class JdGoodsInfoService {
      * @return
      */
     public String getSkuCss(Long sku){
-    	JdApiResponse<JSONObject> jdSimilarResponse = jdProductApiClient.getSkuCss(sku);
-		JdCss jdCss = null;
-		Gson gson = new Gson();
-		if(StringUtils.equals(jdSimilarResponse.getCode(),"0") && null != jdSimilarResponse.getDetail()){
-			jdCss = gson.fromJson(jdSimilarResponse.getDetail().toString(),  JdCss.class);
-		}
-		if(null != jdCss){
-			return jdCss.getCssContent();
-		}
+    	//TODO
+    	//TODO
+    	//TODO
 		return "";
     }
+//    public String getSkuCss(Long sku){
+//    	JdApiResponse<JSONObject> jdSimilarResponse = jdProductApiClient.getSkuCss(sku);
+//		JdCss jdCss = null;
+//		Gson gson = new Gson();
+//		if(StringUtils.equals(jdSimilarResponse.getCode(),"0") && null != jdSimilarResponse.getDetail()){
+//			jdCss = gson.fromJson(jdSimilarResponse.getDetail().toString(),  JdCss.class);
+//		}
+//		if(null != jdCss){
+//			return jdCss.getCssContent();
+//		}
+//		return "";
+//    }
 
 }

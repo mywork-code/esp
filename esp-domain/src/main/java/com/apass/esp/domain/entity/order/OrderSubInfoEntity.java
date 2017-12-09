@@ -185,8 +185,21 @@ public class OrderSubInfoEntity {
      * 商户是否发货详细信息
      */
     private String preDeliveryMsg;
+    
+    /**
+     * 物流最新一条信息
+     */
+    private String trackMessage;
+    
+    public String getTrackMessage() {
+		return trackMessage;
+	}
 
-    public String getLogisticsNameDes() {
+	public void setTrackMessage(String trackMessage) {
+		this.trackMessage = trackMessage;
+	}
+
+	public String getLogisticsNameDes() {
         return logisticsNameDes;
     }
 

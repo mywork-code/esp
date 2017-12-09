@@ -44,7 +44,6 @@ import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +150,7 @@ public class PaymentService {
         }
         //更新库存
         for (OrderInfoEntity order : orderInfoList) {
-            if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
             	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
                 LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
                 if (null == stockLog) {
@@ -235,7 +234,7 @@ public class PaymentService {
         }
         //更新库存
         for (OrderInfoEntity order : orderInfoList) {
-            if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
             	GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(order.getOrderId());
                 LOG.info(requestId + "_" + order.getOrderId(), "库存记录日志表:",stockLog == null ? null : GsonUtils.toJson(order));
                 if (null == stockLog) {
@@ -590,7 +589,7 @@ public class PaymentService {
 				//验证商品是否已经下架
 				orderService.validateGoodsOffShelf(requestId, detail.getGoodsId());
 				//如果是京东订单，则不要做以下判断
-				if(!StringUtils.equals(detail.getSource(), SourceType.JD.getCode())){
+				if(!StringUtils.equals(detail.getSource(), SourceType.WZ.getCode())){
 					//商品的购买数量
 					Long goodNum = detail.getGoodsNum();
 					//商品的当前库存
@@ -923,7 +922,7 @@ public class PaymentService {
                     List<OrderDetailInfoEntity> orderDetails = orderService.loadOrderDetail(payingOrders);
                     for (OrderDetailInfoEntity orderDetail : orderDetails) {
                         try {
-													if(!SourceType.JD.getCode().equals(orderDetail.getSource())){
+													if(!SourceType.WZ.getCode().equals(orderDetail.getSource())){
 														orderService.modifyGoodsQuantity(orderDetail.getGoodsId(), orderDetail.getGoodsStockId(),
 																orderDetail.getGoodsNum(), 1, OrderService.errorNo);
 													}
@@ -971,7 +970,7 @@ public class PaymentService {
         if (!"00".equals(payRealStatus)) {
             for (String orderId : orders) {
             	OrderInfoEntity order = orderDao.selectByOrderId(orderId);
-            	if(!StringUtils.equals(order.getSource(), SourceType.JD.getCode())){
+            	if(!StringUtils.equals(order.getSource(), SourceType.WZ.getCode())){
             		GoodsStockLogEntity sotckLog = goodsStockLogDao.loadByOrderId(orderId);
                     if (null==sotckLog) {
                         continue;

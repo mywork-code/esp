@@ -1,6 +1,5 @@
 package com.apass.esp.service.offer;
 
-import com.apass.esp.common.model.QueryParams;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;

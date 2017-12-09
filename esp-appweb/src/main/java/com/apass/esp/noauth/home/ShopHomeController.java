@@ -3,6 +3,7 @@ package com.apass.esp.noauth.home;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
+import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
@@ -63,8 +65,9 @@ import com.apass.esp.service.nation.NationService;
 import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.wz.WeiZhiGoodsInfoService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.entity.base.Region;
-import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -133,11 +136,16 @@ public class ShopHomeController {
 
     @Autowired
     private SystemEnvConfig systemEnvConfig;
-    
+
     @Autowired
     private ProGroupGoodsService proGroupGoodsService;
     @Autowired
     private MyCouponManagerService myCouponManagerService;
+    @Autowired
+    private WeiZhiProductService weiZhiProductService;
+    @Autowired
+    private WeiZhiGoodsInfoService weiZhiGoodsInfoService;
+
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -160,21 +168,21 @@ public class ShopHomeController {
             Pagination<GoodsBasicInfoEntity> recommendGoods = goodService.loadRecommendGoods(0, 10);
             returnMap.put("banners", banners);
             returnMap.put("recommendGoods", recommendGoods.getDataList());
-            ArrayList<ResponseInit> mapArrayList= new ArrayList<>(2);
+            ArrayList<ResponseInit> mapArrayList = new ArrayList<>(2);
             ResponseInit responseInit = new ResponseInit();
             responseInit.setTitle("商城首付价购物指引");
             responseInit.setUrl("http://ajqh.download.apass.cn/activity/20170912/index.html");
             ResponseInit responseInit2 = new ResponseInit();
             responseInit2.setTitle("客户谨慎还款重要提示");
-          if(systemEnvConfig.isPROD()){
-            responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
-          }else{
-            responseInit2.setUrl("http://gfbapp.vcash.cn/#/Announcement");
-          }
+            if (systemEnvConfig.isPROD()) {
+                responseInit2.setUrl("http://ajqh.app.apass.cn/#/Announcement");
+            } else {
+                responseInit2.setUrl("http://gfbapp.vcash.cn/#/Announcement");
+            }
 
             mapArrayList.add(responseInit);
             mapArrayList.add(responseInit2);
-            returnMap.put("guide",mapArrayList);
+            returnMap.put("guide", mapArrayList);
             for (GoodsBasicInfoEntity goods : recommendGoods.getDataList()) {
                 ActivityInfoEntity param = new ActivityInfoEntity();
                 param.setGoodsId(goods.getGoodId());
@@ -196,12 +204,19 @@ public class ShopHomeController {
                     goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                             BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                 }
-                if ("jd".equals(goods.getSource())) {
+                if (SourceType.WZ.getCode().equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
-                    if(goods.getGoodsSiftUrl().contains("eshop")){
+                    if (goods.getGoodsSiftUrl().contains("eshop")) {
                         goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
-                    }else{
-                        goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" +goods.getGoodsLogoUrl());
+                    } else {
+                        goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
+                    }
+                } else if (SourceType.WZ.getCode().equals(goods.getSource())) {
+                    goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
+                    if (goods.getGoodsSiftUrl().contains("eshop")) {
+                        goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
+                    } else {
+                        goods.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     }
                 } else {
                     // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
@@ -266,17 +281,17 @@ public class ShopHomeController {
                 banners.add(bity);
                 returnMap.put("banners", banners);
             } else if (null != flage && flage.equals("recommend")) {
-            	String page = CommonUtils.getValue(paramMap, "page");
-            	String rows = CommonUtils.getValue(paramMap, "rows");
+                String page = CommonUtils.getValue(paramMap, "page");
+                String rows = CommonUtils.getValue(paramMap, "rows");
                 int pageSize = Integer.MAX_VALUE;
                 int pageIndex = 1;
-                if(StringUtils.isNotBlank(page) && StringUtils.isNotBlank(rows)){
-                	try {
-                		pageIndex = Integer.parseInt(page);
-                		pageSize = Integer.parseInt(rows);
-					} catch (Exception e) {
-						
-					}
+                if (StringUtils.isNotBlank(page) && StringUtils.isNotBlank(rows)) {
+                    try {
+                        pageIndex = Integer.parseInt(page);
+                        pageSize = Integer.parseInt(rows);
+                    } catch (Exception e) {
+
+                    }
                 }
                 int pageBegin = pageSize * (pageIndex - 1);
                 Pagination<GoodsBasicInfoEntity> goodsPageList = goodService.loadRecommendGoods(pageBegin, pageSize);//加载精选商品
@@ -310,54 +325,58 @@ public class ShopHomeController {
                 returnMap.put("banners", banners);
             }
 
-			for (GoodsBasicInfoEntity goodsInfo : goodsList) {
-				if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
-					ActivityInfoEntity param = new ActivityInfoEntity();
-					param.setGoodsId(goodsInfo.getGoodId());
-					param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
-					List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
-					Map<String, Object> result = new HashMap<>();
-					if (null != activitys && activitys.size() > 0) {
-						result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
-						BigDecimal price = (BigDecimal) result.get("minPrice");
-						Long minPriceStockId = (Long) result.get("minPriceStockId");
-						goodsInfo.setGoodsPrice(price);
-						goodsInfo.setGoodsPriceFirst(
-								(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-						goodsInfo.setGoodsStockId(minPriceStockId);
-					} else {
-						BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
-								goodsInfo.getGoodsStockId());
-						goodsInfo.setGoodsPrice(price);
-						goodsInfo.setGoodsPriceFirst(
-								(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
-					}
-					// 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
-					// Long marketPrice =
-					// goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
-					// .getGoodId());
-					// goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
-					String logoUrl = goodsInfo.getGoodsLogoUrl();
-					String siftUrl = goodsInfo.getGoodsSiftUrl();
-					if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
-						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
-						goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
-					} else {
-						goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
-						goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
-					}
-					goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
-					goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
-				}
-			}
-            returnMap.put("goodsList", goodsList);
-            return Response.successResponse(returnMap);
+            for (GoodsBasicInfoEntity goodsInfo : goodsList) {
+                if (null != goodsInfo.getGoodId() && null != goodsInfo.getGoodsStockId()) {
+                    ActivityInfoEntity param = new ActivityInfoEntity();
+                    param.setGoodsId(goodsInfo.getGoodId());
+                    param.setStatus(ActivityInfoStatus.EFFECTIVE.getCode());
+                    List<ActivityInfoEntity> activitys = actityInfoDao.filter(param);
+                    Map<String, Object> result = new HashMap<>();
+                    if (null != activitys && activitys.size() > 0) {
+                        result = goodService.getMinPriceGoods(goodsInfo.getGoodId());
+                        BigDecimal price = (BigDecimal) result.get("minPrice");
+                        Long minPriceStockId = (Long) result.get("minPriceStockId");
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst(
+                                (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+                        goodsInfo.setGoodsStockId(minPriceStockId);
+                    } else {
+                        BigDecimal price = commonService.calculateGoodsPrice(goodsInfo.getGoodId(),
+                                goodsInfo.getGoodsStockId());
+                        goodsInfo.setGoodsPrice(price);
+                        goodsInfo.setGoodsPriceFirst(
+                                (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
+                    }
+                    // 电商3期511 20170517 根据商品Id查询所有商品库存中市场价格最高的商品的市场价
+                    // Long marketPrice =
+                    // goodsStockInfoRepository.getMaxMarketPriceByGoodsId(goodsInfo
+                    // .getGoodId());
+                    // goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
+                    String logoUrl = goodsInfo.getGoodsLogoUrl();
+                    String siftUrl = goodsInfo.getGoodsSiftUrl();
+                    if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
+                        goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
+                        goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/" + goodsInfo.getGoodsLogoUrl());
+                    } else if (StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode())) {
+                            goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+                            goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
+                        } else {
+                            goodsInfo.setGoodsLogoUrlNew(imageService.getImageUrl(logoUrl));
+                            goodsInfo.setGoodsSiftUrlNew(imageService.getImageUrl(siftUrl));
+                        }
+                        goodsInfo.setGoodsLogoUrl(EncodeUtils.base64Encode(logoUrl));
+                        goodsInfo.setGoodsSiftUrl(EncodeUtils.base64Encode(siftUrl));
+                    }
+                }
+                returnMap.put("goodsList", goodsList);
+                return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsList fail", e);
             LOGGER.error("加载商品列表失败！");
             return Response.fail(BusinessErrorCode.LOAD_INFO_FAILED);
         }
     }
+
 
     /**
      * 加载商品列表(根据类目id查询商品):老方法，新方法请看:/loadGoodsListByCategoryId
@@ -811,15 +830,15 @@ public class ShopHomeController {
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
             // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
+            if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<SkuNum> skuNumList=new ArrayList<>();
-                SkuNum skuNum=new SkuNum();
-                skuNum.setNum(1);
-                skuNum.setSkuId(Long.parseLong(externalId));
-                skuNumList.add(skuNum);
+//                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
+//                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
+//                skuNum.setNum(1);
+//                skuNum.setSkuId(Long.parseLong(externalId));
+//                skuNumList.add(skuNum);
                 //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
+                if(!orderService.checkGoodsSalesOrNot(externalId)){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
@@ -895,7 +914,8 @@ public class ShopHomeController {
      * 非京东商品也变成多规格商品
      * @return
      */
-    @POST
+    @SuppressWarnings("unused")
+	@POST
     @Path("/v3/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
         try {
@@ -906,152 +926,133 @@ public class ShopHomeController {
             String cityCode = CommonUtils.getValue(paramMap, "cityCode");
             String districtCode = CommonUtils.getValue(paramMap, "districtCode");
             String townsCode = CommonUtils.getValue(paramMap, "townsCode");
-
             if (null == goodsId) {
                 LOGGER.error("商品号不能为空!");
                 return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
             }
-            Boolean flage = true;
-            Region region = new Region();// app端传过来的地址
+            Region region = null;// app端传过来的地址
             if (!StringUtils.isAnyEmpty(provinceCode, cityCode, districtCode)) {
-                    List<DictDTO> result = nationService.queryDistrictJd(districtCode);
-                    if (result.size() == 0) {
-                        region.setProvinceId(Integer.parseInt(provinceCode));
-                        region.setCityId(Integer.parseInt(cityCode));
-                        region.setCountyId(Integer.parseInt(districtCode));
-                        region.setTownId(0);
-                        flage = false;
-                    } else {
-                        if (StringUtils.isNotEmpty(townsCode)) {
-                            region.setProvinceId(Integer.parseInt(provinceCode));
-                            region.setCityId(Integer.parseInt(cityCode));
-                            region.setCountyId(Integer.parseInt(districtCode));
-                            region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
-                            flage = false;
-                        } else {
-                            return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
-                        }
-                    }
-            }
-            Region region2 = new Region();
-            // 查看地址信息
-            AddressInfoEntity addty = new AddressInfoEntity();
-            // 查询京东地址
-            List<AddressInfoEntity> addressInfoList = new ArrayList<>();
-            if (StringUtils.isNotEmpty(userId)) {
-                addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
-            }
-            if (addressInfoList.size() > 0) {
-                if (!("1".equals(addressInfoList.get(0).getIsDefault()))) {
-                    addressInfoList.get(0).setIsDefault("1");
+                region = new Region();
+                List<DictDTO> result = nationService.queryDistrictJd(districtCode);
+                region.setProvinceId(Integer.parseInt(provinceCode));
+                region.setCityId(Integer.parseInt(cityCode));
+                region.setCountyId(Integer.parseInt(districtCode));
+                if (result.size() != 0 && StringUtils.isEmpty(townsCode)) {
+                    return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
                 }
+                region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
             }
-            // app端没传地址并且数据库地址为空时，使用默认地址
-            if (flage && addressInfoList.size() == 0) {
-                addty.setId(Long.parseLong("-1"));
-                addty.setProvinceCode("2");
-                addty.setProvince("上海");
-                addty.setCityCode("2815");
-                addty.setCity("长宁区");
-                addty.setDistrictCode("51975");
-                addty.setDistrict("城区");
-                addty.setTownsCode("0");
-                addty.setTowns("");
-                addty.setIsDefault("1");
-                addressInfoList.add(addty);
-            }
-            // 获取地址信息
-            for (AddressInfoEntity addressInfoEntity : addressInfoList) {
-                if ("1".equals(addressInfoEntity.getIsDefault())) {
-                    region2.setProvinceId(Integer.parseInt(addressInfoEntity.getProvinceCode()));
-                    region2.setProvince(addressInfoEntity.getProvince());
-                    region2.setCityId(Integer.parseInt(addressInfoEntity.getCityCode()));
-                    region2.setCountyId(Integer.parseInt(addressInfoEntity.getDistrictCode()));
-                    region2.setTownId(StringUtils.isEmpty(addressInfoEntity.getTownsCode()) ? 0 : Integer
-                            .parseInt(addressInfoEntity.getTownsCode()));
+            // 如果flage = false则地址用前端传递过来的，否则先去查询数据库是否有改用户的地址信息，如果没有再使用平台默认地址信息
+            List<AddressInfoEntity> addressInfoList = new ArrayList<>();// 返回给前端对象
+            if (null == region) {
+                region = new Region();
+                if (StringUtils.isNotBlank(userId)) {
+                    addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
                 }
-            }
-            Region region3 = new Region();
-            if (flage) {
-                region3 = region2;
-            } else {
-                region3 = region;
+                if (addressInfoList.size() == 0) {
+                    AddressInfoEntity addty = new AddressInfoEntity();
+                    addty.setId(Long.parseLong("-1"));
+                    addty.setProvinceCode("2");
+                    addty.setProvince("上海");
+                    addty.setCityCode("2815");
+                    addty.setCity("长宁区");
+                    addty.setDistrictCode("51975");
+                    addty.setDistrict("城区");
+                    addty.setTownsCode("0");
+                    addty.setTowns("");
+                    addressInfoList.add(addty);
+                }
+                addressInfoList.get(0).setIsDefault("1");
+                region.setProvinceId(Integer.parseInt(addressInfoList.get(0).getProvinceCode()));
+                region.setCityId(Integer.parseInt(addressInfoList.get(0).getCityCode()));
+                region.setCountyId(Integer.parseInt(addressInfoList.get(0).getDistrictCode()));
+                region.setTownId(StringUtils.isEmpty(addressInfoList.get(0).getTownsCode()) ? 0
+                        : Integer.parseInt(addressInfoList.get(0).getTownsCode()));
             }
             GoodsInfoEntity goodsInfo = goodsService.selectByGoodsId(Long.valueOf(goodsId));
-            // 判断是否是京东商品
-            if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {// 来源于京东
-                String externalId = goodsInfo.getExternalId();// 外部商品id
-                List<SkuNum> skuNumList=new ArrayList<>();
-                SkuNum skuNum=new SkuNum();
-                skuNum.setNum(1);
-                skuNum.setSkuId(Long.parseLong(externalId));
-                skuNumList.add(skuNum);
-                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if(!orderService.checkGoodsSalesOrNot(skuNumList)){
-                	goodsInfo.setStatus("G03");//商品下架
-                }
-                returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
-                
-                //添加活动id
-            	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
-            	if(null !=proGroupGoodsBo && proGroupGoodsBo.isValidActivity()){
-            	    returnMap.put("proActivityId",proGroupGoodsBo.getActivityId());
-            	}
-            	//获取商品的优惠券
-            	List<String> proCoupons=jdGoodsInfoService.getProCouponList(goodsId);
-            	if(proCoupons.size()>3){
-            		returnMap.put("proCouponList",proCoupons.subList(0, 3));
-            	}else{
-            		 returnMap.put("proCouponList",proCoupons);
-            	}
-                returnMap.put("unSupportProvince", goodsInfo.getUnSupportProvince());// 不配送区域
-                returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称
-                returnMap.put("merchantCode", goodsInfo.getMerchantCode());// 商户编码
-                returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));// 满减活动字段
-                returnMap.put("support7dRefund",goodsService.getsupport7dRefund(Long.parseLong(externalId)));// 是否支持7天无理由退货,Y、N
-                List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
-                        .loadByGoodsId(goodsId);
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0)
-                            .getId());
-                    returnMap.put("goodsPrice", price);// 商品价格
-                    returnMap.put("goodsPriceFirstPayment",
-                            (new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 商品首付价格
-                    // 京东商品没有规格情况拼凑数据格式
-                    int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
-                    if (jdSimilarSkuListSize == 0) {
-                        List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap
-                                .get("JdSimilarSkuToList");
-                        JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-                        JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-                        jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                        jdSimilarSkuVo.setSkuId(externalId);
-                        jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                        jdSimilarSkuVo.setPrice(price);
-                        jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                                BigDecimal.ROUND_DOWN));
-                        jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-                        jdSimilarSkuTo.setSkuIdOrder("");
-                        jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-                        JdSimilarSkuToList.add(jdSimilarSkuTo);
-                    }
-                }
-                returnMap.put("source", "jd");
-                returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
-                returnMap.put("status", goodsInfo.getStatus());
-            } else {
-            	Boolean isUnSupport=false;
-            	WorkCityJd workCityJd=nationService.selectByProvinceId(region3.getProvinceId()+"");
-            	if (StringUtils.isNotBlank(goodsInfo.getUnSupportProvince()) && null !=workCityJd
-                        && goodsInfo.getUnSupportProvince().indexOf(workCityJd.getProvince()) > -1) {
-            		isUnSupport = true;
-               }
-            	returnMap.put("isUnSupport", isUnSupport);
-                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
+            if (null == goodsInfo) {
+                LOGGER.error("商品信息不存在:{}", goodsId);
+                throw new BusinessException("商品信息不存在");
             }
+            Date now = new Date();
+            if (now.before(goodsInfo.getListTime())
+                    || (null != goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
+                    || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
+                goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
+            }
+//			returnMap.put("status", goodsInfo.getStatus());
+
+            // 商品规格
+            List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+            if (jdGoodsStockInfoList.size() == 1) {
+                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                goodsInfo.setGoodsPrice(price);
+                goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+            }
+            returnMap.put("status", goodsInfo.getStatus());// 商品下架
+            if (SourceType.JD.getCode().equals(goodsInfo.getSource())
+                    || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
+                String externalId = goodsInfo.getExternalId();// 外部商品id
+                if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+                    returnMap.put("source", "jd");
+                    returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
+                            goodsId.toString(), region);
+                } else {
+                    returnMap.put("source", "wz");
+                    returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
+                            goodsId.toString(), region);
+                }
+                // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+                if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+                    returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                }
+                // 是否支持7天无理由退货,Y、N
+                returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
+                returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
+                returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
+            } else {
+                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);// sprint11(商品多规格)
+            }
+            // 京东商品没有规格情况拼凑数据格式
+            int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
+            if (jdSimilarSkuListSize == 0) {
+                List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
+                JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+                JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+                jdSimilarSkuVo.setGoodsId(goodsId.toString());
+                jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+                jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
+                jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
+                jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                jdSimilarSkuTo.setSkuIdOrder("");
+                jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+                JdSimilarSkuToList.add(jdSimilarSkuTo);
+            }
+
+            // 添加活动id
+            ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
+            if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
+                returnMap.put("proActivityId", proGroupGoodsBo.getActivityId());
+            }
+            // 获取商品的优惠券
+            List<String> proCoupons = jdGoodsInfoService.getProCouponList(goodsId);
+            if (proCoupons.size() > 3) {
+                returnMap.put("proCouponList", proCoupons.subList(0, 3));
+            } else {
+                returnMap.put("proCouponList", proCoupons);
+            }
+            // 商品名称
+            returnMap.put("goodsName", goodsInfo.getGoodsName());
+            // 商户编码
+            returnMap.put("merchantCode", goodsInfo.getMerchantCode());
+            // 满减活动字段
+            returnMap.put("activityCfg", goodsService.getActivityInfo(goodsId));
+
+            // 商品title
+            returnMap.put("goodsTitle", goodsInfo.getGoodsTitle());
             // 获取购物车中商品种类数
-            if (!StringUtils.isEmpty(userId)) {
+            if (StringUtils.isNotBlank(userId)) {
                 int amountInCart = shoppingCartService.getNumOfTypeInCart(userId);
                 returnMap.put("amountInCart", amountInCart);
             }
@@ -1059,7 +1060,7 @@ public class ShopHomeController {
             return Response.success("加载成功", returnMap);
         } catch (BusinessException e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
-            return Response.fail(BusinessErrorCode.GET_INFO_FAILED+":"+e.getErrorDesc());
+            return Response.fail(BusinessErrorCode.GET_INFO_FAILED);
         } catch (Exception e) {
             LOGGER.error("ShopHomeController loadGoodsBasicInfo fail", e);
             LOGGER.error("获取商品基本信息失败");
