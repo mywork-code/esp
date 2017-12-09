@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitBuydetail;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
@@ -39,6 +40,8 @@ public class LimitBuyActService {
     public GoodsStockInfoService goodsStockInfoService;
     @Autowired
     public GoodsService goodsService;
+    @Autowired
+    public LimitBuydetailService limitBuydetailService;
     /**
      * CREATE
      * @param entity
@@ -352,6 +355,12 @@ public class LimitBuyActService {
                         GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
+                        
+                        List<LimitBuydetail> detaillist = limitBuydetailService.findActCurrAmtBylimitGoodsSkuId(sku.getId());
+                        Integer count = limitBuydetailService.findActCurrAmtCount(detaillist);
+                        Long totle = sku.getLimitNumTotal();
+                        
+                        
                         goodsinfolist.add(vo);
                     }
                     time.setList(goodsinfolist);

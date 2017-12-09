@@ -10,6 +10,9 @@ public class LimitGoodsSkuInfo extends LimitGoodsSku{
     private String goodsTitle;
     private String goodsName;
     private String goodsUrl;
+    //冗余按钮状态 按钮名称
+    private String buttonStatus;
+    private String buttonDesc;
     public String getGoodsTitle() {
         return goodsTitle;
     }
@@ -27,5 +30,17 @@ public class LimitGoodsSkuInfo extends LimitGoodsSku{
     }
     public void setGoodsUrl(String goodsUrl) {
         this.goodsUrl = goodsUrl;
+    }
+    public String getButtonStatus() {
+        return buttonStatus;
+    }
+    public void setButtonStatus(String buttonStatus) {
+        this.buttonStatus = buttonStatus;
+    }
+    public String getButtonDesc() {
+        return buttonDesc;
+    }
+    public void setButtonDesc(String buttonDesc) {
+        this.buttonDesc = buttonDesc;
     }
 }
