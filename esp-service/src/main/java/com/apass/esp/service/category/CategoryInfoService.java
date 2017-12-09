@@ -9,6 +9,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategoryLevel;
 import com.apass.esp.domain.enums.CategoryStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.vo.SimpleBannerVo;
 import com.apass.esp.domain.vo.CategoryVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
@@ -578,7 +579,7 @@ public class CategoryInfoService {
         Map<String, Object> result = goodsService.getMinPriceGoods(goods.getGoodId());
 
         GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
-        if ("jd".equals(goods.getSource())) {
+        if (SourceType.WZ.getCode().equals(goods.getSource())) {
             goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"
                     + goods.getGoodsLogoUrl());
         } else {
