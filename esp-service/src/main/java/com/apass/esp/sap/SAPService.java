@@ -442,7 +442,7 @@ public class SAPService {
         contentList.add(salOrder.getGoodsName());
         contentList.add(salOrder.getGoodsModel());
         contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add("个");
+        contentList.add("EA");
         contentList.add(salOrder.getGoodNum().toString());
 
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -832,9 +832,9 @@ public class SAPService {
     }
 
   private String getDateBegin() {
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.DATE, -1);
-    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.DATE, -1);
+      return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
   }
 
   private String getDateEnd() {
@@ -873,7 +873,11 @@ public class SAPService {
         } else {
           contentList.add("Z051");
         }
-        contentList.add(txn.getTxnAmt() + "");
+        if(txn.getTxnAmt().compareTo(new BigDecimal(0)) == 0){
+          contentList.add("");
+        }else{
+          contentList.add(txn.getTxnAmt() + "");
+        }
         contentList.add("");
         contentList.add(txn.getMainOrderId());
         contentList.add("");
