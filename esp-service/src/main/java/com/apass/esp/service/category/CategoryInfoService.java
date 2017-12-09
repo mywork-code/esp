@@ -138,20 +138,23 @@ public class CategoryInfoService {
         List<Category> categories2 = new ArrayList<Category>();
 
         for (int i = 0; i < categories.size(); i++) {
-            if (StringUtils.isNotEmpty(categories.get(i).getPictureUrl())) {
-                String pictureUrl = espImageUrl + "/static" + categories.get(i).getPictureUrl();
-                categories.get(i).setPictureUrl(pictureUrl);
+        	
+        	Category cate = categories.get(i);
+        	
+            if (StringUtils.isNotEmpty(cate.getPictureUrl())) {
+                String pictureUrl = espImageUrl + "/static" + cate.getPictureUrl();
+                cate.setPictureUrl(pictureUrl);
             }
             // 限制一级类目的名字为2个字
-            if (categories.get(i).getCategoryName().length() > 2) {
-                categories.get(i).setCategoryName(categories.get(i).getCategoryName().substring(0, 2));
+            if (cate.getCategoryName().length() > 2) {
+                cate.setCategoryName(cate.getCategoryName().substring(0, 2));
             }
             // 判断该一级类目下是否有可在app端显示的商品，如何没有则改一级类目不显示在app端
             GoodsBasicInfoEntity goodsBasicInfoEntity = new GoodsBasicInfoEntity();
-            goodsBasicInfoEntity.setCategoryId1(categories.get(i).getId());
+            goodsBasicInfoEntity.setCategoryId1(cate.getId());
             Integer totalCount = goodsBasicRepository.loadGoodsByParamCount(goodsBasicInfoEntity);
             if (totalCount > 0) {
-                categories2.add(categories.get(i));
+                categories2.add(cate);
             }
         }
         for (Category v : categories2) {
@@ -578,7 +581,7 @@ public class CategoryInfoService {
         Map<String, Object> result = goodsService.getMinPriceGoods(goods.getGoodId());
 
         GoodsCategoryDto goodsCategoryDto = new GoodsCategoryDto();
-        if ("jd".equals(goods.getSource())) {
+        if (StringUtils.isNotBlank(goods.getSource())) {
             goodsCategoryDto.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"
                     + goods.getGoodsLogoUrl());
         } else {
