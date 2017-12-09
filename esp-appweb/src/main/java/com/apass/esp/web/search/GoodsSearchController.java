@@ -8,6 +8,7 @@ import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
 import com.apass.esp.domain.enums.CategorySort;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.vo.SearchKesVo;
 import com.apass.esp.domain.vo.SearchSort;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
@@ -285,7 +286,7 @@ public class GoodsSearchController {
 								(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
 					}
 
-					if ("jd".equals(goodsInfo.getSource())) {// 京东图片
+					if (StringUtils.isNotBlank(goodsInfo.getSource())) {// 京东图片
 						String logoUrl = goodsInfo.getGoodsLogoUrl();
 						goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + logoUrl);
 						goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n1/" + logoUrl);
@@ -382,7 +383,7 @@ public class GoodsSearchController {
 						.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + goodsInfoEntity.getGoodsLogoUrl());
 				goodsInfoEntity
 						.setGoodsSiftUrlNew("http://img13.360buyimg.com/n1/" + goodsInfoEntity.getGoodsSiftUrl());
-				goodsInfoEntity.setSource("jd");
+				goodsInfoEntity.setSource(SourceType.WZ.getCode());
 			}
 			goodsInfoEntity.setGoogsDetail("");
 			Map<String, Object> minPriceGoodsMap = goodsservice.getMinPriceGoods(Long.parseLong(goodsId));

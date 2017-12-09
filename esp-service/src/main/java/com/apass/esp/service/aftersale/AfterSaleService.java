@@ -19,6 +19,7 @@ import com.apass.esp.domain.entity.refund.ServiceProcessEntity;
 import com.apass.esp.domain.enums.JDReturnType;
 import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.enums.RefundStatus;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.repository.datadic.DataDicRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -180,7 +181,7 @@ public class AfterSaleService {
         // 存放审核拒绝的商品库存id
         List<Long> refuseStockIds = Lists.newArrayList();
         String jdReturnType = "";
-        if (StringUtils.equals("jd",orderInfo.getSource()) || StringUtils.equals("wz",orderInfo.getSource())) {
+        if (StringUtils.equals(orderInfo.getSource(),SourceType.JD.getCode()) || StringUtils.equals(orderInfo.getSource(),SourceType.WZ.getCode())) {
 //            AfsApply afsApply = new AfsApply();
 //            afsApply.setJdOrderId(Long.valueOf(orderInfo.getExtOrderId()));// 京东订单号
 
@@ -579,7 +580,7 @@ public class AfterSaleService {
             LOG.info(requestId, "售后状态查询,当前售后状态不允许提交物流信息", refundInfo.getStatus());
             throw new BusinessException("当前售后状态不允许提交物流信息");
         }
-        if (!StringUtils.equals("jd",orderInfo.getSource()) && !StringUtils.equals("wz",orderInfo.getSource())) {
+        if (!StringUtils.equals(orderInfo.getSource(),SourceType.JD.getCode()) && !StringUtils.equals(orderInfo.getSource(),SourceType.WZ.getCode())) {
             if (null == refundInfo.getIsAgree() || !refundInfo.getIsAgree().equals("1")) {
                 LOG.info(requestId, "等待客服审核,暂时不能提交物流信息", "");
                 throw new BusinessException("等待客服审核,暂时不能提交物流信息!");
