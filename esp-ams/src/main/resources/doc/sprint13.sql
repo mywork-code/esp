@@ -21,6 +21,7 @@ CREATE TABLE `t_esp_limit_goods_sku` (
   `activity_price` decimal(15,3) NOT NULL DEFAULT '0.000' COMMENT '活动价',
 `limit_num_total` bigint(20) NOT NULL COMMENT '该商品限购总数量',
 `limit_num` bigint(20) NOT NULL COMMENT '该商品每人限购数量',
+ `limit_curr_total`  bigint(20) NOT NULL COMMENT '该商品的限购剩余量',
 `sort_no` bigint(20) NOT NULL COMMENT '该商品限时购排序',
 `url` varchar(20) NOT NULL DEFAULT '' COMMENT '限时购缩略图URL',
 `create_user`  varchar(20)  NOT NULL DEFAULT '' COMMENT '创建人' ,
