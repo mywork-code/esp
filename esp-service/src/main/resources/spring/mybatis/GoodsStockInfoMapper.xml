@@ -55,6 +55,7 @@
 		market_price marketPrice,
 		goods_Cost_Price goodsCostPrice,
 		stock_Logo stockLogo,
+		sku_id  skuId,
 		goods_compare_url goodsCompareUrl,
 		goods_compare_url2 goodsCompareUrl2
 		FROM

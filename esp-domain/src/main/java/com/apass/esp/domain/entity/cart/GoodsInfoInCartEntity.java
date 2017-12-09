@@ -25,7 +25,12 @@ public class GoodsInfoInCartEntity {
 
     /** 商品选择价格 **/
     private BigDecimal goodsSelectedPrice;
-
+    /** 限时购活动标志 **/
+    private Boolean limitFalg;
+    /** 限时购商品的价格    **/
+    private BigDecimal goodsLimitPrice;
+    /** 限时购活动中每人限购的数量    **/
+    private Long limitNum;
     /** 商品数量 **/
     private int goodsNum;
 
@@ -219,6 +224,30 @@ public class GoodsInfoInCartEntity {
 
 	public void setProActivityId(Long proActivityId) {
 		this.proActivityId = proActivityId;
+	}
+
+	public Boolean getLimitFalg() {
+		return limitFalg;
+	}
+
+	public void setLimitFalg(Boolean limitFalg) {
+		this.limitFalg = limitFalg;
+	}
+
+	public BigDecimal getGoodsLimitPrice() {
+		return goodsLimitPrice;
+	}
+
+	public void setGoodsLimitPrice(BigDecimal goodsLimitPrice) {
+		this.goodsLimitPrice = goodsLimitPrice;
+	}
+
+	public Long getLimitNum() {
+		return limitNum;
+	}
+
+	public void setLimitNum(Long limitNum) {
+		this.limitNum = limitNum;
 	}
     
 }
