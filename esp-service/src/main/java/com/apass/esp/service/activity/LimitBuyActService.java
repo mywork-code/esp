@@ -551,4 +551,63 @@ public class LimitBuyActService {
         }
         return sb.toString();
     }
+    /**
+     * 限时购活动开始前五分钟 每个商品校验  发送短信提醒
+     */
+    public String limitbuyGoodsRemind() {
+        StringBuffer sb = new StringBuffer();
+        String day = DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
+        String hour = DateFormatUtil.dateToString(new Date(),"HH");
+        String hournext = Long.parseLong(hour)+1+"";
+        String minite = ":00:00";
+        //拼接当前时间字符串   
+        String now = day + " " + hournext + minite;
+        //格式化当前时间字符串
+        Date nowDate = DateFormatUtil.string2date(now, null);
+        LimitBuyAct act = new LimitBuyAct();
+        act.setStartDate(nowDate);
+        List<LimitBuyAct> actlist = readEntityList(act);
+        if(actlist==null||actlist.size()==0){
+            sb.append("没有限时购活动自动开始,无需短信提醒!");
+        }
+        for(LimitBuyAct acten : actlist){
+            //当前时间为活动开始时间的活动，状态为未开始，查询该活动的所有商品记录//短信提醒
+            if(acten.getStatus()==(byte)1){
+                LimitGoodsSku sku = new LimitGoodsSku();
+                sku.setLimitBuyActId(acten.getId());
+                List<LimitGoodsSku> skulist = limitGoodsSkuService.readEntityList(sku);
+                if(skulist==null||skulist.size()==0){
+                    sb.append("即将开始的限时购活动没有维护商品列表,无需短信提醒!");
+                }
+                for(LimitGoodsSku skuen : skulist){
+                    LimitUserMessage message = new LimitUserMessage();
+                    message.setLimitBuyActId(acten.getId());
+                    message.setLimitGoodsSkuId(skuen.getId());
+                    List<LimitUserMessage> messageList = limitUserMessageService.getLimitUserMessageList(message);
+                    if(messageList==null||messageList.size()==0){
+                        sb.append("即将开始的限时购活动维护商品列表,该商品无短信提醒,商品goodSkuID:"+skuen.getId()+",商品skuId:"+skuen.getSkuId()+"。继续查找下一个商品短信提醒!");
+                    }
+                    String str = null;
+                    //发送短信提醒接口 
+                    Boolean falg = false;
+                    for(LimitUserMessage messageen : messageList){
+                        //短信发送
+                        
+                        
+                        
+                        str+="用户详情：";
+                        str+=messageen.getUserId();
+                        str+=";";
+                        falg = true;
+                    }
+                    if(falg){
+                        sb.append("即将开始的限时购活动维护商品列表,该商品发送短信提醒,商品goodSkuID:"+skuen.getId()+",商品skuId:"+skuen.getSkuId()+"。");
+                        sb.append("短信提醒用户集合:{}");
+                        sb.append(str).append("继续查找下一个商品短信提醒!");
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
 }
