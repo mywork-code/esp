@@ -76,6 +76,10 @@ public class LimitCommonService {
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+			//判断限时购当前剩余数量
+			if(limitGoodsSku.getLimitCurrTotal()<=0){
+				continue;
+			}
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
 			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
