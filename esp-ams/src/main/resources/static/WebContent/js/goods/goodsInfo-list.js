@@ -2156,13 +2156,12 @@ $(function() {
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress="";
-        if("jd"==source){
+        if("wz"==source){
             subtitle = "商品预览-" + eid;
         	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?skuId=" + eid+"&view=list";
         }else{
         	destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
         }
-//    	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
 
         if (parentTabs.tabs('exists', subtitle)) {
             parentTabs.tabs('select', subtitle);
