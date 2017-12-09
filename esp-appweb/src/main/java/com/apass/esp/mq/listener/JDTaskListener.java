@@ -48,7 +48,7 @@ import java.util.Set;
 /**
  * Created by jie.xu on 17/7/14.
  */
-@Component("jdTaskListener")
+//@Component("jdTaskListener")
 public class JDTaskListener implements MessageListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(JDTaskListener.class);
   @Autowired

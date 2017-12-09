@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * Created by jie.xu on 17/7/14.
  */
-@Component
+//@Component
 public class JDTaskConsumerConfiguration {
   @Autowired
   @Qualifier(value = "jdTaskListener")
