@@ -4,14 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
-import com.apass.esp.domain.entity.LimitBuydetail;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
@@ -356,10 +357,7 @@ public class LimitBuyActService {
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
                         
-                        List<LimitBuydetail> detaillist = limitBuydetailService.findActCurrAmtBylimitGoodsSkuId(sku.getId());
-                        Integer count = limitBuydetailService.findActCurrAmtCount(detaillist);
-                        Long totle = sku.getLimitNumTotal();
-                        
+                        //11111111111111111111111111111111111111判断按钮状态
                         
                         goodsinfolist.add(vo);
                     }

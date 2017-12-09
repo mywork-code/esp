@@ -10,6 +10,7 @@
     <result column="activity_price" property="activityPrice" jdbcType="DECIMAL" />
     <result column="limit_num_total" property="limitNumTotal" jdbcType="BIGINT" />
     <result column="limit_num" property="limitNum" jdbcType="BIGINT" />
+    <result column="limit_curr_total" property="limitCurrTotal" jdbcType="BIGINT" />
     <result column="sort_no" property="sortNo" jdbcType="BIGINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="VARCHAR" />
@@ -19,7 +20,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, limit_buy_act_id, goods_id, sku_id, market_price, activity_price, limit_num_total, 
-    limit_num, sort_no, url, create_user, update_user, created_time, updated_time
+    limit_num, limit_curr_total, sort_no, url, create_user, update_user, created_time, updated_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -32,16 +33,17 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" useGeneratedKeys="true" keyProperty="id" >
-    insert into t_esp_limit_goods_sku (limit_buy_act_id, goods_id, sku_id, 
-      market_price, activity_price, limit_num_total, 
-      limit_num, sort_no, url, 
-      create_user, update_user, created_time, 
-      updated_time)
-    values (#{limitBuyActId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, 
-      #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, #{limitNumTotal,jdbcType=BIGINT}, 
-      #{limitNum,jdbcType=BIGINT}, #{sortNo,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP}, 
-      #{updatedTime,jdbcType=TIMESTAMP})
+    insert into t_esp_limit_goods_sku 
+    (limit_buy_act_id, goods_id, sku_id, market_price, activity_price, 
+    limit_num_total, limit_num, limit_curr_total, sort_no, url, 
+    create_user, update_user, created_time, updated_time)
+        values 
+    (#{limitBuyActId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{skuId,jdbcType=VARCHAR}, 
+      #{marketPrice,jdbcType=DECIMAL}, #{activityPrice,jdbcType=DECIMAL}, 
+      #{limitNumTotal,jdbcType=BIGINT},#{limitNum,jdbcType=BIGINT}, #{limitCurrTotal,jdbcType=BIGINT},
+      #{sortNo,jdbcType=BIGINT}, #{url,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
+      #{createdTime,jdbcType=TIMESTAMP},#{updatedTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_limit_goods_sku
@@ -66,6 +68,9 @@
       </if>
       <if test="limitNum != null" >
         limit_num,
+      </if>
+      <if test="limitCurrTotal != null" >
+        limit_curr_total,
       </if>
       <if test="sortNo != null" >
         sort_no,
@@ -107,6 +112,9 @@
       </if>
       <if test="limitNum != null" >
         #{limitNum,jdbcType=BIGINT},
+      </if>
+      <if test="limitCurrTotal != null" >
+        #{limitCurrTotal,jdbcType=BIGINT},
       </if>
       <if test="sortNo != null" >
         #{sortNo,jdbcType=BIGINT},
@@ -152,6 +160,9 @@
       <if test="limitNum != null" >
         limit_num = #{limitNum,jdbcType=BIGINT},
       </if>
+      <if test="limitCurrTotal != null" >
+        limit_curr_total = #{limitCurrTotal,jdbcType=BIGINT},
+      </if>
       <if test="sortNo != null" >
         sort_no = #{sortNo,jdbcType=BIGINT},
       </if>
@@ -182,6 +193,7 @@
       activity_price = #{activityPrice,jdbcType=DECIMAL},
       limit_num_total = #{limitNumTotal,jdbcType=BIGINT},
       limit_num = #{limitNum,jdbcType=BIGINT},
+      limit_curr_total = #{limitCurrTotal,jdbcType=BIGINT},
       sort_no = #{sortNo,jdbcType=BIGINT},
       url = #{url,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=VARCHAR},

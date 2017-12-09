@@ -13,6 +13,7 @@ public class LimitGoodsSku extends CreatedUser{
     private Long limitNum;
     private Long sortNo;
     private String url;
+    private Long limitCurrTotal;//该商品的限购剩余量
     public Long getId() {
         return id;
     }
@@ -72,5 +73,11 @@ public class LimitGoodsSku extends CreatedUser{
     }
     public void setUrl(String url) {
         this.url = url;
+    }
+    public Long getLimitCurrTotal() {
+        return limitCurrTotal;
+    }
+    public void setLimitCurrTotal(Long limitCurrTotal) {
+        this.limitCurrTotal = limitCurrTotal;
     }
 }

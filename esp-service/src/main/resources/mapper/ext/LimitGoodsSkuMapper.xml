@@ -12,6 +12,7 @@
             activity_price activityPrice,
             limit_num_total limitNumTotal,
             limit_num limitNum,
+            limit_curr_total limitCurrTotal,
             sort_no sortNo,
             url url,
             sku_id skuId,
