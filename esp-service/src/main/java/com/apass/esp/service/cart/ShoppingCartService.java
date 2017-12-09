@@ -9,14 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.goods.GoodsAttrValService;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.service.jd.JdGoodsInfoService;
-import com.apass.esp.service.offer.ActivityCfgService;
-import com.apass.esp.service.offer.ProGroupGoodsService;
-import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
@@ -49,9 +42,15 @@ import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsAttrValService;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.EncodeUtils;
 
 @Component
 public class ShoppingCartService {
@@ -383,6 +382,7 @@ public class ShoppingCartService {
 					goodsInfoInCart.setLimitFalg(true);
 					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
 					goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
+					goodsInfoInCart.setLimitBuyActId(limitGS.getId());
 				}
 			}
 

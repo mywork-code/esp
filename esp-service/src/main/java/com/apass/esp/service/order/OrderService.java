@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.apass.esp.domain.dto.InvoiceDto;
-import com.apass.esp.domain.enums.*;
-import com.apass.esp.invoice.InvoiceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.common.utils.JsonUtil;
 import com.apass.esp.domain.Response;
+import com.apass.esp.domain.dto.InvoiceDto;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.dto.cart.PurchaseRequestDto;
 import com.apass.esp.domain.dto.goods.GoodsInfoInOrderDto;
@@ -58,10 +56,25 @@ import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundDetailInfoEntity;
 import com.apass.esp.domain.entity.refund.RefundInfoEntity;
+import com.apass.esp.domain.enums.AcceptGoodsType;
+import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CouponMessage;
+import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.InvoiceStatusEnum;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.PreStockStatus;
+import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.query.ProMyCouponQuery;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
+import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.domain.vo.ProMyCouponVo;
+import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.AwardDetailMapper;
 import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
@@ -69,7 +82,6 @@ import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProCouponMapper;
-import com.apass.esp.mapper.ProCouponRelMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.mapper.RepayFlowMapper;
 import com.apass.esp.repository.address.AddressInfoRepository;
@@ -86,6 +98,7 @@ import com.apass.esp.repository.order.OrderSubInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
 import com.apass.esp.repository.refund.OrderRefundRepository;
 import com.apass.esp.repository.refund.RefundDetailInfoRepository;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.aftersale.AfterSaleService;
 import com.apass.esp.service.bill.BillService;
@@ -232,7 +245,10 @@ public class OrderService {
     @Autowired
     private InvoiceService invoiceService;
 	@Autowired
-	public LimitBuyActMapper limitBuyActMapper;
+	private LimitBuyActMapper limitBuyActMapper;
+	@Autowired
+	private LimitCommonService limitCommonService;
+	
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
 
@@ -1298,6 +1314,33 @@ public class OrderService {
             	}
             }
         }
+        /**
+         * sprint13验证限时购活动中
+         */
+        for (PurchaseRequestDto purchase : purchaseList) {
+        	String limitActivityId = purchase.getLimitActivityId();
+            if(StringUtils.isNotBlank(limitActivityId)){
+            	
+            	/**
+            	 * 首先根据根据商品的Id,获取商品的对象，然后判断source是否为空，如果不为空external_id则一定不为空<br/>
+            	 * 如果为空，则标志着是自己的商品，根据stock_id查询，获取sku_id
+            	 */
+            	GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
+            	String skuId = null;
+            	if(StringUtils.isNotBlank(goods.getSource())){
+            		skuId = goods.getExternalId();
+            	}else{
+            		GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
+            		skuId = stock.getSkuId();
+            	}
+            	boolean bl = limitCommonService.validteLimitGoodsNums(new LimitBuyParam(limitActivityId, userId+"", skuId, purchase.getBuyNum()));
+            	//TODO
+            	if(!bl){
+            		throw new BusinessException("超过限购数量或库存不足");
+            	}
+            }
+        }
+        
         // 校验商品订单总金额
         BigDecimal countTotalPrice = BigDecimal.ZERO;
         for (PurchaseRequestDto purchase : purchaseList) {

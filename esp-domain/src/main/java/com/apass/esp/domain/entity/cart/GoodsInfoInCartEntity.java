@@ -25,6 +25,8 @@ public class GoodsInfoInCartEntity {
 
     /** 商品选择价格 **/
     private BigDecimal goodsSelectedPrice;
+    /** 商品限时购活动id **/
+    private Long limitBuyActId;
     /** 限时购活动标志 **/
     private Boolean limitFalg;
     /** 限时购商品的价格    **/
@@ -248,6 +250,14 @@ public class GoodsInfoInCartEntity {
 
 	public void setLimitNum(Long limitNum) {
 		this.limitNum = limitNum;
+	}
+
+	public Long getLimitBuyActId() {
+		return limitBuyActId;
+	}
+
+	public void setLimitBuyActId(Long limitBuyActId) {
+		this.limitBuyActId = limitBuyActId;
 	}
     
 }

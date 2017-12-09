@@ -344,7 +344,8 @@
 			t1.goods_compare_url2 		 goodsCompareUrl2,
 			t1.stock_logo				stockLogo,
 			t2.source                    goodsSource,
-			t2.goods_logo_url            goodsLogoUrl
+			t2.goods_logo_url            goodsLogoUrl,
+			t1.sku_id					 skuId
 		FROM
 			T_ESP_GOODS_STOCK_INFO t1 ,
 		    T_ESP_GOODS_BASE_INFO  t2

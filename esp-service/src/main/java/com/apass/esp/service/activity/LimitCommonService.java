@@ -76,6 +76,10 @@ public class LimitCommonService {
 		TreeMap<Long, Object> mapNo = new TreeMap<>();//还没有开始的活动
 
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+			//判断限时购当前剩余数量
+			if(limitGoodsSku.getLimitCurrTotal()<=0){
+				continue;
+			}
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
 			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
@@ -158,14 +162,6 @@ public class LimitCommonService {
 		if(null == limitGoods){
 			return true;
 		}
-		//如果传入的价格和限时购价格不一致，则默认不是限时购商品
-		if(limitGoods.getActivityPrice().compareTo(params.getActivityPrice()) != 0){
-			return true;
-		}
-		//如果商品购买件数无限制
-		if(limitGoods.getLimitNum() == 0 && limitGoods.getLimitNumTotal() >= params.getNum()){
-			return true;
-		}
 		/**
 		 * 计算用户购买了同一个活动同一商品的件数
 		 */
@@ -175,7 +171,7 @@ public class LimitCommonService {
 		}
 		goodsSum += params.getNum().longValue();
 		//总件数-本次购买的件数
-		long remaining = limitGoods.getLimitNumTotal().longValue() - params.getNum().longValue();
+		long remaining = limitGoods.getLimitCurrTotal().longValue() - params.getNum().longValue();
 		if(remaining >= 0 && limitGoods.getLimitNum().longValue() >= goodsSum){
 			return true;
 		}
