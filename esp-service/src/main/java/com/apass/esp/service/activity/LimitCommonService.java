@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -156,6 +155,9 @@ public class LimitCommonService {
 			return true;
 		}
 		if(limitGoods.getActivityPrice().compareTo(params.getActivityPrice()) != 0){
+			return true;
+		}
+		if(limitGoods.getLimitNum() == 0 && limitGoods.getLimitNumTotal() >= params.getNum()){
 			return true;
 		}
 		/**
