@@ -43,6 +43,7 @@ import com.apass.esp.domain.entity.merchant.MerchantInfoEntity;
 import com.apass.esp.domain.entity.rbac.UsersDO;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.service.UsersService;
@@ -618,7 +619,7 @@ public class GoodsBaseInfoController {
             return "商品库存为空,请添加！";
         }
         GoodsInfoEntity entity = new GoodsInfoEntity();
-        if (!StringUtils.equals("jd",source) && !StringUtils.equals("wz",source)) {
+        if (!StringUtils.equals(source,SourceType.JD.getCode()) && !StringUtils.equals(source,SourceType.WZ.getCode())) {
             List<BannerInfoEntity> bannerList = bannerInfoService.loadIndexBanners(id);// banner图
             if (bannerList.isEmpty()) {
                 return "商品大图为空，请上传！";
@@ -665,7 +666,7 @@ public class GoodsBaseInfoController {
             BigDecimal dividePoint = goodsPrice.divide(goodsCostPrice, 4, BigDecimal.ROUND_DOWN);
             BigDecimal dividePoint1 = systemParamEntity.getPriceCostRate().multiply(new BigDecimal(0.01))
                     .setScale(4, BigDecimal.ROUND_DOWN);
-            if (StringUtils.equals("jd",source) || StringUtils.equals("wz",source)) {
+            if (StringUtils.equals(source,SourceType.JD.getCode()) || StringUtils.equals(source,SourceType.WZ.getCode())) {
                 String skuId = goodsEntity.getExternalId();
                 Map<String, Object> descMap = new HashMap<String, Object>();
                 try {

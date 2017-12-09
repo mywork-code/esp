@@ -7,6 +7,7 @@ import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsIsDelete;
 import com.apass.esp.domain.enums.GoodsType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.JdCategoryMapper;
 import com.apass.esp.mapper.JdGoodsMapper;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
@@ -94,7 +95,7 @@ public class JdGoodsService {
             entity.setDelistTime(null);
             entity.setCreateUser(username);
             entity.setUpdateUser(username);
-            entity.setSource("wz");
+            entity.setSource(SourceType.WZ.getCode());
             entity.setGoodsLogoUrl(jdGoods.getImagePath());
             entity.setGoodsSiftUrl(jdGoods.getImagePath());
             entity.setExternalId(jdGoods.getSkuId().toString());
