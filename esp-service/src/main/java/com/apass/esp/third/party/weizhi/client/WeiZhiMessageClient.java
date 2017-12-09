@@ -53,10 +53,10 @@ public class WeiZhiMessageClient {
             String responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_MESSAGE_DEL), entity);
 
             LOGGER.info("----del message ------ response:{}",responseJson);
-            WeiZhiResponse response = (WeiZhiResponse) JSONObject.parse(responseJson);
+            WeiZhiResponse response = JSONObject.parseObject(responseJson,WeiZhiResponse.class);
             return response;
         }catch (Exception e){
-            LOGGER.error("del weizhi msg error,messageType={},messageId={}",messageType,messageId);
+            LOGGER.error("del weizhi msg error,messageType={},messageId={}",messageType,messageId,e);
             return null;
         }
 
