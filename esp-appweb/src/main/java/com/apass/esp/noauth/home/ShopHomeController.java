@@ -832,12 +832,6 @@ public class ShopHomeController {
             // 判断是否是京东商品
             if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 来源于京东
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-//                List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList=new ArrayList<>();
-//                com.apass.esp.third.party.weizhi.entity.SkuNum skuNum=new com.apass.esp.third.party.weizhi.entity.SkuNum();
-//                skuNum.setNum(1);
-//                skuNum.setSkuId(Long.parseLong(externalId));
-//                skuNumList.add(skuNum);
-                //验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                 if(!orderService.checkGoodsSalesOrNot(externalId)){
                 	goodsInfo.setStatus("G03");//商品下架
                 }
@@ -1011,7 +1005,14 @@ public class ShopHomeController {
                 returnMap.put("goodsPrice", goodsInfo.getGoodsPrice());// 商品价格
                 returnMap.put("goodsPriceFirstPayment",goodsInfo.getFirstPrice());// 商品首付价格
             } else {
-                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);// sprint11(商品多规格)
+            	Boolean isUnSupport=false;
+            	WorkCityJd workCityJd=nationService.selectByProvinceId(region.getProvinceId()+"");
+            	if (StringUtils.isNotBlank(goodsInfo.getUnSupportProvince()) && null !=workCityJd
+                        && goodsInfo.getUnSupportProvince().indexOf(workCityJd.getProvince()) > -1) {
+            		isUnSupport = true;
+               }
+            	returnMap.put("isUnSupport", isUnSupport);
+                goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 京东商品没有规格情况拼凑数据格式
             int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
