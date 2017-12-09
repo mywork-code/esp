@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LimitUserMessageMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.LimitUserMessage" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="limit_buy_act_id" property="limitBuyActId" jdbcType="BIGINT" />
+    <result column="limit_goods_sku_id" property="limitGoodsSkuId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="telephone" property="telephone" jdbcType="BIGINT" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, limit_buy_act_id, limit_goods_sku_id, user_id, telephone, created_time, updated_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_esp_limit_user_message
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_esp_limit_user_message
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.LimitUserMessage" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_limit_user_message (limit_buy_act_id, limit_goods_sku_id, user_id, 
+      telephone, created_time, updated_time
+      )
+    values (#{limitBuyActId,jdbcType=BIGINT}, #{limitGoodsSkuId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+      #{telephone,jdbcType=BIGINT}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.LimitUserMessage" useGeneratedKeys="true" keyProperty="id" >
+    insert into t_esp_limit_user_message
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="limitBuyActId != null" >
+        limit_buy_act_id,
+      </if>
+      <if test="limitGoodsSkuId != null" >
+        limit_goods_sku_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="limitBuyActId != null" >
+        #{limitBuyActId,jdbcType=BIGINT},
+      </if>
+      <if test="limitGoodsSkuId != null" >
+        #{limitGoodsSkuId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="telephone != null" >
+        #{telephone,jdbcType=BIGINT},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.LimitUserMessage" >
+    update t_esp_limit_user_message
+    <set >
+      <if test="limitBuyActId != null" >
+        limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT},
+      </if>
+      <if test="limitGoodsSkuId != null" >
+        limit_goods_sku_id = #{limitGoodsSkuId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="telephone != null" >
+        telephone = #{telephone,jdbcType=BIGINT},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.LimitUserMessage" >
+    update t_esp_limit_user_message
+    set limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT},
+      limit_goods_sku_id = #{limitGoodsSkuId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=BIGINT},
+      telephone = #{telephone,jdbcType=BIGINT},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

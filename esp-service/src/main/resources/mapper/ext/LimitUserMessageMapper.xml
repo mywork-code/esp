@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.apass.esp.mapper.LimitUserMessageMapper" >
+    <select id="getLimitUserMessageList" resultType="com.apass.esp.domain.entity.LimitUserMessage">
+        <![CDATA[
+        SELECT
+            id id,
+            limit_buy_act_id limitBuyActId,
+            limit_goods_sku_id limitGoodsSkuId,
+            user_id userId,
+            telephone telephone,
+            created_time createdTime,
+            updated_time updatedTime
+        FROM
+            t_esp_limit_user_message
+        WHERE 1=1
+        ]]>
+        <if test="limitBuyActId!=null and limitBuyActId!=''"> AND limit_buy_act_id = #{limitBuyActId} </if>
+        <if test="limitGoodsSkuId!=null and limitGoodsSkuId!=''"> AND limit_goods_sku_id = #{limitGoodsSkuId} </if>
+        <if test="userId!=null and userId!=''"> AND user_id = #{userId} </if>
+        <if test="telephone!=null and telephone!=''"> AND telephone = #{telephone} </if>
+        <![CDATA[ 
+        ORDER BY created_time asc
+        ]]>
+    </select>
+</mapper>

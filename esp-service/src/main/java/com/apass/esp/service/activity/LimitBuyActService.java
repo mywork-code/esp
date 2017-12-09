@@ -137,7 +137,7 @@ public class LimitBuyActService {
      * 限时购活动新增 
      * 限时购活动开始日期验证  有没有相同时间活动
      * 验证通过    
-     * 1。 限时购活动 保存    2。 限时购商品列表  保存
+     * 1。 限时购活动 保存    2。 限时购商品列表  保存（新增的限时购活动商品  初始限购剩余量等于限购总量）
      * @param buyActView
      * @return
      * @throws BusinessException 
@@ -190,6 +190,7 @@ public class LimitBuyActService {
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
             sku.setLimitBuyActId(actId);
+            sku.setLimitCurrTotal(sku.getLimitNumTotal());//新增的限时购活动商品  初始限购剩余量等于限购总量
             sku.setSortNo(++sortNo);
             if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
                 throw new BusinessException("限时购活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
@@ -212,7 +213,7 @@ public class LimitBuyActService {
      * 限时购活动修改 
      * 限时购活动开始日期验证  有没有相同时间活动
      * 验证通过    
-     * 1。 限时购活动 保存    2。 限时购商品列表  保存
+     * 1。 限时购活动 保存    2。 限时购商品列表  保存（修改限时购活动商品   限购剩余量等于限购总量）
      * @param buyActView
      * @return
      * @throws BusinessException 
@@ -263,6 +264,7 @@ public class LimitBuyActService {
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
             sku.setLimitBuyActId(actId);
+            sku.setLimitCurrTotal(sku.getLimitNumTotal());//修改限时购活动商品   限购剩余量等于限购总量
             sku.setSortNo(++sortNo);
             if(sku.getId()==null){
                 if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
@@ -356,9 +358,14 @@ public class LimitBuyActService {
                         GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
-                        
-                        //11111111111111111111111111111111111111判断按钮状态
-                        
+                        //判断按钮状态
+                        if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
+                            vo.setButtonStatus("1");
+                            vo.setButtonDesc("立即抢购");
+                        }else{
+                            vo.setButtonStatus("0");
+                            vo.setButtonDesc("已抢光");
+                        }
                         goodsinfolist.add(vo);
                     }
                     time.setList(goodsinfolist);
@@ -436,6 +443,8 @@ public class LimitBuyActService {
      * @return
      */
     public Response activityGoodsList(Long limitBuyActId) {
+        // 获取活动状态   以便判断按钮状态
+        Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
         List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
@@ -448,6 +457,18 @@ public class LimitBuyActService {
             GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
+            if(actstatus==(byte)1){//未开始活动  
+                vo.setButtonDesc("抢购提醒");
+                vo.setButtonStatus("1");
+            }else{//进行中活动  
+                if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
+                    vo.setButtonStatus("1");
+                    vo.setButtonDesc("立即抢购");
+                }else{
+                    vo.setButtonStatus("0");
+                    vo.setButtonDesc("已抢光");
+                }
+            }
             goodsinfolist.add(vo);
         }
         return Response.success("限时购活动商品列表刷新成功！",goods);
