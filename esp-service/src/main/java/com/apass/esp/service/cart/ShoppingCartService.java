@@ -317,13 +317,13 @@ public class ShoppingCartService {
 	 */
     public List<ListCartDto> getGoodsInfoInCart(String requestId, String userId) throws BusinessException {
         Long userIdVal = Long.valueOf(userId);
-        List<GoodsInfoInCartEntity> goodsInfoInCartList = null;
 
-        goodsInfoInCartList = cartInfoRepository.getGoodsInfoInCart(userIdVal);
+        List<GoodsInfoInCartEntity> goodsInfoInCartList = cartInfoRepository.getGoodsInfoInCart(userIdVal);
 
         if (null == goodsInfoInCartList || goodsInfoInCartList.isEmpty()) {
             LOG.info(requestId, "查询数据库购物车表数据", "数据为空");
-            throw new BusinessException("购物车为空",BusinessErrorCode.CART_NULL);
+    		List<ListCartDto> list = new ArrayList<>();
+			return list;
         } else {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
@@ -331,7 +331,7 @@ public class ShoppingCartService {
                     String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
                     goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
                     //购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-                    if(goodsInfoInCart.getDelistTime().before(date) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
+                    if((null !=goodsInfoInCart.getDelistTime() && goodsInfoInCart.getDelistTime().before(date)) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
                         goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
                     }
@@ -343,13 +343,21 @@ public class ShoppingCartService {
                     String goodsLogoUrlNew = EncodeUtils.base64Decode(goodsInfoInCart.getGoodsLogoUrl());
                     goodsInfoInCart.setGoodsLogoUrlNew(imageService.getImageUrl(goodsLogoUrlNew));
                     // 已过下架时间   或   库存为0， 标记该商品已下架      购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
-                    if(goodsInfoInCart.getDelistTime().before(date) || null == goodsInfoInCart.getStockCurrAmt()
+                    if((null !=goodsInfoInCart.getDelistTime() && goodsInfoInCart.getDelistTime().before(date)) || null == goodsInfoInCart.getStockCurrAmt()
                             || goodsInfoInCart.getStockCurrAmt().intValue() == 0 || goodsInfoInCart.getGoodsNum() == 0
                             || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
                         goodsInfoInCart.setIsDelete("00");//失效
                         goodsInfoInCart.setIsSelect("0");//不选中
                     }
+                 // 如果非京东商品是多规格商品，则调用方法去取商品的规格描述
+					List<GoodsAttrVal> goodsAttrValList = goodsAttrValService
+							.queryGoodsAttrValsByGoodsId(goodsInfoInCart.getGoodsId());
+					if (null != goodsAttrValList && goodsAttrValList.size() > 1) {
+						// 获取非京东商品的多规格描述
+						String goodsDesc = goodsService.getGoodsStockDesc(goodsInfoInCart.getGoodsStockId());
+						goodsInfoInCart.setGoodsSkuAttr(goodsDesc);
                 }
+               }
 
                 // 计算商品折扣后价格
                 BigDecimal goodsPrice = commonService.calculateGoodsPrice(goodsInfoInCart.getGoodsId(), goodsInfoInCart.getGoodsStockId());
