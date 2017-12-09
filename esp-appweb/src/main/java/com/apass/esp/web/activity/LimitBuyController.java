@@ -45,10 +45,29 @@ public class LimitBuyController {
     public Response activityGoodsList(@RequestBody Map<String, Object> params) {
         try{
             String limitBuyActId = CommonUtils.getValue(params, "limitBuyActId");
-            return limitBuyActService.activityGoodsList(Long.parseLong(limitBuyActId));
+            String userId = CommonUtils.getValue(params, "userId");
+            return limitBuyActService.activityGoodsList(Long.parseLong(limitBuyActId),Long.parseLong(userId));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("限时购活动商品列表刷新失败");
+        }
+    }
+    /**
+     * 即将开始限时购活动  某一个商品  面对用户开启抢购提醒
+     * @param params
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/activityAddRemind")
+    public Response activityAddRemind(@RequestBody Map<String, Object> params) {
+        try{
+            String limitGoodsSkuId = CommonUtils.getValue(params, "limitGoodsSkuId");
+            String userId = CommonUtils.getValue(params, "userId");
+            String telephone = CommonUtils.getValue(params, "telephone");
+            return limitBuyActService.activityAddRemind(Long.parseLong(limitGoodsSkuId),Long.parseLong(userId),Long.parseLong(telephone));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return Response.fail("即将开始限时购活动商品面对用户开启抢购提醒失败");
         }
     }
 }

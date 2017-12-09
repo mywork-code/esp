@@ -4,16 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitGoodsSku;
+import com.apass.esp.domain.entity.LimitUserMessage;
 import com.apass.esp.domain.entity.activity.LimitBuyActTimeLine;
 import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
@@ -42,13 +41,13 @@ public class LimitBuyActService {
     @Autowired
     public GoodsService goodsService;
     @Autowired
-    public LimitBuydetailService limitBuydetailService;
+    public LimitUserMessageService limitUserMessageService;
     /**
      * CREATE
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Long createEntity(LimitBuyAct entity){
         int i = limitBuyActMapper.insert(entity);
         if(i==1){
@@ -85,7 +84,7 @@ public class LimitBuyActService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public LimitBuyAct updatedEntity(LimitBuyAct entity) {
         Integer i = limitBuyActMapper.updateByPrimaryKeySelective(entity);
         if(i==1){
@@ -98,7 +97,7 @@ public class LimitBuyActService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(LimitBuyAct entity) {
         return limitBuyActMapper.deleteByPrimaryKey(entity.getId());
     }
@@ -106,7 +105,7 @@ public class LimitBuyActService {
      * DELETE BY ID
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(Long id) {
         return limitBuyActMapper.deleteByPrimaryKey(id);
     }
@@ -142,6 +141,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = { Exception.class})
     public Response addLimitBuyAct(LimitBuyActVo buyActView,String username) throws BusinessException {
         Byte startTime = buyActView.getStartTime();
         String startTimeValue = null;
@@ -219,6 +219,7 @@ public class LimitBuyActService {
      * @throws BusinessException 
      */
     @SuppressWarnings("unused")
+    @Transactional(rollbackFor = { Exception.class})
     public Response editLimitBuyAct(LimitBuyActVo buyActView,String username) throws BusinessException {
         Byte startTime = buyActView.getStartTime();
         String startTimeValue = null;
@@ -291,6 +292,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
+    @Transactional(rollbackFor = { Exception.class})
     public Response editLimitBuyActDeleteGoods(Long goodsSkuId) throws BusinessException {
         LimitGoodsSku goodsSku = limitGoodsSkuService.readEntity(goodsSkuId);
         if(goodsSku==null||goodsSku.getLimitBuyActId()==null){
@@ -442,7 +444,7 @@ public class LimitBuyActService {
      * @param parseLong
      * @return
      */
-    public Response activityGoodsList(Long limitBuyActId) {
+    public Response activityGoodsList(Long limitBuyActId,Long userId) {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -458,8 +460,15 @@ public class LimitBuyActService {
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             if(actstatus==(byte)1){//未开始活动  
-                vo.setButtonDesc("抢购提醒");
-                vo.setButtonStatus("1");
+                //验证用户面对该商品是否开启提醒
+                Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,userId);
+                if(falg){
+                    vo.setButtonStatus("1");
+                    vo.setButtonDesc("抢购提醒");
+                }else{
+                    vo.setButtonStatus("0");
+                    vo.setButtonDesc("已设置提醒");
+                }
             }else{//进行中活动  
                 if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
                     vo.setButtonStatus("1");
@@ -473,10 +482,31 @@ public class LimitBuyActService {
         }
         return Response.success("限时购活动商品列表刷新成功！",goods);
     }
+    /**
+     * 即将开始限时购活动  某一个商品  面对用户开启抢购提醒
+     * @param params
+     * @return
+     */
+    @Transactional(rollbackFor = { Exception.class})
+    public Response activityAddRemind(Long limitGoodsSkuId, Long userId, Long telephone) {
+        Long limitBuyActId = limitGoodsSkuService.readEntity(limitGoodsSkuId).getLimitBuyActId();
+        LimitUserMessage entity = new LimitUserMessage();
+        entity.setLimitGoodsSkuId(limitGoodsSkuId);
+        entity.setLimitBuyActId(limitBuyActId);
+        entity.setUserId(userId);
+        entity.setTelephone(telephone);
+        entity.setCreatedTime(new Date());
+        entity.setUpdatedTime(new Date());
+        if(limitUserMessageService.activityAddRemind(entity)!=null){
+            return Response.success("即将开始限时购活动商品面对用户开启抢购提醒成功！");
+        }
+        return Response.fail("即将开始限时购活动商品面对用户开启抢购提醒失败");
+    }
     /*限时定时任务*/
     /**
      * 定时任务   活动自动开始  活动自动结束
      */
+    @Transactional(rollbackFor = { Exception.class})
     public String limitbuyActStartOver(String user) {
         StringBuffer sb = new StringBuffer();
         String day = DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
