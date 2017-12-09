@@ -1,7 +1,5 @@
 package com.apass.esp.domain.vo;
 
-import java.math.BigDecimal;
-
 public class LimitBuyParam {
 	
 	private String limitBuyActId;//限时购活动Id
@@ -10,9 +8,9 @@ public class LimitBuyParam {
 	
 	private String skuId;//skuId
 	
-	private BigDecimal activityPrice;//显示购活动价
+//	private BigDecimal activityPrice;//显示购活动价
 	
-	private Long num;//商品的数量
+	private Integer num;//商品的数量
 
 	public String getLimitBuyActId() {
 		return limitBuyActId;
@@ -38,19 +36,19 @@ public class LimitBuyParam {
 		this.skuId = skuId;
 	}
 
-	public BigDecimal getActivityPrice() {
-		return activityPrice;
-	}
+//	public BigDecimal getActivityPrice() {
+//		return activityPrice;
+//	}
+//
+//	public void setActivityPrice(BigDecimal activityPrice) {
+//		this.activityPrice = activityPrice;
+//	}
 
-	public void setActivityPrice(BigDecimal activityPrice) {
-		this.activityPrice = activityPrice;
-	}
-
-	public Long getNum() {
+	public Integer getNum() {
 		return num;
 	}
 
-	public void setNum(Long num) {
+	public void setNum(Integer num) {
 		this.num = num;
 	}
 	
@@ -66,13 +64,24 @@ public class LimitBuyParam {
 	}
 
 	public LimitBuyParam(String limitBuyActId, String userId, String skuId,
-			BigDecimal activityPrice, Long num) {
+			Integer num) {
 		super();
 		this.limitBuyActId = limitBuyActId;
 		this.userId = userId;
 		this.skuId = skuId;
-		this.activityPrice = activityPrice;
 		this.num = num;
 	}
+
+//	public LimitBuyParam(String limitBuyActId, String userId, String skuId,
+//			BigDecimal activityPrice, Long num) {
+//		super();
+//		this.limitBuyActId = limitBuyActId;
+//		this.userId = userId;
+//		this.skuId = skuId;
+//		this.activityPrice = activityPrice;
+//		this.num = num;
+//	}
+	
+	
 
 }
