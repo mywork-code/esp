@@ -46,3 +46,14 @@ PRIMARY KEY (`id`)
 
 ALTER TABLE `t_esp_order_detail_info`
 ADD COLUMN `limit_activity_id`  varchar(20)  NOT NULL DEFAULT '' COMMENT '限时购活动ID' ;
+
+CREATE TABLE `t_esp_limit_user_message` (
+`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键标识ID',
+`limit_buy_act_id` bigint(20) NOT NULL COMMENT '限时购活动表ID外键',
+`limit_goods_sku_id` bigint(20) NOT NULL COMMENT '限时购活动商品表ID外键',
+`user_id` bigint(20) NOT NULL COMMENT '用户ID',
+`telephone` bigint(20) NOT NULL COMMENT '用户提醒手机号，可以修改为非用户注册手机号',
+`created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
+`updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='限时购活动用户抢购提醒记录表';
