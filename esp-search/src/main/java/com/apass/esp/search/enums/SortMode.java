@@ -20,7 +20,7 @@ public enum SortMode implements Serializable {
     ORDERVALUE_DESC("listTime", true),
     TIMECREATED_ASC("createDate", false),//创建时间
     TIMECREATED_DESC("createDate", true),
-    PRICE_ASC("goodsPrice", false),//创建时间
+    PRICE_ASC("goodsPrice", false),//商品价格
     PRICE_DESC("goodsPrice", true),
     SORD_ASC("sordNo",false),//排序字段
     SORD_DESC("sordNo",true);
