@@ -48,7 +48,7 @@ public class ActivityScheduleTask {
     public void limitbuyActStartOver() {
 	    try{
 	        String now = DateFormatUtil.datetime2String(new Date());
-	        String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+	        String username = SpringSecurityUtils.getCurrentUser();
 	        String sb = limitBuyActService.limitbuyActStartOver(username);
 	        logger.info("限时购活动状态自动更新成功,当前时间"+now+",任务执行详情 {}  "+sb);
 	    } catch (Exception e) {

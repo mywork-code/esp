@@ -379,7 +379,13 @@ $(function () {
                 onLoadSuccess: function (object) {
                     var l = object.length;
                     if (l > 0) {
-                        $("#addGoodsToGroup").window('open');
+                        var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+                        var win = $("#addGoodsToGroup").window({
+                            left: evt.pageX,
+                            top: evt.pageY
+                        });
+
+                        win.window('open');
                         $("#addGoodsToGroupActivityId").val(activityId);
                         $("#addGoodsToGroupGoodsId").val(goodsIdsString);
                     } else {
