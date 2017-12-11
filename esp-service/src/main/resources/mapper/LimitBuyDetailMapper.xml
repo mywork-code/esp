@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.apass.esp.mapper.LimitBuydetailMapper" >
-  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.LimitBuydetail" >
+<mapper namespace="com.apass.esp.mapper.LimitBuyDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.apass.esp.domain.entity.LimitBuyDetail" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="limit_buy_act_id" property="limitBuyActId" jdbcType="BIGINT" />
     <result column="limit_goods_sku_id" property="limitGoodsSkuId" jdbcType="BIGINT" />
@@ -9,9 +9,11 @@
     <result column="buy_no" property="buyNo" jdbcType="INTEGER" />
     <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, limit_buy_act_id, limit_goods_sku_id, user_id, buy_no, created_time, updated_time
+    id, limit_buy_act_id, limit_goods_sku_id, user_id, buy_no, created_time, updated_time, 
+    order_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -23,15 +25,15 @@
     delete from t_esp_limit_buydetail
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.apass.esp.domain.entity.LimitBuydetail" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="com.apass.esp.domain.entity.LimitBuyDetail" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_limit_buydetail (limit_buy_act_id, limit_goods_sku_id, user_id, 
-      buy_no, created_time, updated_time
-      )
+      buy_no, created_time, updated_time, 
+      order_id)
     values (#{limitBuyActId,jdbcType=BIGINT}, #{limitGoodsSkuId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
-      #{buyNo,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}
-      )
+      #{buyNo,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{orderId,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.LimitBuydetail" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insertSelective" parameterType="com.apass.esp.domain.entity.LimitBuyDetail" useGeneratedKeys="true" keyProperty="id" >
     insert into t_esp_limit_buydetail
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="limitBuyActId != null" >
@@ -51,6 +53,9 @@
       </if>
       <if test="updatedTime != null" >
         updated_time,
+      </if>
+      <if test="orderId != null" >
+        order_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -72,9 +77,12 @@
       <if test="updatedTime != null" >
         #{updatedTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.LimitBuydetail" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.apass.esp.domain.entity.LimitBuyDetail" >
     update t_esp_limit_buydetail
     <set >
       <if test="limitBuyActId != null" >
@@ -95,17 +103,21 @@
       <if test="updatedTime != null" >
         updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.LimitBuydetail" >
+  <update id="updateByPrimaryKey" parameterType="com.apass.esp.domain.entity.LimitBuyDetail" >
     update t_esp_limit_buydetail
     set limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT},
       limit_goods_sku_id = #{limitGoodsSkuId,jdbcType=BIGINT},
       user_id = #{userId,jdbcType=BIGINT},
       buy_no = #{buyNo,jdbcType=INTEGER},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
-      updated_time = #{updatedTime,jdbcType=TIMESTAMP}
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      order_id = #{orderId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
