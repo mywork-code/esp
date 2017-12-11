@@ -127,7 +127,7 @@ public class PaymentService {
 	 * sprint12
 	 */
 
-	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
+	@Transactional(rollbackFor = { Exception.class, RuntimeException.class })
 	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
 	public String defary1(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
 		// 校验订单状态
@@ -338,7 +338,6 @@ public class PaymentService {
      * @return
      * @throws BusinessException
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
 	@Monitor(methodDesc = "根据订单详情列表修改商品库存")
 	private void modifyGoodsStock(String requestId, Long userId, OrderInfoEntity orderInfo) throws BusinessException {
         //获取该订单详情列表
@@ -354,35 +353,34 @@ public class PaymentService {
             // 商品库存Id
             Long goodsStockId = orderDetail.getGoodsStockId();
             // 默认调用尝试次数
-            Integer errorNum = 3;
+            Integer errorNum = 2;
             GoodsInfoEntity goodsInfo = goodsDao.select(goodsId);
-            for (int i = 0; i < errorNum; i++) {
-                LOG.info(requestId, "开始减少库存","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+            for (int i = 1; i <= errorNum; i++) {
+                LOG.info(requestId, "开始减少库存","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                 GoodsStockInfoEntity goodsStock = goodsStockDao.select(goodsStockId);
                 if (null == goodsStock) {
                     throw new BusinessException("商品信息不存在,请联系客服!");
                 }
-                LOG.info(requestId, "查询出库存量", "商品库存Id:[" + goodsStockId + "]商品库存:[" + goodsStock.getStockCurrAmt()+ "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                LOG.info(requestId, "查询出库存量", "商品库存Id:[" + goodsStockId + "]商品库存:[" + goodsStock.getStockCurrAmt()+ "],购买数量:[" + buyNum + "],errorNum:" + i);
                 goodsStock.setStockAmt(goodsStock.getStockCurrAmt());
                 // 减库存
                 if (goodsStock.getStockCurrAmt() >= buyNum) {
                     Long stockCurrAmt = goodsStock.getStockCurrAmt() - buyNum;
                     goodsStock.setStockCurrAmt(stockCurrAmt);
                     Integer successFlag = goodsStockDao.updateCurrAmtAndTotalAmount(goodsStock);
-                    LOG.info(requestId, "更新库存记录", "商品库存Id:[" + goodsStockId + "],successFlag:[" + successFlag+ "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                    LOG.info(requestId, "更新库存记录", "商品库存Id:[" + goodsStockId + "],successFlag:[" + successFlag+ "],购买数量:[" + buyNum + "],errorNum:" + i);
                     if (successFlag == 0) {
-                        if (errorNum <= 0) {
-                            LOG.info(requestId, "更新库存失败尝试次数已用完","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                        if (i == errorNum) {
+                            LOG.info(requestId, "更新库存失败尝试次数已用完","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                             throw new BusinessException(goodsInfo.getGoodsName() + "商品库存不足");
                         }
-                        errorNum--;
-                        LOG.info(requestId, "本次更新库存失败尝试再次更新","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                        LOG.info(requestId, "本次更新库存失败尝试再次更新","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                         continue;
                     } else if (successFlag > 1) {
-                        LOG.info(requestId, "更新库存异常","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                        LOG.info(requestId, "更新库存异常","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                         throw new BusinessException(goodsInfo.getGoodsName() + "商品库存更新异常请联系客服!");
                     } else if (successFlag == 1) {
-                        LOG.info(requestId, "更新库存成功","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + errorNum);
+                        LOG.info(requestId, "更新库存成功","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                         break;
                     }
                 } else {
