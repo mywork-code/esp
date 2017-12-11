@@ -343,7 +343,7 @@ public class PaymentService {
         //获取该订单详情列表
         List<OrderDetailInfoEntity> orderDetailList = orderDetailDao.queryOrderDetailInfo(orderInfo.getOrderId() + "");
         for (OrderDetailInfoEntity orderDetail : orderDetailList) {
-        	if(StringUtils.equals(orderDetail.getSource(), SourceType.JD.getCode())){
+        	if(StringUtils.equals(orderDetail.getSource(), SourceType.WZ.getCode())){
         		continue;
         	}
             // 商品购买数量

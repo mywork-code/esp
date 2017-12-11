@@ -992,7 +992,7 @@ public class ShopHomeController {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                 } else {
-                    returnMap.put("source", "wz");
+                    returnMap.put("source", SourceType.WZ.getCode());
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                 }
