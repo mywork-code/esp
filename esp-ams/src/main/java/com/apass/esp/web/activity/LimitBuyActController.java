@@ -186,7 +186,7 @@ public class LimitBuyActController {
     @LogAnnotion(operationType = "限时购活动新增", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response addLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            String username = SpringSecurityUtils.getCurrentUser();
             return limitBuyActService.addLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
@@ -209,7 +209,7 @@ public class LimitBuyActController {
     @LogAnnotion(operationType = "限时购活动修改", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response editLimitBuyAct(@RequestBody LimitBuyActVo buyActView) {
         try{
-            String username = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            String username = SpringSecurityUtils.getCurrentUser();
             return limitBuyActService.editLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
