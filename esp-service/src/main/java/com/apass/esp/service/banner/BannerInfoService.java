@@ -42,7 +42,6 @@ public class BannerInfoService {
                 || BannerType.BANNER_SIFT.getIdentify().equals(bn.getBannerType())){
                 bn.setBannerType(BannerType.getEnum(bn.getBannerType()).getMessage());
             } else {
-
                 String[] arrs = bn.getBannerType().split("_");
                 bn.setBannerType(cateService.getCategoryById(Long.valueOf(arrs[1])).getCategoryName());
             }
