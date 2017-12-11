@@ -21,6 +21,7 @@ import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.third.party.jd.entity.order.Order;
 import com.apass.gfb.framework.jwt.common.ListeningStringUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
@@ -339,6 +340,7 @@ public class SAPService {
   private void generatePaymentOrFullPaymentCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
@@ -841,6 +843,7 @@ public class SAPService {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+//    return "2017-04-01";
   }
 
   private String getDateEnd() {
@@ -909,6 +912,7 @@ public class SAPService {
   private void transPurchaseOrReturnCvs() throws Exception{
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     CsvWriter csvWriter = null;
     try {
