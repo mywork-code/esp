@@ -34,6 +34,7 @@ import com.apass.esp.domain.entity.common.ResponseInit;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.ActivityInfoStatus;
@@ -984,18 +985,20 @@ public class ShopHomeController {
                 goodsInfo.setGoodsPrice(price);
                 goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
             }
-            returnMap.put("status", goodsInfo.getStatus());// 商品下架
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
-                    returnMap.put("source", "jd");
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
+                    returnMap.put("source", "jd");
+                    returnMap.put("status", goodsInfo.getStatus());
+
                 } else {
-                    returnMap.put("source", "wz");
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
+                    returnMap.put("source", "jd");
+                    returnMap.put("status", goodsInfo.getStatus());
                 }
                 // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                 if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
@@ -1012,12 +1015,14 @@ public class ShopHomeController {
                         && goodsInfo.getUnSupportProvince().indexOf(workCityJd.getProvince()) > -1) {
             		isUnSupport = true;
                }
+                returnMap.put("status", goodsInfo.getStatus());// 商品下架
             	returnMap.put("isUnSupport", isUnSupport);
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 京东商品没有规格情况拼凑数据格式
             int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
-            if (jdSimilarSkuListSize == 0) {
+            List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) returnMap.get("jdSimilarSkuList");
+            if (jdSimilarSkuListSize == 0 || jdSimilarSkuList.isEmpty()) {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
