@@ -11,6 +11,36 @@ public class LimitBuyParam {
 //	private BigDecimal activityPrice;//显示购活动价
 	
 	private Integer num;//商品的数量
+	
+	private Long goodsId;//商品编号
+	
+	private Long goodsStockId;//商品库存编号
+	
+	private String orderId;//订单ID
+	
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public Long getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public Long getGoodsStockId() {
+		return goodsStockId;
+	}
+
+	public void setGoodsStockId(Long goodsStockId) {
+		this.goodsStockId = goodsStockId;
+	}
 
 	public String getLimitBuyActId() {
 		return limitBuyActId;
@@ -70,6 +100,12 @@ public class LimitBuyParam {
 		this.userId = userId;
 		this.skuId = skuId;
 		this.num = num;
+	}
+
+	public LimitBuyParam(Long goodsId, Long goodsStockId) {
+		super();
+		this.goodsId = goodsId;
+		this.goodsStockId = goodsStockId;
 	}
 
 //	public LimitBuyParam(String limitBuyActId, String userId, String skuId,

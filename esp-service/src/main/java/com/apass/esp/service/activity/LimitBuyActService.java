@@ -19,6 +19,7 @@ import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -42,6 +43,8 @@ public class LimitBuyActService {
     public GoodsService goodsService;
     @Autowired
     public LimitUserMessageService limitUserMessageService;
+    @Autowired
+    public MobileSmsService mobileSmsService;
     /**
      * CREATE
      * @param entity
@@ -444,7 +447,7 @@ public class LimitBuyActService {
      * @param parseLong
      * @return
      */
-    public Response activityGoodsList(Long limitBuyActId,Long userId) {
+    public Response activityGoodsList(Long limitBuyActId,String userId) {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -461,13 +464,18 @@ public class LimitBuyActService {
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             if(actstatus==(byte)1){//未开始活动  
                 //验证用户面对该商品是否开启提醒
-                Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,userId);
-                if(falg){
+                if(StringUtils.isBlank(userId)){
                     vo.setButtonStatus("1");
                     vo.setButtonDesc("抢购提醒");
                 }else{
-                    vo.setButtonStatus("0");
-                    vo.setButtonDesc("已设置提醒");
+                    Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,Long.parseLong(userId));
+                    if(falg){
+                        vo.setButtonStatus("1");
+                        vo.setButtonDesc("抢购提醒");
+                    }else{
+                        vo.setButtonStatus("0");
+                        vo.setButtonDesc("已设置提醒");
+                    }
                 }
             }else{//进行中活动  
                 if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
@@ -553,6 +561,7 @@ public class LimitBuyActService {
     }
     /**
      * 限时购活动开始前五分钟 每个商品校验  发送短信提醒
+     * @throws BusinessException 
      */
     public String limitbuyGoodsRemind() {
         StringBuffer sb = new StringBuffer();
@@ -590,20 +599,25 @@ public class LimitBuyActService {
                     String str = null;
                     //发送短信提醒接口 
                     Boolean falg = false;
+                    sb.append("即将开始的限时购活动维护商品列表,该商品发送短信提醒,商品goodSkuID:"+skuen.getId()+",商品skuId:"+skuen.getSkuId()+"。");
+                    sb.append("短信提醒用户集合:{}");
                     for(LimitUserMessage messageen : messageList){
                         //短信发送
-                        
-                        
-                        
-                        str+="用户详情：";
-                        str+=messageen.getUserId();
-                        str+=";";
-                        falg = true;
-                    }
-                    if(falg){
-                        sb.append("即将开始的限时购活动维护商品列表,该商品发送短信提醒,商品goodSkuID:"+skuen.getId()+",商品skuId:"+skuen.getSkuId()+"。");
-                        sb.append("短信提醒用户集合:{}");
-                        sb.append(str).append("继续查找下一个商品短信提醒!");
+                        String messagetemplate = "短信模板";
+                        try {
+                            str+="用户详情：";
+                            str+=messageen.getUserId();
+                            str+=";";
+                            falg = mobileSmsService.sendNoticeSms(messageen.getTelephone().toString(), messagetemplate);
+                            if(falg){
+                                sb.append(str).append("发送成功!");
+                            }else{
+                                sb.append(str).append("发送失败!");
+                            }
+                        } catch (BusinessException e) {
+                            sb.append(str).append("发送失败!");
+                            continue;
+                        }
                     }
                 }
             }
