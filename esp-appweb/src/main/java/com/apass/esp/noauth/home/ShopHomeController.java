@@ -991,13 +991,13 @@ public class ShopHomeController {
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
-                    returnMap.put("source", "jd");
+                    returnMap.put("source", SourceType.JD.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
 
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
-                    returnMap.put("source", "jd");
+                    returnMap.put("source", SourceType.WZ.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
                 }
                 // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）

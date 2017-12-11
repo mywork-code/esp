@@ -84,7 +84,7 @@ public class BannerController extends BaseController {
         if(SpringSecurityUtils.hasPermission("BANNER_LIST_EDIT")) {
         	map.put("grantedAuthority", "permission");
 		}
-		    //查询一级类目
+		//查询一级类目
         CategoryDto dto = new CategoryDto();
         List<CategoryVo> list = cateService.listCategory(dto);
         map.put("oneLevelCateList",list);

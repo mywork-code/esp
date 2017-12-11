@@ -21,6 +21,7 @@ import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.third.party.jd.entity.order.Order;
 import com.apass.gfb.framework.jwt.common.ListeningStringUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
@@ -339,6 +340,7 @@ public class SAPService {
   private void generatePaymentOrFullPaymentCsv() {
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
 
@@ -369,13 +371,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -557,13 +559,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -603,14 +605,14 @@ public class SAPService {
             || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           contentList.add("CR" + cashRefundTxn.getOrderId());
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add(cashRefundTxn.getOrderId());
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -841,6 +843,7 @@ public class SAPService {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+//    return "2017-04-01";
   }
 
   private String getDateEnd() {
@@ -909,6 +912,7 @@ public class SAPService {
   private void transPurchaseOrReturnCvs() throws Exception{
     List<String> orderStatusList = new ArrayList<>();
     orderStatusList.add(OrderStatus.ORDER_COMPLETED.getCode());
+    orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
     List<TxnOrderInfo> txnList = txnInfoService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
     CsvWriter csvWriter = null;
     try {
@@ -937,13 +941,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
