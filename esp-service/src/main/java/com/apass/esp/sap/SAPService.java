@@ -371,13 +371,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -559,13 +559,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -605,14 +605,14 @@ public class SAPService {
             || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           contentList.add("CR" + cashRefundTxn.getOrderId());
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
           contentList.add(cashRefundTxn.getOrderId());
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
@@ -941,13 +941,13 @@ public class SAPService {
         if (txn.getTxnType().equals(TxnTypeCode.SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
-          contentList.add("");
+          contentList.add("898310148160258");
           contentList.add("6008");
           contentList.add("97990155300001887");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add("cm2017082910000147");
+          contentList.add("100002039");
           contentList.add("6008");
           contentList.add("97990155300001887");
         }
