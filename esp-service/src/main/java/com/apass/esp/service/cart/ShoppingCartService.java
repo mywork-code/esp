@@ -753,7 +753,7 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-		if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+		if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
 			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
 			//京东商品没有规格情况拼凑数据格式
