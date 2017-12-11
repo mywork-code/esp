@@ -436,6 +436,9 @@ public class SAPService {
 
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
+        if(StringUtils.isEmpty(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())))){
+          continue;
+        }
         contentList.add(getSalesOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
@@ -746,6 +749,9 @@ public class SAPService {
 //        }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
+        if(StringUtils.isEmpty(getPurchaseOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())))){
+          continue;
+        }
         contentList.add(getPurchaseOrderGuidMap(String.valueOf(salOrder.getOrderPrimayId())));
         contentList.add(String.valueOf(rowNum));
         contentList.add("200001");
@@ -834,7 +840,7 @@ public class SAPService {
   private String getDateBegin() {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
-      return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
   }
 
   private String getDateEnd() {
@@ -864,6 +870,9 @@ public class SAPService {
         }
         List<String> contentList = new ArrayList<String>();
         contentList.add(ListeningStringUtils.getUUID());
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()))){
+          continue;
+        }
         contentList.add(getFinancialVoucherAdjustmentGuidMap(txn.getTxnId()));
         contentList.add(txn.getMainOrderId());
         contentList.add(i + "");
