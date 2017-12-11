@@ -204,7 +204,7 @@ public class ShopHomeController {
                     goods.setGoodsPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
                             BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                 }
-                if (SourceType.WZ.getCode().equals(goods.getSource())) {
+                if (SourceType.JD.getCode().equals(goods.getSource())) {
                     goods.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goods.getGoodsLogoUrl());
                     if (goods.getGoodsSiftUrl().contains("eshop")) {
                         goods.setGoodsSiftUrlNew(imageService.getImageUrl(goods.getGoodsSiftUrl()));
@@ -577,6 +577,7 @@ public class ShopHomeController {
 				List<GoodsVo> list = new ArrayList<GoodsVo>();
 				for (Goods goods : pagination.getDataList()) {
 					list.add(goodsToGoodVo(goods));
+					
 				}
 				returnMap.put("totalCount", pagination.getTotalCount());
 				returnMap.put("goodsList", list);
