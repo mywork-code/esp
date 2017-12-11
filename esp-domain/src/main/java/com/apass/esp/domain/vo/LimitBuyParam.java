@@ -82,9 +82,8 @@ public class LimitBuyParam {
 		this.num = num;
 	}
 	
-	public LimitBuyParam(String limitBuyActId, String userId, String skuId) {
+	public LimitBuyParam(String userId, String skuId) {
 		super();
-		this.limitBuyActId = limitBuyActId;
 		this.userId = userId;
 		this.skuId = skuId;
 	}
@@ -108,16 +107,14 @@ public class LimitBuyParam {
 		this.goodsStockId = goodsStockId;
 	}
 
-//	public LimitBuyParam(String limitBuyActId, String userId, String skuId,
-//			BigDecimal activityPrice, Long num) {
-//		super();
-//		this.limitBuyActId = limitBuyActId;
-//		this.userId = userId;
-//		this.skuId = skuId;
-//		this.activityPrice = activityPrice;
-//		this.num = num;
-//	}
-	
-	
+	public LimitBuyParam(String limitBuyActId, String userId,
+			Integer num, Long goodsId, Long goodsStockId) {
+		super();
+		this.limitBuyActId = limitBuyActId;
+		this.userId = userId;
+		this.num = num;
+		this.goodsId = goodsId;
+		this.goodsStockId = goodsStockId;
+	}
 
 }
