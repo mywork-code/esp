@@ -840,16 +840,17 @@ public class ShoppingCartService {
         
         GoodsStockInfoEntity preGoodsStockEntity=goodsStockDao.select(preGoodsStockIdVal);
         GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
+        // 查询商品基本信息，返回客户端该商品单条信息
+        goodsInfo = goodsInfoDao.select(goodsIdVal);
+        String externalId=null;
 		if ("jd".equals(preGoodsStockEntity.getGoodsSource()) && "jd".equals(secGoodsStockEntity.getGoodsSource())) {
-			// 查询商品基本信息，返回客户端该商品单条信息
-			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
 			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 			goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
 			goodsInfoInCart.setStockCurrAmt(Long.parseLong("200"));
 			goodsInfoInCart.setGoodsSkuAttr(goodsInfo.getAttrDesc());//商品描述
+			externalId=goodsInfo.getExternalId();
+		 	
 		} else {
-			// 查询商品基本信息，返回客户端该商品单条信息
-	        goodsInfo = goodsInfoDao.select(goodsIdVal);
 	        // 1.校验 preGoodsStockId、secGoodsStockId 是否属于 goodsId
 			goodsStockInfoList = goodsStockDao.loadByGoodsId(goodsIdVal);
 			if (null == goodsStockInfoList || goodsStockInfoList.isEmpty()) {
@@ -869,6 +870,15 @@ public class ShoppingCartService {
 	        goodsInfoInCart.setGoodsSkuAttr(resultMap.get(secGoodsStockIdVal).getGoodsSkuAttr());
 	        goodsInfoInCart.setStockCurrAmt(resultMap.get(secGoodsStockIdVal).getStockCurrAmt());
 	        goodsInfoInCart.setDelistTime(goodsInfo.getDelistTime());
+	        externalId=secGoodsStockEntity.getSkuId();
+		}
+		//根据skuId查询该规格是否参加了限时购活动
+		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(externalId);
+		if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
+			goodsInfoInCart.setLimitFalg(true);
+			goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
+			goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
+			goodsInfoInCart.setLimitBuyActId(limitGS.getId());
 		}
         // 2.删除购物车中原商品
         this.deleteGoodsInCart(requestId, userIdVal, new String[]{preGoodsStockId});
