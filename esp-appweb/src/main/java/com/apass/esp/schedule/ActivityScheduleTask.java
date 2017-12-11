@@ -55,4 +55,17 @@ public class ActivityScheduleTask {
             logger.error("限时购活动状态自动更新异常", e);
         }
 	}
+	/**
+	 * 限时购活动开始前五分钟 每个商品校验  发送短信提醒
+	 */
+	@Scheduled(cron = "0 55 9,13,17,21 * * ?")
+	public void limitbuyGoodsRemind() {
+	    try{
+    	    String now = DateFormatUtil.datetime2String(new Date());
+            String sb = limitBuyActService.limitbuyGoodsRemind();
+            logger.info("限时购活动即将开始，发送短信提醒成功,当前时间"+now+",任务执行详情 {}  "+sb);
+        } catch (Exception e) {
+            logger.error("限时购活动即将开始，发送短信提醒异常", e);
+        }
+	}
 }

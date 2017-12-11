@@ -11,8 +11,8 @@ public class LimitGoodsSkuInfo extends LimitGoodsSku{
     private String goodsName;
     private String goodsUrl;
     //冗余按钮状态 按钮名称
-    private String buttonStatus;
-    private String buttonDesc;
+    private String buttonStatus;//按钮状态  1《可用》 0《置灰》
+    private String buttonDesc;//按钮名称
     public String getGoodsTitle() {
         return goodsTitle;
     }

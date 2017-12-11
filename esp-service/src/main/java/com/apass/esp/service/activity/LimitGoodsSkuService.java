@@ -38,7 +38,7 @@ public class LimitGoodsSkuService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Long createEntity(LimitGoodsSku entity){
         int i = limitGoodsSkuMapper.insert(entity);
         if(i==1){
@@ -51,7 +51,7 @@ public class LimitGoodsSkuService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Long createEntityBySelect(LimitGoodsSku entity){
         int i = limitGoodsSkuMapper.insertSelective(entity);
         if(i==1){
@@ -90,7 +90,7 @@ public class LimitGoodsSkuService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public LimitGoodsSku updatedEntity(LimitGoodsSku entity) {
         Integer i = limitGoodsSkuMapper.updateByPrimaryKeySelective(entity);
         if(i==1){
@@ -103,7 +103,7 @@ public class LimitGoodsSkuService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(LimitGoodsSku entity) {
         return limitGoodsSkuMapper.deleteByPrimaryKey(entity.getId());
     }
@@ -111,7 +111,7 @@ public class LimitGoodsSkuService {
      * DELETE BY ID
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(Long id) {
         return limitGoodsSkuMapper.deleteByPrimaryKey(id);
     }

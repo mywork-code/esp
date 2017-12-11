@@ -71,7 +71,7 @@ public class InvoiceService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Long createdEntity(Invoice entity) {
         Integer i = invoiceMapper.insertSelective(entity);
         if(i==1){
@@ -110,7 +110,7 @@ public class InvoiceService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Invoice updatedEntity(Invoice entity) {
         Integer i = invoiceMapper.updateByPrimaryKeySelective(entity);
         if(i==1){
@@ -123,7 +123,7 @@ public class InvoiceService {
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(Invoice entity) {
         return invoiceMapper.deleteByPrimaryKey(entity.getId());
     }
@@ -131,7 +131,7 @@ public class InvoiceService {
      * DELETE BY ID
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteEntity(Long id) {
         return invoiceMapper.deleteByPrimaryKey(id);
     }

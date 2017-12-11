@@ -42,7 +42,7 @@ public class GoodsAttrValService {
      * @param editCategoryId1
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Boolean delgoodsAttrValByAttrId(Long attrId,Long goodsId) {
         try{
             List<GoodsAttrVal> list = this.goodsAttrValListByAttrId(attrId,goodsId);
@@ -60,7 +60,7 @@ public class GoodsAttrValService {
      * @param arr1
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Boolean savegoodsAttrValByAttrId(Long attrId, String[] arr,Long goodsId) {
         try{
             GoodsAttrVal entity = null;
@@ -93,7 +93,7 @@ public class GoodsAttrValService {
      * @param arr1
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Boolean savegoodsAttrValByAttrIdForEditAdd(Long attrId, String[] arr,Long goodsId) {
         try{
             GoodsAttrVal entity = null;
@@ -178,7 +178,7 @@ public class GoodsAttrValService {
      * 保存单个实体
      * @param entity
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer insertAttrVal(GoodsAttrVal entity) {
         List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
         if(list!=null&&list.size()>0){
@@ -190,7 +190,7 @@ public class GoodsAttrValService {
      * 删除单个实体
      * @param attrValId
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Integer deleteByPrimaryKey(Long attrValId) {
         return goodsAttrValMapper.deleteByPrimaryKey(attrValId);
     }
@@ -205,7 +205,7 @@ public class GoodsAttrValService {
      * 更新单个实体
      * @param attrValId
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public int updateByPrimaryKeySelective(GoodsAttrVal entity) {
         List<GoodsAttrVal> list = goodsAttrValMapper.goodsAttrValListByAttrId(entity);
         if(list!=null&&list.size()>1){

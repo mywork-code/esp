@@ -1289,18 +1289,20 @@ public class OrderService {
         for (PurchaseRequestDto purchase : purchaseList) {
             BigDecimal price = commonService.calculateGoodsPrice(purchase.getGoodsId(),
                     purchase.getGoodsStockId());
-            if (!(purchase.getPrice().compareTo(price) == 0)) {
+            if ( StringUtils.isBlank(purchase.getLimitActivityId()) && !(purchase.getPrice().compareTo(price) == 0)) {
                 LOG.info(requestId, "id为" + purchase.getGoodsId() + "的商品价格发生改变，请重新购买！", purchase
                         .getGoodsStockId().toString());
                 throw new BusinessException("商品价格已变动，请重新下单");
             }
             
             //验证商品参加的活动是否过期
-            ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
-        	if(validActivityFlag != ActivityStatus.PROCESSING){
-        		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
-        		throw new BusinessException("订单中包含无效活动的商品!");
-        	}
+            if(StringUtils.isNotBlank(purchase.getProActivityId())){
+	            ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+	        	if(validActivityFlag != ActivityStatus.PROCESSING){
+	        		LOGGER.error("ActivityID为{}的活动,GoodsID为{}的商品，参加的活动无效!",purchase.getProActivityId(),purchase.getGoodsId());
+	        		throw new BusinessException("订单中包含无效活动的商品!");
+	        	}
+            }
         	
             //验证限时购活动是否结束
             String limitActivityId = purchase.getLimitActivityId();
@@ -2622,7 +2624,7 @@ public class OrderService {
             Map<String, Object> resultMaps = new HashMap<>();
             if (null != goods) {
                 //判断商品活动是否失效
-                ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
+              ActivityStatus validActivityFlag = proGroupGoodsService.isValidActivity(purchase.getProActivityId(),purchase.getGoodsId());
               resultMaps.put(PRO_ACTIVITY_FLAG,validActivityFlag);
 
                 if (StringUtils.equals(goods.getSource(), SourceType.JD.getCode())) {
