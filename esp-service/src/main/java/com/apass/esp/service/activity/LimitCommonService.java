@@ -17,7 +17,7 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.mapper.LimitBuyActMapper;
-import com.apass.esp.mapper.LimitBuydetailMapper;
+import com.apass.esp.mapper.LimitBuyDetailMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -34,7 +34,7 @@ public class LimitCommonService {
 	@Autowired
 	public LimitBuyActMapper limitBuyActMapper;
 	@Autowired
-	private LimitBuydetailMapper buydetailMapper;
+	private LimitBuyDetailMapper buydetailMapper;
 	@Autowired
 	private GoodsStockInfoRepository goodsStockDao;
 	@Autowired
