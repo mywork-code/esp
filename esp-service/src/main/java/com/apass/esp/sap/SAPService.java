@@ -757,7 +757,7 @@ public class SAPService {
         contentList.add("200001");
         contentList.add(salOrder.getGoodsName());
         contentList.add(salOrder.getGoodsPrice().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-        contentList.add("个");
+        contentList.add("EA");
         contentList.add(salOrder.getGoodNum().toString());
 
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
@@ -840,7 +840,7 @@ public class SAPService {
   private String getDateBegin() {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
-     return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
   }
 
   private String getDateEnd() {
