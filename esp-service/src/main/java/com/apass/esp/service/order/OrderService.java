@@ -1326,15 +1326,8 @@ public class OrderService {
             	 * 首先根据根据商品的Id,获取商品的对象，然后判断source是否为空，如果不为空external_id则一定不为空<br/>
             	 * 如果为空，则标志着是自己的商品，根据stock_id查询，获取sku_id
             	 */
-            	GoodsInfoEntity goods = goodsDao.select(purchase.getGoodsId());
-            	String skuId = null;
-            	if(StringUtils.isNotBlank(goods.getSource())){
-            		skuId = goods.getExternalId();
-            	}else{
-            		GoodsStockInfoEntity stock = goodsStockDao.select(purchase.getGoodsStockId());
-            		skuId = stock.getSkuId();
-            	}
-            	boolean bl = limitCommonService.validteLimitGoodsNums(new LimitBuyParam(limitActivityId, userId+"", skuId, purchase.getBuyNum()));
+            	boolean bl = limitCommonService.validateLimitGoodsNumsByGoodsIdAndStockId(new LimitBuyParam(limitActivityId, userId+"",
+            			purchase.getBuyNum(), purchase.getGoodsId(), purchase.getGoodsStockId()));
             	if(!bl){
             		throw new BusinessException("商品价格已变动，请重新下单");
             	}

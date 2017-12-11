@@ -10,7 +10,7 @@
            		AND user_id = #{userId} 
            </if>
            <if test="skuId!=null and skuId!=''"> 
-           		AND sku_id = #{skuId} 
+           		AND limit_goods_sku_id = #{skuId} 
            </if>
         </where>
    </sql>
@@ -18,6 +18,6 @@
         SELECT 
             <include refid="Base_Column_List" />
         FROM t_esp_limit_buydetail
-            <include refid="QueryConditionSql" />
+        <include refid="QueryConditionSql" />
    </select>
 </mapper>

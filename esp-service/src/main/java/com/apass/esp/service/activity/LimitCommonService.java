@@ -161,7 +161,6 @@ public class LimitCommonService {
 	 * @return
 	 */
 	public boolean validateLimitGoodsNumsByGoodsIdAndStockId(LimitBuyParam params){
-		
 		GoodsInfoEntity goods = goodsDao.select(params.getGoodsId());
     	String skuId = null;
     	if(StringUtils.isNotBlank(goods.getSource())){
@@ -183,15 +182,6 @@ public class LimitCommonService {
 	 * @return
 	 */
 	public boolean validteLimitGoodsNums(LimitBuyParam params){
-		
-		/**
-		 * 根据限时购的活动ID和SkuId，获取对应的限时购商品的
-		 */
-		
-		/**
-		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
-		 */
-		List<LimitBuydetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(new LimitBuyParam(params.getLimitBuyActId(), params.getUserId(), params.getSkuId()));
 		/**
 		 * 首先根据限时购活动的Id和skuID，查询出活动下，该skuID的限购数量和总限购数量
 		 */
@@ -199,6 +189,10 @@ public class LimitCommonService {
 		if(null == limitGoods){
 			return true;
 		}
+		/**
+		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
+		 */
+		List<LimitBuydetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(new LimitBuyParam(params.getUserId(), limitGoods.getId()+""));
 		/**
 		 * 计算用户购买了同一个活动同一商品的件数
 		 */
