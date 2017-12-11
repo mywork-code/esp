@@ -13,11 +13,15 @@ import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.LimitBuydetail;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
+import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.LimitBuydetailMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
+import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 /**
  * 对限时购的公共操作
  * @author aopai
@@ -32,6 +36,10 @@ public class LimitCommonService {
 	public LimitBuyActMapper limitBuyActMapper;
 	@Autowired
 	private LimitBuydetailMapper buydetailMapper;
+	@Autowired
+	private GoodsStockInfoRepository goodsStockDao;
+	@Autowired
+	private GoodsRepository goodsDao;
 	/**
 	 * 根据goodsId判断是否是限时购商品
 	 * @param goodsId
@@ -148,9 +156,38 @@ public class LimitCommonService {
 	 * @param skuId 商品的skuId
 	 * @param num 商品的数量
 	 * @param userId 用户Id
+	 * @param goodsId 商品编号
+	 * @param goodsStockId 商品库存
+	 * @return
+	 */
+	public boolean validateLimitGoodsNumsByGoodsIdAndStockId(LimitBuyParam params){
+		
+		GoodsInfoEntity goods = goodsDao.select(params.getGoodsId());
+    	String skuId = null;
+    	if(StringUtils.isNotBlank(goods.getSource())){
+    		skuId = goods.getExternalId();
+    	}else{
+    		GoodsStockInfoEntity stock = goodsStockDao.select(params.getGoodsStockId());
+    		skuId = stock.getSkuId();
+    	}
+    	params.setSkuId(skuId);
+		return validteLimitGoodsNums(params);
+	}
+	
+	/**
+	 * 验证限时购的商品购买数量
+	 * @param limitActivityId 限时购活动Id
+	 * @param skuId 商品的skuId
+	 * @param num 商品的数量
+	 * @param userId 用户Id
 	 * @return
 	 */
 	public boolean validteLimitGoodsNums(LimitBuyParam params){
+		
+		/**
+		 * 根据限时购的活动ID和SkuId，获取对应的限时购商品的
+		 */
+		
 		/**
 		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
 		 */

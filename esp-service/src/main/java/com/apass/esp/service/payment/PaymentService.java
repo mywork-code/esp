@@ -19,6 +19,7 @@ import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
@@ -32,6 +33,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.offer.MyCouponManagerService;
@@ -117,6 +119,8 @@ public class PaymentService {
 	private InvoiceService invoiceService;
 	@Autowired
 	public LimitBuyActMapper limitBuyActMapper;
+	@Autowired
+	private LimitCommonService limitCommonService;
 	
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -602,6 +606,23 @@ public class PaymentService {
 	            	}
 	            	if(limitBuyAct.getEndDate().getTime() < now.getTime()){
 	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+	            	}
+	            	
+	            	/**
+	            	 * 首先根据根据商品的Id,获取商品的对象，然后判断source是否为空，如果不为空external_id则一定不为空<br/>
+	            	 * 如果为空，则标志着是自己的商品，根据stock_id查询，获取sku_id
+	            	 */
+	            	GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+	            	String skuId = null;
+	            	if(StringUtils.isNotBlank(goods.getSource())){
+	            		skuId = goods.getExternalId();
+	            	}else{
+	            		GoodsStockInfoEntity stock = goodsStockDao.select(detail.getGoodsStockId());
+	            		skuId = stock.getSkuId();
+	            	}
+	            	boolean bl = limitCommonService.validteLimitGoodsNums(new LimitBuyParam(limitActivityId, userId+"", skuId, detail.getGoodsNum().intValue()));
+	            	if(!bl){
+	            		throw new BusinessException("商品价格已变动，请重新下单");
 	            	}
 	            }
 	            
