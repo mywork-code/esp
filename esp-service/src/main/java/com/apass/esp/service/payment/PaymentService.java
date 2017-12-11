@@ -127,7 +127,7 @@ public class PaymentService {
 	 * sprint12
 	 */
 
-	@Transactional(rollbackFor = { Exception.class, BusinessException.class })
+	@Transactional(rollbackFor = { Exception.class, RuntimeException.class })
 	@Monitor(methodDesc = "支付[银行卡支付或信用支付]")
 	public String defary1(String requestId ,Long userId, List<String> orderList, String paymentType, String cardNo,String systemType,String downPayType) throws BusinessException {
 		// 校验订单状态
@@ -338,7 +338,6 @@ public class PaymentService {
      * @return
      * @throws BusinessException
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = { Exception.class, BusinessException.class })
 	@Monitor(methodDesc = "根据订单详情列表修改商品库存")
 	private void modifyGoodsStock(String requestId, Long userId, OrderInfoEntity orderInfo) throws BusinessException {
         //获取该订单详情列表
