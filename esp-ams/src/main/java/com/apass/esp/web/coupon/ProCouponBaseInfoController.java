@@ -101,26 +101,30 @@ public class ProCouponBaseInfoController {
             activityCfgQuery.setCoupon(ActivityCfgCoupon.COUPON_Y.getCode());
             activityCfgQuery.setStatus("processing");
             List<ProActivityCfg> activityCfgList = activityCfgService.selectProActivityCfgByActivitCfgQuery(activityCfgQuery);
+            LOGGER.info("活动配置表中有效活动数:{},参数activityCfgList:{}",String.valueOf(activityCfgList.size()),GsonUtils.toJson(activityCfgList));
             List<Long> activityIds = Lists.newArrayList();//有效活动id集合
             if(CollectionUtils.isNotEmpty(activityCfgList)){
                 for (ProActivityCfg proActivityCfg: activityCfgList) {
                     activityIds.add(proActivityCfg.getId());
                 }
-            }
-            
-            //根据活动id去优惠券关联表中查询相应的优惠券id
-            List<ProCouponRel> couponRels = couponRelService.getCouponRelListByActivityIdBanch(activityIds);
-            Set<Long> couponIds = Sets.newTreeSet();
-            if(CollectionUtils.isNotEmpty(couponRels)){
-                for (ProCouponRel proRel:couponRels) {
-                    couponIds.add(proRel.getCouponId());
+                //根据活动id去优惠券关联表中查询相应的优惠券id
+                List<ProCouponRel> couponRels = couponRelService.getCouponRelListByActivityIdBanch(activityIds);
+                Set<Long> couponIds = Sets.newTreeSet();
+                if(CollectionUtils.isNotEmpty(couponRels)){
+                    for (ProCouponRel proRel:couponRels) {
+                        couponIds.add(proRel.getCouponId());
+                    }
+
+                    ArrayList<Long> couponIdList = new ArrayList<>(couponIds);
+                    LOGGER.info("有效活动对应的优惠券ids：{}",GsonUtils.toJson(couponIdList));
+
+                    //查询用户领取类型优惠券，并not in上述id的优惠券显示在前端
+                    List<ProCoupon> lists = proCouponService.selectProCouponByIds(couponIdList);
+
+                    return lists;
                 }
             }
-            ArrayList<Long> couponIdList = new ArrayList<>(couponIds);
 
-            //查询用户领取类型优惠券，并not in上述id的优惠券显示在前端
-            List<ProCoupon> lists = proCouponService.selectProCouponByIds(couponIdList);
-            return lists;
         }
 
         return proCouponService.getProCouponList(proCoupon);
