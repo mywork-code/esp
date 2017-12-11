@@ -457,7 +457,7 @@ public class ShopHomeController {
                                 BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
                     }
 
-                    if ("jd".equals(goodsInfo.getSource())) {// 京东图片
+                    if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 京东图片
                         String logoUrl = goodsInfo.getGoodsLogoUrl();
                         goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + logoUrl);
                         goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n1/" + logoUrl);
@@ -661,7 +661,7 @@ public class ShopHomeController {
 							(new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));// 设置首付价=商品价*10%
 				}
 
-				if ("jd".equals(goodsInfo.getSource())) {// 京东图片
+				if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {// 京东图片
 					String logoUrl = goodsInfo.getGoodsLogoUrl();
 					goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/" + logoUrl);
 					goodsInfo.setGoodsLogoUrl("http://img13.360buyimg.com/n1/" + logoUrl);
