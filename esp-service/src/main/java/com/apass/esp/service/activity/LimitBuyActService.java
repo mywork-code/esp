@@ -444,7 +444,7 @@ public class LimitBuyActService {
      * @param parseLong
      * @return
      */
-    public Response activityGoodsList(Long limitBuyActId,Long userId) {
+    public Response activityGoodsList(Long limitBuyActId,String userId) {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -461,13 +461,18 @@ public class LimitBuyActService {
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             if(actstatus==(byte)1){//未开始活动  
                 //验证用户面对该商品是否开启提醒
-                Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,userId);
-                if(falg){
+                if(StringUtils.isBlank(userId)){
                     vo.setButtonStatus("1");
                     vo.setButtonDesc("抢购提醒");
                 }else{
-                    vo.setButtonStatus("0");
-                    vo.setButtonDesc("已设置提醒");
+                    Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,Long.parseLong(userId));
+                    if(falg){
+                        vo.setButtonStatus("1");
+                        vo.setButtonDesc("抢购提醒");
+                    }else{
+                        vo.setButtonStatus("0");
+                        vo.setButtonDesc("已设置提醒");
+                    }
                 }
             }else{//进行中活动  
                 if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
