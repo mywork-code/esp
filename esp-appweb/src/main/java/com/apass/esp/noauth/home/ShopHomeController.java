@@ -910,7 +910,6 @@ public class ShopHomeController {
      * 非京东商品也变成多规格商品
      * @return
      */
-    @SuppressWarnings("unused")
 	@POST
     @Path("/v3/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
@@ -939,12 +938,18 @@ public class ShopHomeController {
                 region.setTownId(StringUtils.isEmpty(townsCode) ? 0 : Integer.parseInt(townsCode));
             }
             // 如果flage = false则地址用前端传递过来的，否则先去查询数据库是否有改用户的地址信息，如果没有再使用平台默认地址信息
-            List<AddressInfoEntity> addressInfoList = new ArrayList<>();// 返回给前端对象
+            // 查询京东地址
+            List<AddressInfoEntity> addressInfoList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(userId)) {
+                addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
+            }
+            if (addressInfoList.size() > 0) {
+                if (!("1".equals(addressInfoList.get(0).getIsDefault()))) {
+                    addressInfoList.get(0).setIsDefault("1");
+                }
+            }
             if (null == region) {
                 region = new Region();
-                if (StringUtils.isNotBlank(userId)) {
-                    addressInfoList = addressService.queryAddressInfoJd(Long.valueOf(userId));
-                }
                 if (addressInfoList.size() == 0) {
                     AddressInfoEntity addty = new AddressInfoEntity();
                     addty.setId(Long.parseLong("-1"));
