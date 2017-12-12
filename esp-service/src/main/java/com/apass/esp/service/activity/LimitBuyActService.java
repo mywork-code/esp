@@ -631,7 +631,7 @@ public class LimitBuyActService {
                     sb.append("短信提醒用户集合:{}");
                     for(LimitUserMessage messageen : messageList){
                         //短信发送
-                        String messagetemplate = "【安家趣花】您关注的限时抢购商品就要开抢了，请打开安家趣花APP做好准备，活动马上开始 http://ajqh.wap.apass.cn/#/down12Registered?channel=dxlk2 回复T退订。";
+                        String messagetemplate = "【安家趣花】您关注的限时抢购商品就要开抢了，请打开安家趣花APP做好准备，活动马上开始。回复T退订。";
                         try {
                             str+="用户详情：";
                             str+=messageen.getUserId();
