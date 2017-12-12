@@ -139,7 +139,7 @@ $(function() {
 	//修改商品保存库存
 	$(".save-btnAllEdit").click(function() {
 		if(viewdisplaybysource == 'jd'){
-    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+    		$.messager.alert("提示", "微知商品不可维护商品属性,商品库存售价信息可直接点击修改保存数据！", "info");
 			return;
     	}
 		if(goodsCateChangeFalg==0){//库存已删  商品类目已修改，调用新增商品库存的方法！
@@ -186,163 +186,155 @@ $(function() {
         striped:true,
         toolbar : '#tb',
         columns : [[{
-                    title : '商户名称',
-                    field : 'merchantName',
-                    width : 90,
-                    align : 'center'
-                },{
-                    title : '商品名称',
-                    field : 'goodsName',
-                    width : 90,
-                    align : 'center'
-                },{
-					title : '商品编号',
-					field : 'goodsCode',
-					width : 90,
-					align : 'center'
-				},{
-					title : 'skuid',
-					field : 'externalId',
-					width : 90,
-					align : 'center'
-				},{  
-       		 		title : '类目名称',  
-       		 		field : 'categoryName3', 
-       		 	    width : 90,  
-       		 		align : 'center'
-       		 	},{
-                    title : '商品型号',
-                    field : 'goodsModel',
-                    width : 80,
-                    align : 'center'
-                },{
-                    title : '商品小标题',
-                    field : 'goodsTitle',
-                    width : 90,
-                    align : 'center'
-                },{
-                    title : '商品类型',
-                    field : 'goodsTypeDesc',
-                    width : 80,
-                    align : 'center',
-//                },{
-//                    title : '规格类型',
-//                    field : 'goodsSkuType',
-//                    width : 80,
-//                    align : 'center'
-                },{
-                    title : '商品生产日期',
-                    field : 'proDate',
-                    width : 120,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	if(null!=value && ""!=value){
-                    		return new Date(value).Format("yyyy-MM-dd");
-                    	}
-                    }
-                },{
-                    title : '保质期',
-                    field : 'keepDate',
-                    width : 80,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	if(null!=value && ""!=value){
-                    		return value+"个月";
-                    	}
-                    }
-                },{
-                    title : '生产厂家',
-                    field : 'supNo',
-                    width : 90,
-                    align : 'center'
-                },{
-                    title : '排序',
-                    field : 'sordNo',
-                    width : 60,
-                    align : 'center'
-                },{
-                    title : '状态',
-                    field : 'statusDesc',
-                    width : 80,
-                    align : 'center',
-                },{
-                    title : '商品上架时间',
-                    field : 'listTimeString',
-                    width : 140,
-                    align : 'center'
-                },{
-                    title : '商品下架时间',
-                    field : 'delistTimeString',
-                    width : 140,
-                    align : 'center'
-                },{
-                    title : '创建人',
-                    field : 'createUser',
-                    width : 100,
-                    align : 'center'
-                },{
-                    title : '修改人',
-                    field : 'updateUser',
-                    width : 100,
-                    align : 'center'
-                },{
-                    title : '创建时间',
-                    field : 'createDate',
-                    width : 140,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                    }
-                },{
-                    title : '修改时间',
-                    field : 'updateDate',
-                    width : 140,
-                    align : 'center',
-                    formatter:function(value,row,index){
-                    	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
-                    }
-                },{
-                	title : '商品来源标识',
-                	field : 'source',
-                	width : 140,
-                	align : 'center',
-                	hidden: 'hidden'
-                },{
-                    title : '操作',
-                    field : 'opt',
-                    width : 150,
-                    align : 'center',
-                    formatter : function(value, row, index) {
-                	 var merchantStatus =$("#merchantStatus").val();//商户状态必须为正常
-                	 // 授权标示,
-                 	 var grantedAuthority=$('#grantedAuthority').val();
-                	 var content = "";
-                	
-            		 if(row.status =='G02'&& merchantStatus=="1"&&row.source != 'jd'&&row.source != 'wz'){
-            			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('"
-            				 + index +"');\">库存</a>&nbsp;&nbsp;";
-            		 }
-                	 
-                     if(grantedAuthority=='permission'){
-	                     if(row.status !='G02'&& merchantStatus=="1"){//已上架不允许修改
-                    		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoods('"
-                              + index + "');\">修改</a>&nbsp;&nbsp;"
-                    	 }
-                    	 
-                         if((row.status =='G03'||row.status =='G00')&& merchantStatus=="1"){//待上架或下架才能上架
-	                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelves('"
-	                    		 +  row.id + "','" +  row.source + "','" +  row.listTime + "','" +  row.delistTime + "');\">上架</a>&nbsp;&nbsp;" 
-                         }
-                         if(row.status =='G02'&& merchantStatus=="1"){//上架商品才能下架
-                        	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"
-                                 + row.id + "','" +  row.source + "');\">下架</a>&nbsp;&nbsp;"
-                         }
+        	title : '商户名称',
+            field : 'merchantName',
+            width : 70,
+            align : 'center'
+        },{
+            title : '商品名称',
+            field : 'goodsName',
+            width : 90,
+            align : 'center'
+        },{
+			title : '商品编号',
+			field : 'goodsCode',
+			width : 90,
+			align : 'center'
+		},{
+//			title : 'skuid',
+//			field : 'externalId',
+//			width : 90,
+//			align : 'center'
+//		},{  
+	 		title : '类目名称',  
+	 		field : 'categoryName3', 
+	 	    width : 80,  
+	 		align : 'center'
+	 	},{
+            title : '商品型号',
+            field : 'goodsModel',
+            width : 80,
+            align : 'center'
+        },{
+            title : '商品小标题',
+            field : 'goodsTitle',
+            width : 80,
+            align : 'center'
+        },{
+            title : '商品类型',
+            field : 'goodsTypeDesc',
+            width : 60,
+            align : 'center',
+//        },{
+//            title : '规格类型',
+//            field : 'goodsSkuType',
+//            width : 80,
+//            align : 'center'
+        },{
+            title : '商品生产日期',
+            field : 'proDate',
+            width : 100,
+            align : 'center',
+            formatter:function(value,row,index){
+            	if(null!=value && ""!=value){
+            		return new Date(value).Format("yyyy-MM-dd");
+            	}
+            }
+        },{
+            title : '保质期',
+            field : 'keepDate',
+            width : 80,
+            align : 'center',
+            formatter:function(value,row,index){
+            	if(null!=value && ""!=value){
+            		return value+"个月";
+            	}
+            }
+        },{
+            title : '生产厂家',
+            field : 'supNo',
+            width : 80,
+            align : 'center'
+        },{
+            title : '排序',
+            field : 'sordNo',
+            width : 50,
+            align : 'center'
+        },{
+            title : '状态',
+            field : 'statusDesc',
+            width : 50,
+            align : 'center',
+        },{
+            title : '商品上架时间',
+            field : 'listTimeString',
+            width : 125,
+            align : 'center'
+        },{
+            title : '商品下架时间',
+            field : 'delistTimeString',
+            width : 125,
+            align : 'center'
+        },{
+            title : '创建人',
+            field : 'createUser',
+            width : 60,
+            align : 'center'
+        },{
+            title : '修改人',
+            field : 'updateUser',
+            width : 60,
+            align : 'center'
+        },{
+            title : '创建时间',
+            field : 'createDate',
+            width : 125,
+            align : 'center',
+            formatter:function(value,row,index){
+            	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+            }
+        },{
+            title : '修改时间',
+            field : 'updateDate',
+            width : 125,
+            align : 'center',
+            formatter:function(value,row,index){
+            	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
+            }
+        },{
+        	title : '商品来源标识',
+        	field : 'source',
+        	width : 80,
+        	align : 'center',
+//        	hidden: 'hidden'
+        },{
+            title : '操作',
+            field : 'opt',
+            width : 120,
+            align : 'center',
+            formatter : function(value, row, index) {
+            	 var merchantStatus =$("#merchantStatus").val();//商户状态必须为正常
+            	 // 授权标示,
+             	 var grantedAuthority=$('#grantedAuthority').val();
+            	 var content = "";
+        		 if(row.status =='G02'&& merchantStatus=="1"&&row.source != 'jd'&&row.source != 'wz'){
+        			 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.queryGoodsStockInfo('" + index +"');\">库存</a>&nbsp;&nbsp;";
+        		 }
+                 if(grantedAuthority=='permission'){
+                     if(row.status !='G02'&& merchantStatus=="1"){//已上架不允许修改
+                		 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.editGoods('" + index + "');\">修改</a>&nbsp;&nbsp;"
+                	 }
+                     if((row.status =='G03'||row.status =='G00')&& merchantStatus=="1"){//待上架或下架才能上架
+                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelves('" +  row.id + "','" +  row.source + "','" +  row.listTime + "','" +  row.delistTime + "');\">上架</a>&nbsp;&nbsp;" 
                      }
-                     content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('"
-                         + row.id +"','"+ row.source+ "','"+ row.externalId+ "');\">预览</a>&nbsp;&nbsp;";
-                	 return content;
-                    }
-                }]],
+                     if(row.status =='G02'&& merchantStatus=="1"){//上架商品才能下架
+                    	 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.shelf('"  + row.id + "','" +  row.source + "');\">下架</a>&nbsp;&nbsp;"
+                     }
+                 }
+                 content +="<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.previewProduct('" + row.id +"','"+ row.source+ "','"+ row.externalId+ "');\">预览</a>&nbsp;&nbsp;";
+            	 return content;
+            }
+        }]],
         loader : function(param, success, error) {
             $.ajax({
                 url : ctx + '/application/goods/management/pagelist',
@@ -3445,7 +3437,7 @@ function flushtableattrEditlist(){
         columns:[[{
         	title : '属性规格',
             field : 'goodsSkuAttr',
-            width : 100,
+            width : 80,
             align : 'center'
         },{
             field : 'stockLogo',
@@ -3454,24 +3446,29 @@ function flushtableattrEditlist(){
             field : 'id',
             hidden: 'hidden'
         },{
+        	title : 'skuId',
+            field : 'skuId',
+            width : 80,
+            align : 'center',
+        },{
         	title : '成本价',
             field : 'goodsCostPrice',
-            width : 100,
+            width : 80,
             align : 'center',
         },{
         	title : '售价',
             field : 'goodsPrice',
-            width : 100,
+            width : 80,
             align : 'center',
         },{
         	title : '库存总量',
             field : 'stockTotalAmt',
-            width : 100,
+            width : 90,
             align : 'center',
         },{
         	title : '库存剩余',
             field : 'stockCurrAmt',
-            width : 100,
+            width : 90,
             align : 'center',
         },{
         	field:'action',
@@ -3504,8 +3501,10 @@ function flushtableattrEditlist(){
 var editindex;
 function editrowForEdit1(target){
 	if(viewdisplaybysource == 'jd'){
+		$("#editgoodsCostPrice").numberspinner({"disabled":"disabled"});
 		$("#editStockGoodsLogoFile").attr('disabled',true);
 	}else{
+		$("#editgoodsCostPrice").removeAttr('disabled');
 		$("#editStockGoodsLogoFile").removeAttr('disabled');
 	}
 	editindex = getRowIndexE(target);

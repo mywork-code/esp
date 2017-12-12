@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.vo.GoodsAttrVo;
 import com.apass.esp.mapper.GoodsAttrMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -51,6 +53,8 @@ public class GoodsAttrService {//450
     private GoodsStockInfoService goodsStockInfoService;
     @Autowired
     private GoodsRepository goodsRepository;
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
     /**
      * 商品属性查询
      * @param entity
@@ -562,7 +566,24 @@ public class GoodsAttrService {//450
 //            throw new BusinessException("商品ID为空，参数错误！");
 //        }
         if(!falg){
-            listold =  goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+            GoodsInfoEntity g = goodsService.selectByGoodsId(Long.parseLong(goodsId));
+            Boolean f1 = StringUtils.equals(g.getSource(),"wz");
+            Boolean f2 = StringUtils.equals(g.getSource(),"jd");
+            Boolean f = f1||f2;
+            if(!f){//供应商
+                listold =  goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+            }else{//wz
+                TreeSet<String> jdsku = jdGoodsInfoService.getJdSimilarSkuIdList(g.getExternalId());
+                for(String set : jdsku){
+                    //根据SKUID查找库存   //该方法需要拷贝limitbuy分支！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+                    List<String> skuIdList = new ArrayList<String>();
+                    skuIdList.add(set);
+                    GoodsInfoEntity goo = goodsService.getGoodsListBySkuIds(skuIdList).get(0);
+                    GoodsStockInfoEntity s = goodsStockInfoService.getGoodsStock(goo.getId()).get(0);
+                    s.setSkuId(goo.getExternalId());
+                    listold.add(s);
+                }
+            }
         }
         categoryname1 = famartsubString(categoryname1);
         categoryname2 = famartsubString(categoryname2);

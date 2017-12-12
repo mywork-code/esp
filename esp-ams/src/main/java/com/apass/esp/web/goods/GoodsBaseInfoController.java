@@ -1127,8 +1127,8 @@ public class GoodsBaseInfoController {
                 arr.add(en);
                 respBody.setRows(arr);
             }else{
-                respBody.setTotal(pagination.getTotalCount());
                 respBody.setRows(pagination.getDataList());
+                respBody.setTotal(pagination.getTotalCount());
             }
             respBody.setStatus(CommonCode.SUCCESS_CODE);
         } catch (Exception e) {
