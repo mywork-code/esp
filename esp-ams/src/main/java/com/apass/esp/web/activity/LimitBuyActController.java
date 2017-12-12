@@ -220,6 +220,22 @@ public class LimitBuyActController {
         }
     }
     /**
+     * 查询活动状态
+     * @param entity
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getLimitBuyActStatus")
+    public Response getLimitBuyActStatus(LimitGoodsSku entity) {
+        try {
+            Byte status = limitBuyActService.readEntity(limitGoodsSkuService.readEntity(entity.getId()).getLimitBuyActId()).getStatus();
+            return Response.success("限时购活动状态查询成功！",status);
+        } catch (Exception e) {
+            LOGGER.error("限时购活动状态查询失败", e);
+            return Response.fail("限时购活动状态查询失败,");
+        }
+    }
+    /**
      * 限时购活动修改
      * 限时购活动商品删除
      * @param goodsSkuId
