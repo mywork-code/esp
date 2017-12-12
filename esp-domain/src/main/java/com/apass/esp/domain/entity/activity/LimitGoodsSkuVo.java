@@ -18,6 +18,7 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     private Date listTime;//上下架时间
     private Date delistTime;
     private Long categoryId1;//商品一级分类
+    private Long limitPersonNum;//个人在当前活动还剩多少限购数量
     private Long time;//离活动开始时间或活动开始时间与服务器时间差
     private Date startTime;
     private Date endTime;
@@ -116,6 +117,12 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
 	}
 	public void setLimitFalg(String limitFalg) {
 		this.limitFalg = limitFalg;
+	}
+	public Long getLimitPersonNum() {
+		return limitPersonNum;
+	}
+	public void setLimitPersonNum(Long limitPersonNum) {
+		this.limitPersonNum = limitPersonNum;
 	}
     
 }

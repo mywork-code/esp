@@ -15,6 +15,7 @@ public class JdSimilarSkuVo {
 	private BigDecimal limitActivityPriceFirst;
 	private Boolean  isLimitActivity;//是否是限时购
 	private Long limitNum;//每人限购几件
+    private Long limitPersonNum;//个人在当前活动还剩多少限购数量
 	private Long limitBuyActId;//限购活动id
 	private String limitBuyFalg;//限购状态标准（活动未开始NotBeginning；活动进行中  InProgress）
 	private Long limitBuyTime;//距离开始时间或距离结束时间
@@ -145,6 +146,12 @@ public class JdSimilarSkuVo {
 	}
 	public void setLimitBuyEndTime(Date limitBuyEndTime) {
 		this.limitBuyEndTime = limitBuyEndTime;
+	}
+	public Long getLimitPersonNum() {
+		return limitPersonNum;
+	}
+	public void setLimitPersonNum(Long limitPersonNum) {
+		this.limitPersonNum = limitPersonNum;
 	}
 	
 }

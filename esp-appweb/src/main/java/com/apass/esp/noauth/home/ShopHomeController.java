@@ -1057,7 +1057,7 @@ public class ShopHomeController {
                         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                      	//根据skuId查询该规格是否参加了限时购活动
-        				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(externalId);
+        				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,externalId);
         				if(null !=limitGS){
     					BigDecimal limitActivityPrice=limitGS.getActivityPrice();
     					limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);

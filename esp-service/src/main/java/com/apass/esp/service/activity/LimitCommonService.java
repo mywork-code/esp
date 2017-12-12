@@ -68,7 +68,7 @@ public class LimitCommonService {
 	 * 2.将活动开始时间与服务器时间的时间差（）
 	 * @return
 	 */
-	public LimitGoodsSkuVo selectLimitByGoodsId(String skuId) {
+	public LimitGoodsSkuVo selectLimitByGoodsId(String userId,String skuId) {
 		LimitGoodsSkuVo lgs = null;
 		if(StringUtils.isBlank(skuId)){
 			return null;
@@ -92,6 +92,28 @@ public class LimitCommonService {
 			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
 			limitGoodsSkuVo.setStartTime(limitBuyAct.getStartDate());
 			limitGoodsSkuVo.setEndTime(limitBuyAct.getEndDate());
+			/**
+			 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
+			 */
+			if(StringUtils.isNoneBlank(userId)){
+				LimitBuyParam limitBuyParam=new LimitBuyParam();
+				limitBuyParam.setUserId(userId);
+				limitBuyParam.setLimitBuyActId(limitBuyAct.getId()+"");
+				limitBuyParam.setSkuId(skuId);
+				List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
+				/**
+				 * 计算用户购买了同一个活动同一商品的件数
+				 */
+				long goodsSum = 0l;
+				long limitPersonNum=01;
+				for (LimitBuyDetail limitBuydetail : buyDetails) {
+					goodsSum += limitBuydetail.getBuyNo();
+				}
+				limitPersonNum=limitGoodsSkuVo.getLimitNum()-goodsSum;
+				if(limitPersonNum>0){
+					limitGoodsSkuVo.setLimitPersonNum(limitPersonNum);
+				}
+			}
 			if (ActivityStatus.PROCESSING == activityStatus) {
 				long time = new Date().getTime() - limitBuyAct.getStartDate().getTime();//已经开始了多少时间
 				long time2 = limitBuyAct.getEndDate().getTime()-new Date().getTime();//离结束还有多少时间

@@ -381,7 +381,7 @@ public class ShoppingCartService {
 				goodsInfoInCart.setGoodsSelectedPrice(goodsPrice);
 				
 				//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(skuId);
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,skuId);
 				if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
 					goodsInfoInCart.setLimitFalg(true);
 					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
@@ -873,11 +873,12 @@ public class ShoppingCartService {
 	        externalId=secGoodsStockEntity.getSkuId();
 		}
 		//根据skuId查询该规格是否参加了限时购活动
-		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(externalId);
+		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,externalId);
 		if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
 			goodsInfoInCart.setLimitFalg(true);
 			goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
 			goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
+			goodsInfoInCart.setLimitPersonNum(limitGS.getLimitPersonNum());
 			goodsInfoInCart.setLimitBuyActId(limitGS.getId());
 		}
         // 2.删除购物车中原商品
