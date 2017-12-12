@@ -38,6 +38,7 @@ CREATE TABLE `t_esp_limit_buydetail` (
 `limit_goods_sku_id` bigint(20) NOT NULL COMMENT '限时购活动商品表ID外键',
 `user_id` bigint(20) NOT NULL COMMENT '用户ID',
 `buy_no` int NOT NULL DEFAULT 0 COMMENT '该用户该商品购买数量，需要小于该商品单人限购',
+`order_id`  varchar(128) NOT NULL COMMENT '订单编号',
 `created_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '创建时间' ,
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 PRIMARY KEY (`id`)
@@ -57,3 +58,5 @@ CREATE TABLE `t_esp_limit_user_message` (
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='限时购活动用户抢购提醒记录表';
+
+alter table t_esp_goods_base_info add column main_goods_code varchar(20) not null default '' comment '主商品编号';

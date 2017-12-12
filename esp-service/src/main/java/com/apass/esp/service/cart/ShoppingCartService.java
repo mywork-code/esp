@@ -226,7 +226,7 @@ public class ShoppingCartService {
 			throw new BusinessException("无效的商品id", BusinessErrorCode.GOODS_NOT_EXIST);
 		}
 		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
-		if ("jd".equals(goodsInfo.getSource())) {
+		if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
             //	京东商品购买数量不能超过200		
 			if(countVal>200){
 				LOGGER.error("商品数量不能超过200！", goodsStockId, countVal);
@@ -328,8 +328,8 @@ public class ShoppingCartService {
             Date date = new Date();
             for (GoodsInfoInCartEntity goodsInfoInCart : goodsInfoInCartList) {
                 if(SourceType.WZ.getCode().equals(goodsInfoInCart.getGoodsSource())){
-                    String goodsLogoUrlNew=goodsInfoInCart.getGoodsBaseLogoUrl();
-                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(goodsLogoUrlNew,JdGoodsImageType.TYPEN3.getCode()));
+                    String goodsLogoUrlNew=goodsInfoInCart.getGoodsLogoUrl();
+                    goodsInfoInCart.setGoodsLogoUrlNew(imageService.getJDImageUrl(EncodeUtils.decodeBase64ToString(goodsLogoUrlNew),JdGoodsImageType.TYPEN3.getCode()));
                     //购物车中数量 为 0 的商品也标记已下架，让客户删除 (同步库存为0时导致的)
                     if((null !=goodsInfoInCart.getDelistTime() && goodsInfoInCart.getDelistTime().before(date)) || goodsInfoInCart.getGoodsNum() == 0 || !GoodStatus.GOOD_UP.getCode().equals(goodsInfoInCart.getGoodsStatus())){
                         goodsInfoInCart.setIsDelete("00");//失效
@@ -600,7 +600,7 @@ public class ShoppingCartService {
         Map<Long, GoodsInfoInCartEntity> cartInfoMap= new HashMap<Long, GoodsInfoInCartEntity>();
         List<Long> goodsStockIdList = new LinkedList<Long>();
         for(GoodsInfoInCartEntity cartInfo : goodsInfoInCartList){
-        	if("jd".equals(cartInfo.getGoodsSource())){
+        	if(SourceType.WZ.getCode().equals(cartInfo.getGoodsSource())){
         		cartInfo.setGoodsLogoUrlNew(imageService.getJDImageUrl(cartInfo.getGoodsBaseLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));
         	}else{
                 cartInfo.setGoodsLogoUrlNew(imageService.getImageUrl(cartInfo.getGoodsLogoUrl()));
@@ -636,7 +636,7 @@ public class ShoppingCartService {
     		}
     		GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsStockInfo.getGoodsId());
     		
-			if ("jd".equals(goodsInfo.getSource())) {
+			if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 				cartDto.setGoodsNum(idNum.getGoodsNum());
 			} else {
 				int stockCurrAmt = cartInfoMap.get(idNum.getGoodsStockId()).getStockCurrAmt().intValue();
@@ -698,7 +698,7 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-		if ("jd".equals(goodsInfo.getSource())) {
+		if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
 			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
 			//京东商品没有规格情况拼凑数据格式
@@ -753,7 +753,7 @@ public class ShoppingCartService {
             LOG.info(requestId, "根据商品id查询商品信息", "数据为空");
             throw new BusinessException("无效的商品id",BusinessErrorCode.GOODS_ID_ERROR);
         }
-		if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
+		if (SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
 			Map<String, Object> jdSimilarSkuInfoMap = jdGoodsInfoService.jdSimilarSkuInfo(Long.parseLong(goodsInfo.getExternalId()));
 			List<JdSimilarSkuTo> jdSimilarSkuToList=new ArrayList<>();
 			//京东商品没有规格情况拼凑数据格式
@@ -837,7 +837,7 @@ public class ShoppingCartService {
         
         GoodsStockInfoEntity preGoodsStockEntity=goodsStockDao.select(preGoodsStockIdVal);
         GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
-		if ("jd".equals(preGoodsStockEntity.getGoodsSource()) && "jd".equals(secGoodsStockEntity.getGoodsSource())) {
+		if (SourceType.WZ.getCode().equals(preGoodsStockEntity.getGoodsSource()) && SourceType.WZ.getCode().equals(secGoodsStockEntity.getGoodsSource())) {
 			// 查询商品基本信息，返回客户端该商品单条信息
 			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
 			goodsInfoInCart.setGoodsLogoUrl(imageService.getJDImageUrl(secGoodsStockEntity.getGoodsLogoUrl(),JdGoodsImageType.TYPEN3.getCode()));

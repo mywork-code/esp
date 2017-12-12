@@ -419,7 +419,8 @@ public class JdGoodsInfoService {
 			List<JdSaleAttr> saleAttrList = jdsk.getSaleAttrList();
 			List<JdSaleAttr> saleAttrList2 = new ArrayList<>();
 			for (JdSaleAttr jdsa : saleAttrList) {
-				jdsa.setImagePath("http://img13.360buyimg.com/n3/" + jdsa.getImagePath());
+				//jdsa.setImagePath("http://img13.360buyimg.com/n3/" + jdsa.getImagePath());
+				jdsa.setImagePath(jdsa.getImagePath());
 				List<String> skuIds = jdsa.getSkuIds();
 				List<String> skuIds2 = new ArrayList<>();
 				for (String skuId : skuIds) {
@@ -1041,7 +1042,7 @@ public class JdGoodsInfoService {
 				int size = JdSimilarSkuList.size();
 				for (int i=0; i<size; i++) {
 					JdSimilarSkuList.get(i).update(JdSimilarSkuList.get(i).getSaleAttrList());
-					JdSimilarSkuList.add(JdSimilarSkuList.get(i));
+//					JdSimilarSkuList.add(JdSimilarSkuList.get(i));
 				}
 			}
 		} catch (Exception e) {
