@@ -128,7 +128,7 @@ public class JdGoodsService {
             stockEntity.setGoodsCostPrice(jdGoods.getPrice());
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
-            
+            stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
             goodsStockInfoService.insert(stockEntity);
         }
 
