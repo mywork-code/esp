@@ -910,7 +910,6 @@ public class ShopHomeController {
      * 非京东商品也变成多规格商品
      * @return
      */
-    @SuppressWarnings("unused")
 	@POST
     @Path("/v3/loadDetailInfoById")
     public Response loadGoodsBasicInfoJD2(Map<String, Object> paramMap) {
