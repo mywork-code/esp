@@ -326,6 +326,10 @@ public class LimitBuyActService {
             if(++sort==8){
                 break;
             }
+            //最多只获取明天23:59:59前开始的活动冗余填充时间条
+            if(isDayAfterTomorrowDate(act.getStartDate())){
+                break;
+            }
             LimitBuyActTimeLine time = new LimitBuyActTimeLine();
             time.setLimitBuyActId(act.getId().toString());
             time.setStartDate(act.getStartDate());
@@ -363,13 +367,19 @@ public class LimitBuyActService {
                         GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
-                        //判断按钮状态
-                        if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
-                            vo.setButtonStatus("1");
-                            vo.setButtonDesc("立即抢购");
-                        }else{
+                        //判断商品上下架状态
+                        if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
                             vo.setButtonStatus("0");
-                            vo.setButtonDesc("已抢光");
+                            vo.setButtonDesc("已下架");
+                        }else{
+                            //判断按钮状态
+                            if(sku.getLimitNumTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
+                                vo.setButtonStatus("1");
+                                vo.setButtonDesc("立即抢购");
+                            }else{
+                                vo.setButtonStatus("0");
+                                vo.setButtonDesc("已抢光");
+                            }
                         }
                         goodsinfolist.add(vo);
                     }
@@ -439,6 +449,12 @@ public class LimitBuyActService {
         Date tomorrow = DateFormatUtil.string2date(target, null);
         return tomorrow.getTime()<date.getTime();
     }
+    private Boolean isDayAfterTomorrowDate(Date date){
+        String target = DateFormatUtil.dateToString(DateFormatUtil.addOneDay(new Date()));
+        target += " 23:59:59";
+        Date afterTomorrow = DateFormatUtil.string2date(target, null);
+        return afterTomorrow.getTime()<date.getTime();
+    }
     private Boolean isSameDay(String date1,String date2){
         return StringUtils.equals(date1, date2);
     }
@@ -463,27 +479,39 @@ public class LimitBuyActService {
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             if(actstatus==(byte)1){//未开始活动  
-                //验证用户面对该商品是否开启提醒
-                if(StringUtils.isBlank(userId)){
-                    vo.setButtonStatus("1");
-                    vo.setButtonDesc("抢购提醒");
+                //验证商品上下架状态
+                if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
+                    vo.setButtonStatus("0");
+                    vo.setButtonDesc("已下架");
                 }else{
-                    Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,Long.parseLong(userId));
-                    if(falg){
+                  //验证用户面对该商品是否开启提醒
+                    if(StringUtils.isBlank(userId)){
                         vo.setButtonStatus("1");
                         vo.setButtonDesc("抢购提醒");
                     }else{
-                        vo.setButtonStatus("0");
-                        vo.setButtonDesc("已设置提醒");
+                        Boolean falg = limitUserMessageService.validateLimitUserMessage(sku,Long.parseLong(userId));
+                        if(falg){
+                            vo.setButtonStatus("1");
+                            vo.setButtonDesc("抢购提醒");
+                        }else{
+                            vo.setButtonStatus("0");
+                            vo.setButtonDesc("已设置提醒");
+                        }
                     }
                 }
             }else{//进行中活动  
-                if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
-                    vo.setButtonStatus("1");
-                    vo.setButtonDesc("立即抢购");
-                }else{
+                //验证商品上下架状态
+                if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
                     vo.setButtonStatus("0");
-                    vo.setButtonDesc("已抢光");
+                    vo.setButtonDesc("已下架");
+                }else{
+                    if(sku.getLimitNumTotal()>0){//限购剩余量 >0  则 任然有富裕
+                        vo.setButtonStatus("1");
+                        vo.setButtonDesc("立即抢购");
+                    }else{
+                        vo.setButtonStatus("0");
+                        vo.setButtonDesc("已抢光");
+                    }
                 }
             }
             goodsinfolist.add(vo);
