@@ -128,6 +128,7 @@ public class JdGoodsService {
             stockEntity.setStockTotalAmt(-1l);
             stockEntity.setStockCurrAmt(-1l);
             stockEntity.setStockLogo(jdGoods.getImagePath());
+            stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
             stockEntity.setGoodsId(insertJdGoods.getGoodId());
             stockEntity.setGoodsPrice(jdGoods.getJdPrice());
             stockEntity.setMarketPrice(jdGoods.getJdPrice());

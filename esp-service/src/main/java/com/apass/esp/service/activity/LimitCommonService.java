@@ -4,13 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.apass.esp.domain.entity.LimitBuyAct;
-import com.apass.esp.domain.entity.LimitBuydetail;
+import com.apass.esp.domain.entity.LimitBuyDetail;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -18,7 +17,7 @@ import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.mapper.LimitBuyActMapper;
-import com.apass.esp.mapper.LimitBuydetailMapper;
+import com.apass.esp.mapper.LimitBuyDetailMapper;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
@@ -35,7 +34,7 @@ public class LimitCommonService {
 	@Autowired
 	public LimitBuyActMapper limitBuyActMapper;
 	@Autowired
-	private LimitBuydetailMapper buydetailMapper;
+	private LimitBuyDetailMapper buydetailMapper;
 	@Autowired
 	private GoodsStockInfoRepository goodsStockDao;
 	@Autowired
@@ -192,12 +191,12 @@ public class LimitCommonService {
 		/**
 		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
 		 */
-		List<LimitBuydetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(new LimitBuyParam(params.getUserId(), limitGoods.getId()+""));
+		List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(new LimitBuyParam(params.getUserId(), limitGoods.getId()+""));
 		/**
 		 * 计算用户购买了同一个活动同一商品的件数
 		 */
 		long goodsSum = 0l;
-		for (LimitBuydetail limitBuydetail : buyDetails) {
+		for (LimitBuyDetail limitBuydetail : buyDetails) {
 			goodsSum += limitBuydetail.getBuyNo();
 		}
 		goodsSum += params.getNum().longValue();

@@ -33,6 +33,7 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.service.activity.LimitBuydetailService;
 import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
@@ -121,6 +122,8 @@ public class PaymentService {
 	public LimitBuyActMapper limitBuyActMapper;
 	@Autowired
 	private LimitCommonService limitCommonService;
+	@Autowired
+	private LimitBuydetailService limitBuydetailService;
 	
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -205,6 +208,27 @@ public class PaymentService {
 				}
         	}
         }
+        
+        /**
+         * 订单中包含限时购活动的商品时，往t_esp_limit_buydetail表中添加数据(sprint 13)
+         */
+        for (OrderInfoEntity order : orderInfoList) {
+        	OrderInfoEntity entity = orderDao.selectByOrderId(order.getOrderId());
+        	List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(order.getOrderId());
+        	for (OrderDetailInfoEntity detail : subList) {
+        		String limitBuyActId = detail.getLimitActivityId();
+				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动ID不为空，说明此商品为限时购的商品
+					LimitBuyParam params = new LimitBuyParam();
+					params.setLimitBuyActId(limitBuyActId);
+					params.setNum(detail.getGoodsNum().intValue());
+					params.setOrderId(entity.getOrderId());
+					params.setSkuId(detail.getSkuId());
+					params.setUserId(entity.getUserId()+"");
+					limitBuydetailService.insertDataToBuyDetaill(params);
+				}
+			}
+        }
+        
 		return rayResp.getPayPage();
 	}
 	

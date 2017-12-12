@@ -1,8 +1,10 @@
 package com.apass.esp.domain.entity;
 
 import java.util.Date;
+
 import com.apass.esp.common.model.QueryParams;
-public class LimitBuydetail extends QueryParams{
+
+public class LimitBuyDetail extends QueryParams {
     private Long id;
 
     private Long limitBuyActId;
@@ -16,6 +18,8 @@ public class LimitBuydetail extends QueryParams{
     private Date createdTime;
 
     private Date updatedTime;
+
+    private String orderId;
 
     public Long getId() {
         return id;
@@ -71,5 +75,13 @@ public class LimitBuydetail extends QueryParams{
 
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }
