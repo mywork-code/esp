@@ -516,7 +516,7 @@ public class LimitBuyActService {
             }
             goodsinfolist.add(vo);
         }
-        return Response.success("限时购活动商品列表刷新成功！",goods);
+        return Response.success("限时购活动商品列表刷新成功！",goodsinfolist);
     }
     /**
      * 即将开始限时购活动  某一个商品  面对用户开启抢购提醒
