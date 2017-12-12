@@ -232,11 +232,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWzPrice() throws Exception{
 		List<String> skuList = Lists.newArrayList();
-<<<<<<< HEAD
 		skuList.add("768678");
-=======
-		skuList.add("209954");
->>>>>>> 63451db8276db867d256794b0305b0f737dfdf3c
 		List<WZPriceResponse> priceList = price.getWzPrice(skuList);
 		return Response.successResponse(priceList);
 	}
