@@ -401,7 +401,8 @@ public class GoodsService {
 	Map<Long,Object> LimitMap=new HashMap<>();
     for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 		//根据skuId查询该规格是否参加了限时购活动
-    	LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+    	String userId="";
+    	LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsStockInfoEntity.getSkuId());
 		if(null !=limitGS){
 			LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
 		}
@@ -439,7 +440,8 @@ public class GoodsService {
 				break;
 			}
 		}
-		LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(defaultGoodsPriceStock.getSkuId());
+		String userId="";
+		LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(userId,defaultGoodsPriceStock.getSkuId());
 		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
 		BigDecimal activityPrice = limitGS.getActivityPrice();
 		activityPrice.setScale(2, BigDecimal.ROUND_DOWN);
@@ -491,9 +493,9 @@ public class GoodsService {
         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
         BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-
+        String userId="";
        	//根据skuId查询该规格是否参加了限时购活动
-		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsList.get(0).getSkuId());
+		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsList.get(0).getSkuId());
 		if(null !=limitGS){
 		BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 		limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
@@ -758,9 +760,9 @@ public class GoodsService {
 			jdSimilarSkuVo.setGoodsStockId(goodsStockInfoEntity.getId().toString());
 			jdSimilarSkuVo.setStockCurrAmt(goodsStockInfoEntity.getStockCurrAmt());
 			BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsStockInfoEntity.getId());
-			
+	    	String userId="";
 			//根据skuId查询该规格是否参加了限时购活动
-			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(goodsStockInfoEntity.getSkuId());
+			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsStockInfoEntity.getSkuId());
 			if(null !=limitGS){
 				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
