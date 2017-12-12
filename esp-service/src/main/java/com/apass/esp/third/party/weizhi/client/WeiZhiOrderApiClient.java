@@ -51,6 +51,7 @@ public class WeiZhiOrderApiClient {
      */
     public OrderUnitResponse submitOrder(OrderReq orderReq) throws Exception {
         Objects.requireNonNull(orderReq.getOrderPriceSnap());
+        logger.info("----submitOrder------ params:{}",JsonUtil.toJsonString(orderReq));
         
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         
