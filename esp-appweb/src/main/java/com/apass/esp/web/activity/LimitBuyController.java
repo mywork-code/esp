@@ -1,12 +1,14 @@
 package com.apass.esp.web.activity;
 import java.util.Map;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.activity.LimitBuyActService;
 import com.apass.gfb.framework.utils.CommonUtils;
@@ -15,8 +17,9 @@ import com.apass.gfb.framework.utils.CommonUtils;
  * @author Administrator
  *
  */
-@RestController
-@RequestMapping("/activity/limitBuyContro")
+@Path("/activity/limitBuyContro")
+@Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class LimitBuyController {
 	private static final Logger logger = LoggerFactory.getLogger(LimitBuyController.class);
 	@Autowired
@@ -26,8 +29,8 @@ public class LimitBuyController {
      * @param params
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/activityBanner")
+	@POST
+    @Path("/activityBanner")
     public Response activityBanner() {
         try{
             String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
@@ -41,8 +44,8 @@ public class LimitBuyController {
      * 限时购活动时间条
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/activityTimeLine")
+	@POST
+    @Path("/activityTimeLine")
     public Response activityTimeLine() {
         try{
             return limitBuyActService.activityTimeLine();
@@ -56,8 +59,8 @@ public class LimitBuyController {
      * @param params
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/activityGoodsList")
+	@POST
+    @Path("/activityGoodsList")
     public Response activityGoodsList(@RequestBody Map<String, Object> params) {
         try{
             String limitBuyActId = CommonUtils.getValue(params, "limitBuyActId");
@@ -73,8 +76,8 @@ public class LimitBuyController {
      * @param params
      * @return
      */
-    @ResponseBody
-    @RequestMapping("/activityAddRemind")
+	@POST
+    @Path("/activityAddRemind")
     public Response activityAddRemind(@RequestBody Map<String, Object> params) {
         try{
             String limitGoodsSkuId = CommonUtils.getValue(params, "limitGoodsSkuId");
