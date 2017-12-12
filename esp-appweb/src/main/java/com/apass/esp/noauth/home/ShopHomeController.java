@@ -970,36 +970,36 @@ public class ShopHomeController {
                 LOGGER.error("商品信息不存在:{}", goodsId);
                 throw new BusinessException("商品信息不存在");
             }
+            //对所有的（wz，jd，非第三方）进行校验
             Date now = new Date();
             if (now.before(goodsInfo.getListTime())
                     || (null != goodsInfo.getDelistTime() && now.after(goodsInfo.getDelistTime()))
                     || !GoodStatus.GOOD_UP.getCode().equals(goodsInfo.getStatus())) {
                 goodsInfo.setStatus(GoodStatus.GOOD_DOWN.getCode());
             }
-//			returnMap.put("status", goodsInfo.getStatus());
-
+            
             // 商品规格
             List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-            if (jdGoodsStockInfoList.size() == 1) {
-                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-                goodsInfo.setGoodsPrice(price);
-                goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-            }
+        
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
+                //第三方的价格计算（wz和jd）
+                if (jdGoodsStockInfoList.size() == 1) {
+                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                    goodsInfo.setGoodsPrice(price);
+                    goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+                }
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                     returnMap.put("source", SourceType.JD.getCode());
-                    returnMap.put("status", goodsInfo.getStatus());
-
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                     returnMap.put("source", SourceType.WZ.getCode());
-                    returnMap.put("status", goodsInfo.getStatus());
                 }
+                returnMap.put("status", goodsInfo.getStatus());
                 // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
                 if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
                     returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
