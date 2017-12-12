@@ -102,6 +102,9 @@ public class JdConfirmPreInventoryTask {
     
     @Scheduled(cron = "0 0/30 * * * *")
     public void handleJdConfirmPreInventoryTask() {
+    	if(!systemEnvConfig.isPROD()){
+          return;
+        }
         /**
          * 查询订单状态D03(已发货)，预占库存状态为1(1.预占 2.确认)，并且source 为京东的订单
          */
