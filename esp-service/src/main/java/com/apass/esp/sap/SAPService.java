@@ -389,7 +389,7 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("400010");
+          contentList.add("400004");
 
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
@@ -421,10 +421,6 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-    StringBuffer sb = new StringBuffer();
-    for (SalesOrderInfo saleOrderRefund : salOrderList) {
-      sb.append(saleOrderRefund.getOrderPrimayId()+",");
-    }
 
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDERINFO_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -470,10 +466,6 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-    StringBuffer sb = new StringBuffer();
-    for (SalesOrderPassOrRefund saleOrderRefund : salOrderList) {
-      sb.append(saleOrderRefund.getOrderId()+",");
-    }
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.SALESORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
@@ -642,10 +634,6 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderPassOrRefund> salOrderList = orderService.selectSalesOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-    StringBuffer sb = new StringBuffer();
-    for (SalesOrderPassOrRefund saleOrderRefund : salOrderList) {
-      sb.append(saleOrderRefund.getOrderId()+",");
-    }
     try {
       CsvWriter csvWriter = new CsvWriter(SAPConstants.PURCHASERETURNSALES_FILE_PATH, ',', Charset.forName("UTF-8"));
       //第一行空着
@@ -723,10 +711,6 @@ public class SAPService {
     orderStatusList.add(OrderStatus.ORDER_TRADCLOSED.getCode());
 
     List<SalesOrderInfo> salOrderList = orderService.selectByOrderStatusList(orderStatusList, getDateBegin(), getDateEnd());
-    StringBuffer sb = new StringBuffer();
-    for (SalesOrderInfo saleOrderRefund : salOrderList) {
-      sb.append(saleOrderRefund.getOrderPrimayId()+",");
-    }
 
     try {
       CsvWriter csvWriter  = new CsvWriter(SAPConstants.PURCHASEORDER_FILE_PATH, ',', Charset.forName("UTF-8"));
@@ -957,7 +941,7 @@ public class SAPService {
             || txn.getTxnType().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
           //银联
           contentList.add(txn.getOrigTxnId());
-          contentList.add("400010");
+          contentList.add("400004");
         } else if (txn.getTxnType().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
             || txn.getTxnType().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
@@ -1116,7 +1100,7 @@ public class SAPService {
               contentList.add(repayId);
               contentList.add(order.getOrderId());
               contentList.add(repayId);
-              contentList.add("400010");
+              contentList.add("400004");
               csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
             }
           }
