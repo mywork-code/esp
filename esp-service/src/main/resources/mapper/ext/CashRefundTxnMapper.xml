@@ -54,6 +54,7 @@
         rt.ori_txn_code oriTxnCode,
         rt.txn_code  txnCode,
         rt.status status,
+        rt.amt amt,
         cr.order_id  orderId
         from t_esp_refund_txn rt
         left join t_esp_cash_refund cr
