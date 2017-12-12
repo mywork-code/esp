@@ -534,9 +534,9 @@ public class LimitBuyActService {
         entity.setCreatedTime(new Date());
         entity.setUpdatedTime(new Date());
         if(limitUserMessageService.activityAddRemind(entity)!=null){
-            return Response.success("即将开始限时购活动商品面对用户开启抢购提醒成功！");
+            return Response.success("即将开始限时购活动商品开启抢购提醒成功！");
         }
-        return Response.fail("即将开始限时购活动商品面对用户开启抢购提醒失败");
+        return Response.fail("即将开始限时购活动商品开启抢购提醒失败");
     }
     /*限时定时任务*/
     /**
@@ -631,7 +631,7 @@ public class LimitBuyActService {
                     sb.append("短信提醒用户集合:{}");
                     for(LimitUserMessage messageen : messageList){
                         //短信发送
-                        String messagetemplate = "短信模板";
+                        String messagetemplate = "【安家趣花】您关注的限时抢购商品就要开抢了，请打开安家趣花APP做好准备，活动马上开始 http://ajqh.wap.apass.cn/#/down12Registered?channel=dxlk2 回复T退订。";
                         try {
                             str+="用户详情：";
                             str+=messageen.getUserId();
