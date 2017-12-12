@@ -42,7 +42,7 @@ public class JDMessageScheduleTask {
     @Autowired
     private WeiZhiMessageClient weiZhiMessageClient;
 
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     public void handleJDMessageScheduleTask() {
      List<JdMessageEnum> messageEnumList = new ArrayList<>();
         messageEnumList.add(JdMessageEnum.DELIVERED_ORDER);
