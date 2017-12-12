@@ -70,10 +70,7 @@ $(function () {
             width : 200,
             align : 'center',
             formatter : function(value, row, index) {
-            	var content = ""
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\""+row.id+"\",\""+row.startDate+"\",\""+row.startTime+"\");'>编辑活动</a>&nbsp;";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.deleDetails(\""+row.id+"\");'>删除活动</a>";
-                return content;
+        		return "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='$.editDetails(\""+row.id+"\",\""+row.startDate+"\",\""+row.startTime+"\");'>编辑活动</a>&nbsp;";
             }
         }]],
         loader : function(param, success, error) {
