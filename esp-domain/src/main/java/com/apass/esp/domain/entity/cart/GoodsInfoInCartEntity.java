@@ -33,6 +33,8 @@ public class GoodsInfoInCartEntity {
     private BigDecimal goodsLimitPrice;
     /** 限时购活动中每人限购的数量    **/
     private Long limitNum;
+    /** 个人在当前活动还剩多少限购数量 **/
+    private Long limitPersonNum;
     /** 商品数量 **/
     private int goodsNum;
 
@@ -258,6 +260,14 @@ public class GoodsInfoInCartEntity {
 
 	public void setLimitBuyActId(Long limitBuyActId) {
 		this.limitBuyActId = limitBuyActId;
+	}
+
+	public Long getLimitPersonNum() {
+		return limitPersonNum;
+	}
+
+	public void setLimitPersonNum(Long limitPersonNum) {
+		this.limitPersonNum = limitPersonNum;
 	}
     
 }
