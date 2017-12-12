@@ -3,7 +3,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -415,11 +418,11 @@ public class LimitBuyActService {
             public int compare(LimitBuyActTimeLine en1, LimitBuyActTimeLine en2) {
                 return en1.getSort().compareTo(en2.getSort());
             }});
-        List<Object> data = new ArrayList<Object>();
+        Map<String,Object> map = new HashMap<String,Object>();
         String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
-        data.add(url);
-        data.add(timelist);
-        return Response.success("限时购活动时间条刷新成功！",data);
+        map.put("url",url);
+        map.put("timelist",timelist);
+        return Response.success("限时购活动时间条刷新成功！",map);
     }
     private String getyDayDate(Date date){
         String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
