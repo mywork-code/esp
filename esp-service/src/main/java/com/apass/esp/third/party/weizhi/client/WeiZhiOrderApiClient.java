@@ -32,7 +32,6 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.HttpClientUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 @Service
 public class WeiZhiOrderApiClient {
 
@@ -58,6 +57,7 @@ public class WeiZhiOrderApiClient {
         if (orderReq.getSkuNumList().size() > 50) {
             throw new BusinessException("最大数量为50，当前:" + orderReq.getSkuNumList().size());
         }
+        System.out.println("----submitOrder------ params:orderPriceSnap------>"+JsonUtil.toJsonString(orderReq.getOrderPriceSnap()));
         
         BasicNameValuePair param1 = new BasicNameValuePair("token", weiZhiTokenService.getTokenFromRedis());
         BasicNameValuePair param2 = new BasicNameValuePair("thirdOrder", orderReq.getOrderNo());
