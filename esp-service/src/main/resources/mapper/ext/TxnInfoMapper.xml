@@ -100,6 +100,7 @@
           ord.orderstatus orderStatus,
           ord.pay_time  payTime,
           ord.id extOrderId,
+          ord.merchant_code merchantCode,
           tx.user_id userId,
           tx.txn_type txnType,
           tx.txn_date   txnDate,

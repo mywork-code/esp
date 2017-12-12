@@ -77,6 +77,18 @@ public class TxnOrderInfo {
    */
   private String status;
 
+  /**
+   * 商户编码
+   */
+  private String merchantCode;
+
+  public String getMerchantCode() {
+    return merchantCode;
+  }
+
+  public void setMerchantCode(String merchantCode) {
+    this.merchantCode = merchantCode;
+  }
 
   public Long getTxnId() {
     return txnId;

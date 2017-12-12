@@ -3,14 +3,18 @@ package com.apass.esp.domain.enums;
  * LOGSTASh 日志KEY
  */
 public enum MerchantCode {
+    MERCHANT_QISOU("上海奇搜网络科技有限公司", "100094",""),
+    MERCHANT_ZHIWEI("致维科技（北京）有限公司", "100188",""),
+    MERCHANT_YITUO("一拓文化传媒（上海）有限公司", "100029",""),
+    //TODO
     MERCHANT_JIFAN("上海季繁贸易有限公司", "100213","0001092"),
-    MERCHANT_JUNYAO("上海均耀电子科技有限公司", "","0shjs12"),
-    MERCHANT_BANGLI("上海邦礼网络信息技术有限公司", "","0shqp2"),
-    MERCHANT_XIRUN("上海钿润电子商务有限公司", "","0shsj16"),
+    MERCHANT_JUNYAO("上海均耀电子科技有限公司", "100192","0shjs12"),
+    MERCHANT_BANGLI("上海邦礼网络信息技术有限公司", "100214","0shqp2"),
+    MERCHANT_XIRUN("上海钿润电子商务有限公司", "100215","0shsj16"),
     MERCHANT_HANSHUN("上海涵顺工贸有限公司", "",""),
     MERCHANT_HENSONG("上海很松电子商务有限公司", "",""),
-    MERCHANT_KAIENXI("上海凯恩西数码科技有限公司", "","0shpd15"),
-    MERCHANT_LAIKE("莱克电气股份有限公司上海分公司", "","0shmh14"),
+    MERCHANT_KAIENXI("上海凯恩西数码科技有限公司", "100216","0shpd15"),
+    MERCHANT_LAIKE("莱克电气股份有限公司上海分公司", "100222","0shmh14"),
     MERCHANT_YUNYI("上海韵毅数码科技有限公司", "",""),
     MERCHANT_LIKE_ELECTRONIC("上海礼客电子商务有限公司", "",""),
     MERCHANT_LIKE_INDUSTRY("上海立客实业有限公司", "","0shmh13"),
