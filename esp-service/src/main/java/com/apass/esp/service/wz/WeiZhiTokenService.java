@@ -1,6 +1,5 @@
 package com.apass.esp.service.wz;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +64,7 @@ public class WeiZhiTokenService {
 		}
 		getToken();
 		token = cacheManager.get(WeiZhiConstants.WEIZHI_TOKEN + ":" + WeiZhiConstants.ACCESS_TOKEN);
+//		String token =weiZhiTokenClient.getToken().getAccess_token();
 		return token;
 	}
 }
