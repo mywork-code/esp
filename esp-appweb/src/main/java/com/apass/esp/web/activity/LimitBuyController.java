@@ -24,22 +24,6 @@ public class LimitBuyController {
 	private static final Logger logger = LoggerFactory.getLogger(LimitBuyController.class);
 	@Autowired
     private LimitBuyActService limitBuyActService;
-	/**
-     * 限时购BANNER
-     * @param params
-     * @return
-     */
-	@POST
-    @Path("/activityBanner")
-    public Response activityBanner() {
-        try{
-            String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
-            return Response.success("限时购BANNER刷新成功!", url);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return Response.fail("限时购BANNER刷新失败!");
-        }
-    }
     /**
      * 限时购活动时间条
      * @return

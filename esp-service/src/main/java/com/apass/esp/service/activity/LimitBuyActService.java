@@ -415,7 +415,11 @@ public class LimitBuyActService {
             public int compare(LimitBuyActTimeLine en1, LimitBuyActTimeLine en2) {
                 return en1.getSort().compareTo(en2.getSort());
             }});
-        return Response.success("限时购活动时间条刷新成功！",timelist);
+        List<Object> data = new ArrayList<Object>();
+        String url = "http://espapp.sit.apass.cn/static/eshop/other/1512959987323.png";
+        data.add(url);
+        data.add(timelist);
+        return Response.success("限时购活动时间条刷新成功！",data);
     }
     private String getyDayDate(Date date){
         String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
