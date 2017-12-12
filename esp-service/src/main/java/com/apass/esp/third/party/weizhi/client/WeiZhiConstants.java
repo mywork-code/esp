@@ -23,12 +23,12 @@ public class WeiZhiConstants {
     @PostConstruct
     public void init(){
         if(systemEnvConfig.isPROD()){
-            tokenUrl = "";
-            clientId = "";
-            userName = "";
-            password = "";
-            clientSecret = "";
-            requestUrl = "";
+            tokenUrl = "http://openapi.viphrm.com/jdapi/accessToken";
+            clientId = "244953049";
+            userName = "zydc";
+            password = "zydc123456";
+            clientSecret = "pm0G8ZzOQ2XItQnq9q1r";
+            requestUrl = "http://openapi.viphrm.com";
         }else{
             tokenUrl = "http://testopenapi.viphrm.com/jdapi/accessToken";
             clientId = "100118132";
@@ -89,18 +89,7 @@ public class WeiZhiConstants {
         this.requestUrl = requestUrl;
     }
 
-//    //tokenUrl
-//    public static final String TOKEN_URL = "http://180.168.49.94:65530/jdapi/accessToken";
-	//
     public static final String GRANT_TYPE = "access_token";
-//	//对接账号
-//    public static final String CLIENT_ID = "200034525";
-//    //用户名
-//    public static final String USER_NAME = "zydc";
-//    //密码
-//    public static final String PASSWORD = "132654";
-//    //
-//    public static final String CLIENT_SECRET = "kLKYak8a9xHsUW2TBgdf";
     //Token在redis中的key值
     public  static final String WEIZHI_TOKEN = "WEIZHI_TOKEN";
     

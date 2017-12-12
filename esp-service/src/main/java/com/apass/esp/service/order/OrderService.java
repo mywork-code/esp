@@ -1235,19 +1235,19 @@ public class OrderService {
                     orderDetail.setSource(SourceType.WZ.getCode());
                     orderDetail.setSkuId(goods.getExternalId());
                     
-                    long skuId = Long.parseLong(goods.getExternalId());
-                    Set<Long> skus = new HashSet<>();
-                    skus.add(skuId);
-                    JdApiResponse<JSONArray> jsonArrayJdApiResponse = jdProductApiClient.priceSellPriceGet(skus);
-                    if (jsonArrayJdApiResponse != null
-                        && jsonArrayJdApiResponse.isSuccess()
-                        && jsonArrayJdApiResponse.getResult() != null
-                        && jsonArrayJdApiResponse.getResult().size() != 0
-                        ) {
-                    	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
-                        BigDecimal price = (BigDecimal) jsonObject.get("price");
-                        orderDetail.setGoodsCostPrice(price);
-                    }
+                    List<String> skus = Lists.newArrayList();
+                    skus.add(goods.getExternalId());
+                    
+                    List<WZPriceResponse> priceResponse = Lists.newArrayList();
+                    try {
+                    	priceResponse =	priceApi.getWzPrice(skus);
+                    	if(CollectionUtils.isNotEmpty(priceResponse)){
+                    		String goodsCostPrice = priceResponse.get(0).getWzPrice();
+                    		orderDetail.setGoodsCostPrice(new BigDecimal(goodsCostPrice));//成本价（微知价格）
+                    	}
+					} catch (Exception e) {
+						LOGGER.error("call wz method getWzPrice is failed!!!{}",e);
+					}
                 }
                 if(StringUtils.isBlank(goods.getSource())){
                 	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());

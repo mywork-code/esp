@@ -184,7 +184,7 @@ public class RecommentForH5Coller {
                     // goodsInfo.setMarketPrice(new BigDecimal(marketPrice));
                     String logoUrl = goodsInfo.getGoodsLogoUrl();
                     String siftUrl = goodsInfo.getGoodsSiftUrl();
-                    if (StringUtils.equals(goodsInfo.getSource(), SourceType.JD.getCode())) {
+                    if (StringUtils.equals(goodsInfo.getSource(), SourceType.WZ.getCode())) {
                         goodsInfo.setGoodsLogoUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
                         goodsInfo.setGoodsSiftUrlNew("http://img13.360buyimg.com/n3/" + goodsInfo.getGoodsLogoUrl());
                     } else {

@@ -58,3 +58,5 @@ CREATE TABLE `t_esp_limit_user_message` (
 `updated_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '修改时间' ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='限时购活动用户抢购提醒记录表';
+
+alter table t_esp_goods_base_info add column main_goods_code varchar(20) not null default '' comment '主商品编号';
