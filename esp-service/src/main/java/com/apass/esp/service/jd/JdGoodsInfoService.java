@@ -331,9 +331,9 @@ public class JdGoodsInfoService {
 			if (jdGoodsStockInfoList.size() == 1) {
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-
+				String userId="";
 				//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(skuId);
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,skuId);
 				if(null !=limitGS){
 					LimitMap.put(skuId, skuIdOrder);
 //					LimitGoodsSkuMap.put(skuId, limitGS);
@@ -345,6 +345,7 @@ public class JdGoodsInfoService {
 					jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
 					jdSimilarSkuVo.setIsLimitActivity(true);
 					jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+					jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
 					jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
 					jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
 					jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
@@ -458,8 +459,10 @@ public class JdGoodsInfoService {
 			if (jdGoodsStockInfoList.size() == 1) {
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
+				
 				//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(skuId);
+				String userId="";
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,skuId);
 				if(null !=limitGS){
 //					LimitMap.put(skuId, skuIdOrder);
 //					LimitGoodsSkuMap.put(skuId, limitGS);
