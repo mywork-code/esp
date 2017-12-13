@@ -373,6 +373,9 @@ public class WeiZhiProductApiClient {
 	 * 商品可售验证接口
 	 */
 	public CheckSale getWeiZhiCheckSale(String skuIds) throws Exception {
+		if(!StringUtils.isNumeric(skuIds)){
+			return null;
+		}
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
