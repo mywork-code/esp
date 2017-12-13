@@ -30,18 +30,18 @@ public class WeiZhiConstants {
             clientSecret = "pm0G8ZzOQ2XItQnq9q1r";
             requestUrl = "http://openapi.viphrm.com";
         }else{
-            tokenUrl = "http://testopenapi.viphrm.com/jdapi/accessToken";
-            clientId = "100118132";
-            userName = "prezydc";
-            password = "124456";
-            clientSecret = "4U0pYYAbuhNNzXMvF3wy";
-            requestUrl = "http://testopenapi.viphrm.com";
 //            tokenUrl = "http://testopenapi.viphrm.com/jdapi/accessToken";
 //            clientId = "100118132";
 //            userName = "prezydc";
 //            password = "124456";
 //            clientSecret = "4U0pYYAbuhNNzXMvF3wy";
 //            requestUrl = "http://testopenapi.viphrm.com";
+            tokenUrl = "http://testopenapi.viphrm.com/jdapi/accessToken";
+            clientId = "100118132";
+            userName = "prezydc";
+            password = "124456";
+            clientSecret = "4U0pYYAbuhNNzXMvF3wy";
+            requestUrl = "http://testopenapi.viphrm.com";
         }
 
     }
