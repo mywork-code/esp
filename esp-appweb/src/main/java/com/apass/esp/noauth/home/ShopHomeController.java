@@ -1039,6 +1039,12 @@ public class ShopHomeController {
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
                 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                if(jdGoodsStockInfoList.get(0).getStockCurrAmt()<0){
+                	jdSimilarSkuVo.setStockCurrAmt(200L);
+                }else{
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockAmt());
+                }
+                jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
