@@ -1200,4 +1200,20 @@ public class GoodsBaseInfoController {
             return Response.fail("2");
         }
     }
+    /**
+     * 新增商品  第一条属性规格名称集合  刷新规格表格
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/tableattr", method = RequestMethod.POST)
+    public ResponsePageBody<StockInfoFileModel> tableattr(HttpServletRequest request) {
+        try{
+            String arrten = HttpWebUtils.getValue(request, "arrten");
+            return goodsAttrService.tableattr(arrten);
+        }catch (Exception e) {
+            LOGGER.error("商品属性下拉框载入失败!", e);
+            return null;
+        }
+    }
 }

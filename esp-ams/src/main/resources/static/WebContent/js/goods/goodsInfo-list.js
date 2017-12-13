@@ -743,6 +743,7 @@ $(function() {
     	categorynameArrY = [];
     	categorynameArrZ = [];
     	flushAttrList();
+    	addFlushAttrValTable();
     	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
     	$(".add-btn1").click();
 	});
@@ -3161,6 +3162,51 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 		categorynameArrZ=valueidarr;
 	}
 	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+	var father = document.getElementById("inputDiv");
+	var childfirst = father.childNodes[0];
+	var childSecond = childfirst.childNodes[1];
+	var childten = childSecond.childNodes;
+	$('#tableattr').datagrid('load', {"arrten":childten});;
+}
+function addFlushAttrValTable(){//根据第一条属性下规格名称刷新规格表格
+	$('#tableattr').datagrid({
+        rownumbers : true,
+        pagination : true,
+        singleSelect : true,
+        striped:true,
+        columns:[[{
+        	title : '属性规格',
+            field : 'attrnameByAfter',
+            width : 250,
+            align : 'center'
+        },{
+        	field : 'attrValId',
+            hidden: 'hidden'
+        },{
+            field : 'stockLogo',
+            hidden: 'hidden'
+        },{
+        	field:'action',
+        	title:'操作',
+        	width:300,
+        	align:'center',
+			formatter:function(value,row,index){
+				var content = "";
+				content += '<a href="#" onclick="addtableattr1(this)">上传缩略图</a> ';
+				content += '<a href="#" onclick="addtableattr2(this)">查看图片</a> ';
+				return content;
+			}
+        }]],
+        loader : function(param, success, error) {
+            $.ajax({url : ctx + '/application/goods/management/tableattr',data : param,type : "post",dataType : "json",
+                success : function(data) {
+                    $.validateResponse(data, function() {
+                        success(data);
+                    });
+                }
+            })
+        }
+	});
 }
 function flushAttrListPrepare(value1,value2,value3){//刷新表格
 	var params = {};

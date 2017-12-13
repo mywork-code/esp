@@ -1010,4 +1010,35 @@ public class GoodsAttrService {//450
         str = str.replace(" ", "");
         return str;
     }
+    /**
+     * 第一条属性规格名称集合  刷新规格表格
+     * @param request
+     * @return
+     */
+    public ResponsePageBody<StockInfoFileModel> tableattr(String arrten) {
+        ResponsePageBody<StockInfoFileModel> respBody = new ResponsePageBody<StockInfoFileModel>();
+        arrten = famartsubString(arrten);
+        Boolean falg = "undefined".equals(arrten)||StringUtils.isBlank(arrten);
+        String[] arr = null;
+        List<StockInfoFileModel> list = new ArrayList<StockInfoFileModel>();
+        if(!falg){//arrten非空
+            arr = arrten.split(",");
+            for(String s : arr){
+                Boolean falgs = "undefined".equals(s)||StringUtils.isBlank(s);
+                if(!falgs){
+                    StockInfoFileModel e = new StockInfoFileModel();
+                    e.setAttrnameByAfter(s);
+                    list.add(e);
+                }
+            }
+        }
+        if(list==null||list.size()==0){
+            StockInfoFileModel e = new StockInfoFileModel();
+            e.setAttrnameByAfter("无");
+            list.add(e);
+        }
+        respBody.setRows(list);
+        respBody.setTotal(list.size());
+        return respBody;
+    }
 }
