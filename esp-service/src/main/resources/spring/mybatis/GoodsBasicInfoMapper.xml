@@ -145,8 +145,6 @@
 					a.`status` = 'G02'
 				AND a.is_delete = '01'
 				AND CURRENT_TIMESTAMP > a.list_time
-
-				AND SOURCE = #{source}
 	]]>
 	   <if test="goodsCode != null or externalId != null">
             AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
