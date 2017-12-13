@@ -72,7 +72,6 @@ import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
@@ -1031,7 +1030,11 @@ public class ShopHomeController {
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                if(StringUtils.isNotBlank(jdGoodsStockInfoList.get(0).getSkuId())){
+                    jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                }else{
+                    jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
