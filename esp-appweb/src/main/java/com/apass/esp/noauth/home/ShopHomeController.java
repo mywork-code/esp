@@ -1025,7 +1025,7 @@ public class ShopHomeController {
             // 京东商品没有规格情况拼凑数据格式
             int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
             List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) returnMap.get("jdSimilarSkuList");
-            if (jdSimilarSkuListSize == 0 || jdSimilarSkuList.isEmpty()) {
+            if (jdSimilarSkuListSize == 0 || null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()) {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
@@ -1049,7 +1049,9 @@ public class ShopHomeController {
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
             }
-
+            if(null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()){
+            	returnMap.put("jdSimilarSkuList", null);
+            }
             // 添加活动id
             ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
             if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
