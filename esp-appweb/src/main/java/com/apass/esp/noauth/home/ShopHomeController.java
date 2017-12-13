@@ -1030,10 +1030,12 @@ public class ShopHomeController {
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                if(StringUtils.isNotBlank(jdGoodsStockInfoList.get(0).getSkuId())){
-                    jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                String source =(String) returnMap.get("source");
+                if(StringUtils.equals(SourceType.JD.getCode(), source)){
+                	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
                 }else{
-                    jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                 }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
