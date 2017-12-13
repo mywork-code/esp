@@ -985,16 +985,15 @@ public class ShopHomeController {
             
             // 商品规格
             List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-        
+            //价格计算
+            if (jdGoodsStockInfoList.size() == 1) {
+                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                goodsInfo.setGoodsPrice(price);
+                goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+            }
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                //第三方的价格计算（wz和jd）
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-                }
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
