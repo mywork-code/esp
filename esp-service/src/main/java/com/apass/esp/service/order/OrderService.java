@@ -2022,7 +2022,7 @@ public class OrderService {
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity);
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto goodsInfoInOrderDto : goodsInfoInOrderDtoList) {
-            if (StringUtils.isEmpty(dto.getSource())){
+            if (StringUtils.isEmpty(goodsInfoInOrderDto.getSource())){
                 goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils
                         .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
             }else{
