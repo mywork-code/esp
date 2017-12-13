@@ -1000,7 +1000,7 @@ public class ShopHomeController {
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
-                    returnMap.put("source", SourceType.WZ.getCode());
+                    returnMap.put("source", SourceType.JD.getCode());
                 }
                 returnMap.put("status", goodsInfo.getStatus());
                 // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
@@ -1025,7 +1025,7 @@ public class ShopHomeController {
             // 京东商品没有规格情况拼凑数据格式
             int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
             List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) returnMap.get("jdSimilarSkuList");
-            if (jdSimilarSkuListSize == 0 || jdSimilarSkuList.isEmpty()) {
+            if (jdSimilarSkuListSize == 0 || null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()) {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
@@ -1039,11 +1039,18 @@ public class ShopHomeController {
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
                 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
+                if(jdGoodsStockInfoList.get(0).getStockCurrAmt()<0){
+                	jdSimilarSkuVo.setStockCurrAmt(200L);
+                }else{
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockAmt());
+                }
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
             }
-
+            if(null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()){
+            	returnMap.put("jdSimilarSkuList", null);
+            }
             // 添加活动id
             ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
             if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
