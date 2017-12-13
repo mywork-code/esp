@@ -688,7 +688,7 @@ public class OrderInfoController {
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
           if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
-            if(StringUtils.isNotEmpty(list.getSource())){
+            if(StringUtils.isNotEmpty(l.getSource())){
               l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+EncodeUtils.base64Decode(l.getGoodsLogoUrl()));
             }else{
               l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
@@ -748,7 +748,7 @@ public class OrderInfoController {
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = list.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
           if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
-            if(!StringUtils.isEmpty(list.getSource())){
+            if(!StringUtils.isEmpty(l.getSource())){
               l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+EncodeUtils.base64Decode(l.getGoodsLogoUrl()));
             }else{
               l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));

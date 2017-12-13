@@ -84,7 +84,20 @@ public class GoodsInfoInOrderDto {
      */
     private String unSupportProvince;
     
-    public String getMerchantCode() {
+    /**
+     * 商品来源
+     */
+    private String source;
+    
+    public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getMerchantCode() {
         return merchantCode;
     }
     public void setMerchantCode(String merchantCode) {
