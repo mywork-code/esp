@@ -799,17 +799,22 @@ public class OrderService {
 					falge = true;
 				}
 			}
+			return falge;
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
 			return falge;
 		}
-		return falge;
 	}
     /**
      * 验证京东商品是否支持7天退货
      */
     public boolean checkGoodsIs7ToReturn(List<SkuNum> skuNumList){
-    	String skuIds = StringUtils.join(skuNumList,",");
+    	List<String> skuId = Lists.newArrayList();
+    	for (SkuNum sku : skuNumList) {
+    		skuId.add(sku.getSkuId()+"");
+    		
+		}
+    	String skuIds = StringUtils.join(skuId,",");
     	CheckSale sale = null;
 		try{
 			sale = productApi.getWeiZhiCheckSale(skuIds);

@@ -1,8 +1,31 @@
 package com.apass.esp.service.goods;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.goods.GoodsStockSkuDto;
-import com.apass.esp.domain.entity.*;
+import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.GoodsAttr;
+import com.apass.esp.domain.entity.GoodsAttrVal;
+import com.apass.esp.domain.entity.JdGoodSalesVolume;
+import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsBasicInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsDetailInfoEntity;
@@ -33,6 +56,7 @@ import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.offer.ActivityCfgService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
+import com.apass.esp.service.wz.WeiZhiProductService;
 import com.apass.esp.third.party.jd.client.JdProductApiClient;
 import com.apass.esp.third.party.jd.entity.base.JdCategory;
 import com.apass.esp.third.party.jd.entity.base.JdGoods;
@@ -48,17 +72,6 @@ import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
 
 @Service
 public class GoodsService {
@@ -115,8 +128,10 @@ public class GoodsService {
   private GoodsAttrService goodsAttrService;
   @Autowired
   private GoodsStockInfoRepository goodsStockInfoRepository;
-    @Autowired
+  @Autowired
   private WeiZhiProductApiClient productApiClient;
+  @Autowired
+  private WeiZhiProductService weiZhiProductService;
   /**
    * app 首页加载精品推荐商品
    *
@@ -1121,17 +1136,12 @@ public class GoodsService {
      * 京东商品是否支持7天无理由退货,Y、N
      */
     public String getsupport7dRefund(Long skuId) {
-        String value = "N";
-        List<com.apass.esp.third.party.weizhi.entity.SkuNum> skuNumList = new ArrayList<>();
-        com.apass.esp.third.party.weizhi.entity.SkuNum skuNum = new com.apass.esp.third.party.weizhi.entity.SkuNum();
-        skuNum.setNum(1);
-        skuNum.setSkuId(skuId);
-        skuNumList.add(skuNum);
-        // 验证京东商品是否支持7天退货
-        if (orderService.checkGoodsIs7ToReturn(skuNumList)) {
-            value = "Y";
-        }
-        return value;
+    	try {
+			return weiZhiProductService.getsupport7dRefund(skuId+"");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return  null;
+		}
     }
   /**
    * 获取商品最低价所对应的库存id
