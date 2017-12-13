@@ -997,15 +997,16 @@ public class ShopHomeController {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                     returnMap.put("source", SourceType.JD.getCode());
+                    returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                     returnMap.put("source", SourceType.JD.getCode());
-                }
-                returnMap.put("status", goodsInfo.getStatus());
-                // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
-                    returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                    returnMap.put("status", goodsInfo.getStatus());
+                    // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+                    if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+                        returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                    }
                 }
                 // 是否支持7天无理由退货,Y、N
                 returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
