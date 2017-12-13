@@ -72,7 +72,6 @@ import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
@@ -985,16 +984,15 @@ public class ShopHomeController {
             
             // 商品规格
             List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-        
+            //价格计算
+            if (jdGoodsStockInfoList.size() == 1) {
+                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                goodsInfo.setGoodsPrice(price);
+                goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+            }
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                //第三方的价格计算（wz和jd）
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-                }
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
@@ -1032,7 +1030,11 @@ public class ShopHomeController {
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                if(StringUtils.isNotBlank(jdGoodsStockInfoList.get(0).getSkuId())){
+                    jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                }else{
+                    jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
