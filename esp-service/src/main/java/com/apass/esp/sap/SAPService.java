@@ -21,7 +21,6 @@ import com.apass.esp.repository.repaySchedule.RepayScheduleRepository;
 import com.apass.esp.service.TxnInfoService;
 import com.apass.esp.service.merchant.MerchantInforService;
 import com.apass.esp.service.order.OrderService;
-import com.apass.esp.third.party.jd.entity.order.Order;
 import com.apass.gfb.framework.jwt.common.ListeningStringUtils;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.FTPUtils;
