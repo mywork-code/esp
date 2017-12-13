@@ -1788,12 +1788,14 @@ public class GoodsService {
 //        entity.setSource(sourceType.getCode());
 //        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
 //    }
-	  public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
-	    GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
-	    entity.setGoodsCode(Long.parseLong(param));
-	    entity.setExternalId(param);
-	    return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
-	}
+
+    
+    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
+        GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+        entity.setGoodsCode(Long.parseLong(param));
+        entity.setExternalId(param);
+        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+    }
 
     public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {
         return goodsDao.selectByCategoryId2AndsordNo(params);
