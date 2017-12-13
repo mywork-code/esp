@@ -689,7 +689,7 @@ public class OrderInfoController {
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
           if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
             if(StringUtils.isNotEmpty(list.getSource())){
-              l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+EncodeUtils.base64Decode(l.getGoodsLogoUrl()));
+              l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+l.getGoodsLogoUrl());
             }else{
               l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
             }
@@ -749,7 +749,7 @@ public class OrderInfoController {
         for (GoodsInfoInOrderDto l : goodsInfoInOrderDtoList) {
           if (StringUtils.isNoneEmpty(l.getGoodsLogoUrl())) {
             if(!StringUtils.isEmpty(list.getSource())){
-              l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+EncodeUtils.base64Decode(l.getGoodsLogoUrl()));
+              l.setGoodsLogoUrlNew("http://img13.360buyimg.com/n1/"+l.getGoodsLogoUrl());
             }else{
               l.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils.base64Decode(l.getGoodsLogoUrl())));
             }
