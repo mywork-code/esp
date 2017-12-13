@@ -412,7 +412,7 @@ public class GoodsService {
       GoodsStockInfoEntity defaultGoodsPriceStock = new GoodsStockInfoEntity();
       BigDecimal defaultPrice = null;
       //如果传了goodsStockId则以这个为默认，否则以价格最低者为默认
-      if (StringUtils.isNotEmpty(goodsStockId)) {
+      if (StringUtils.isNotBlank(goodsStockId)) {
           defaultGoodsPriceStock = goodsStockDao.getGoodsStockInfoEntityByStockId(Long.parseLong(goodsStockId));
           defaultPrice = commonService.calculateGoodsPrice(goodsId, Long.parseLong(goodsStockId));
       } else {
@@ -442,18 +442,6 @@ public class GoodsService {
           if (null != defaultGoodsPriceStock.getStockCurrAmt() && defaultGoodsPriceStock.getStockCurrAmt() > 0 && !isUnSupport) {
               returnMap.put("goodsStockDes", "有货");
           }
-          //商品价格最低
-          Map<String, Object> result = getMinPriceNotJdGoods(goodsId);
-          GoodsStockInfoEntity MinGoodsPriceStock = (GoodsStockInfoEntity) result.get("goodsStock");
-          BigDecimal minPrice = (BigDecimal) result.get("minPrice");
-          returnMap.put("goodsPrice", minPrice);
-          returnMap.put("goodsPriceFirstPayment", (new BigDecimal("0.1").multiply(minPrice)).setScale(2, BigDecimal.ROUND_DOWN));
-          returnMap.put("googsDetail", goodsBasicInfo.getGoogsDetail());
-          returnMap.put("skuId", MinGoodsPriceStock.getSkuId());
-          returnMap.put("goodsStockDes", "无货");
-          if (null != MinGoodsPriceStock.getStockCurrAmt() && MinGoodsPriceStock.getStockCurrAmt() > 0) {
-              returnMap.put("goodsStockDes", "有货");
-          }
 
           returnMap.put("source", "notJd");
           // 查询商品图片
@@ -466,23 +454,7 @@ public class GoodsService {
           List<JdSimilarSkuTo> JdSimilarSkuToList = null;
           if (jdSimilarSkuList != null) {
               JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId, jdSimilarSkuList, isUnSupport);
-          } else {
-              JdSimilarSkuToList = new ArrayList<>();
-              JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
-              JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-              jdSimilarSkuVo.setGoodsId(goodsId.toString());
-              jdSimilarSkuVo.setSkuId(goodsList.get(0).getSkuId());
-              jdSimilarSkuVo.setGoodsStockId(goodsList.get(0).getId().toString());
-              BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-              jdSimilarSkuVo.setPrice(price);
-              jdSimilarSkuVo.setStockCurrAmt(goodsList.get(0).getStockCurrAmt());
-              jdSimilarSkuVo.setPriceFirst((new BigDecimal("0.1").multiply(price)).setScale(2,
-                      BigDecimal.ROUND_DOWN));
-              jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-              jdSimilarSkuTo.setSkuIdOrder("");
-              jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
-              JdSimilarSkuToList.add(jdSimilarSkuTo);
-          }
+          } 
 
           returnMap.put("jdImagePathList", JdImagePathList);
           returnMap.put("support7dRefund", goodsBasicInfo.getSupport7dRefund());//是否支持7天无理由退货,Y、N
@@ -496,7 +468,13 @@ public class GoodsService {
               returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
               returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
           }
-          returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+          if(null !=JdSimilarSkuToList){
+        	  returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+          }else{
+        	  JdSimilarSkuToList=new ArrayList<>();
+        	  returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+          }
+          
           //返回活动id
           ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
           if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
@@ -509,9 +487,6 @@ public class GoodsService {
           } else {
               returnMap.put("proCouponList", proCoupons);
           }
-          returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
-          returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
-          returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
           returnMap.put("postage", "0");// 电商3期511 添加邮费字段（当邮费为0时显示免运费） 20170517
       }
   }
