@@ -299,7 +299,7 @@ public class BannerController extends BaseController {
                 }
                 entity.setCreateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
                 entity.setUpdateUser(SpringSecurityUtils.getLoginUserDetails().getUsername());
-                 result = bannerInfoService.addBannerInfor(entity);
+                result = bannerInfoService.addBannerInfor(entity);
                 if (result == 1) {
                     return Response.success("上传banner成功！");
                 } else {
