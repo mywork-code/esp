@@ -760,6 +760,8 @@ public class GoodsBaseInfoController {
                         GoodsInfoEntity entity2 = goodsService.selectByGoodsId(entity.getId());
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
                         LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));
+                        //TODO在ES中相似规格的商品只上架一件（即：如果商品多规格则在ES中添加一个规格）
+                        
                         goodsEsDao.add(goods);
                     }
                 }
