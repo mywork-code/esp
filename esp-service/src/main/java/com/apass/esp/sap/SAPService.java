@@ -432,7 +432,6 @@ public class SAPService {
 
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
-          contentList.add("CR" + cashRefundTxn.getOrderId());
           //银联
           contentList.add("97990155300001887");//退款用对应账号
           contentList.add("6008");
@@ -440,7 +439,6 @@ public class SAPService {
         } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
                 || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
           //支付宝
-          contentList.add(cashRefundTxn.getOrderId());
           contentList.add("97990155300001887");//退款用对应账号
           contentList.add("6008");
           contentList.add("97990155300001887");
@@ -650,7 +648,9 @@ public class SAPService {
           continue;
         }
         List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
+        String uuid = ListeningStringUtils.getUUID();
+        contentList.add(uuid);
+        financialVoucherAdjustmentGuidMap.put(Long.valueOf(cashRefundTxn.getOrderId()),uuid);
         contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getUpdateDate(), "yyyyMMdd"));
         contentList.add("2");
         contentList.add("3");
@@ -748,7 +748,7 @@ public class SAPService {
           contentList.add("");
         }
         contentList.add("");
-        contentList.add("0");
+        contentList.add("");
 
         if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
           contentList.add(salOrder.getOrderId());
@@ -894,8 +894,8 @@ public class SAPService {
   private String getDateBegin() {
       Calendar cal = Calendar.getInstance();
       cal.add(Calendar.DATE, -1);
-    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
-//    return "2017-04-01";
+//    return DateFormatUtil.dateToString(cal.getTime(), DateFormatUtil.YYYY_MM_DD);
+    return "2017-04-01";
   }
 
   private String getDateEnd() {
@@ -951,6 +951,40 @@ public class SAPService {
         contentList.add("");
         csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
       }
+      //获取退款单号，银联：CR+订单id；支付宝：订单id
+      List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
+              getDateBegin(), getDateEnd());
+      for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
+        ++i;
+        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.XYZF_CODE.getCode())) {
+          continue;
+        }
+        List<String> contentList = new ArrayList<String>();
+        contentList.add(ListeningStringUtils.getUUID());
+        if(StringUtils.isEmpty(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())))){
+          continue;
+        }
+        contentList.add(getFinancialVoucherAdjustmentGuidMap(Long.valueOf(cashRefundTxn.getOrderId())));
+        contentList.add(cashRefundTxn.getOrderId());
+        contentList.add(i + "");
+        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
+                || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
+          contentList.add("Z067");
+        } else {
+          contentList.add("Z051");
+        }
+        if(cashRefundTxn.getAmt().compareTo(new BigDecimal(0)) == 0){
+          contentList.add("");
+        }else{
+          contentList.add(cashRefundTxn.getAmt() + "");
+        }
+        contentList.add("");
+        contentList.add(cashRefundTxn.getOrderId());
+        contentList.add("");
+        contentList.add("");
+        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
+      }
+
       financialVoucherAdjustmentGuidMap.clear();
       csvWriter.close();
 
