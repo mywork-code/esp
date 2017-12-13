@@ -291,8 +291,8 @@ $(function() {
     //确认  
 	$("#agreeEdit").click(function() {	
 		var siftGoodsFile=$('#siftGoodsFile').val();//结果:siftGoodsFile = "C:\fakepath\Capture001.png"
-		var siftGoodsSortInput=$("#siftGoodsSortInput").val();
-		var r = /^\+?[1-9][0-9]*$/;//正整数 
+		var siftGoodsSortInput=$("#siftGoodsSortInput").textbox("getValue");
+		var r = /^\+?[1-9][0-9]*$/;//正整数
 	    var falg = r.test(siftGoodsSortInput);
 	    if(!falg){
 	    	$.messager.alert("提示", "精选商品排序字段请用正整数维护！", "info");
