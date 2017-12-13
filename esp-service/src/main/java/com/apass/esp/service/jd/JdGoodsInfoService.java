@@ -463,6 +463,7 @@ public class JdGoodsInfoService {
 			JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
 			//为京东商品添加库存
 			jdSimilarSkuVo.setStockCurrAmt(Long.parseLong("200"));
+			jdSimilarSkuVo.setStockDesc("有货");
 			String skuId = iterator.next();
 			// 查询商品价格
 			GoodsInfoEntity goodsInfo = goodsRepository.selectGoodsByExternalId(skuId);
