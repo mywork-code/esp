@@ -1030,26 +1030,20 @@ public class ShopHomeController {
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                if(StringUtils.isNotBlank(jdGoodsStockInfoList.get(0).getSkuId())){
-                    jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                String source =(String) returnMap.get("source");
+                if(StringUtils.equals(SourceType.JD.getCode(), source)){
+                	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
                 }else{
-                    jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                 }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
                 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
-                if(jdGoodsStockInfoList.get(0).getStockCurrAmt()<0){
-                	jdSimilarSkuVo.setStockCurrAmt(200L);
-                }else{
-                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockAmt());
-                }
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
-            }
-            if(null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()){
-            	returnMap.put("jdSimilarSkuList", null);
             }
             // 添加活动id
             ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);

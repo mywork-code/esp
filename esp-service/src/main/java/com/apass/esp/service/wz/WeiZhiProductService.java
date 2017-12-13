@@ -273,7 +273,10 @@ public class WeiZhiProductService {
 	 */
 	public List<JdSimilarSku> getWeiZhiSimilarSku(String skuId) throws Exception {
 		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId,3);
-		List<JdSimilarSku> list=wZJdSimilarSku.getResult();
+		List<JdSimilarSku> list = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(wZJdSimilarSku.getResult())){
+			list = wZJdSimilarSku.getResult();
+		}
 		return list;
 	}
 	/**
