@@ -1048,9 +1048,6 @@ public class ShopHomeController {
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
             }
-            if(null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()){
-            	returnMap.put("jdSimilarSkuList", null);
-            }
             // 添加活动id
             ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
             if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {
