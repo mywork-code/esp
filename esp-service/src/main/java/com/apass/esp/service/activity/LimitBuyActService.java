@@ -550,7 +550,7 @@ public class LimitBuyActService {
      * 定时任务   活动自动开始  活动自动结束
      */
     @Transactional(rollbackFor = { Exception.class})
-    public String limitbuyActStartOver(String user) {
+    public String limitbuyActStartOver() {
         StringBuffer sb = new StringBuffer();
         String day = DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD);
         String hour = DateFormatUtil.dateToString(new Date(),"HH");
@@ -572,7 +572,7 @@ public class LimitBuyActService {
             if(en.getStatus()==(byte)1){
                 sb.append("限时购活动自动开始,活动id:").append(en.getId()).append(";");
                 en.setStatus((byte)2);
-                en.fillField(user);
+                en.fillTime();
                 updatedEntity(en);
             }
         }
@@ -588,7 +588,7 @@ public class LimitBuyActService {
             if(en.getStatus()==(byte)2){
                 sb.append("限时购活动自动结束,活动id:").append(en.getId()).append(";");
                 en.setStatus((byte)3);
-                en.fillField(user);
+                en.fillTime();
                 updatedEntity(en);
             }
         }

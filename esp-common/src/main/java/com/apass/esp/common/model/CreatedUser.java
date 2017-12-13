@@ -29,17 +29,17 @@ public class CreatedUser extends QueryParams{
     public void setUpdatedTime(Date updatedTime) {
         this.updatedTime = updatedTime;
     }
-    private void fillUser(String user){
+    public void fillUser(String user){
         setUpdateUser(user);
     }
-    private void fillTime(){
+    public void fillTime(){
         setUpdatedTime(new Date());
     }
-    private void fillAllUser(String user){
+    public void fillAllUser(String user){
         setCreateUser(user);
         setUpdateUser(user);
     }
-    private void fillAllTime(){
+    public void fillAllTime(){
         setCreatedTime(new Date());
         setUpdatedTime(new Date());
     }
