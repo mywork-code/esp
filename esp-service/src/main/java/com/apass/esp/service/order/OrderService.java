@@ -2070,6 +2070,7 @@ public class OrderService {
             //如果是京东的商品
             if(null != goods && StringUtils.equals(goods.getSource(),SourceType.WZ.getCode())){
             	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            	goodsInfo.setSource(goods.getSource());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
