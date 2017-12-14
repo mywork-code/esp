@@ -273,6 +273,7 @@ public class LimitBuyActService {
             sku.setLimitBuyActId(actId);
             sku.setLimitCurrTotal(sku.getLimitNumTotal());//修改限时购活动商品   限购剩余量等于限购总量
             sku.setSortNo(++sortNo);
+            sku.fillField(username);
             if(sku.getId()==null){
                 if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
                     throw new BusinessException("限时购活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");

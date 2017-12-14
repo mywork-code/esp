@@ -248,30 +248,41 @@ $(function () {
 			return;
 		}
 		var filefalg = null == file || ("") == file;
-		if(limitGoodsSkuId!=""){
-			$("#limitGoodsSkuId").val(limitGoodsSkuId);
-		}
+		$("#upskuId").val(skuId);
 		if(!filefalg){
-			var thisForm = $("#editGoodsFrom");
 			//此处上传缩略图
 			//把URL返回在table里
 			//把限购数量返回在table里
+			var thisForm = $("#editGoodsFrom");
+			thisForm.form({
+				url : ctx + '/activity/limitBuyActContro/upLoadSkuPic',
+				success : function(data) {
+					var response = JSON.parse(data);
+					if(response.status==1){
+						$.messager.alert("提示","缩略图上传成功！", "info");
+						$('#uploadGoodsList').datagrid('updateRow',{
+							index: editindex,
+							row:{
+								"limitNumTotal":limitNumTotalAdd,
+								"limitNum":limitNumAdd,
+								"url":response.data,
+								}
+						});
+					}else{
+						$.messager.alert("提示", response.msg, "info");
+					}
+			    }
+			});
+			thisForm.submit();
+		}else{
 			$('#uploadGoodsList').datagrid('updateRow',{
 				index: editindex,
 				row:{
 					"limitNumTotal":limitNumTotalAdd,
 					"limitNum":limitNumAdd,
-					"url":"123",
 					}
 			});
 		}
-		$('#uploadGoodsList').datagrid('updateRow',{
-			index: editindex,
-			row:{
-				"limitNumTotal":limitNumTotalAdd,
-				"limitNum":limitNumAdd,
-				}
-		});
 		$('#editGoods').window('close');
 	});
 	//编辑商品  上传URL 弹窗   取消
@@ -475,10 +486,12 @@ function functionx(data){
 var limitGoodsSkuId ;//商品ID
 var stockCurrAmt ;//商品库存剩余
 var editindex;//商品表行号
+var skuId ;//商品skuID
 //编辑商品弹框
 function editGoods(target){
 	var rowentity = getRowEntity(target);
 	limitGoodsSkuId = rowentity.id;
+	skuId = rowentity.skuId;
 	$("#editGoodsFile").val('');
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){
 		stockCurrAmt = rowentity.stockCurrAmt;
@@ -558,8 +571,8 @@ function downGoods(target){
 };
 function getRowIndex(target){
 	var tr = $(target).closest('tr.datagrid-row');
-	var editindex = parseInt(tr.attr('datagrid-row-index'));
-	return editindex;
+	var editinde = parseInt(tr.attr('datagrid-row-index'));
+	return editinde;
 };
 function getRowEntity(target){
 	editindex = getRowIndex(target);

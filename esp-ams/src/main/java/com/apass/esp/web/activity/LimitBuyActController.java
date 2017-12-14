@@ -1,17 +1,20 @@
 package com.apass.esp.web.activity;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
@@ -23,11 +26,14 @@ import com.apass.esp.domain.enums.LimitBuyStatus;
 import com.apass.esp.domain.enums.StartTime;
 import com.apass.esp.service.activity.LimitBuyActService;
 import com.apass.esp.service.activity.LimitGoodsSkuService;
+import com.apass.esp.utils.FileUtilsCommons;
+import com.apass.esp.utils.ImageTools;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
+import com.apass.gfb.framework.utils.RandomUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 /**
  * 限时购后台交互
@@ -42,6 +48,10 @@ public class LimitBuyActController {
     private LimitBuyActService limitBuyActService;
     @Autowired
     private LimitGoodsSkuService limitGoodsSkuService;
+    @Value("${nfs.rootPath}")
+    private String                rootPath;
+    @Value("${nfs.goods}")
+    private String                nfsGoods;
     /**
      * 限时购管理页面
      */
@@ -253,6 +263,50 @@ public class LimitBuyActController {
         }catch(Exception e) {
             LOGGER.error("ADD addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动修改异常！");
+        }
+    }
+    /**
+     * 限时购URL  上传缩略图  返回该缩略图URL给前端。
+     * 
+     * @param stockInfo
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/upLoadSkuPic", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "新增库存", valueType = LogValueTypeEnum.VALUE_DTO)
+    public Response upLoadSkuPic(@ModelAttribute("upFile") LimitBuyActVo skuvo) {
+        InputStream is = null;
+        try {
+            MultipartFile file = skuvo.getUpLoadGoodsFile();
+            String imgType = ImageTools.getImgType(file);
+            String fileDiName = RandomUtils.getRandom(10);
+            String fileName = "skuUrl_"+ fileDiName + "." + imgType;
+            Long skuId = skuvo.getLimitBuyActId();
+            String url = nfsGoods + skuId + "/" + fileName;
+            //缩略图校验
+            boolean checkSiftGoodsImgSize = ImageTools.checkGoodsLogoImgSize(file);// 尺寸
+            boolean checkImgType = ImageTools.checkImgType(file);// 类型
+            int size = file.getInputStream().available();// 大小
+            is = file.getInputStream();
+            if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
+                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
+            } else if (size > 1024 * 300) {
+                return Response.fail("文件不能大于300kb!");
+            }
+            //上传文件
+            FileUtilsCommons.uploadFilesUtil(rootPath, url,file);
+            return Response.success("success", url);
+        } catch (Exception e) {
+            LOGGER.error("上传缩略图失败!", e);
+            return Response.fail("上传缩略图失败!");
+        }finally{
+            try {
+                if(is!=null){
+                    is.close();
+                }
+            } catch (IOException e) {
+                LOGGER.error("IOException COLSE !", e);
+            }
         }
     }
 }
