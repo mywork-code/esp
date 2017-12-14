@@ -21,6 +21,7 @@ import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.IndexType;
@@ -42,6 +43,8 @@ public class ESClientController {
     
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private GoodsEsDao goodsEsDao;
     
     @RequestMapping(value = "addData", method = RequestMethod.GET)
     @ResponseBody
@@ -64,7 +67,30 @@ public class ESClientController {
         }
         return Response.successResponse();
     }
-
+    /**
+     * 批量删除ES中jd的商品
+     * 注意：删完后立即注销这个方法
+     */
+	@RequestMapping(value = "deleteDataBySource", method = RequestMethod.GET)
+	@ResponseBody
+	public Response deleteDataBySource() {
+		try {
+//			Pagination<Goods> result = IndexManager.goodSearchBySource("jd", 0, 5000);
+//			// int total=result.getTotalCount();
+//			List<Goods> goodsList = result.getDataList();
+//			Goods goods2 = new Goods();
+//			for (Goods goods : goodsList) {
+//				goods2.setId(goods.getId());
+//				goodsEsDao.delete(goods);
+//				LOGGER.info("----------deleteData----------success" + goods.getId());
+//			}
+			LOGGER.info("----------deleteData----------success");
+		} catch (Exception e) {
+			LOGGER.error("----------deleteData----------", e);
+			return Response.fail("----------deleteData----------fail");
+		}
+		return Response.successResponse("----------deleteData----------success");
+	}
     /**
      * 查询
      *

@@ -1,14 +1,12 @@
 package com.apass.esp.search.manager;
 
-import com.apass.esp.search.condition.GoodsSearchCondition;
-import com.apass.esp.search.entity.IdAble;
-import com.apass.esp.search.enums.IndexType;
-import com.apass.esp.search.utils.ESDataUtil;
-import com.apass.esp.search.utils.Esprop;
-import com.apass.esp.search.utils.Pinyin4jUtil;
-import com.apass.esp.search.utils.PropertiesUtils;
-import com.apass.gfb.framework.mybatis.page.Pagination;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +30,15 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import com.apass.esp.search.condition.GoodsSearchCondition;
+import com.apass.esp.search.entity.IdAble;
+import com.apass.esp.search.enums.IndexType;
+import com.apass.esp.search.utils.ESDataUtil;
+import com.apass.esp.search.utils.Esprop;
+import com.apass.esp.search.utils.Pinyin4jUtil;
+import com.apass.esp.search.utils.PropertiesUtils;
+import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Created by xianzhi.wang on 2017/5/22.
@@ -238,4 +239,27 @@ public class IndexManager<T> {
         return pagination;
     }
 
+	// 删除ES中的京东商品
+	public static <Goods> Pagination<Goods> goodSearchBySource(String source,int from, int size) {
+		TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("source", source);
+		List<Goods> results = new ArrayList<>();
+		SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())// 不同的索引  变量代   码通用
+							.setTypes(IndexType.GOODS.getDataName())
+							.setQuery(termQueryBuilder);
+		serachBuilder.addSort("_score", SortOrder.DESC);
+	    if (0 != size) {
+            serachBuilder.setFrom(from).setSize(size);
+        }
+		SearchResponse response = serachBuilder.execute().actionGet();
+		SearchHits searchHits = response.getHits();
+		SearchHit[] hits = searchHits.getHits();
+		for (SearchHit hit : hits) {
+			results.add((Goods) ESDataUtil.readValue(hit.source(), IndexType.GOODS.getTypeClass()));
+		}
+		int total = (int) searchHits.getTotalHits();
+        Pagination pagination = new Pagination();
+        pagination.setDataList(results);
+        pagination.setTotalCount(total);
+        return pagination;
+	}
 }
