@@ -950,7 +950,7 @@ public class GoodsBaseInfoController {
     }
     
     /**
-     * 商品预览
+     * 商品预览--微知
      *
      * @return
      * @throws Exception

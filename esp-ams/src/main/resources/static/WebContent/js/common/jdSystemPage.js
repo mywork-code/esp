@@ -18,9 +18,7 @@ $ (function ()
 	    pagination : true,
 	    singleSelect : true,
 	    striped : true,
-	    columns : [
-		    [
-		            
+	    columns : [[
 		            {
 		                title : 'id',
 		                field : 'id',
@@ -63,8 +61,7 @@ $ (function ()
 			                return content;
 		                }
 		            }
-		    ]
-	    ],
+				   ]],
 	    
 	    loader : function (param, success, error)
 	    {
