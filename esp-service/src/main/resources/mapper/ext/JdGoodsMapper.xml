@@ -5,7 +5,7 @@
 		select 
 	    <include refid="Base_Column_List"/>
 	    from t_esp_jd_goods
-	    where third_category = #{cateId}
+	    where third_category = #{cateId} and state=1 and sku_id>0
 	</select>
 
 	<select id="queryGoodsBySkuId" resultMap="BaseResultMap">
