@@ -275,6 +275,7 @@ $(function () {
 			});
 			thisForm.submit();
 		}else{
+			$.messager.alert("提示","修改行数据每人限购和限购总量！", "info");
 			$('#uploadGoodsList').datagrid('updateRow',{
 				index: editindex,
 				row:{

@@ -1,6 +1,8 @@
 package com.apass.esp.service.activity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -123,11 +125,14 @@ public class LimitGoodsSkuService {
      * @param list
      * @return
      */
-    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+    public Map<String ,Object> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+        Map<String ,Object> map = new HashMap<String,Object>();
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
         StringBuffer sb = new StringBuffer();
         List<LimitGoodsSku> slist = new ArrayList<LimitGoodsSku>();
+        Integer numal = 0;
+        Integer unnumal = 0;
         for(LimitGoodsSku entity : list){
             if(sortNo==10){
                 slist.add(entity);
@@ -169,6 +174,7 @@ public class LimitGoodsSkuService {
             vo.setSortNo(++sortNo);
             vo.setUpLoadStatus((byte)1);
             skuvolist.add(vo);
+            numal++;
         }
         for(LimitGoodsSku entity : slist){
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
@@ -193,11 +199,15 @@ public class LimitGoodsSkuService {
             vo.setLimitNumTotal(0L);
             vo.setLimitNum(0L);
             skuvolist.add(vo);
+            unnumal++;
             if(sortNo==100){
                 break;
             }
         }
-        return skuvolist;
+        String msg = "共" + list.size() + "件商品，关联成功" + numal + "件，失败" + unnumal + "件.";
+        map.put("msg", msg);
+        map.put("date", skuvolist);
+        return map;
     }
     /**
      * 刷新 限时购活动商品列表

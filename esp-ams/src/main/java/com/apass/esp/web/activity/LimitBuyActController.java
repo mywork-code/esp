@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +152,7 @@ public class LimitBuyActController {
      * @param file
      * @return
      */
+    @SuppressWarnings("unchecked")
     @ResponseBody
     @RequestMapping(value = "/upLoadLimitGoodsSku")
     @LogAnnotion(operationType = "限时购活动商品上传", valueType = LogValueTypeEnum.VALUE_REQUEST)
@@ -157,11 +160,12 @@ public class LimitBuyActController {
         ResponsePageBody<LimitGoodsSkuVo> respBody = new ResponsePageBody<LimitGoodsSkuVo>();
         try{
             List<LimitGoodsSku> listsku = UpLoadUtil.readImportExcelByMultipartFile(actvo.getUpLoadGoodsFile(), LimitGoodsSku.class);
-            List<LimitGoodsSkuVo> listgoods = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku);
+            Map<String ,Object> map = limitGoodsSkuService.findGoodsInfoListBySkuId(listsku);
+            List<LimitGoodsSkuVo> listgoods = (List<LimitGoodsSkuVo>) map.get("date");
             respBody.setTotal(listgoods.size());
             respBody.setRows(listgoods);
             respBody.setStatus(CommonCode.SUCCESS_CODE);
-            respBody.setMsg("限时购活动商品上传成功!");
+            respBody.setMsg("限时购活动商品上传成功!"+map.get("msg").toString());
         }catch(InvalidFormatException e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
             respBody.setMsg("限时购活动商品上传异常,文件内容转换错误!");
