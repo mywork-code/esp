@@ -190,8 +190,8 @@ public class LimitBuyActService {
             throw new BusinessException("限时购活动保存失败!");
         }
         List<LimitGoodsSku> skulist = buyActView.getList();
-        if(skulist.size()>10){
-            throw new BusinessException("每个限时购活动商品数量最多录入10个!");
+        if(skulist.size()>100){
+            throw new BusinessException("每个限时购活动商品数量最多录入100个!");
         }
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){

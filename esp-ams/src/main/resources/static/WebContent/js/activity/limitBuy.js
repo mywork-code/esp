@@ -275,7 +275,7 @@ $(function () {
 		$('#editGoods').window('close');
 	});
 	//编辑商品  上传URL 弹窗   取消
-	$("#editGoodsFromCancle").click(function() {save-btn
+	$("#editGoodsFromCancle").click(function() {
 		$('#editGoods').window('close');
 	});
 	/**保存所有数据   限时购   和   限时购商品列表  （新增 修改）	 */
@@ -324,7 +324,7 @@ function getLimitGoodsList(){
 	//商品列表
     $('#uploadGoodsList').datagrid({
 //    	title : '限时购活动商品列表',
-    	fit : true,
+    	fit : false,
         rownumbers : true,
         pagination : true,
         singleSelect : true,
@@ -455,6 +455,23 @@ function getLimitGoodsList(){
         }
     });
 }
+function functionx(data){
+	debugger
+	var pager = $("#uploadGoodsList").datagrid("getPager"); 
+	pager.pagination({ 
+		total:data.total, 
+		onSelectPage:function (pageNo, pageSize) { 
+		    var start = (pageNo - 1) * pageSize; 
+		    var end = start + pageSize; 
+		    $("#uploadGoodsList").datagrid("loadData", data.slice(start, end)); 
+		    pager.pagination('refresh', { 
+		    	total:data.total, 
+		    	pageNumber:pageNo 
+		    });
+		} 
+	});
+}
+ 
 var limitGoodsSkuId ;//商品ID
 var stockCurrAmt ;//商品库存剩余
 var editindex;//商品表行号
@@ -507,11 +524,37 @@ function deleGoods(target){
 };
 //上移商品
 function upGoods(target){
-	var rowentity = getRowEntity(target);
+	var rowIndex = getRowIndex(target);
+	var selectrow = getRowEntity(target);
+	if(rowIndex==0){  
+        $.messager.alert('提示', '顶行无法上移!', 'warning');  
+    }else{  
+        $('#uploadGoodsList').datagrid('deleteRow', rowIndex);//删除一行  
+        rowIndex--;  
+        $('#uploadGoodsList').datagrid('insertRow', {  
+            index:rowIndex,  
+            row:selectrow  
+        });  
+        $('#uploadGoodsList').datagrid('selectRow', rowIndex);  
+    }  
 };
 //下移商品
 function downGoods(target){
-	var rowentity = getRowEntity(target);
+	var rows=$('#uploadGoodsList').datagrid('getRows');  
+	var rowlength=rows.length;
+	var rowIndex = getRowIndex(target);
+	var selectrow = getRowEntity(target);
+	if(rowIndex==rowlength-1){  
+        $.messager.alert('提示', '底行无法下移!', 'warning');  
+    }else{  
+        $('#uploadGoodsList').datagrid('deleteRow', rowIndex);//删除一行  
+        rowIndex++;  
+        $('#uploadGoodsList').datagrid('insertRow', {  
+            index:rowIndex,  
+            row:selectrow  
+        });  
+        $('#uploadGoodsList').datagrid('selectRow', rowIndex);  
+    } 
 };
 function getRowIndex(target){
 	var tr = $(target).closest('tr.datagrid-row');

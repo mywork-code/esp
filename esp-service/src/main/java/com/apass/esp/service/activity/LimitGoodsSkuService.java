@@ -183,6 +183,8 @@ public class LimitGoodsSkuService {
             vo.setCategoryId1Name(cate.getCategoryName());
             vo.setSortNo(++sortNo);
             vo.setUpLoadStatus((byte)0);
+            vo.setLimitNumTotal(0L);
+            vo.setLimitNum(0L);
             skuvolist.add(vo);
             if(sortNo==100){
                 break;
