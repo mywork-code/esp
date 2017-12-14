@@ -75,17 +75,18 @@ public class ESClientController {
     @ResponseBody
     public void deleteDataBySource() {
         try {
-        	Pagination<Goods> result=IndexManager.goodSearchBySource("jd",0,500);
-        	int total=result.getTotalCount();
+        	Pagination<Goods> result=IndexManager.goodSearchBySource("jd",0,3600);
+//        	int total=result.getTotalCount();
         	List<Goods> goodsList=result.getDataList();
         	Goods goods2 = new Goods();
         	for (Goods goods : goodsList) {
  		         goods2.setId(goods.getId());
                 goodsEsDao.delete(goods);
+                LOGGER.info("----------deleteData----------success"+goods.getId());
 		   }
-        	while(total>0){
-        		deleteDataBySource();
-        	}
+//        	while(total>0){
+//        		deleteDataBySource();
+//        	}
           LOGGER.info("----------deleteData----------success");
         }catch(Exception e){
         	LOGGER.error("----------deleteData----------", e);
