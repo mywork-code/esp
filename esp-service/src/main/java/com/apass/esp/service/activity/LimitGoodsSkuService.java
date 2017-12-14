@@ -1,6 +1,8 @@
 package com.apass.esp.service.activity;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -141,10 +143,15 @@ public class LimitGoodsSkuService {
                 slist.add(entity);
                 continue;
             }
-            sb.append(entity.getSkuId()).append("++");
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
             GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
+            if(!StringUtils.equals(goods.getStatus(), "G02")||f){
+                slist.add(entity);
+                continue;
+            }
+            sb.append(entity.getSkuId()).append("++");
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品基本信息表
             BeanUtils.copyProperties(goods, vo);
