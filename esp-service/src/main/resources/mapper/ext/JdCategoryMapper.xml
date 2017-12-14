@@ -3,12 +3,13 @@
 <mapper namespace="com.apass.esp.mapper.JdCategoryMapper">
     <select id="getCateGoryByCatId" resultMap="BaseResultMap" parameterType="java.lang.Long">
     SELECT <include refid="Base_Column_List" /> from t_esp_jd_category
-    where cat_id =#{catId}
+    where cat_id =#{catId} and status = 1 and cat_id>0
   </select>
 
     <select id="selectByParentId" resultMap="BaseResultMap">
        SELECT <include refid="Base_Column_List" /> from t_esp_jd_category
-        where  parent_id = #{parentId} and cat_class = #{catClass}
+        where parent_id = #{parentId} and cat_class = #{catClass}
+        and status = 1 and cat_id>0
     </select>
 
 </mapper>

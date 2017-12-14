@@ -61,3 +61,5 @@ PRIMARY KEY (`id`)
 
 alter table t_esp_goods_base_info add column main_goods_code varchar(20) not null default '' comment '主商品编号';
 alter table t_esp_limit_goods_sku add up_load_status tinyint not null DEFAULT 1 COMMENT '商品上传成功标志 1：成功；0：失败    默认为1';
+ALTER TABLE `t_esp_limit_goods_sku`
+MODIFY COLUMN `url`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '限时购缩略图URL' AFTER `sort_no`;

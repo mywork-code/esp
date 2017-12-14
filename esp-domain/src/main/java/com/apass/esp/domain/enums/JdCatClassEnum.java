@@ -6,9 +6,7 @@ package com.apass.esp.domain.enums;
 public enum JdCatClassEnum {
   LEVEL_1(0),
   LEVEL_2(1),
-  LEVEL_3(2),
-
-  ;
+  LEVEL_3(2);
 
   private Integer val;
 
