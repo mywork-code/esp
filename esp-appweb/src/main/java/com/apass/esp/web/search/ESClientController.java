@@ -69,6 +69,7 @@ public class ESClientController {
     }
     /**
      * 批量删除ES中jd的商品
+     * 注意：删完后立即注销这个方法
      */
     @RequestMapping(value = "deleteDataBySource", method = RequestMethod.GET)
     @ResponseBody
