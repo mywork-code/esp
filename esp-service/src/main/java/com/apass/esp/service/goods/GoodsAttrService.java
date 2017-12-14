@@ -33,6 +33,7 @@ import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.utils.BaseConstants;
+import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
 import com.google.common.collect.Lists;
 /**
  * 商品属性
@@ -427,10 +428,10 @@ public class GoodsAttrService {//450
      * @throws BusinessException 
      */
     @Transactional
-    public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
-            List<GoodsStockInfoEntity> goodsStocken,
+    public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, List<GoodsStockInfoEntity> goodsStocken,
             String[] arr1, String[] arr2,String[] arr3,
-            String goodsid, String userName,String status) throws BusinessException {
+            String goodsid, String userName,String status,
+            List<StockInfoFileModel> listUrlAdd,List<GoodsStockInfoEntity> listUrledit) throws BusinessException {
         Long goodsId = Long.parseLong(goodsid);
         arr1 = famartsubStringarr(arr1);
         arr2 = famartsubStringarr(arr2);
@@ -447,15 +448,15 @@ public class GoodsAttrService {//450
         if(!dsCREATE){
             throw new BusinessException("删除商品旧库存信息失败！");
         }
-        return saveGoodsCateAttrAndStock(goodsStock, goodsStocken, goodsId, userName,status);
+        return saveGoodsCateAttrAndStock(goodsStock, goodsStocken, goodsId, userName,status,listUrlAdd,listUrledit);
     }
     @Transactional
-    private Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
-            List<GoodsStockInfoEntity> goodsStocken,Long goodsId,String userName,String status) throws BusinessException{
+    private Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock,List<GoodsStockInfoEntity> goodsStocken,
+            Long goodsId,String userName,String status,List<StockInfoFileModel> listUrlAdd,List<GoodsStockInfoEntity> listUrledit) throws BusinessException{
         Boolean falgstatus = "undefined".equals(status)||StringUtils.isBlank(status);
         //修改商品库存维护使用新增商品库存维护逻辑  因为类目修改库存被删除
         if(!falgstatus&&"editstatusaddmethod".equals(status)){
-            return editsaveGoodsCateAttrAndStock(goodsStocken, goodsId, userName);
+            return editsaveGoodsCateAttrAndStock(goodsStocken, goodsId, userName,listUrledit);
         }
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
@@ -482,7 +483,16 @@ public class GoodsAttrService {//450
             goodsStockentoty.setCreateUser(userName);
             goodsStockentoty.setUpdateUser(userName);
             goodsStockentoty.setMarketPrice(new BigDecimal(entity.getGoodsPrice()));
-//            goodsStockentoty.setStockLogo(url);
+            for(StockInfoFileModel enurl : listUrlAdd){
+                if(goodsStock.size()==1){
+                    goodsStockentoty.setStockLogo(enurl.getStockLogo());
+                    break;
+                }
+                if(StringUtils.contains(goodsStockentoty.getGoodsSkuAttr(), enurl.getAttrnameByAfter())){
+                    goodsStockentoty.setStockLogo(enurl.getStockLogo());
+                    break;
+                }
+            }
             Integer i = goodsStockInfoService.insertGoodsAttr(goodsStockentoty);
             if(i!=1){
                 throw new BusinessException("保存商品库存信息失败,请您完整正确填写库存相关信息（列表价格不能为空）！");
@@ -838,7 +848,7 @@ public class GoodsAttrService {//450
      * @throws BusinessException 
      */
     @Transactional
-    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName,String [] arr1,String [] arr2,String [] arr3) throws BusinessException {
+    public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName,String [] arr1,String [] arr2,String [] arr3,List<GoodsStockInfoEntity> listUrledit) throws BusinessException {
         arr1 = famartsubStringarr(arr1);
         arr2 = famartsubStringarr(arr2);
         arr3 = famartsubStringarr(arr3);
@@ -846,7 +856,7 @@ public class GoodsAttrService {//450
         if(!fCREATE){
             throw new BusinessException("保存商品属性和规格信息失败,请您完整正确填写规格相关信息（规格名称不能重复）！");
         }
-        return editsaveGoodsCateAttrAndStock(list, goodsId, userName);
+        return editsaveGoodsCateAttrAndStock(list, goodsId, userName,listUrledit);
     }
     /**
      * 修改商品 保存库存 批量保存  商品的属性规格 和库存信息（无规格）
@@ -857,17 +867,26 @@ public class GoodsAttrService {//450
      * @throws BusinessException 
      */
     @Transactional
-    private Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) throws BusinessException {
+    private Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName,List<GoodsStockInfoEntity> listUrledit) throws BusinessException {
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
         for(GoodsStockInfoEntity entity : list){
             entity.setGoodsId(goodsId);
+            for(GoodsStockInfoEntity enurl : listUrledit){
+                if(list.size()==1){
+                    entity.setStockLogo(enurl.getStockLogo());
+                    break;
+                }
+                if(StringUtils.contains(entity.getGoodsSkuAttr(), enurl.getGoodsSkuAttr())){
+                    entity.setStockLogo(enurl.getStockLogo());
+                    break;
+                }
+            }
             //goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             //goodsStockentoty.setGoodsPrice(new BigDecimal(entity.getGoodsPrice()));
             //goodsStockentoty.setGoodsCostPrice(new BigDecimal(entity.getGoodsCostPrice()));
             //goodsStockentoty.setStockTotalAmt(Long.valueOf(entity.getStockTotalAmt()));// 库存总量
             //goodsStockentoty.setStockCurrAmt(Long.valueOf(entity.getStockAmt()));// 库存剩余
-            //goodsStockentoty.setGoodsSkuAttr(entity.getAttrnameByAfter());
             entity.setMarketPrice(entity.getGoodsPrice());//1h
             entity.setDeleteFlag("N");
             entity.setCreateUser(userName);
@@ -1039,6 +1058,39 @@ public class GoodsAttrService {//450
         }
         respBody.setRows(list);
         respBody.setTotal(list.size());
+        respBody.setStatus(CommonCode.SUCCESS_CODE);
+        return respBody;
+    }
+    /**
+     * 修改商品（类目更新 库存删除 与上个方法逻辑相同）  第一条属性规格名称集合  刷新规格（缩略图）表格
+     * @param request
+     * @return
+     */
+    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(String arrten) {
+        ResponsePageBody<GoodsStockInfoEntity> respBody = new ResponsePageBody<GoodsStockInfoEntity>();
+        arrten = famartsubString(arrten);
+        Boolean falg = "undefined".equals(arrten)||StringUtils.isBlank(arrten);
+        String[] arr = null;
+        List<GoodsStockInfoEntity> list = new ArrayList<GoodsStockInfoEntity>();
+        if(!falg){//arrten非空
+            arr = arrten.split(",");
+            for(String s : arr){
+                Boolean falgs = "undefined".equals(s)||StringUtils.isBlank(s);
+                if(!falgs){
+                    GoodsStockInfoEntity e = new GoodsStockInfoEntity();
+                    e.setGoodsSkuAttr(s);
+                    list.add(e);
+                }
+            }
+        }
+        if(list==null||list.size()==0){
+            GoodsStockInfoEntity e = new GoodsStockInfoEntity();
+            e.setGoodsSkuAttr("无");
+            list.add(e);
+        }
+        respBody.setRows(list);
+        respBody.setTotal(list.size());
+        respBody.setStatus(CommonCode.SUCCESS_CODE);
         return respBody;
     }
 }

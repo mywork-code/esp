@@ -1049,6 +1049,7 @@ public class GoodsBaseInfoController {
     @LogAnnotion(operationType = "新增商品  批量保存  商品的属性规格 和库存信息", valueType = LogValueTypeEnum.VALUE_REQUEST)
     public Response saveGoodsCateAttrAndStock(HttpServletRequest request) {
         try{
+            String user = SpringSecurityUtils.getCurrentUser();
             String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
             String[] categorynameArr1 = request.getParameterValues("categorynameArr1");//HttpWebUtils.getValue(request, "categorynameArr1");
             String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
@@ -1057,8 +1058,12 @@ public class GoodsBaseInfoController {
             String status = HttpWebUtils.getValue(request, "status");
             List<StockInfoFileModel> listadd = JSONObject.parseObject(goodsStock[0], new TypeReference<List<StockInfoFileModel>>(){});
             List<GoodsStockInfoEntity> listenedit = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
+            
+            String[] stockLogo = request.getParameterValues("stockLogo");//HttpWebUtils.getValue(request, "goodsStock");
+            List<StockInfoFileModel> stockLogoUrlAdd = JSONObject.parseObject(stockLogo[0], new TypeReference<List<StockInfoFileModel>>(){});
+            List<GoodsStockInfoEntity> stockLogoUrledit = JSONObject.parseObject(stockLogo[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
             return goodsAttrService.saveGoodsCateAttrAndStock(listadd,listenedit,categorynameArr1,categorynameArr2,
-                categorynameArr3,goodsId,SpringSecurityUtils.getLoginUserDetails().getUsername(),status);
+                categorynameArr3,goodsId,user,status,stockLogoUrlAdd,stockLogoUrledit);
         }catch(BusinessException e){
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
@@ -1173,9 +1178,12 @@ public class GoodsBaseInfoController {
             String[] categorynameArr2 = request.getParameterValues("categorynameArr2");//HttpWebUtils.getValue(request, "categorynameArr2");
             String[] categorynameArr3 = request.getParameterValues("categorynameArr3");//HttpWebUtils.getValue(request, "categorynameArr3");
             String[] goodsStock = request.getParameterValues("goodsStock");//HttpWebUtils.getValue(request, "goodsStock");
+            String[] stockLogo = request.getParameterValues("stockLogo");//HttpWebUtils.getValue(request, "stockLogo");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
             List<GoodsStockInfoEntity> list = JSONObject.parseObject(goodsStock[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
-            return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),SpringSecurityUtils.getLoginUserDetails().getUsername(),categorynameArr1,categorynameArr2,categorynameArr3);
+            List<GoodsStockInfoEntity> listUrledit = JSONObject.parseObject(stockLogo[0], new TypeReference<List<GoodsStockInfoEntity>>(){});
+            String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
+            return goodsAttrService.editsaveGoodsCateAttrAndStock(list,Long.parseLong(goodsId),user,categorynameArr1,categorynameArr2,categorynameArr3,listUrledit);
         }catch(BusinessException e){
             return Response.fail(e.getErrorDesc());
         }catch (Exception e) {
@@ -1201,7 +1209,7 @@ public class GoodsBaseInfoController {
         }
     }
     /**
-     * 新增商品  第一条属性规格名称集合  刷新规格表格
+     * 新增商品  第一条属性规格名称集合  刷新规格（缩略图）表格
      * @param request
      * @return
      */
@@ -1211,6 +1219,23 @@ public class GoodsBaseInfoController {
         try{
             String arrten = HttpWebUtils.getValue(request, "arrten");
             return goodsAttrService.tableattr(arrten);
+        }catch (Exception e) {
+            LOGGER.error("商品属性下拉框载入失败!", e);
+            return null;
+        }
+    }
+    /**
+     * 修改商品（类目更新 库存删除 与上个方法逻辑相同）  第一条属性规格名称集合  刷新规格（缩略图）表格
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/tableattrEdit", method = RequestMethod.POST)
+    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(HttpServletRequest request) {
+        try{
+            String arrten = HttpWebUtils.getValue(request, "arrten");
+            String goodsId = HttpWebUtils.getValue(request, "goodsId");
+            return goodsAttrService.tableattrEdit(arrten);
         }catch (Exception e) {
             LOGGER.error("商品属性下拉框载入失败!", e);
             return null;

@@ -33,7 +33,9 @@ $(function() {
 //	$('#editGoodsInfo').window('close');
 	$('#goodsStockInfo').window('close');
 	$('#addGoodsStockInfoWin').window('close');
+	$('#addGoodsStockInfoWin1').window('close');
 	$('#editaddGoodsStockInfoWin').window('close');
+	$('#editaddGoodsStockInfoWin1').window('close');
 	$('#editGoodsStockInfoWin').window('close');
 	$('#addAmtGoodsStockInfoWin').window('close');
 	$('#bannerPicUpWin').window('close');
@@ -93,18 +95,24 @@ $(function() {
 		var ids = [];
 	    var rows = $('#tableattrlist').datagrid('getRows');
 	    for(var i=0; i<rows.length; i++){
+	        ids.push(rows[i]);
+	    }
+	    var idss = [];
+	    var rowss = $('#tableattr').datagrid('getRows');
+	    for(var i=0; i<rowss.length; i++){
 	    	var d = i+1;
-	    	if(rows[i].stockTotalAmt<rows[i].stockAmt){
-	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+	    	if(rowss[i].stockLogo==null||rowss[i].stockLogo==''){
+	    		$.messager.alert("提示", "第"+d+"行缩略图表格未上传图片！", "info");
 				return;
 	    	}
-	        ids.push(rows[i]);
+	    	idss.push(rowss[i]);
 	    }
 	    var param = {};
 	    param['categorynameArr1']= categorynameArrX.toString();
 	    param['categorynameArr2']= categorynameArrY.toString();
 	    param['categorynameArr3']= categorynameArrZ.toString();
 	    param["goodsStock"]= JSON.stringify(ids);
+	    param["stockLogo"]= JSON.stringify(idss);
 	    param["goodsId"]= finalGoodId;
 		var address = ctx + '/application/goods/management/saveGoodsCateAttrAndStock';
 		$.ajax({
@@ -149,18 +157,24 @@ $(function() {
 		var ids = [];
 	    var rows = $('#tableattrEditlist').datagrid('getRows');
 	    for(var i=0; i<rows.length; i++){
+	        ids.push(rows[i]);
+	    }
+	    var idss = [];
+	    var rowss = $('#tableattrEdit').datagrid('getRows');
+	    for(var i=0; i<rowss.length; i++){
 	    	var d = i+1;
-	    	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
-	    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+	    	if(rowss[i].stockLogo==null||rowss[i].stockLogo==''){
+	    		$.messager.alert("提示", "第"+d+"行缩略图表格未上传图片！", "info");
 				return;
 	    	}
-	        ids.push(rows[i]);
+	    	idss.push(rowss[i]);
 	    }
 	    var param = {};
 	    param['categorynameArr1']= categorynameArrX.toString();
 	    param['categorynameArr2']= categorynameArrY.toString();
 	    param['categorynameArr3']= categorynameArrZ.toString();
 	    param["goodsStock"]= JSON.stringify(ids);
+	    param["stockLogo"]= JSON.stringify(idss);
 	    param["goodsId"]= finalGoodId;
 		var address = ctx + '/application/goods/management/editsaveGoodsCateAttrAndStock';
 		$.ajax({
@@ -743,7 +757,7 @@ $(function() {
     	categorynameArrY = [];
     	categorynameArrZ = [];
     	flushAttrList();
-    	addFlushAttrValTable();
+    	addFlushAttrVal();
     	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
     	$(".add-btn1").click();
 	});
@@ -866,6 +880,7 @@ $(function() {
     	
 //    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+    	editaddFlushAttrVal();
     	flushtableattrEditlist();
     	//类目未修改才刷新下方规格   并且判断商品属性  是否无属性  规格  那么就新增十条不可编辑的属性和规格
     	if(goodsCateChangeFalg==1){
@@ -877,6 +892,8 @@ $(function() {
     	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
     		$(".add-btn2").click();
     	}
+    	//类目修改与否  都要刷新规格缩略图表格
+    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	});
 	
 	//监听编辑商品输入商品名称事件
@@ -1012,7 +1029,10 @@ $(function() {
 		});
 		//加载类目
 		loadEditDatagrid();
+		editaddFlushAttrVal();
 		flushtableattrEditlist();
+		//类目修改与否  都要刷新规格缩略图表格
+		$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	}
 	//取消保存类目 关闭页面
 	$("#disSaveGoodsCategory").click(function(){
@@ -1072,8 +1092,11 @@ $(function() {
 	    		    	categorynameArrX = [];//保存input内容-属性ID   该属性下属所有规格最多十个
 	    		    	categorynameArrY = [];
 	    		    	categorynameArrZ = [];
+	    		    	editaddFlushAttrVal();
 	    		    	flushtableattrEditlist();
 	    		    	flushtableattrEditlistEdit(editGoodId,categorynameArr1,categorynameArr2,categorynameArr3);
+	    		    	//类目修改与否  都要刷新规格缩略图表格
+	    		    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	    			}
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1244,6 +1267,7 @@ $(function() {
 				    	
 				    	loadStockGoods('editGoodsStockList',id,externalsource);
 //				    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+				    	editaddFlushAttrVal();
 				    	flushtableattrEditlist();
 				    	//类目未修改才刷新规格  并且判断商品属性  是否无属性  规格 那么就新增十条不可编辑的属性和规格   京东不加
 				    	if(goodsCateChangeFalg==1){
@@ -1252,6 +1276,8 @@ $(function() {
 				    	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
 				    		$(".add-btn2").click();
 				    	}
+				    	//类目修改与否  都要刷新规格缩略图表格
+				    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 						return;
 					}
 					//非京东 跳页  跳第三页
@@ -1476,6 +1502,7 @@ $(function() {
 			    	
 			    	loadStockGoods('editGoodsStockList',editGoodId,externalsource);
 //			    	loadStockGoods('tableattrEditlist',editGoodId,externalsource);
+			    	editaddFlushAttrVal();
 			    	flushtableattrEditlist();
 			    	//类目未修改才刷新规格  并且判断商品属性  是否无属性  规格  那么就新增十条不可编辑的属性和规格   京东不加
 			    	if(goodsCateChangeFalg==1){
@@ -1484,6 +1511,8 @@ $(function() {
 			    	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
 			    		$(".add-btn2").click();
 			    	}
+			    	//类目修改与否  都要刷新规格缩略图表格
+			    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 				}
 			}
 		});
@@ -1535,8 +1564,7 @@ $(function() {
 		//loadStockGoods('goodsStockList',goodsId,source);
 		loadStockGoodsAbout('goodsStockList',goodsId,source);
 	}
-	
-	//商品规格长度校验
+	//商品规格长度校验   弃用
 	$("input",$("#goodsSkuAttr").next("span")).blur(function(){  
 		var goodsSkuAttr = $("#goodsSkuAttr").textbox('getValue');
 		if(goodsSkuAttr.length>8){
@@ -1545,65 +1573,26 @@ $(function() {
 			return;
 		}
 	})  
+	//==================================-------库存商品 末--------===============================================//
 	
-	//新增库存
-	$(".addGoodsStockInfo").click(function() {
-		$("#goodsSkuAttr").textbox('clear');
-		$("#goodsPrice").textbox('clear');
-		$("#marketPrice").textbox('clear');
-		$("#stockTotalAmt").textbox('clear');
-		$("#goodsCostPrice").textbox('clear');
-		$("#goodsCompareUrlone").textbox('clear');
-		$("#goodsCompareUrltwo").textbox('clear');
-		$("#goodsCompareUrl").val('');
-		$("#stockLogoFile").val('');
-		
-		$('#addGoodsStockInfoWin').window({modal: true});
-		$('#addGoodsStockInfoWin').window('open');
+	//新增商品新增库存弹窗见3263行editrowForAdd函数
+	//新增商品新增库存缩略图 取消
+	$("#addGoodsStockInfoDisy1").click(function() {
+		$('#addGoodsStockInfoWin1').window('close');
 	});
 	//新增商品新增库存 取消
 	$("#addGoodsStockInfoDisy").click(function() {
 		$('#addGoodsStockInfoWin').window('close');
 	});
-	//新增商品新增库存 确定
-	$("#addGoodsStockInfoSumbit").click(function() {
-		$("#addstockInfogoodsId").val(finalGoodId);
-		var goodsCostPrice=$("#goodsCostPrice").textbox('getValue');
-		var goodsPrice=$("#goodsPrice").textbox('getValue');
-//		var goodsSkuAttr=$("#goodsSkuAttr").textbox('getValue');
-//		var marketPrice=$("#marketPrice").textbox('getValue');
-		var stockTotalAmt=$("#stockTotalAmt").textbox('getValue');
-//		var goodsCompareUrlone=$("#goodsCompareUrlone").textbox('getValue');
-//		var goodsCompareUrltwo=$("#goodsCompareUrltwo").textbox('getValue');
-		// debugger;
-//		$('#goodsCompareUrl').val(goodsCompareUrlone+";"+goodsCompareUrlone);
-//		console.log($('#goodsCompareUrl').val());
+	//新增商品新增库存 缩略图 确定
+	$("#addGoodsStockInfoSumbit1").click(function() {
 		var stockLogoFile=$("#stockLogoFile").val();
-//		if(goodsSkuAttr.length>8){
-//			$.messager.alert("提示", "库存规格最多8字！", "info");  
-//			return;
-//		}
-//		if (null == marketPrice || ("") == marketPrice) {
-//			$.messager.alert("提示", "市场价不能为空！", "info");
-//			return;
-//		}
-		if (null == goodsCostPrice || ("") == goodsCostPrice) {
-			$.messager.alert("提示", "商品成本不能为空！", "info");
+		if (null == stockLogoFile || ("") == stockLogoFile) {
+			$.messager.alert("提示", "请选择商品属性缩略图文件！", "info");
 			return;
 		}
-		if (null == goodsPrice || ("") == goodsPrice) {
-			$.messager.alert("提示", "商品售价不能为空！", "info");
-			return;
-		}
-		if (null == stockTotalAmt || ("") == stockTotalAmt) {
-			$.messager.alert("提示", "库存总量不能为空！", "info");
-			return;
-		}
-		//if (null == stockLogoFile || ("") == stockLogoFile) {
-		// 	$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
-		// 	return;
-		// }
 		//提交from
+		$("#addstockInfogoodsId").val(finalGoodId);
 		var theForm = $("#stockInfoFrom");
 		theForm.form({
 //			url : ctx + '/application/goods/stockinfo/add',
@@ -1616,21 +1605,13 @@ $(function() {
 				var response = JSON.parse(data);
 				if(response.msg=="success"){
 					$.messager.alert("提示","缩略图上传成功！", "info");
-//			        loadStockGoods('addGoodsStockList',finalGoodId,null);
-//			        loadStockGoods('editGoodsStockList',finalGoodId,null);
-//			        loadStockGoods('goodsStockList',finalGoodId,null);
-					$('#tableattrlist').datagrid('updateRow',
-					{
-						index: addindex,
+					$('#tableattr').datagrid('updateRow',{
+						index: addin,
 						row:{
 							"stockLogo":response.data,
-							"goodsCostPrice":goodsCostPrice,
-							"goodsPrice":goodsPrice,
-							"stockTotalAmt":stockTotalAmt,
-							"stockAmt":stockTotalAmt
 							}
 					});
-					$('#addGoodsStockInfoWin').window('close');
+					$('#addGoodsStockInfoWin1').window('close');
 					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", response.msg, "info");
@@ -1638,22 +1619,12 @@ $(function() {
 		    }
 		});
 		theForm.submit();
-	});
-	//新增商品新增库存 防止表单干净提交代码
-	$("#stockInfoFrom").submit(function(){  
-		$(":submit",this).attr("disabled","disabled");  
-	});
-	//修改商品新增库存 取消
-	$("#editaddGoodsStockInfoDisy").click(function() {
-		$('#editaddGoodsStockInfoWin').window('close');
-	});
-	//修改商品新增库存 确定
-	$("#editaddGoodsStockInfoSumbit").click(function() {
-		$("#editaddstockInfogoodsId").val(finalGoodId);
-		var goodsCostPrice=$("#editaddgoodsCostPrice").textbox('getValue');
-		var goodsPrice=$("#editaddgoodsPrice").textbox('getValue');
-		var stockTotalAmt=$("#editaddstockTotalAmt").textbox('getValue');
-		var stockLogoFile=$("#editaddstockLogoFile").val();
+	})
+	//新增商品新增库存 确定
+	$("#addGoodsStockInfoSumbit").click(function() {
+		var goodsCostPrice=$("#goodsCostPrice").textbox('getValue');
+		var goodsPrice=$("#goodsPrice").textbox('getValue');
+		var stockTotalAmt=$("#stockTotalAmt").textbox('getValue');
 		if (null == goodsCostPrice || ("") == goodsCostPrice) {
 			$.messager.alert("提示", "商品成本不能为空！", "info");
 			return;
@@ -1666,10 +1637,39 @@ $(function() {
 			$.messager.alert("提示", "库存总量不能为空！", "info");
 			return;
 		}
-		// if (null == stockLogoFile || ("") == stockLogoFile) {
-		// 	$.messager.alert("提示", "未选择商品库存缩略图LOGO！", "info");
-		// 	return;
-		// }
+		$('#tableattrlist').datagrid('updateRow',{
+			index: addindex,
+			row:{
+				"goodsCostPrice":goodsCostPrice,
+				"goodsPrice":goodsPrice,
+				"stockTotalAmt":stockTotalAmt,
+				"stockAmt":stockTotalAmt
+				}
+		});
+		$('#addGoodsStockInfoWin').window('close');
+	});
+	//新增商品新增库存 防止表单干净提交代码
+	$("#stockInfoFrom").submit(function(){  
+		$(":submit",this).attr("disabled","disabled");  
+	});
+	
+	
+	//修改商品新增库存 缩略图 取消
+	$("#editaddGoodsStockInfoDisy1").click(function() {
+		$('#editaddGoodsStockInfoWin1').window('close');
+	});
+	//修改商品新增库存 取消
+	$("#editaddGoodsStockInfoDisy").click(function() {
+		$('#editaddGoodsStockInfoWin').window('close');
+	});
+	//修改商品新增库存 缩略图 确定
+	$("#editaddGoodsStockInfoSumbit1").click(function() {
+		var stockLogoFile=$("#editaddstockLogoFile").val();
+		$("#editaddstockInfogoodsId").val(finalGoodId);
+		if (null == stockLogoFile || ("") == stockLogoFile) {
+			$.messager.alert("提示", "请选择商品属性缩略图文件！", "info");
+		 	return;
+		}
 		var theForm = $("#editaddstockInfoFrom");
 		theForm.form({
 			url : ctx + '/application/goods/stockinfo/addForLogo',
@@ -1681,18 +1681,13 @@ $(function() {
 				var response = JSON.parse(data);
 				if(response.msg=="success"){
 					$.messager.alert("提示","缩略图上传成功！", "info");
-					$('#tableattrEditlist').datagrid('updateRow',
-					{
-						index: editindex,
+					$('#tableattrEdit').datagrid('updateRow',{
+						index: editaddin,
 						row:{
 							"stockLogo":response.data,
-							"goodsCostPrice":goodsCostPrice,
-							"goodsPrice":goodsPrice,
-							"stockTotalAmt":stockTotalAmt,
-							"stockCurrAmt":stockTotalAmt
 							}
 					});
-					$('#editaddGoodsStockInfoWin').window('close');
+					$('#editaddGoodsStockInfoWin1').window('close');
 					$(".search-btn").click();
 				}else{
 					$.messager.alert("提示", response.msg, "info");
@@ -1700,6 +1695,34 @@ $(function() {
 		    }
 		});
 		theForm.submit();
+	});
+	//修改商品新增库存 确定
+	$("#editaddGoodsStockInfoSumbit").click(function() {
+		var goodsCostPrice=$("#editaddgoodsCostPrice").textbox('getValue');
+		var goodsPrice=$("#editaddgoodsPrice").textbox('getValue');
+		var stockTotalAmt=$("#editaddstockTotalAmt").textbox('getValue');
+		if (null == goodsCostPrice || ("") == goodsCostPrice) {
+			$.messager.alert("提示", "商品成本不能为空！", "info");
+			return;
+		}
+		if (null == goodsPrice || ("") == goodsPrice) {
+			$.messager.alert("提示", "商品售价不能为空！", "info");
+			return;
+		}
+		if (null == stockTotalAmt || ("") == stockTotalAmt) {
+			$.messager.alert("提示", "库存总量不能为空！", "info");
+			return;
+		}
+		$('#tableattrEditlist').datagrid('updateRow',{
+			index: editindex,
+			row:{
+				"goodsCostPrice":goodsCostPrice,
+				"goodsPrice":goodsPrice,
+				"stockTotalAmt":stockTotalAmt,
+				"stockCurrAmt":stockTotalAmt
+				}
+		});
+		$('#editaddGoodsStockInfoWin').window('close');
 	});
 	//修改商品新增库存 防止表单重复提交代码
 	$("#editaddstockInfoFrom").submit(function(){  
@@ -3119,6 +3142,7 @@ function buttonclick(id){//删除本条属性下属十个规格，刷新表格
 		categorynameArr3=[];
 		categorynameArrZ=[];
 	}
+	addFlushAttrValPar();
 	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
 }
 function createTableByCate(value,id){//根据每个属性  十条规格   失焦事件  刷新表格
@@ -3132,6 +3156,7 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 	if(!reg.test(childattVlaue)||childattVlaue==0){
 		$.messager.alert("提示", "请先选择商品属性！", "info");
 		child.value="";
+		return;
 	}
 	var childbroarr = child.parentNode.childNodes;//本节点兄弟input对象集合
 	var valuearr=[];
@@ -3139,7 +3164,7 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 	for(var i=0;i<childbroarr.length;i++){
 		var val = childbroarr[i].value;
 		if(typeof(val)!="undefined"&&val!=null&&val!=''){
-			valuearr.push(childbroarr[i].value);
+			valuearr.push(val);
 			valueidarr.push(val+"-"+childattVlaue);
 		}
 	}
@@ -3161,14 +3186,24 @@ function createTableByCate(value,id){//根据每个属性  十条规格   失焦
 		categorynameArr3=valuearr;
 		categorynameArrZ=valueidarr;
 	}
+	addFlushAttrValPar();
 	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
+}
+function addFlushAttrValPar(){
 	var father = document.getElementById("inputDiv");
 	var childfirst = father.childNodes[0];
 	var childSecond = childfirst.childNodes[1];
 	var childten = childSecond.childNodes;
-	$('#tableattr').datagrid('load', {"arrten":childten});;
+	var ct = [];
+	for(var i=0;i<childten.length;i++){
+		var v = childten[i].value;
+		if(typeof(v)!="undefined"&&v!=null&&v!=''){
+			ct.push(v);
+		}
+	}
+	$('#tableattr').datagrid('load', {"arrten":ct.toString()});
 }
-function addFlushAttrValTable(){//根据第一条属性下规格名称刷新规格表格
+function addFlushAttrVal(){//根据第一条属性下规格名称刷新规格表格
 	$('#tableattr').datagrid({
         rownumbers : true,
         pagination : true,
@@ -3188,7 +3223,7 @@ function addFlushAttrValTable(){//根据第一条属性下规格名称刷新规�
         },{
         	field:'action',
         	title:'操作',
-        	width:300,
+        	width:250,
         	align:'center',
 			formatter:function(value,row,index){
 				var content = "";
@@ -3207,6 +3242,22 @@ function addFlushAttrValTable(){//根据第一条属性下规格名称刷新规�
             })
         }
 	});
+}
+var addin;//新增商品 规格缩略图表格行数
+function addtableattr1(target){
+	addin = getRowIndex(target);
+	var rows = $('#tableattr').datagrid('getRows');
+	var r = rows[addin];
+	$("#addStockGoodsLogoImg").attr("src","");
+	if(r.stockLogo!=null&&r.stockLogo!=""&&r.attrnameByAfter!=null&&r.attrnameByAfter!=""){
+		$("#addStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
+	}
+	$("#stockLogoFile").val('');
+	$('#addGoodsStockInfoWin1').window({modal: true});
+	$('#addGoodsStockInfoWin1').window('open');
+}
+function addtableattr2(target){
+	
 }
 function flushAttrListPrepare(value1,value2,value3){//刷新表格
 	var params = {};
@@ -3273,20 +3324,15 @@ function flushAttrList(){//表格   刷新       弹框 后才刷新
         }
 	});
 }
-var addindex;
-function editrowForAdd(target){//可编辑动态表格
+var addindex;//新增库存表格行数
+//新增商品新加库存
+function editrowForAdd(target){
 	addindex = getRowIndex(target);
 	var rows = $('#tableattrlist').datagrid('getRows');
 	var r = rows[addindex];
 	$("#goodsCostPrice").textbox('setValue',r.goodsCostPrice);
 	$("#goodsPrice").textbox('setValue',r.goodsPrice);
 	$("#stockTotalAmt").textbox('setValue',r.stockTotalAmt);
-	$("#addStockGoodsLogoImg").attr("src","");
-	if(r.stockLogo!=null&&r.stockLogo!=""&&r.goodsCostPrice!=null&&r.goodsCostPrice!=""){
-		$("#addStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
-	}
-	$("#stockLogoFile").val('');
-	
 	$('#addGoodsStockInfoWin').window({modal: true});
 	$('#addGoodsStockInfoWin').window('open');
 }
@@ -3473,6 +3519,76 @@ function flushtableattrEditlistEdit(finalGoodId,value1,value2,value3){
 	}
 	$('#tableattrEditlist').datagrid('load', param);
 }
+function editaddFlushAttrValPar(){
+	var father = document.getElementById("inputDivEdit");
+	var childfirst = father.childNodes[0];
+	var childSecond = childfirst.childNodes[1];
+	var childten = childSecond.childNodes;
+	var ct = [];
+	for(var i=0;i<childten.length;i++){
+		var v = childten[i].value;
+		if(typeof(v)!="undefined"&&v!=null&&v!=''){
+			ct.push(v);
+		}
+	}
+	$('#tableattrEdit').datagrid('load', {"arrten":ct.toString()});
+}
+function editaddFlushAttrVal(){//根据第一条属性下规格名称刷新规格表格
+	$('#tableattrEdit').datagrid({
+        rownumbers : true,
+        pagination : true,
+        singleSelect : true,
+        striped:true,
+        columns:[[{
+        	title : '属性规格',
+            field : 'goodsSkuAttr',
+            width : 250,
+            align : 'center'
+        },{
+        	field : 'attrValId',
+            hidden: 'hidden'
+        },{
+            field : 'stockLogo',
+            hidden: 'hidden'
+        },{
+        	field:'action',
+        	title:'操作',
+        	width:250,
+        	align:'center',
+			formatter:function(value,row,index){
+				var content = "";
+				content += '<a href="#" onclick="edittableattr1(this)">上传缩略图</a> ';
+				content += '<a href="#" onclick="edittableattr2(this)">查看图片</a> ';
+				return content;
+			}
+        }]],
+        loader : function(param, success, error) {
+            $.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
+                success : function(data) {
+                    $.validateResponse(data, function() {
+                        success(data);
+                    });
+                }
+            })
+        }
+	});
+}
+var editaddin;//修改商品 （类目修改）规格缩略图表格行数
+function edittableattr1(target){
+	editaddin = getRowIndex(target);
+	var rows = $('#tableattrEdit').datagrid('getRows');
+	var r = rows[editaddin];
+	$("#editaddStockGoodsLogoImg").attr("src","");
+	if(r.stockLogo!=null&&r.stockLogo!=""&&r.goodsSkuAttr!=null&&r.goodsSkuAttr!=""){
+		$("#editaddStockGoodsLogoImg").attr("src",ctx + "/fileView/query?picUrl=" + r.stockLogo);
+	}
+	$("#editaddstockLogoFile").val('');
+	$('#editaddGoodsStockInfoWin1').window({modal: true});
+	$('#editaddGoodsStockInfoWin1').window('open');
+}
+function edittableattr2(target){
+	
+}
 function flushtableattrEditlist(){
 	$('#tableattrEditlist').datagrid({
 		rownumbers : true,
@@ -3544,7 +3660,7 @@ function flushtableattrEditlist(){
         },
 	});
 }
-var editindex;
+var editindex;//修改库存表格行数
 function editrowForEdit1(target){
 	if(viewdisplaybysource == 'jd'){
 		$("#editgoodsCostPrice").numberspinner({"disabled":"disabled"});
@@ -3639,18 +3755,24 @@ function function2(){
 	var ids = [];
     var rows = $('#tableattrEditlist').datagrid('getRows');
     for(var i=0; i<rows.length; i++){
+        ids.push(rows[i]);
+    }
+    var idss = [];
+    var rowss = $('#tableattrEdit').datagrid('getRows');
+    for(var i=0; i<rowss.length; i++){
     	var d = i+1;
-    	if(rows[i].stockTotalAmt<rows[i].stockCurrAmt){
-    		$.messager.alert("提示", "第"+d+"行表格保存错误，库存总量小于剩余库存，不可提交！", "info");
+    	if(rowss[i].stockLogo==null||rowss[i].stockLogo==''){
+    		$.messager.alert("提示", "第"+d+"行缩略图表格未上传图片！", "info");
 			return;
     	}
-        ids.push(rows[i]);
+    	idss.push(rowss[i]);
     }
     var param = {};
     param['categorynameArr1']= categorynameArrX.toString();
     param['categorynameArr2']= categorynameArrY.toString();
     param['categorynameArr3']= categorynameArrZ.toString();
     param["goodsStock"]= JSON.stringify(ids);
+    param["stockLogo"]= JSON.stringify(idss);
     param["goodsId"]= finalGoodId;
     param['status'] = "editstatusaddmethod";
 	var address = ctx + '/application/goods/management/saveGoodsCateAttrAndStock';
@@ -3709,6 +3831,7 @@ function function3(value,id){//根据每个属性  十条规格   失焦事件  
 		categorynameArrZ=valueidarr;
 	}
 	function4(categorynameArr1,categorynameArr2,categorynameArr3);
+	editaddFlushAttrValPar(null);
 }
 function function4(value1,value2,value3){
 	var params = {};
@@ -3752,6 +3875,7 @@ function function5(id){//删除本条属性下属十个规格，刷新表格
 		categorynameArrZ=[];
 	}
 	function4(categorynameArr1,categorynameArr2,categorynameArr3);
+	editaddFlushAttrValPar(null);
 }
 
 function functionX(goodsId){
