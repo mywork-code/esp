@@ -522,8 +522,8 @@ public class TestWZController {
 	@RequestMapping("/initJdGoods")
 	@ResponseBody
 	public Response initJdGoods(){
-		/*整体逻辑：先查一级类目,根据一级类目查二级类目,根据二级类目查三级类目,根据三级类目查询skuId集合
-		根据skuid查询商品详情,根据详情中的category字段查类目信息插jd_category表。再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
+		/*整体逻辑：先查一级类目,根据一级类目查二级类目,根据二级类目查三级类目,根据三级类目查询skuId集合.
+		根据skuid查询商品详情,根据详情中的category字段查类目信息,插jd_category表。再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
 		//分页参数
 		long startTime = System.currentTimeMillis();
 		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}",startTime+"");
@@ -541,6 +541,11 @@ public class TestWZController {
 
 				//根据一级类目查询二级类目
 				for (Category category : weiZhiFirstCategorys) {
+					//插入类目表level为1
+					//addCategory(,1);
+
+
+
 					int pageNum2 = 1;
 					int secondCategorysCount = 0;//记录已执行的 某一级类目下二级类目的数量
 					CategoryPage secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());

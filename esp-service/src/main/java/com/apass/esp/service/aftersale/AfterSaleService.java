@@ -273,6 +273,9 @@ public class AfterSaleService {
                 try {
                     //TODO 校验某订单中某商品是否可以提交售后服务
                     availableNumberComp = weiZhiAfterSaleApiClient.getAvailableNumberComp(orderInfo.getExtOrderId(),orderDetailInfoEntity.getSkuId());
+                    if(availableNumberComp == null){
+                        throw new BusinessException("校验某订单中某商品是否可以提交售后服务失败!");
+                    }
                 } catch (Exception e) {
                     LOGGER.error("校验某订单中某商品是否可以提交售后服务异常",e);
                     throw new BusinessException("调用接口:校验某订单中某商品是否可以提交售后服务失败!");

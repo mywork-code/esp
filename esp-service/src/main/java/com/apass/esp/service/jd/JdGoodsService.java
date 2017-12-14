@@ -19,6 +19,7 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.gfb.framework.utils.RandomUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,9 @@ public class JdGoodsService {
 
     @Autowired
     private OrderDetailInfoRepository orderDetailInfoRepository;
+
+    @Autowired
+    private JdGoodsInfoService jdGoodsInfoService;
 
     /**
      * 关联京东类目
@@ -129,6 +133,21 @@ public class JdGoodsService {
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
             stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
+            Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(jdGoods.getSkuId());
+            if(jdGoodsSpecification != null){
+                StringBuffer sb = new StringBuffer();
+                for(String value:jdGoodsSpecification.values()){
+                    sb.append(value+" ");
+                }
+                String goodsSku = sb.toString();
+                if(StringUtils.isNotBlank(goodsSku)){
+                    goodsSku = goodsSku.substring(0,goodsSku.length()-1);
+
+                }
+                stockEntity.setGoodsSkuAttr(goodsSku);
+            }
+            stockEntity.setAttrValIds("");
+            stockEntity.setDeleteFlag("N");
             goodsStockInfoService.insert(stockEntity);
         }
 
