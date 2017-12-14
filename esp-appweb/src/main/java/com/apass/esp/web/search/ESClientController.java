@@ -71,27 +71,26 @@ public class ESClientController {
      * 批量删除ES中jd的商品
      * 注意：删完后立即注销这个方法
      */
-    @RequestMapping(value = "deleteDataBySource", method = RequestMethod.GET)
-    @ResponseBody
-    public void deleteDataBySource() {
-        try {
-        	Pagination<Goods> result=IndexManager.goodSearchBySource("jd",0,3600);
-//        	int total=result.getTotalCount();
-        	List<Goods> goodsList=result.getDataList();
-        	Goods goods2 = new Goods();
-        	for (Goods goods : goodsList) {
- 		         goods2.setId(goods.getId());
-                goodsEsDao.delete(goods);
-                LOGGER.info("----------deleteData----------success"+goods.getId());
-		   }
-//        	while(total>0){
-//        		deleteDataBySource();
-//        	}
-          LOGGER.info("----------deleteData----------success");
-        }catch(Exception e){
-        	LOGGER.error("----------deleteData----------", e);
-        }
-    }
+	@RequestMapping(value = "deleteDataBySource", method = RequestMethod.GET)
+	@ResponseBody
+	public Response deleteDataBySource() {
+		try {
+//			Pagination<Goods> result = IndexManager.goodSearchBySource("jd", 0, 5000);
+//			// int total=result.getTotalCount();
+//			List<Goods> goodsList = result.getDataList();
+//			Goods goods2 = new Goods();
+//			for (Goods goods : goodsList) {
+//				goods2.setId(goods.getId());
+//				goodsEsDao.delete(goods);
+//				LOGGER.info("----------deleteData----------success" + goods.getId());
+//			}
+			LOGGER.info("----------deleteData----------success");
+		} catch (Exception e) {
+			LOGGER.error("----------deleteData----------", e);
+			return Response.fail("----------deleteData----------fail");
+		}
+		return Response.successResponse("----------deleteData----------success");
+	}
     /**
      * 查询
      *
