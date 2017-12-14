@@ -1781,14 +1781,21 @@ public class GoodsService {
      * @param param
      * @return
      */
-    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param,SourceType sourceType) {
+//    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param,SourceType sourceType) {
+//        GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
+//        entity.setGoodsCode(Long.parseLong(param));
+//        entity.setExternalId(param);
+//        entity.setSource(sourceType.getCode());
+//        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+//    }
+
+    
+    public GoodsBasicInfoEntity getByGoodsBySkuIdOrGoodsCode2(String param) {
         GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
         entity.setGoodsCode(Long.parseLong(param));
         entity.setExternalId(param);
-        entity.setSource(sourceType.getCode());
         return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
     }
-
 
     public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {
         return goodsDao.selectByCategoryId2AndsordNo(params);

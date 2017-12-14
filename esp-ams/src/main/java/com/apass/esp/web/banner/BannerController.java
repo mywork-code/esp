@@ -237,7 +237,8 @@ public class BannerController extends BaseController {
             	}else if("goodId".equals(activityName)){
                   //这里由原来的goodId 改为 商品编号或skuid
                   entity.setAttrVal(activityUrl);
-                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl, SourceType.WZ);
+                  //GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl, SourceType.WZ);
+                  GoodsBasicInfoEntity goodsInfo=goodsService.getByGoodsBySkuIdOrGoodsCode2(activityUrl);
                   if(goodsInfo == null){
                       return Response.fail("请添加已上架的商品");
                   }
