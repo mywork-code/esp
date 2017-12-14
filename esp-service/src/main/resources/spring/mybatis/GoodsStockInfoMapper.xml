@@ -169,11 +169,15 @@
 	             market_price,
 	             goods_Cost_Price,
 	             stock_Logo,
-	             goods_compare_url,goods_compare_url2)
+	             goods_compare_url,
+	             goods_compare_url2,
+	             sku_id,
+	             attr_val_ids,
+	             delete_flag)
 			values (#{goodsId, jdbcType=BIGINT},
 			        #{goodsSkuAttr, jdbcType=VARCHAR},
 		        	#{goodsPrice, jdbcType=DECIMAL},
-		        	#{stockTotalAmt, jdbcType=BIGINT}, 
+		        	#{stockTotalAmt, jdbcType=BIGINT},
 			        #{stockCurrAmt, jdbcType=BIGINT},
 			        #{createUser, jdbcType=VARCHAR},
 			        #{updateUser, jdbcType=VARCHAR},
@@ -183,7 +187,10 @@
 			        #{goodsCostPrice, jdbcType=DECIMAL},
 			        #{stockLogo, jdbcType=VARCHAR},
 			        #{goodsCompareUrl, jdbcType=VARCHAR},
-			        #{goodsCompareUrl2, jdbcType=VARCHAR}
+			        #{goodsCompareUrl2, jdbcType=VARCHAR},
+			        #{skuId, jdbcType=VARCHAR},
+			        #{attrValIds, jdbcType=VARCHAR},
+			        #{deleteFlag, jdbcType=VARCHAR}
 			        );
 	]]>
 	</insert>
