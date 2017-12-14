@@ -47,6 +47,7 @@ public class LimitCommonService {
 	public Boolean isLimitByGoodsId(String skuId){
 		LimitGoodsSku entity =new LimitGoodsSku();
 		entity.setSkuId(skuId);
+		entity.setUpLoadStatus((byte)1);
 		List<LimitGoodsSku>  LimitGoodsSkuList=limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if(null ==LimitGoodsSkuList ||  LimitGoodsSkuList.size()==0 ){
 			return false;
@@ -75,6 +76,7 @@ public class LimitCommonService {
 		}
 		LimitGoodsSku entity = new LimitGoodsSku();
 		entity.setSkuId(skuId);
+		entity.setUpLoadStatus((byte)1);
 		List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
 		if (null == LimitGoodsSkuList || LimitGoodsSkuList.size() == 0) {
 			return null;

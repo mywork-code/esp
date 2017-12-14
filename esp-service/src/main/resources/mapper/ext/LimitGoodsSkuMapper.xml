@@ -56,6 +56,7 @@
         <if test="limitBuyActId!=null and limitBuyActId!=''"> AND limit_buy_act_id = #{limitBuyActId} </if>
         <if test="goodsId!=null and goodsId!=''"> AND goods_id = #{goodsId} </if>
         <if test="skuId!=null and skuId!=''"> AND sku_id = #{skuId} </if>
+        <if test="upLoadStatus!=null and upLoadStatus!=''"> AND up_load_status = #{upLoadStatus} </if>
         <![CDATA[ 
             ORDER BY sort_no ASC
         ]]>
