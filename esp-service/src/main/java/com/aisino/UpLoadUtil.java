@@ -64,8 +64,12 @@ public class UpLoadUtil{
         Sheet hssfSheet = hssfWorkbook.getSheetAt(0);
         // 第一行为标题，数据从第二行开始获取
         Row titleRow = hssfSheet.getRow(0);//第一行标题 字段
-        // 得到总行数
+        // 得到总行数   
         int rowNum = hssfSheet.getLastRowNum() + 1;
+        //只取前一百条导入数据
+        if(rowNum>101){
+            rowNum = 101;
+        }
         for (int i = 1; i < rowNum; i++) {
             Row hssfRow = hssfSheet.getRow(i);
             if (hssfRow == null) {

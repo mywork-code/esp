@@ -121,38 +121,24 @@ public class LimitGoodsSkuService {
      * @param list
      * @return
      */
-    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list,Long limitBuyActId) {
+    public List<LimitGoodsSkuVo> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
-        if(limitBuyActId!=null){   
-            List<LimitGoodsSku> skulistbydb = readEntityList(limitBuyActId);
-            for(LimitGoodsSku entity : skulistbydb){
-                LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
-                GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
-                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
-                Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
-                //复制商品基本信息表
-                BeanUtils.copyProperties(goods, vo);
-                vo.setGoodsId(goods.getId());
-                //复制限时购活动商品表   避免复制商品基本信息表带入主键
-                BeanUtils.copyProperties(entity, vo);
-                //复制库存表
-                vo.setStockCurrAmt(stock.getStockCurrAmt());
-                vo.setMarketPrice(stock.getMarketPrice());
-                //复制类目名称数据
-                vo.setCategoryId1Name(cate.getCategoryName());
-                vo.setSortNo(++sortNo);
-                skuvolist.add(vo);
-            }
-        }
         StringBuffer sb = new StringBuffer();
+        List<LimitGoodsSku> slist = new ArrayList<LimitGoodsSku>();
         for(LimitGoodsSku entity : list){
+            if(sortNo==10){
+                slist.add(entity);
+                continue;
+            }
             if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
                 //是否跑出异常   待上传商品列表已经在其他进行中活动中添加
+                slist.add(entity);
                 continue;
             }
             if(sb.toString().contains(entity.getSkuId())){
                 //是否跑出异常   待上传商品列表含有重复相同商品
+                slist.add(entity);
                 continue;
             }
             sb.append(entity.getSkuId()).append("++");
@@ -174,8 +160,31 @@ public class LimitGoodsSkuService {
             //复制类目名称数据
             vo.setCategoryId1Name(cate.getCategoryName());
             vo.setSortNo(++sortNo);
+            vo.setUpLoadStatus((byte)1);
             skuvolist.add(vo);
-            if(sortNo==10){
+        }
+        for(LimitGoodsSku entity : slist){
+            LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+            GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
+            //复制商品基本信息表
+            BeanUtils.copyProperties(goods, vo);
+            vo.setGoodsId(goods.getId());
+            //清空主键  因为复制商品基本信息表时主键被复制了
+            vo.setId(null);
+            //复制库存表
+            vo.setStockCurrAmt(stock.getStockCurrAmt());
+            vo.setMarketPrice(stock.getMarketPrice());
+            //复制导入数据
+            vo.setActivityPrice(entity.getActivityPrice());
+            vo.setSkuId(entity.getSkuId());
+            //复制类目名称数据
+            vo.setCategoryId1Name(cate.getCategoryName());
+            vo.setSortNo(++sortNo);
+            vo.setUpLoadStatus((byte)0);
+            skuvolist.add(vo);
+            if(sortNo==100){
                 break;
             }
         }

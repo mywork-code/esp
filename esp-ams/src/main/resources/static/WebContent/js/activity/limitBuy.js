@@ -344,17 +344,17 @@ function getLimitGoodsList(){
         },{
             title : '商品名称',
             field : 'goodsName',
-            width : 100,
+            width : 90,
             align : 'center',
         },{
             title : '商品编码',
             field : 'goodsCode',
-            width : 90,
+            width : 80,
             align : 'center',
         },{
             title : 'SKUID',
             field : 'skuId',
-            width : 100,
+            width : 90,
             align : 'center',
         },{
         	title : '活动价',
@@ -364,7 +364,7 @@ function getLimitGoodsList(){
         },{
             title : '商户名称',
             field : 'merchantName',
-            width : 80,
+            width : 70,
             align : 'center',
         },{
         	 title : '类目名称',
@@ -376,6 +376,19 @@ function getLimitGoodsList(){
              field : 'status',
              width : 70,
              align : 'center',
+         },{
+        	 title : '上传标志',
+             field : 'upLoadStatus',
+             width : 50,
+             align : 'center',
+             formatter:function(value,row,index){
+          		if(value==1){
+          			return "成功";
+          		}
+          		if(value==0){
+          			return "失败";
+          		}
+             }
          },{
         	 title : '商品上架时间',
              field : 'listTime',
@@ -417,11 +430,14 @@ function getLimitGoodsList(){
             width : 130,
             align : 'center',
             formatter : function(value, row, index) {
-                var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this);'>编辑</a>&nbsp;";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='deleGoods(this);'>删除</a>";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this);'>上移</a>";
-                content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this);'>下移</a>";
-                return content;
+            	if(row.upLoadStatus==1){
+            		var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this);'>编辑</a>&nbsp;";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this);'>上移</a>";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this);'>下移</a>";
+                    return content;
+            	}else{
+            		return "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='deleGoods(this);'>删除</a>";
+            	}
             }
         }]],
         loader : function(param, success, error) {
