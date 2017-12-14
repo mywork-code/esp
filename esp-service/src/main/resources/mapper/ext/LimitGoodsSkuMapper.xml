@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.apass.esp.mapper.LimitGoodsSkuMapper" >
+    <!-- 分页查询条件 -->
+    <sql id="QueryConditionSql">
+        <where>
+            <if test="limitBuyActId!=null and limitBuyActId!=''"> 
+                AND limit_buy_act_id = #{limitBuyActId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </sql>
+    <!-- 分页查询 -->
+    <select id="getLimitGoodsSkuPage" resultMap="BaseResultMap" 
+        parameterType="com.apass.esp.domain.entity.LimitGoodsSku">
+        SELECT 
+            <include refid="Base_Column_List" />
+        FROM t_esp_limit_goods_sku
+            <include refid="QueryConditionSql" />
+        <![CDATA[ 
+        ORDER BY sort_no ASC
+        ]]>
+        <if test="startRecordIndex != null">
+            <include refid="PAGINATION.MYSQL_PAGINATION" />
+        </if>
+    </select>
+    <!-- 分页查询数量 -->
+    <select id ="getLimitGoodsSkuPageCount" resultType="java.lang.Integer"
+        parameterType="com.apass.esp.domain.entity.LimitGoodsSku">
+        SELECT COUNT(*) FROM t_esp_limit_goods_sku
+        <include refid="QueryConditionSql" />
+    </select>
     <select id="getLimitGoodsSkuList" resultType="com.apass.esp.domain.entity.LimitGoodsSku">
         <![CDATA[
         SELECT

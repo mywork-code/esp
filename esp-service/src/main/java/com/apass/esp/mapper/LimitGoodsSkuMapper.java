@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.gfb.framework.mybatis.GenericMapper;
 public interface LimitGoodsSkuMapper extends GenericMapper<LimitGoodsSku,Long> {
+    public List<LimitGoodsSku> getLimitGoodsSkuPage(LimitGoodsSku entity);
+    public Integer getLimitGoodsSkuPageCount(LimitGoodsSku entity);
     /**
      * 
      * @param entity

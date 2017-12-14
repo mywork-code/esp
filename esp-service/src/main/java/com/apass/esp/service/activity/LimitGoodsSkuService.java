@@ -202,7 +202,7 @@ public class LimitGoodsSkuService {
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         if(entity.getLimitBuyActId()!=null){
             Long sortNo = 0L;
-            skulist = readEntityList(entity);
+            skulist = limitGoodsSkuMapper.getLimitGoodsSkuPage(entity);
             for(LimitGoodsSku sku : skulist){
                 LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
                 GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
@@ -223,7 +223,7 @@ public class LimitGoodsSkuService {
             }
         }
         ResponsePageBody<LimitGoodsSkuVo> pageBody = new ResponsePageBody<LimitGoodsSkuVo>();
-        pageBody.setTotal(skuvolist.size());
+        pageBody.setTotal(limitGoodsSkuMapper.getLimitGoodsSkuPageCount(entity));
         pageBody.setRows(skuvolist);
         pageBody.setStatus(BaseConstants.CommonCode.SUCCESS_CODE);
         return pageBody;
