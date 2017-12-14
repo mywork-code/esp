@@ -75,7 +75,7 @@ public class ESClientController {
     @ResponseBody
     public void deleteDataBySource() {
         try {
-        	Pagination<Goods> result=IndexManager.goodSearchBySource("wz",0,500);
+        	Pagination<Goods> result=IndexManager.goodSearchBySource("jd",0,500);
         	int total=result.getTotalCount();
         	List<Goods> goodsList=result.getDataList();
         	Goods goods2 = new Goods();
