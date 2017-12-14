@@ -671,6 +671,9 @@ public class OrderService {
                 .queryOrderDetailListByOrderList(orders);
         for (OrderDetailInfoEntity detail : details) {
             GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+            if(StringUtils.isBlank(goods.getSource())){
+            	continue;
+            }
             SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
             skuList.add(goods.getExternalId());
             skuNumList.add(num);
@@ -683,6 +686,12 @@ public class OrderService {
         /**
          * 批量获取微知的价格
          */
+        /**
+         * 此处加上空值判断的原因是为了过滤手动修改数据（自己的商品改成微知，数据修改不全，如source并未修改）导致的错误
+         */
+        if(CollectionUtils.isEmpty(skuList)){
+        	return null;
+        }
         List<WZPriceResponse> priceResponse = priceApi.getWzPrice(skuList);
         if(CollectionUtils.isEmpty(priceResponse)){
         	LOGGER.error("call wz getWzPrice is failed {}",JsonUtil.toJsonString(skuList));
@@ -2068,7 +2077,7 @@ public class OrderService {
                 }
             }
             //如果是京东的商品
-            if(null != goods && StringUtils.equals(goods.getSource(),SourceType.WZ.getCode())){
+            if(null != goods && StringUtils.isNotBlank(goods.getSource())){
             	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
             	goodsInfo.setSource(goods.getSource());
             }

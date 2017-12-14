@@ -129,6 +129,8 @@ public class JdGoodsService {
             stockEntity.setCreateUser(username);
             stockEntity.setUpdateUser(username);
             stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
+            stockEntity.setAttrValIds("");
+            stockEntity.setDeleteFlag("N");
             goodsStockInfoService.insert(stockEntity);
         }
 
