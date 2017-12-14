@@ -72,7 +72,6 @@ import com.apass.esp.third.party.jd.entity.base.Region;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.EncodeUtils;
@@ -985,29 +984,29 @@ public class ShopHomeController {
             
             // 商品规格
             List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository.loadByGoodsId(goodsId);
-        
+            //价格计算
+            if (jdGoodsStockInfoList.size() == 1) {
+                BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
+                goodsInfo.setGoodsPrice(price);
+                goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+            }
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
-                //第三方的价格计算（wz和jd）
-                if (jdGoodsStockInfoList.size() == 1) {
-                    BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-                    goodsInfo.setGoodsPrice(price);
-                    goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
-                }
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
                     returnMap.put("source", SourceType.JD.getCode());
+                    returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
-                    returnMap.put("source", SourceType.WZ.getCode());
-                }
-                returnMap.put("status", goodsInfo.getStatus());
-                // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
-                if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
-                    returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                    returnMap.put("source", SourceType.JD.getCode());
+                    returnMap.put("status", goodsInfo.getStatus());
+                    // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）
+                    if (StringUtils.isNotBlank(externalId) && !orderService.checkGoodsSalesOrNot(externalId)) {
+                        returnMap.put("status",GoodStatus.GOOD_DOWN.getCode());// 商品下架
+                    }
                 }
                 // 是否支持7天无理由退货,Y、N
                 returnMap.put("support7dRefund", goodsService.getsupport7dRefund(Long.parseLong(externalId)));
@@ -1027,12 +1026,18 @@ public class ShopHomeController {
             // 京东商品没有规格情况拼凑数据格式
             int jdSimilarSkuListSize = (int) returnMap.get("jdSimilarSkuListSize");
             List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) returnMap.get("jdSimilarSkuList");
-            if (jdSimilarSkuListSize == 0 || jdSimilarSkuList.isEmpty()) {
+            if (jdSimilarSkuListSize == 0 || null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()) {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                String source =(String) returnMap.get("source");
+                if(StringUtils.equals(SourceType.JD.getCode(), source)){
+                	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                }else{
+                	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
+                }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
                 jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
@@ -1041,7 +1046,6 @@ public class ShopHomeController {
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
                 JdSimilarSkuToList.add(jdSimilarSkuTo);
             }
-
             // 添加活动id
             ProGroupGoodsBo proGroupGoodsBo = proGroupGoodsService.getByGoodsId(goodsId);
             if (null != proGroupGoodsBo && proGroupGoodsBo.isValidActivity()) {

@@ -671,6 +671,9 @@ public class OrderService {
                 .queryOrderDetailListByOrderList(orders);
         for (OrderDetailInfoEntity detail : details) {
             GoodsInfoEntity goods = goodsDao.select(detail.getGoodsId());
+            if(StringUtils.isBlank(goods.getSource())){
+            	continue;
+            }
             SkuNum num = new SkuNum(Long.valueOf(goods.getExternalId()), detail.getGoodsNum().intValue());
             skuList.add(goods.getExternalId());
             skuNumList.add(num);
@@ -683,6 +686,12 @@ public class OrderService {
         /**
          * 批量获取微知的价格
          */
+        /**
+         * 此处加上空值判断的原因是为了过滤手动修改数据（自己的商品改成微知，数据修改不全，如source并未修改）导致的错误
+         */
+        if(CollectionUtils.isEmpty(skuList)){
+        	return null;
+        }
         List<WZPriceResponse> priceResponse = priceApi.getWzPrice(skuList);
         if(CollectionUtils.isEmpty(priceResponse)){
         	LOGGER.error("call wz getWzPrice is failed {}",JsonUtil.toJsonString(skuList));
@@ -799,17 +808,22 @@ public class OrderService {
 					falge = true;
 				}
 			}
+			return falge;
 		} catch (Exception e) {
 			LOGGER.error("getWeiZhiCheckSale is fail:{}", e);
 			return falge;
 		}
-		return falge;
 	}
     /**
      * 验证京东商品是否支持7天退货
      */
     public boolean checkGoodsIs7ToReturn(List<SkuNum> skuNumList){
-    	String skuIds = StringUtils.join(skuNumList,",");
+    	List<String> skuId = Lists.newArrayList();
+    	for (SkuNum sku : skuNumList) {
+    		skuId.add(sku.getSkuId()+"");
+    		
+		}
+    	String skuIds = StringUtils.join(skuId,",");
     	CheckSale sale = null;
 		try{
 			sale = productApi.getWeiZhiCheckSale(skuIds);
@@ -2017,7 +2031,7 @@ public class OrderService {
         OrderDetailInfoDto dto = getOrderDetailInfoDto(requestId, entity);
         List<GoodsInfoInOrderDto> goodsInfoInOrderDtoList = dto.getOrderDetailInfoList();
         for (GoodsInfoInOrderDto goodsInfoInOrderDto : goodsInfoInOrderDtoList) {
-            if (StringUtils.isEmpty(dto.getSource())){
+            if (StringUtils.isEmpty(goodsInfoInOrderDto.getSource())){
                 goodsInfoInOrderDto.setGoodsLogoUrlNew(imageService.getImageUrl(EncodeUtils
                         .base64Decode(goodsInfoInOrderDto.getGoodsLogoUrl())));
             }else{
@@ -2065,6 +2079,7 @@ public class OrderService {
             //如果是京东的商品
             if(null != goods && StringUtils.equals(goods.getSource(),SourceType.WZ.getCode())){
             	goodsInfo.setGoodsSkuAttr(goods.getAttrDesc());
+            	goodsInfo.setSource(goods.getSource());
             }
             goodsInfo.setGoodsName(orderDetailInfo.getGoodsName());
             goodsInfo.setGoodsPrice(orderDetailInfo.getGoodsPrice());
