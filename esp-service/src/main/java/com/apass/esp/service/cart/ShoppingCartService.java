@@ -386,6 +386,7 @@ public class ShoppingCartService {
 					goodsInfoInCart.setLimitFalg(true);
 					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
 					goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
+					goodsInfoInCart.setLimitPersonNum(limitGS.getLimitPersonNum());
 					goodsInfoInCart.setLimitBuyActId(limitGS.getId());
 				}
 			}

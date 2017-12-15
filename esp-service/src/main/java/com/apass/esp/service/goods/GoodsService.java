@@ -505,6 +505,7 @@ public class GoodsService {
 		jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
 		jdSimilarSkuVo.setIsLimitActivity(true);
 		jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+		jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
 		jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
 		jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
 		jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
@@ -772,6 +773,7 @@ public class GoodsService {
 				jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
 				jdSimilarSkuVo.setIsLimitActivity(true);
 				jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+				jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
 				jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
 				jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
 				jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
