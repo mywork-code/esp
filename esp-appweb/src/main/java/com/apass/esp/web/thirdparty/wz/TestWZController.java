@@ -61,6 +61,7 @@ public class TestWZController {
 
 
 	private ConcurrentHashMap<String, JdCategory> concurrentHashMap = new ConcurrentHashMap<>();
+	private List<Long> cats = Lists.newArrayList();
 	@Autowired
 	private WeiZhiTokenService weiZhiTokenService;
 	@Autowired
@@ -522,11 +523,11 @@ public class TestWZController {
 	@RequestMapping("/initJdGoods")
 	@ResponseBody
 	public Response initJdGoods(){
-		/*整体逻辑：先查一级类目,根据一级类目查二级类目,根据二级类目查三级类目,根据三级类目查询skuId集合.
-		根据skuid查询商品详情,根据详情中的category字段查类目信息,插jd_category表。再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
-		//分页参数
+		/*整体逻辑：先查一级类目,插jd_category表;根据一级类目查二级类目,插jd_category表;根据二级类目查三级类目,插jd_category表;
+		根据三级类目查询skuId集合。根据skuid查询商品详情,再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
 		long startTime = System.currentTimeMillis();
 		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}",startTime+"");
+		//分页参数
 		int pageNum = 1;
 		List<Category> weiZhiFirstCategorys = null;
 		while (true) {
@@ -539,13 +540,13 @@ public class TestWZController {
 					break;
 				}
 
-				//根据一级类目查询二级类目
 				for (Category category : weiZhiFirstCategorys) {
 					//插入类目表level为1
-					//addCategory(,1);
+					addCategory(category.getCatId(),1);
+				}
 
-
-
+				//根据一级类目查询二级类目
+				for (Category category : weiZhiFirstCategorys) {
 					int pageNum2 = 1;
 					int secondCategorysCount = 0;//记录已执行的 某一级类目下二级类目的数量
 					CategoryPage secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
@@ -558,6 +559,10 @@ public class TestWZController {
 							secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
 						}
 						pageNum2++;//查询二级类目 页面+1
+						for (Category category2 : secondCategorys.getCategorys()) {
+							//插入类目表level为2
+							addCategory(category2.getCatId(),2);
+						}
 
 						for (Category category2 : secondCategorys.getCategorys()) {
 							int pageNum3 = 1;
@@ -575,6 +580,11 @@ public class TestWZController {
 								pageNum3++;
 
 								for (Category category3 : thirdCategorys.getCategorys()) {
+									//插入类目表level为3
+									addCategory(category3.getCatId(),3);
+								}
+
+								for (Category category3 : thirdCategorys.getCategorys()) {
 									int pageNumForSku = 1;
 									int skuCount = 0;
 									//根据三级类目查询商品编号。
@@ -588,6 +598,10 @@ public class TestWZController {
 										}
 										pageNumForSku++;
 										for (String skuId : wzSkuListPage.getSkuIds()) {
+											JdGoods jG = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
+											if(jG != null){
+												continue;
+											}
 											//商品详情,往京东商品表和京东类目表中插数据
 											Product goodDetail = weiZhiProductService.getWeiZhiProductDetail(skuId);
 											if (null == goodDetail) {
@@ -595,9 +609,9 @@ public class TestWZController {
 											}
 											List<Integer> categories = goodDetail.getCategories();//一级类目二级类目和三级类目
 											//先插类目表
-											for (int i = 0; i < categories.size(); i++) {
-												addCategory(categories.get(i), i + 1);//类目id和级别
-											}
+//											for (int i = 0; i < categories.size(); i++) {
+//												addCategory(categories.get(i), i + 1);//类目id和级别
+//											}
 
 											//插入商品表
 											JdGoods jdGoods = new JdGoods();
@@ -640,24 +654,22 @@ public class TestWZController {
 											}
 										}
 										skuCount = skuCount + wzSkuListPage.getSkuIds().size();
-										if (skuCount == wzSkuListPage.getTotalRows()) {
+										if (skuCount >= wzSkuListPage.getTotalRows()) {
 											break;
 										}
 									}
 								}
 								//判断循环何时结束:同一个二级类目下的循环
 								thirdCategorysCount = thirdCategorysCount + thirdCategorys.getCategorys().size();
-								if (thirdCategorysCount == thirdCategorys.getTotalRows()) {
+								if (thirdCategorysCount >= thirdCategorys.getTotalRows()) {
 									break;
 								}
 							}
-
-
 						}
 
 						//判断循环何时结束:同一个一级类目下的循环
 						secondCategorysCount = secondCategorysCount + secondCategorys.getCategorys().size();
-						if (secondCategorysCount == secondCategorys.getTotalRows()) {
+						if (secondCategorysCount >= secondCategorys.getTotalRows()) {
 							break;//跳出while循环
 						}
 					}
@@ -677,11 +689,16 @@ public class TestWZController {
 	/**
 	 * 往京东类目表中插入数据
      */
-	private void addCategory(Integer catId, int level) throws Exception {
-		LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
-		if (concurrentHashMap.get(catId) == null) {
+	private void addCategory(Long catId, int level) throws Exception {
+//		if(cats.contains(catId)){
+//			return;
+//		}
+//		cats.add(catId);
+		JdCategory cateGoryByCatId = jdCategoryMapper.getCateGoryByCatId(catId);
 
-			Category category = weiZhiProductService.getcategory(Long.valueOf(catId));
+		if(cateGoryByCatId == null){
+			LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
+			Category category = weiZhiProductService.getcategory(catId);
 			LOGGER.info("微知接口返回数据,category:{}", GsonUtils.toJson(category));
 			if (category == null) {
 				return;
@@ -706,8 +723,8 @@ public class TestWZController {
 			} catch (Exception e) {
 				LOGGER.error("insert jdCategoryMapper sql error catId {}", catId);
 			}
-			concurrentHashMap.putIfAbsent(catId+"", jdCategory);
 		}
+
 
 	}
 
