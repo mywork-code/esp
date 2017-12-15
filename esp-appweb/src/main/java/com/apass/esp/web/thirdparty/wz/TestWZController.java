@@ -694,33 +694,37 @@ public class TestWZController {
 //			return;
 //		}
 //		cats.add(catId);
+		JdCategory cateGoryByCatId = jdCategoryMapper.getCateGoryByCatId(catId);
 
-		LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
-		Category category = weiZhiProductService.getcategory(catId);
-		LOGGER.info("微知接口返回数据,category:{}", GsonUtils.toJson(category));
-		if (category == null) {
-			return;
+		if(cateGoryByCatId == null){
+			LOGGER.info("往京东类目表中插入数据方法开始执行,参数cateId:{},level:{},",catId,level);
+			Category category = weiZhiProductService.getcategory(catId);
+			LOGGER.info("微知接口返回数据,category:{}", GsonUtils.toJson(category));
+			if (category == null) {
+				return;
+			}
+
+			JdCategory jdCategory = new JdCategory();
+			jdCategory.setName(category.getName());
+			jdCategory.setParentId(category.getParentId());
+			jdCategory.setCatClass(category.getCatClass());
+			jdCategory.setFlag(false);
+			jdCategory.setCatId(Long.valueOf(catId));
+			jdCategory.setStatus(category.getState() == 1 ? true : false);
+			jdCategory.setCategoryId1(0l);
+			jdCategory.setCategoryId2(0l);
+			jdCategory.setCategoryId3(0l);
+			jdCategory.setCreateDate(new Date());
+			jdCategory.setUpdateDate(new Date());
+
+			try {
+				jdCategoryMapper.insertSelective(jdCategory);
+
+			} catch (Exception e) {
+				LOGGER.error("insert jdCategoryMapper sql error catId {}", catId);
+			}
 		}
 
-		JdCategory jdCategory = new JdCategory();
-		jdCategory.setName(category.getName());
-		jdCategory.setParentId(category.getParentId());
-		jdCategory.setCatClass(category.getCatClass());
-		jdCategory.setFlag(false);
-		jdCategory.setCatId(Long.valueOf(catId));
-		jdCategory.setStatus(category.getState() == 1 ? true : false);
-		jdCategory.setCategoryId1(0l);
-		jdCategory.setCategoryId2(0l);
-		jdCategory.setCategoryId3(0l);
-		jdCategory.setCreateDate(new Date());
-		jdCategory.setUpdateDate(new Date());
-
-		try {
-			jdCategoryMapper.insertSelective(jdCategory);
-
-		} catch (Exception e) {
-			LOGGER.error("insert jdCategoryMapper sql error catId {}", catId);
-		}
 
 	}
 
