@@ -1098,6 +1098,7 @@ public class ShopHomeController {
             		isUnSupport = true;
                }
             	returnMap.put("isUnSupport", isUnSupport);
+            	returnMap.put("userId", userId);
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 获取购物车中商品种类数

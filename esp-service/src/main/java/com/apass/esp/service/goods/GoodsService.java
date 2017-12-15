@@ -26,7 +26,6 @@ import com.apass.esp.domain.entity.Category;
 import com.apass.esp.domain.entity.GoodsAttr;
 import com.apass.esp.domain.entity.GoodsAttrVal;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
-import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
@@ -69,7 +68,6 @@ import com.apass.esp.third.party.jd.entity.order.SkuNum;
 import com.apass.esp.utils.PaginationManage;
 import com.apass.esp.utils.ValidateUtils;
 import com.apass.gfb.framework.exception.BusinessException;
-import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.DateFormatUtil;
@@ -380,6 +378,7 @@ public class GoodsService {
    */
   public void loadGoodsBasicInfoById2(Long goodsId, Map<String, Object> returnMap) throws BusinessException {
     GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
+    String userId=(String) returnMap.get("userId");
     if (null == goodsBasicInfo) {
       LOGGER.error("商品信息不存在:{}", goodsId);
       throw new BusinessException("商品信息不存在");
@@ -401,7 +400,6 @@ public class GoodsService {
 	Map<Long,Object> LimitMap=new HashMap<>();
     for (GoodsStockInfoEntity goodsStockInfoEntity : goodsList) {
 		//根据skuId查询该规格是否参加了限时购活动
-    	String userId="";
     	LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsStockInfoEntity.getSkuId());
 		if(null !=limitGS){
 			LimitMap.put(goodsStockInfoEntity.getId(), goodsStockInfoEntity);
@@ -440,7 +438,7 @@ public class GoodsService {
 				break;
 			}
 		}
-		String userId="";
+		
 		LimitGoodsSkuVo limitGS = limitCommonService.selectLimitByGoodsId(userId,defaultGoodsPriceStock.getSkuId());
 		defaultPrice = commonService.calculateGoodsPrice(goodsId,defaultGoodsPriceStock.getId());
 		BigDecimal activityPrice = limitGS.getActivityPrice();
@@ -487,13 +485,12 @@ public class GoodsService {
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,defaultGoodsPriceStock.getAttrValIds());
     List<JdSimilarSkuTo> JdSimilarSkuToList = null;
     if(jdSimilarSkuList != null){
-        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport);
+        JdSimilarSkuToList = getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport,userId);
     }else{ 
     	JdSimilarSkuToList=new ArrayList<>();
         JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
         JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
         BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsList.get(0).getId());
-        String userId="";
        	//根据skuId查询该规格是否参加了限时购活动
 		LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsList.get(0).getSkuId());
 		if(null !=limitGS){
@@ -641,7 +638,7 @@ public class GoodsService {
   /**
    * 获取 非京东商品变成多规格商品规格
    */
-  public Map<String, Object> loadGoodsBasicInfoById3(Long goodsId) throws BusinessException {
+  public Map<String, Object> loadGoodsBasicInfoById3(Long goodsId,String userId) throws BusinessException {
 	Map<String, Object> returnMap =new HashMap<>();
     //商品价格最低
     Map<String,Object> result= getMinPriceNotJdGoods(goodsId);
@@ -649,7 +646,7 @@ public class GoodsService {
     List<JdSimilarSku>  jdSimilarSkuList=getJdSimilarSkuListBygoodsId(goodsId,MinGoodsPriceStock.getAttrValIds());
     if(null !=jdSimilarSkuList){
       Boolean isUnSupport=false;
-      List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport);
+      List<JdSimilarSkuTo> JdSimilarSkuToList =getJdSimilarSkuToListByGoodsId(goodsId,jdSimilarSkuList,isUnSupport,userId);
       returnMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
       returnMap.put("jdSimilarSkuListSize", jdSimilarSkuList.size());
       returnMap.put("jdSimilarSkuList", jdSimilarSkuList);
@@ -688,7 +685,7 @@ public class GoodsService {
 	 * @return
 	 * @throws BusinessException
 	 */
-	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list,Boolean isUnSupport) throws BusinessException {
+	public List<JdSimilarSkuTo> getJdSimilarSkuToListByGoodsId(Long goodsId,List<JdSimilarSku> list,Boolean isUnSupport,String userId) throws BusinessException {
 		GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsId);
 		Long proActivityId = null;
 		String activityCfg;
@@ -761,7 +758,6 @@ public class GoodsService {
 			jdSimilarSkuVo.setGoodsStockId(goodsStockInfoEntity.getId().toString());
 			jdSimilarSkuVo.setStockCurrAmt(goodsStockInfoEntity.getStockCurrAmt());
 			BigDecimal price = commonService.calculateGoodsPrice(goodsId, goodsStockInfoEntity.getId());
-	    	String userId="";
 			//根据skuId查询该规格是否参加了限时购活动
 			LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsStockInfoEntity.getSkuId());
 			if(null !=limitGS){

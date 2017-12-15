@@ -114,6 +114,8 @@ public class LimitCommonService {
 				limitPersonNum=limitGoodsSkuVo.getLimitNum()-goodsSum;
 				if(limitPersonNum>0){
 					limitGoodsSkuVo.setLimitPersonNum(limitPersonNum);
+				}else{
+					limitGoodsSkuVo.setLimitPersonNum(0l);
 				}
 			}
 			if (ActivityStatus.PROCESSING == activityStatus) {
