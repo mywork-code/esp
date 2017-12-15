@@ -92,6 +92,7 @@ public class LimitCommonService {
 			LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
 			ActivityStatus activityStatus = getLimitBuyStatus(limitBuyAct.getStartDate(), limitBuyAct.getEndDate());
 			LimitGoodsSkuVo limitGoodsSkuVo =getLimitGoodsSkuToLimitGoodsSkuVo(limitGoodsSku);
+			limitGoodsSkuVo.setLimitBuyActId(limitBuyAct.getId());
 			limitGoodsSkuVo.setStartTime(limitBuyAct.getStartDate());
 			limitGoodsSkuVo.setEndTime(limitBuyAct.getEndDate());
 			/**

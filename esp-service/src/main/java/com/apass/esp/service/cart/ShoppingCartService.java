@@ -387,7 +387,7 @@ public class ShoppingCartService {
 					goodsInfoInCart.setGoodsLimitPrice(limitGS.getActivityPrice());
 					goodsInfoInCart.setLimitNum(limitGS.getLimitNum());
 					goodsInfoInCart.setLimitPersonNum(limitGS.getLimitPersonNum());
-					goodsInfoInCart.setLimitBuyActId(limitGS.getId());
+					goodsInfoInCart.setLimitBuyActId(limitGS.getLimitBuyActId());
 				}
 			}
 
