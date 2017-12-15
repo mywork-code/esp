@@ -212,6 +212,15 @@ public class LimitCommonService {
 		if(null == limitGoods){
 			return true;
 		}
+		
+		if(limitGoods.getLimitCurrTotal() <= 0){
+			return false;
+		}
+		
+		if(limitGoods.getLimitNum() == 0){
+			return true;
+		}
+		
 		/**
 		 * 根据限时购的活动ID和用户ID和skuID,查询某一用户在某一活动下，购买某一件商品的数量
 		 */
