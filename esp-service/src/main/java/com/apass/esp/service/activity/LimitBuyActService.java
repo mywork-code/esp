@@ -361,6 +361,7 @@ public class LimitBuyActService {
                     time.setActDesc("抢购中");
                     LimitGoodsSku act = new LimitGoodsSku();
                     act.setLimitBuyActId(Long.parseLong(time.getLimitBuyActId()));
+                    act.setUpLoadStatus((byte)1);
                     List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
                     List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
                     for(LimitGoodsSku sku : goods){
@@ -476,6 +477,7 @@ public class LimitBuyActService {
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
         act.setLimitBuyActId(limitBuyActId);
+        act.setUpLoadStatus((byte)1);
         List<LimitGoodsSku> goods = limitGoodsSkuService.readEntityList(act);
         List<LimitGoodsSkuInfo> goodsinfolist = new ArrayList<LimitGoodsSkuInfo>();
         for(LimitGoodsSku sku : goods){
