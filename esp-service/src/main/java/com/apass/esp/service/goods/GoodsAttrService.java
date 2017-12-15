@@ -9,13 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.goods.StockInfoFileModel;
 import com.apass.esp.domain.entity.CategoryAttrRel;
@@ -526,14 +524,34 @@ public class GoodsAttrService {//450
         Set<Entry<String, Object>> set = map.entrySet();
         Map<String,Object> value = new HashMap<String,Object>();
         Integer i = 1;
+        List<GoodsAttrVal> url = null;
         for(Entry<String, Object> entry : set){
             String key1 = "attrVal"+i;
             String key2 = "attr"+i;
             value.put(key1, entry.getValue());
             GoodsAttr attr = this.getGoodsAttr(Long.parseLong(entry.getKey()));
             value.put(key2, attr);
+            if(i==1){
+                url = (List<GoodsAttrVal>) entry.getValue();
+            }
             i++;
         }
+        List<GoodsStockInfoEntity> xlist = new ArrayList<GoodsStockInfoEntity>();
+        List<GoodsStockInfoEntity> stocklist = goodsStockInfoService.getGoodsStock(goodsId);
+        if(url!=null&&url.size()>0){
+            for(GoodsAttrVal urlen : url){
+                for(GoodsStockInfoEntity stcoken : stocklist){
+                    if(StringUtils.contains(stcoken.getGoodsSkuAttr(), urlen.getAttrVal())){
+                        GoodsStockInfoEntity e = new GoodsStockInfoEntity();
+                        e.setStockLogo(stcoken.getStockLogo());
+                        e.setGoodsSkuAttr(urlen.getAttrVal());
+                        xlist.add(e);
+                        break;
+                    }
+                }
+            }
+        }
+        value.put("url", xlist);
         return Response.success("success", value);
     }
     /**

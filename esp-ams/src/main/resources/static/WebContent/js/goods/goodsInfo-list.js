@@ -3348,6 +3348,8 @@ function flushGoodsStock(finalGoodId){
 		success : function(data) {
 			if(data.msg=='success'){
 				var da = data.data;
+				var urlList = da.url;
+				$('#tableattrEdit').datagrid('loadData', urlList);
 				var attrVal1 = da.attrVal1;
 				var attrVal2 = da.attrVal2;
 				var attrVal3 = da.attrVal3;
