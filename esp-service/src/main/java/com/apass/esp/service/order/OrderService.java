@@ -953,10 +953,12 @@ public class OrderService {
                         	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
                             BigDecimal price = (BigDecimal) jsonObject.get("price");
                             orderDetail.setGoodsCostPrice(price);
+                            orderDetail.setSkuId(goods.getExternalId());
                         }
                     }
                     if(StringUtils.isBlank(goods.getSource())){
                     	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());
+                    	 orderDetail.setSkuId(goodsStock.getSkuId());
                     }
                     orderDetail.setOrderId(orderInfo.getOrderId());
                     orderDetail.setGoodsId(goods.getId());
@@ -1082,10 +1084,12 @@ public class OrderService {
                     	JSONObject jsonObject = (JSONObject) jsonArrayJdApiResponse.getResult().get(0);
                         BigDecimal price = (BigDecimal) jsonObject.get("price");
                         orderDetail.setGoodsCostPrice(price);
+                        orderDetail.setSkuId(goods.getExternalId());
                     }
                 }
                 if(StringUtils.isBlank(goods.getSource())){
                 	 orderDetail.setGoodsCostPrice(goodsStock.getGoodsCostPrice());
+                	 orderDetail.setSkuId(goodsStock.getSkuId());
                 }
                 orderDetail.setOrderId(orderInfo.getOrderId());
                 orderDetail.setGoodsId(goods.getId());
