@@ -130,7 +130,7 @@ $(function () {
     	$("#startTime").combobox('setValue','');
     	$("#status").combobox('setValue','');
     });
-    //添加按钮事件
+    //添加活动
     $(".add-btn").click(function() {
     	status = ""
     	limitBuyActId = "";
@@ -142,6 +142,7 @@ $(function () {
     	$('#uploadGoodsList').datagrid('load', params);
 		$('#editLayer').show(500,editLayerShow());
     });
+    //编辑活动
     $.editDetails = function(id,startDate,startTime,status) {
     	status = status;
     	if(status=="2"){//进行中活动
@@ -466,22 +467,6 @@ function getLimitGoodsList(){
             })
         }
     });
-}
-function functionx(data){
-	debugger
-	var pager = $("#uploadGoodsList").datagrid("getPager"); 
-	pager.pagination({ 
-		total:data.total, 
-		onSelectPage:function (pageNo, pageSize) { 
-		    var start = (pageNo - 1) * pageSize; 
-		    var end = start + pageSize; 
-		    $("#uploadGoodsList").datagrid("loadData", data.slice(start, end)); 
-		    pager.pagination('refresh', { 
-		    	total:data.total, 
-		    	pageNumber:pageNo 
-		    });
-		} 
-	});
 }
  
 var limitGoodsSkuId ;//商品ID
