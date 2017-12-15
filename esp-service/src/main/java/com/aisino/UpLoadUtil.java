@@ -76,7 +76,8 @@ public class UpLoadUtil{
                 throw new BusinessException("XLS文件出现空行！");
             }
             //表格中共有2列（商品编号/skuid,活动价）
-            int cellNum = hssfRow.getLastCellNum();
+//            int cellNum = hssfRow.getLastCellNum();
+            int cellNum = 2;
             Map<String,Object> map = new HashMap<String,Object>();
             for(int j = 0; j < cellNum; j++){
                 Cell titleCell = titleRow.getCell(j);//第一行标题 字段 每一列
