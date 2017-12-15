@@ -138,31 +138,32 @@ $(function () {
     	$("#startTimeAdd").combobox('setValue','');
     	$("#startDayAdd").datebox({'disabled': false }); 
 		$("#startTimeAdd").combobox({'disabled': false }); 
-    	var params = {};
-    	$('#uploadGoodsList').datagrid('load', params);
-		$('#editLayer').show(500,editLayerShow());
+		$('#addLayer').show(500,addLayerShow());
     });
     //编辑活动
     $.editDetails = function(id,startDate,startTime,status) {
     	status = status;
     	if(status=="2"){//进行中活动
-    		$("#startDayAdd").datebox({'disabled': true }); 
-    		$("#startTimeAdd").combobox({'disabled': true }); 
+    		$("#startDayEdit").datebox({'disabled': true }); 
+    		$("#startTimeEdit").combobox({'disabled': true }); 
     	}
     	if(status=="1"){//未开始活动
-    		$("#startDayAdd").datebox({'disabled': false }); 
-    		$("#startTimeAdd").combobox({'disabled': false }); 
+    		$("#startDayEdit").datebox({'disabled': false }); 
+    		$("#startTimeEdit").combobox({'disabled': false }); 
     	}
     	limitBuyActId = id;
-    	$("#startDayAdd").datebox('setValue', new Date(startDate/1).Format("yyyy-MM-dd"));
-    	$("#startTimeAdd").combobox('setValue',startTime);
+    	$("#startDayEdit").datebox('setValue', new Date(startDate/1).Format("yyyy-MM-dd"));
+    	$("#startTimeEdit").combobox('setValue',startTime);
     	var params = {};
     	params['limitBuyActId']=limitBuyActId;
-    	$('#uploadGoodsList').datagrid('load', params);
+    	$('#uploadGoodsListEdit').datagrid('load', params);
 		$('#editLayer').show(500,editLayerShow());
 	};
     //返回
-    $(".cancel-btn").click(function() {
+    $(".cancel-btn-add").click(function() {
+    	$('#addLayer').hide(500,addLayerHide());
+    });
+    $(".cancel-btn-edit").click(function() {
     	$('#editLayer').hide(500,editLayerHide());
     });
     //活动开始时间下拉框
@@ -187,8 +188,30 @@ $(function () {
         	//刷新下发表格    不刷新  
         }
 	});
+	//活动开始时间下拉框
+	$('#startTimeEdit').combobox({
+		method: "get",
+        url: ctx + "/activity/limitBuyActContro/getStartTimeDorp",
+        panelHeight: '100',  
+        textField: 'key',
+        valueField: 'value',
+        onChange: function (n, o) {
+        	//刷新下发表格    不刷新  
+        }
+	});
+	//活动状态下拉框
+	$('#statusEdit').combobox({
+		method: "get",
+        url: ctx + "/activity/limitBuyActContro/getStatusDorp",
+        panelHeight: '100',  
+        textField: 'key',
+        valueField: 'value',
+        onChange: function (n, o) {
+        	//刷新下发表格    不刷新  
+        }
+	});
 	//导入商品  弹窗
-	$(".upload-btn").click(function() {
+	$(".upload-btn-add").click(function() {
 		if(status!=""){
 			$.messager.alert("提示", "编辑商品不能上传商品列表,请点击新增活动!", "info");
 			return;
@@ -216,7 +239,7 @@ $(function () {
 				if(response.status=="1"){
 					//刷新商品列表
 					$('#upLoadGoods').window('close');
-					$('#uploadGoodsList').datagrid('loadData', response);
+					$('#uploadGoodsListAdd').datagrid('loadData', response);
 				}
 		    }
 		});
@@ -261,14 +284,26 @@ $(function () {
 					var response = JSON.parse(data);
 					if(response.status==1){
 						$.messager.alert("提示","缩略图上传成功！", "info");
-						$('#uploadGoodsList').datagrid('updateRow',{
-							index: editindex,
-							row:{
-								"limitNumTotal":limitNumTotalAdd,
-								"limitNum":limitNumAdd,
-								"url":response.data,
-								}
-						});
+						if(addedit==1){
+							$('#uploadGoodsListAdd').datagrid('updateRow',{
+								index: editindex,
+								row:{
+									"limitNumTotal":limitNumTotalAdd,
+									"limitNum":limitNumAdd,
+									"url":response.data,
+									}
+							});
+						}
+						if(addedit==2){
+							$('#uploadGoodsListEdit').datagrid('updateRow',{
+								index: editindex,
+								row:{
+									"limitNumTotal":limitNumTotalAdd,
+									"limitNum":limitNumAdd,
+									"url":response.data,
+									}
+							});
+						}
 					}else{
 						$.messager.alert("提示", response.msg, "info");
 					}
@@ -277,13 +312,24 @@ $(function () {
 			thisForm.submit();
 		}else{
 			$.messager.alert("提示","修改行数据每人限购和限购总量！", "info");
-			$('#uploadGoodsList').datagrid('updateRow',{
-				index: editindex,
-				row:{
-					"limitNumTotal":limitNumTotalAdd,
-					"limitNum":limitNumAdd,
-					}
-			});
+			if(addedit==1){
+				$('#uploadGoodsListAdd').datagrid('updateRow',{
+					index: editindex,
+					row:{
+						"limitNumTotal":limitNumTotalAdd,
+						"limitNum":limitNumAdd,
+						}
+				});
+			}
+			if(addedit==2){
+				$('#uploadGoodsListEdit').datagrid('updateRow',{
+					index: editindex,
+					row:{
+						"limitNumTotal":limitNumTotalAdd,
+						"limitNum":limitNumAdd,
+						}
+				});
+			}
 		}
 		$('#editGoods').window('close');
 	});
@@ -292,10 +338,43 @@ $(function () {
 		$('#editGoods').window('close');
 	});
 	/**保存所有数据   限时购   和   限时购商品列表  （新增 修改）	 */
-	$(".save-btn").click(function() {
+	$(".save-btn-add").click(function() {
 		var startDay = $("#startDayAdd").datebox('getValue');
 		var startTime = $("#startTimeAdd").combobox('getValue');
-		var goodsrows = $('#uploadGoodsList').datagrid('getRows');
+		var goodsrows = $('#uploadGoodsListAdd').datagrid('getRows');
+		if(startDay==""||startTime==""){
+			$.messager.alert("提示", "请输入限时购活动开始日期和时间!", "info");
+			return;
+		}
+		if(goodsrows==""||goodsrows.length==0){
+			$.messager.alert("提示", "请上传限时购活动商品!", "info");
+			return;
+		}
+		var param = {
+			id:limitBuyActId,
+			startDay:startDay,
+			startTime:startTime,
+			list:goodsrows
+		};
+		//判断是新增还是修改
+		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
+		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
+			success : function(data) {
+				if(data.status==1){
+					var params = {};
+			    	$('#limitBuyActPage').datagrid('load', params);
+			    	$('#addLayer').hide(500,addLayerHide());
+			    	window.location.reload();
+				}
+				$.messager.alert("提示", data.msg, "info");
+			}
+		})
+	});
+	/**保存所有数据   限时购   和   限时购商品列表  （新增 修改）	 */
+	$(".save-btn-edit").click(function() {
+		var startDay = $("#startDayEdit").datebox('getValue');
+		var startTime = $("#startTimeEdit").combobox('getValue');
+		var goodsrows = $('#uploadGoodsListEdit').datagrid('getRows');
 		if(startDay==""||startTime==""){
 			$.messager.alert("提示", "请输入限时购活动开始日期和时间!", "info");
 			return;
@@ -318,6 +397,7 @@ $(function () {
 					var params = {};
 			    	$('#limitBuyActPage').datagrid('load', params);
 			    	$('#editLayer').hide(500,editLayerHide());
+			    	window.location.reload();
 				}
 				$.messager.alert("提示", data.msg, "info");
 			}
@@ -325,18 +405,146 @@ $(function () {
 	});
 });
 function commonLayerShow(){
+	$('#addLayer').hide();
 	$('#editLayer').hide();
 }
+function addLayerShow(){
+	$('#commonLayer').hide(500);
+}
+function addLayerHide(){
+	$('#commonLayer').show(500);
+}
 function editLayerShow(){
-	$('#commonLayer').hide();
+	$('#commonLayer').hide(500);
 }
 function editLayerHide(){
-	$('#commonLayer').show();
+	$('#commonLayer').show(500);
 }
 function getLimitGoodsList(){
-	//商品列表
-    $('#uploadGoodsList').datagrid({
-//    	title : '限时购活动商品列表',
+	addFunction();
+	editFunction();
+};
+function addFunction(){
+    $('#uploadGoodsListAdd').datagrid({
+    	fit : false,
+        rownumbers : true,
+        singleSelect : true,
+        striped:true,
+        columns : [[{
+            title : '主键',
+            field : 'id',
+            hidden : true,
+            width : 10,
+            align : 'center'
+        },{
+        	title : 'URL',
+            field : 'url',
+            hidden : true,
+            width : 10,
+            align : 'center'
+        },{
+            title : '商品名称',
+            field : 'goodsName',
+            width : 90,
+            align : 'center',
+        },{
+            title : '商品编码',
+            field : 'goodsCode',
+            width : 80,
+            align : 'center',
+        },{
+            title : 'SKUID',
+            field : 'skuId',
+            width : 90,
+            align : 'center',
+        },{
+        	title : '活动价',
+            field : 'activityPrice',
+            width : 70,
+            align : 'center',
+        },{
+            title : '商户名称',
+            field : 'merchantName',
+            width : 70,
+            align : 'center',
+        },{
+        	 title : '类目名称',
+             field : 'categoryId1Name',
+             width : 70,
+             align : 'center',
+         },{
+        	 title : '商品状态',
+             field : 'status',
+             width : 70,
+             align : 'center',
+         },{
+        	 title : '上传标志',
+             field : 'upLoadStatus',
+             width : 50,
+             align : 'center',
+             formatter:function(value,row,index){
+          		if(value==1){
+          			return "成功";
+          		}
+          		if(value==0){
+          			return "失败";
+          		}
+             }
+         },{
+        	 title : '商品上架时间',
+             field : 'listTime',
+             width : 80,
+             align : 'center',
+             formatter:function(value,row,index){
+         		if(value!=null){
+         			return new Date(value).Format("yyyy-MM-dd");
+         		}
+             }
+         },{
+        	 title : '商品下架时间',
+             field : 'delistTime',
+             width : 80,
+             align : 'center',
+             formatter:function(value,row,index){
+         		if(value!=null){
+         			return new Date(value).Format("yyyy-MM-dd");
+         		}
+             }
+         },{
+        	 title : '库存剩余',
+             field : 'stockCurrAmt',
+             width : 80,
+             align : 'center',
+         },{
+        	 title : '限购总量',
+             field : 'limitNumTotal',
+             width : 80,
+             align : 'center',
+         },{
+        	 title : '每人限购',
+             field : 'limitNum',
+             width : 80,
+             align : 'center',
+         },{
+            title : '操作',
+            field : 'opt',
+            width : 130,
+            align : 'center',
+            formatter : function(value, row, index) {
+            	if(row.upLoadStatus==1){
+            		var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this,1);'>编辑</a>&nbsp;";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this,1);'>上移</a>";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this,1);'>下移</a>";
+                    return content;
+            	}else{
+            		return "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='deleGoods(this,1);'>删除</a>";
+            	}
+            }
+        }]],
+    });
+}
+function editFunction(){
+    $('#uploadGoodsListEdit').datagrid({
     	fit : false,
         rownumbers : true,
         pagination : true,
@@ -444,12 +652,10 @@ function getLimitGoodsList(){
             align : 'center',
             formatter : function(value, row, index) {
             	if(row.upLoadStatus==1){
-            		var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this);'>编辑</a>&nbsp;";
-                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this);'>上移</a>";
-                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this);'>下移</a>";
+            		var content = "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='editGoods(this,2);'>编辑</a>&nbsp;";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='upGoods(this,2);'>上移</a>";
+                    content += "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='downGoods(this,2);'>下移</a>";
                     return content;
-            	}else{
-            		return "<a href='javascript:void(0);' class='easyui-linkedbutton'; onclick='deleGoods(this);'>删除</a>";
             	}
             }
         }]],
@@ -473,17 +679,18 @@ var limitGoodsSkuId ;//商品ID
 var stockCurrAmt ;//商品库存剩余
 var editindex;//商品表行号
 var skuId ;//商品skuID
+var addedit;//新增活动or修改活动
 //编辑商品弹框
-function editGoods(target){
-	var rowentity = getRowEntity(target);
+function editGoods(target,num){
+	addedit=num;
+	var rowentity = getRowEntity(target,num);
 	limitGoodsSkuId = rowentity.id;
 	skuId = rowentity.skuId;
 	$("#editGoodsFile").val('');
+	stockCurrAmt = rowentity.stockCurrAmt;
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){
-		stockCurrAmt = rowentity.stockCurrAmt;
 		$("#limitNumTotalAdd").textbox('clear');
 		$("#limitNumAdd").textbox('clear');
-		
 		
 		//有问题需要解决   有微调器失效BUG
 		$("#limitNumTotalAdd").textbox({'disabled':false});
@@ -514,45 +721,73 @@ function editGoods(target){
 	}
 };
 //删除商品弹框
-function deleGoods(target){
-	var rowentity = getRowEntity(target);
+function deleGoods(target,num){
+	var rowentity = getRowEntity(target,num);
 	if(rowentity.id!=null){
 		//此处删除数据库中数据！！
 	}
-	$('#uploadGoodsList').datagrid('deleteRow', getRowIndex(target));
+	$('#uploadGoodsListAdd').datagrid('deleteRow', getRowIndex(target));
 };
 //上移商品
-function upGoods(target){
+function upGoods(target,num){
 	var rowIndex = getRowIndex(target);
-	var selectrow = getRowEntity(target);
+	var selectrow = getRowEntity(target,num);
 	if(rowIndex==0){  
         $.messager.alert('提示', '顶行无法上移!', 'warning');  
-    }else{  
-        $('#uploadGoodsList').datagrid('deleteRow', rowIndex);//删除一行  
-        rowIndex--;  
-        $('#uploadGoodsList').datagrid('insertRow', {  
-            index:rowIndex,  
-            row:selectrow  
-        });  
-        $('#uploadGoodsList').datagrid('selectRow', rowIndex);  
+    }else{
+    	if(num==1){
+    		$('#uploadGoodsListAdd').datagrid('deleteRow', rowIndex);//删除一行  
+            rowIndex--;  
+            $('#uploadGoodsListAdd').datagrid('insertRow', {  
+                index:rowIndex,  
+                row:selectrow  
+            });  
+            $('#uploadGoodsListAdd').datagrid('selectRow', rowIndex);  
+    	}
+    	if(num==2){
+    		$('#uploadGoodsListEdit').datagrid('deleteRow', rowIndex);//删除一行  
+            rowIndex--;  
+            $('#uploadGoodsListEdit').datagrid('insertRow', {  
+                index:rowIndex,  
+                row:selectrow  
+            });  
+            $('#uploadGoodsListEdit').datagrid('selectRow', rowIndex);  
+    	}
     }  
 };
 //下移商品
-function downGoods(target){
-	var rows=$('#uploadGoodsList').datagrid('getRows');  
+function downGoods(target,num){
+	var rows;
+	if(num==1){
+		rows=$('#uploadGoodsListAdd').datagrid('getRows');  
+	}
+	if(num==2){
+		rows=$('#uploadGoodsListEdit').datagrid('getRows');  
+	}
 	var rowlength=rows.length;
 	var rowIndex = getRowIndex(target);
-	var selectrow = getRowEntity(target);
+	var selectrow = getRowEntity(target,num);
 	if(rowIndex==rowlength-1){  
         $.messager.alert('提示', '底行无法下移!', 'warning');  
     }else{  
-        $('#uploadGoodsList').datagrid('deleteRow', rowIndex);//删除一行  
-        rowIndex++;  
-        $('#uploadGoodsList').datagrid('insertRow', {  
-            index:rowIndex,  
-            row:selectrow  
-        });  
-        $('#uploadGoodsList').datagrid('selectRow', rowIndex);  
+    	if(num==1){
+    		$('#uploadGoodsListAdd').datagrid('deleteRow', rowIndex);//删除一行  
+            rowIndex++;  
+            $('#uploadGoodsListAdd').datagrid('insertRow', {  
+                index:rowIndex,  
+                row:selectrow  
+            });  
+            $('#uploadGoodsListAdd').datagrid('selectRow', rowIndex);    
+    	}
+    	if(num==2){
+    		$('#uploadGoodsListEdit').datagrid('deleteRow', rowIndex);//删除一行  
+            rowIndex++;  
+            $('#uploadGoodsListEdit').datagrid('insertRow', {  
+                index:rowIndex,  
+                row:selectrow  
+            });  
+            $('#uploadGoodsListEdit').datagrid('selectRow', rowIndex);    
+    	}
     } 
 };
 function getRowIndex(target){
@@ -560,8 +795,14 @@ function getRowIndex(target){
 	var editinde = parseInt(tr.attr('datagrid-row-index'));
 	return editinde;
 };
-function getRowEntity(target){
+function getRowEntity(target,num){
 	editindex = getRowIndex(target);
-	var rows = $('#uploadGoodsList').datagrid('getRows');
+	var rows;
+	if(num==1){
+		rows = $('#uploadGoodsListAdd').datagrid('getRows');
+	}
+	if(num==2){
+		rows = $('#uploadGoodsListEdit').datagrid('getRows');
+	}
 	return rows[editindex];
 };

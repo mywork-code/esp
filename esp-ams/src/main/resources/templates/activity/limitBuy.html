@@ -37,11 +37,10 @@
 	    </div>
 	    <div id="limitBuyActPage" style="display: none ;width:100%;height: 400px"></div>
     </div>
-    
-    <!-- 限时购活动维护页面 -->
-    <div id="editLayer">
+    <!-- 限时购活动新增页面 -->
+    <div id="addLayer">
         <div style="margin-left: 1100px;">
-            <a href="javascript:void(0);" class="easyui-linkbutton cancel-btn" data-options="iconCls:'icon-add'">返回</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton cancel-btn-add" data-options="iconCls:'icon-add'">返回</a>
         </div>
         <div style="margin-left: 20px;margin-top: 10px;">
             <table class="details_table" style="width: 92%">
@@ -66,15 +65,53 @@
                 <tr>
                     <td width="20%" align="right"><font color="red">*</font>活动商品：</td>
                     <td colspan="4">
-                        <a href="javascript:void(0);" class="easyui-linkbutton upload-btn" data-options="iconCls:'icon-add'" style="width: 100px">导入商品</a>
-                        <a href="javascript:void(0);" class="easyui-linkbutton download-btn" data-options="iconCls:'icon-add'">导入模板下载</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton upload-btn-add" data-options="iconCls:'icon-add'" style="width: 100px">导入商品</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton download-btn-add" data-options="iconCls:'icon-add'">导入模板下载</a>
                     </td>
                 </tr>
             </table>
         </div>
-        <div id="uploadGoodsList"></div>
+        <div id="uploadGoodsListAdd"></div>
         <div style="margin-left: 10px;">
-            <a href="javascript:void(0);" class="easyui-linkbutton save-btn" data-options="iconCls:'icon-add'">保存限时购活动</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton save-btn-add" data-options="iconCls:'icon-add'">保存限时购活动</a>
+        </div>
+    </div>
+    <!-- 限时购活动维护页面 -->
+    <div id="editLayer">
+        <div style="margin-left: 1100px;">
+            <a href="javascript:void(0);" class="easyui-linkbutton cancel-btn-edit" data-options="iconCls:'icon-add'">返回</a>
+        </div>
+        <div style="margin-left: 20px;margin-top: 10px;">
+            <table class="details_table" style="width: 92%">
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动开始日期：</td>
+                    <td colspan="1">
+                        <input id="startDayEdit" name="startDayAdd" class="easyui-datebox" style="width: 120px" editable="false"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动开始时间：</td>
+                    <td colspan="1">
+                        <input id="startTimeEdit" name="startTimeAdd" class="easyui-combobox" style="width:120px" editable="false">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动有效时长：</td>
+                    <td colspan="1">
+                        <input style="width:115px" disabled="true" value = "24Hours">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" align="right"><font color="red">*</font>活动商品：</td>
+                    <td colspan="4">
+                        <a href="javascript:void(0);" class="easyui-linkbutton download-btn-edit" data-options="iconCls:'icon-add'">导入模板下载</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="uploadGoodsListEdit"></div>
+        <div style="margin-left: 10px;">
+            <a href="javascript:void(0);" class="easyui-linkbutton save-btn-edit" data-options="iconCls:'icon-add'">保存限时购活动</a>
         </div>
     </div>
     
@@ -132,7 +169,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><span style="color:red;margin-right: 40px;">支持格式：.xls,.exls;大小：≤3096kb</span></td>
+                    <td><span style="margin-right: 40px;">支持格式：.xls,.exls;大小：≤3096kb</span></td>
                 </tr>
                 <tr>
                     <td colspan="8">
