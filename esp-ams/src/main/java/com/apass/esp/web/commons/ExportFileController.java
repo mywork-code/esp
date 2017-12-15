@@ -881,6 +881,7 @@ public class ExportFileController {
             if (!CollectionUtils.isEmpty(list)) {
                 for (Object g : list) {
                     GoodsInfoEntity b = (GoodsInfoEntity) g;
+                    
                     if (StringUtils.equals(b.getSource(), SourceType.JD.getCode())) {
                         b.setMerchantName(SourceType.JD.getMessage());
                     }
