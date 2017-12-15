@@ -208,7 +208,8 @@ public class LimitGoodsSkuService {
             vo.setId(null);
             //复制库存表
             vo.setStockCurrAmt(stock.getStockCurrAmt());
-            vo.setMarketPrice(stock.getMarketPrice());
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getGoodsStockId());
+            vo.setMarketPrice(marketPrice);
             //复制导入数据
             vo.setActivityPrice(entity.getActivityPrice());
             vo.setSkuId(entity.getSkuId());
