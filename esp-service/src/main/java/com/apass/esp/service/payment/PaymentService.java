@@ -599,11 +599,13 @@ public class PaymentService {
 			 */
 			for (OrderDetailInfoEntity detail : orderDetailList) {
 				//验证商品的价格是否发生改变，如何改变则将改订单设为无效
-	            BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
-	            if(!(detail.getGoodsPrice().compareTo(price)==0)){
-	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
-	    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
-	            }
+				if(StringUtils.isBlank(detail.getLimitActivityId())){
+					BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
+		            if(!(detail.getGoodsPrice().compareTo(price)==0)){
+		            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
+		    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+		            }
+				}
 	            /**
 	             * 验证活动是否过期
 	             */
