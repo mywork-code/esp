@@ -171,7 +171,7 @@ public class LimitGoodsSkuService {
                 }
             }
             //判断价格高于售价
-            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(), Long.parseLong(stock.getSkuId()));
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getGoodsStockId());
             if(entity.getActivityPrice().compareTo(marketPrice)>0){
                 slist.add(entity);
                 continue;

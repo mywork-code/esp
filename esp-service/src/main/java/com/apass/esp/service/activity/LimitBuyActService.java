@@ -1,4 +1,5 @@
 package com.apass.esp.service.activity;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -6,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -48,6 +49,8 @@ public class LimitBuyActService {
     public LimitUserMessageService limitUserMessageService;
     @Autowired
     public MobileSmsService mobileSmsService;
+    @Autowired
+    private CommonService commonService;
     /**
      * CREATE
      * @param entity
@@ -318,8 +321,9 @@ public class LimitBuyActService {
     /**
      * 限时购前台页面时间条展示   包括抢购中的活动商品列表
      * @return
+     * @throws BusinessException 
      */
-    public Response activityTimeLine() {
+    public Response activityTimeLine() throws BusinessException {
         List<LimitBuyActTimeLine> timelist = new ArrayList<LimitBuyActTimeLine>();
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStatus((byte)3);
@@ -372,6 +376,8 @@ public class LimitBuyActService {
                         GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
+                        BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
+                        vo.setMarketPrice(marketPrice);
                         //判断商品上下架状态
                         if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
                             vo.setButtonStatus("0");
@@ -471,8 +477,9 @@ public class LimitBuyActService {
      * 限时购前台页面刷新商品列表
      * @param parseLong
      * @return
+     * @throws BusinessException 
      */
-    public Response activityGoodsList(Long limitBuyActId,String userId) {
+    public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -488,6 +495,8 @@ public class LimitBuyActService {
             GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
+            vo.setMarketPrice(marketPrice);
             if(actstatus==(byte)1){//未开始活动  
                 //验证商品上下架状态
                 if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
