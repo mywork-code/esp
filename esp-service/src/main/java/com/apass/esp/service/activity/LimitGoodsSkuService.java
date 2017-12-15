@@ -1,9 +1,9 @@
 package com.apass.esp.service.activity;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,11 @@ import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.service.category.CategoryInfoService;
+import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
 import com.apass.esp.utils.ResponsePageBody;
+import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
 /**
  * 限时购活动商品
@@ -37,6 +39,8 @@ public class LimitGoodsSkuService {
     public GoodsService goodsService;
     @Autowired
     private CategoryInfoService categoryInfoService;
+    @Autowired
+    private CommonService commonService;
     /**
      * CREATE
      * @param entity
@@ -124,8 +128,10 @@ public class LimitGoodsSkuService {
      * 冗余goodsinfo字段
      * @param list
      * @return
+     * @throws BusinessException 
+     * @throws NumberFormatException 
      */
-    public Map<String ,Object> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) {
+    public Map<String ,Object> findGoodsInfoListBySkuId(List<LimitGoodsSku> list) throws NumberFormatException, BusinessException {
         Map<String ,Object> map = new HashMap<String,Object>();
         List<LimitGoodsSkuVo> skuvolist = new ArrayList<LimitGoodsSkuVo>();
         Long sortNo = 0L;
@@ -164,6 +170,12 @@ public class LimitGoodsSkuService {
                     continue;
                 }
             }
+            //判断价格高于售价
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(), Long.parseLong(stock.getSkuId()));
+            if(entity.getActivityPrice().compareTo(marketPrice)>0){
+                slist.add(entity);
+                continue;
+            }
             sb.append(entity.getSkuId()).append("++");
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品基本信息表
@@ -173,7 +185,7 @@ public class LimitGoodsSkuService {
             vo.setId(null);
             //复制库存表
             vo.setStockCurrAmt(stock.getStockCurrAmt());
-            vo.setMarketPrice(stock.getMarketPrice());
+            vo.setMarketPrice(marketPrice);
             //复制导入数据
             vo.setActivityPrice(entity.getActivityPrice());
             vo.setSkuId(entity.getSkuId());
