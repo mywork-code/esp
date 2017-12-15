@@ -151,10 +151,18 @@ public class LimitGoodsSkuService {
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
             GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            Boolean fwz = StringUtils.equals("wz", goods.getSource());
             Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
-            if(!StringUtils.equals(goods.getStatus(), "G02")||f){
-                slist.add(entity);
-                continue;
+            if(fwz){
+                if(!StringUtils.equals(goods.getStatus(), "G02")||f){
+                    slist.add(entity);
+                    continue;
+                }
+            }else{
+                if(!StringUtils.equals(goods.getStatus(), "G02")){
+                    slist.add(entity);
+                    continue;
+                }
             }
             sb.append(entity.getSkuId()).append("++");
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());

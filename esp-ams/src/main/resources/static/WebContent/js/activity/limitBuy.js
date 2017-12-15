@@ -252,8 +252,8 @@ $(function () {
 	//编辑商品  上传URL 弹窗  见下方editGoods
 	//编辑商品  上传URL 弹窗   确定
 	$("#editGoodsFromSumbit").click(function() {
-		var limitNumTotalAdd=$("#limitNumTotalAdd").textbox('getValue');
-		var limitNumAdd=$("#limitNumAdd").textbox('getValue');
+		var limitNumTotalAdd=$("#limitNumTotalAdd").textbox('getValue')/1;
+		var limitNumAdd=$("#limitNumAdd").textbox('getValue')/1;
 		var file=$("#editGoodsFile").val();
 		if (null == limitNumTotalAdd || ("") == limitNumTotalAdd) {
 			$.messager.alert("提示", "请输入限购总量!", "info");
@@ -267,7 +267,7 @@ $(function () {
 			$.messager.alert("提示", "限购总量不可小于每人限购!", "info");
 			return;
 		}
-		if (stockCurrAmt < limitNumTotalAdd) {
+		if (stockCurrAmt/1 < limitNumTotalAdd) {
 			$.messager.alert("提示", "限购总量不可大于库存剩余!", "info");
 			return;
 		}
@@ -283,7 +283,7 @@ $(function () {
 				success : function(data) {
 					var response = JSON.parse(data);
 					if(response.status==1){
-						$.messager.alert("提示","缩略图上传成功！", "info");
+						$.messager.alert("提示","该活动商品缩略图上传成功！", "info");
 						if(addedit==1){
 							$('#uploadGoodsListAdd').datagrid('updateRow',{
 								index: editindex,
@@ -311,7 +311,7 @@ $(function () {
 			});
 			thisForm.submit();
 		}else{
-			$.messager.alert("提示","修改行数据每人限购和限购总量！", "info");
+			$.messager.alert("提示","该商品了修改单人限购和限购总量！", "info");
 			if(addedit==1){
 				$('#uploadGoodsListAdd').datagrid('updateRow',{
 					index: editindex,
