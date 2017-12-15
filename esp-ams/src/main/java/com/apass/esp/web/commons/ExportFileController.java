@@ -46,6 +46,7 @@ import com.apass.esp.domain.entity.order.OrderSubInfoEntity;
 import com.apass.esp.domain.enums.AwardActivity;
 import com.apass.esp.domain.enums.ExportBusConfig;
 import com.apass.esp.domain.enums.PreDeliveryType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.enums.AwardActivity.AWARD_STATUS_AMS;
 import com.apass.esp.domain.vo.AwardBindRelIntroVo;
 import com.apass.esp.mapper.AwardDetailMapper;
@@ -880,8 +881,11 @@ public class ExportFileController {
             if (!CollectionUtils.isEmpty(list)) {
                 for (Object g : list) {
                     GoodsInfoEntity b = (GoodsInfoEntity) g;
-                    if ("jd".equals(b.getSource())) {
-                        b.setMerchantName("京东");
+                    if (StringUtils.equals(b.getSource(), SourceType.JD.getCode())) {
+                        b.setMerchantName(SourceType.JD.getMessage());
+                    }
+                    if(StringUtils.equals(b.getSource(), SourceType.WZ.getCode())){
+                    	b.setMerchantName(SourceType.WZ.getMessage());
                     }
                     if (null != b.getListTime()) {
                         b.setListTimeString(b.getListTime());

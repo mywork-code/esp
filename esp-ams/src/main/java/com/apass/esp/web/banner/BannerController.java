@@ -242,7 +242,7 @@ public class BannerController extends BaseController {
                   if(goodsInfo == null){
                       return Response.fail("请添加已上架的商品");
                   }
-            		if("jd".equals(goodsInfo.getSource())){
+            		if(StringUtils.isNotBlank(goodsInfo.getSource())){
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=jd";
             		}else{
             			activityUrl="ajqh://cn.apass.ajqh/goods?id="+goodsInfo.getGoodId()+"&source=notJd";
