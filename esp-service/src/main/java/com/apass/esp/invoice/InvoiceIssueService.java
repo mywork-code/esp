@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class InvoiceIssueService {
     private static String TESTURL="http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
-//    private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
-    private static String PRODUCTURL="http://112.65.253.4:9012/sajt-shdzfp-sl-http/SvrServlet";
+    private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
+//    private static String PRODUCTURL="http://112.65.253.4:9012/sajt-shdzfp-sl-http/SvrServlet";
     @Autowired
     private SystemEnvConfig systemEnvConfig;
     /**
