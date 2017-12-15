@@ -5,6 +5,7 @@ import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.enums.CouponExtendType;
 import com.apass.esp.domain.enums.CouponType;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.service.goods.GoodsService;
@@ -82,7 +83,7 @@ public class ProCouponService {
             }
 
             //如果是京东商品，查询相似goods_code用逗号隔开，插入表中作为similar_goods_code
-            if(StringUtils.equals(goodsInfoEntity.getSource(),"jd")){
+            if(StringUtils.equals(goodsInfoEntity.getSource(),SourceType.JD.getCode())||StringUtils.equals(goodsInfoEntity.getSource(), SourceType.WZ.getCode())){
                 TreeSet<String> skuIdSet = jdGoodsInfoService.getJdSimilarSkuIdList(goodsInfoEntity.getExternalId());
                 List<String> skuIdList = new ArrayList<String> (skuIdSet);
                 if(CollectionUtils.isEmpty(skuIdList)){

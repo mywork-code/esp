@@ -1780,7 +1780,7 @@ $(function() {
 	});
 	
 	var sourceJd;//修改库存时商品来源标识
-	//修改库存
+	//修改库存:过时
 	$.editStockinfo = function(index,datagridId,source,status) {
 		var row = $('#'+datagridId).datagrid('getData').rows[index];
 		sourceJd = source;
@@ -2210,10 +2210,11 @@ $(function() {
 	};
 	//预览商品
 	$.previewProduct = function(id,source,eid) {
+		debugger;
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress="";
-        if("wz"==source){
+        if("wz"==source||"jd"==source){
             subtitle = "商品预览-" + eid;
         	destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?skuId=" + eid+"&view=list";
         }else{

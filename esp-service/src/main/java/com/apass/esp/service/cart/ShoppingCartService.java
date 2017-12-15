@@ -9,14 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.apass.esp.common.code.BusinessErrorCode;
-import com.apass.esp.service.common.ImageService;
-import com.apass.esp.service.goods.GoodsAttrValService;
-import com.apass.esp.service.goods.GoodsService;
-import com.apass.esp.service.jd.JdGoodsInfoService;
-import com.apass.esp.service.offer.ActivityCfgService;
-import com.apass.esp.service.offer.ProGroupGoodsService;
-import com.apass.gfb.framework.utils.EncodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
 import com.apass.esp.domain.dto.cart.GoodsStockIdNumDto;
@@ -36,6 +29,7 @@ import com.apass.esp.domain.entity.cart.CartInfoEntity;
 import com.apass.esp.domain.entity.cart.GoodsInfoInCartEntity;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.entity.jd.JdSimilarSku;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuTo;
 import com.apass.esp.domain.entity.jd.JdSimilarSkuVo;
 import com.apass.esp.domain.enums.GoodStatus;
@@ -47,9 +41,15 @@ import com.apass.esp.repository.cart.CartInfoRepository;
 import com.apass.esp.repository.goods.GoodsRepository;
 import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
+import com.apass.esp.service.goods.GoodsAttrValService;
+import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
+import com.apass.esp.service.offer.ActivityCfgService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.logstash.LOG;
-import com.apass.gfb.framework.utils.GsonUtils;
+import com.apass.gfb.framework.utils.EncodeUtils;
 
 @Component
 public class ShoppingCartService {
@@ -786,6 +786,37 @@ public class ShoppingCartService {
 			resultMap.put("jdSimilarSkuList", returnMap2.get("jdSimilarSkuList"));
 			resultMap.put("jdSimilarSkuListSize", returnMap2.get("jdSimilarSkuListSize"));
 		}
+		  // 京东商品没有规格情况拼凑数据格式
+          int jdSimilarSkuListSize = (int) resultMap.get("jdSimilarSkuListSize");
+	      List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) resultMap.get("jdSimilarSkuList");
+          if (jdSimilarSkuListSize == 0 || null ==jdSimilarSkuList || jdSimilarSkuList.isEmpty()) {
+              List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) resultMap.get("JdSimilarSkuToList");
+              JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
+              JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+              jdSimilarSkuVo.setGoodsId(goodsId.toString());
+              String source =(String) resultMap.get("source");
+  			  List<GoodsStockSkuDto> goodsStockSkuList = goodsStockDao.getGoodsStockSkuInfo(goodsIdVal);
+  			 //价格计算
+              if (goodsStockSkuList.size() == 1) {
+                  BigDecimal price = commonService.calculateGoodsPrice(goodsIdVal, Long.parseLong(goodsStockId));
+                  goodsInfo.setGoodsPrice(price);
+                  goodsInfo.setFirstPrice((new BigDecimal("0.1").multiply(price)).setScale(2, BigDecimal.ROUND_DOWN));
+              }
+              if(StringUtils.equals(SourceType.WZ.getCode(), source)){
+              	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+              }else{
+              	jdSimilarSkuVo.setSkuId(goodsStockId);
+              	jdSimilarSkuVo.setStockCurrAmt(goodsStockSkuList.get(0).getStockCurrAmt());
+              }
+              jdSimilarSkuVo.setGoodsStockId(goodsStockId);
+              jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
+              jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
+              jdSimilarSkuVo.setStockDesc("");
+              jdSimilarSkuTo.setSkuIdOrder("");
+              jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);
+              JdSimilarSkuToList.add(jdSimilarSkuTo);
+              resultMap.put("JdSimilarSkuToList", JdSimilarSkuToList);
+          }
         return resultMap;
     }
     /**
