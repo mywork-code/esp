@@ -1,5 +1,6 @@
 package com.apass.esp.service.activity;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,12 @@ public class LimitBuydetailService {
     @Transactional(rollbackFor = { Exception.class})
     public void insertDataToBuyDetaill(LimitBuyParam params){
     	
-    	LimitGoodsSku goodSku = limitGoodsSkuMapper.getLimitGoodsSkuList(params.getLimitBuyActId(), params.getSkuId());
+    	LimitGoodsSku sku = new LimitGoodsSku();
+		sku.setLimitBuyActId(Long.parseLong(params.getLimitBuyActId()));
+		sku.setSkuId(params.getSkuId());
+		List<LimitGoodsSku> goodsSku = limitGoodsSkuMapper.getLimitGoodsSkuList(sku);
+    	
+    	LimitGoodsSku goodSku = goodsSku.get(0);
     	long currTotal = goodSku.getLimitCurrTotal() - params.getNum();
     	if(currTotal < 0){
     		return;

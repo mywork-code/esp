@@ -21,5 +21,5 @@ public interface LimitGoodsSkuMapper extends GenericMapper<LimitGoodsSku,Long> {
      * @param skuId
      * @return
      */
-    public LimitGoodsSku getLimitGoodsSkuList(@Param("limitBuyActId") String limitBuyActId,@Param("skuId") String skuId);
+//    public LimitGoodsSku getLimitGoodsSkuList(@Param("limitBuyActId") String limitBuyActId,@Param("skuId") String skuId);
 }

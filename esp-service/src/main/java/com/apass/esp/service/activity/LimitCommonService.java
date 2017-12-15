@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -211,10 +212,15 @@ public class LimitCommonService {
 		/**
 		 * 首先根据限时购活动的Id和skuID，查询出活动下，该skuID的限购数量和总限购数量
 		 */
-		LimitGoodsSku limitGoods = limitGoodsSkuMapper.getLimitGoodsSkuList(params.getLimitBuyActId(),params.getSkuId());
-		if(null == limitGoods){
+		LimitGoodsSku sku = new LimitGoodsSku();
+		sku.setLimitBuyActId(Long.parseLong(params.getLimitBuyActId()));
+		sku.setSkuId(params.getSkuId());
+		List<LimitGoodsSku> goodsSku = limitGoodsSkuMapper.getLimitGoodsSkuList(sku);
+		if(CollectionUtils.isEmpty(goodsSku)){
 			return true;
 		}
+		
+		LimitGoodsSku limitGoods = goodsSku.get(0);
 		
 		if(limitGoods.getLimitCurrTotal() <= 0){
 			return false;
