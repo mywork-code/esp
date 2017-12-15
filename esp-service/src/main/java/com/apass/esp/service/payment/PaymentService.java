@@ -209,26 +209,6 @@ public class PaymentService {
         	}
         }
         
-        /**
-         * 订单中包含限时购活动的商品时，往t_esp_limit_buydetail表中添加数据(sprint 13)
-         */
-        for (OrderInfoEntity order : orderInfoList) {
-        	OrderInfoEntity entity = orderDao.selectByOrderId(order.getOrderId());
-        	List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(order.getOrderId());
-        	for (OrderDetailInfoEntity detail : subList) {
-        		String limitBuyActId = detail.getLimitActivityId();
-				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动ID不为空，说明此商品为限时购的商品
-					LimitBuyParam params = new LimitBuyParam();
-					params.setLimitBuyActId(limitBuyActId);
-					params.setNum(detail.getGoodsNum().intValue());
-					params.setOrderId(entity.getOrderId());
-					params.setSkuId(detail.getSkuId());
-					params.setUserId(entity.getUserId()+"");
-					limitBuydetailService.insertDataToBuyDetaill(params);
-				}
-			}
-        }
-        
 		return rayResp.getPayPage();
 	}
 	
@@ -1002,6 +982,34 @@ public class PaymentService {
         	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
 		}
+        
+        if(YesNo.isYes(status)){
+        	/**
+             * 订单中包含限时购活动的商品时，往t_esp_limit_buydetail表中添加数据(sprint 13)
+             */
+        	OrderInfoEntity entity = orderDao.selectByOrderId(mainOrderId);
+        	try {
+        		List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(mainOrderId);
+            	for (OrderDetailInfoEntity detail : subList) {
+            		String limitBuyActId = detail.getLimitActivityId();
+    				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动ID不为空，说明此商品为限时购的商品
+    					LimitBuyParam params = new LimitBuyParam();
+    					params.setLimitBuyActId(limitBuyActId);
+    					params.setNum(detail.getGoodsNum().intValue());
+    					params.setOrderId(entity.getOrderId());
+    					params.setSkuId(detail.getSkuId());
+    					params.setUserId(entity.getUserId()+"");
+    					try {
+    						limitBuydetailService.insertDataToBuyDetaill(params);
+						} catch (Exception e) {
+							LOGGER.error("callback_{}_ insertDataToBuyDetaill fail:{}", GsonUtils.toJson(params),e);
+						}
+    				}
+    			}
+			} catch (Exception e) {
+				 LOGGER.error("callback_{}_ limitdetail fail:{}", mainOrderId,e);
+			}
+        }
 	}
 	
 	/**
