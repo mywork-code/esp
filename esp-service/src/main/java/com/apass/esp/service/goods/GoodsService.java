@@ -1215,8 +1215,11 @@ public class GoodsService {
     List<GoodsInfoEntity> dataList = goodsDao.pageList(goodsInfoEntity);
     Integer totalCount = goodsDao.countByKey(goodsInfoEntity, "goodsPageList");
     for (GoodsInfoEntity goodsInfo : dataList) {
-      if ("jd".equals(goodsInfo.getSource())) {
-        goodsInfo.setMerchantName("京东");
+      if(StringUtils.equals("jd",SourceType.JD.getCode())){
+          goodsInfo.setMerchantCode(SourceType.JD.getMessage());
+      }
+      if(StringUtils.equals("wz",SourceType.WZ.getCode())){
+        goodsInfo.setMerchantCode(SourceType.WZ.getMessage());
       }
       if (null != goodsInfo.getListTime()) {
         goodsInfo.setListTimeString(goodsInfo.getListTime());

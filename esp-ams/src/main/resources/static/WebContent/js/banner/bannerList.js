@@ -202,7 +202,7 @@ $(function(){
 			var id = acUrl.slice(acUrl.indexOf("=") +1,acUrl.indexOf("&"));
 			var source = '';
 			if(acUrl.indexOf("notJd") == -1){
-				source = 'jd'
+				source = "wz";
 			}
 			//跳转到商品详情页
 			$.previewProduct(id,source);
@@ -275,7 +275,7 @@ $(function(){
 		var subtitle = "商品预览-" + id;
 		var parentTabs = parent.$('#tabs');
 		var destAddress="";
-		if("jd"==source){
+		if("wz"==source){
 			destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?id=" + id+"&view=list";
 		}else{
 			destAddress = ctx + "/application/goods/management/loadAllBannerPic?id=" + id+"&view=list";
