@@ -317,10 +317,11 @@ $(function() {
 	}
 	//预览商品
 	$.previewProduct =  function(id,source,eid) {
+        debugger;
         var subtitle = "商品预览-" + id;
         var parentTabs = parent.$('#tabs');
         var destAddress="";
-        if("jd"==source){
+        if("jd"==source||"wz"==source){
             subtitle = "商品预览-" + eid;
             destAddress = ctx + "/application/goods/management/loadAllBannerPicJD?skuId=" + eid+"&view=list";
         }else{
