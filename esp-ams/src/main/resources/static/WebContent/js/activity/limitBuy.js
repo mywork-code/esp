@@ -87,7 +87,7 @@ $(function () {
                 success : function(resp) {
                     $.validateResponse(resp, function() {
                     	getLimitGoodsList();
-                        $('#commonLayer').show(100,commonLayerShow());
+                        $('#commonLayer').show(50,commonLayerShow());
                         success(resp);
                     });
                 }

@@ -137,25 +137,34 @@ public class LimitGoodsSkuService {
         Long sortNo = 0L;
         StringBuffer sb = new StringBuffer();
         List<LimitGoodsSku> slist = new ArrayList<LimitGoodsSku>();
+        List<LimitGoodsSku> underfindlist = new ArrayList<LimitGoodsSku>();
         Integer numal = 0;
         Integer unnumal = 0;
         for(LimitGoodsSku entity : list){
-            if(sortNo==10){
+            if(sortNo==10L){
+                //是否跑出异常   待上传列表上传成功十个
                 slist.add(entity);
                 continue;
             }
-            if(limitCommonService.isLimitByGoodsId(entity.getSkuId())){
+            String skuId = entity.getSkuId();
+            Boolean fskuid = checkoutSkuId(skuId);
+            if(fskuid){
+                //是否跑出异常   待上传列表SKUID错误
+                underfindlist.add(entity);
+                continue;
+            }
+            if(limitCommonService.isLimitByGoodsId(skuId)){
                 //是否跑出异常   待上传商品列表已经在其他进行中活动中添加
                 slist.add(entity);
                 continue;
             }
-            if(sb.toString().contains(entity.getSkuId())){
+            if(sb.toString().contains(skuId)){
                 //是否跑出异常   待上传商品列表含有重复相同商品
                 slist.add(entity);
                 continue;
             }
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
-            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(entity.getSkuId());
+            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
             GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
             Boolean fwz = StringUtils.equals("wz", goods.getSource());
             Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
@@ -176,7 +185,7 @@ public class LimitGoodsSkuService {
                 slist.add(entity);
                 continue;
             }
-            sb.append(entity.getSkuId()).append("++");
+            sb.append(skuId).append("++");
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品基本信息表
             BeanUtils.copyProperties(goods, vo);
@@ -188,7 +197,7 @@ public class LimitGoodsSkuService {
             vo.setMarketPrice(marketPrice);
             //复制导入数据
             vo.setActivityPrice(entity.getActivityPrice());
-            vo.setSkuId(entity.getSkuId());
+            vo.setSkuId(skuId);
             //复制类目名称数据
             vo.setCategoryId1Name(cate.getCategoryName());
             vo.setSortNo(++sortNo);
@@ -225,10 +234,32 @@ public class LimitGoodsSkuService {
                 break;
             }
         }
+        for(LimitGoodsSku entity : underfindlist){
+            LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
+            vo.setActivityPrice(entity.getActivityPrice());
+            vo.setSkuId(entity.getSkuId());
+            vo.setSortNo(++sortNo);
+            vo.setUpLoadStatus((byte)0);
+            vo.setLimitNumTotal(0L);
+            vo.setLimitNum(0L);
+            skuvolist.add(vo);
+            unnumal++;
+            if(sortNo==100){
+                break;
+            }
+        }
         String msg = "共" + list.size() + "件商品，关联成功" + numal + "件，失败" + unnumal + "件.";
         map.put("msg", msg);
         map.put("date", skuvolist);
         return map;
+    }
+    private Boolean checkoutSkuId(String skuId) {
+        GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
+        if(stock==null){
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * 刷新 限时购活动商品列表
