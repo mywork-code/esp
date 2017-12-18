@@ -227,7 +227,7 @@ public class WeiZhiProductApiClient {
 				firstCategorys = response.getData();
 			}
 		} catch (Exception e) {
-			LOGGER.error("getWeiZhiGetCategorys response {} return is not 200");
+			LOGGER.error("getWeiZhiGetCategorys response {} return is not 200",e.toString());
 		}
 		return firstCategorys;
 	}
