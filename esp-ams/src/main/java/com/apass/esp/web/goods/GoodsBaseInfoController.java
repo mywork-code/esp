@@ -1237,7 +1237,7 @@ public class GoodsBaseInfoController {
         try{
             String arrten = HttpWebUtils.getValue(request, "arrten");
             String goodsId = HttpWebUtils.getValue(request, "goodsId");
-            return goodsAttrService.tableattrEdit(arrten);
+            return goodsAttrService.tableattrEdit(arrten,goodsId);
         }catch (Exception e) {
             LOGGER.error("商品属性下拉框载入失败!", e);
             return null;
