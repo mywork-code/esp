@@ -1061,8 +1061,17 @@ public class ShopHomeController {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
-            	//根据skuId查询该规格是否参加了限时购活动
-				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,jdGoodsStockInfoList.get(0).getSkuId());
+              //根据skuId查询该规格是否参加了限时购活动
+				LimitGoodsSkuVo limitGS;
+                String source =(String) returnMap.get("source");
+                if(StringUtils.equals(SourceType.JD.getCode(), source)){
+                	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
+                     limitGS=limitCommonService.selectLimitByGoodsId(userId,goodsInfo.getExternalId());
+                }else{
+                	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
+                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
+                    limitGS=limitCommonService.selectLimitByGoodsId(userId,jdGoodsStockInfoList.get(0).getSkuId());
+                }
 				if(null !=limitGS){
 				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
 				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
@@ -1083,13 +1092,6 @@ public class ShopHomeController {
                   jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
 				}
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
-                String source =(String) returnMap.get("source");
-                if(StringUtils.equals(SourceType.JD.getCode(), source)){
-                	 jdSimilarSkuVo.setSkuId(goodsInfo.getExternalId());
-                }else{
-                	jdSimilarSkuVo.setSkuId(jdGoodsStockInfoList.get(0).getSkuId());
-                	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
-                }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
                 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
                 jdSimilarSkuTo.setSkuIdOrder("");
