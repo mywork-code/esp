@@ -27,6 +27,8 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
     private String categoryId1Name;//商品一级分类名称
     //冗余库存表字段
     private Long stockCurrAmt;//剩余库存
+    //冗余商品来源
+    private String source;
     public String getGoodsName() {
         return goodsName;
     }
@@ -124,5 +126,11 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
 	public void setLimitPersonNum(Long limitPersonNum) {
 		this.limitPersonNum = limitPersonNum;
 	}
+    public String getSource() {
+        return source;
+    }
+    public void setSource(String source) {
+        this.source = source;
+    }
     
 }
