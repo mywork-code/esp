@@ -410,10 +410,15 @@ public class MyCouponManagerService {
 			return "未使用";
 		}
 		
+		String couponName = "";
 		ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(mycouponId);
-		ProCoupon coupon = couponMapper.selectByPrimaryKey(myCoupon.getCouponId());
-		
-		return coupon.getName();
+		if(null != myCoupon){
+			ProCoupon coupon = couponMapper.selectByPrimaryKey(myCoupon.getCouponId());
+			if(null != coupon ){
+				couponName = coupon.getName();
+			}
+		}
+		return couponName;
 	}
 	/**
 	 * 修改我的优惠券状态
