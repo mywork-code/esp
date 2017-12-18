@@ -165,10 +165,19 @@ public class LimitGoodsSkuService {
             }
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
-            GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            GoodsInfoEntity goods = null;
+            if(stock!=null){
+                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            }else{
+                List<String> strlist = new ArrayList<String>();
+                strlist.add(skuId);
+                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                goods = goodsList.get(0);
+                stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+            }
             Boolean fwz = StringUtils.equals("wz", goods.getSource());
             Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
-            if(fwz){
+            if(!fwz){
                 if(!StringUtils.equals(goods.getStatus(), "G02")||f){
                     flist.add(entity);
                     continue;
@@ -202,6 +211,11 @@ public class LimitGoodsSkuService {
             vo.setCategoryId1Name(cate.getCategoryName());
             vo.setSortNo(++sortNo);
             vo.setUpLoadStatus((byte)1);
+            if(!fwz){
+                vo.setSource("notwz");
+            }else{
+                vo.setSource("wz");
+            }
             skuvolist.add(vo);
             numal++;
         }
@@ -209,7 +223,16 @@ public class LimitGoodsSkuService {
             String skuId = entity.getSkuId();
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
-            GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            GoodsInfoEntity goods = null;
+            if(stock!=null){
+                goods = goodsService.selectByGoodsId(stock.getGoodsId());
+            }else{
+                List<String> strlist = new ArrayList<String>();
+                strlist.add(skuId);
+                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                goods = goodsList.get(0);
+                stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+            }
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品基本信息表
             BeanUtils.copyProperties(goods, vo);
@@ -229,6 +252,7 @@ public class LimitGoodsSkuService {
             vo.setUpLoadStatus((byte)0);
             vo.setLimitNumTotal(0L);
             vo.setLimitNum(0L);
+            vo.setSource("notwz");
             skuvolist.add(vo);
             unnumal++;
             if(sortNo==100L){
@@ -244,6 +268,7 @@ public class LimitGoodsSkuService {
             vo.setUpLoadStatus((byte)0);
             vo.setLimitNumTotal(0L);
             vo.setLimitNum(0L);
+            vo.setSource("notwz");
             skuvolist.add(vo);
             unnumal++;
             if(sortNo==100L){
@@ -262,7 +287,10 @@ public class LimitGoodsSkuService {
      */
     private Boolean checkoutSkuId(String skuId) {
         GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
-        if(stock==null){
+        List<String> strlist = new ArrayList<String>();
+        strlist.add(skuId);
+        List<GoodsInfoEntity> goods = goodsService.getGoodsListBySkuIds(strlist);
+        if(stock==null&&(goods==null||goods.size()==0)){
             return true;
         }else{
             return false;
@@ -283,7 +311,17 @@ public class LimitGoodsSkuService {
             for(LimitGoodsSku sku : skulist){
                 LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
                 GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
-                GoodsInfoEntity goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                GoodsInfoEntity goods = null;
+                if(stock!=null){
+                    goods = goodsService.selectByGoodsId(stock.getGoodsId());
+                }else{
+                    List<String> strlist = new ArrayList<String>();
+                    strlist.add(sku.getSkuId());
+                    List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                    goods = goodsList.get(0);
+                    stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+                }
+                Boolean fwz = StringUtils.equals("wz", goods.getSource());
                 Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
                 //复制商品基本信息表
                 BeanUtils.copyProperties(goods, vo);
@@ -296,6 +334,11 @@ public class LimitGoodsSkuService {
                 //复制类目名称数据
                 vo.setCategoryId1Name(cate.getCategoryName());
                 vo.setSortNo(++sortNo);
+                if(!fwz){
+                    vo.setSource("notwz");
+                }else{
+                    vo.setSource("wz");
+                }
                 skuvolist.add(vo);
             }
             pageBody.setTotal(limitGoodsSkuMapper.getLimitGoodsSkuPageCount(entity));
