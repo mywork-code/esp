@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public class ShoppingCartService {
      * @throws BusinessException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addGoodsToCart(String requestId, String userId, String goodsStockId, String count) throws BusinessException {
+    public void addGoodsToCart(String requestId, String userId, String goodsStockId, String count,String addressString) throws BusinessException {
         
         Long userIdVal = Long.valueOf(userId);
         Long goodsStockIdVal = Long.valueOf(goodsStockId);
@@ -195,6 +196,7 @@ public class ShoppingCartService {
             saveToCart.setGoodsStockId(goodsStockIdVal);
             saveToCart.setGoodsSelectedPrice(goodsPrice);
             saveToCart.setGoodsNum(countVal);
+            saveToCart.setAddress(addressString);
             saveToCart.setIsSelect("1");
             cartInfoRepository.insert(saveToCart);
             if(null == saveToCart.getId()){
@@ -874,6 +876,14 @@ public class ShoppingCartService {
         GoodsStockInfoEntity secGoodsStockEntity=goodsStockDao.select(secGoodsStockIdVal);
 
         String externalId=null;
+        String address = null;
+        CartInfoEntity cto = new CartInfoEntity();
+        cto.setUserId(userIdVal);
+        cto.setGoodsStockId(preGoodsStockIdVal);
+        List<CartInfoEntity> cartInfoList=cartInfoRepository.filter(cto);
+        if(!CollectionUtils.isEmpty(cartInfoList) && cartInfoList.size()==1){
+        	address=cartInfoList.get(0).getAddress();
+        }
 		if (SourceType.WZ.getCode().equals(preGoodsStockEntity.getGoodsSource()) && SourceType.WZ.getCode().equals(secGoodsStockEntity.getGoodsSource())) {
 			// 查询商品基本信息，返回客户端该商品单条信息
 			goodsInfo =goodsInfoDao.select(secGoodsStockEntity.getGoodsId());
@@ -917,7 +927,7 @@ public class ShoppingCartService {
         this.deleteGoodsInCart(requestId, userIdVal, new String[]{preGoodsStockId});
         
         // 3.添加新规格商品到购物车
-        this.addGoodsToCart(requestId, userId, secGoodsStockId, num);
+        this.addGoodsToCart(requestId, userId, secGoodsStockId, num,address);
         
         // 4.查询商品基本信息，返回客户端该商品单条信息
 //        GoodsInfoEntity goodsInfo = goodsInfoDao.select(goodsIdVal);
