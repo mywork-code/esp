@@ -129,6 +129,8 @@ $(function () {
     	$("#startDay").datebox('setValue', '');
     	$("#startTime").combobox('setValue','');
     	$("#status").combobox('setValue','');
+    	var params = {};
+    	$('#limitBuyActPage').datagrid('load', params);
     });
     //添加活动
     $(".add-btn").click(function() {
