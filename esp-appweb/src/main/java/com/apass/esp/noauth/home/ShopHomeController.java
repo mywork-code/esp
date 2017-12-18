@@ -248,8 +248,8 @@ public class ShopHomeController {
                 LimitBuyActBannerVo limitBuyActBannerVo = new LimitBuyActBannerVo();//返回app值
                 limitBuyAct = limitBuyActs.get(0);
                 //TODO 发生产时要在对应目录上传图片 /data/nfs/gfb/eshop/banner/limitbuy
-                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171207161037.png");
-                String time = DateFormatUtil.dateToString(limitBuyAct.getStartDate(),"HH:mm");
+                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171218164912.png");
+                String time = DateFormatUtil.dateToString(limitBuyAct.getStartDate(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS);
                 limitBuyActBannerVo.setTime(time);
                 long millisecond = new Date().getTime() - limitBuyAct.getStartDate().getTime();
                 limitBuyActBannerVo.setMillisecond(millisecond);
