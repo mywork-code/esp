@@ -24,6 +24,7 @@
         <if test="attrVal!=null and attrVal!=''">
             AND t.attr_val = '${attrVal}'
         </if>
+        order by t.created_time ASC
     </select>
     
     <!-- 根据goodsId查询商品的规格 -->

@@ -136,7 +136,6 @@
 
 	<!-- 系统参数-->
 	<input type="hidden" id="merchantStatus" name="merchantStatus" value="${merchantStatus!}" />
-<!-- 	<input type="hidden" id="goodsPriceRate" name="goodsPriceRate" value="${goodsPriceRate!}" /> -->
 	<input type="hidden" id="priceCostRate" name="priceCostRate" value="${priceCostRate!}" />
 	<input type="hidden" id="merchantSettleRate" name="merchantSettleRate" value="${merchantSettleRate!}">
 <!-- ====================================================--------添加商品 始-------------================================================= -->
@@ -368,6 +367,9 @@
                 </div>
                 <div>
                    <div id ="inputDiv"></div> 
+                </div>
+                <div style = "margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width:550px;">
+                     <div id ="tableattr"></div>
                 </div>
                 <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">
                     <div id="tableattrlist"></div>
@@ -609,6 +611,9 @@
 		        <div>
 		           <div id ="inputDivEdit"></div> 
 		        </div>
+		        <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 550px">
+                   <div id="tableattrEdit"></div>
+                </div>
 		        <div style="margin-left: 20px;margin-top: 10px;text-align: -webkit-left;width: 635px">
 		           <div id="tableattrEditlist"></div>
 		        </div>
@@ -629,105 +634,116 @@
 	<div id="addGoodsStockInfoWin" class="easyui-window" title="<font color='black'>新加库存</font>" 
 	   hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
 	   data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
-		<form id="stockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">	
-			<table class="details_table" style="width: 92%">
-				<!-- <tr>
-					<td width="20%" align="right"><font color="red">*</font>商品规格:</td>
-					<td width="30%">
-					   <input class="easyui-textbox" type="text" id="goodsSkuAttr" name="goodsSkuAttr" style="width: 100%;" />
-					</td>
-				</tr> 
-				<tr>
-					<td align="right"><font color="red">*</font>市场价:</td>
-					<td>
-						<input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="marketPrice" 
-						name="marketPrice"	required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/>
-					</td>
-				</tr> -->
-				<input type="hidden" name = "addstockInfogoodsId" id = "addstockInfogoodsId">
-				<tr>
-					<td align="right"><font color="red">*</font>商品成本:</td>
-					<td>
-					   <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="goodsCostPrice" 
-					   name="goodsCostPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" />
-				    </td>
-				</tr>
-				<tr>
-					<td align="right"><font color="red">*</font>商品售价:</td>
-					<td>                                                                         <!-- precision:0,suffix:'.00' -->
-					   <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="goodsPrice" 
-					   name="goodsPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/>
-				    </td>
-				</tr>
-				<tr>
-					<td align="right"><font color="red">*</font>库存总量:</td>
-					<td>
-					   <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="stockTotalAmt" name="stockTotalAmt"
-						required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
-					</td>
-				</tr>
-				<!-- <tr>
-					<td width="20%" align="right"><font color="red">*</font>比价链接1:</td>
-					<td width="30%">
-					   <input class="easyui-textbox" type="text" id="goodsCompareUrlone" name="goodsCompareUrl" style="width: 100%;" />
-					 </td>
-				</tr>
-				<tr>
-					<td width="20%" align="right"><font color="red">*</font>比价链接2:</td>
-					<td width="30%">
-					   <input class="easyui-textbox" type="text" id="goodsCompareUrltwo" name="goodsCompareUrl2" style="width: 100%;" />
-					 </td>
-				</tr> -->
-			    <tr>
-					<td width="20%" align="right" valign="top" width="">库存缩略图:</td>
-					<td colspan="3" width="60%">
-					   <img id='addStockGoodsLogoImg' src=""/>
-					   <input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/>
-				    </td>
-				</tr>
-				<tr>
-					<td align="right"><font color="red"></font></td>
-					<td><span style="color:red">支持格式：.png,.jpg;尺寸：130*130px;大小：≤300kb</span></td>
-				</tr>
-				<tr style="margin-top: 22px;">
-					<td colspan="4">
-					   <a href="javascript:void(0);" id="addGoodsStockInfoSumbit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
-					   <a href="javascript:void(0);" id="addGoodsStockInfoDisy" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
-					</td>
-				</tr>
-			</table>
-		</form>
+		<table class="details_table" style="width: 92%">
+			<tr>
+				<td align="right"><font color="red">*</font>商品成本:</td>
+				<td>
+				   <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="goodsCostPrice" 
+				   name="goodsCostPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" />
+			    </td>
+			</tr>
+			<tr>
+				<td align="right"><font color="red">*</font>商品售价:</td>
+				<td>                                                                         <!-- precision:0,suffix:'.00' -->
+				   <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="goodsPrice" 
+				   name="goodsPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/>
+			    </td>
+			</tr>
+			<tr>
+				<td align="right"><font color="red">*</font>库存总量:</td>
+				<td>
+				   <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="stockTotalAmt" name="stockTotalAmt"
+					required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
+				</td>
+			</tr>
+		    <!-- <tr>
+				<td width="20%" align="right" valign="top" width="">库存缩略图:</td>
+				<td colspan="3" width="60%">
+				   <img id='addStockGoodsLogoImg' src=""/>
+				   <input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/>
+			    </td>
+			</tr>
+			<tr>
+				<td align="right"><font color="red"></font></td>
+				<td><span style="color:red">支持格式：.png,.jpg;尺寸：130*130px;大小：≤300kb</span></td>
+			</tr> -->
+			<tr style="margin-top: 22px;">
+				<td colspan="4">
+				   <a href="javascript:void(0);" id="addGoodsStockInfoSumbit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+				   <a href="javascript:void(0);" id="addGoodsStockInfoDisy" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+				</td>
+			</tr>
+		</table>
 	</div>
-	
+	<!-- 新增商品新加库存  附属 上传缩略图 -->
+	<div id="addGoodsStockInfoWin1" class="easyui-window" title="<font color='black'>新加库存上传缩略图</font>" 
+       hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
+       data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+        <form id="stockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">  
+            <table class="details_table" style="width: 92%">
+                <input type="hidden" name = "addstockInfogoodsId" id = "addstockInfogoodsId">
+                <tr>
+                    <td width="20%" align="right" valign="top" width="">库存缩略图:</td>
+                    <td colspan="3" width="60%">
+                       <img id='addStockGoodsLogoImg' src=""/>
+                       <input width="20%" type="file" id="stockLogoFile" name="stockLogoFile"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right"><font color="red"></font></td>
+                    <td><span style="color:red">支持格式：.png,.jpg;尺寸：130*130px;大小：≤300kb</span></td>
+                </tr>
+                <tr style="margin-top: 22px;">
+                    <td colspan="4">
+                       <a href="javascript:void(0);" id="addGoodsStockInfoSumbit1" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+                       <a href="javascript:void(0);" id="addGoodsStockInfoDisy1" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 	
 	<!-- 修改商品新加库存 -->
     <div id="editaddGoodsStockInfoWin" class="easyui-window" title="<font color='black'>新加库存</font>" 
        hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
        data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
+		<table class="details_table" style="width: 92%">
+		    <tr>
+		        <td align="right"><font color="red">*</font>商品成本:</td>
+		        <td>
+		           <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="editaddgoodsCostPrice" 
+		           name="goodsCostPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" />
+		        </td>
+		    </tr>
+		    <tr>
+		        <td align="right"><font color="red">*</font>商品售价:</td>
+		        <td>                                                                         <!-- precision:0,suffix:'.00' -->
+		           <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="editaddgoodsPrice" 
+		           name="goodsPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/>
+		        </td>
+		    </tr>
+		    <tr>
+		        <td align="right"><font color="red">*</font>库存总量:</td>
+		        <td>
+		           <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="editaddstockTotalAmt" 
+		           name="stockTotalAmt" required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
+		        </td>
+		    </tr>
+		    <tr style="margin-top: 22px;">
+		        <td colspan="4">
+		           <a href="javascript:void(0);" id="editaddGoodsStockInfoSumbit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+		           <a href="javascript:void(0);" id="editaddGoodsStockInfoDisy" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+		        </td>
+		    </tr>
+		</table>
+    </div>
+	<!-- 修改商品新加库存  附属 上传缩略图-->
+    <div id="editaddGoodsStockInfoWin1" class="easyui-window" title="<font color='black'>新加库存上传缩略图</font>" 
+       hidden="hidden" style="width: 500px; height: 350px; display: none; text-align: center;"
+       data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
         <form id="editaddstockInfoFrom"  method="POST" enctype="multipart/form-data" modelAttribute="stockInfoFileModel">  
             <table class="details_table" style="width: 92%">
                 <input type="hidden" name = "editaddstockInfogoodsId" id = "editaddstockInfogoodsId">
-                <tr>
-                    <td align="right"><font color="red">*</font>商品成本:</td>
-                    <td>
-                       <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="editaddgoodsCostPrice" 
-                       name="goodsCostPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td align="right"><font color="red">*</font>商品售价:</td>
-                    <td>                                                                         <!-- precision:0,suffix:'.00' -->
-                       <input class="easyui-numberspinner" type="text" data-options="min:1,max:100000,precision:2" id="editaddgoodsPrice" 
-                       name="goodsPrice" required="true" missingMessage="1~100000之间的正整数" style="width: 100%;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td align="right"><font color="red">*</font>库存总量:</td>
-                    <td>
-                       <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="editaddstockTotalAmt" 
-                       name="stockTotalAmt" required="true" missingMessage="1~999之间的正整数" style="width: 100%;" />
-                    </td>
-                </tr>
                 <tr>
                     <td width="20%" align="right" valign="top" width="">库存缩略图:</td>
                     <td colspan="3" width="60%">
@@ -741,14 +757,13 @@
                 </tr>
                 <tr style="margin-top: 22px;">
                     <td colspan="4">
-                       <a href="javascript:void(0);" id="editaddGoodsStockInfoSumbit" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
-                       <a href="javascript:void(0);" id="editaddGoodsStockInfoDisy" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
+                       <a href="javascript:void(0);" id="editaddGoodsStockInfoSumbit1" style="margin-right: 15px;" class="easyui-linkbutton">确&nbsp;定&nbsp;</a>
+                       <a href="javascript:void(0);" id="editaddGoodsStockInfoDisy1" style="margin-right: 15px;" class="easyui-linkbutton">取&nbsp;消&nbsp;</a>
                     </td>
                 </tr>
             </table>
         </form>
     </div>
-	
 	
 	<!-- 修改商品修改库存 -->
 	<div id="editGoodsStockInfoWin" class="easyui-window" title="<font color='black'>修改库存信息</font>" hidden="hidden"
