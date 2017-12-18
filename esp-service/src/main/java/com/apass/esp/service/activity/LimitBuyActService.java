@@ -372,8 +372,17 @@ public class LimitBuyActService {
                         LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
                         BeanUtils.copyProperties(sku, vo);
                         GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+                        GoodsInfoEntity goodsBase = null;
+                        if(stock!=null){
+                            goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+                        }else{
+                            List<String> strlist = new ArrayList<String>();
+                            strlist.add(sku.getSkuId());
+                            List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                            goodsBase = goodsList.get(0);
+                            stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
+                        }
                         vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
-                        GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
                         BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
@@ -491,8 +500,17 @@ public class LimitBuyActService {
             LimitGoodsSkuInfo vo = new LimitGoodsSkuInfo();
             BeanUtils.copyProperties(sku, vo);
             GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(sku.getSkuId());
+            GoodsInfoEntity goodsBase = null;
+            if(stock!=null){
+                goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
+            }else{
+                List<String> strlist = new ArrayList<String>();
+                strlist.add(sku.getSkuId());
+                List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
+                goodsBase = goodsList.get(0);
+                stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
+            }
             vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
-            GoodsInfoEntity goodsBase = goodsService.selectByGoodsId(stock.getGoodsId());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
