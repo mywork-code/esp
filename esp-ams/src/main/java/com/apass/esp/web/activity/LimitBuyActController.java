@@ -204,7 +204,7 @@ public class LimitBuyActController {
             return limitBuyActService.addLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
-            return Response.fail("限时购活动新增异常,"+e.getErrorDesc());
+            return Response.fail(e.getErrorDesc());
         }catch(Exception e) {
             LOGGER.error("ADD addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动新增异常！");
@@ -227,7 +227,7 @@ public class LimitBuyActController {
             return limitBuyActService.editLimitBuyAct(buyActView,username);
         }catch(BusinessException e) {
             LOGGER.error("addLimitBuyAct EXCEPTION!", e);
-            return Response.fail("限时购活动修改异常,"+e.getErrorDesc());
+            return Response.fail(e.getErrorDesc());
         }catch(Exception e) {
             LOGGER.error("ADD addLimitBuyAct EXCEPTION!", e);
             return Response.fail("限时购活动修改异常！");

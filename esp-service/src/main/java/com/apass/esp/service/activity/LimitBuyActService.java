@@ -168,7 +168,7 @@ public class LimitBuyActService {
                 startTimeValue = " 22:00:00";
                 break;
             default:
-                throw new BusinessException("该活动开始日期和时间格式化异常!");
+                throw new BusinessException("本活动开始日期和时间格式化异常!");
         }
         String date = buyActView.getStartDay()+startTimeValue;
         buyActView.setStartDate(DateFormatUtil.string2date(date, null));
@@ -176,7 +176,7 @@ public class LimitBuyActService {
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
         if(list!=null&&list.size()>0){
-            throw new BusinessException("该活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
@@ -202,11 +202,11 @@ public class LimitBuyActService {
             sku.setLimitCurrTotal(sku.getLimitNumTotal());//新增的限时购活动商品  初始限购剩余量等于限购总量
             sku.setSortNo(++sortNo);
             if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
-                throw new BusinessException("限时购活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
+                throw new BusinessException("活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
             }
             sku.fillAllField(username);
             if(limitGoodsSkuService.createEntityBySelect(sku)==null){
-                throw new BusinessException("限时购活动商品保存失败!");
+                throw new BusinessException("第"+sortNo+"行活动商品保存失败!");
             }
         }
         return Response.success("限时购活动新增成功！");
@@ -246,7 +246,7 @@ public class LimitBuyActService {
                 startTimeValue = " 22:00:00";
                 break;
             default:
-                throw new BusinessException("该活动开始日期和时间格式化异常!");
+                throw new BusinessException("本活动开始日期和时间格式化异常!");
         }
         LimitBuyAct entity = new LimitBuyAct();
         String sd = buyActView.getStartDay() + startTimeValue;
@@ -256,7 +256,7 @@ public class LimitBuyActService {
             if(en.getId()==buyActView.getId()){
                 continue;
             }
-            throw new BusinessException("该活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
@@ -268,9 +268,6 @@ public class LimitBuyActService {
         }
         Long actId =entity.getId();
         List<LimitGoodsSku> skulist = buyActView.getList();
-        if(skulist.size()>10){
-            throw new BusinessException("每个限时购活动商品数量最多录入10个!");
-        }
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
             sku.setLimitBuyActId(actId);
@@ -279,16 +276,16 @@ public class LimitBuyActService {
             sku.fillField(username);
             if(sku.getId()==null){
                 if(sku.getLimitNum()==null||sku.getLimitNumTotal()==null){
-                    throw new BusinessException("限时购活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
+                    throw new BusinessException("活动商品保存失败,第"+sortNo+"行商品请先编辑限购数量!");
                 }
                 sku.fillAllField(username);
                 if(limitGoodsSkuService.createEntity(sku)==null){
-                    throw new BusinessException("限时购活动商品保存失败!");
+                    throw new BusinessException("第"+sortNo+"行活动商品保存失败!");
                 }
             }else{
                 entity.fillField(username);
                 if(limitGoodsSkuService.updatedEntity(sku)==null){
-                    throw new BusinessException("限时购活动商品修改失败!");
+                    throw new BusinessException("第"+sortNo+"活动商品修改失败!");
                 }
             }
             
