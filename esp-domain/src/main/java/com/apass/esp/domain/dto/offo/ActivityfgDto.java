@@ -7,6 +7,7 @@ import com.apass.esp.common.model.QueryParams;
  */
 public class ActivityfgDto extends QueryParams{
     private String status;
+    private String coupon;
 
     public String getStatus() {
         return status;
@@ -15,4 +16,13 @@ public class ActivityfgDto extends QueryParams{
     public void setStatus(String status) {
         this.status = status;
     }
+
+	public String getCoupon() {
+		return coupon;
+	}
+
+	public void setCoupon(String coupon) {
+		this.coupon = coupon;
+	}
+    
 }
