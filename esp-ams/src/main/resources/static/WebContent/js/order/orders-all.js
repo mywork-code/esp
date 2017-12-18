@@ -178,7 +178,7 @@ $(function () {
                             content += " onclick='$.queryOrderDetail(\"" + row.orderId + "\",\"" + row.userId
                                 + "\",\"" + row.orderAmt + "\",\"" + row.orderStatusDsc + "\",\""
                                 + row.goodName + "\",\"" + row.payType + "\",\"" + row.transNo + "\",\""
-                                + row.createDate + "\");'>查看详情</a>";
+                                + row.createDate + "\",\"" + row.mainOrder + "\",\"" + row.useCoupon + "\");'>查看详情</a>";
                             if (grantedAuthority == 'permission') {
                                 if (orderStatus == 'D05') {
                                     content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
@@ -250,7 +250,8 @@ $(function () {
     });
 
     // 查询订单详情
-    $.queryOrderDetail = function (orderId, userId, orderAmt, orderStatusDsc, goodName, payType, transNo, createDate) {
+    $.queryOrderDetail = function (orderId, userId, orderAmt, orderStatusDsc, goodName, payType, transNo, createDate
+    		,mainOrder,useCoupon) {
         // 设置窗口中的订单信息
 //		$ ("#orderDetailListWin #userId").textbox ('setValue', userId);
         $("#orderDetailListWin #orderId").textbox('setValue', orderId);
@@ -265,7 +266,12 @@ $(function () {
         if (transNo != "null") {
             $("#orderDetailListWin #transNo").textbox('setValue', transNo);
         }
-
+        
+        $("#orderDetailListWin #useCoupons").textbox('setValue', useCoupon);
+        
+        if(mainOrder == 'Y'){
+        	$("#orderDetailListWin #yesMainOrders").attr("checked",true);
+        }
 
         $('#orderDetailListWin').window('open');
 

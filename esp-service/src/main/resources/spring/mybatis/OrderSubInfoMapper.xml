@@ -97,7 +97,9 @@
 		orderInfo.pre_delivery preDelivery,
 		orderInfo.pre_delivery preDeliveryMsg,
 		orderInfo.source source,
-		orderInfo.ext_order_id extOrderId
+		orderInfo.ext_order_id extOrderId,
+		orderInfo.parent_order_id parentOrderId,
+		orderInfo.coupon_id couponId
 		FROM
 		t_esp_order_info orderInfo 
         left join t_esp_merchant_info merchant on 

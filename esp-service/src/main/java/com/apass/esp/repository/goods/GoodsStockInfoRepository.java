@@ -105,4 +105,12 @@ public class GoodsStockInfoRepository extends BaseMybatisRepository<GoodsStockIn
 	public Integer insertGoodsAttr(GoodsStockInfoEntity goodsStockentoty) {
 		return this.getSqlSession().insert("insertGoodsAttr",goodsStockentoty);
 	}
+	/**
+	 * getStockInfoEntityBySkuId
+	 * @param skuId
+	 * @return
+	 */
+    public GoodsStockInfoEntity getStockInfoEntityBySkuId(String skuId) {
+        return this.getSqlSession().selectOne("getStockInfoEntityBySkuId", skuId);
+    }
 }

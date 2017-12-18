@@ -55,6 +55,7 @@
 		market_price marketPrice,
 		goods_Cost_Price goodsCostPrice,
 		stock_Logo stockLogo,
+		sku_id  skuId,
 		goods_compare_url goodsCompareUrl,
 		goods_compare_url2 goodsCompareUrl2
 		FROM
@@ -350,7 +351,8 @@
 			t1.goods_compare_url2 		 goodsCompareUrl2,
 			t1.stock_logo				stockLogo,
 			t2.source                    goodsSource,
-			t2.goods_logo_url            goodsLogoUrl
+			t2.goods_logo_url            goodsLogoUrl,
+			t1.sku_id					 skuId
 		FROM
 			T_ESP_GOODS_STOCK_INFO t1 ,
 		    T_ESP_GOODS_BASE_INFO  t2
@@ -414,5 +416,25 @@
         </foreach>
         )  
    </delete>
-   
+   <select id="getStockInfoEntityBySkuId" parameterType="GoodsStockInfoEntity" resultType="GoodsStockInfoEntity">
+    SELECT
+        id id,
+        goods_id goodsId,
+        goods_sku_attr goodsSkuAttr,
+        goods_price goodsPrice,
+        stock_total_amt stockTotalAmt,
+        stock_curr_amt stockCurrAmt,
+        attr_val_ids    attrValIds,
+        create_user createUser,
+        update_user updateUser,
+        create_date createDate,
+        update_date updateDate,
+        market_price marketPrice,
+        goods_Cost_Price goodsCostPrice,
+        stock_Logo stockLogo
+    FROM
+        t_esp_goods_stock_info
+    WHERE 1=1
+        AND sku_id = #{skuId, jdbcType=BIGINT}
+    </select>
 </mapper> 
