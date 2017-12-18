@@ -1081,7 +1081,7 @@ public class GoodsAttrService {//450
      * @param request
      * @return
      */
-    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(String arrten) {
+    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(String arrten,String goodsId) {
         ResponsePageBody<GoodsStockInfoEntity> respBody = new ResponsePageBody<GoodsStockInfoEntity>();
         arrten = famartsubString(arrten);
         Boolean falg = "undefined".equals(arrten)||StringUtils.isBlank(arrten);
@@ -1101,6 +1101,11 @@ public class GoodsAttrService {//450
         if(list==null||list.size()==0){
             GoodsStockInfoEntity e = new GoodsStockInfoEntity();
             e.setGoodsSkuAttr("无");
+            Boolean falgg = "undefined".equals(arrten)||StringUtils.isBlank(arrten);
+            if(!falgg){
+                String url = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId)).get(0).getStockLogo();
+                e.setStockLogo(url);
+            }
             list.add(e);
         }
         respBody.setRows(list);

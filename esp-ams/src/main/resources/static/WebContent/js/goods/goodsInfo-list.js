@@ -133,7 +133,7 @@ $(function() {
 	///*修改商品    -新增库存信息*/
     $(".add-btn2").click(function() {
     	if(viewdisplaybysource == 'jd'){
-    		$.messager.alert("提示", "京东商品不可维护商品属性和商品库存信息！", "info");
+    		$.messager.alert("提示", "微知商品不可维护商品属性和商品库存信息！", "info");
 			return;
     	}
     	if(goodsCateChangeFalg==1){
@@ -893,7 +893,8 @@ $(function() {
     		$(".add-btn2").click();
     	}
     	//类目修改与否  都要刷新规格缩略图表格
-    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+    	editaddFlushAttrValPar(finalGoodId);
+//    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	});
 	
 	//监听编辑商品输入商品名称事件
@@ -1032,7 +1033,8 @@ $(function() {
 		editaddFlushAttrVal();
 		flushtableattrEditlist();
 		//类目修改与否  都要刷新规格缩略图表格
-		$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+		editaddFlushAttrValPar(finalGoodId);
+//		$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	}
 	//取消保存类目 关闭页面
 	$("#disSaveGoodsCategory").click(function(){
@@ -1096,7 +1098,8 @@ $(function() {
 	    		    	flushtableattrEditlist();
 	    		    	flushtableattrEditlistEdit(editGoodId,categorynameArr1,categorynameArr2,categorynameArr3);
 	    		    	//类目修改与否  都要刷新规格缩略图表格
-	    		    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+	    		    	editaddFlushAttrValPar(finalGoodId);
+//	    		    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	    			}
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1277,7 +1280,8 @@ $(function() {
 				    		$(".add-btn2").click();
 				    	}
 				    	//类目修改与否  都要刷新规格缩略图表格
-				    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+				    	editaddFlushAttrValPar(finalGoodId);
+//				    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 						return;
 					}
 					//非京东 跳页  跳第三页
@@ -3518,7 +3522,7 @@ function flushtableattrEditlistEdit(finalGoodId,value1,value2,value3){
 	}
 	$('#tableattrEditlist').datagrid('load', param);
 }
-function editaddFlushAttrValPar(){
+function editaddFlushAttrValPar(goodsId){
 	var father = document.getElementById("inputDivEdit");
 	var childfirst = father.childNodes[0];
 	var childSecond = childfirst.childNodes[1];
@@ -3530,10 +3534,15 @@ function editaddFlushAttrValPar(){
 			ct.push(v);
 		}
 	}
-	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : {"arrten":ct.toString()},type : "post",dataType : "json",
+	var param = {};
+	param["arrten"]=ct.toString();
+	if(goodsId!=null){
+		param["goodsId"]=goodsId;
+	}
+	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
         success : function(data) {
             $.validateResponse(data, function() {
-            	$('#tableattrEdit').datagrid('load', data.rows);
+            	$('#tableattrEdit').datagrid('loadData', data.rows);
             });
         }
     })

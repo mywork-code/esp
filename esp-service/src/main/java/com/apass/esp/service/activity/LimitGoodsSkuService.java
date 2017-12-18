@@ -189,7 +189,7 @@ public class LimitGoodsSkuService {
                 }
             }
             //判断价格高于售价
-            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getGoodsStockId());
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getId());
             if(entity.getActivityPrice().compareTo(marketPrice)>0){
                 flist.add(entity);
                 continue;
@@ -241,7 +241,7 @@ public class LimitGoodsSkuService {
             vo.setId(null);
             //复制库存表
             vo.setStockCurrAmt(stock.getStockCurrAmt());
-            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getGoodsStockId());
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getId());
             vo.setMarketPrice(marketPrice);
             //复制导入数据
             vo.setActivityPrice(entity.getActivityPrice());
