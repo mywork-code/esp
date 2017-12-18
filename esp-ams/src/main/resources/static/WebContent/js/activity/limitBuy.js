@@ -812,7 +812,7 @@ function downGoods(target,num){
             rowIndex++;  
             $('#uploadGoodsListEdit').datagrid('insertRow', {  
                 index:rowIndex,  
-                row:selectrow  
+                row:selectrow   
             });  
             $('#uploadGoodsListEdit').datagrid('selectRow', rowIndex);    
     	}
