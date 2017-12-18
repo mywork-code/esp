@@ -891,10 +891,9 @@ $(function() {
     		functionX(finalGoodId);
     	}else{//类目修改模拟点击事件新增一条空属性和十条空规格
     		$(".add-btn2").click();
+    		//类目修改与否  都要刷新规格缩略图表格   《 此种情况 类目修改   刷新   下方缩略图表格    类目未修改时，已经模拟出缩略图表格   flushGoodsStock（）方法中已经刷新》
+        	editaddFlushAttrValPar1(finalGoodId);
     	}
-    	//类目修改与否  都要刷新规格缩略图表格
-    	editaddFlushAttrValPar(finalGoodId);
-//    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
 	});
 	
 	//监听编辑商品输入商品名称事件
@@ -1033,8 +1032,7 @@ $(function() {
 		editaddFlushAttrVal();
 		flushtableattrEditlist();
 		//类目修改与否  都要刷新规格缩略图表格
-		editaddFlushAttrValPar(finalGoodId);
-//		$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+		editaddFlushAttrValPar1(finalGoodId);
 	}
 	//取消保存类目 关闭页面
 	$("#disSaveGoodsCategory").click(function(){
@@ -1098,8 +1096,7 @@ $(function() {
 	    		    	flushtableattrEditlist();
 	    		    	flushtableattrEditlistEdit(editGoodId,categorynameArr1,categorynameArr2,categorynameArr3);
 	    		    	//类目修改与否  都要刷新规格缩略图表格
-	    		    	editaddFlushAttrValPar(finalGoodId);
-//	    		    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+	    		    	editaddFlushAttrValPar1(finalGoodId);
 	    			}
 				}else{
 					$.messager.alert("提示", data.msg, "info");
@@ -1280,8 +1277,7 @@ $(function() {
 				    		$(".add-btn2").click();
 				    	}
 				    	//类目修改与否  都要刷新规格缩略图表格
-				    	editaddFlushAttrValPar(finalGoodId);
-//				    	$('#tableattrEdit').datagrid('load', {"goodsId":finalGoodId});
+				    	editaddFlushAttrValPar1(finalGoodId);
 						return;
 					}
 					//非京东 跳页  跳第三页
@@ -1564,8 +1560,6 @@ $(function() {
 		$('#goodsId').val(goodsId);
 		$('#goodsStockInfo').window({modal: true});
 		$('#goodsStockInfo').window('open');
-		
-		//loadStockGoods('goodsStockList',goodsId,source);
 		loadStockGoodsAbout('goodsStockList',goodsId,source);
 	}
 	//商品规格长度校验   弃用
@@ -1732,7 +1726,61 @@ $(function() {
 	$("#editaddstockInfoFrom").submit(function(){  
 		$(":submit",this).attr("disabled","disabled");  
 	});
-	
+	// 修改商品修改库存 取消
+	$("#editGoodsStockInfoDisy").click(function() {
+		$('#editGoodsStockInfoWin').window('close');
+	});
+	// 修改商品修改库存 确定
+	$("#editGoodsStockInfoSumbit").click(function() {
+		var goodsId=finalGoodId;
+		var stockinfoId=$("#editstockinfoId").val();
+		var goodsSkuAttr=$("#editgoodsSkuAttr").textbox('getValue');
+		var goodsCostPrice=$("#editgoodsCostPrice").textbox('getValue');
+		var goodsPrice=$("#editgoodsPrice").textbox('getValue');
+		var stockTotalAmt=$("#editstockTotalAmt").textbox('getValue');
+		if (null == goodsCostPrice || ("") == goodsCostPrice) {
+			$.messager.alert("提示", "商品成本不能为空！", "info");
+			return;
+		}
+		if (null == goodsPrice || ("") == goodsPrice) {
+			$.messager.alert("提示", "商品售价不能为空！", "info");
+			return;
+		}
+		if (null == stockTotalAmt || ("") == stockTotalAmt) {
+			$.messager.alert("提示", "库存总量不能为空！", "info");
+			return;
+		}
+		$('#tableattrEditlist').datagrid('updateRow',{
+			index: editindex,
+			row:{
+				"goodsCostPrice":goodsCostPrice,
+				"goodsPrice":goodsPrice,
+				"stockTotalAmt":stockTotalAmt,
+				"stockCurrAmt":stockTotalAmt
+				}
+		});
+		$('#editGoodsStockInfoWin').window('close');
+		return;
+		/*var param = {};
+		param['id']=stockinfoId;
+		param['goodsCostPrice']=goodsCostPrice;
+		param['goodsPrice']=goodsPrice;
+		$.ajax({ url : ctx + '/application/goods/stockinfo/editStockinfo', type : "POST", data : param,
+			success : function(data) {
+				if(data.msg=="success"){
+					$.messager.alert("提示", "修改库存信息成功！", "info");
+					var params = {};
+			        params['goodsId'] = goodsId;
+			        $('#editGoodsStockInfoWin').window('close');
+			        flushGoodsStock(goodsId);
+	            	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
+			        $(".search-btn").click();
+				}else{
+					$.messager.alert("提示", data.msg, "info");
+				}
+			}
+		});*/
+	});
 	
 	//加库存弹出窗口
 	$.updateStockinfo = function(stockinfoId,stockTotalAmt,stockCurrAmt) {
@@ -1771,11 +1819,6 @@ $(function() {
 		$.ajax({url : ctx + '/application/goods/stockinfo/editStockinfo',type : "POST",data : param,success : function(data) {
 			 	var params = {};
 		        params['goodsId'] = goodsId;
-//		        $('#addGoodsStockList').datagrid('load', params);
-//		        $('#editGoodsStockList').datagrid('load', params);
-//		        loadStockGoods('addGoodsStockList',goodsId,null);
-//		        loadStockGoods('editGoodsStockList',goodsId,null);
-//		        loadStockGoods('goodsStockList',goodsId,null);
 		        loadStockGoodsAbout('goodsStockList',goodsId,null);
 		        $('#addAmtGoodsStockInfoWin').window('close');
 		        $(".search-btn").click();
@@ -1833,95 +1876,7 @@ $(function() {
 		$('#editJDStockWin').window('close');
 	});
 	
-	// 修改商品修改库存 取消
-	$("#editGoodsStockInfoDisy").click(function() {
-		$('#editGoodsStockInfoWin').window('close');
-	});
-	// 修改商品修改库存 确定
-	$("#editGoodsStockInfoSumbit").click(function() {
-		var goodsId=finalGoodId;
-		var stockinfoId=$("#editstockinfoId").val();
-		var goodsSkuAttr=$("#editgoodsSkuAttr").textbox('getValue');
-		var goodsCostPrice=$("#editgoodsCostPrice").textbox('getValue');
-		var goodsPrice=$("#editgoodsPrice").textbox('getValue');
-		var stockTotalAmt=$("#editstockTotalAmt").textbox('getValue');
-//		var marketPrice=$("#editmarketPrice").textbox('getValue');
-//		var editgoodsCompareUrlone=$("#editgoodsCompareUrlone").textbox('getValue');
-//		var editgoodsCompareUrltwo=$("#editgoodsCompareUrltwo").textbox('getValue');
-		var editstockLogoFile=$("#editstockLogoFile").val();
-		var editStockGoodsLogoFile=$('#editStockGoodsLogoFile').val();
-
-//		if (null == editgoodsCompareUrlone || ("") == editgoodsCompareUrlone) {
-//			$.messager.alert("提示", "比价链接不允许为空！", "info");
-//			return;
-//		}
-//		if (null == editgoodsCompareUrltwo || ("") == editgoodsCompareUrltwo) {
-//			$.messager.alert("提示", "比价链接不允许为空！", "info");
-//			return;
-//		}
-//		if (null == goodsSkuAttr || ("") == goodsSkuAttr) {
-//			$.messager.alert("提示", "属性不能为空！", "info");
-//			return;
-//		}
-//		if(goodsSkuAttr.length>8){
-//			$.messager.alert("提示", "库存规格最多8字！", "info");  
-//			return;
-//		}
-//		if (null == marketPrice || ("") == marketPrice) {
-//			$.messager.alert("提示", "市场价不能为空！", "info");
-//			return;
-//		}
-		if (null == goodsCostPrice || ("") == goodsCostPrice) {
-			$.messager.alert("提示", "商品成本不能为空！", "info");
-			return;
-		}
-		if (null == goodsPrice || ("") == goodsPrice) {
-			$.messager.alert("提示", "商品售价不能为空！", "info");
-			return;
-		}
-		if (null == stockTotalAmt || ("") == stockTotalAmt) {
-			$.messager.alert("提示", "库存总量不能为空！", "info");
-			return;
-		}
-//		if (null == editstockLogoFile || ("") == editstockLogoFile) {
-//			$.messager.alert("提示", "库存logo不允许空！", "info");
-//			return;
-//		}
-//		if (null == editstockLogoFile || ("") == editstockLogoFile) {
-//			$.messager.alert("提示", "库存logo不允许空！", "info");
-//			return;
-//		}
-		// debugger;
-		var param = {};
-		param['id']=stockinfoId;
-//		param['goodsSkuAttr']=goodsSkuAttr;
-		param['goodsCostPrice']=goodsCostPrice;
-		param['goodsPrice']=goodsPrice;
-//		param['addAmt']=stockTotalAmt;
-//		param['marketPrice']=marketPrice;
-//		param['goodsCompareUrl']=editgoodsCompareUrlone;
-//		param['goodsCompareUrl2']=editgoodsCompareUrltwo;
-		$.ajax({ url : ctx + '/application/goods/stockinfo/editStockinfo', type : "POST", data : param,
-			success : function(data) {
-//				var response = JSON.parse(data);
-				if(data.msg=="success"){
-					// debugger;
-					$.messager.alert("提示", "修改库存信息成功！", "info");
-					var params = {};
-			        params['goodsId'] = goodsId;
-//			        loadStockGoods('addGoodsStockList',goodsId,sourceJd);
-//			        loadStockGoods('editGoodsStockList',goodsId,sourceJd);
-//			        loadStockGoods('goodsStockList',goodsId,sourceJd);
-			        $('#editGoodsStockInfoWin').window('close');
-			        flushGoodsStock(goodsId);
-	            	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
-			        $(".search-btn").click();
-				}else{
-					$.messager.alert("提示", data.msg, "info");
-				}
-			}
-		});
-	});
+	
 	//修改商品修改库存 上传库存logo(修改LOGO)
 	$("#upStockLogoBtn").click(function() {
 		var editStockGoodsLogoFile=$('#editStockGoodsLogoFile').val();
@@ -2620,9 +2575,11 @@ function loadStockGoodsAbout(datagridId,goodsId,source){
 		},{
 			field: 'goodsSkuAttr', title: '库存规格', width: 80,align : 'center'
 		},{
+			field: 'skuId', title: 'SKUID', width: 80,align : 'center'
+		},{
 			field: 'goodsCostPrice',
 			title: '成本价格', 
-			width: 70,
+			width: 60,
 			align : 'center',
             formatter:function(value,row,index){// 授权标示
              	var goodCostpriceIf=$('#goodCostpriceIf').val();
@@ -2632,15 +2589,15 @@ function loadStockGoodsAbout(datagridId,goodsId,source){
         		return "未授权";
             }
 		},{
-			field: 'goodsPrice', title: '商品售价', width: 70,align : 'center'
+			field: 'goodsPrice', title: '商品售价', width: 60,align : 'center'
 		},{
-			field: 'stockTotalAmt', title: '库存总量', width: 70,align : 'center'
+			field: 'stockTotalAmt', title: '库存总量', width: 60,align : 'center'
 		},{
-			field: 'stockCurrAmt', title: '库存剩余', width: 70,align : 'center'
+			field: 'stockCurrAmt', title: '库存剩余', width: 60,align : 'center'
 		},{
 			field : 'opt',  
 			title : '操作', 
-			width : 80,
+			width : 70,
 			align : 'center',
             formatter : function(value, row, index) {// 授权标示
              	var grantedAuthority=$('#grantedAuthority').val();
@@ -3493,7 +3450,7 @@ function createTableByCateEdit(value,id,goodsId){//input失焦直接save ATTRVAL
         				continue;
         			}
         		}
-//            	flushGoodsStock(goodsId);
+        		editaddFlushAttrValPar2(goodsId,categorynameArr1);
             	flushtableattrEditlistEdit(goodsId,categorynameArr1,categorynameArr2,categorynameArr3);
             	if(value==""&&arrthis.length==3){//该规格被删除动态修改该INPUT的ID
             		document.getElementById(id).id=arrthis[0]+"Ed"+arrthis[1];
@@ -3539,6 +3496,29 @@ function editaddFlushAttrValPar(goodsId){
 	if(goodsId!=null){
 		param["goodsId"]=goodsId;
 	}
+	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
+        success : function(data) {
+            $.validateResponse(data, function() {
+            	$('#tableattrEdit').datagrid('loadData', data.rows);
+            });
+        }
+    })
+}
+function editaddFlushAttrValPar1(goodsId){
+	var param = {};
+	param["goodsId"]=goodsId;
+	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
+        success : function(data) {
+            $.validateResponse(data, function() {
+            	$('#tableattrEdit').datagrid('loadData', data.rows);
+            });
+        }
+    })
+}
+function editaddFlushAttrValPar2(goodsId,arr){
+	var param = {};
+	param["goodsId"]=goodsId;
+	param["arrten"]=arr.toString();
 	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
         success : function(data) {
             $.validateResponse(data, function() {
@@ -3899,6 +3879,7 @@ function functionX(goodsId){
 	        		str+='</div>';
 	        	str+='</div>';
 	        	$('#inputDivEdit').append(str);
+	        	editaddFlushAttrValPar(goodsId);
         	}
         }
 	})

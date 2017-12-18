@@ -183,7 +183,7 @@ public class LimitBuyActController {
             respBody.setMsg("限时购活动商品上传异常,"+e.getErrorDesc());
         }catch(Exception e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            respBody.setMsg("限时购活动商品上传异常！实例化限时购商品列表错误!");
+            respBody.setMsg("限时购活动商品上传异常！商品列表查询失败!");
         }
         return respBody;
     }
