@@ -1,6 +1,7 @@
 package com.apass.esp.third.party.weizhi.client;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -445,7 +446,7 @@ public class WeiZhiProductApiClient {
 	/**
 	 * 统一余额查询接口
 	 */
-	public int  getWeiZhiGetBalance() throws Exception {
+	public BigDecimal  getWeiZhiGetBalance() throws Exception {
 		//获取Token
 		String token = weiZhiTokenService.getTokenFromRedis();
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -453,18 +454,18 @@ public class WeiZhiProductApiClient {
 		parameters.add(param1);
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters, HTTP.UTF_8);
 		String responseJson = null;
-		Integer price=0;
+		BigDecimal price= BigDecimal.ZERO;
 		try {
 			responseJson = HttpClientUtils.getMethodPostResponse(weiZhiConstants.getWZRequestUrl(WeiZhiConstants.WZAPI_PRODUCT_GETBALANCE),entity);
 			LOGGER.info("统一余额查询接口返回Json数据：" + responseJson);
 			if (null == responseJson) {
 				LOGGER.info("微知获取token失败！");
-				return 0;
+				return price;
 			}
 			Gson gson = new Gson();
-			Type objectType = new TypeToken<WeiZhiResponse<Integer>>() {
+			Type objectType = new TypeToken<WeiZhiResponse<BigDecimal>>() {
 			}.getType();
-			WeiZhiResponse<Integer> response = gson.fromJson(responseJson, objectType);
+			WeiZhiResponse<BigDecimal> response = gson.fromJson(responseJson, objectType);
 			if (null != response && response.getResult() == 0) {
 				price = response.getData();
 			}
