@@ -47,7 +47,7 @@ $(function () {
             width : 200,
             align : 'center',
             formatter:function(value,row,index){
-        		return "24Hours";
+        		return "24小时";
             }
         },{
             title : '活动状态',
