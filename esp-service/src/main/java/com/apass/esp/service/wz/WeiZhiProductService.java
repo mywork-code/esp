@@ -1,5 +1,6 @@
 package com.apass.esp.service.wz;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -284,7 +285,7 @@ public class WeiZhiProductService {
 	 * @param skuId
 	 * @throws Exception
 	 */
-	public int  getWeiZhiGetBalance() throws Exception {
+	public BigDecimal  getWeiZhiGetBalance() throws Exception {
 		return weiZhiProductApiClient.getWeiZhiGetBalance();
 	}
 	/**

@@ -67,5 +67,8 @@ ALTER TABLE `t_esp_goods_stock_info`
 MODIFY COLUMN `goods_sku_attr`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商品最小单元sku属性(商品规格)' AFTER `goods_id`;
 ALTER TABLE `t_esp_jd_category`
 MODIFY COLUMN `name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '类目名称' AFTER `cat_id`;
+ALTER TABLE `t_esp_jd_goods`
+MODIFY COLUMN `product_area`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '产地' AFTER `upc`;
+
 
 
