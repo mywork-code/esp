@@ -409,61 +409,6 @@ public class SAPService {
         rowNum = rowNum + 1;
       }
 
-      //获取退款单号，银联：CR+订单id；支付宝：订单id
-      List<CashRefundTxn> cashRefundTxnList = cashRefundTxnMapper.queryByStatusAndDate(CashRefundTxnStatus.CASHREFUNDTXN_STATUS2.getCode(),
-              getDateBegin(), getDateEnd());
-      for (CashRefundTxn cashRefundTxn : cashRefundTxnList) {
-
-        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.XYZF_CODE.getCode())) {
-          continue;
-        }
-
-        List<String> contentList = new ArrayList<String>();
-        contentList.add(ListeningStringUtils.getUUID());
-        contentList.add("01");
-        contentList.add("");
-        contentList.add("A");
-        contentList.add("06");
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(),"yyyyMMdd"));
-        contentList.add(DateFormatUtil.dateToString(cashRefundTxn.getCreateDate(), "HHmmss"));
-        contentList.add("ajqh");
-        contentList.add(String.valueOf(rowNum));
-        contentList.add(cashRefundTxn.getAmt().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-
-        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
-                || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
-          //银联
-          contentList.add("97990155300001887");//退款用对应账号
-          contentList.add("6008");
-          contentList.add("97990155300001887");
-        } else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
-                || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-          //支付宝
-          contentList.add("97990155300001887");//退款用对应账号
-          contentList.add("6008");
-          contentList.add("97990155300001887");
-        }
-
-        contentList.add(cashRefundTxn.getOrderId());
-        contentList.add(cashRefundTxn.getOrderId());
-
-
-        if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.SF_CODE.getCode())
-                || cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())) {
-          //银联
-          contentList.add("");
-          contentList.add("400004");
-
-        }  else if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_SF_CODE.getCode())
-                || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-          //支付宝
-          contentList.add(cashRefundTxn.getOriTxnCode());
-          contentList.add("400016");
-        }
-        csvWriter.writeRecord(contentList.toArray(new String[contentList.size()]));
-        rowNum = rowNum + 1;
-      }
-
       csvWriter.close();
 
     } catch (Exception e) {
@@ -656,7 +601,6 @@ public class SAPService {
         contentList.add("3");
         if (cashRefundTxn.getTypeCode().equals(TxnTypeCode.KQEZF_CODE.getCode())
             || cashRefundTxn.getTypeCode().equals(TxnTypeCode.ALIPAY_CODE.getCode())) {
-
           contentList.add("Y");
         } else {
           contentList.add("N");
@@ -748,7 +692,7 @@ public class SAPService {
           contentList.add("");
         }
         contentList.add("");
-        contentList.add("");
+        contentList.add("0.00");
 
         if (StringUtils.isNotBlank(salOrder.getRefundOrderId()) && StringUtils.equals(salOrder.getOrderId(), salOrder.getRefundOrderId())) {
           contentList.add(salOrder.getOrderId());

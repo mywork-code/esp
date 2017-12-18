@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.apass.esp.third.party.jd.entity.aftersale.SendSku;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -528,7 +529,7 @@ public class TestWZController {
 		/*整体逻辑：先查一级类目,插jd_category表;根据一级类目查二级类目,插jd_category表;根据二级类目查三级类目,插jd_category表;
 		根据三级类目查询skuId集合。根据skuid查询商品详情,再批量查询商品价格,把商品详情和price,jd_price插入jd_goods表*/
 		long startTime = System.currentTimeMillis();
-		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}",startTime+"");
+		LOGGER.info("微知商品初始化接口接口开始执行了,开始时间:startTime:{}", DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
 		//分页参数
 		int pageNum = 1;
 		List<Category> weiZhiFirstCategorys = null;
@@ -536,6 +537,9 @@ public class TestWZController {
 			try {
 				//查询一级类目
 				CategoryPage firstCategorys = weiZhiProductService.getWeiZhiFirstCategorys(pageNum, 20);
+				if(firstCategorys == null){
+					return Response.fail("微知接口返回失败！");
+				}
 				weiZhiFirstCategorys = firstCategorys.getCategorys();
 				pageNum++;//查询二级类目 页面+1
 				if (CollectionUtils.isEmpty(weiZhiFirstCategorys)) {
@@ -548,57 +552,65 @@ public class TestWZController {
 				}
 
 				//根据一级类目查询二级类目
-				for (Category category : weiZhiFirstCategorys) {
+				firstCategorys:for (Category category : weiZhiFirstCategorys) {
 					int pageNum2 = 1;
 					int secondCategorysCount = 0;//记录已执行的 某一级类目下二级类目的数量
 					CategoryPage secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
-
-					if (CollectionUtils.isEmpty(secondCategorys.getCategorys())) {
-						continue;
+					if(secondCategorys==null){
+						return Response.fail("微知接口返回失败！");
 					}
+
 					while(secondCategorysCount<secondCategorys.getTotalRows()){//当已执行数量小于该一级类目下二级类目总数量，页面+1，一级类目不变，继续执行
 						if(pageNum2>1){
 							secondCategorys = weiZhiProductService.getWeiZhiSecondCategorys(pageNum2, 20, category.getCatId());
 						}
 						pageNum2++;//查询二级类目 页面+1
+						if (CollectionUtils.isEmpty(secondCategorys.getCategorys())) {//如果对应的一级类目下没有查到二级类目，继续循环
+							continue firstCategorys;
+						}
 						for (Category category2 : secondCategorys.getCategorys()) {
 							//插入类目表level为2
 							addCategory(category2.getCatId(),2);
 						}
 
-						for (Category category2 : secondCategorys.getCategorys()) {
+						secondCategorys:for (Category category2 : secondCategorys.getCategorys()) {
 							int pageNum3 = 1;
 							int thirdCategorysCount = 0;
 							//根据二级类目查询三级类目
 							CategoryPage thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
-							if (CollectionUtils.isEmpty(thirdCategorys.getCategorys())) {
-								continue;
+							if(thirdCategorys==null){
+								return Response.fail("微知接口返回失败！");
 							}
-
 							while(thirdCategorysCount < thirdCategorys.getTotalRows()){
 								if(pageNum3>1){
 									thirdCategorys = weiZhiProductService.getWeiZhiThirdCategorys(pageNum3, 20, category2.getCatId());
 								}
 								pageNum3++;
-
+								if (CollectionUtils.isEmpty(thirdCategorys.getCategorys())) {
+									continue secondCategorys;
+								}
 								for (Category category3 : thirdCategorys.getCategorys()) {
 									//插入类目表level为3
 									addCategory(category3.getCatId(),3);
 								}
 
-								for (Category category3 : thirdCategorys.getCategorys()) {
+								thirdCategorys:for (Category category3 : thirdCategorys.getCategorys()) {
 									int pageNumForSku = 1;
 									int skuCount = 0;
 									//根据三级类目查询商品编号。
 									WzSkuListPage wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
-									if (CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())) {
-										continue;
+									if(wzSkuListPage==null){
+										return Response.fail("微知接口返回失败！");
 									}
 									while (skuCount < wzSkuListPage.getTotalRows()){
 										if(pageNumForSku>1){
 											wzSkuListPage = weiZhiProductService.getWeiZhiGetSku(pageNumForSku, 20, category3.getCatId().toString());//1,20,672+""
 										}
 										pageNumForSku++;
+
+										if (CollectionUtils.isEmpty(wzSkuListPage.getSkuIds())) {
+											continue thirdCategorys;
+										}
 										for (String skuId : wzSkuListPage.getSkuIds()) {
 											JdGoods jG = jdGoodsMapper.queryGoodsBySkuId(Long.valueOf(skuId));
 											if(jG != null){
@@ -675,11 +687,10 @@ public class TestWZController {
 							break;//跳出while循环
 						}
 					}
-
 				}
 			} catch (Exception e) {
 				LOGGER.error("微知商品初始化失败", e);
-				return Response.fail("微知商品初始化失败!");
+				return Response.fail("微知商品初始化失败,失败时间:"+DateFormatUtil.dateToString(new Date(),DateFormatUtil.YYYY_MM_DD_HH_MM_SS)+",异常信息："+e.toString());
 			}
 		}
 		long endTime = System.currentTimeMillis();
