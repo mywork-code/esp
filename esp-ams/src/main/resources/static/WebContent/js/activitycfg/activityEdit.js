@@ -65,7 +65,7 @@ $(function () {
 
     $('#importFileList').datagrid({
         title: '商品池',
-        //fit: true,
+        fit: true,
         rownumbers: true,
         pagination: true,
         singleSelect: false, //允许选择多行  
@@ -299,6 +299,7 @@ $(function () {
             }
         });
     });
+    
     //单个商品添加至
     $.editGoodsAndActivity = function (goodsId, activityId) {
         /**加载该活动的分组**/
@@ -310,8 +311,9 @@ $(function () {
             onLoadSuccess: function (object) {
                 var l = object.length;
                 if (l > 0) {
-                    $("#addGoodsToGroup").window('open');
-                    $("#addGoodsToGroupActivityId").val(activityId);
+                	//$('#addGoodsToGroup').window("resize",{top:$(document).scrollTop() + ($(window).height()-250) * 0.5});//居中显示
+                	$('#addGoodsToGroup').window('open')
+                	$("#addGoodsToGroupActivityId").val(activityId);
                     $("#addGoodsToGroupGoodsId").val(goodsId);
                 } else {
                     alert("请先创建分组！");
@@ -378,13 +380,21 @@ $(function () {
                 onLoadSuccess: function (object) {
                     var l = object.length;
                     if (l > 0) {
+                        var $win;
                         $win = $('#addGoodsToGroup').window({
-                            top:($(window).height() - 300) * 0.5,
-                            left:($(window).width() - 200) * 0.5,
+                            title:"<font color='black'>添加至分组</font>",
+                            width: 300,
+                            height: 150,
+                            top:180,
+                            left:320,
+                            shadow: true,
+                            modal:true,
+                            closed:true,
+                            minimizable:false,
+                            maximizable:false,
+                            collapsible:false
                         });
-
                         $win.window('open');
-
                         $("#addGoodsToGroupActivityId").val(activityId);
                         $("#addGoodsToGroupGoodsId").val(goodsIdsString);
                     } else {
@@ -529,7 +539,8 @@ $(function () {
             modal: true,
             title: "<span style='color: black'>编辑</span>",
             resizable: false,
-            width: 900,
+            width: 800,
+            top:30,
             buttons: [{
                 text: "确定",
                 handler: function () {
@@ -569,6 +580,9 @@ $(function () {
                 }
             }]
         });
+       // var evt = window.event || arguments.callee.caller.arguments[0]; //获取event对象
+       // $('#editGroupDiv').window("resize",{top:evt.pageY * 0.5});//居中显示
+       // $("#editGroupDiv").window("open");
     }
 
     var groupGoodsId,//分组id

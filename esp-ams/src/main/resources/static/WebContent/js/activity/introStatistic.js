@@ -66,6 +66,7 @@ $(function(){
     $(".search-btn").click(function(){
         var startCreateDate=$("#createDate1").datebox('getValue');
         var endCreateDate=$("#createDate2").datebox('getValue');
+        var telephone=$("#telephone").textbox('getValue');
         if(startCreateDate!=null && startCreateDate!=''&&endCreateDate!=null && endCreateDate!=''){
     		if(startCreateDate>endCreateDate){
     			$.messager.alert("<span style='color: black;'>提示</span>","活动时间：开始时间应早于结束时间！",'info');
@@ -77,6 +78,7 @@ $(function(){
         var params={};
         params['startCreateDate'] = startCreateDate;
         params['endCreateDate'] = endCreateDate;
+        params['mobile'] = telephone;
         $('#list').datagrid('load',params);
     });
 

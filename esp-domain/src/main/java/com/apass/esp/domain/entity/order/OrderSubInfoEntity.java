@@ -257,8 +257,53 @@ public class OrderSubInfoEntity {
      * 商户编码
      */
     private String merchantCode;
+    
+    /**
+     * 主订单
+     */
+    private Long parentOrderId;
+    
+    private String mainOrder = "0";//是否主订单（是否拆单）
+    /**
+     * 使用优惠券的Id
+     */
+    private Long couponId;
+    
+    private String useCoupon;//是否使用优惠券
+    
+	public String getMainOrder() {
+		return mainOrder;
+	}
 
-    // 商品编号，商品名称，商品类型，商品型号，商品规格，购买量，价格
+	public void setMainOrder(String mainOrder) {
+		this.mainOrder = mainOrder;
+	}
+
+	public String getUseCoupon() {
+		return useCoupon;
+	}
+
+	public void setUseCoupon(String useCoupon) {
+		this.useCoupon = useCoupon;
+	}
+
+	public Long getParentOrderId() {
+		return parentOrderId;
+	}
+
+	public void setParentOrderId(Long parentOrderId) {
+		this.parentOrderId = parentOrderId;
+	}
+
+	public Long getCouponId() {
+		return couponId;
+	}
+
+	public void setCouponId(Long couponId) {
+		this.couponId = couponId;
+	}
+
+	// 商品编号，商品名称，商品类型，商品型号，商品规格，购买量，价格
     private String goodsId;
 
     private String goodsName;
