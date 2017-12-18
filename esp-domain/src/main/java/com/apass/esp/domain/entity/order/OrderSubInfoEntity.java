@@ -263,7 +263,7 @@ public class OrderSubInfoEntity {
      */
     private Long parentOrderId;
     
-    private String mainOrder = "0";//是否主订单（是否拆单）
+    private String mainOrder = "N";//是否主订单（是否拆单）
     /**
      * 使用优惠券的Id
      */
