@@ -400,6 +400,22 @@ public class MyCouponManagerService {
 	}
 	
 	/**
+	 * 根据我的优惠券的Id,获取优惠券的名称
+	 * @param mycouponId
+	 * @return
+	 */
+	public String getMyCouponByMyCouponId(Long mycouponId){
+		
+		if(null == mycouponId || mycouponId == -1l){
+			return "未使用";
+		}
+		
+		ProMyCoupon myCoupon = myCouponMapper.selectByPrimaryKey(mycouponId);
+		ProCoupon coupon = couponMapper.selectByPrimaryKey(myCoupon.getCouponId());
+		
+		return coupon.getName();
+	}
+	/**
 	 * 修改我的优惠券状态
 	 * @param mycouponId
 	 * @param status

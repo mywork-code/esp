@@ -7,6 +7,7 @@ import com.apass.esp.domain.dto.payment.PayRequestDto;
 import com.apass.esp.domain.dto.payment.PayResponseDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -18,7 +19,9 @@ import com.apass.esp.domain.entity.payment.PayInfoEntity;
 import com.apass.esp.domain.enums.*;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
+import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.invoice.InvoiceService;
+import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -30,6 +33,8 @@ import com.apass.esp.repository.httpClient.RsponseEntity.CustomerCreditInfo;
 import com.apass.esp.repository.order.OrderDetailInfoRepository;
 import com.apass.esp.repository.order.OrderInfoRepository;
 import com.apass.esp.repository.payment.PaymentHttpClient;
+import com.apass.esp.service.activity.LimitBuydetailService;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
 import com.apass.esp.service.offer.MyCouponManagerService;
@@ -112,6 +117,12 @@ public class PaymentService {
 
 	@Autowired
 	private InvoiceService invoiceService;
+	@Autowired
+	public LimitBuyActMapper limitBuyActMapper;
+	@Autowired
+	private LimitCommonService limitCommonService;
+	@Autowired
+	private LimitBuydetailService limitBuydetailService;
 	
 	/**
 	 * 支付[银行卡支付或信用支付]
@@ -196,6 +207,7 @@ public class PaymentService {
 				}
         	}
         }
+        
 		return rayResp.getPayPage();
 	}
 	
@@ -564,11 +576,13 @@ public class PaymentService {
 			 */
 			for (OrderDetailInfoEntity detail : orderDetailList) {
 				//验证商品的价格是否发生改变，如何改变则将改订单设为无效
-	            BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
-	            if(!(detail.getGoodsPrice().compareTo(price)==0)){
-	            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
-	    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
-	            }
+				if(StringUtils.isBlank(detail.getLimitActivityId())){
+					BigDecimal price = commonService.calculateGoodsPrice(detail.getGoodsId() ,detail.getGoodsStockId());
+		            if(!(detail.getGoodsPrice().compareTo(price)==0)){
+		            	LOG.info(requestId, "id为"+detail.getGoodsId()+"的商品价格发生改变，请重新购买！",detail.getGoodsStockId().toString());
+		    			throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+		            }
+				}
 	            /**
 	             * 验证活动是否过期
 	             */
@@ -581,6 +595,30 @@ public class PaymentService {
 	            	}
 	            	if(cfg.getStartTime().getTime() > now.getTime() || cfg.getEndTime().getTime() < now.getTime() ){
 	            		throw new BusinessException("抱歉，您的订单内含活动已过期的商品");
+	            	}
+	            }
+	            
+	            /**
+	             * 验证限时购活动是否过期
+	             */
+	            String limitActivityId = detail.getLimitActivityId();
+	            if(StringUtils.isNotBlank(limitActivityId)){
+	            	LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(Long.parseLong(limitActivityId));
+	            	if(null == limitBuyAct){
+	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+	            	}
+	            	if(limitBuyAct.getEndDate().getTime() < now.getTime()){
+	            		throw new BusinessException(orderId,"商品价格已变动，请重新下单",BusinessErrorCode.GOODS_PRICE_CHANGE_ERROR);
+	            	}
+	            	
+	            	/**
+	            	 * 首先根据根据商品的Id,获取商品的对象，然后判断source是否为空，如果不为空external_id则一定不为空<br/>
+	            	 * 如果为空，则标志着是自己的商品，根据stock_id查询，获取sku_id
+	            	 */
+	            	boolean bl = limitCommonService.validateLimitGoodsNumsByGoodsIdAndStockId(new LimitBuyParam(limitActivityId, userId+"",
+	            			detail.getGoodsNum().intValue(), detail.getGoodsId(), detail.getGoodsStockId()));
+	            	if(!bl){
+	            		throw new BusinessException("商品价格已变动，请重新下单");
 	            	}
 	            }
 	            
@@ -941,6 +979,34 @@ public class PaymentService {
         	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
 		}
+        
+        if(YesNo.isYes(status)){
+        	/**
+             * 订单中包含限时购活动的商品时，往t_esp_limit_buydetail表中添加数据(sprint 13)
+             */
+        	OrderInfoEntity entity = orderDao.selectByOrderId(mainOrderId);
+        	try {
+        		List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(mainOrderId);
+            	for (OrderDetailInfoEntity detail : subList) {
+            		String limitBuyActId = detail.getLimitActivityId();
+    				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动ID不为空，说明此商品为限时购的商品
+    					LimitBuyParam params = new LimitBuyParam();
+    					params.setLimitBuyActId(limitBuyActId);
+    					params.setNum(detail.getGoodsNum().intValue());
+    					params.setOrderId(entity.getOrderId());
+    					params.setSkuId(detail.getSkuId());
+    					params.setUserId(entity.getUserId()+"");
+    					try {
+    						limitBuydetailService.insertDataToBuyDetaill(params);
+						} catch (Exception e) {
+							LOGGER.error("callback_{}_ insertDataToBuyDetaill fail:{}", GsonUtils.toJson(params),e);
+						}
+    				}
+    			}
+			} catch (Exception e) {
+				 LOGGER.error("callback_{}_ limitdetail fail:{}", mainOrderId,e);
+			}
+        }
 	}
 	
 	/**

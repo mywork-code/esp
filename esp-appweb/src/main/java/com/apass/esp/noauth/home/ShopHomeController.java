@@ -25,8 +25,10 @@ import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
 import com.apass.esp.domain.entity.Category;
+import com.apass.esp.domain.entity.LimitBuyAct;
 import com.apass.esp.domain.entity.WorkCityJd;
 import com.apass.esp.domain.entity.activity.ActivityInfoEntity;
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import com.apass.esp.domain.entity.address.AddressInfoEntity;
 import com.apass.esp.domain.entity.banner.BannerInfoEntity;
 import com.apass.esp.domain.entity.common.DictDTO;
@@ -42,9 +44,11 @@ import com.apass.esp.domain.enums.BannerType;
 import com.apass.esp.domain.enums.CategorySort;
 import com.apass.esp.domain.enums.CityJdEnums;
 import com.apass.esp.domain.enums.GoodStatus;
+import com.apass.esp.domain.enums.LimitBuyStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.CategoryVo;
+import com.apass.esp.domain.vo.LimitBuyActBannerVo;
 import com.apass.esp.domain.vo.MyCouponVo;
 import com.apass.esp.domain.vo.OtherCategoryGoodsVo;
 import com.apass.esp.repository.activity.ActivityInfoRepository;
@@ -54,6 +58,8 @@ import com.apass.esp.search.entity.Goods;
 import com.apass.esp.search.entity.GoodsVo;
 import com.apass.esp.search.enums.SortMode;
 import com.apass.esp.search.manager.IndexManager;
+import com.apass.esp.service.activity.LimitBuyActService;
+import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.address.AddressService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.cart.ShoppingCartService;
@@ -74,6 +80,7 @@ import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Pagination;
 import com.apass.gfb.framework.utils.CommonUtils;
+import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
 import com.google.common.collect.Lists;
@@ -145,7 +152,10 @@ public class ShopHomeController {
     private WeiZhiProductService weiZhiProductService;
     @Autowired
     private WeiZhiGoodsInfoService weiZhiGoodsInfoService;
-
+    @Autowired
+    private LimitBuyActService limitBuyActService;
+    @Autowired
+    private LimitCommonService limitCommonService;
     /**
      * 首页初始化 加载banner和精品商品
      *
@@ -228,6 +238,25 @@ public class ShopHomeController {
                     goods.setGoodsSiftUrl(EncodeUtils.base64Encode(goods.getGoodsSiftUrl()));
                 }
             }
+
+            //限时购:开始时间和banner图
+            //查询是当前是否有限时购活动：无-->不显示 有显示入口
+            LimitBuyAct limitBuyAct = new LimitBuyAct();
+            limitBuyAct.setStatus((byte)Integer.parseInt(LimitBuyStatus.PROCEED.getValue()));
+            List<LimitBuyAct> limitBuyActs = limitBuyActService.readEntityList(limitBuyAct);
+            if(!CollectionUtils.isEmpty(limitBuyActs)){
+                LimitBuyActBannerVo limitBuyActBannerVo = new LimitBuyActBannerVo();//返回app值
+                limitBuyAct = limitBuyActs.get(0);
+                //TODO 发生产时要在对应目录上传图片 /data/nfs/gfb/eshop/banner/limitbuy
+                limitBuyActBannerVo.setImgurl(espImageUrl + "/static"+ "/eshop/banner/limitbuy/20171207161037.png");
+                String time = DateFormatUtil.dateToString(limitBuyAct.getStartDate(),"HH:mm");
+                limitBuyActBannerVo.setTime(time);
+                long millisecond = new Date().getTime() - limitBuyAct.getStartDate().getTime();
+                limitBuyActBannerVo.setMillisecond(millisecond);
+                returnMap.put("limitBuyActBannerVo",limitBuyActBannerVo);
+            }
+
+
             return Response.successResponse(returnMap);
         } catch (Exception e) {
             LOGGER.error("indexInit fail", e);
@@ -993,6 +1022,7 @@ public class ShopHomeController {
             if (SourceType.JD.getCode().equals(goodsInfo.getSource())
                     || SourceType.WZ.getCode().equals(goodsInfo.getSource())) {
                 String externalId = goodsInfo.getExternalId();// 外部商品id
+
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
                             goodsId.toString(), region);
@@ -1021,6 +1051,7 @@ public class ShopHomeController {
                }
                 returnMap.put("status", goodsInfo.getStatus());// 商品下架
             	returnMap.put("isUnSupport", isUnSupport);
+            	returnMap.put("userId", userId);
                 goodService.loadGoodsBasicInfoById2(goodsId, returnMap);//sprint11(商品多规格)
             }
             // 京东商品没有规格情况拼凑数据格式
@@ -1030,6 +1061,27 @@ public class ShopHomeController {
                 List<JdSimilarSkuTo> JdSimilarSkuToList = (List<JdSimilarSkuTo>) returnMap.get("JdSimilarSkuToList");
                 JdSimilarSkuTo jdSimilarSkuTo = new JdSimilarSkuTo();
                 JdSimilarSkuVo jdSimilarSkuVo = new JdSimilarSkuVo();
+            	//根据skuId查询该规格是否参加了限时购活动
+				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,jdGoodsStockInfoList.get(0).getSkuId());
+				if(null !=limitGS){
+				BigDecimal limitActivityPrice=limitGS.getActivityPrice();
+				limitActivityPrice.setScale(2, BigDecimal.ROUND_DOWN);
+				jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());//限时购活动价
+				jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
+				jdSimilarSkuVo.setLimitActivityPrice(limitActivityPrice);
+				jdSimilarSkuVo.setLimitActivityPriceFirst((new BigDecimal("0.1").multiply(limitActivityPrice)).setScale(2, BigDecimal.ROUND_DOWN));
+				jdSimilarSkuVo.setIsLimitActivity(true);
+				jdSimilarSkuVo.setLimitNum(limitGS.getLimitNum());
+				jdSimilarSkuVo.setLimitPersonNum(limitGS.getLimitPersonNum());
+				jdSimilarSkuVo.setLimitBuyActId(limitGS.getLimitBuyActId());
+				jdSimilarSkuVo.setLimitBuyFalg(limitGS.getLimitFalg());
+				jdSimilarSkuVo.setLimitBuyTime(limitGS.getTime());
+				jdSimilarSkuVo.setLimitBuyStartTime(limitGS.getStartTime());
+				jdSimilarSkuVo.setLimitBuyEndTime(limitGS.getEndTime());
+				}else{
+		          jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
+                  jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
+				}
                 jdSimilarSkuVo.setGoodsId(goodsId.toString());
                 String source =(String) returnMap.get("source");
                 if(StringUtils.equals(SourceType.JD.getCode(), source)){
@@ -1039,8 +1091,6 @@ public class ShopHomeController {
                 	jdSimilarSkuVo.setStockCurrAmt(jdGoodsStockInfoList.get(0).getStockCurrAmt());
                 }
                 jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
-                jdSimilarSkuVo.setPrice(goodsInfo.getGoodsPrice());
-                jdSimilarSkuVo.setPriceFirst(goodsInfo.getFirstPrice());
                 jdSimilarSkuVo.setStockDesc(returnMap.get("goodsStockDes").toString());
                 jdSimilarSkuTo.setSkuIdOrder("");
                 jdSimilarSkuTo.setJdSimilarSkuVo(jdSimilarSkuVo);

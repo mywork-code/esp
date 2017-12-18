@@ -1,14 +1,34 @@
 package com.apass.esp.web.coupon;
 
-import com.apass.esp.common.model.QueryParams;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.CouponList;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProCouponRel;
 import com.apass.esp.domain.entity.ProMyCoupon;
-import com.apass.esp.domain.entity.customer.CustomerInfo;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.ActivityCfgCoupon;
+import com.apass.esp.domain.enums.CouponExtendType;
+import com.apass.esp.domain.enums.CouponIsDelete;
+import com.apass.esp.domain.enums.CouponSillType;
+import com.apass.esp.domain.enums.CouponStatus;
+import com.apass.esp.domain.enums.CouponType;
 import com.apass.esp.domain.query.ProCouponQuery;
 import com.apass.esp.domain.vo.ActivityCfgQuery;
 import com.apass.esp.domain.vo.ProMyCouponAmsVo;
@@ -25,24 +45,9 @@ import com.apass.gfb.framework.utils.BaseConstants;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.EncodeUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import com.apass.gfb.framework.utils.HttpWebUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.internal.LinkedTreeMap;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Created by xiaohai on 2017/10/27.

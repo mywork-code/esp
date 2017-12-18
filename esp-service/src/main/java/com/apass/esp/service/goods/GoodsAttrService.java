@@ -108,15 +108,13 @@ public class GoodsAttrService {//450
      * @param name
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public int addGoodsAttr(String name,String user) {
         GoodsAttr entity = new GoodsAttr();
         entity.setName(name);
         if(getGoodsAttrListByName(entity)){
             return 2;
         }
-        entity.setUpdatedTime(new Date());
-        entity.setUpdatedUser(user);
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
         entity.setUpdatedTime(new Date());
@@ -128,15 +126,13 @@ public class GoodsAttrService {//450
      * @param name
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Long addGoodsAttr2(String name,String user) {
         GoodsAttr entity = new GoodsAttr();
         entity.setName(name);
         if(getGoodsAttrListByName(entity)){
             return -1l;
         }
-        entity.setUpdatedTime(new Date());
-        entity.setUpdatedUser(user);
         entity.setCreatedTime(new Date());
         entity.setCreatedUser(user);
         entity.setUpdatedTime(new Date());
@@ -150,7 +146,7 @@ public class GoodsAttrService {//450
      * @param name
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public int editGoodsAttr(Long id, String name,String user) {
         GoodsAttr entity = new GoodsAttr();
         entity.setName(name);
@@ -167,7 +163,7 @@ public class GoodsAttrService {//450
      * @param entity
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public int editGoodsAttr(GoodsAttr entity) {
 //        String user = SpringSecurityUtils.getLoginUserDetails().getUsername();
         if(getGoodsAttrListByName(entity)){
@@ -182,7 +178,7 @@ public class GoodsAttrService {//450
      * @param id
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public int deleteGoodsAttr(Long id) {
         List<CategoryAttrRel>  list = categoryAttrRelService.categoryAttrRelListByAttrId(id);
         if(list!=null&&list.size()>0){
@@ -323,7 +319,7 @@ public class GoodsAttrService {//450
      * @param arr3
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     private Boolean delgoodsAttrValByAttrId(String[] arr1, String[] arr2,String[] arr3,Long goodsId){
         if(arr1!=null&&arr1.length>0){
             String id1 = arr1[0].split("-")[1];
@@ -355,7 +351,7 @@ public class GoodsAttrService {//450
      * @param arr3
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     private Boolean savegoodsAttrValByAttrId(String[] arr1, String[] arr2, String[] arr3,Long goodsId) {
         if(arr1!=null&&arr1.length>0){
             String id1 = arr1[0].split("-")[1];
@@ -388,7 +384,7 @@ public class GoodsAttrService {//450
      * @param arr3
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     private Boolean savegoodsAttrValByAttrIdForEditAdd(String[] arr1, String[] arr2, String[] arr3,Long goodsId) {
         if(arr1!=null&&arr1.length>0){
             String id1 = arr1[0].split("-")[1];
@@ -422,7 +418,7 @@ public class GoodsAttrService {//450
      * @return
      * @throws BusinessException 
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
             List<GoodsStockInfoEntity> goodsStocken,
             String[] arr1, String[] arr2,String[] arr3,
@@ -445,7 +441,7 @@ public class GoodsAttrService {//450
         }
         return saveGoodsCateAttrAndStock(goodsStock, goodsStocken, goodsId, userName,status);
     }
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     private Response saveGoodsCateAttrAndStock(List<StockInfoFileModel> goodsStock, 
             List<GoodsStockInfoEntity> goodsStocken,Long goodsId,String userName,String status) throws BusinessException{
         Boolean falgstatus = "undefined".equals(status)||StringUtils.isBlank(status);
@@ -705,7 +701,7 @@ public class GoodsAttrService {//450
      * @throws BusinessException 
      */
     @SuppressWarnings("unused")
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Response createTableByCateEdit(String attrValId, String attrId, String attrVal,String goodsId) throws BusinessException {
         attrVal = famartsubStringTrim(attrVal);
         Boolean falg1 = "undefined".equals(attrValId)||StringUtils.isBlank(attrValId);//验证该INPUT有没有规格ID
@@ -816,7 +812,7 @@ public class GoodsAttrService {//450
      * @return
      * @throws BusinessException 
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName,String [] arr1,String [] arr2,String [] arr3) throws BusinessException {
         arr1 = famartsubStringarr(arr1);
         arr2 = famartsubStringarr(arr2);
@@ -835,7 +831,7 @@ public class GoodsAttrService {//450
      * @return
      * @throws BusinessException 
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     private Response editsaveGoodsCateAttrAndStock(List<GoodsStockInfoEntity> list, Long goodsId, String userName) throws BusinessException {
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
@@ -883,7 +879,7 @@ public class GoodsAttrService {//450
      * @return
      * @throws BusinessException 
      */
-    @Transactional
+    @Transactional(rollbackFor = { Exception.class})
     public Response editCategory(GoodsInfoEntity entity) throws BusinessException {
         String message = "0";
         Long cateid1 = goodsService.selectByGoodsId(entity.getId()).getCategoryId1();
