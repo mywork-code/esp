@@ -54,7 +54,7 @@ public class WeiZhiAfterSaleApiClient {
         params.add(new BasicNameValuePair("questionDesc",afsWeizhiApply.getQuestionDesc()));
         params.add(new BasicNameValuePair("isNeedDetectionReport","true"));
         params.add(new BasicNameValuePair("questionPic",afsWeizhiApply.getQuestionPic()));
-        params.add(new BasicNameValuePair("isHasPackage",String.valueOf(afsWeizhiApply.getIsHasPackage()==null ? "0" : afsWeizhiApply.getIsHasPackage())));
+        params.add(new BasicNameValuePair("isHasPackage",String.valueOf(afsWeizhiApply.getIsHasPackage()==null ? false : true)));
         params.add(new BasicNameValuePair("packageDesc",String.valueOf(afsWeizhiApply.getPackageDesc()==null ? "0" : afsWeizhiApply.getPackageDesc())));
         params.add(new BasicNameValuePair("asCustomerDto",afsWeizhiApply.getAsCustomerDto()));
         params.add(new BasicNameValuePair("asPickwareDto",afsWeizhiApply.getAsPickwareDto()));
