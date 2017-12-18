@@ -3202,12 +3202,17 @@ function addFlushAttrValPar(){
 			ct.push(v);
 		}
 	}
-	$('#tableattr').datagrid('load', {"arrten":ct.toString()});
+	$.ajax({url : ctx + '/application/goods/management/tableattr',data : {"arrten":ct.toString()},type : "post",dataType : "json",
+        success : function(data) {
+            $.validateResponse(data, function() {
+            	$('#tableattr').datagrid('loadData', data.rows);
+            });
+        }
+    })
 }
 function addFlushAttrVal(){//根据第一条属性下规格名称刷新规格表格
 	$('#tableattr').datagrid({
         rownumbers : true,
-        pagination : true,
         singleSelect : true,
         striped:true,
         columns:[[{
@@ -3233,15 +3238,6 @@ function addFlushAttrVal(){//根据第一条属性下规格名称刷新规格表
 				return content;
 			}
         }]],
-        loader : function(param, success, error) {
-            $.ajax({url : ctx + '/application/goods/management/tableattr',data : param,type : "post",dataType : "json",
-                success : function(data) {
-                    $.validateResponse(data, function() {
-                        success(data);
-                    });
-                }
-            })
-        }
 	});
 }
 var addin;//新增商品 规格缩略图表格行数
@@ -3534,12 +3530,17 @@ function editaddFlushAttrValPar(){
 			ct.push(v);
 		}
 	}
-	$('#tableattrEdit').datagrid('load', {"arrten":ct.toString()});
+	$.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : {"arrten":ct.toString()},type : "post",dataType : "json",
+        success : function(data) {
+            $.validateResponse(data, function() {
+            	$('#tableattrEdit').datagrid('load', data.rows);
+            });
+        }
+    })
 }
 function editaddFlushAttrVal(){//根据第一条属性下规格名称刷新规格表格
 	$('#tableattrEdit').datagrid({
         rownumbers : true,
-        pagination : true,
         singleSelect : true,
         striped:true,
         columns:[[{
@@ -3565,15 +3566,6 @@ function editaddFlushAttrVal(){//根据第一条属性下规格名称刷新规�
 				return content;
 			}
         }]],
-        loader : function(param, success, error) {
-            $.ajax({url : ctx + '/application/goods/management/tableattrEdit',data : param,type : "post",dataType : "json",
-                success : function(data) {
-                    $.validateResponse(data, function() {
-                        success(data);
-                    });
-                }
-            })
-        }
 	});
 }
 var editaddin;//修改商品 （类目修改）规格缩略图表格行数
