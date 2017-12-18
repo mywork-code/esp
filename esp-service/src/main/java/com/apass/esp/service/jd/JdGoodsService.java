@@ -135,7 +135,7 @@ public class JdGoodsService {
             stockEntity.setUpdateUser(username);
             stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
             Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(jdGoods.getSkuId());
-            if(jdGoodsSpecification != null){
+            if(jdGoodsSpecification != null && jdGoodsSpecification.size() > 0){
                 StringBuffer sb = new StringBuffer();
                 for(String value:jdGoodsSpecification.values()){
                     sb.append(value+" ");
