@@ -47,7 +47,7 @@ $(function () {
             width : 200,
             align : 'center',
             formatter:function(value,row,index){
-        		return "24Hours";
+        		return "24小时";
             }
         },{
             title : '活动状态',
@@ -129,6 +129,8 @@ $(function () {
     	$("#startDay").datebox('setValue', '');
     	$("#startTime").combobox('setValue','');
     	$("#status").combobox('setValue','');
+    	var params = {};
+    	$('#limitBuyActPage').datagrid('load', params);
     });
     //添加活动
     $(".add-btn").click(function() {
@@ -267,8 +269,8 @@ $(function () {
 			$.messager.alert("提示", "限购总量不可小于每人限购!", "info");
 			return;
 		}
-		if (stockCurrAmt/1 < limitNumTotalAdd) {
-			$.messager.alert("提示", "限购总量不可大于库存剩余!", "info");
+		if (stockCurrAmt/1 < limitNumTotalAdd&&source!='wz') {
+			$.messager.alert("提示", "非微知供应商商品，限购总量不可大于库存剩余!", "info");
 			return;
 		}
 		var filefalg = null == file || ("") == file;
@@ -443,9 +445,22 @@ function addFunction(){
             width : 10,
             align : 'center'
         },{
+        	title : '来源',
+            field : 'source',
+            width : 50,
+            align : 'center',
+            formatter:function(value,row,index){
+          		if(value=='wz'){
+          			return "微知";
+          		}
+          		if(value==0){
+          			return "供应商";
+          		}
+             }
+        },{
             title : '商品名称',
             field : 'goodsName',
-            width : 90,
+            width : 80,
             align : 'center',
         },{
             title : '商品编码',
@@ -455,7 +470,7 @@ function addFunction(){
         },{
             title : 'SKUID',
             field : 'skuId',
-            width : 90,
+            width : 70,
             align : 'center',
         },{
         	title : '活动价',
@@ -563,9 +578,22 @@ function editFunction(){
             width : 10,
             align : 'center'
         },{
+        	title : '来源',
+            field : 'source',
+            width : 50,
+            align : 'center',
+            formatter:function(value,row,index){
+          		if(value=='wz'){
+          			return "微知";
+          		}
+          		if(value==0){
+          			return "供应商";
+          		}
+             }
+        },{
             title : '商品名称',
             field : 'goodsName',
-            width : 90,
+            width : 80,
             align : 'center',
         },{
             title : '商品编码',
@@ -575,7 +603,7 @@ function editFunction(){
         },{
             title : 'SKUID',
             field : 'skuId',
-            width : 90,
+            width : 80,
             align : 'center',
         },{
         	title : '活动价',
@@ -680,15 +708,17 @@ var stockCurrAmt ;//商品库存剩余
 var editindex;//商品表行号
 var skuId ;//商品skuID
 var addedit;//新增活动or修改活动
+var source;//新增活动or修改活动
 //编辑商品弹框
 function editGoods(target,num){
 	addedit=num;
 	var rowentity = getRowEntity(target,num);
 	limitGoodsSkuId = rowentity.id;
 	skuId = rowentity.skuId;
+	source = rowentity.source;
 	$("#editGoodsFile").val('');
 	stockCurrAmt = rowentity.stockCurrAmt;
-	if(limitGoodsSkuId==""||limitGoodsSkuId==null){
+	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
 		$("#limitNumTotalAdd").textbox('clear');
 		$("#limitNumAdd").textbox('clear');
 		
@@ -697,7 +727,7 @@ function editGoods(target,num){
 		$("#limitNumAdd").textbox({'disabled':false});
 		$('#editGoods').window({modal: true});
 		$('#editGoods').window('open');
-	}else{
+	}else{//修改编辑
 		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
 		$.ajax({url : ctx + "/activity/limitBuyActContro/getLimitBuyActStatus",data : {"id":limitGoodsSkuId},type : "post",dataType : "json",
@@ -784,7 +814,7 @@ function downGoods(target,num){
             rowIndex++;  
             $('#uploadGoodsListEdit').datagrid('insertRow', {  
                 index:rowIndex,  
-                row:selectrow  
+                row:selectrow   
             });  
             $('#uploadGoodsListEdit').datagrid('selectRow', rowIndex);    
     	}

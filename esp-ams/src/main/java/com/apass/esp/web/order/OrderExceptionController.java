@@ -84,6 +84,9 @@ public class OrderExceptionController {
 
     @Autowired
     private OrderModifyStatusScheduleTask task1;
+    
+    @Autowired
+    private MailStatis2ScheduleTask task2;
     /**
      * 订单信息页面
      */
@@ -274,4 +277,10 @@ public class OrderExceptionController {
     	return Response.success("定时发货成功!");
     }
     
+    @ResponseBody
+    @RequestMapping("/mail/statis")
+    public Response mailStatisSchedule(){
+    	task2.mailStatisSchedule();
+    	return Response.success("安家趣花电商订单统计(成交金额，统计成本)!");
+    }
 }

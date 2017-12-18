@@ -686,7 +686,7 @@
             last_acceptgoodsdate		lastAcceptGoodsDate,
             acceptgoodsdate			acceptGoodsDate
 	    from t_esp_order_info
-		where  orderstatus =#{orderStatus} and ext_parent_id!='-1'
+		where  orderstatus =#{orderStatus} and ext_parent_id!='-1' and parent_order_id >= 0
 		and pay_time &gt;= #{dateBegin}
 		and pay_time &lt;= #{dateEnd}
 	</select>
