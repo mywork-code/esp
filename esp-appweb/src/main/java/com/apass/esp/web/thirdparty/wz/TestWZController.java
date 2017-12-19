@@ -234,7 +234,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response getWzPrice() throws Exception{
 		List<String> skuList = Lists.newArrayList();
-		skuList.add("768678");
+		skuList.add("4515143");
 		List<WZPriceResponse> priceList = price.getWzPrice(skuList);
 		return Response.successResponse(priceList);
 	}
