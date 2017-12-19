@@ -293,7 +293,7 @@ public class LimitBuyActController {
             int size = file.getInputStream().available();// 大小
             is = file.getInputStream();
             if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
+                return Response.fail("上传缩略图尺寸不符合 宽:130px,高:130px,格式:.jpg,.png");
             } else if (size > 1024 * 300) {
                 return Response.fail("文件不能大于300kb!");
             }

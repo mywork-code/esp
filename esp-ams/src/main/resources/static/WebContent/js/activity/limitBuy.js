@@ -140,6 +140,11 @@ $(function () {
     	$("#startTimeAdd").combobox('setValue','');
     	$("#startDayAdd").datebox({'disabled': false }); 
 		$("#startTimeAdd").combobox({'disabled': false }); 
+//		$('#uploadGoodsListAdd').datagrid('loadData',[]);
+		var rows = $('#uploadGoodsListAdd').datagrid('getRows');
+        for(var i=rows.length-1;i>=0;i--){
+            $('#uploadGoodsListAdd').datagrid('deleteRow',i);
+        }
 		$('#addLayer').show(500,addLayerShow());
     });
     //编辑活动
@@ -262,7 +267,7 @@ $(function () {
 			return;
 		}
 		if (null == limitNumAdd || ("") == limitNumAdd) {
-			$.messager.alert("提示", "请输入每人限购!", "info");
+			$.messager.alert("提示", "请输入每人限购,且不可为零!", "info");
 			return;
 		}
 		if (limitNumTotalAdd < limitNumAdd) {
@@ -345,7 +350,7 @@ $(function () {
 		var startTime = $("#startTimeAdd").combobox('getValue');
 		var goodsrows = $('#uploadGoodsListAdd').datagrid('getRows');
 		if(startDay==""||startTime==""){
-			$.messager.alert("提示", "请输入限时购活动开始日期和时间!", "info");
+			$.messager.alert("提示", "请选择限时购活动开始日期和时间!", "info");
 			return;
 		}
 		if(goodsrows==""||goodsrows.length==0){
@@ -378,7 +383,7 @@ $(function () {
 		var startTime = $("#startTimeEdit").combobox('getValue');
 		var goodsrows = $('#uploadGoodsListEdit').datagrid('getRows');
 		if(startDay==""||startTime==""){
-			$.messager.alert("提示", "请输入限时购活动开始日期和时间!", "info");
+			$.messager.alert("提示", "请选择限时购活动开始日期和时间!", "info");
 			return;
 		}
 		if(goodsrows==""||goodsrows.length==0){
@@ -453,7 +458,7 @@ function addFunction(){
           		if(value=='wz'){
           			return "微知";
           		}
-          		if(value==0){
+          		if(value!='wz'){
           			return "供应商";
           		}
              }
@@ -586,7 +591,7 @@ function editFunction(){
           		if(value=='wz'){
           			return "微知";
           		}
-          		if(value==0){
+          		if(value!='wz'){
           			return "供应商";
           		}
              }
@@ -718,9 +723,16 @@ function editGoods(target,num){
 	source = rowentity.source;
 	$("#editGoodsFile").val('');
 	stockCurrAmt = rowentity.stockCurrAmt;
+	if(rowentity.url!=""&&rowentity.url!=null){
+		$("#limitGoodsSkuUrl").attr("src",ctx + "/fileView/query?picUrl=" + rowentity.url);
+	}else{
+		$("#limitGoodsSkuUrl").attr("src",'');
+	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
-		$("#limitNumTotalAdd").textbox('clear');
-		$("#limitNumAdd").textbox('clear');
+//		$("#limitNumTotalAdd").textbox('clear');
+//		$("#limitNumAdd").textbox('clear');
+		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
+		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
 		
 		//有问题需要解决   有微调器失效BUG
 		$("#limitNumTotalAdd").textbox({'disabled':false});
