@@ -1,6 +1,9 @@
 package com.aisino;
 import java.io.File;
 import java.util.Iterator;
+
+import cn.jpush.api.utils.StringUtils;
+import com.apass.gfb.framework.exception.BusinessException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.dom4j.Document;
@@ -59,6 +62,9 @@ public class EncryptionDecryption {
     @SuppressWarnings("unchecked")
     public static InvoiceDLReturn getRequestFaPiaoDLRetuen(String respXML) throws Exception{
         String returnentity = getRequestFaPiaoDL(respXML);
+        if(StringUtils.isEmpty(returnentity)){
+            throw new BusinessException("解密发票下载报错.........");
+        }
         Document doc = DocumentHelper.parseText(returnentity);
         Element root = doc.getRootElement();
         InvoiceDLReturn entity = new InvoiceDLReturn();
