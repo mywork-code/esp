@@ -420,6 +420,18 @@ $(function () {
 			}
 		})
 	});
+	$(".download-btn-add").click(function() {
+		var url = ctx + '/activity/limitBuyActContro/downloadTemplate';
+		$.ajax({url : url,type : "POST",dataType: "json",contentType: 'application/json',
+			success : function(data) {}
+		})
+	});
+	$(".download-btn-edit").click(function() {
+		var url = ctx + '/activity/limitBuyActContro/downloadTemplate';
+		$.ajax({url : url,type : "POST",dataType: "json",contentType: 'application/json',
+			success : function(data) {}
+		})
+	});
 });
 function commonLayerShow(){
 	$('#addLayer').hide();
