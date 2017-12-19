@@ -252,7 +252,12 @@ public class LimitGoodsSkuService {
             vo.setUpLoadStatus((byte)0);
             vo.setLimitNumTotal(0L);
             vo.setLimitNum(0L);
-            vo.setSource("notwz");
+            Boolean fwz = StringUtils.equals("wz", goods.getSource());
+            if(!fwz){
+                vo.setSource("notwz");
+            }else{
+                vo.setSource("wz");
+            }
             skuvolist.add(vo);
             unnumal++;
             if(sortNo==100L){
