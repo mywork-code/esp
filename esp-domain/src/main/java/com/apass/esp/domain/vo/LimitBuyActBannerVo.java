@@ -12,7 +12,7 @@ public class LimitBuyActBannerVo {
     private String imgurl;
 
     /**
-     *当前时间场次:字符串
+     *当前时间场次:hh:ss
      */
     private String startDate;
 
