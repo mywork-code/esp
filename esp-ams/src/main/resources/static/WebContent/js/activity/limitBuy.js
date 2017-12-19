@@ -739,6 +739,17 @@ function editGoods(target,num){
 		$("#limitNumAdd").textbox({'disabled':false});
 		$('#editGoods').window({modal: true});
 		$('#editGoods').window('open');
+//		$win = $('#editGoods').window({
+//             top:320,
+//             left:420,
+//             shadow: true,
+//             modal:true,
+//             closed:true,
+//             minimizable:false,
+//             maximizable:false,
+//             collapsible:false
+//         });
+//         $win.window('open');
 	}else{//修改编辑
 		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
