@@ -203,6 +203,16 @@ public class LimitBuyActService {
         if(skulist.size()>100){
             throw new BusinessException("每个限时购活动商品数量最多录入100个!");
         }
+        Boolean f = false;
+        for(LimitGoodsSku sku : skulist){
+            if(sku.getUpLoadStatus()==(byte)1){
+                f = true;
+                break;
+            }
+        }
+        if(!f){
+            throw new BusinessException("活动商品全部导入失败,不可保存!");
+        }
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
             sku.setLimitBuyActId(actId);
