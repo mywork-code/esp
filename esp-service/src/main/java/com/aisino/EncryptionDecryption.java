@@ -3,6 +3,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import cn.jpush.api.utils.StringUtils;
+import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.exception.BusinessException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -91,7 +92,6 @@ public class EncryptionDecryption {
      * 0:不压缩；1：压缩
      */
     public static String decrypt(String encryTxt, String zipCode) throws Exception{
-//        byte[] bytes = encryTxt.getBytes();
         if("0".equals(zipCode)){
             return decodeText(encryTxt);
         } else {
@@ -103,9 +103,14 @@ public class EncryptionDecryption {
      */
     private static String encodeText(String source) throws Exception{
         final String trustsBytes = CaConstant.getCaFilePath("PUBLIC_TRUSTS");
+
         String decryptPFXBytes = CaConstant.getCaFilePath("CLIENT_DECRYPTPFX");
         String decryptPFXKey = CaConstant.getProperty("CLIENT_DECRYPTPFX_KEY");
         String cafilepath = CaConstant.getCaFilePath("PLATFORM_DECRYPTCER");
+        if(SystemEnvConfig.isPord()){
+            decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
+            decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
+        }
         // 客户端加密过程 :客户端私钥(pfx)、pwd + 平台公钥(cer)
         byte[] trustsBytesarr = FileUtils.readFileToByteArray(new File(trustsBytes));
         byte[] privatePFXBytesarr = FileUtils.readFileToByteArray(new File(decryptPFXBytes));
@@ -124,6 +129,10 @@ public class EncryptionDecryption {
         String decryptPFXBytes = CaConstant.getCaFilePath("CLIENT_DECRYPTPFX");
         String decryptPFXKey = CaConstant.getProperty("CLIENT_DECRYPTPFX_KEY");
         String cafilepath = CaConstant.getCaFilePath("PLATFORM_DECRYPTCER");
+        if(SystemEnvConfig.isPord()){
+            decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
+            decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
+        }
         // 客户端加密过程 :客户端私钥(pfx)、pwd + 平台公钥(cer)
         byte[] trustsBytesarr = FileUtils.readFileToByteArray(new File(trustsBytes));
         byte[] privatePFXBytesarr = FileUtils.readFileToByteArray(new File(decryptPFXBytes));
@@ -140,6 +149,10 @@ public class EncryptionDecryption {
         final String trustsBytes = CaConstant.getCaFilePath("PUBLIC_TRUSTS");
         String decryptPFXBytes = CaConstant.getCaFilePath("CLIENT_DECRYPTPFX");
         String decryptPFXKey = CaConstant.getProperty("CLIENT_DECRYPTPFX_KEY");
+        if(SystemEnvConfig.isPord()){
+            decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
+            decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
+        }
         final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
         final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(GZipUtils.decompress(Base64.decodeBase64(encryTxt)));
         LOGGER.info("解密:{}",new String(decodeData2));
@@ -152,6 +165,10 @@ public class EncryptionDecryption {
         final String trustsBytes = CaConstant.getCaFilePath("PUBLIC_TRUSTS");
         String decryptPFXBytes = CaConstant.getCaFilePath("CLIENT_DECRYPTPFX");
         String decryptPFXKey = CaConstant.getProperty("CLIENT_DECRYPTPFX_KEY");
+        if(SystemEnvConfig.isPord()){
+            decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
+            decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
+        }
         final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
         final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(Base64.decodeBase64(encryTxt));
         LOGGER.info("解密:{}",new String(decodeData2));
