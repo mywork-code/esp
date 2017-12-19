@@ -157,7 +157,7 @@ public class LimitGoodsSkuService {
                 continue;
             }
             if(limitCommonService.isLimitByGoodsId(skuId)){
-                //是否跑出异常   待上传商品列表已经在其他进行中活动中添加
+                //是否跑出异常   待上传商品列表已经在其他进行中限时购活动中添加
                 flist.add(entity);
                 continue;
             }
@@ -178,31 +178,35 @@ public class LimitGoodsSkuService {
                 goods = goodsList.get(0);
                 stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
             }
-            //判断该商品是否存在有效的满减活动中
+            
             Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(goods.getId());  
-            if(!result){//不允许导入
+            if(!result){
+                //是否跑出异常  待上传商品列表含有有效满减活动中的商品
                 flist.add(entity);
                 continue;
             }
             Boolean fwz = StringUtils.equals("wz", goods.getSource());
             Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
             if(!fwz){
+                //是否跑出异常   待上传商品列表含有未上架非微知商品
                 if(!StringUtils.equals(goods.getStatus(), "G02")||f){
                     flist.add(entity);
                     continue;
                 }
             }else{
+                //是否跑出异常   待上传商品列表含有未上架微知商品
                 if(!StringUtils.equals(goods.getStatus(), "G02")){
                     flist.add(entity);
                     continue;
                 }
             }
-            //判断价格高于售价
             BigDecimal marketPrice = commonService.calculateGoodsPrice(goods.getId(),stock.getId());
             if(entity.getActivityPrice().compareTo(marketPrice)>0){
+                //是否跑出异常   待上传商品列表活动价格高于市场售价
                 flist.add(entity);
                 continue;
             }
+            //所有验证通过，导入成功
             sb.append(skuId).append("++");
             Category cate = categoryInfoService.selectNameById(goods.getCategoryId1());
             //复制商品基本信息表
@@ -228,6 +232,7 @@ public class LimitGoodsSkuService {
             skuvolist.add(vo);
             numal++;
         }
+        //验证不通过，导入不成功
         for(LimitGoodsSku entity : flist){
             String skuId = entity.getSkuId();
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
@@ -273,6 +278,7 @@ public class LimitGoodsSkuService {
                 break;
             }
         }
+        //验证不通过，不存在的sku 
         for(LimitGoodsSku entity : underfindlist){
             String skuId = entity.getSkuId();
             LimitGoodsSkuVo vo = new LimitGoodsSkuVo();
