@@ -99,7 +99,7 @@ public class UpLoadUtil{
                         continue;
                     case 1:
                         if (falg1 && falg2) {
-                            map.put("activityPrice", value);
+                            map.put("activityPrice", formartString(value));
 //                            map.put(getValue(titleCell), value);//第一行标题 字段 每一列 取列名
                         }
                         continue;
@@ -116,6 +116,19 @@ public class UpLoadUtil{
             list.add(objt);
         }
         return list;
+    }
+    private static String formartString(String str){
+        int x = str.indexOf(".");
+        if(x==-1){
+            return str;
+        }else{
+            if(str.length()>x+3){
+                str=str.substring(0,str.length()-1);
+            }else{
+                return str;
+            }
+        }
+        return formartString(str);
     }
     /**
      * 取单元格内容

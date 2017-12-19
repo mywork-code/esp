@@ -42,6 +42,8 @@ public class CartInfoEntity {
     
     private String isSelect;
     
+    private String address;
+    
     public Long getId() {
         return id;
     }
@@ -90,5 +92,11 @@ public class CartInfoEntity {
     public void setIsSelect(String isSelect) {
         this.isSelect = isSelect;
     }
-
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+    
 }

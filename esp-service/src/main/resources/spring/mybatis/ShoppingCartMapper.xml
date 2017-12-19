@@ -29,6 +29,7 @@
 	            GOODS_SELECTED_PRICE,
 	            GOODS_NUM,
 	            IS_SELECT,
+	            ADDRESS,
 	            CREATE_DATE,
 	            UPDATE_DATE
 	        )
@@ -39,6 +40,7 @@
 	            #{goodsSelectedPrice, jdbcType=DECIMAL},
 	            #{goodsNum, jdbcType=INTEGER},
 	            #{isSelect, jdbcType=VARCHAR},
+	            #{address,  jdbcType=VARCHAR},
 	            CURRENT_TIMESTAMP,
 	            CURRENT_TIMESTAMP
 	        )
@@ -90,6 +92,7 @@
                 GOODS_STOCK_ID               goodsStockId,
                 GOODS_SELECTED_PRICE         goodsSelectedPrice,
                 GOODS_NUM                    goodsNum,
+                address                      address,
                 CREATE_DATE                  createDate,
                 UPDATE_DATE                  updateDate
         FROM T_ESP_CART_INFO

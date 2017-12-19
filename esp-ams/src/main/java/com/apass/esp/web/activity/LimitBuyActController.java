@@ -183,7 +183,7 @@ public class LimitBuyActController {
             respBody.setMsg("限时购活动商品上传异常,"+e.getErrorDesc());
         }catch(Exception e) {
             LOGGER.error("upLoadLimitGoodsSku EXCEPTION!", e);
-            respBody.setMsg("限时购活动商品上传异常！实例化限时购商品列表错误!");
+            respBody.setMsg("限时购活动商品上传异常！商品列表查询失败!");
         }
         return respBody;
     }
@@ -293,7 +293,7 @@ public class LimitBuyActController {
             int size = file.getInputStream().available();// 大小
             is = file.getInputStream();
             if (!(checkSiftGoodsImgSize && checkImgType)) {// 130*130px;// .png,.jpg
-                return Response.fail("文件尺寸不符,上传图片尺寸必须是宽：130px,高：130px,格式：.jpg,.png");
+                return Response.fail("上传缩略图尺寸不符合 宽:130px,高:130px,格式:.jpg,.png");
             } else if (size > 1024 * 300) {
                 return Response.fail("文件不能大于300kb!");
             }

@@ -1,5 +1,20 @@
 package com.apass.esp.web.cart;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.cart.GoodsIsSelectDto;
@@ -13,19 +28,6 @@ import com.apass.gfb.framework.logstash.LOG;
 import com.apass.gfb.framework.utils.BaseConstants.ParamsCode;
 import com.apass.gfb.framework.utils.CommonUtils;
 import com.apass.gfb.framework.utils.GsonUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Path("/cart")
 @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -53,6 +55,7 @@ public class ShoppingCartController {
         String userId = CommonUtils.getValue(paramMap, ParamsCode.USER_ID);
         String goodsStockId = CommonUtils.getValue(paramMap, ParamsCode.GOODS_STOCK_ID);
         String count = CommonUtils.getValue(paramMap, ParamsCode.COUNT);
+        String addressString = CommonUtils.getValue(paramMap, ParamsCode.ADDRESS);
 
         String requestId = logStashSign + "_" + userId;
         paramMap.remove("x-auth-token"); //输出日志前删除会话token
@@ -62,11 +65,15 @@ public class ShoppingCartController {
         	logger.error("用户ID、商品库存ID、数量不能为空");
             return Response.fail(BusinessErrorCode.PARAM_IS_EMPTY);
         }
+        //如果在添加购物车时没有传地址则默认为默认地址
+        if(StringUtils.isBlank(addressString)){
+        	addressString=ParamsCode.DEFULTADDRESS;
+        }
 
         try {
             Map<String, Object> resultMap = new HashMap<String, Object>();
             
-            shoppingCartService.addGoodsToCart(requestId, userId, goodsStockId, count);
+            shoppingCartService.addGoodsToCart(requestId, userId, goodsStockId, count,addressString);
             int goodsAmountInCart = shoppingCartService.getNumOfTypeInCart(userId);
             resultMap.put("goodsAmountInCart", goodsAmountInCart);
 

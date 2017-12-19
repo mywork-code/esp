@@ -113,6 +113,9 @@ public class BaseConstants {
         public static final String COUNT                    = "count";                  // 一次添加进购物车的商品数量
         public static final String USER_ID                  = "userId";                 // 用户ID
         public static final String GOODS_SELECTED_PRICE     = "goodsSelectedPrice";     // 商品选择时价格
+        public static final String ADDRESS                  = "address";                // 添加购物车时商品所对应的地址
+        public static final String DEFULTADDRESS            = "2,2815,51975,0";         // 默认地址(上海，长宁，城区)
+
     }
 
     /**
