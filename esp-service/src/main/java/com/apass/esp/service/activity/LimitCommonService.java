@@ -55,6 +55,9 @@ public class LimitCommonService {
 		}
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct=limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+			if(limitBuyAct==null){
+			    continue;
+			}
 			ActivityStatus activityStatus =getLimitBuyStatus(limitBuyAct.getStartDate(),limitBuyAct.getEndDate());
 			if(ActivityStatus.PROCESSING==activityStatus || ActivityStatus.NO==activityStatus){
 				return true;
