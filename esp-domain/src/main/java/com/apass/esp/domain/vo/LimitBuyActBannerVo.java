@@ -1,5 +1,7 @@
 package com.apass.esp.domain.vo;
 
+import java.util.Date;
+
 /**
  * Created by xiaohai on 2017/12/7.
  */
@@ -10,23 +12,15 @@ public class LimitBuyActBannerVo {
     private String imgurl;
 
     /**
-     *当前时间场次
+     *当前时间场次:字符串
      */
-    private String time;
+    private Date startDate;
 
     /**
-     * 距结束还有多久的时间间隔
+     * 结束时间
      * @return
      */
-    private long millisecond;
-
-    public long getMillisecond() {
-        return millisecond;
-    }
-
-    public void setMillisecond(long millisecond) {
-        this.millisecond = millisecond;
-    }
+    private Date endDate;;
 
     public String getImgurl() {
         return imgurl;
@@ -36,11 +30,19 @@ public class LimitBuyActBannerVo {
         this.imgurl = imgurl;
     }
 
-    public String getTime() {
-        return time;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

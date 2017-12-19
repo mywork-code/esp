@@ -3,7 +3,7 @@
  */
 $(function() {
 	//初始化
-    $('#tablelist').datagrid({
+    $('#tablelistCh').datagrid({
         title : '商品列表',
         fit : true,
         //fitColumns : true,
@@ -196,7 +196,7 @@ $(function() {
         }
     });
     // 查询列表
-    $(".search-btn").click(function() {
+    $(".search-btnCh").click(function() {
         var params = {};
         params['merchantName'] = $("#merchantName").textbox('getValue');
         params['merchantType'] = $("#merchantType").combobox('getValue');
@@ -211,14 +211,14 @@ $(function() {
         }
         params['goodsCategoryCombo']=goodsCategoryCombo;
 
-        $('#tablelist').datagrid('load', params);
+        $('#tablelistCh').datagrid('reload', params);
     });
 
     goodsCategoryComboFun();
 
     // 批量复核
     $(".checkAll").click(function() {
-    	var selRow = $('#tablelist').datagrid('getChecked');
+    	var selRow = $('#tablelistCh').datagrid('getChecked');
 		if(selRow.length==0){  
 			 $.messager.alert("提示", "至少勾选一条数据！","info");  
 			 return ;  
@@ -254,13 +254,12 @@ $(function() {
         $ ("#goodsCode").textbox('setValue','');
         $("#goodsCategoryCombo").combotree('setValue', '请选择');
 		var params = {};
-		$ ('#tablelist').datagrid ('load', params);
+		$ ('#tablelistCh').datagrid ('load', params);
 	});
 	
 	 //复核
 	function checkGoods(ids,msgss){
 		  var handlesubmit = function() {
-			    debugger;
 		        var reject = $("#reviewOpinion").switchbutton("options").checked;
 		        $.ajax({
 					type : "POST",
@@ -272,7 +271,9 @@ $(function() {
 			            },
 					success : function(data) {
 		            	$("#reviewGoods").dialog("close");
-	                    $(".search-btn").click();
+                        debugger;
+	                    $(".search-btnCh").click();
+                        $(".search-btn").click();
 					}
 				});
 		    }
