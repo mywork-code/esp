@@ -52,7 +52,7 @@ public class DownloadInvoiceExecutor {
             while (flag && errTime > 0){
                 try {
                     --errTime;
-                    Thread.sleep(1000L * 20);
+                   Thread.sleep(1000L * 20);
                     //调用下载发票接口
                     boolean httpClientFlag = false; //请求下载接口 返回成功 或 失败的标识
                     FaPiaoDLoad faPiaoDLoad = new FaPiaoDLoad();
@@ -67,7 +67,7 @@ public class DownloadInvoiceExecutor {
                         faPiaoDLoad.setNsrsbh("310101000000090");
                     }
                     faPiaoDLoad.setPdfXzfs("3");
-                    String s = invoiceIssueService.requestFaPiaoDL(faPiaoDLoad);
+                    String s = invoiceIssueService.httpRequestFaPiaoDL(faPiaoDLoad);
                     LOG.info("调用发票下载接口返回-----------> " + s);
                     ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
                     Invoice in = invoiceService.getInvoice(orderId);
