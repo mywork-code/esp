@@ -382,7 +382,7 @@ public class LimitBuyActService {
                         vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
-                        BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
+                        BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
                         vo.setMarketPrice(marketPrice);
                         //判断商品上下架状态
                         if(!StringUtils.equals(goodsBase.getStatus(), "G02")){
@@ -510,7 +510,7 @@ public class LimitBuyActService {
             vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
-            BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getGoodsStockId());
+            BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
             vo.setMarketPrice(marketPrice);
             if(actstatus==(byte)1){//未开始活动  
                 //验证商品上下架状态

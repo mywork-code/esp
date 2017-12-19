@@ -1081,10 +1081,11 @@ public class GoodsAttrService {//450
      * @param request
      * @return
      */
-    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(String arrten) {
+    public ResponsePageBody<GoodsStockInfoEntity> tableattrEdit(String arrten,String goodsId) {
         ResponsePageBody<GoodsStockInfoEntity> respBody = new ResponsePageBody<GoodsStockInfoEntity>();
         arrten = famartsubString(arrten);
         Boolean falg = "undefined".equals(arrten)||StringUtils.isBlank(arrten);
+        Boolean falgg = "undefined".equals(goodsId)||StringUtils.isBlank(goodsId);
         String[] arr = null;
         List<GoodsStockInfoEntity> list = new ArrayList<GoodsStockInfoEntity>();
         if(!falg){//arrten非空
@@ -1094,6 +1095,15 @@ public class GoodsAttrService {//450
                 if(!falgs){
                     GoodsStockInfoEntity e = new GoodsStockInfoEntity();
                     e.setGoodsSkuAttr(s);
+                    if(!falgg){
+                        List<GoodsStockInfoEntity> glist = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+                        for(GoodsStockInfoEntity en : glist){
+                            if(StringUtils.contains(en.getGoodsSkuAttr(), s)){
+                                e.setStockLogo(en.getStockLogo());
+                                break;
+                            }
+                        }
+                    }
                     list.add(e);
                 }
             }
@@ -1101,6 +1111,10 @@ public class GoodsAttrService {//450
         if(list==null||list.size()==0){
             GoodsStockInfoEntity e = new GoodsStockInfoEntity();
             e.setGoodsSkuAttr("无");
+            if(!falgg){
+                String url = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId)).get(0).getStockLogo();
+                e.setStockLogo(url);
+            }
             list.add(e);
         }
         respBody.setRows(list);

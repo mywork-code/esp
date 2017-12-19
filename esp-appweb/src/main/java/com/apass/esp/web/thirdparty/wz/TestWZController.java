@@ -489,7 +489,7 @@ public class TestWZController {
 	@ResponseBody
 	public Response  getWeiZhiGetBalance() {
 		try {
-			int price=weiZhiProductService.getWeiZhiGetBalance();
+			BigDecimal price=weiZhiProductService.getWeiZhiGetBalance();
 			return Response.success("统一余额查询成功！", price);
 		} catch (Exception e) {
 			return Response.fail("统一余额查询失败！");

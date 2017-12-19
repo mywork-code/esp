@@ -269,10 +269,13 @@ $(function () {
         
         $("#orderDetailListWin #useCoupons").textbox('setValue', useCoupon);
         
-        if(mainOrder == 'Y'){
-        	$("#orderDetailListWin #yesMainOrders").attr("checked",true);
-        }
-
+        $("#orderDetailListWin input:radio[name='mainOrders']").attr("disabled",false);
+        $("#orderDetailListWin input:radio[name='mainOrders']").each(function(){  
+            if($(this).val() == mainOrder){  
+                $(this).prop("checked", true );  
+            }  
+        });  
+        $("#orderDetailListWin input:radio[name='mainOrders']").attr("disabled",true);
         $('#orderDetailListWin').window('open');
 
         // 查询订单详情信息
