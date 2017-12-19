@@ -588,7 +588,8 @@ function addFunction(){
 
 function editFunction(){
     $('#uploadGoodsListEdit').datagrid({
-    	fit : false,
+    	fit : true,
+		fitColumns: true,
         rownumbers : true,
         pagination : true,
         singleSelect : true,
