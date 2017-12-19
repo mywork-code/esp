@@ -10,11 +10,20 @@ public class SystemEnvConfig {
      */
     @Value("${spring.profiles.active}")
     private String activeProfile;
+
     /**
      * 是否为生产环境
      */
     public boolean isPROD() {
         return checkProfileMatch("production");
+    }
+
+    public static boolean isPord(){
+        String profile = System.getProperty("spring.profiles.active");
+        if(StringUtils.isEmpty(profile)){
+            throw new RuntimeException("请在web 程序下调用该方法.....");
+        }
+        return profile.contains("production");
     }
     /**
      * 是否为UAT环境
