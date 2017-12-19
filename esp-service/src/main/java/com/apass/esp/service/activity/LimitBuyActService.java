@@ -1,4 +1,7 @@
 package com.apass.esp.service.activity;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -195,6 +202,16 @@ public class LimitBuyActService {
         List<LimitGoodsSku> skulist = buyActView.getList();
         if(skulist.size()>100){
             throw new BusinessException("每个限时购活动商品数量最多录入100个!");
+        }
+        Boolean f = false;
+        for(LimitGoodsSku sku : skulist){
+            if(sku.getUpLoadStatus()==(byte)1){
+                f = true;
+                break;
+            }
+        }
+        if(!f){
+            throw new BusinessException("活动商品全部导入失败,不可保存!");
         }
         Long sortNo = 0L;
         for(LimitGoodsSku sku : skulist){
@@ -459,11 +476,11 @@ public class LimitBuyActService {
         return DateFormatUtil.dateToString(date,"HH:mm");
     }
     private String gettDayDate(Date date){
-        //String day = "明日";
-        String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        String day = "明日";
         String time = DateFormatUtil.dateToString(date,"HH:mm");
-        //return day+" "+time;
-        return day+"日 "+time;
+        return day+" "+time;
+        //String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        //return day+"日 "+time;
     }
     private Boolean isYesterdayDate(Date date){
         String target = DateFormatUtil.dateToString(new Date());
@@ -711,5 +728,58 @@ public class LimitBuyActService {
             }
         }
         return sb.toString();
+    }
+    /**
+     * xls模板创建
+     * @param filePath
+     * @throws IOException 
+     */
+    public Long downloadTemplate(String filePath) {
+        FileOutputStream out = null;
+        try{
+            Long start = System.currentTimeMillis();
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("SKUupLoadTemplate");
+            // 获取标题样式，内容样式
+            for (int i = 0; i < 11; i++) {
+                HSSFRow createRowContent = sheet.createRow(i);
+                for (int j = 0; j < 2; j++) {
+                    HSSFCell cellContent = createRowContent.createCell(j);
+                    if(i==0){
+                        if(j==0){
+                            cellContent.setCellValue("skuId");
+                        }
+                        if(j==1){
+                            cellContent.setCellValue("activityPrice");
+                        }
+                    }else{
+                        if(j==0){
+                            cellContent.setCellValue("000");
+                        }
+                        if(j==1){
+                            cellContent.setCellValue("0.00");
+                        }
+                    }
+                }
+            }
+            Long end = System.currentTimeMillis();
+            Long cost = (end - start)/ 1000;
+            String filePath2 = new File(filePath).getParent();
+            if (!new File(filePath2).isDirectory()) {
+                new File(filePath2).mkdirs();
+            }
+            out = new FileOutputStream(filePath);
+            workbook.write(out);
+            return cost;
+        }catch(IOException e){
+            return -1L;
+        }finally{
+            try {
+                if(out!=null){
+                    out.close();
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 }

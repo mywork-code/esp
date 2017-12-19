@@ -66,6 +66,7 @@ public class AwardDetailService {
 	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) throws BusinessException {
 	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
+
 		Map<String, Object> maps = getAllSum(query);
 		List<AwardBindRelStatisticVo> result = new ArrayList<>();
 		for(AwardBindRelStatistic rs : list){
@@ -74,25 +75,26 @@ public class AwardDetailService {
 			vo.setInviteNum(rs.getTotalInviteNum());
 			//查询返现金额
 			List<AwardDetail> awardDetails = awardDetailMapper.queryAwardDetail(rs.getUserId());
-			BigDecimal bankAmt = BigDecimal.ZERO;
-			BigDecimal creditAmt = BigDecimal.ZERO;
-			BigDecimal rebateAmt = BigDecimal.ZERO;
+			BigDecimal bankAmt = BigDecimal.ZERO;//现金
+			BigDecimal creditAmt = BigDecimal.ZERO;//额度
+			BigDecimal rebateAmt = BigDecimal.ZERO;//返现金额
 			for(AwardDetail awardDetail : awardDetails){
 			    if(awardDetail.getType() == AwardActivity.AWARD_TYPE.GAIN.getCode()){
-                                rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
-                            }
-                            String orderId = awardDetail.getOrderId();
-                            if(StringUtils.isNotBlank(orderId)){
-                                OrderInfoEntity order = orderService.selectByOrderId(orderId);
-                                if(order != null){
-                                    if (PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())) {
-                                        // 银行卡全卡支付
-                                        bankAmt = bankAmt.add(order.getOrderAmt());
-                                    } else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())) {
-                                        creditAmt = creditAmt.add(order.getOrderAmt());
-                                    }
-                                }
-                            }
+					rebateAmt = rebateAmt.add(awardDetail.getAmount());//反现
+				}
+				String orderId = awardDetail.getOrderId();
+				if(StringUtils.isNotBlank(orderId)){
+					OrderInfoEntity order = orderService.selectByOrderId(orderId);
+					if(order != null){
+						if (PaymentType.CARD_PAYMENT.getCode().equals(order.getPayType())
+								|| StringUtils.equals(PaymentType.ALIPAY_PAYMENT.getCode(),order.getPayType())) {
+							// 银行卡全卡支付
+							bankAmt = bankAmt.add(order.getOrderAmt());
+						} else if (PaymentType.CREDIT_PAYMENT.getCode().equals(order.getPayType())) {
+							creditAmt = creditAmt.add(order.getOrderAmt());
+						}
+					}
+				}
 			}
 			vo.setRebateAmt(rebateAmt);
 			vo.setBankAmt(bankAmt);

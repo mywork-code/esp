@@ -1,9 +1,14 @@
 package com.apass.esp.web.activity;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
@@ -35,8 +41,8 @@ import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.log.LogAnnotion;
 import com.apass.gfb.framework.log.LogValueTypeEnum;
 import com.apass.gfb.framework.security.toolkit.SpringSecurityUtils;
-import com.apass.gfb.framework.utils.RandomUtils;
 import com.apass.gfb.framework.utils.BaseConstants.CommonCode;
+import com.apass.gfb.framework.utils.RandomUtils;
 /**
  * 限时购后台交互
  * @author Administrator
@@ -310,6 +316,53 @@ public class LimitBuyActController {
                 }
             } catch (IOException e) {
                 LOGGER.error("IOException COLSE !", e);
+            }
+        }
+    }
+    /**
+     * 膜版下载
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/downloadTemplate", method = RequestMethod.POST)
+    @LogAnnotion(operationType = "", valueType = LogValueTypeEnum.VALUE_EXPORT)
+    public void downloadTemplate(HttpServletResponse response) {
+        ServletOutputStream os = null;
+        FileInputStream is = null;
+        try {
+            String fileName = "downloadgoods";
+            String filePath = rootPath + fileName + ".xls";
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".xlsx").getBytes(), "iso-8859-1"));// 设置文件名
+            Long cost = limitBuyActService.downloadTemplate(filePath);
+            if(cost!=-1L){
+                os = response.getOutputStream();
+                is = new FileInputStream(new File(filePath));
+                byte[] b = new byte[1024];
+                int i = 0;
+                while ((i = is.read(b)) > 0) {
+                    os.write(b, 0, i);
+                }
+                os.flush();
+            }
+        } catch (Exception e) {
+            LOGGER.error("导出文件失败", e);
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+                LOGGER.error("关闭资源失败。", e);
+            }finally {
+                try {
+                    if (os != null) {
+                        os.close();
+                    }
+                } catch (IOException e) {
+                    LOGGER.error("关闭资源失败。", e);
+                }
             }
         }
     }
