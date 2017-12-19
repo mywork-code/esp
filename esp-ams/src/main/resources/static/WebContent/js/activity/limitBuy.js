@@ -494,7 +494,7 @@ function addFunction(){
              align : 'center',
          },{
         	 title : '商品状态',
-             field : 'status',
+             field : 'statusDesc',
              width : 70,
              align : 'center',
          },{
@@ -563,6 +563,7 @@ function addFunction(){
         }]],
     });
 }
+
 function editFunction(){
     $('#uploadGoodsListEdit').datagrid({
     	fit : false,
@@ -627,7 +628,7 @@ function editFunction(){
              align : 'center',
          },{
         	 title : '商品状态',
-             field : 'status',
+             field : 'statusDesc',
              width : 70,
              align : 'center',
          },{
