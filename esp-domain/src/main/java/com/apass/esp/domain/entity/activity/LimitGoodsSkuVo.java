@@ -69,14 +69,7 @@ public class LimitGoodsSkuVo extends LimitGoodsSku{
         return statusDesc;
     }
     public void setStatusDesc(String statusDesc) {
-        String content = "";
-        GoodStatus[] goodsStatus = GoodStatus.values();
-        for (GoodStatus goodStatus : goodsStatus) {
-            if (goodStatus.getCode().equals(statusDesc)) {
-                content = goodStatus.getMessage();
-            }
-        }
-        this.statusDesc = content;
+        this.statusDesc = statusDesc;
     }
     public Date getListTime() {
         return listTime;
