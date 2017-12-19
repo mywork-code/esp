@@ -42,15 +42,17 @@ public class DownloadInvoiceExecutor {
     @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
     private class DownLoadFaPiaoThread extends  Thread {
         private boolean flag = true;
+        private int errTime = 10;
         private String orderId;
         private DownLoadFaPiaoThread(String orderId){
             this.orderId = orderId;
         }
         @Override
         public void run() {
-            while (flag){
+            while (flag && errTime > 0){
                 try {
-                    Thread.sleep(1000L * 30);
+                    --errTime;
+                    Thread.sleep(1000L * 20);
                     //调用下载发票接口
                     boolean httpClientFlag = false; //请求下载接口 返回成功 或 失败的标识
                     FaPiaoDLoad faPiaoDLoad = new FaPiaoDLoad();
@@ -66,11 +68,11 @@ public class DownloadInvoiceExecutor {
                     }
                     faPiaoDLoad.setPdfXzfs("3");
                     String s = invoiceIssueService.requestFaPiaoDL(faPiaoDLoad);
+                    LOG.info("调用发票下载接口返回-----------> " + s);
                     ReturnStateInfo sS = EncryptionDecryption.getFaPiaoReturnState(s);
                     Invoice in = invoiceService.getInvoice(orderId);
                     if("0000".equals(sS.getReturnCode())){
                         httpClientFlag = true;
-//                        invoiceService.updateStatusByOrderId((byte)2,orderId);
                         InvoiceDLReturn re= EncryptionDecryption.getRequestFaPiaoDLRetuen(s);
                         in.setPdfUrl(re.getPdfUrl());//图片
                         in.setTax(new BigDecimal(re.getKphjse()));//含税
@@ -88,9 +90,9 @@ public class DownloadInvoiceExecutor {
                         flag = false;
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOG.error("调用发票下载异常--------------->",e);
                 }catch (Exception e) {
-                    e.printStackTrace();
+                    LOG.error("调用发票下载异常--------------->",e);
                 }
                 
             }

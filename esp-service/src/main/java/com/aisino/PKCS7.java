@@ -1,5 +1,6 @@
 package com.aisino;
 
+import com.apass.esp.common.utils.OSUtils;
 import com.apass.esp.invoice.CaConstant;
 import com.google.common.io.Closer;
 import org.apache.commons.codec.binary.Base64;
@@ -47,7 +48,11 @@ public final class PKCS7 {
     private byte[] data; //原文
 
     static {
-        System.load(CaConstant.getCaFilePath("DLLADDRESS2"));
+        if(OSUtils.WINDOWS){
+            System.load(CaConstant.getCaFilePath("WINDOWS_DLLADDRESS2"));
+        }else{
+            System.load(CaConstant.getCaFilePath("DLLADDRESS2"));
+        }
     }
 
 
