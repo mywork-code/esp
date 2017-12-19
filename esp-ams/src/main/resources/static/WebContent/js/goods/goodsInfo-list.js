@@ -380,7 +380,7 @@ $(function() {
         }
         params['goodsCategoryCombo']=goodsCategoryCombo;
         
-        $('#tablelist').datagrid('load', params);
+        $('#tablelist').datagrid('reload', params);
     });
     // 刷新列表
     $("#flush").click(function() {

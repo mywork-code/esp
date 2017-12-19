@@ -86,6 +86,8 @@ $(function(){
     $("#reset").click(function(){
         $("#createDate1").textbox('setValue','');
         $("#createDate2").textbox('setValue','');
+        $("#telephone").textbox('setValue','');
+
         var params={};
         $('#list').datagrid('load',params);
     });
@@ -115,7 +117,7 @@ $(function(){
         });
     }
     //查询拉取人数
-    $("#awardbindrel").combobox({ 
+    $("#awardbindrel").combobox({
     	onBeforeLoad:function(){
     		$('#awardbindrel').combobox('setValue',-1);
     		awardbindrel(-1);
