@@ -144,7 +144,7 @@
     
     <!-- 限时购活动维护页面上传商品列表   后续维护商品列表限购数量   上传限时购商品URL -->
     <div id="editGoods" class="easyui-window" title="<font color='black'>商品活动信息维护</font>"
-    hidden="hidden" style="width: 350px; height: 200px; display: none; text-align: center;"
+    hidden="hidden" style="width: 350px; height: 300px; display: none; text-align: center;"
     data-options="collapsible:false, minimizable:false, maximizable:false, resizable:true">
         <form id="editGoodsFrom"  method="POST" enctype="multipart/form-data" modelAttribute="editFile">  
             <table class="details_table" style="margin-top: 20px;">
@@ -158,12 +158,13 @@
                 <tr>
                     <td width="20%" align="right" valign="top" width=""><font color="red">*</font>单人限购:</td>
                     <td colspan="3" width="60%">
-                        <input class="easyui-numberspinner" type="text" data-options="min:1,max:999" id="limitNumAdd" name="limitNumAdd" required="true" missingMessage="1~999之间的正整数" style="width: 90%;" />
+                        <input class="easyui-numberspinner" type="text" data-options="min:0,max:999" id="limitNumAdd" name="limitNumAdd" required="true" missingMessage="1~999之间的正整数" style="width: 90%;" />
                     </td>
                 </tr>
                 <tr>
                     <td width="20%" align="right" valign="top" width="">缩略图:</td>
                     <td colspan="3" width="60%">
+                        <img id='limitGoodsSkuUrl' src=""/>
                         <input width="20%" type="file" id="editGoodsFile" name="upLoadGoodsFile"/>
                     </td>
                 </tr>

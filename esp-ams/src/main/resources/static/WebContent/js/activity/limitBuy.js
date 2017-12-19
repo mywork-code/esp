@@ -241,6 +241,10 @@ $(function () {
 		thisForm.form({
 			url : ctx + '/activity/limitBuyActContro/upLoadLimitGoodsSku',
 			success : function(data) {
+				if (data.indexOf ('请输入账户') != -1){
+            		$.messager.alert("提示", "超时，请重新登录", "info");
+            		parent.location.reload();
+			    }
 				var response = JSON.parse(data);
 				$.messager.alert("<font color='black'>提示</font>", response.msg, "info");
 				if(response.status=="1"){
@@ -267,7 +271,7 @@ $(function () {
 			return;
 		}
 		if (null == limitNumAdd || ("") == limitNumAdd) {
-			$.messager.alert("<font color='black'>提示</font>", "请输入每人限购!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请输入每人限购,且不可为零!", "info");
 			return;
 		}
 		if (limitNumTotalAdd < limitNumAdd) {
@@ -288,6 +292,10 @@ $(function () {
 			thisForm.form({
 				url : ctx + '/activity/limitBuyActContro/upLoadSkuPic',
 				success : function(data) {
+					if (data.indexOf ('请输入账户') != -1){
+	            		$.messager.alert("提示", "超时，请重新登录", "info");
+	            		parent.location.reload();
+				    }
 					var response = JSON.parse(data);
 					if(response.status==1){
 						$.messager.alert("<font color='black'>提示</font>","该活动商品缩略图上传成功！", "info");
@@ -367,6 +375,8 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
+				var data = JSON.parse(data);
+				ifLogout(data);
 				if(data.status==1){
 					var params = {};
 			    	$('#limitBuyActPage').datagrid('load', params);
@@ -400,6 +410,8 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
+				var data = JSON.parse(data);
+				ifLogout(data);
 				if(data.status==1){
 					var params = {};
 			    	$('#limitBuyActPage').datagrid('load', params);
@@ -723,6 +735,11 @@ function editGoods(target,num){
 	source = rowentity.source;
 	$("#editGoodsFile").val('');
 	stockCurrAmt = rowentity.stockCurrAmt;
+	if(rowentity.url!=""&&rowentity.url!=null){
+		$("#limitGoodsSkuUrl").attr("src",ctx + "/fileView/query?picUrl=" + rowentity.url);
+	}else{
+		$("#limitGoodsSkuUrl").attr("src",'');
+	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
 //		$("#limitNumTotalAdd").textbox('clear');
 //		$("#limitNumAdd").textbox('clear');
@@ -734,11 +751,24 @@ function editGoods(target,num){
 		$("#limitNumAdd").textbox({'disabled':false});
 		$('#editGoods').window({modal: true});
 		$('#editGoods').window('open');
+//		$win = $('#editGoods').window({
+//             top:320,
+//             left:420,
+//             shadow: true,
+//             modal:true,
+//             closed:true,
+//             minimizable:false,
+//             maximizable:false,
+//             collapsible:false
+//         });
+//         $win.window('open');
 	}else{//修改编辑
 		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
 		$.ajax({url : ctx + "/activity/limitBuyActContro/getLimitBuyActStatus",data : {"id":limitGoodsSkuId},type : "post",dataType : "json",
             success : function(data) {
+            	var data = JSON.parse(data);
+				ifLogout(data);
             	var sta = data.data;
             	if(sta=="1"){//未开始 可编辑
             		
@@ -843,3 +873,11 @@ function getRowEntity(target,num){
 	}
 	return rows[editindex];
 };
+//判断是否超时
+function ifLogout(data){
+	if(data.message=='timeout' && data.result==false){
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return false;
+	}
+}

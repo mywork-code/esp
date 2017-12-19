@@ -176,7 +176,7 @@ public class LimitBuyActService {
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
         if(list!=null&&list.size()>0){
-            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("活动保存失败.该日期时间段活动已存在,不能重复添加!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
@@ -256,7 +256,7 @@ public class LimitBuyActService {
             if(en.getId()==buyActView.getId()){
                 continue;
             }
-            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("活动保存失败.该日期时间段活动已存在,不能重复添加!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
@@ -320,7 +320,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityTimeLine() throws BusinessException {
+    public Response activityTimeLine(String head) throws BusinessException {
         List<LimitBuyActTimeLine> timelist = new ArrayList<LimitBuyActTimeLine>();
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStatus((byte)3);
@@ -380,6 +380,7 @@ public class LimitBuyActService {
                             stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
                         }
                         vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+                        vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
                         BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
@@ -389,13 +390,24 @@ public class LimitBuyActService {
                             vo.setButtonStatus("0");
                             vo.setButtonDesc("已下架");
                         }else{
+                            Boolean fwz = StringUtils.equals("wz", goodsBase.getSource());
                             //判断按钮状态
-                            if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
-                                vo.setButtonStatus("1");
-                                vo.setButtonDesc("立即抢购");
-                            }else{
-                                vo.setButtonStatus("0");
-                                vo.setButtonDesc("已抢光");
+                            if(!fwz){//非微知  判断2个库存
+                                if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
+                                    vo.setButtonStatus("1");
+                                    vo.setButtonDesc("立即抢购");
+                                }else{
+                                    vo.setButtonStatus("0");
+                                    vo.setButtonDesc("已抢光");
+                                }
+                            }else{//微知 只判断1个库存
+                                if(sku.getLimitCurrTotal()>0){//限购剩余量 >0  则 任然有富裕
+                                    vo.setButtonStatus("1");
+                                    vo.setButtonDesc("立即抢购");
+                                }else{
+                                    vo.setButtonStatus("0");
+                                    vo.setButtonDesc("已抢光");
+                                }
                             }
                         }
                         goodsinfolist.add(vo);
@@ -485,7 +497,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
+    public Response activityGoodsList(Long limitBuyActId,String userId,String head) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -508,6 +520,7 @@ public class LimitBuyActService {
                 stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
             }
             vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+            vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
@@ -518,7 +531,7 @@ public class LimitBuyActService {
                     vo.setButtonStatus("0");
                     vo.setButtonDesc("已下架");
                 }else{
-                  //验证用户面对该商品是否开启提醒
+                    //验证用户面对该商品是否开启提醒
                     if(StringUtils.isBlank(userId)){
                         vo.setButtonStatus("1");
                         vo.setButtonDesc("抢购提醒");
@@ -539,13 +552,26 @@ public class LimitBuyActService {
                     vo.setButtonStatus("0");
                     vo.setButtonDesc("已下架");
                 }else{
-                    if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
-                        vo.setButtonStatus("1");
-                        vo.setButtonDesc("立即抢购");
-                    }else{
-                        vo.setButtonStatus("0");
-                        vo.setButtonDesc("已抢光");
+                    Boolean fwz = StringUtils.equals("wz", goodsBase.getSource());
+                    //判断按钮状态
+                    if(!fwz){//非微知  判断2个库存
+                        if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
+                            vo.setButtonStatus("1");
+                            vo.setButtonDesc("立即抢购");
+                        }else{
+                            vo.setButtonStatus("0");
+                            vo.setButtonDesc("已抢光");
+                        }
+                    }else{//微知 只判断1个库存
+                        if(sku.getLimitCurrTotal()>0){//限购剩余量 >0  则 任然有富裕
+                            vo.setButtonStatus("1");
+                            vo.setButtonDesc("立即抢购");
+                        }else{
+                            vo.setButtonStatus("0");
+                            vo.setButtonDesc("已抢光");
+                        }
                     }
+                    
                 }
             }
             goodsinfolist.add(vo);
