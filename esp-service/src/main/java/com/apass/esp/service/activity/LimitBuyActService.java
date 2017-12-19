@@ -176,7 +176,7 @@ public class LimitBuyActService {
         entity.setStartDate(buyActView.getStartDate());
         List<LimitBuyAct> list = limitBuyActMapper.getLimitBuyActList(entity);
         if(list!=null&&list.size()>0){
-            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("活动保存失败.该日期时间段活动已存在,不能重复添加!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
@@ -256,7 +256,7 @@ public class LimitBuyActService {
             if(en.getId()==buyActView.getId()){
                 continue;
             }
-            throw new BusinessException("本活动开始日期和时间已经保存了一个限时购活动,请您另选时间维护!");
+            throw new BusinessException("活动保存失败.该日期时间段活动已存在,不能重复添加!");
         }
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
