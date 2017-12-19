@@ -77,7 +77,7 @@
       <if test="upc != null" >
         upc,
       </if>
-      <if test="productArea != null" >
+      <if test="productArea != null and productArea !='' " >
         product_area,
       </if>
       <if test="saleUnit != null" >
