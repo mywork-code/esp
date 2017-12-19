@@ -643,15 +643,15 @@ public class GoodsBaseInfoController {
             List<GoodsStockSkuDto> goodsStockSkuInfo = goodsStockInfoService.getGoodsStockSkuInfo(Long.valueOf(id));
             if(CollectionUtils.isEmpty(goodsStockSkuInfo) || goodsStockSkuInfo.size()>2){
                 LOGGER.info("京东商品库存有误,商品id:{}",id);
-                return "京东商品库存有误";
+                return "微知商品库存有误";
             }
 
             if(goodsStockSkuInfo.get(0).getGoodsCostPrice().compareTo(new BigDecimal(99))<0){
-                return "京东协议价格低于99元，不能上架";
+                return "微知协议价格低于99元，不能上架";
             }
             //验证商品是否可售（当验证为不可售时，提示操作人员）
             if(!orderService.checkGoodsSalesOrNot(goodsEntity.getExternalId())){
-            	 return "该京东商品暂时不可售，不能上架";
+            	 return "该微知商品暂时不可售，不能上架";
             }
         }
         SystemParamEntity systemParamEntity = null;
