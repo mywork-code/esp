@@ -267,7 +267,7 @@ $(function () {
 			return;
 		}
 		if (null == limitNumAdd || ("") == limitNumAdd) {
-			$.messager.alert("提示", "请输入每人限购!", "info");
+			$.messager.alert("提示", "请输入每人限购,且不可为零!", "info");
 			return;
 		}
 		if (limitNumTotalAdd < limitNumAdd) {
