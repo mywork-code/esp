@@ -427,7 +427,10 @@ $(function () {
 		})
 	});
 	$(".download-btn-edit").click(function() {
-		
+		var url = ctx + '/activity/limitBuyActContro/downloadTemplate';
+		$.ajax({url : url,type : "POST",dataType: "json",contentType: 'application/json',
+			success : function(data) {}
+		})
 	});
 });
 function commonLayerShow(){
