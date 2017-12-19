@@ -723,6 +723,11 @@ function editGoods(target,num){
 	source = rowentity.source;
 	$("#editGoodsFile").val('');
 	stockCurrAmt = rowentity.stockCurrAmt;
+	if(rowentity.url!=""&&rowentity.url!=null){
+		$("#limitGoodsSkuUrl").attr("src",ctx + "/fileView/query?picUrl=" + rowentity.url);
+	}else{
+		$("#limitGoodsSkuUrl").attr("src",'');
+	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
 //		$("#limitNumTotalAdd").textbox('clear');
 //		$("#limitNumAdd").textbox('clear');
