@@ -2031,7 +2031,7 @@ $(function() {
 							$(".search-btn").click();
 						}else{
 							$.messager.alert("提示", data, "info");
-                            $(".search-btn").click();
+                            //$(".search-btn").click();
 						}
 					}
 				});
