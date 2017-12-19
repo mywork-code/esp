@@ -476,11 +476,11 @@ public class LimitBuyActService {
         return DateFormatUtil.dateToString(date,"HH:mm");
     }
     private String gettDayDate(Date date){
-        //String day = "明日";
-        String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        String day = "明日";
         String time = DateFormatUtil.dateToString(date,"HH:mm");
-        //return day+" "+time;
-        return day+"日 "+time;
+        return day+" "+time;
+        //String day = DateFormatUtil.dateToString(date,DateFormatUtil.DD);
+        //return day+"日 "+time;
     }
     private Boolean isYesterdayDate(Date date){
         String target = DateFormatUtil.dateToString(new Date());
