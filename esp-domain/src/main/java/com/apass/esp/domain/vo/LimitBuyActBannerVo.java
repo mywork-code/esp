@@ -14,13 +14,13 @@ public class LimitBuyActBannerVo {
     /**
      *当前时间场次:字符串
      */
-    private Date startDate;
+    private String startDate;
 
     /**
      * 结束时间
      * @return
      */
-    private Date endDate;;
+    private String endDate;;
 
     public String getImgurl() {
         return imgurl;
@@ -30,19 +30,19 @@ public class LimitBuyActBannerVo {
         this.imgurl = imgurl;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 }
