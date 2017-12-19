@@ -19,6 +19,7 @@ import com.apass.esp.service.category.CategoryInfoService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
+import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.utils.ResponsePageBody;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.utils.BaseConstants;
@@ -41,6 +42,8 @@ public class LimitGoodsSkuService {
     private CategoryInfoService categoryInfoService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private ProGroupGoodsService proGroupGoodsService;
     /**
      * CREATE
      * @param entity
@@ -174,6 +177,12 @@ public class LimitGoodsSkuService {
                 List<GoodsInfoEntity> goodsList = goodsService.getGoodsListBySkuIds(strlist);
                 goods = goodsList.get(0);
                 stock = goodsStockInfoService.getGoodsStock(goods.getId()).get(0);
+            }
+            //判断该商品是否存在有效的满减活动中
+            Boolean result=proGroupGoodsService.selectEffectiveGoodsByGoodsId(goods.getId());  
+            if(!result){//不允许导入
+                flist.add(entity);
+                continue;
             }
             Boolean fwz = StringUtils.equals("wz", goods.getSource());
             Boolean f = !(stock.getStockCurrAmt()!=null&&stock.getStockCurrAmt()>0);
