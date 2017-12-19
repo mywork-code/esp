@@ -13,7 +13,7 @@
 			<if test="activityId != null ">
 				<![CDATA[  and activity_id = #{activityId} ]]>
 			</if>
-			<if test="mobile != null ">
+			<if test="mobile != null  and mobile != ''">
 				<![CDATA[  and mobile = #{mobile} ]]>
 			</if>
 		</trim>

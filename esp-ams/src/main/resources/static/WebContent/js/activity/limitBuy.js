@@ -220,7 +220,7 @@ $(function () {
 	//导入商品  弹窗
 	$(".upload-btn-add").click(function() {
 		if(status!=""){
-			$.messager.alert("提示", "编辑商品不能上传商品列表,请点击新增活动!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "编辑商品不能上传商品列表,请点击新增活动!", "info");
 			return;
 		}
 		$("#upLoadGoodsFile").val('');
@@ -231,7 +231,7 @@ $(function () {
 	$("#upLoadGoodsFromSumbit").click(function() {
 		var file=$("#upLoadGoodsFile").val();
 		if (null == file || ("") == file) {
-			$.messager.alert("提示", "请选择上传商品文件!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请选择上传商品文件!", "info");
 			return;
 		}
 		if(limitBuyActId!=""){
@@ -241,8 +241,12 @@ $(function () {
 		thisForm.form({
 			url : ctx + '/activity/limitBuyActContro/upLoadLimitGoodsSku',
 			success : function(data) {
+				if (data.indexOf ('请输入账户') != -1){
+            		$.messager.alert("提示", "超时，请重新登录", "info");
+            		parent.location.reload();
+			    }
 				var response = JSON.parse(data);
-				$.messager.alert("提示", response.msg, "info");
+				$.messager.alert("<font color='black'>提示</font>", response.msg, "info");
 				if(response.status=="1"){
 					//刷新商品列表
 					$('#upLoadGoods').window('close');
@@ -263,19 +267,19 @@ $(function () {
 		var limitNumAdd=$("#limitNumAdd").textbox('getValue')/1;
 		var file=$("#editGoodsFile").val();
 		if (null == limitNumTotalAdd || ("") == limitNumTotalAdd) {
-			$.messager.alert("提示", "请输入限购总量!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请输入限购总量!", "info");
 			return;
 		}
 		if (null == limitNumAdd || ("") == limitNumAdd) {
-			$.messager.alert("提示", "请输入每人限购,且不可为零!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请输入每人限购,且不可为零!", "info");
 			return;
 		}
 		if (limitNumTotalAdd < limitNumAdd) {
-			$.messager.alert("提示", "限购总量不可小于每人限购!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "限购总量不可小于每人限购!", "info");
 			return;
 		}
 		if (stockCurrAmt/1 < limitNumTotalAdd&&source!='wz') {
-			$.messager.alert("提示", "非微知供应商商品，限购总量不可大于库存剩余!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "非微知供应商商品，限购总量不可大于库存剩余!", "info");
 			return;
 		}
 		var filefalg = null == file || ("") == file;
@@ -288,9 +292,13 @@ $(function () {
 			thisForm.form({
 				url : ctx + '/activity/limitBuyActContro/upLoadSkuPic',
 				success : function(data) {
+					if (data.indexOf ('请输入账户') != -1){
+	            		$.messager.alert("提示", "超时，请重新登录", "info");
+	            		parent.location.reload();
+				    }
 					var response = JSON.parse(data);
 					if(response.status==1){
-						$.messager.alert("提示","该活动商品缩略图上传成功！", "info");
+						$.messager.alert("<font color='black'>提示</font>","该活动商品缩略图上传成功！", "info");
 						if(addedit==1){
 							$('#uploadGoodsListAdd').datagrid('updateRow',{
 								index: editindex,
@@ -312,13 +320,13 @@ $(function () {
 							});
 						}
 					}else{
-						$.messager.alert("提示", response.msg, "info");
+						$.messager.alert("<font color='black'>提示</font>", response.msg, "info");
 					}
 			    }
 			});
 			thisForm.submit();
 		}else{
-			$.messager.alert("提示","该商品了修改单人限购和限购总量！", "info");
+			$.messager.alert("<font color='black'>提示</font>","该商品了修改单人限购和限购总量！", "info");
 			if(addedit==1){
 				$('#uploadGoodsListAdd').datagrid('updateRow',{
 					index: editindex,
@@ -350,11 +358,11 @@ $(function () {
 		var startTime = $("#startTimeAdd").combobox('getValue');
 		var goodsrows = $('#uploadGoodsListAdd').datagrid('getRows');
 		if(startDay==""||startTime==""){
-			$.messager.alert("提示", "请选择限时购活动开始日期和时间!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请选择限时购活动开始日期和时间!", "info");
 			return;
 		}
 		if(goodsrows==""||goodsrows.length==0){
-			$.messager.alert("提示", "请上传限时购活动商品!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请上传限时购活动商品!", "info");
 			return;
 		}
 		var param = {
@@ -367,13 +375,14 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
+				ifLogout(data);
 				if(data.status==1){
 					var params = {};
 			    	$('#limitBuyActPage').datagrid('load', params);
 			    	$('#addLayer').hide(500,addLayerHide());
 			    	window.location.reload();
 				}
-				$.messager.alert("提示", data.msg, "info");
+				$.messager.alert("<font color='black'>提示</font>", data.msg, "info");
 			}
 		})
 	});
@@ -383,11 +392,11 @@ $(function () {
 		var startTime = $("#startTimeEdit").combobox('getValue');
 		var goodsrows = $('#uploadGoodsListEdit').datagrid('getRows');
 		if(startDay==""||startTime==""){
-			$.messager.alert("提示", "请选择限时购活动开始日期和时间!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请选择限时购活动开始日期和时间!", "info");
 			return;
 		}
 		if(goodsrows==""||goodsrows.length==0){
-			$.messager.alert("提示", "请上传限时购活动商品!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请上传限时购活动商品!", "info");
 			return;
 		}
 		var param = {
@@ -400,13 +409,14 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
+				ifLogout(data);
 				if(data.status==1){
 					var params = {};
 			    	$('#limitBuyActPage').datagrid('load', params);
 			    	$('#editLayer').hide(500,editLayerHide());
 			    	window.location.reload();
 				}
-				$.messager.alert("提示", data.msg, "info");
+				$.messager.alert("<font color='black'>提示</font>", data.msg, "info");
 			}
 		})
 	});
@@ -494,7 +504,7 @@ function addFunction(){
              align : 'center',
          },{
         	 title : '商品状态',
-             field : 'status',
+             field : 'statusDesc',
              width : 70,
              align : 'center',
          },{
@@ -563,6 +573,7 @@ function addFunction(){
         }]],
     });
 }
+
 function editFunction(){
     $('#uploadGoodsListEdit').datagrid({
     	fit : false,
@@ -627,7 +638,7 @@ function editFunction(){
              align : 'center',
          },{
         	 title : '商品状态',
-             field : 'status',
+             field : 'statusDesc',
              width : 70,
              align : 'center',
          },{
@@ -739,11 +750,23 @@ function editGoods(target,num){
 		$("#limitNumAdd").textbox({'disabled':false});
 		$('#editGoods').window({modal: true});
 		$('#editGoods').window('open');
+//		$win = $('#editGoods').window({
+//             top:320,
+//             left:420,
+//             shadow: true,
+//             modal:true,
+//             closed:true,
+//             minimizable:false,
+//             maximizable:false,
+//             collapsible:false
+//         });
+//         $win.window('open');
 	}else{//修改编辑
 		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
 		$.ajax({url : ctx + "/activity/limitBuyActContro/getLimitBuyActStatus",data : {"id":limitGoodsSkuId},type : "post",dataType : "json",
             success : function(data) {
+				ifLogout(data);
             	var sta = data.data;
             	if(sta=="1"){//未开始 可编辑
             		
@@ -775,7 +798,7 @@ function upGoods(target,num){
 	var rowIndex = getRowIndex(target);
 	var selectrow = getRowEntity(target,num);
 	if(rowIndex==0){  
-        $.messager.alert('提示', '顶行无法上移!', 'warning');  
+		$.messager.alert("<font color='black'>提示</font>", "顶行无法上移!", "warning");  
     }else{
     	if(num==1){
     		$('#uploadGoodsListAdd').datagrid('deleteRow', rowIndex);//删除一行  
@@ -810,7 +833,7 @@ function downGoods(target,num){
 	var rowIndex = getRowIndex(target);
 	var selectrow = getRowEntity(target,num);
 	if(rowIndex==rowlength-1){  
-        $.messager.alert('提示', '底行无法下移!', 'warning');  
+		$.messager.alert("<font color='black'>提示</font>", "底行无法下移!", "warning");  
     }else{  
     	if(num==1){
     		$('#uploadGoodsListAdd').datagrid('deleteRow', rowIndex);//删除一行  
@@ -848,3 +871,11 @@ function getRowEntity(target,num){
 	}
 	return rows[editindex];
 };
+//判断是否超时
+function ifLogout(data){
+	if(data.message=='timeout' && data.result==false){
+		$.messager.alert("操作提示", "登录超时, 请重新登录", "info");
+		window.top.location = ctx + "/logout";
+		return false;
+	}
+}
