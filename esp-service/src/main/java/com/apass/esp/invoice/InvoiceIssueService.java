@@ -1,5 +1,7 @@
 package com.apass.esp.invoice;
 import java.util.List;
+
+import com.apass.gfb.framework.utils.HttpClientUtils;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import com.aisino.PassWordCreate;
 import com.apass.esp.invoice.model.DataDescription;
@@ -13,6 +15,7 @@ import com.apass.gfb.framework.environment.SystemEnvConfig;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.thoughtworks.xstream.XStream;
+import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /**
@@ -22,41 +25,37 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class InvoiceIssueService {
-    private static String TESTURL="http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
-    private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
-//    private static String PRODUCTURL="http://112.65.253.4:9012/sajt-shdzfp-sl-http/SvrServlet";
+//    private static String TESTURL="http://fw1test.shdzfp.com:7500/axis2/services/SajtIssueInvoiceService?wsdl";
+   // private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
+    private static String TESTURL= "http://fw1test.shdzfp.com:9000/sajt-shdzfp-sl-http/SvrServlet";
+    private static String PRODUCTURL="http://112.65.253.4:9012/sajt-shdzfp-sl-http/SvrServlet";
     @Autowired
     private SystemEnvConfig systemEnvConfig;
+
     /**
-     * 3.2  返回报文示例与数据项说明
+     * 下载发票
      * @param entity
      * @return
      * @throws Exception
      */
-    public String requestFaPiaoDL(FaPiaoDLoad entity) throws Exception {
+    public String httpRequestFaPiaoDL(FaPiaoDLoad entity) throws Exception {
         String params = createContentDL(entity);
-        System.out.println(params);
-        JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(getInvoiceUrl());
-        Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
-        return (String) tsobjects[0];
+        return HttpClientUtils.getMethodPostResponse(getInvoiceUrl(),new StringEntity(params,"UTF-8"));
     }
+
     /**
-     * 3.1  返回报文示例（只有外层报文，没 Content ）：返回报文只有外层报文，Content 内容为空，无数据项。  直接返回
+     * 开具发票
      * @param ensale
      * @param list
      * @param enbuy
      * @return
      * @throws Exception
      */
-    public String requestFaPiaoKJ(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
+    public String httpRequestFaPiaoKJ(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
         String params = createContentXml(ensale,list,enbuy);
-        System.out.println(params);
-        JaxWsDynamicClientFactory jwdc = JaxWsDynamicClientFactory.newInstance();
-        org.apache.cxf.endpoint.Client client = jwdc.createClient(getInvoiceUrl());
-        Object[] tsobjects = client.invoke("eiInterface", new Object[]{params});
-        return (String) tsobjects[0];
+        return HttpClientUtils.getMethodPostResponse(getInvoiceUrl(),new StringEntity(params,"UTF-8"));
     }
+
     /**
      * 3.2 <!--交换数据-->
      * @param entity
