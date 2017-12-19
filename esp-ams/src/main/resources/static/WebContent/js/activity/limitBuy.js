@@ -375,7 +375,6 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
-				var data = JSON.parse(data);
 				ifLogout(data);
 				if(data.status==1){
 					var params = {};
@@ -410,7 +409,6 @@ $(function () {
 		var url = limitBuyActId==""? (ctx + '/activity/limitBuyActContro/addLimitBuyAct'):(ctx + '/activity/limitBuyActContro/editLimitBuyAct');
 		$.ajax({url : url,type : "POST",data :JSON.stringify(param),dataType: "json",contentType: 'application/json',
 			success : function(data) {
-				var data = JSON.parse(data);
 				ifLogout(data);
 				if(data.status==1){
 					var params = {};
@@ -767,7 +765,6 @@ function editGoods(target,num){
 		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
 		$.ajax({url : ctx + "/activity/limitBuyActContro/getLimitBuyActStatus",data : {"id":limitGoodsSkuId},type : "post",dataType : "json",
             success : function(data) {
-            	var data = JSON.parse(data);
 				ifLogout(data);
             	var sta = data.data;
             	if(sta=="1"){//未开始 可编辑

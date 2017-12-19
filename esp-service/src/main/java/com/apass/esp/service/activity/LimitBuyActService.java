@@ -393,7 +393,7 @@ public class LimitBuyActService {
                             Boolean fwz = StringUtils.equals("wz", goodsBase.getSource());
                             //判断按钮状态
                             if(!fwz){//非微知  判断2个库存
-                                if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
+                                if(sku.getLimitCurrTotal()>0||stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
                                     vo.setButtonStatus("1");
                                     vo.setButtonDesc("立即抢购");
                                 }else{
@@ -555,7 +555,7 @@ public class LimitBuyActService {
                     Boolean fwz = StringUtils.equals("wz", goodsBase.getSource());
                     //判断按钮状态
                     if(!fwz){//非微知  判断2个库存
-                        if(sku.getLimitCurrTotal()>0&&stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
+                        if(sku.getLimitCurrTotal()>0||stock.getStockCurrAmt()>0){//限购剩余量 >0 真实库存剩余》0 则 任然有富裕
                             vo.setButtonStatus("1");
                             vo.setButtonDesc("立即抢购");
                         }else{
