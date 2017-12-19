@@ -66,7 +66,7 @@ public class AwardDetailService {
 	public ResponsePageIntroStaticBody<AwardBindRelStatisticVo> pageBindRelStatistic(ActivityBindRelStatisticQuery query) throws BusinessException {
 	    ResponsePageIntroStaticBody<AwardBindRelStatisticVo> respBody = new ResponsePageIntroStaticBody<>();
 		List<AwardBindRelStatistic> list = wihdrawBindRelMapper.selectBindRelStatistic(query);
-                Map<String, Object> maps = getAllSum(query);
+		Map<String, Object> maps = getAllSum(query);
 		List<AwardBindRelStatisticVo> result = new ArrayList<>();
 		for(AwardBindRelStatistic rs : list){
 			AwardBindRelStatisticVo vo = new AwardBindRelStatisticVo();

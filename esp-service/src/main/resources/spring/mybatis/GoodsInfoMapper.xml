@@ -898,6 +898,7 @@
             goods_logo_url goodsLogoUrl,
             list_time listTime,
             status status,
+            status statusDesc,
             delist_time delistTime,
             pro_date proDate,
             keep_date keepDate,
