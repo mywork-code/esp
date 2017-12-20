@@ -193,7 +193,8 @@ public class LimitBuyActService {
         }else if(compareTime(entity.getEndDate())){
             entity.setStatus((byte)2);
         }else{
-            entity.setStatus((byte)3);
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能新增!");
+            //entity.setStatus((byte)3);
         }
         entity.fillAllField(username);
         Long actId =null;
@@ -279,6 +280,14 @@ public class LimitBuyActService {
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
+        if(compareTime(entity.getStartDate())){
+            entity.setStatus((byte)1);
+        }else if(compareTime(entity.getEndDate())){
+            entity.setStatus((byte)2);
+        }else{
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能修改!");
+            //entity.setStatus((byte)3);
+        }
         entity.fillField(username);
         LimitBuyAct actupdate =null;
         if((actupdate = updatedEntity(entity))==null){
@@ -346,7 +355,7 @@ public class LimitBuyActService {
         List<LimitBuyAct> list = readEntityListDeSelect(entity);
         for(LimitBuyAct act : list){
             //最多只获取8个活动冗余填充时间条
-            if(++sort==8){
+            if(++sort==9){
                 break;
             }
             //最多只获取明天23:59:59前开始的活动冗余填充时间条
@@ -397,7 +406,8 @@ public class LimitBuyActService {
                             goodsBase = goodsList.get(0);
                             stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
                         }
-                        vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+                        vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
+                        vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
                         vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
@@ -537,7 +547,8 @@ public class LimitBuyActService {
                 goodsBase = goodsList.get(0);
                 stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
             }
-            vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+            vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
+            vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
             vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
