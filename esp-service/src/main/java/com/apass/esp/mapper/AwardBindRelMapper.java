@@ -8,6 +8,7 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
 
@@ -87,5 +88,5 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    */
   List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query);
 
-  List<AwardBindRel> selectAllUserByCreateDate(String startCreateDate);
+  List<AwardBindRel> selectAllUserByCreateDate(Map<String,Object> paramMap);
 }
