@@ -3800,4 +3800,13 @@ public class OrderService {
     public List<CheckAccountOrderDetail> getCheckOrderDetail(String beginDate) {
         return orderInfoRepository.getCheckOrderDetail(beginDate);
     }
+
+    /**
+     * 根据userId根据订单
+     * @param inviteUserId
+     * @return
+     */
+    public List<OrderInfoEntity> selectByUserId(Long inviteUserId) {
+        return orderInfoRepository.selectByUserId(inviteUserId);
+    }
 }

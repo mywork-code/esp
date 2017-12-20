@@ -166,4 +166,15 @@
 		GROUP BY
 			user_id
 	</select>
+
+
+	<!-- 查询某段时间内某活动下的推荐人及推荐人拉新人数 -->
+	<select id="selectAllUserByCreateDate" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		t_esp_award_bind_rel
+		<include refid="queryCriteria" />
+		ORDER BY mobile
+	</select>
 </mapper>

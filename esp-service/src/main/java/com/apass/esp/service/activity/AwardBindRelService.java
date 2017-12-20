@@ -97,4 +97,8 @@ public class AwardBindRelService {
 	public List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query) {
 		return wihdrawBindRelMapper.getUserIdListByActivityId(query);
 	}
+
+	public List<AwardBindRel> selectAllUserByCreateDate(String startCreateDate) {
+		return wihdrawBindRelMapper.selectAllUserByCreateDate(startCreateDate);
+	}
 }

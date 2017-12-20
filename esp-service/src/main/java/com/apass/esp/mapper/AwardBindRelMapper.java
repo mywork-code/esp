@@ -86,4 +86,6 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    *  查询某段时间内某活动下的推荐人及推荐人拉新人数 
    */
   List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query);
+
+  List<AwardBindRel> selectAllUserByCreateDate(String startCreateDate);
 }
