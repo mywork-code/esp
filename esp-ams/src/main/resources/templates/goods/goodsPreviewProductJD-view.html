@@ -360,6 +360,7 @@
         .compare_url a {
             color: #b70000;
         }
+        #yulanImg{width:60px;}
     </style>
 </head>
 <body>
@@ -389,6 +390,7 @@
                 </div>
                 <p class="title">${goodsName!}</p>
                 <p class="price">¥ ${goodsPrice!}</p>
+                <p><img id="yulanImg" src="${defaultImage}"/></p>
 
                 <div id="selectWrap" class="swiper-wrapper">
                     <#list jdSimilarSkuList as list>
@@ -399,10 +401,6 @@
                                      data-sku="${list2.skuIdStr!}"
                                      data-value="">
                                     <a href="javascript:;" target='_self'>
-                                        <#if list2.imagePath??>
-                                            <img class="img1" src="http://img13.360buyimg.com/n5/${list2.imagePath!}"
-                                                 alt=""/>
-                                        </#if>
                                         ${list2.saleValue!}</a>
                                 </div>
                             </#list>
