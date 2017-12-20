@@ -330,6 +330,7 @@ $(function () {
 									}
 							});
 						}
+						$('#editGoods').window('close');
 					}else{
 						$.messager.alert("<font color='black'>提示</font>", response.msg, "info");
 					}
@@ -356,8 +357,8 @@ $(function () {
 						}
 				});
 			}
+			$('#editGoods').window('close');
 		}
-		$('#editGoods').window('close');
 	});
 	//编辑商品  上传URL 弹窗   取消
 	$("#editGoodsFromCancle").click(function() {
