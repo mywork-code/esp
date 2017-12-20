@@ -764,11 +764,12 @@ function editGoods(target,num){
 		$("#limitGoodsSkuUrl").attr("src",'');
 	}
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
-//		$("#limitNumTotalAdd").textbox('clear');
-//		$("#limitNumAdd").textbox('clear');
 		if(rowentity.limitNumTotal!=null&&rowentity.limitNum!=null){
 			$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
 			$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
+		}else{
+			$("#limitNumTotalAdd").textbox('clear');
+			$("#limitNumAdd").textbox('clear');
 		}
 		//有问题需要解决   有微调器失效BUG
 		$("#limitNumTotalAdd").textbox({'disabled':false});
