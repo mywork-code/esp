@@ -249,11 +249,11 @@ $(function () {
 				$.messager.alert("<font color='black'>提示</font>", response.msg, "info");
 				if(response.status=="1"){
 					//刷新商品列表
-					$('#upLoadGoods').window('close');
 					$('#uploadGoodsListAdd').datagrid('loadData', response);
 				}
 		    }
 		});
+		$('#upLoadGoods').window('close');
 		thisForm.submit();
 	});
 	//导入商品  弹窗 取消
