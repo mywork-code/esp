@@ -57,9 +57,11 @@ public class LimitBuyActController {
     @Autowired
     private LimitGoodsSkuService limitGoodsSkuService;
     @Value("${nfs.rootPath}")
-    private String                rootPath;
+    private String rootPath;
+    @Value("${nfs.reportfile}")
+    private String reportfile;
     @Value("${nfs.goods}")
-    private String                nfsGoods;
+    private String nfsGoods;
     /**
      * 限时购管理页面
      */
@@ -331,10 +333,10 @@ public class LimitBuyActController {
         ServletOutputStream os = null;
         FileInputStream is = null;
         try {
-            String fileName = "downloadgoods";
-            String filePath = rootPath + fileName + ".xls";
+            String fileName = "upLoadTemplate";
+            String filePath = reportfile + fileName + ".csv";
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".xlsx").getBytes(), "iso-8859-1"));// 设置文件名
+            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".csv").getBytes(), "iso-8859-1"));// 设置文件名
             Long cost = limitBuyActService.downloadTemplate(filePath);
             if(cost!=-1L){
                 os = response.getOutputStream();
