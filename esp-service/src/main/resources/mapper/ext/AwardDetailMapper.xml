@@ -88,8 +88,10 @@
     <sql id="queryCriteria">
     	<where>
     		<if test="type !=null and type !='' ">and type = #{type}</if>
+    		<if test="status !=null and status !='' ">and status = #{status}</if>
     		<if test="activityId !=null and activityId !='' ">and activity_id = #{activityId}</if>
     		<if test="userId !=null and userId !='' ">and user_id = #{userId}</if>
+			<if test="orderId !=null and orderId !='' ">and order_id = #{orderId}</if>
     		<if test="startCreateDate !=null and startCreateDate !='' "><![CDATA[and create_date > #{startCreateDate}]]></if>
     		<if test="endCreateDate !=null and endCreateDate !='' "><![CDATA[and create_date <= #{endCreateDate}]]></if>
     		
@@ -100,4 +102,12 @@
     	  FROM t_esp_award_detail
     	<include refid="queryCriteria" />
     </select>
+
+	<!--根据邀请人userId和被邀请人userId查询数据-->
+	<select id="getAllAwardByUserIdAndInviteUserId" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />
+		from t_esp_award_detail
+		<include refid="queryCriteria" />
+	</select>
+
 </mapper>

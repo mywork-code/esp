@@ -344,4 +344,14 @@ public class AwardDetailService {
 		query.setType("1");//提取奖励
 		return awardDetailMapper.getAllAwardByActivityIdAndTime(query);
 	}
+
+	public AwardDetail getAllAwardByUserIdAndInviteUserId(Long userId, Long inviteUserId) {
+		ActivityBindRelStatisticQuery query = new ActivityBindRelStatisticQuery();
+		query.setOrderId(String.valueOf(inviteUserId));
+		query.setUserId(userId);
+		query.setType("0");//获得奖励
+		query.setStatus("0");
+
+		return awardDetailMapper.getAllAwardByUserIdAndInviteUserId(query);
+	}
 }
