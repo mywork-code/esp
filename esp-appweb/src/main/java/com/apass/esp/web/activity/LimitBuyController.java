@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.apass.esp.domain.Response;
 import com.apass.esp.service.activity.LimitBuyActService;
@@ -25,8 +24,6 @@ public class LimitBuyController {
 	private static final Logger logger = LoggerFactory.getLogger(LimitBuyController.class);
 	@Autowired
     private LimitBuyActService limitBuyActService;
-	@Value("${esp.image.uri}")
-    private String espImageUrl;
     /**
      * 限时购活动时间条
      * @return
@@ -35,7 +32,7 @@ public class LimitBuyController {
     @Path("/activityTimeLine")
     public Response activityTimeLine() {
         try{
-            return limitBuyActService.activityTimeLine(espImageUrl);
+            return limitBuyActService.activityTimeLine();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("限时购活动时间条刷新失败");
@@ -52,7 +49,7 @@ public class LimitBuyController {
         try{
             String limitBuyActId = CommonUtils.getValue(params, "limitBuyActId");
             String userId = CommonUtils.getValue(params, "userId");
-            return limitBuyActService.activityGoodsList(Long.parseLong(limitBuyActId),userId,espImageUrl);
+            return limitBuyActService.activityGoodsList(Long.parseLong(limitBuyActId),userId);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Response.fail("限时购活动商品列表刷新失败");

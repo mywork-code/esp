@@ -29,8 +29,10 @@ import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -59,6 +61,8 @@ public class LimitBuyActService {
     public MobileSmsService mobileSmsService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private ImageService imageService;
     /**
      * CREATE
      * @param entity
@@ -347,7 +351,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityTimeLine(String head) throws BusinessException {
+    public Response activityTimeLine() throws BusinessException {
         List<LimitBuyActTimeLine> timelist = new ArrayList<LimitBuyActTimeLine>();
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStatus((byte)3);
@@ -409,7 +413,15 @@ public class LimitBuyActService {
                         }
                         vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
                         vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
-                        vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
+                        if (SourceType.WZ.getCode().equals(goodsBase.getSource())) {
+                            if (vo.getGoodsUrl().contains("eshop")) {
+                                vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                            } else {
+                                vo.setGoodsUrl("http://img13.360buyimg.com/n3/" + vo.getGoodsUrl());
+                            }
+                        } else {
+                            vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                        }
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
                         BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
@@ -527,7 +539,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityGoodsList(Long limitBuyActId,String userId,String head) throws BusinessException {
+    public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -551,7 +563,15 @@ public class LimitBuyActService {
             }
             vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
             vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
-            vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
+            if (SourceType.WZ.getCode().equals(goodsBase.getSource())) {
+                if (vo.getGoodsUrl().contains("eshop")) {
+                    vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                } else {
+                    vo.setGoodsUrl("http://img13.360buyimg.com/n3/" + vo.getGoodsUrl());
+                }
+            } else {
+                vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+            }
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
