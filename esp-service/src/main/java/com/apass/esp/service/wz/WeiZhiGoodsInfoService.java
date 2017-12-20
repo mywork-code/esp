@@ -29,6 +29,7 @@ import com.apass.esp.search.enums.IndexType;
 import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.goods.GoodsService;
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.service.offer.CouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.third.party.jd.entity.base.Region;
@@ -55,6 +56,8 @@ public class WeiZhiGoodsInfoService {
 	private  GoodsService  goodsService;
 	@Autowired
 	private CouponManagerService couponManagerService;
+	@Autowired
+	private JdGoodsInfoService  jdGoodsInfoService;
 	/**
 	 * 微知根据商品编号获取商品需要展示App信息
 	 * 
@@ -98,7 +101,7 @@ public class WeiZhiGoodsInfoService {
 			String jdGoodStock = weiZhiProductService.getStockBySku(sku.toString(), region);
 			map.put("goodsStockDes", jdGoodStock);
 			// //查询京东商品规格
-			 Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region);
+			 Map<String, Object> map2 = jdGoodsInfoService.getJdSimilarSkuInfoList(sku, region);
 			 map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 			 map.put("skuId", map2.get("skuId"));
 			 map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
