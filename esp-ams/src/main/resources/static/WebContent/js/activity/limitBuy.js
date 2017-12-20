@@ -263,23 +263,34 @@ $(function () {
 	//编辑商品  上传URL 弹窗  见下方editGoods
 	//编辑商品  上传URL 弹窗   确定
 	$("#editGoodsFromSumbit").click(function() {
-		var limitNumTotalAdd=$("#limitNumTotalAdd").textbox('getValue')/1;
-		var limitNumAdd=$("#limitNumAdd").textbox('getValue')/1;
+		var limitNumTotalAdd=$("#limitNumTotalAdd").textbox('getValue');
+		var limitNumAdd=$("#limitNumAdd").textbox('getValue');
 		var file=$("#editGoodsFile").val();
 		if (null == limitNumTotalAdd || ("") == limitNumTotalAdd) {
 			$.messager.alert("<font color='black'>提示</font>", "请输入限购总量!", "info");
 			return;
 		}
+		var r = /^\+?[1-9][0-9]*$/;//正整数
+	    var falg1 = r.test(limitNumTotalAdd);
+	    if(!falg1){
+	    	$.messager.alert("<font color='black'>提示</font>", "限购总量请输入正整数!", "info");
+			return;
+	    }
 		if (null == limitNumAdd || ("") == limitNumAdd) {
-			$.messager.alert("<font color='black'>提示</font>", "请输入每人限购,且不可为零!", "info");
+			$.messager.alert("<font color='black'>提示</font>", "请输入单人限购!", "info");
 			return;
 		}
-		if (limitNumTotalAdd < limitNumAdd) {
-			$.messager.alert("<font color='black'>提示</font>", "限购总量不可小于每人限购!", "info");
+		var falg2 = r.test(limitNumAdd);
+	    if(!falg2){
+	    	$.messager.alert("<font color='black'>提示</font>", "单人限购请输入正整数!", "info");
+			return;
+	    }
+		if (limitNumTotalAdd/1 < limitNumAdd/1) {
+			$.messager.alert("<font color='black'>提示</font>", "限购总量不可小于单人限购!", "info");
 			return;
 		}
-		if (stockCurrAmt/1 < limitNumTotalAdd&&source!='wz') {
-			$.messager.alert("<font color='black'>提示</font>", "非微知供应商商品，限购总量不可大于库存剩余!", "info");
+		if (stockCurrAmt/1 < limitNumTotalAdd/1&&source!='wz') {
+			$.messager.alert("<font color='black'>提示</font>", "非微知来源商品，限购总量不可大于库存剩余!", "info");
 			return;
 		}
 		var filefalg = null == file || ("") == file;
@@ -755,9 +766,10 @@ function editGoods(target,num){
 	if(limitGoodsSkuId==""||limitGoodsSkuId==null){//新增编辑
 //		$("#limitNumTotalAdd").textbox('clear');
 //		$("#limitNumAdd").textbox('clear');
-		$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
-		$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
-		
+		if(rowentity.limitNumTotal!=null&&rowentity.limitNum!=null){
+			$("#limitNumTotalAdd").textbox('setValue',rowentity.limitNumTotal);
+			$("#limitNumAdd").textbox('setValue',rowentity.limitNum);
+		}
 		//有问题需要解决   有微调器失效BUG
 		$("#limitNumTotalAdd").textbox({'disabled':false});
 		$("#limitNumAdd").textbox({'disabled':false});
@@ -782,9 +794,7 @@ function editGoods(target,num){
 				ifLogout(data);
             	var sta = data.data;
             	if(sta=="1"){//未开始 可编辑
-            		
             		//有问题需要解决   有微调器失效BUG
-            		
             		$("#limitNumTotalAdd").textbox({'disabled':false});
             		$("#limitNumAdd").textbox({'disabled':false});
             	}
