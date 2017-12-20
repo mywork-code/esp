@@ -337,7 +337,7 @@ public class LimitBuyActController {
 //            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".csv").getBytes(), "iso-8859-1"));// 设置文件名
             Long cost = limitBuyActService.downloadTemplate(filePath);
             if(cost!=-1L){
-                os = new FileOutputStream("C:\\Users\\Administrator\\"+fileName+".csv");
+                os = new FileOutputStream("D:\\temp\\"+fileName+".csv");
                 is = new FileInputStream(new File(filePath));
                 byte[] b = new byte[1024];
                 int i = 0;
