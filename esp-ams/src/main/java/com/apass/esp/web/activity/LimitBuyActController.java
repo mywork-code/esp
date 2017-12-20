@@ -1,15 +1,14 @@
 package com.apass.esp.web.activity;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.aisino.UpLoadUtil;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.entity.Kvattr;
@@ -329,17 +327,17 @@ public class LimitBuyActController {
      */
     @RequestMapping(value = "/downloadTemplate", method = RequestMethod.POST)
     @LogAnnotion(operationType = "", valueType = LogValueTypeEnum.VALUE_EXPORT)
-    public void downloadTemplate(HttpServletResponse response) {
-        ServletOutputStream os = null;
-        FileInputStream is = null;
+    public void downloadTemplate() {
+        OutputStream os = null;
+        InputStream is = null;
         try {
             String fileName = "upLoadTemplate";
             String filePath = reportfile + fileName + ".csv";
-            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".csv").getBytes(), "iso-8859-1"));// 设置文件名
+//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".csv").getBytes(), "iso-8859-1"));// 设置文件名
             Long cost = limitBuyActService.downloadTemplate(filePath);
             if(cost!=-1L){
-                os = response.getOutputStream();
+                os = new FileOutputStream("C:\\Users\\Administrator\\"+fileName+".csv");
                 is = new FileInputStream(new File(filePath));
                 byte[] b = new byte[1024];
                 int i = 0;

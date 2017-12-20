@@ -2,6 +2,7 @@ package com.apass.esp.service.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -649,7 +650,7 @@ public class LimitBuyActService {
         //当前时间字符串为活动结束时间     需要自动结束的活动
         LimitBuyAct over = new LimitBuyAct();
         over.setEndDate(nowDate);
-        List<LimitBuyAct> overlist = readEntityList(start);
+        List<LimitBuyAct> overlist = readEntityList(over);
         if(overlist==null||overlist.size()==0){
             sb.append("没有限时购活动自动结束.");
         }
@@ -735,7 +736,7 @@ public class LimitBuyActService {
      * @throws IOException 
      */
     public Long downloadTemplate(String filePath) {
-        FileOutputStream out = null;
+        OutputStream os = null;
         try{
             Long start = System.currentTimeMillis();
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -768,15 +769,15 @@ public class LimitBuyActService {
             if (!new File(filePath2).isDirectory()) {
                 new File(filePath2).mkdirs();
             }
-            out = new FileOutputStream(filePath);
-            workbook.write(out);
+            os = new FileOutputStream(filePath);
+            workbook.write(os);
             return cost;
         }catch(IOException e){
             return -1L;
         }finally{
             try {
-                if(out!=null){
-                    out.close();
+                if(os!=null){
+                    os.close();
                 }
             } catch (IOException e) {
             }
