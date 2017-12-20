@@ -398,6 +398,7 @@ public class LimitBuyActService {
                             stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
                         }
                         vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+                        vo.setGoodsUrl(vo.getGoodsUrl()==null?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
                         vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
@@ -538,6 +539,7 @@ public class LimitBuyActService {
                 stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
             }
             vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
+            vo.setGoodsUrl(vo.getGoodsUrl()==null?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
             vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
