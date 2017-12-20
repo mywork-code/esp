@@ -193,7 +193,8 @@ public class LimitBuyActService {
         }else if(compareTime(entity.getEndDate())){
             entity.setStatus((byte)2);
         }else{
-            entity.setStatus((byte)3);
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能新增!");
+            //entity.setStatus((byte)3);
         }
         entity.fillAllField(username);
         Long actId =null;
@@ -279,6 +280,14 @@ public class LimitBuyActService {
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
+        if(compareTime(entity.getStartDate())){
+            entity.setStatus((byte)1);
+        }else if(compareTime(entity.getEndDate())){
+            entity.setStatus((byte)2);
+        }else{
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能修改!");
+            //entity.setStatus((byte)3);
+        }
         entity.fillField(username);
         LimitBuyAct actupdate =null;
         if((actupdate = updatedEntity(entity))==null){
