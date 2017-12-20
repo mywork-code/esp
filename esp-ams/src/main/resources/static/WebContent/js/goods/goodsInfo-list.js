@@ -760,6 +760,13 @@ $(function() {
     	addFlushAttrVal();
     	flushAttrListPrepare(categorynameArr1,categorynameArr2,categorynameArr3);
     	$(".add-btn1").click();
+    	$.ajax({url : ctx + '/application/goods/management/tableattr',data : {"arrten":''},type : "post",dataType : "json",
+            success : function(data) {
+                $.validateResponse(data, function() {
+                	$('#tableattr').datagrid('loadData', data.rows);
+                });
+            }
+        })
 	});
 	
 	//大图：上一步
