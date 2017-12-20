@@ -1,5 +1,6 @@
 package com.aisino;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import cn.jpush.api.utils.StringUtils;
@@ -113,10 +114,15 @@ public class EncryptionDecryption {
         }
         // 客户端加密过程 :客户端私钥(pfx)、pwd + 平台公钥(cer)
         byte[] trustsBytesarr = FileUtils.readFileToByteArray(new File(trustsBytes));
+        String trustsStr = FileUtils.readFileToString(new File(trustsBytes),Charset.forName("UTF-8"));
+        String cafileStr = FileUtils.readFileToString(new File(cafilepath),Charset.forName("UTF-8"));
+
         byte[] privatePFXBytesarr = FileUtils.readFileToByteArray(new File(decryptPFXBytes));
-        final PKCS7 pkcs7Client = new PKCS7(trustsBytesarr, privatePFXBytesarr, decryptPFXKey);
-        byte[] publicPFXBytesarr2 = FileUtils.readFileToByteArray(new File(cafilepath));
-        final byte[] encodeData = pkcs7Client.pkcs7Encrypt(source, publicPFXBytesarr2);
+//        final PKCS7 pkcs7Client = new PKCS7(trustsBytesarr, privatePFXBytesarr, decryptPFXKey);
+//        byte[] publicPFXBytesarr2 = FileUtils.readFileToByteArray(new File(cafilepath));
+//        final byte[] encodeData = pkcs7Client.pkcs7Encrypt(source, publicPFXBytesarr2);
+        final byte[] encodeData = PKCS7.signedAndEnvelopedMulti(trustsStr,cafileStr,
+                privatePFXBytesarr,decryptPFXKey,source.getBytes(Charset.forName("UTF-8")));
         String encodeText= new String(Base64.encodeBase64(encodeData));
         return encodeText;
     }
@@ -135,10 +141,15 @@ public class EncryptionDecryption {
         }
         // 客户端加密过程 :客户端私钥(pfx)、pwd + 平台公钥(cer)
         byte[] trustsBytesarr = FileUtils.readFileToByteArray(new File(trustsBytes));
+        String trustsStr = FileUtils.readFileToString(new File(trustsBytes),Charset.forName("UTF-8"));
+        String cafileStr = FileUtils.readFileToString(new File(cafilepath),Charset.forName("UTF-8"));
+
         byte[] privatePFXBytesarr = FileUtils.readFileToByteArray(new File(decryptPFXBytes));
-        final PKCS7 pkcs7Client = new PKCS7(trustsBytesarr, privatePFXBytesarr, decryptPFXKey);
-        byte[] publicPFXBytesarr2 = FileUtils.readFileToByteArray(new File(cafilepath));
-        final byte[] encodeData = pkcs7Client.pkcs7Encrypt(source, publicPFXBytesarr2);
+//        final PKCS7 pkcs7Client = new PKCS7(trustsBytesarr, privatePFXBytesarr, decryptPFXKey);
+//        byte[] publicPFXBytesarr2 = FileUtils.readFileToByteArray(new File(cafilepath));
+//        final byte[] encodeData = pkcs7Client.pkcs7Encrypt(source, publicPFXBytesarr2);
+        final byte[] encodeData = PKCS7.signedAndEnvelopedMulti(trustsStr,cafileStr,
+                privatePFXBytesarr,decryptPFXKey,source.getBytes(Charset.forName("UTF-8")));
         String encodeText= new String(Base64.encodeBase64(GZipUtils.compress(encodeData)));
         return encodeText;
     }
@@ -153,10 +164,15 @@ public class EncryptionDecryption {
             decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
             decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
         }
-        final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
-        final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(GZipUtils.decompress(Base64.decodeBase64(encryTxt)));
+//        final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
+//        final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(GZipUtils.decompress(Base64.decodeBase64(encryTxt)));
+
+        String trustsStr = FileUtils.readFileToString(new File(trustsBytes),Charset.forName("UTF-8"));
+        byte[] params =  GZipUtils.decompress(Base64.decodeBase64(encryTxt));
+        PKCS7 pKCS7 = PKCS7.unpackMulti(trustsStr,FileUtils.readFileToByteArray(new File(decryptPFXBytes)),decryptPFXKey,params);
+        final byte[] decodeData2 = pKCS7.data;
         LOGGER.info("解密:{}",new String(decodeData2));
-        return new String(decodeData2);
+        return new String(decodeData2,Charset.forName("UTF-8"));
     }
     /**
      *先base64解码,再ca解密,这种不需要gzip解压缩
@@ -169,9 +185,13 @@ public class EncryptionDecryption {
             decryptPFXBytes = CaConstant.getCaFilePath("PROD_CLIENT_DECRYPTPFX");
             decryptPFXKey = CaConstant.getProperty("PROD_CLIENT_DECRYPTPFX_KEY");
         }
-        final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
-        final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(Base64.decodeBase64(encryTxt));
+//        final PKCS7 pkcs7Client2 = new PKCS7(FileUtils.readFileToByteArray(new File(trustsBytes)), FileUtils.readFileToByteArray(new File(decryptPFXBytes)), decryptPFXKey);
+//        final byte[] decodeData2 = pkcs7Client2.pkcs7Decrypt(Base64.decodeBase64(encryTxt));
+        String trustsStr = FileUtils.readFileToString(new File(trustsBytes),Charset.forName("UTF-8"));
+        byte[] params =  Base64.decodeBase64(encryTxt);
+        PKCS7 pKCS7 = PKCS7.unpackMulti(trustsStr,FileUtils.readFileToByteArray(new File(decryptPFXBytes)),decryptPFXKey,params);
+        final byte[] decodeData2 = pKCS7.data;
         LOGGER.info("解密:{}",new String(decodeData2));
-        return new String(decodeData2);
+        return new String(decodeData2,Charset.forName("UTF-8"));
     }
 }
