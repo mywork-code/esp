@@ -355,10 +355,11 @@ public class LimitBuyActService {
         List<LimitBuyAct> list = readEntityListDeSelect(entity);
         for(LimitBuyAct act : list){
             //最多只获取8个活动冗余填充时间条
-            if(++sort==8){
+            if(++sort==9){
                 break;
             }
             //最多只获取明天23:59:59前开始的活动冗余填充时间条
+            //最多只获取明天当前时间前开始的活动冗余填充时间条
             if(isDayAfterTomorrowDate(act.getStartDate())){
                 break;
             }
@@ -511,8 +512,9 @@ public class LimitBuyActService {
         return tomorrow.getTime()<date.getTime();
     }
     private Boolean isDayAfterTomorrowDate(Date date){
-        String target = DateFormatUtil.dateToString(DateFormatUtil.addOneDay(new Date()));
-        target += " 23:59:59";
+        String targetday = DateFormatUtil.dateToString(DateFormatUtil.addOneDay(new Date()));
+        String targettime = DateFormatUtil.dateToString(new Date(),"HH:mm:ss");
+        String target = targetday +" "+targettime;
         Date afterTomorrow = DateFormatUtil.string2date(target, null);
         return afterTomorrow.getTime()<date.getTime();
     }
