@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -2394,6 +2395,16 @@ public class OrderService {
             //设置活动Id
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
+            //根据skuId查询该规格是否参加了限时购活动
+            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),goods.getExternalId());
+            if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
+                goodInfo.setLimitFalg(true);
+                goodInfo.setGoodsLimitPrice(limitGS.getActivityPrice());
+                goodInfo.setLimitNum(limitGS.getLimitNum());
+                goodInfo.setLimitPersonNum(limitGS.getLimitPersonNum());
+                goodInfo.setLimitBuyActId(limitGS.getLimitBuyActId());
+            }
+
             // 订单总金额
             totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
         }
@@ -2409,6 +2420,8 @@ public class OrderService {
         } else {
             resultMap.put("addressInfo", address);
         }
+
+
     }
 
     /**
