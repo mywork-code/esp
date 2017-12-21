@@ -127,6 +127,12 @@
 			<if test="activityId != null ">
 				<![CDATA[  and activity_id = #{activityId} ]]>
 			</if>
+			<if test="mobiles != null ">
+				and mobile in
+				<foreach collection="mobiles" item="mobile" separator="," open="(" close=")">
+					#{mobile}
+				</foreach>
+			</if>
 		</where>
 	</sql>
 	<!-- 查询某段时间内某活动下的推荐人总数 -->
