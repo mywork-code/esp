@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,7 +219,7 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
             List<GoodsInfoEntity> goodsInfoEnties = this.getSqlSession().selectList(
                     "selectGoodsByExternalId", externalId);
             if (goodsInfoEnties.isEmpty() || goodsInfoEnties == null) {
-                LOGGER.error("数据有误，externalId={}的就东商品在商品表里不存在", externalId);
+                LOGGER.error("数据有误，externalId={}的京东东商品在商品表里不存在", externalId);
                 throw new BusinessException("数据有误");
             }
             return goodsInfoEnties.get(0);
@@ -294,5 +295,11 @@ public class GoodsRepository extends BaseMybatisRepository<GoodsInfoEntity, Long
 
     public Integer updateServiceForBaseInfoColler(GoodsInfoEntity entity) {
         return this.getSqlSession().update("updateServiceForBaseInfoColler", entity);
+    }
+
+    public List<GoodsInfoEntity> selectGoodsByExternalIds(List<Long> skuIds) {
+        Map<String,Object> paramMap = Maps.newHashMap();
+        paramMap.put("skuIds",skuIds);
+        return this.getSqlSession().selectList("selectGoodsByExternalIds", skuIds);
     }
 }

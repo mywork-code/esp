@@ -2409,7 +2409,7 @@ public class OrderService {
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
             //根据skuId查询该规格是否参加了限时购活动
-            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),goodsStock.getSkuId());
+            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),orderDetail.getSkuId());
             if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
                 goodInfo.setLimitFalg(true);
                 goodInfo.setGoodsLimitPrice(limitGS.getActivityPrice());
