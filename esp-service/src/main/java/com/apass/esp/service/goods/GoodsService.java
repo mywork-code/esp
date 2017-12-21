@@ -1375,35 +1375,23 @@ public class GoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public GoodsInfoEntity insert(GoodsInfoEntity entity) {
-        if (entity.getGoodId() != null) {
-            entity.setId(entity.getGoodId());
-            if(StringUtils.isNoneBlank(entity.getGoodsCode())){
-                entity.setMainGoodsCode(entity.getGoodsCode());
+        StringBuffer sb = new StringBuffer();
+        String merchantCode = entity.getMerchantCode();
+        MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
+        if (merchantInfoEntity != null) {
+            String merchantId = String.valueOf(merchantInfoEntity.getId());
+            if (merchantId.length() == 1) {
+                merchantId = "0" + merchantId;
+            } else if (merchantId.length() > 1) {
+                merchantId = merchantId.substring(merchantId.length() - 2, merchantId.length());
             }
-            updateService(entity);
-            return entity;
-        }
-        int count = goodsDao.insert(entity);
-        if (count == 1) {
-            LOGGER.info("保存商品成功,保存内容：{}", GsonUtils.toJson(entity));
-            // 商品编号
-            StringBuffer sb = new StringBuffer();
-            String merchantCode = entity.getMerchantCode();
-            MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
-            if (merchantInfoEntity != null) {
-                String merchantId = String.valueOf(merchantInfoEntity.getId());
-                if (merchantId.length() == 1) {
-                    merchantId = "0" + merchantId;
-                } else if (merchantId.length() > 1) {
-                    merchantId = merchantId.substring(merchantId.length() - 2, merchantId.length());
-                }
-                sb.append(merchantId);
-                String random = RandomUtils.getNum(8);
-                sb.append(random);
-                entity.setGoodsCode(sb.toString());
-                entity.setMainGoodsCode(sb.toString());
-                goodsDao.updateGoods(entity);
-            }
+            sb.append(merchantId);
+            String random = RandomUtils.getNum(8);
+            sb.append(random);
+            entity.setGoodsCode(sb.toString());
+            entity.setMainGoodsCode(sb.toString());
+            goodsDao.insert(entity);
+            LOGGER.info("保存商品成功,保存内容：{}", entity);
         }
         return entity;
     }
