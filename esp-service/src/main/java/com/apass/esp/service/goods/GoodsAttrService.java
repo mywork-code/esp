@@ -1112,8 +1112,11 @@ public class GoodsAttrService {//450
             GoodsStockInfoEntity e = new GoodsStockInfoEntity();
             e.setGoodsSkuAttr("无");
             if(!falgg){
-                String url = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId)).get(0).getStockLogo();
-                e.setStockLogo(url);
+                List<GoodsStockInfoEntity> gslist = goodsStockInfoService.getGoodsStock(Long.parseLong(goodsId));
+                if(gslist!=null&&gslist.size()>0){
+                    String url = gslist.get(0).getStockLogo();
+                    e.setStockLogo(url);
+                }
             }
             list.add(e);
         }

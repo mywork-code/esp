@@ -58,4 +58,6 @@ public interface AwardDetailMapper extends GenericMapper<AwardDetail, Long> {
 	 *  统计某段时间内某个活动总奖励金额（或者提取金额）
 	 */
 	BigDecimal getAllAwardByActivityIdAndTime(ActivityBindRelStatisticQuery query);
+
+	AwardDetail getAllAwardByUserIdAndInviteUserId(ActivityBindRelStatisticQuery query);
 }

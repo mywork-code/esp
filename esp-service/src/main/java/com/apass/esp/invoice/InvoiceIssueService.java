@@ -16,6 +16,8 @@ import com.apass.gfb.framework.utils.DateFormatUtil;
 import com.apass.gfb.framework.utils.RandomUtils;
 import com.thoughtworks.xstream.XStream;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /**
@@ -29,6 +31,8 @@ public class InvoiceIssueService {
    // private static String PRODUCTURL="http://fw1.shdzfp.com:9000/axis2/services/SajtIssueInvoiceService?wsdl";
     private static String TESTURL= "http://fw1test.shdzfp.com:9000/sajt-shdzfp-sl-http/SvrServlet";
     private static String PRODUCTURL="http://112.65.253.4:9012/sajt-shdzfp-sl-http/SvrServlet";
+    private static final Logger log = LoggerFactory.getLogger(InvoiceIssueService.class);
+
     @Autowired
     private SystemEnvConfig systemEnvConfig;
 
@@ -40,6 +44,7 @@ public class InvoiceIssueService {
      */
     public String httpRequestFaPiaoDL(FaPiaoDLoad entity) throws Exception {
         String params = createContentDL(entity);
+        log.info("下载发票接口参数:--------------->" + params);
         return HttpClientUtils.getMethodPostResponse(getInvoiceUrl(),new StringEntity(params,"UTF-8"));
     }
 
@@ -53,6 +58,7 @@ public class InvoiceIssueService {
      */
     public String httpRequestFaPiaoKJ(FaPiaoKJ ensale,List<FaPiaoKJXM> list,FaPiaoKJDD enbuy) throws Exception {
         String params = createContentXml(ensale,list,enbuy);
+        log.info("发票开具接口参数:--------------->" + params);
         return HttpClientUtils.getMethodPostResponse(getInvoiceUrl(),new StringEntity(params,"UTF-8"));
     }
 

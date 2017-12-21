@@ -940,11 +940,15 @@ public class GoodsBaseInfoController {
         if(StringUtils.isNotBlank(skuId)){
             returnMap =goodsService.loadAllBannerPicNotJd2(skuId);
             returnMap.put("view", view);
+            String image=goodsService.getDefaultImage(returnMap);
+            returnMap.put("defaultImage", image);
             System.out.println(GsonUtils.toJson(returnMap));
             return new ModelAndView("goods/goodsPreviewProductNotJD-view", returnMap);
         }
         returnMap =goodsService.loadAllBannerPicNotJd(Long.parseLong(id));
         returnMap.put("view", view);
+        String image=goodsService.getDefaultImage(returnMap);
+        returnMap.put("defaultImage", image);
         System.out.println(GsonUtils.toJson(returnMap));
         return new ModelAndView("goods/goodsPreviewProductNotJD-view", returnMap);
     }

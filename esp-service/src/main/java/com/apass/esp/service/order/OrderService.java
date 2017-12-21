@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apass.esp.domain.entity.activity.LimitGoodsSkuVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -2394,8 +2395,21 @@ public class OrderService {
             //设置活动Id
             goodInfo.setProActivityId(proGroupGoodsService.getActivityId(orderDetail.getGoodsId()));
             goodsList.add(goodInfo);
-            // 订单总金额
-            totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
+            //根据skuId查询该规格是否参加了限时购活动
+            LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId.toString(),goodsStock.getSkuId());
+            if(null !=limitGS  && StringUtils.equals("InProgress", limitGS.getLimitFalg())){
+                goodInfo.setLimitFalg(true);
+                goodInfo.setGoodsLimitPrice(limitGS.getActivityPrice());
+                goodInfo.setLimitNum(limitGS.getLimitNum());
+                goodInfo.setLimitPersonNum(limitGS.getLimitPersonNum());
+                goodInfo.setLimitBuyActId(limitGS.getLimitBuyActId());
+
+                totalAmount = totalAmount.add(limitGS.getActivityPrice().multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
+            }else {
+                // 订单总金额
+                totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
+            }
+
         }
         resultMap.put("goodsList", goodsList);
         // 商品总金额
@@ -2409,6 +2423,8 @@ public class OrderService {
         } else {
             resultMap.put("addressInfo", address);
         }
+
+
     }
 
     /**
@@ -3786,5 +3802,14 @@ public class OrderService {
     }
     public List<CheckAccountOrderDetail> getCheckOrderDetail(String beginDate) {
         return orderInfoRepository.getCheckOrderDetail(beginDate);
+    }
+
+    /**
+     * 根据userId根据订单
+     * @param inviteUserId
+     * @return
+     */
+    public List<OrderInfoEntity> selectByUserId(Long inviteUserId) {
+        return orderInfoRepository.selectByUserId(inviteUserId);
     }
 }

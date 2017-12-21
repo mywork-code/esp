@@ -321,11 +321,17 @@ public class InvoiceService {
         faPiaoKJ.setKpxm(in.getContent());
         faPiaoKJ.setBmbBbh("12.0");
         faPiaoKJ.setXhfmc("上海奥派数据科技有限公司");
-        faPiaoKJ.setXhfDh("上海市虹口区欧阳路196号10号楼一层13室");//公司地址
+        faPiaoKJ.setXhfDz("上海市虹口区欧阳路196号10号楼一层13室");//公司地址
         faPiaoKJ.setXhfDh("021-60351818");//公司电话
 
-        faPiaoKJ.setGhfmc(InvoiceHeadTypeEnum.getEnum(in.getHeadType()).getDesc());
-        faPiaoKJ.setGhfNsrsbh(in.getTaxpayerNum());
+        if(InvoiceHeadTypeEnum.getEnum(in.getHeadType()) == InvoiceHeadTypeEnum.COMPANY){
+            //单位
+            faPiaoKJ.setGhfmc(InvoiceHeadTypeEnum.getEnum(in.getHeadType()).getDesc());
+            faPiaoKJ.setGhfNsrsbh(in.getTaxpayerNum());
+        }else{
+            //个人
+            faPiaoKJ.setGhfmc(order.getName());
+        }
 
         faPiaoKJ.setGhfqylx("04");
         faPiaoKJ.setKpy("财务");
@@ -406,7 +412,7 @@ public class InvoiceService {
         try {
             s = invoiceIssueService.httpRequestFaPiaoKJ(faPiaoKJ, list, faPiaoKJDD);
         } catch (Exception e) {
-            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,接口返回:"+s);
+            LOGGER.info("该笔订单开具发票"+order.getOrderId()+",发票开具接口调用异常,接口返回:",e);
             updateStatusByOrderId((byte)InvoiceStatusEnum.FAIL.getCode(),order.getOrderId());
             return false;
         }

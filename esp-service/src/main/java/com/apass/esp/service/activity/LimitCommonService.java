@@ -55,6 +55,9 @@ public class LimitCommonService {
 		}
 		for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
 			LimitBuyAct limitBuyAct=limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+			if(limitBuyAct==null){
+			    continue;
+			}
 			ActivityStatus activityStatus =getLimitBuyStatus(limitBuyAct.getStartDate(),limitBuyAct.getEndDate());
 			if(ActivityStatus.PROCESSING==activityStatus || ActivityStatus.NO==activityStatus){
 				return true;
@@ -103,7 +106,7 @@ public class LimitCommonService {
 				LimitBuyParam limitBuyParam=new LimitBuyParam();
 				limitBuyParam.setUserId(userId);
 				limitBuyParam.setLimitBuyActId(limitBuyAct.getId()+"");
-				limitBuyParam.setSkuId(skuId);
+				limitBuyParam.setSkuId(limitGoodsSku.getId()+"");
 				List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
 				/**
 				 * 计算用户购买了同一个活动同一商品的件数

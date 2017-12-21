@@ -2,6 +2,7 @@ package com.apass.esp.service.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +29,10 @@ import com.apass.esp.domain.entity.activity.LimitBuyActVo;
 import com.apass.esp.domain.entity.activity.LimitGoodsSkuInfo;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
 import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
+import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.mapper.LimitBuyActMapper;
 import com.apass.esp.service.common.CommonService;
+import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.common.MobileSmsService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.service.goods.GoodsStockInfoService;
@@ -58,6 +61,8 @@ public class LimitBuyActService {
     public MobileSmsService mobileSmsService;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private ImageService imageService;
     /**
      * CREATE
      * @param entity
@@ -192,7 +197,8 @@ public class LimitBuyActService {
         }else if(compareTime(entity.getEndDate())){
             entity.setStatus((byte)2);
         }else{
-            entity.setStatus((byte)3);
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能新增!");
+            //entity.setStatus((byte)3);
         }
         entity.fillAllField(username);
         Long actId =null;
@@ -278,6 +284,14 @@ public class LimitBuyActService {
         BeanUtils.copyProperties(buyActView, entity);
         entity.setStartDate(DateFormatUtil.string2date(sd, null));
         entity.setEndDate(DateFormatUtil.addOneDay(entity.getStartDate()));
+        if(compareTime(entity.getStartDate())){
+            entity.setStatus((byte)1);
+        }else if(compareTime(entity.getEndDate())){
+            entity.setStatus((byte)2);
+        }else{
+            throw new BusinessException("活动保存失败.该日期时间段会出现已经结束的活动,不能修改!");
+            //entity.setStatus((byte)3);
+        }
         entity.fillField(username);
         LimitBuyAct actupdate =null;
         if((actupdate = updatedEntity(entity))==null){
@@ -337,7 +351,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityTimeLine(String head) throws BusinessException {
+    public Response activityTimeLine() throws BusinessException {
         List<LimitBuyActTimeLine> timelist = new ArrayList<LimitBuyActTimeLine>();
         LimitBuyAct entity = new LimitBuyAct();
         entity.setStatus((byte)3);
@@ -345,10 +359,11 @@ public class LimitBuyActService {
         List<LimitBuyAct> list = readEntityListDeSelect(entity);
         for(LimitBuyAct act : list){
             //最多只获取8个活动冗余填充时间条
-            if(++sort==8){
+            if(++sort==9){
                 break;
             }
             //最多只获取明天23:59:59前开始的活动冗余填充时间条
+            //最多只获取明天当前时间前开始的活动冗余填充时间条
             if(isDayAfterTomorrowDate(act.getStartDate())){
                 break;
             }
@@ -396,8 +411,17 @@ public class LimitBuyActService {
                             goodsBase = goodsList.get(0);
                             stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
                         }
-                        vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
-                        vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
+                        vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
+                        vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
+                        if (SourceType.WZ.getCode().equals(goodsBase.getSource())) {
+                            if (vo.getGoodsUrl().contains("eshop")) {
+                                vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                            } else {
+                                vo.setGoodsUrl("http://img13.360buyimg.com/n3/" + vo.getGoodsUrl());
+                            }
+                        } else {
+                            vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                        }
                         vo.setGoodsName(goodsBase.getGoodsName());
                         vo.setGoodsTitle(goodsBase.getGoodsTitle());
                         BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
@@ -500,8 +524,9 @@ public class LimitBuyActService {
         return tomorrow.getTime()<date.getTime();
     }
     private Boolean isDayAfterTomorrowDate(Date date){
-        String target = DateFormatUtil.dateToString(DateFormatUtil.addOneDay(new Date()));
-        target += " 23:59:59";
+        String targetday = DateFormatUtil.dateToString(DateFormatUtil.addOneDay(new Date()));
+        String targettime = DateFormatUtil.dateToString(new Date(),"HH:mm:ss");
+        String target = targetday +" "+targettime;
         Date afterTomorrow = DateFormatUtil.string2date(target, null);
         return afterTomorrow.getTime()<date.getTime();
     }
@@ -514,7 +539,7 @@ public class LimitBuyActService {
      * @return
      * @throws BusinessException 
      */
-    public Response activityGoodsList(Long limitBuyActId,String userId,String head) throws BusinessException {
+    public Response activityGoodsList(Long limitBuyActId,String userId) throws BusinessException {
         // 获取活动状态   以便判断按钮状态
         Byte actstatus = readEntity(limitBuyActId).getStatus();
         LimitGoodsSku act = new LimitGoodsSku();
@@ -536,8 +561,17 @@ public class LimitBuyActService {
                 goodsBase = goodsList.get(0);
                 stock = goodsStockInfoService.getGoodsStock(goodsBase.getId()).get(0);
             }
-            vo.setGoodsUrl(sku.getUrl()==null?stock.getStockLogo():sku.getUrl());
-            vo.setGoodsUrl(head + "/static"+ vo.getGoodsUrl());
+            vo.setGoodsUrl(StringUtils.isBlank(sku.getUrl())?stock.getStockLogo():sku.getUrl());
+            vo.setGoodsUrl(StringUtils.isBlank(vo.getGoodsUrl())?goodsBase.getGoodsLogoUrl():vo.getGoodsUrl());
+            if (SourceType.WZ.getCode().equals(goodsBase.getSource())) {
+                if (vo.getGoodsUrl().contains("eshop")) {
+                    vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+                } else {
+                    vo.setGoodsUrl("http://img13.360buyimg.com/n3/" + vo.getGoodsUrl());
+                }
+            } else {
+                vo.setGoodsUrl(imageService.getImageUrl(vo.getGoodsUrl()));
+            }
             vo.setGoodsName(goodsBase.getGoodsName());
             vo.setGoodsTitle(goodsBase.getGoodsTitle());
             BigDecimal marketPrice = commonService.calculateGoodsPrice(stock.getGoodsId(), stock.getId());
@@ -649,7 +683,7 @@ public class LimitBuyActService {
         //当前时间字符串为活动结束时间     需要自动结束的活动
         LimitBuyAct over = new LimitBuyAct();
         over.setEndDate(nowDate);
-        List<LimitBuyAct> overlist = readEntityList(start);
+        List<LimitBuyAct> overlist = readEntityList(over);
         if(overlist==null||overlist.size()==0){
             sb.append("没有限时购活动自动结束.");
         }
@@ -735,7 +769,7 @@ public class LimitBuyActService {
      * @throws IOException 
      */
     public Long downloadTemplate(String filePath) {
-        FileOutputStream out = null;
+        OutputStream os = null;
         try{
             Long start = System.currentTimeMillis();
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -768,15 +802,15 @@ public class LimitBuyActService {
             if (!new File(filePath2).isDirectory()) {
                 new File(filePath2).mkdirs();
             }
-            out = new FileOutputStream(filePath);
-            workbook.write(out);
+            os = new FileOutputStream(filePath);
+            workbook.write(os);
             return cost;
         }catch(IOException e){
             return -1L;
         }finally{
             try {
-                if(out!=null){
-                    out.close();
+                if(os!=null){
+                    os.close();
                 }
             } catch (IOException e) {
             }
