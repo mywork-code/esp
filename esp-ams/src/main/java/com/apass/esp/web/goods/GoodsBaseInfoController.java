@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.apass.esp.domain.Response;
@@ -46,6 +50,7 @@ import com.apass.esp.domain.enums.GoodsType;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.search.dao.GoodsEsDao;
 import com.apass.esp.search.entity.Goods;
+import com.apass.esp.search.manager.IndexManager;
 import com.apass.esp.service.UsersService;
 import com.apass.esp.service.banner.BannerInfoService;
 import com.apass.esp.service.category.CategoryInfoService;
@@ -761,8 +766,25 @@ public class GoodsBaseInfoController {
                         Goods goods = goodsService.goodsInfoToGoods(entity2);
                         LOGGER.info("审核通过,添加索引传递的参数:{}",GsonUtils.toJson(goods));
                         //TODO在ES中相似规格的商品只上架一件（即：如果商品多规格则在ES中添加一个规格）
-                        
-                        goodsEsDao.add(goods);
+                        String source=entity2.getSource();
+                        String skuId="";
+                        Boolean  goodsInESNumFalg=true;
+                        if(null !=source && SourceType.WZ.getCode().equals(source)){
+                        	skuId=entity2.getExternalId();
+                        	TreeSet<String> similarSkuIds=jdGoodsInfoService.getJdSimilarSkuIdList(skuId);
+                        	for (String string : similarSkuIds) {
+                        		GoodsInfoEntity goodsInfo=goodsService.selectGoodsByExternalId(string);
+                        		Goods goodsfromES=IndexManager.goodSearchFromESBySkuId(goodsInfo.getId());
+                        		if(null !=goodsfromES){//该商品的相似规格已经在ES中存在
+                        			goodsInESNumFalg=false;
+                        			break;
+                        		}
+                        	}
+                        }
+                        //如果ES中没有商品规格中任何一个，则添加到ES中
+                        if(goodsInESNumFalg){
+                        	  goodsEsDao.add(goods);
+                        }
                     }
                 }
             }
