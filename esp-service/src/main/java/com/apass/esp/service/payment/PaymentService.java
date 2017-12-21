@@ -416,7 +416,11 @@ public class PaymentService {
                     if (successFlag == 0) {
                         if (i == errorNum) {
                             LOG.info(requestId, "更新库存失败尝试次数已用完","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
-                            throw new BusinessException(goodsInfo.getGoodsName() + "商品库存不足");
+                            if(stockCurrAmt < 0){
+								throw new BusinessException(goodsInfo.getGoodsName() + "商品库存不足");
+							}else{
+								throw new BusinessException("系统繁忙，请重新重试!");
+							}
                         }
                         LOG.info(requestId, "本次更新库存失败尝试再次更新","商品库存Id:[" + goodsStockId + "],购买数量:[" + buyNum + "],errorNum:" + i);
                         continue;

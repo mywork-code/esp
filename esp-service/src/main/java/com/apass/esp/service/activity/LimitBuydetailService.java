@@ -35,9 +35,10 @@ public class LimitBuydetailService {
 		List<LimitGoodsSku> goodsSku = limitGoodsSkuMapper.getLimitGoodsSkuList(sku);
     	
     	LimitGoodsSku goodSku = goodsSku.get(0);
-    	long currTotal = goodSku.getLimitCurrTotal() - params.getNum();
+    	long limitCurrTotal = goodSku.getLimitCurrTotal();
+    	long currTotal = limitCurrTotal - params.getNum();
     	goodSku.setLimitCurrTotal(currTotal);
-    	goodSku.setLimitNumTotal(goodSku.getLimitCurrTotal());
+    	goodSku.setLimitNumTotal(limitCurrTotal);
     	goodSku.setUpdatedTime(new Date());
     	Integer num = limitGoodsSkuMapper.updateLimitGoods(goodSku);
     	if(num < 1){
