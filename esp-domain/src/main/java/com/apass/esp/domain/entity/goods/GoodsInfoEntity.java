@@ -177,6 +177,21 @@ public class GoodsInfoEntity {
      * 是否支持7天退货
      */
     private String support7dRefund;
+
+    /**
+     * 同类微知商品主goods_Code
+     * @return
+     */
+    private String mainGoodsCode;
+
+    public String getMainGoodsCode() {
+        return mainGoodsCode;
+    }
+
+    public void setMainGoodsCode(String mainGoodsCode) {
+        this.mainGoodsCode = mainGoodsCode;
+    }
+
     public String getSupport7dRefund() {
         return support7dRefund;
     }

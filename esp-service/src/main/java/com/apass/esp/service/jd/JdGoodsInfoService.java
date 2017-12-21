@@ -91,7 +91,6 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 /**
- * 获取京东商品基础信息（前端展示信息）
  * @author zengqingshan
  */
 @Service
