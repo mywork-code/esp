@@ -456,8 +456,7 @@ public class GoodsAttrService {//450
         GoodsInfoEntity goods = goodsRepository.select(goodsId);
         String sku = goods.getGoodsCode();
         for(StockInfoFileModel entity : goodsStock){
-            String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
-            String skuId = sku+rand;
+            String skuId = goodsStockInfoService.getValidSkuIdByGoodsCode(sku);
             GoodsStockInfoEntity goodsStockentoty = new GoodsStockInfoEntity();
             if(StringUtils.isBlank(entity.getAttrnameByAfter())){
                 goodsStockentoty.setAttrValIds(" ");
@@ -913,8 +912,7 @@ public class GoodsAttrService {//450
                 entity.setAttrValIds(skuIdStr);
             }
             if(entity.getId()==null){
-                String rand = com.apass.gfb.framework.utils.RandomUtils.getNum(2);
-                String skuId = sku+rand;
+                String skuId = goodsStockInfoService.getValidSkuIdByGoodsCode(sku);
                 entity.setSkuId(skuId);
                 Integer i = goodsStockInfoService.insertGoodsAttr(entity);
                 if(i!=1){
