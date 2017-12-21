@@ -1190,13 +1190,13 @@ public class PaymentService {
 		if (StringUtils.isBlank(orderId)) {
 			LOGGER.error("updateLimintNum+退款详情表数据有误：{}", orderId);
 		}
+		LOGGER.info("限时购活动退款退回库存，订单号为："+orderId);
 		OrderInfoEntity orderInfoEntity = orderDao.selectByOrderId(orderId);
 		List<OrderDetailInfoEntity> OrderDetailInfoEntityList = orderDetailInfoRepository
 				.queryOrderDetailBySubOrderId(orderId);
 		for (OrderDetailInfoEntity orderDetailInfoEntity : OrderDetailInfoEntityList) {
 			Long goodsStockId = orderDetailInfoEntity.getGoodsStockId();
 			String limitActivityId = orderDetailInfoEntity.getLimitActivityId();
-
 			Long goodsNum = orderDetailInfoEntity.getGoodsNum();
 			GoodsStockInfoEntity goodsStockInfo = goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
 			GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsStockInfo.getGoodsId());
@@ -1207,6 +1207,7 @@ public class PaymentService {
 			} else {
 				skuId = goodsStockInfo.getSkuId();
 			}
+			LOGGER.info("orderDetailInfoEntityId="+orderDetailInfoEntity.getId()+";goodsStockId="+goodsStockId+";limitActivityId="+limitActivityId);
 			// 更新t_esp_limit_goods_sku表
 			LimitGoodsSku entity = new LimitGoodsSku();
 			entity.setSkuId(skuId);
