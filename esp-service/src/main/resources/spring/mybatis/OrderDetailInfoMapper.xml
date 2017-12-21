@@ -321,6 +321,7 @@
 		FROM
 			t_esp_order_detail_info
 	    <where>
+			source != 'jd' and
 	    	sku_id in 
 	    	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
 				#{item}

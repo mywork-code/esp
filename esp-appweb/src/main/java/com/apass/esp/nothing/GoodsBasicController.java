@@ -67,8 +67,9 @@ public class GoodsBasicController {
                 region.setCountyId(51975);
                 region.setTownId(0);
                 String externalId = goodsInfo.getExternalId();// 外部商品id
+                String userId="";
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), goodsId.toString(), region);
+                        Long.valueOf(externalId).longValue(), goodsId.toString(), region,userId);
                 List<GoodsStockInfoEntity> jdGoodsStockInfoList = goodsStockInfoRepository
                         .loadByGoodsId(Long.valueOf(goodsId));
                 returnMap.put("goodsName", goodsInfo.getGoodsName());// 商品名称

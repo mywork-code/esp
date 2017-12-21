@@ -28,17 +28,17 @@ $(function() {
         		}, {
                     title : '商品名称',
                     field : 'goodsName',
-                    width : 90,
+                    width : 80,
                     align : 'center'
                 },{
                     title : '商品编号',
                     field : 'goodsCode',
-                    width : 90,
+                    width : 80,
                     align : 'center'
                 },{
                     title : 'skuid',
                     field : 'externalId',
-                    width : 90,
+                    width : 80,
                     align : 'center',
                     formatter : function(value, row, index) {
                         return value == '' ? "--" : value;
@@ -46,7 +46,7 @@ $(function() {
                 },{
        		 		title : '三级类目名称',  
        		 		field : 'categoryName3', 
-       		 	    width : 90,  
+       		 	    width : 80,  
        		 		align : 'center'
        		 	}, {
                 	title : '商品型号',
@@ -56,7 +56,7 @@ $(function() {
                 }, {
                     title : '商品小标题',
                     field : 'goodsTitle',
-                    width : 90,
+                    width : 80,
                     align : 'center'
                 }, {
                     title : '商品类型',
@@ -129,7 +129,7 @@ $(function() {
                 }, {
                     title : '上架时间',
                     field : 'listTime',
-                    width : 140,
+                    width : 120,
                     align : 'center',
                     formatter:function(value,row,index){
                     	return new Date(value).Format("yyyy-MM-dd hh:mm:ss");
@@ -137,7 +137,7 @@ $(function() {
 	            }, {
 	                title : '下架时间',
 	                field : 'delistTime',
-	                width : 140,
+	                width : 120,
 	                align : 'center',
 	            	formatter:function(value,row,index){
                         if(value != null && value != ""){
@@ -147,22 +147,18 @@ $(function() {
                 }, {
                     title : '操作',
                     field : 'opt',
-                    width : 220,
+                    width : 150,
                     align : 'center',
                     formatter : function(value, row, index) {
                         var content = "";
                         if(row.goodsType=='1'){
-                        	 content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-                             content += "onclick='$.userGoodsSettings(\"" + row.id + "\",\"" + row.goodsType + "\");'>设置商品为精选</a>&nbsp;&nbsp;";
-                             content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
+                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.updateGoodsSift(\"" + row.id + "\",\"" + row.goodsType + "\");'>设置为精选</a>&nbsp;";
                         }else if(row.goodsType=='2'){
-                        	content += "&nbsp;<a href='javascript:void(0);' class='easyui-linkedbutton'";
-                        	content += " onclick='$.userGoodsSettings(\"" + row.id + "\",\"" + row.goodsType + "\");'>恢复商品为正常</a>&nbsp;&nbsp;";
-                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton'";
+//                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.editGoodsSift(\"" + row.id + "\");'>编辑</a>&nbsp;";
+                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick='$.updateGoodsSift(\"" + row.id + "\",\"" + row.goodsType + "\");'>恢复为正常</a>&nbsp;";
                         }
                         if(row.goodsSiftUrl){
-                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('"
-                        		+ row.goodsSiftUrl+ "');\">查看图片</a>&nbsp;&nbsp;";//encodeURI(JSON.stringify(row.bannerImgUrl) )
+                        	content += "<a href='javascript:void(0);' class='easyui-linkedbutton' onclick=\"$.show('" + row.goodsSiftUrl+ "');\">查看图片</a>&nbsp;&nbsp;";//encodeURI(JSON.stringify(row.bannerImgUrl) )
                         }
                         return content;
                     }
@@ -237,8 +233,12 @@ $(function() {
 	var goodsType = null;
 	//全局变量商品精选排序
 	var siftGoodsSort = null;
-    // 设置商品为精选弹窗
-    $.userGoodsSettings = function(goodsId2,goodsType2) {
+	// 编辑精选商品
+	$.editGoodsSift= function(goodsId) {
+		$('#siftGoodsInfoUpload').window('open');
+	};
+    // 设置商品为精选弹窗   or 恢复为正常
+    $.updateGoodsSift = function(goodsId2,goodsType2) {
     	$("#siftGoodsFile").val("");//点击设置商品为精选时置空文件，让用户重新选择
     	$("#siftGoodsSortInput").val('');//点击设置商品排序为精选时置空，让用户重新选择
     	goodsId = goodsId2;

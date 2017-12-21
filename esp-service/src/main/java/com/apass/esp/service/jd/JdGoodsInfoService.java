@@ -222,7 +222,7 @@ public class JdGoodsInfoService {
 	 * 
 	 * @throws BusinessException
 	 */
-	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, String goodsId, Region region) {
+	public Map<String, Object> getAppJdGoodsAllInfoBySku(Long sku, String goodsId, Region region,String userId) {
 		Map<String, Object> map = Maps.newHashMap();
 		try {
 			if (sku.toString().length() == 8) {
@@ -259,7 +259,7 @@ public class JdGoodsInfoService {
 			String jdGoodStock = getStockBySku(sku.toString(), region);
 			map.put("goodsStockDes", jdGoodStock);
 			//查询京东商品规格
-			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region);
+			Map<String, Object> map2 = getJdSimilarSkuInfoList(sku, region,userId);
 			map.put("JdSimilarSkuToList", map2.get("JdSimilarSkuToList"));
 			map.put("skuId", map2.get("skuId"));
 			map.put("jdSimilarSkuList", map2.get("jdSimilarSkuList"));
@@ -276,7 +276,7 @@ public class JdGoodsInfoService {
 		return map;
 	}
 	// 查询商品规格（包括库存）
-	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region) throws BusinessException {
+	public Map<String,Object> getJdSimilarSkuInfoList(Long sku,Region region,String userId) throws BusinessException {
 		Map<String, Object> map = Maps.newHashMap();
 		TreeSet<String> skusSet = new TreeSet<String>();
 		List<JdSimilarSku> jdSimilarSkuList = getJdSimilarSkuList(sku);
@@ -384,7 +384,6 @@ public class JdGoodsInfoService {
 			if (jdGoodsStockInfoList.size() == 1) {
 				jdSimilarSkuVo.setGoodsStockId(jdGoodsStockInfoList.get(0).getId().toString());
 				BigDecimal price = commonService.calculateGoodsPrice(goodsId, jdGoodsStockInfoList.get(0).getId());
-				String userId="";
 				//根据skuId查询该规格是否参加了限时购活动
 				LimitGoodsSkuVo limitGS=limitCommonService.selectLimitByGoodsId(userId,skuId);
 				if(null !=limitGS){

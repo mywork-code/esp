@@ -12,6 +12,9 @@
            <if test="skuId!=null and skuId!=''"> 
            		AND limit_goods_sku_id = #{skuId} 
            </if>
+           <if test="orderId!=null and orderId!=''">
+           		AND order_id = #{orderId} 
+           </if>
         </where>
    </sql>
    <select id="getUserBuyGoodsNum" resultMap="BaseResultMap">
