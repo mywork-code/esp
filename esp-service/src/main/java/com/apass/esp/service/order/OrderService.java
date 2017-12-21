@@ -3839,7 +3839,7 @@ public class OrderService {
 		List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
 		Date date = new Date();
 		for (LimitBuyDetail limit : buyDetails) {
-			LimitGoodsSku sku =   limitGoodsSkuMapper.selectByPrimaryKey(limit.getLimitGoodsSkuId());
+			LimitGoodsSku sku =  limitGoodsSkuMapper.selectByPrimaryKey(limit.getLimitGoodsSkuId());
 			sku.setLimitCurrTotal(sku.getLimitCurrTotal() + limit.getBuyNo());//回滚数量，在原有的数量上，加上退换的数量
 			sku.setUpdatedTime(date);
 			limitGoodsSkuMapper.updateByPrimaryKeySelective(sku);
