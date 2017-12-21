@@ -306,14 +306,18 @@ public class LimitGoodsSkuService {
      * @return
      */
     private Boolean checkoutSkuId(String skuId) {
-        GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
-        List<String> strlist = new ArrayList<String>();
-        strlist.add(skuId);
-        List<GoodsInfoEntity> goods = goodsService.getGoodsListBySkuIds(strlist);
-        if(stock==null&&(goods==null||goods.size()==0)){
+        try{
+            GoodsStockInfoEntity stock = goodsStockInfoService.getStockInfoEntityBySkuId(skuId);
+            List<String> strlist = new ArrayList<String>();
+            strlist.add(skuId);
+            List<GoodsInfoEntity> goods = goodsService.getGoodsListBySkuIds(strlist);
+            if(stock==null&&(goods==null||goods.size()==0)){
+                return true;
+            }else{
+                return false;
+            }
+        }catch(Exception e){
             return true;
-        }else{
-            return false;
         }
     }
     /**

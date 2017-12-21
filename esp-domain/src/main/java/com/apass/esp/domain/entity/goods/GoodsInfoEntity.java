@@ -1,4 +1,3 @@
-
 package com.apass.esp.domain.entity.goods;
 import com.apass.esp.domain.enums.GoodStatus;
 import com.apass.esp.domain.enums.GoodsType;
@@ -23,175 +22,130 @@ public class GoodsInfoEntity {
     private Long id;
     // 等同id避免IOS关键字
     private Long goodId;
-    // 商品编号
-    private String goodsCode;
-    public String getGoodsCode() {
-        return goodsCode;
-    }
-    public void setGoodsCode(String goodsCode) {
-        this.goodsCode = goodsCode;
-    }
-    /** 商品类目编码 **/
+    //商品类目编码
     private String categoryCode;
-    /** 商品名称 **/
+    //商品名称 
     private String goodsName;
-    /** 商品小标题 **/
+    //商品小标题
     private String goodsTitle;
-    /** 商品卖点 **/
+    //商品卖点
     private String goodsSellPt;
-    /** 商品类型 -1：正常，精选 **/
+    //商品类型 -1：正常，精选
     private String goodsType;
-    /** 商品类型描述 **/
+    //商品类型描述
     private String goodsTypeDesc;
-    /** 商品logo地址 **/
+    //商品logo地址
     private String goodsLogoUrl;
-    /** 商品logo地址 (新) **/
+    //商品logo地址 (新)
     private String goodsLogoUrlNew;
-    /** 精选商品地址 **/
+    //精选商品地址
     private String goodsSiftUrl;
-    /** 精选商品地址 (新) **/
+    //精选商品地址 (新)
     private String goodsSiftUrlNew;
-    public String getGoodsSiftUrlNew() {
-        return goodsSiftUrlNew;
-    }
-    public void setGoodsSiftUrlNew(String goodsSiftUrlNew) {
-        this.goodsSiftUrlNew = goodsSiftUrlNew;
-    }
-    /** 商品上架时间 **/
+    //商品上架时间
     private Date listTime;
     private String listTimeString;
-    /** 商品下架时间 **/
+    //商品下架时间
     private Date delistTime;
     private String delistTimeString;
-    /** 商品新建时间 **/
+    //商品新建时间
     private String newCreatDate = "1900-01-01 00:00:00";
-    /** 商品生产日期 **/
+    //商品生产日期
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date proDate;
-    /** 商品保质期多少月 **/
+    //商品保质期多少月
     private String keepDate;
-    /** 生产厂家 **/
+    //生产厂家
     private String supNo;
-    /** 创建人 **/
-    private String createUser;
-    /** 修改人 **/
-    private String updateUser;
-    /** 创建时间 **/
-    private Date createDate;
-    /** 修改时间 **/
-    private Date updateDate;
-    /** 商户号 **/
+    //商户号
     private String merchantCode;
-    /** 备注 **/
+    //备注 
     private String remark;
-    /** 是否删除 **/
-    private String isDelete;
-    /** 商品状态 **/
+    //商品状态 
     private String status;
     private List<String> statuList;
+    //商品状态描述
+    private String statusDesc;
+    //商品详情
+    private String googsDetail;
+    //商品最小单元分类-规格类型(颜色，尺寸等)
+    private String goodsSkuType;
+    //商品型号
+    private String goodsModel;
+    //商户名称
+    private String merchantName;
+    //商户类型（个人、企业）
+    private String merchantType;
+    //商品一级分类
+    private Long categoryId1;
+    //商品二级分类
+    private Long categoryId2;
+    //商品三级分类
+    private Long categoryId3;
+    //商品三级分类名称
+    private String categoryName3;
+    //不支持配送区域
+    private String unSupportProvince;
+    //商品来源标识(如：jd)
+    private String source;
+    //外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
+    private String externalId;
+    //商品规格
+    private String goodsSkuAttr;
+    //商品价格
+    private BigDecimal goodsPrice;
+    //市场价
+    private BigDecimal marketPrice;
+    //成本价
+    private BigDecimal goodsCostPrice;
+    //首付价
+    private BigDecimal firstPrice;
+    //属性描述
+    private String attrDesc;
+    //起始索引
+    private Integer begin;
+    //页面大小
+    private Integer pageSize;
+    //是否支持7天退货
+    private String support7dRefund;
+    // 商品编号
+    private String goodsCode;
+    //同类微知商品主goods_Code
+    private String mainGoodsCode;
+    // 标识
+    private String colFalgt;
+    //商品排序
+    private Integer sordNo;
+    //是否删除
+    private String isDelete;
+    //精选商品排序字段
+    private Integer siftSort;
+    //创建人
+    private String createUser;
+    //修改人 
+    private String updateUser;
+    //创建时间
+    private Date createDate;
+    //修改时间
+    private Date updateDate;
     public List<String> getStatuList() {
         return statuList;
     }
     public void setStatuList(List<String> statuList) {
         this.statuList = statuList;
     }
-    /** 商品状态描述 **/
-    private String statusDesc;
-    /** 商品详情 **/
-    private String googsDetail;
-    /**
-     * 商品最小单元分类-规格类型(颜色，尺寸等)
-     */
-    private String goodsSkuType;
-    /**
-     * 商品型号
-     */
-    private String goodsModel;
-    /**
-     * 商户名称
-     */
-    private String merchantName;
-    /**
-     * 商户类型（个人、企业）
-     */
-    private String merchantType;
-    /** 商品一级分类 */
-    private Long categoryId1;
-    /** 商品二级分类 */
-    private Long categoryId2;
-    /** 商品三级分类 */
-    private Long categoryId3;
-    /** 商品三级分类名称 */
-    private String categoryName3;
-    /**
-     * 不支持配送区域
-     */
-    private String unSupportProvince;
-    /**
-     * 商品来源标识(如：jd)
-     */
-    private String source;
-    /**
-     * 外部商品id,唯一标识(如：对应t_esp_jd_goods表中jd_id)
-     */
-    private String externalId;
-    /**
-     * 商品规格
-     */
-    private String goodsSkuAttr;
-    /**
-     * 商品价格
-     */
-    private BigDecimal goodsPrice;
-    /**
-     * 市场价
-     */
-    private BigDecimal marketPrice;
-    /**
-     * 成本价
-     */
-    private BigDecimal goodsCostPrice;
-    /**
-     * 首付价
-     */
-    private BigDecimal firstPrice;
-    /**
-     * 属性描述
-     */
-    private String attrDesc;
+    public String getGoodsSiftUrlNew() {
+        return goodsSiftUrlNew;
+    }
+    public void setGoodsSiftUrlNew(String goodsSiftUrlNew) {
+        this.goodsSiftUrlNew = goodsSiftUrlNew;
+    }
     public String getAttrDesc() {
         return attrDesc;
     }
     public void setAttrDesc(String attrDesc) {
         this.attrDesc = attrDesc;
     }
-    /**
-     * 起始索引
-     */
-    private Integer begin;
-    /**
-     * 页面大小
-     */
-    private Integer pageSize;
-    /**
-     * 是否支持7天退货
-     */
-    private String support7dRefund;
-
-    /**
-     * 同类微知商品主goods_Code
-     * @return
-     */
-    private String mainGoodsCode;
-
-    public String getMainGoodsCode() {
-        return mainGoodsCode;
-    }
-
-    public void setMainGoodsCode(String mainGoodsCode) {
-        this.mainGoodsCode = mainGoodsCode;
-    }
-
     public String getSupport7dRefund() {
         return support7dRefund;
     }
@@ -246,11 +200,6 @@ public class GoodsInfoEntity {
     public void setColFalgt(String colFalgt) {
         this.colFalgt = colFalgt;
     }
-    private String colFalgt;// 标识
-    /**
-     * 商品排序
-     */
-    private Integer sordNo;
     public Long getGoodId() {
         return goodId;
     }
@@ -379,27 +328,6 @@ public class GoodsInfoEntity {
     public void setSupNo(String supNo) {
         this.supNo = supNo;
     }
-    public String getCreateUser() {
-        return createUser;
-    }
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-    public String getUpdateUser() {
-        return updateUser;
-    }
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser;
-    }
-    public Date getCreateDate() {
-        return createDate;
-    }
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-    public Date getUpdateDate() {
-        return updateDate;
-    }
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
@@ -523,12 +451,44 @@ public class GoodsInfoEntity {
     public void setGoodsCostPrice(BigDecimal goodsCostPrice) {
         this.goodsCostPrice = goodsCostPrice;
     }
-    private Integer siftSort;//精选商品排序字段
     public Integer getSiftSort() {
         return siftSort;
     }
     public void setSiftSort(Integer siftSort) {
         this.siftSort = siftSort;
+    }
+    public String getGoodsCode() {
+        return goodsCode;
+    }
+    public void setGoodsCode(String goodsCode) {
+        this.goodsCode = goodsCode;
+    }
+    public String getMainGoodsCode() {
+        return mainGoodsCode;
+    }
+    public void setMainGoodsCode(String mainGoodsCode) {
+        this.mainGoodsCode = mainGoodsCode;
+    }
+    public String getCreateUser() {
+        return createUser;
+    }
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+    public String getUpdateUser() {
+        return updateUser;
+    }
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
+    public Date getCreateDate() {
+        return createDate;
+    }
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+    public Date getUpdateDate() {
+        return updateDate;
     }
     @Override
     public String toString() {

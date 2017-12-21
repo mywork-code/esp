@@ -100,7 +100,16 @@ public class IndexManager<T> {
         Pagination<Goods> goodsPagination = search(termQueryBuilder, IndexType.GOODS, desc, from, size, sortField1,sortField2);
         return goodsPagination;
     }
-
+    //根据skuId查询ES中的记录
+	public static <Goods> Goods goodSearchFromESBySkuId(Long goodId) {
+		TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("goodId", goodId);
+		List<Goods> goodsList = goodSearchFromES(termQueryBuilder);
+		if(CollectionUtils.isNotEmpty(goodsList) && goodsList.size()==1){
+			return goodsList.get(0);
+		}
+		return null;
+	}
+    
     private static <Goods> Pagination<Goods> boolSearch(String sortField, boolean desc, int from, int size, String value) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         boolQueryBuilder
@@ -239,27 +248,19 @@ public class IndexManager<T> {
         return pagination;
     }
 
-	// 删除ES中的京东商品
-	public static <Goods> Pagination<Goods> goodSearchBySource(String source,int from, int size) {
-		TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("source", source);
+	// 根据条件查询ES中的消息
+	public static <Goods> List<Goods> goodSearchFromES(QueryBuilder queryBuilder) {
 		List<Goods> results = new ArrayList<>();
 		SearchRequestBuilder serachBuilder = ESClientManager.getClient().prepareSearch(esprop.getIndice())// 不同的索引  变量代   码通用
 							.setTypes(IndexType.GOODS.getDataName())
-							.setQuery(termQueryBuilder);
+							.setQuery(queryBuilder);
 		serachBuilder.addSort("_score", SortOrder.DESC);
-	    if (0 != size) {
-            serachBuilder.setFrom(from).setSize(size);
-        }
 		SearchResponse response = serachBuilder.execute().actionGet();
 		SearchHits searchHits = response.getHits();
 		SearchHit[] hits = searchHits.getHits();
 		for (SearchHit hit : hits) {
 			results.add((Goods) ESDataUtil.readValue(hit.source(), IndexType.GOODS.getTypeClass()));
 		}
-		int total = (int) searchHits.getTotalHits();
-        Pagination pagination = new Pagination();
-        pagination.setDataList(results);
-        pagination.setTotalCount(total);
-        return pagination;
+        return results;
 	}
 }

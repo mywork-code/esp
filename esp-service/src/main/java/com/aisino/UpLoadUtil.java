@@ -168,7 +168,7 @@ public class UpLoadUtil{
         default:
             break;
         }
-        return value;
+        return StringUtils.trim(value);
     }
     /**
      * 判断是否为数字
