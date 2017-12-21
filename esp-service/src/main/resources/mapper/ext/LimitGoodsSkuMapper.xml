@@ -61,4 +61,13 @@
             ORDER BY sort_no ASC
         ]]>
     </select>
+    
+    
+    <update id="updateLimitGoods" parameterType="com.apass.esp.domain.entity.LimitGoodsSku" >
+       update t_esp_limit_goods_sku 
+        set
+            limit_curr_total = #{limitCurrTotal},
+            updated_time = #{updatedTime}
+      where id = #{id} and limit_curr_total = #{limitNumTotal}
+  </update>
 </mapper>
