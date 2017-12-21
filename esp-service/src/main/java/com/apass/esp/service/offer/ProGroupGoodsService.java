@@ -11,18 +11,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apass.esp.domain.dto.ProGroupGoodsBo;
+import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProGroupGoods;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
+import com.apass.esp.domain.entity.goods.GoodsStockInfoEntity;
 import com.apass.esp.domain.enums.ActivityStatus;
 import com.apass.esp.domain.enums.SourceType;
 import com.apass.esp.domain.query.ProGroupGoodsQuery;
 import com.apass.esp.domain.vo.GoodsOrderSortVo;
 import com.apass.esp.domain.vo.GroupGoodsVo;
 import com.apass.esp.domain.vo.ProGroupGoodsVo;
+import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProGroupGoodsMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
+import com.apass.esp.repository.goods.GoodsStockInfoRepository;
 import com.apass.esp.service.common.ImageService;
 import com.apass.esp.service.goods.GoodsService;
 import com.apass.esp.utils.ResponsePageBody;
@@ -53,6 +59,12 @@ public class ProGroupGoodsService {
   
   @Autowired
   private ProActivityCfgMapper activityCfgMapper;
+  @Autowired
+  private GoodsStockInfoRepository goodsStockInfoRepository;
+  @Autowired
+  public LimitGoodsSkuMapper limitGoodsSkuMapper;
+  @Autowired
+  public LimitBuyActMapper limitBuyActMapper;
 
   public ProGroupGoodsBo getByGoodsId(Long goodsId){
     ProGroupGoods groupGoods =  groupGoodsMapper.selectLatestByGoodsId(goodsId);
@@ -135,6 +147,47 @@ public class ProGroupGoodsService {
 		}
 		return result;
 	}
+	// 判断该商品是否参加了限时购活动，如果参加了且时间有冲突
+		public Boolean getStatusByGoodId(String activityId, Long goodsId) {
+			Date proActivityStartDate = null;//满减活动的开始时间
+			Date proActivityEndDate = null;//满减活动的结束时间
+			Date limitStartDate = null;// 限时购活动开始时间
+			Date limitEndDate = null;// 限时购活动结束时间
+			ProActivityCfg activityCfg = activityCfgService.getById(Long.parseLong(activityId));
+			if(null !=activityCfg){
+				proActivityStartDate=activityCfg.getStartTime();
+				proActivityEndDate=activityCfg.getEndTime();
+			}
+			GoodsInfoEntity goodsInfoEntity = goodsRepository.selectGoodsByGoodsId(goodsId + "");
+			String source = goodsInfoEntity.getSource();
+			String skuId = "";
+			if (SourceType.JD.getCode().equals(source) || SourceType.WZ.getCode().equals(source)) {
+				skuId = goodsInfoEntity.getExternalId();
+			} else {
+				List<GoodsStockInfoEntity> goodsStockList = goodsStockInfoRepository.loadByGoodsId(goodsId);
+				if (CollectionUtils.isNotEmpty(goodsStockList) && goodsStockList.size() == 1) {
+					skuId = goodsStockList.get(0).getSkuId();
+				}
+			}
+			LimitGoodsSku entity = new LimitGoodsSku();
+			entity.setSkuId(skuId);
+			entity.setUpLoadStatus((byte) 1);
+			List<LimitGoodsSku> LimitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
+			if (CollectionUtils.isNotEmpty(LimitGoodsSkuList)) {
+				for (LimitGoodsSku limitGoodsSku : LimitGoodsSkuList) {
+					LimitBuyAct limitBuyAct = limitBuyActMapper.selectByPrimaryKey(limitGoodsSku.getLimitBuyActId());
+					if(null !=limitBuyAct){
+						limitStartDate = limitBuyAct.getStartDate();
+						limitEndDate = limitBuyAct.getEndDate();
+					}
+					//满减活动和限时购活动的时间交叉了
+					if(!(proActivityEndDate.before(limitStartDate) || limitEndDate.before(proActivityStartDate) ) ){
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 	/**
 	 * 编辑排序
 	 * @param vo
