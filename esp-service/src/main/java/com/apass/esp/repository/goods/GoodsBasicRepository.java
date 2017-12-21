@@ -44,6 +44,11 @@ public class GoodsBasicRepository extends BaseMybatisRepository<GoodsBasicInfoEn
     public List<GoodsBasicInfoEntity> searchGoodsBySkuIdOrGoodsCode(GoodsBasicInfoEntity param){
     	return getSqlSession().selectList("searchGoodsBySkuIdOrGoodsCode", param);
     }
+
+	public List<GoodsBasicInfoEntity> selectGoodsBySkuIdOrGoodsCode(GoodsBasicInfoEntity param){
+    	return getSqlSession().selectList("selectGoodsBySkuIdOrGoodsCode", param);
+    }
+
     /**
      * 查询可上架的京东商品数量
      */

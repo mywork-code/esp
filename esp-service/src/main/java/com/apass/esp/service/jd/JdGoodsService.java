@@ -64,7 +64,6 @@ public class JdGoodsService {
      * @throws BusinessException
      * @throws ParseException 
      */
-    @Transactional(rollbackFor = Exception.class)
     public void relevanceJdCategory(Map<String, String> paramMap) throws BusinessException, ParseException {
         LOGGER.info("关联京东类目，参数：{}",GsonUtils.toJson(paramMap));
         // 往t_esp_goods_base_info和t_esp_goods_stock_info表插入数据
@@ -84,72 +83,7 @@ public class JdGoodsService {
         }
 
         for (JdGoods jdGoods : JdGoodsList) {
-            // 封闭数据,往t_esp_goods_base_info表插入数据
-            GoodsInfoEntity entity = new GoodsInfoEntity();
-            entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
-            entity.setCategoryId1(Long.valueOf(paramMap.get("categoryId1")));
-            entity.setCategoryId2(Long.valueOf(paramMap.get("categoryId2")));
-            entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
-            entity.setGoodsName(jdGoods.getName());
-            entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
-            entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);//usersService.loadBasicInfo().getMerchantCode()
-            entity.setStatus(GoodStatus.GOOD_NEW.getCode());
-            entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
-            entity.setListTime(null);
-            entity.setDelistTime(null);
-            entity.setCreateUser(username);
-            entity.setUpdateUser(username);
-            entity.setSource(SourceType.WZ.getCode());
-            entity.setGoodsLogoUrl(jdGoods.getImagePath());
-            entity.setGoodsSiftUrl(jdGoods.getImagePath());
-            entity.setExternalId(jdGoods.getSkuId().toString());
-            entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
-            entity.setAttrDesc("");
-            entity.setSupport7dRefund("");
-            entity.setSiftSort(0);
-
-            //查询数据库是否已经存在此商品
-            GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
-            if(insertJdGoods != null){
-                // 商品编号
-                StringBuffer sb = new StringBuffer();
-                sb.append("03");
-                String random = RandomUtils.getNum(8);
-                sb.append(random);
-                entity.setGoodsCode(sb.toString());
-                goodsService.updateService(entity);
-
-            }
-
-            // 往t_esp_goods_stock_info表插数据
-            GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
-            stockEntity.setStockTotalAmt(-1l);
-            stockEntity.setStockCurrAmt(-1l);
-            stockEntity.setStockLogo(jdGoods.getImagePath());
-            stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
-            stockEntity.setGoodsId(insertJdGoods.getGoodId());
-            stockEntity.setGoodsPrice(jdGoods.getJdPrice());
-            stockEntity.setMarketPrice(jdGoods.getJdPrice());
-            stockEntity.setGoodsCostPrice(jdGoods.getPrice());
-            stockEntity.setCreateUser(username);
-            stockEntity.setUpdateUser(username);
-            stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
-            Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(jdGoods.getSkuId());
-            if(jdGoodsSpecification != null && jdGoodsSpecification.size() > 0){
-                StringBuffer sb = new StringBuffer();
-                for(String value:jdGoodsSpecification.values()){
-                    sb.append(value+" ");
-                }
-                String goodsSku = sb.toString();
-                if(StringUtils.isNotBlank(goodsSku)){
-                    goodsSku = goodsSku.substring(0,goodsSku.length()-1);
-
-                }
-                stockEntity.setGoodsSkuAttr(goodsSku);
-            }
-            stockEntity.setAttrValIds("");
-            stockEntity.setDeleteFlag("N");
-            goodsStockInfoService.insert(stockEntity);
+            insertToGoosbaseAndGoodsstock(paramMap, username, jdGoods);
         }
 
         // 更新t_esp_jd_category表数据
@@ -160,6 +94,87 @@ public class JdGoodsService {
         jdCategory.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
         jdCategory.setFlag(true);
         jdCategoryMapper.updateByPrimaryKeySelective(jdCategory);
+    }
+
+    /**
+     * 往商品信息表和商品库存表中插入数据
+     * @param paramMap
+     * @param username
+     * @param jdGoods
+     * @throws ParseException
+     */
+    @Transactional(rollbackFor = {Exception.class,RuntimeException.class})
+    public void insertToGoosbaseAndGoodsstock(Map<String, String> paramMap, String username, JdGoods jdGoods) throws ParseException {
+        // 封闭数据,往t_esp_goods_base_info表插入数据
+        GoodsInfoEntity entity = new GoodsInfoEntity();
+        entity.setGoodsTitle("品牌直供正品保证，支持7天退货");
+        entity.setCategoryId1(Long.valueOf(paramMap.get("categoryId1")));
+        entity.setCategoryId2(Long.valueOf(paramMap.get("categoryId2")));
+        entity.setCategoryId3(Long.valueOf(paramMap.get("categoryId3")));
+        entity.setGoodsName(jdGoods.getName());
+        entity.setGoodsType(GoodsType.GOOD_NORMAL.getCode());
+        entity.setMerchantCode(ExtentMerchantCode.WZMERCHANTCODE);//usersService.loadBasicInfo().getMerchantCode()
+        entity.setStatus(GoodStatus.GOOD_NEW.getCode());
+        entity.setIsDelete(GoodsIsDelete.GOOD_NODELETE.getCode());
+        entity.setListTime(null);
+        entity.setDelistTime(null);
+        entity.setCreateUser(username);
+        entity.setUpdateUser(username);
+        entity.setSource(SourceType.WZ.getCode());
+        entity.setGoodsLogoUrl(jdGoods.getImagePath());
+        entity.setGoodsSiftUrl(jdGoods.getImagePath());
+        entity.setExternalId(jdGoods.getSkuId().toString());
+        entity.setNewCreatDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("1900-01-01 00:00:00"));
+        entity.setAttrDesc("");
+        entity.setSupport7dRefund("");
+        entity.setSiftSort(0);
+
+
+        //查询数据库是否已经存在此商品
+        GoodsInfoEntity insertJdGoods = goodsService.insertJdGoods(entity);
+        if(insertJdGoods != null){
+            // 商品编号
+            StringBuffer sb = new StringBuffer();
+            sb.append("03");
+            String random = RandomUtils.getNum(8);
+            sb.append(random);
+            entity.setGoodsCode(sb.toString());
+            entity.setMerchantCode(sb.toString());
+            goodsService.updateService(entity);
+
+        }
+
+        // 往t_esp_goods_stock_info表插数据
+        GoodsStockInfoEntity stockEntity = new GoodsStockInfoEntity();
+        stockEntity.setStockTotalAmt(-1l);
+        stockEntity.setStockCurrAmt(-1l);
+        stockEntity.setStockLogo(jdGoods.getImagePath());
+        stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
+        stockEntity.setGoodsId(insertJdGoods.getGoodId());
+        stockEntity.setGoodsPrice(jdGoods.getJdPrice());
+        stockEntity.setMarketPrice(jdGoods.getJdPrice());
+        stockEntity.setGoodsCostPrice(jdGoods.getPrice());
+        stockEntity.setCreateUser(username);
+        stockEntity.setUpdateUser(username);
+        stockEntity.setSkuId(String.valueOf(jdGoods.getSkuId()));
+
+        //往库存表里插入商品规格
+        Map<String, String> jdGoodsSpecification = jdGoodsInfoService.getJdGoodsSpecification(jdGoods.getSkuId());
+        if(jdGoodsSpecification != null && jdGoodsSpecification.size() > 0){
+            StringBuffer sb = new StringBuffer();
+            for(String value:jdGoodsSpecification.values()){
+                sb.append(value+" ");
+            }
+            String goodsSku = sb.toString();
+            if(StringUtils.isNotBlank(goodsSku)){
+                goodsSku = goodsSku.substring(0,goodsSku.length()-1);
+
+            }
+            stockEntity.setGoodsSkuAttr(goodsSku);
+        }
+        stockEntity.setAttrValIds("");
+        stockEntity.setDeleteFlag("N");
+        goodsStockInfoService.insert(stockEntity);
     }
 
     @Transactional(rollbackFor = Exception.class)

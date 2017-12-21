@@ -1914,7 +1914,13 @@ public class GoodsService {
         GoodsBasicInfoEntity entity = new GoodsBasicInfoEntity();
         entity.setGoodsCode(Long.parseLong(param));
         entity.setExternalId(param);
-        return goodsBasicRepository.searchGoodsBySkuIdOrGoodsCode(entity).get(0);
+        List<GoodsBasicInfoEntity> goodsBases = goodsBasicRepository.selectGoodsBySkuIdOrGoodsCode(entity);
+        if(CollectionUtils.isEmpty(goodsBases)){
+            LOGGER.error("数据有误，goodsCode:{}",entity.getGoodsCode());
+            throw new RuntimeException("数据有误，goodsCode:"+entity.getGoodsCode());
+        }
+
+        return goodsBases.get(0);
     }
 
     public List<GoodsInfoEntity> selectByCategoryId2AndsordNo(Map<String,Object> params) {

@@ -1,12 +1,10 @@
 package com.apass.esp.web.thirdparty.wz;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.apass.esp.service.jd.JdGoodsInfoService;
 import com.apass.esp.third.party.jd.entity.aftersale.SendSku;
 import com.apass.gfb.framework.utils.DateFormatUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -71,6 +69,8 @@ public class TestWZController {
 	private WeiZhiOrderApiClient order;
 	@Autowired
 	private WeiZhiPriceApiClient price;
+	@Autowired
+	private JdGoodsInfoService jdGoodsInfoService;
 
 	@Autowired
 	private JdGoodsMapper jdGoodsMapper;
@@ -476,6 +476,7 @@ public class TestWZController {
 	public Response getWeiZhiSimilarSku(@RequestBody Map<String, Object> paramMap) throws Exception {
 		try {
 			List<JdSimilarSku> list = weiZhiProductService.getWeiZhiSimilarSku("100376");
+			TreeSet<String> jdSimilarSkuIdList = jdGoodsInfoService.getJdSimilarSkuIdList("100376");
 			return Response.success("同类商品查询成功！", list);
 		} catch (Exception e) {
 			return Response.fail("同类商品查询失败！");

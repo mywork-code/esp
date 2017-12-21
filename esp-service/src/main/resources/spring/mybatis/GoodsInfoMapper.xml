@@ -315,7 +315,8 @@
              source,
              external_id,
              newCreat_date,
-             support_7d_refund
+             support_7d_refund,
+             main_goods_code
              )
             values (#{goodsModel, jdbcType=VARCHAR},
                 #{goodsName, jdbcType=VARCHAR},
@@ -346,7 +347,8 @@
             #{source, jdbcType=VARCHAR},
             #{externalId, jdbcType=VARCHAR},
             #{newCreatDate, jdbcType=VARCHAR},
-            #{support7dRefund}
+            #{support7dRefund},
+            #{mainGoodsCode}
             )
     ]]>
     </insert>
@@ -572,6 +574,9 @@
             </if>
             <if test="siftSort != null">
                 sift_sort = #{siftSort},
+            </if>
+            <if test="mainGoodsCode != null">
+                main_goods_code = #{mainGoodsCode},
             </if>
         </set>
         <![CDATA[
@@ -1350,7 +1355,7 @@
         t.sord_no sordNo,
         t.un_support_province unSupportProvince,
         t.source source,
-        t.external_id externalId
+        t.external_id externalId,
         FROM
         t_esp_goods_base_info t
         <include refid="QueryGoodsSql" />
