@@ -85,9 +85,6 @@ public class CashRefundService {
     private ApassTxnAttrMapper apassTxnAttrMapper;
     
     @Autowired
-    public OrderRefundRepository  orderRefundRepository;
-
-    @Autowired
     private MyCouponManagerService myCouponManagerService;
 
     /**
