@@ -1,7 +1,6 @@
 package com.apass.esp.web.activity;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -322,22 +321,22 @@ public class LimitBuyActController {
     /**
      * 膜版下载
      * 
-     * @param request
+     * @param response
      * @return
      */
     @RequestMapping(value = "/downloadTemplate", method = RequestMethod.POST)
     @LogAnnotion(operationType = "", valueType = LogValueTypeEnum.VALUE_EXPORT)
-    public void downloadTemplate() {
+    public void downloadTemplate(HttpServletResponse response) {
         OutputStream os = null;
         InputStream is = null;
         try {
             String fileName = "upLoadTemplate";
-            String filePath = reportfile + fileName + ".csv";
-//            response.setContentType("application/vnd.ms-excel;charset=utf-8");
-//            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".csv").getBytes(), "iso-8859-1"));// 设置文件名
+            String filePath = reportfile + fileName + ".xls";
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+            response.addHeader("Content-Disposition","attachment;filename=" + new String((fileName + ".xls").getBytes(), "iso-8859-1"));// 设置文件名
             Long cost = limitBuyActService.downloadTemplate(filePath);
             if(cost!=-1L){
-                os = new FileOutputStream("D:\\temp\\"+fileName+".csv");
+                os = response.getOutputStream();;
                 is = new FileInputStream(new File(filePath));
                 byte[] b = new byte[1024];
                 int i = 0;

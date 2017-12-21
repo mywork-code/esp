@@ -433,16 +433,24 @@ $(function () {
 		})
 	});
 	$(".download-btn-add").click(function() {
-		var url = ctx + '/activity/limitBuyActContro/downloadTemplate';
-		$.ajax({url : url,type : "POST",dataType: "json",contentType: 'application/json',
-			success : function(data) {}
-		})
+		var temp = document.createElement("form");          
+        temp.action = ctx + '/activity/limitBuyActContro/downloadTemplate';          
+        temp.method = "post";          
+        temp.style.display = "none";          
+        document.body.appendChild(temp);          
+        temp.submit();
+        temp.remove();
 	});
 	$(".download-btn-edit").click(function() {
-		var url = ctx + '/activity/limitBuyActContro/downloadTemplate';
-		$.ajax({url : url,type : "POST",dataType: "json",contentType: 'application/json',
-			success : function(data) {}
-		})
+		var form = $ ('<form></form>');
+		form.attr ('action', ctx + '/activity/limitBuyActContro/downloadTemplate');
+		form.attr ('method', 'post');
+		form.attr ('target', '_self');
+		var my_input = $ ('<input type="submit"/>');
+		form.append (my_input);
+		$('body').append(form);
+		my_input.click ();
+		form.remove();
 	});
 });
 function commonLayerShow(){
