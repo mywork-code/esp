@@ -307,6 +307,7 @@ public class CashRefundController {
      */
     @POST
     @Path("/agreeRefund")
+    @Deprecated
     public Response agreeRefund(Map<String, Object> paramMap) {
         String userId = CommonUtils.getValue(paramMap, "userId");
         String orderId = CommonUtils.getValue(paramMap, "orderId");
