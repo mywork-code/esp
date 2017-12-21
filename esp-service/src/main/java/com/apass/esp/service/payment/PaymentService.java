@@ -1,5 +1,22 @@
 package com.apass.esp.service.payment;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.apass.esp.common.code.BusinessErrorCode;
 import com.apass.esp.domain.Response;
 import com.apass.esp.domain.dto.aftersale.CashRefundDto;
@@ -16,7 +33,17 @@ import com.apass.esp.domain.entity.goods.GoodsStockLogEntity;
 import com.apass.esp.domain.entity.order.OrderDetailInfoEntity;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
 import com.apass.esp.domain.entity.payment.PayInfoEntity;
-import com.apass.esp.domain.enums.*;
+import com.apass.esp.domain.enums.ActivityStatus;
+import com.apass.esp.domain.enums.CashRefundStatus;
+import com.apass.esp.domain.enums.CashRefundTxnStatus;
+import com.apass.esp.domain.enums.InvoiceStatusEnum;
+import com.apass.esp.domain.enums.OrderStatus;
+import com.apass.esp.domain.enums.PayFailCode;
+import com.apass.esp.domain.enums.PaymentStatus;
+import com.apass.esp.domain.enums.PaymentType;
+import com.apass.esp.domain.enums.SourceType;
+import com.apass.esp.domain.enums.TxnTypeCode;
+import com.apass.esp.domain.enums.YesNo;
 import com.apass.esp.domain.kvattr.DownPayRatio;
 import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.LimitBuyParam;
@@ -37,7 +64,6 @@ import com.apass.esp.service.activity.LimitBuydetailService;
 import com.apass.esp.service.activity.LimitCommonService;
 import com.apass.esp.service.common.CommonService;
 import com.apass.esp.service.common.KvattrService;
-import com.apass.esp.service.offer.MyCouponManagerService;
 import com.apass.esp.service.offer.ProGroupGoodsService;
 import com.apass.esp.service.order.OrderService;
 import com.apass.esp.service.refund.CashRefundService;
@@ -48,23 +74,6 @@ import com.apass.gfb.framework.utils.GsonUtils;
 import com.apass.monitor.annotation.Monitor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 订单支付
@@ -176,6 +185,27 @@ public class PaymentService {
             }
         	
         }
+        
+        /**
+         * sprint 13,购买限时购商品时，记录某一用户在某个活动下，购买了某个商品，同时减去该商品在此活动下的当前库存
+         */
+        for (OrderInfoEntity order : orderInfoList) {
+        	OrderInfoEntity entity = orderDao.selectByOrderId(order.getOrderId());
+        	List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(order.getOrderId());
+        	for (OrderDetailInfoEntity detail : subList) {
+        		String limitBuyActId = detail.getLimitActivityId();
+				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动Id，不为空，则为购买的参加活动的商品
+					LimitBuyParam params = new LimitBuyParam();
+					params.setLimitBuyActId(limitBuyActId);
+					params.setNum(detail.getGoodsNum().intValue());
+					params.setOrderId(entity.getOrderId());
+					params.setSkuId(detail.getSkuId());
+					params.setUserId(entity.getUserId()+"");
+					limitBuydetailService.insertDataToBuyDetaill(params);
+				}
+			}
+        }
+        
         //交易描述
         String txnDesc = obtainTxnDesc(orderDetailList);
         
@@ -207,6 +237,8 @@ public class PaymentService {
 				}
         	}
         }
+        
+        
         
 		return rayResp.getPayPage();
 	}
@@ -950,6 +982,7 @@ public class PaymentService {
         LOGGER.info("-------------status{}--------------",YesNo.isNo(status));
         //付款失败,商品库存回滚
         if (YesNo.isNo(status)) {
+			orderService.rebackLimitActivityNum(mainOrderId);
             GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(mainOrderId);
             LOGGER.info("callback_{}stockLog:{}", mainOrderId, stockLog);
             if (null != stockLog) {
@@ -979,34 +1012,6 @@ public class PaymentService {
         	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
 		}
-        
-        if(YesNo.isYes(status)){
-        	/**
-             * 订单中包含限时购活动的商品时，往t_esp_limit_buydetail表中添加数据(sprint 13)
-             */
-        	OrderInfoEntity entity = orderDao.selectByOrderId(mainOrderId);
-        	try {
-        		List<OrderDetailInfoEntity> subList = orderDetailDao.queryOrderDetailInfo(mainOrderId);
-            	for (OrderDetailInfoEntity detail : subList) {
-            		String limitBuyActId = detail.getLimitActivityId();
-    				if(StringUtils.isNotBlank(limitBuyActId)){//如果限时购的活动ID不为空，说明此商品为限时购的商品
-    					LimitBuyParam params = new LimitBuyParam();
-    					params.setLimitBuyActId(limitBuyActId);
-    					params.setNum(detail.getGoodsNum().intValue());
-    					params.setOrderId(entity.getOrderId());
-    					params.setSkuId(detail.getSkuId());
-    					params.setUserId(entity.getUserId()+"");
-    					try {
-    						limitBuydetailService.insertDataToBuyDetaill(params);
-						} catch (Exception e) {
-							LOGGER.error("callback_{}_ insertDataToBuyDetaill fail:{}", GsonUtils.toJson(params),e);
-						}
-    				}
-    			}
-			} catch (Exception e) {
-				 LOGGER.error("callback_{}_ limitdetail fail:{}", mainOrderId,e);
-			}
-        }
 	}
 	
 	/**
@@ -1162,5 +1167,4 @@ public class PaymentService {
 		}
 		return caDto;
 	}
-
 }

@@ -532,7 +532,6 @@ public class OrderInfoController {
     Map<String, Object> resultMap = new HashMap<String, Object>();
 
     try {
-
       orderService.repeatConfirmOrder(requestId, userId, orderId, resultMap);
       return Response.success("重新下单初始化成功", resultMap);
     } catch (BusinessException e) {

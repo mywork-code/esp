@@ -974,6 +974,37 @@ public class GoodsService {
 		});
 		return jdSimilarSkuList;
 	}
+
+	/**
+	 * 获取默认规格的图片
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public String getDefaultImage(Map<String, Object> map) {
+		if (map.isEmpty()) {
+			return "";
+		}
+		int size = (int) map.get("jdSimilarSkuListSize");
+		List<JdSimilarSku> jdSimilarSkuList = (List<JdSimilarSku>) map.get("jdSimilarSkuList");
+		if (size == 0 || CollectionUtils.isEmpty(jdSimilarSkuList)) {
+			return "";
+		}
+		String skuId=(String) map.get("skuId");
+		for (JdSimilarSku jdSimilarSku : jdSimilarSkuList) {
+			if (1 == jdSimilarSku.getDim()) {
+				List<JdSaleAttr> saleAttrList = jdSimilarSku.getSaleAttrList();
+				for (JdSaleAttr jdSaleAttr : saleAttrList) {
+					List<String> skuIds=jdSaleAttr.getSkuIds();
+					if(!skuIds.isEmpty() && skuIds.contains(skuId)){
+						String iamge=jdSaleAttr.getImagePath();
+						return iamge;
+					}
+				}
+			}
+		}
+		return "";
+	}
   /**
    * 获取商品基本信息
    *

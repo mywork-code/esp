@@ -8,6 +8,7 @@ import com.apass.gfb.framework.mybatis.GenericMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
 
@@ -86,4 +87,6 @@ public interface AwardBindRelMapper extends GenericMapper<AwardBindRel, Long> {
    *  查询某段时间内某活动下的推荐人及推荐人拉新人数 
    */
   List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query);
+
+  List<AwardBindRel> selectAllUserByCreateDate(Map<String,Object> paramMap);
 }

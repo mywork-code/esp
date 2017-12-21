@@ -3,6 +3,7 @@ package com.apass.esp.repository.order;
 import com.apass.esp.domain.dto.aftersale.IdNum;
 import com.apass.esp.domain.entity.bill.SalesOrderPassOrRefund;
 import com.apass.esp.domain.entity.order.OrderInfoEntity;
+import com.apass.esp.domain.enums.OrderStatus;
 import com.apass.esp.domain.vo.CheckAccountOrderDetail;
 import com.apass.gfb.framework.annotation.MyBatisRepository;
 import com.apass.gfb.framework.exception.BusinessException;
@@ -379,5 +380,18 @@ public class OrderInfoRepository extends BaseMybatisRepository<OrderInfoEntity, 
      */
     public List<OrderInfoEntity> findOrderByMainOrderId(String mainOrderId) {
         return getSqlSession().selectList(getSQL("findOrderByMainOrderId"), mainOrderId);
+    }
+
+    /**
+     * 根据userId查询状态为订单完成的订单
+     * @param inviteUserId
+     * @return
+     */
+    public List<OrderInfoEntity> selectByUserId(Long inviteUserId) {
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("userId",String.valueOf(inviteUserId));
+        param.put("orderstatus", OrderStatus.ORDER_COMPLETED.getCode());
+
+        return getSqlSession().selectList(getSQL("selectByUserId"), param);
     }
 }

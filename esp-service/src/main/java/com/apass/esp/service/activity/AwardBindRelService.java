@@ -1,11 +1,12 @@
 package com.apass.esp.service.activity;
 
 
+import java.util.*;
 import java.util.Calendar;
-import java.util.Calendar;
-import java.util.List;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,5 +97,16 @@ public class AwardBindRelService {
 	 */
 	public List<ActivityDetailStatisticsVo> getUserIdListByActivityId(ActivityBindRelStatisticQuery query) {
 		return wihdrawBindRelMapper.getUserIdListByActivityId(query);
+	}
+
+	public List<AwardBindRel> selectAllUserByCreateDate(String startCreateDate) {
+		List<String> list = Lists.newArrayList();
+		list.add("15073857658");
+		list.add("18114470520");
+
+		Map<String,Object> paramMap = Maps.newHashMap();
+		paramMap.put("startCreateDate",startCreateDate);
+		paramMap.put("mobiles",list);
+		return wihdrawBindRelMapper.selectAllUserByCreateDate(paramMap);
 	}
 }

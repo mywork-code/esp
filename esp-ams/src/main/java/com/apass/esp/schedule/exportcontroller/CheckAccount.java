@@ -30,6 +30,7 @@ import com.csvreader.CsvWriter;
 
 /**
  * Created by xiaohai on 2017/10/23.
+ * 趣花商城订单明细导出
  */
 @Controller
 @RequestMapping("/checkup/account")
@@ -107,7 +108,6 @@ public class CheckAccount {
 
             //cvs导出
             toExportOrderDetail(checkAccountOrderDetailList);
-
         }catch (Exception e){
             LOGGER.error("-----Exception--",e);
         }
