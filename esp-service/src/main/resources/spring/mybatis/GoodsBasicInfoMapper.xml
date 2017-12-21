@@ -667,7 +667,30 @@
         ]]>
     </select>
 
+    <!--banner添加，查询goods是否存在 -->
+    <select id="selectGoodsBySkuIdOrGoodsCode" parameterType="GoodsBasicInfoEntity"  resultType="GoodsBasicInfoEntity">
+        <![CDATA[
+				SELECT
+						a.id goodId,
+						a.external_id externalId,
+						a.goods_name   goodsName,
+						a.source       source,
+						a.goods_code   goodsCode,
+						a.goods_code   goodsCodeString
+				FROM
+					    t_esp_goods_base_info  a
+			LEFT JOIN   t_esp_goods_stock_info b ON b.goods_id = a.id
+				WHERE
+				a.is_delete = '01'
 
+	]]>
+        <if test="goodsCode != null or externalId != null">
+            AND (a.goods_code = #{goodsCode, jdbcType=BIGINT}
+            OR a.external_id = #{externalId, jdbcType=VARCHAR}
+            )
+        </if>
+
+    </select>
 
 
 

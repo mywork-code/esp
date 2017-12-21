@@ -270,7 +270,7 @@ public class WeiZhiProductService {
 		return list;
 	}
 	/**
-	 * 同类商品查询
+	 * 相似商品查询
 	 */
 	public List<JdSimilarSku> getWeiZhiSimilarSku(String skuId) throws Exception {
 		WZJdSimilarSku wZJdSimilarSku=weiZhiProductApiClient.getWeiZhiSimilarSku(skuId,3);
