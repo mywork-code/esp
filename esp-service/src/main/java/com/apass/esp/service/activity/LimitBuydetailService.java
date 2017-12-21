@@ -41,7 +41,7 @@ public class LimitBuydetailService {
     	goodSku.setUpdatedTime(new Date());
     	Integer num = limitGoodsSkuMapper.updateLimitGoods(goodSku);
     	if(num < 1){
-    		if(currTotal <= 0){
+    		if(currTotal < 0){
     			throw new BusinessException("订单价格变动，请重新下单!");
     		}else{
     			throw new BusinessException("系统繁忙，请重新重试!");
