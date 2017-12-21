@@ -1372,9 +1372,10 @@ public class GoodsService {
      * 新增
      * @param entity
      * @return
+     * @throws BusinessException 
      */
     @Transactional(rollbackFor = Exception.class)
-    public GoodsInfoEntity insert(GoodsInfoEntity entity) {
+    public GoodsInfoEntity insert(GoodsInfoEntity entity) throws BusinessException {
         StringBuffer sb = new StringBuffer();
         String merchantCode = entity.getMerchantCode();
         MerchantInfoEntity merchantInfoEntity = merchantInforService.queryByMerchantCode(merchantCode);
@@ -1392,8 +1393,10 @@ public class GoodsService {
             entity.setMainGoodsCode(sb.toString());
             goodsDao.insert(entity);
             LOGGER.info("保存商品成功,保存内容：{}", entity);
+            return entity;
+        }else{
+            throw new BusinessException("商品编号无法生存,请检查商品商户编码字段!");
         }
-        return entity;
     }
   /**
    * 修改

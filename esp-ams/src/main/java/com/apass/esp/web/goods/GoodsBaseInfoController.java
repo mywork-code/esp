@@ -390,13 +390,15 @@ public class GoodsBaseInfoController {
                 }
             }
             goodsInfo = goodsService.insert(pageModel);
+        }catch (BusinessException e) {
+            LOGGER.error(e.getErrorDesc(), e);
+            return Response.fail(e.getErrorDesc());
         } catch (Exception e) {
             LOGGER.error("商品添加失败!", e);
             return Response.fail("商品添加失败!");
         }
         return Response.success(message, goodsInfo);
     }
-
     /**
      * 商品基本信息修改
      *
