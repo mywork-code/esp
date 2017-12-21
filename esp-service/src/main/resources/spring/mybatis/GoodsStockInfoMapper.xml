@@ -437,6 +437,6 @@
     FROM
         t_esp_goods_stock_info
     WHERE 1=1
-        AND sku_id = #{skuId, jdbcType=BIGINT}
+        AND sku_id = #{skuId, jdbcType=VARCHAR}
     </select>
 </mapper> 

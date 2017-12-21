@@ -863,7 +863,7 @@ public class ShopHomeController {
                 	goodsInfo.setStatus("G03");//商品下架
                 }
                 returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(
-                        Long.valueOf(externalId).longValue(), goodsId.toString(),region3);
+                        Long.valueOf(externalId).longValue(), goodsId.toString(),region3,userId);
                 
                 //添加活动id
             	ProGroupGoodsBo proGroupGoodsBo=proGroupGoodsService.getByGoodsId(goodsId);
@@ -1022,12 +1022,12 @@ public class ShopHomeController {
 
                 if (SourceType.JD.getCode().equals(goodsInfo.getSource())) {
                     returnMap = jdGoodsInfoService.getAppJdGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
-                            goodsId.toString(), region);
+                            goodsId.toString(), region,userId);
                     returnMap.put("source", SourceType.JD.getCode());
                     returnMap.put("status", GoodStatus.GOOD_DOWN.getCode());
                 } else {
                     returnMap = weiZhiGoodsInfoService.getAppWzGoodsAllInfoBySku(Long.valueOf(externalId).longValue(),
-                            goodsId.toString(), region);
+                            goodsId.toString(), region,userId);
                     returnMap.put("source", SourceType.JD.getCode());
                     returnMap.put("status", goodsInfo.getStatus());
                     // 验证商品是否可售（当验证为不可售时，更新数据库商品状态）

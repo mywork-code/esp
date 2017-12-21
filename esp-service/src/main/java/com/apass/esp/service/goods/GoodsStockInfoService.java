@@ -12,6 +12,7 @@ import com.apass.esp.utils.PaginationManage;
 import com.apass.gfb.framework.exception.BusinessException;
 import com.apass.gfb.framework.mybatis.page.Page;
 import com.apass.gfb.framework.mybatis.page.Pagination;
+import com.apass.gfb.framework.utils.RandomUtils;
 @Service
 public class GoodsStockInfoService {
     @Autowired
@@ -167,5 +168,18 @@ public class GoodsStockInfoService {
      */
     public GoodsStockInfoEntity getStockInfoEntityBySkuId(String skuId) {
         return goodsStockDao.getStockInfoEntityBySkuId(skuId);
+    }
+    /**
+     * 根据goodscode获取有效SKUId
+     * @param sku
+     */
+    public String getValidSkuIdByGoodsCode(String goodsCode) {
+        String rand = RandomUtils.getNum(2);
+        String skuId = goodsCode + rand;
+        GoodsStockInfoEntity stock = getStockInfoEntityBySkuId(skuId);
+        if(stock==null){
+            return skuId;
+        }
+        return getValidSkuIdByGoodsCode(goodsCode);
     }
 }
