@@ -345,6 +345,59 @@ public class LimitBuyActService {
         }
         throw new BusinessException("限时购活动商品删除异常!");
     }
+    /**
+     * xls模板创建
+     * @param filePath
+     * @throws IOException 
+     */
+    public Long downloadTemplate(String filePath) {
+        OutputStream os = null;
+        try{
+            Long start = System.currentTimeMillis();
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("SKUupLoadTemplate");
+            // 获取标题样式，内容样式
+            for (int i = 0; i < 11; i++) {
+                HSSFRow createRowContent = sheet.createRow(i);
+                for (int j = 0; j < 2; j++) {
+                    HSSFCell cellContent = createRowContent.createCell(j);
+                    if(i==0){
+                        if(j==0){
+                            cellContent.setCellValue("skuId");
+                        }
+                        if(j==1){
+                            cellContent.setCellValue("activityPrice");
+                        }
+                    }else{
+                        if(j==0){
+                            cellContent.setCellValue("000");
+                        }
+                        if(j==1){
+                            cellContent.setCellValue("0.00");
+                        }
+                    }
+                }
+            }
+            Long end = System.currentTimeMillis();
+            Long cost = (end - start)/ 1000;
+            String filePath2 = new File(filePath).getParent();
+            if (!new File(filePath2).isDirectory()) {
+                new File(filePath2).mkdirs();
+            }
+            os = new FileOutputStream(filePath);
+            workbook.write(os);
+            return cost;
+        }catch(IOException e){
+            return -1L;
+        }finally{
+            try {
+                if(os!=null){
+                    os.close();
+                }
+            } catch (IOException e) {
+            }
+        }
+    }
     /*限时购前台方法*/
     /**
      * 限时购前台页面时间条展示   包括抢购中的活动商品列表
@@ -762,58 +815,5 @@ public class LimitBuyActService {
             }
         }
         return sb.toString();
-    }
-    /**
-     * xls模板创建
-     * @param filePath
-     * @throws IOException 
-     */
-    public Long downloadTemplate(String filePath) {
-        OutputStream os = null;
-        try{
-            Long start = System.currentTimeMillis();
-            HSSFWorkbook workbook = new HSSFWorkbook();
-            HSSFSheet sheet = workbook.createSheet("SKUupLoadTemplate");
-            // 获取标题样式，内容样式
-            for (int i = 0; i < 11; i++) {
-                HSSFRow createRowContent = sheet.createRow(i);
-                for (int j = 0; j < 2; j++) {
-                    HSSFCell cellContent = createRowContent.createCell(j);
-                    if(i==0){
-                        if(j==0){
-                            cellContent.setCellValue("skuId");
-                        }
-                        if(j==1){
-                            cellContent.setCellValue("activityPrice");
-                        }
-                    }else{
-                        if(j==0){
-                            cellContent.setCellValue("000");
-                        }
-                        if(j==1){
-                            cellContent.setCellValue("0.00");
-                        }
-                    }
-                }
-            }
-            Long end = System.currentTimeMillis();
-            Long cost = (end - start)/ 1000;
-            String filePath2 = new File(filePath).getParent();
-            if (!new File(filePath2).isDirectory()) {
-                new File(filePath2).mkdirs();
-            }
-            os = new FileOutputStream(filePath);
-            workbook.write(os);
-            return cost;
-        }catch(IOException e){
-            return -1L;
-        }finally{
-            try {
-                if(os!=null){
-                    os.close();
-                }
-            } catch (IOException e) {
-            }
-        }
     }
 }
