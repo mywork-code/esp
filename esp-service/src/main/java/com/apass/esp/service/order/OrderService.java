@@ -2403,10 +2403,13 @@ public class OrderService {
                 goodInfo.setLimitNum(limitGS.getLimitNum());
                 goodInfo.setLimitPersonNum(limitGS.getLimitPersonNum());
                 goodInfo.setLimitBuyActId(limitGS.getLimitBuyActId());
+
+                totalAmount = totalAmount.add(limitGS.getActivityPrice().multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
+            }else {
+                // 订单总金额
+                totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
             }
 
-            // 订单总金额
-            totalAmount = totalAmount.add(goodsPrice.multiply(BigDecimal.valueOf(goodInfo.getGoodsNum())));
         }
         resultMap.put("goodsList", goodsList);
         // 商品总金额

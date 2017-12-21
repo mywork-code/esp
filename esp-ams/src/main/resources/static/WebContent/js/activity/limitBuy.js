@@ -600,7 +600,7 @@ function addFunction(){
 
 function editFunction(){
     $('#uploadGoodsListEdit').datagrid({
-    	fit : true,
+    	fit : false,
 		fitColumns: true,
         rownumbers : true,
         pagination : true,

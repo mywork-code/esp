@@ -57,7 +57,7 @@ public class CheckAwaradExport {
     @RequestMapping("/awardCheck")
     public Response exportAward(HttpServletRequest request){
         String beginDate = HttpWebUtils.getValue(request, "beginDate");
-        LOGGER.info("开始时间，beginDate:{}",beginDate);
+        LOGGER.info("数据开始时间，beginDate:{}",beginDate==null?"所有":beginDate);
 
         try{
             List<CheckAwardVo> awardVos = Lists.newArrayList();//存储要导出的数据
@@ -87,7 +87,8 @@ public class CheckAwaradExport {
             LOGGER.error("转介绍导出异常,异常信息：{}",e);
             return Response.fail(e.getMessage());
         }
-        return null;
+
+        return Response.success("数据导出成功!");
     }
 
     /**
