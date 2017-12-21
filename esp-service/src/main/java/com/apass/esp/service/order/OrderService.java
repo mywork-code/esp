@@ -3827,7 +3827,7 @@ public class OrderService {
     }
     
     /**
-	 * 退款时，要返回限时购活动的商品的数量
+	 * 返回限时购活动的商品的数量
 	 * @param orderId
 	 */
 	public void rebackLimitActivityNum(String orderId){

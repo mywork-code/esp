@@ -982,6 +982,7 @@ public class PaymentService {
         LOGGER.info("-------------status{}--------------",YesNo.isNo(status));
         //付款失败,商品库存回滚
         if (YesNo.isNo(status)) {
+			orderService.rebackLimitActivityNum(mainOrderId);
             GoodsStockLogEntity stockLog = goodsStockLogDao.loadByOrderId(mainOrderId);
             LOGGER.info("callback_{}stockLog:{}", mainOrderId, stockLog);
             if (null != stockLog) {
@@ -1010,7 +1011,6 @@ public class PaymentService {
         for (OrderInfoEntity order : payingOrders) {
         	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
-        	orderService.rebackLimitActivityNum(order.getOrderId());
 		}
 	}
 	
