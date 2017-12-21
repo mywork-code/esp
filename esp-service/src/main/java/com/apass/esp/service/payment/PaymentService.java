@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,6 @@ import com.apass.esp.domain.dto.payment.PayResponseDto;
 import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.LimitBuyAct;
-import com.apass.esp.domain.entity.LimitBuyDetail;
-import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProMyCoupon;
 import com.apass.esp.domain.entity.goods.GoodsInfoEntity;
@@ -52,8 +49,6 @@ import com.apass.esp.domain.utils.ConstantsUtils;
 import com.apass.esp.domain.vo.LimitBuyParam;
 import com.apass.esp.invoice.InvoiceService;
 import com.apass.esp.mapper.LimitBuyActMapper;
-import com.apass.esp.mapper.LimitBuyDetailMapper;
-import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
 import com.apass.esp.repository.goods.GoodsRepository;
@@ -137,12 +132,7 @@ public class PaymentService {
 	private LimitCommonService limitCommonService;
 	@Autowired
 	private LimitBuydetailService limitBuydetailService;
-    @Autowired
-    private  OrderDetailInfoRepository orderDetailInfoRepository;
-	@Autowired
-	private LimitGoodsSkuMapper limitGoodsSkuMapper;
-	@Autowired
-	private LimitBuyDetailMapper buydetailMapper;
+	
 	/**
 	 * 支付[银行卡支付或信用支付]
 	 * 
@@ -1020,6 +1010,7 @@ public class PaymentService {
         for (OrderInfoEntity order : payingOrders) {
         	LOGGER.info("No matter whether you successd or not,delete logs");
         	goodsStockLogDao.deleteByOrderId(order.getOrderId());
+        	orderService.rebackLimitActivityNum(order.getOrderId());
 		}
 	}
 	
@@ -1126,9 +1117,6 @@ public class PaymentService {
 			orderService.updateOrderStatus(orderInfoEntity);
 			//发票状态改为不可见
 			invoiceService.updateStatusByOrderId((byte) InvoiceStatusEnum.INVISIBLE.getCode(),orderId);
-			//将限时购的购买数量和限购件数退回
-			updateLimintNum(orderId);
-			
 		}else{
 			//退货失败：修改退款流水表状态
 			updateCashRefundTxnByOrderId(oriTxnCode,CashRefundTxnStatus.CASHREFUNDTXN_STATUS3.getCode(),cashDto.getId());
@@ -1179,56 +1167,4 @@ public class PaymentService {
 		}
 		return caDto;
 	}
-
-	// 退回限时购的数量
-	private void updateLimintNum(String orderId) {
-		if (StringUtils.isBlank(orderId)) {
-			LOGGER.error("updateLimintNum+退款详情表数据有误：{}", orderId);
-		}
-		LOGGER.info("限时购活动退款退回库存，订单号为："+orderId);
-		OrderInfoEntity orderInfoEntity = orderDao.selectByOrderId(orderId);
-		List<OrderDetailInfoEntity> OrderDetailInfoEntityList = orderDetailInfoRepository
-				.queryOrderDetailBySubOrderId(orderId);
-		for (OrderDetailInfoEntity orderDetailInfoEntity : OrderDetailInfoEntityList) {
-			Long goodsStockId = orderDetailInfoEntity.getGoodsStockId();
-			String limitActivityId = orderDetailInfoEntity.getLimitActivityId();
-			Long goodsNum = orderDetailInfoEntity.getGoodsNum();
-			GoodsStockInfoEntity goodsStockInfo = goodsStockDao.getGoodsStockInfoEntityByStockId(goodsStockId);
-			GoodsInfoEntity goodsBasicInfo = goodsDao.select(goodsStockInfo.getGoodsId());
-			String skuId = "";
-			if (SourceType.JD.getCode().equals(goodsBasicInfo.getSource())
-					|| SourceType.WZ.getCode().equals(goodsBasicInfo.getSource())) {
-				skuId = goodsBasicInfo.getExternalId();
-			} else {
-				skuId = goodsStockInfo.getSkuId();
-			}
-			LOGGER.info("orderDetailInfoEntityId="+orderDetailInfoEntity.getId()+";goodsStockId="+goodsStockId+";limitActivityId="+limitActivityId);
-			// 更新t_esp_limit_goods_sku表
-			LimitGoodsSku entity = new LimitGoodsSku();
-			entity.setSkuId(skuId);
-			entity.setLimitBuyActId(Long.parseLong(limitActivityId));
-			List<LimitGoodsSku> limitGoodsSkuList = limitGoodsSkuMapper.getLimitGoodsSkuList(entity);
-			if (CollectionUtils.isNotEmpty(limitGoodsSkuList) && limitGoodsSkuList.size() == 1) {
-				Long limitNumTotal = limitGoodsSkuList.get(0).getLimitNumTotal() + goodsNum;
-				Long limitNum = limitGoodsSkuList.get(0).getLimitNum() + goodsNum;
-				LimitGoodsSku lgs = new LimitGoodsSku();
-				lgs.setId(limitGoodsSkuList.get(0).getId());
-				lgs.setLimitNum(limitNum);
-				lgs.setLimitNumTotal(limitNumTotal);
-				limitGoodsSkuMapper.updateByPrimaryKey(lgs);
-				// 删除t_esp_limit_buydetail表
-				LimitBuyParam limitBuyParam = new LimitBuyParam();
-				limitBuyParam.setUserId(orderInfoEntity.getUserId() + "");
-				limitBuyParam.setLimitBuyActId(limitActivityId);
-				limitBuyParam.setSkuId(skuId);
-				List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
-				if (CollectionUtils.isNotEmpty(buyDetails) && buyDetails.size() == 1) {
-					buydetailMapper.deleteByPrimaryKey(buyDetails.get(0).getId());
-				}
-			}
-
-		}
-	}
-	
-
 }

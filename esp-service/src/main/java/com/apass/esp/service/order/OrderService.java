@@ -36,6 +36,8 @@ import com.apass.esp.domain.entity.CashRefund;
 import com.apass.esp.domain.entity.CashRefundTxn;
 import com.apass.esp.domain.entity.JdGoodSalesVolume;
 import com.apass.esp.domain.entity.LimitBuyAct;
+import com.apass.esp.domain.entity.LimitBuyDetail;
+import com.apass.esp.domain.entity.LimitGoodsSku;
 import com.apass.esp.domain.entity.ProActivityCfg;
 import com.apass.esp.domain.entity.ProCoupon;
 import com.apass.esp.domain.entity.ProMyCoupon;
@@ -79,6 +81,8 @@ import com.apass.esp.mapper.CashRefundMapper;
 import com.apass.esp.mapper.CashRefundTxnMapper;
 import com.apass.esp.mapper.JdGoodSalesVolumeMapper;
 import com.apass.esp.mapper.LimitBuyActMapper;
+import com.apass.esp.mapper.LimitBuyDetailMapper;
+import com.apass.esp.mapper.LimitGoodsSkuMapper;
 import com.apass.esp.mapper.ProActivityCfgMapper;
 import com.apass.esp.mapper.ProCouponMapper;
 import com.apass.esp.mapper.ProMyCouponMapper;
@@ -261,6 +265,10 @@ public class OrderService {
 	private LimitBuyActMapper limitBuyActMapper;
 	@Autowired
 	private LimitCommonService limitCommonService;
+	@Autowired
+	private LimitGoodsSkuMapper limitGoodsSkuMapper;
+	@Autowired
+	private LimitBuyDetailMapper buydetailMapper;
 	
 
     public static final Integer errorNo = 3; // 修改库存尝试次数
@@ -1777,6 +1785,7 @@ public class OrderService {
             LOG.info(requestId, "取消订单,加库存操作end...", orderId);
             LOG.info(requestId, "取消订单,删除商品库存消耗记录", orderId);
             goodsStcokLogDao.deleteByOrderId(orderId);
+            rebackLimitActivityNum(orderId);
         }
     }
 
@@ -1832,6 +1841,7 @@ public class OrderService {
                 continue;
             }
             goodsStcokLogDao.deleteByOrderId(orderId);
+            rebackLimitActivityNum(orderId);
         }
     }
     
@@ -1888,6 +1898,7 @@ public class OrderService {
           }
 		}
     	goodsStcokLogDao.deleteByOrderId(orderId);
+    	rebackLimitActivityNum(orderId);
     }
 
     /**
@@ -2019,6 +2030,7 @@ public class OrderService {
                         // 存在回滚
                         addGoodsStock(requestId, order.getOrderId());
                         goodsStcokLogDao.deleteByOrderId(sotckLog.getOrderId());
+                        rebackLimitActivityNum(sotckLog.getOrderId());
                     }
                 }
 
@@ -2082,6 +2094,7 @@ public class OrderService {
                         // 存在回滚
                         addGoodsStock(requestId, order.getOrderId());
                         goodsStcokLogDao.deleteByOrderId(order.getOrderId());
+                        rebackLimitActivityNum(orderId);
                     }
                 }
 
@@ -3812,4 +3825,25 @@ public class OrderService {
     public List<OrderInfoEntity> selectByUserId(Long inviteUserId) {
         return orderInfoRepository.selectByUserId(inviteUserId);
     }
+    
+    /**
+	 * 退款时，要返回限时购活动的商品的数量
+	 * @param orderId
+	 */
+	public void rebackLimitActivityNum(String orderId){
+		if(StringUtils.isBlank(orderId)){
+			LOGGER.error("updateLimintNum+退款详情表数据有误：{}", orderId);
+		}
+		LimitBuyParam limitBuyParam = new LimitBuyParam();
+		limitBuyParam.setOrderId(orderId);
+		List<LimitBuyDetail> buyDetails = buydetailMapper.getUserBuyGoodsNum(limitBuyParam);
+		Date date = new Date();
+		for (LimitBuyDetail limit : buyDetails) {
+			LimitGoodsSku sku =   limitGoodsSkuMapper.selectByPrimaryKey(limit.getLimitGoodsSkuId());
+			sku.setLimitCurrTotal(sku.getLimitCurrTotal() + limit.getBuyNo());//回滚数量，在原有的数量上，加上退换的数量
+			sku.setUpdatedTime(date);
+			limitGoodsSkuMapper.updateByPrimaryKeySelective(sku);
+			buydetailMapper.deleteByPrimaryKey(limit.getId());
+		}
+	}
 }
